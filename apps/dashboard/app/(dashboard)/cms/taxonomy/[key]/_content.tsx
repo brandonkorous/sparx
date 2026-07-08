@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Badge, Heading, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { TermsManager } from './terms-manager';
 
@@ -49,21 +49,21 @@ export async function TaxonomyDetailContent({ id: key }: Props) {
   }
 
   return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={1}>{taxonomy.plural_name}</Heading>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <h1 className="text-3xl font-semibold">{taxonomy.plural_name}</h1>
           <Badge color="info" variant="soft" size="sm">
             {taxonomy.hierarchical ? 'hierarchical' : 'flat'}
           </Badge>
           <code className="text-xs text-[var(--color-text-tertiary)]">{taxonomy.key}</code>
-        </Stack>
-        <Text variant="muted">
+        </div>
+        <p className="text-base-content/70 text-base">
           {terms.length} term{terms.length === 1 ? '' : 's'} in this taxonomy.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       <TermsManager taxonomyKey={key} hierarchical={taxonomy.hierarchical} terms={terms} />
-    </Stack>
+    </div>
   );
 }

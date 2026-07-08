@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heading, SurfaceFrame, Text, type SurfaceStepDef } from '@sparx/ui';
+import { SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
 import { MODULE_BY_KEY } from '@/lib/modules';
 import { SummaryCard } from '../../onboarding/_components/summary-card';
 import { RailFooter } from '../../onboarding/_components/rail-footer';
@@ -171,11 +171,11 @@ export function StoryTail({
     stage === 'payments' ? (
       <div className="flex flex-col gap-7">
         <div className="flex flex-col gap-2">
-          <Heading level={2}>Get paid</Heading>
-          <Text variant="muted" className="max-w-[58ch]">
+          <h2 className="text-2xl font-semibold tracking-tight">Get paid</h2>
+          <p className="text-base-content/70 max-w-[58ch]">
             Connect your Stripe account so your site can take customer payments. Your site can go
             live now — checkout just stays off until you connect.
-          </Text>
+          </p>
         </div>
         <StepPayments
           stripeConnected={stripeConnected}

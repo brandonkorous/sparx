@@ -13,17 +13,8 @@
 
 import * as React from 'react';
 import { ImageIcon, Plus, Star, Trash } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  NativeSelect,
-  Spinner,
-  Text,
-  SurfaceStep,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Loading, NativeSelect } from 'silicaui-react';
+import { SurfaceStep, useConfirm } from '@sparx/ui';
 
 import {
   addVariantImageAction,
@@ -234,11 +225,11 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
         nextDisabled: busy,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           {loading ? (
             <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-              <Spinner className="h-4 w-4" /> Loading photos…
+              <Loading className="h-4 w-4" /> Loading photos…
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -283,7 +274,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                               size="sm"
                               onClick={() => void makePrimary(img.id)}
                               disabled={busy}
-                              leftIcon={<Star className="h-3.5 w-3.5" />}
+                              iconStart={<Star className="h-3.5 w-3.5" />}
                             >
                               Star
                             </Button>
@@ -333,20 +324,20 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
               </div>
 
               {images.length === 0 && (
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   No photos yet. Add at least one so the product looks its best — or continue and
                   add them later.
-                </Text>
+                </p>
               )}
 
               {error && (
-                <Text size="sm" variant="danger" role="alert">
+                <p className="text-danger text-sm" role="alert">
                   {error}
-                </Text>
+                </p>
               )}
             </div>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
       <MediaPicker

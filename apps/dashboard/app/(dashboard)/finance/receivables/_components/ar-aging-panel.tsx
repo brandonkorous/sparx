@@ -4,7 +4,8 @@
 // (the report mirrors Decimal money columns). Past-due buckets read in danger so the
 // eye lands on what's actually late.
 
-import { Card, CardContent, CardHeader, CardTitle, Stack, Stat, Text } from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Stat } from '@sparx/ui';
 
 import { fmtDollars } from '../../_lib/format';
 import type { AgingReport } from '../actions';
@@ -18,17 +19,16 @@ export function ArAgingPanel({ aging }: { aging: AgingReport }) {
     .reduce((n, b) => n + b.count, 0);
 
   return (
-    <Card variant="module">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={2} wrap>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>Accounts receivable</CardTitle>
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             {aging.totalCount} open invoice{aging.totalCount === 1 ? '' : 's'}
-          </Text>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={5}>
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-3 sm:max-w-lg sm:grid-cols-3">
             <Stat label="Outstanding" value={fmtDollars(aging.totalOutstanding)} />
             <Stat label="Current" value={fmtDollars(aging.totalOutstanding - overdue)} />
@@ -45,29 +45,27 @@ export function ArAgingPanel({ aging }: { aging: AgingReport }) {
               return (
                 <div
                   key={b.key}
-                  className="flex flex-col gap-0.5 rounded-lg border border-[var(--color-border-default)] p-3"
+                  className="rounded-box border-base-300 flex flex-col gap-0.5 border p-3"
                 >
-                  <Text size="xs" variant="muted">
-                    {b.label}
-                  </Text>
-                  <Text
-                    size="lg"
-                    weight="medium"
+                  <p className="text-base-content/70 text-xs">{b.label}</p>
+                  <p
                     className={
-                      pastDue ? 'text-[var(--color-danger-text)] tabular-nums' : 'tabular-nums'
+                      pastDue
+                        ? 'text-danger text-lg font-medium tabular-nums'
+                        : 'text-lg font-medium tabular-nums'
                     }
                   >
                     {fmtDollars(b.balance)}
-                  </Text>
-                  <Text size="xs" variant="muted">
+                  </p>
+                  <p className="text-base-content/70 text-xs">
                     {b.count} invoice{b.count === 1 ? '' : 's'}
-                  </Text>
+                  </p>
                 </div>
               );
             })}
           </div>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

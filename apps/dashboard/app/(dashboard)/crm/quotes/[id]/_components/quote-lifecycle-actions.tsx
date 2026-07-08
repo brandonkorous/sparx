@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { ArrowRight, Check, X, Clock, Send } from 'lucide-react';
 
-import { Button, Stack, toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import {
   acceptQuoteAction,
@@ -40,11 +41,11 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
   }
 
   return (
-    <Stack direction="row" gap={2} wrap>
+    <div className="flex flex-row flex-wrap gap-2">
       {status === 'draft' && (
         <Button
           color="module"
-          leftIcon={<Send className="h-4 w-4" />}
+          iconStart={<Send className="h-4 w-4" />}
           disabled={isPending}
           onClick={() => run('submitted', () => submitQuoteAction({ quoteId }))}
         >
@@ -55,7 +56,7 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
         <>
           <Button
             color="module"
-            leftIcon={<Check className="h-4 w-4" />}
+            iconStart={<Check className="h-4 w-4" />}
             disabled={isPending}
             onClick={() => run('accepted', () => acceptQuoteAction({ quoteId }))}
           >
@@ -63,7 +64,7 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
           </Button>
           <Button
             variant="outline"
-            leftIcon={<X className="h-4 w-4" />}
+            iconStart={<X className="h-4 w-4" />}
             disabled={isPending}
             onClick={() => run('declined', () => declineQuoteAction({ quoteId }))}
           >
@@ -74,7 +75,7 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
       {(status === 'submitted' || status === 'draft') && (
         <Button
           variant="ghost"
-          leftIcon={<Clock className="h-4 w-4" />}
+          iconStart={<Clock className="h-4 w-4" />}
           disabled={isPending}
           onClick={() => run('expired', () => expireQuoteAction({ quoteId }))}
         >
@@ -84,7 +85,7 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
       {status === 'accepted' && (
         <Button
           color="module"
-          rightIcon={<ArrowRight className="h-4 w-4" />}
+          iconEnd={<ArrowRight className="h-4 w-4" />}
           disabled={isPending}
           onClick={() =>
             startTransition(async () => {
@@ -101,6 +102,6 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
           Convert to order
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

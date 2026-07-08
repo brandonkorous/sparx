@@ -15,26 +15,8 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import {
-  ActionQueue,
-  ActionTile,
-  AreaChart,
-  Badge,
-  BarList,
-  Button,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -245,19 +227,27 @@ export default async function B2bPage() {
   }));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Building2 className="h-5 w-5" />}
           title="B2B"
           description="Wholesale & accounts — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Tag className="h-4 w-4" />}>
-                <Link href="/b2b/price-lists">Price lists</Link>
+              <Button
+                variant="outline"
+                iconStart={<Tag className="h-4 w-4" />}
+                render={<Link href="/b2b/price-lists" />}
+              >
+                Price lists
               </Button>
-              <Button asChild variant="outline" leftIcon={<FileText className="h-4 w-4" />}>
-                <Link href="/b2b/quotes/new">New quote</Link>
+              <Button
+                variant="outline"
+                iconStart={<FileText className="h-4 w-4" />}
+                render={<Link href="/b2b/quotes/new" />}
+              >
+                New quote
               </Button>
               <EntityCreateButton
                 entityType="b2b-account"
@@ -272,7 +262,7 @@ export default async function B2bPage() {
         />
 
         {/* Headline KPIs — live from the B2B reporting summary + timeseries */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<DollarSign className="h-4 w-4" />}
             label="Wholesale revenue · 30d"
@@ -297,7 +287,7 @@ export default async function B2bPage() {
             value={aov30 > 0 ? fmtMoneyCents(aov30) : '—'}
             hint="Across wholesale orders"
           />
-        </Grid>
+        </div>
 
         {/* Daily action queue — live counts */}
         <ActionQueue title="Needs attention" icon={<AlertTriangle className="h-4 w-4" />}>
@@ -434,47 +424,47 @@ export default async function B2bPage() {
           >
             {quoteRows.length ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quote</TableHead>
-                    <TableHead>Account</TableHead>
-                    <TableHead className="text-right">Value</TableHead>
-                    <TableHead className="text-right">Sent</TableHead>
-                    <TableHead className="text-right">Expires</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Quote</th>
+                    <th>Account</th>
+                    <th className="text-right">Value</th>
+                    <th className="text-right">Sent</th>
+                    <th className="text-right">Expires</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {quoteRows.map((q) => (
-                    <TableRow key={q.key}>
-                      <TableCell className="font-mono text-xs text-[var(--module-active-text)]">
+                    <tr key={q.key}>
+                      <td className="font-mono text-xs text-[var(--module-active-text)]">
                         {q.label}
-                      </TableCell>
-                      <TableCell className="font-medium">{q.account}</TableCell>
-                      <TableCell className="text-right tabular-nums">{q.value}</TableCell>
-                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      </td>
+                      <td className="font-medium">{q.account}</td>
+                      <td className="text-right tabular-nums">{q.value}</td>
+                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                         {q.sent}
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      </td>
+                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                         {q.expires}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         <Badge color={q.tone} variant="soft">
                           {q.status}
                         </Badge>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             ) : (
               <EmptyState
                 icon={<FileText className="h-5 w-5" />}
                 title="No open quotes"
                 description="Quotes awaiting a buyer response will show here."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/b2b/quotes/new">New quote</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/b2b/quotes/new" />}>
+                    New quote
                   </Button>
                 }
               />
@@ -512,9 +502,9 @@ export default async function B2bPage() {
                 icon={<Building2 className="h-5 w-5" />}
                 title="No accounts yet"
                 description="Your highest-value wholesale accounts will rank here."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/b2b/accounts/new">New account</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/b2b/accounts/new" />}>
+                    New account
                   </Button>
                 }
               />
@@ -523,7 +513,7 @@ export default async function B2bPage() {
         </div>
 
         {/* Pending applications + price tiers + recent activity */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard
             title="Pending applications"
             icon={<CheckCircle2 className="h-4 w-4" />}
@@ -557,9 +547,9 @@ export default async function B2bPage() {
                 icon={<Tag className="h-5 w-5" />}
                 title="No price tiers yet"
                 description="Group accounts into tiers to apply wholesale pricing."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/b2b/price-lists">Create tier</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/b2b/price-lists" />}>
+                    Create tier
                   </Button>
                 }
               />
@@ -573,8 +563,8 @@ export default async function B2bPage() {
               description="Account, quote, and invoice updates will show up here."
             />
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

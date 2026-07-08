@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   SelectionList,
-  Text,
   statusLabel,
   statusTone,
   type SelectionCard,
@@ -68,9 +67,7 @@ export function BootcampsList({ rows, view }: { rows: Bootcamp[]; view: 'table' 
   const card: SelectionCard<Bootcamp> = {
     title: titleLink,
     subtitle: (b) => (
-      <Text size="xs" variant="muted">
-        {fmtDateRange(b.startsAt, b.endsAt)}
-      </Text>
+      <p className="text-base-content/70 text-xs">{fmtDateRange(b.startsAt, b.endsAt)}</p>
     ),
     badge: statusBadge,
     body: (b) => (
@@ -78,9 +75,7 @@ export function BootcampsList({ rows, view }: { rows: Bootcamp[]; view: 'table' 
         <Badge color="info" variant="soft" size="sm">
           {FORMAT_LABELS[b.format]}
         </Badge>
-        <Text size="xs" variant="muted">
-          {seatsLabel(b)} seats
-        </Text>
+        <p className="text-base-content/70 text-xs">{seatsLabel(b)} seats</p>
       </div>
     ),
   };

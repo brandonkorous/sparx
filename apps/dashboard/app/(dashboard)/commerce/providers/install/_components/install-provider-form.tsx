@@ -4,21 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { ProviderEnvironment, ProviderKind } from '@sparx/commerce-schemas';
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 
 import { formString } from '../../../../../../lib/forms';
 import { installProviderAction } from '../../../provider-actions';
@@ -183,15 +170,13 @@ export function InstallProviderForm({
             onInput={recomputeDirty}
             onChange={recomputeDirty}
           >
-            <Stack gap={4}>
-              <Card variant="default">
-                <CardContent className="py-6">
-                  <Stack gap={4}>
-                    <Text size="sm" className="font-medium">
-                      Install
-                    </Text>
-                    <Stack direction="row" gap={3} wrap>
-                      <Stack gap={2} className="min-w-[12rem] flex-1">
+            <div className="flex flex-col gap-4">
+              <Card>
+                <CardBody className="py-6">
+                  <div className="flex flex-col gap-4">
+                    <p className="text-sm font-medium">Install</p>
+                    <div className="flex flex-row flex-wrap gap-3">
+                      <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                         <Label htmlFor="environment">Environment *</Label>
                         <NativeSelect
                           id="environment"
@@ -201,8 +186,8 @@ export function InstallProviderForm({
                           {sandboxAvailable && <option value="sandbox">sandbox</option>}
                           <option value="production">production</option>
                         </NativeSelect>
-                      </Stack>
-                      <Stack gap={2} className="min-w-[14rem] flex-1">
+                      </div>
+                      <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
                         <Label htmlFor="label">Label</Label>
                         <Input
                           id="label"
@@ -210,26 +195,24 @@ export function InstallProviderForm({
                           placeholder={`${displayName} — primary`}
                           maxLength={127}
                         />
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Distinguishes multiple installs of the same provider (e.g. US vs EU
                           entity).
-                        </Text>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </CardContent>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
               </Card>
 
-              <Card variant="default">
-                <CardContent className="py-6">
-                  <Stack gap={3}>
-                    <Text size="sm" className="font-medium">
-                      Provider configuration
-                    </Text>
+              <Card>
+                <CardBody className="py-6">
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm font-medium">Provider configuration</p>
                     {propertyKeys.length === 0 ? (
-                      <Text size="sm" variant="muted">
+                      <p className="text-base-content/70 text-sm">
                         No configuration fields declared.
-                      </Text>
+                      </p>
                     ) : (
                       propertyKeys.map((key) => (
                         <ConfigField
@@ -240,28 +223,26 @@ export function InstallProviderForm({
                         />
                       ))
                     )}
-                    <Stack gap={1} className="rounded bg-[var(--color-bg-subtle)] p-3">
-                      <Text size="xs" className="font-medium">
-                        Webhook path
-                      </Text>
-                      <Text size="xs" className="font-mono text-[var(--color-text-muted)]">
+                    <div className="flex flex-col gap-1 rounded bg-[var(--color-bg-subtle)] p-3">
+                      <p className="text-xs font-medium">Webhook path</p>
+                      <p className="font-mono text-xs text-[var(--color-text-muted)]">
                         {webhookPathTemplate}
-                      </Text>
-                      <Text size="xs" variant="muted">
+                      </p>
+                      <p className="text-base-content/70 text-xs">
                         After install, paste this URL into the provider&apos;s webhook configuration
                         so callbacks land at the right tenant.
-                      </Text>
-                    </Stack>
-                  </Stack>
-                </CardContent>
+                      </p>
+                    </div>
+                  </div>
+                </CardBody>
               </Card>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
-            </Stack>
+            </div>
           </form>
         </SurfaceStep>
       </SurfaceFrame>
@@ -280,7 +261,7 @@ function ConfigField({
 }) {
   const id = `config:${fieldKey}`;
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <Label htmlFor={id}>
         {prop.title ?? fieldKey}
         {required && <span className="text-[var(--color-danger)]"> *</span>}
@@ -288,9 +269,7 @@ function ConfigField({
       {prop.type === 'boolean' ? (
         <label className="flex items-center gap-2">
           <Checkbox color="module" id={id} name={id} defaultChecked={prop.default === true} />
-          <Text size="sm" variant="muted">
-            {prop.description ?? 'Enable'}
-          </Text>
+          <p className="text-base-content/70 text-sm">{prop.description ?? 'Enable'}</p>
         </label>
       ) : prop.description && prop.description.length > 80 ? (
         <Textarea
@@ -316,10 +295,8 @@ function ConfigField({
         />
       )}
       {prop.type !== 'boolean' && prop.description && (
-        <Text size="xs" variant="muted">
-          {prop.description}
-        </Text>
+        <p className="text-base-content/70 text-xs">{prop.description}</p>
       )}
-    </Stack>
+    </div>
   );
 }

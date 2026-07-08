@@ -2,22 +2,8 @@
 // month, computed by dealService.forecast (which the MCP get_forecast tool
 // also wraps, so REST/UI/AI all see identical numbers).
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -47,51 +33,45 @@ export async function PipelineForecast({ pipelineId }: PipelineForecastProps) {
   const maxBucket = result.buckets.reduce((m, b) => Math.max(m, b.weightedValue), 0);
 
   return (
-    <Stack gap={4}>
-      <Stack direction="row" gap={4} wrap>
-        <Card variant="module" className="min-w-[200px]">
-          <CardContent className="py-4">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-row flex-wrap gap-4">
+        <Card className="bg-module bg-soft min-w-[200px]">
+          <CardBody className="py-4">
             <Stat label="Total weighted" value={`$${result.totalWeighted.toLocaleString()}`} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card className="min-w-[200px]">
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Window" value={`${result.startMonth} → ${result.endMonth}`} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card className="min-w-[200px]">
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Closed-won (window)"
               value={`$${result.buckets
                 .reduce((s, b) => s + b.closedWonValue, 0)
                 .toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
+      </div>
 
-      <Card padding="none">
-        <CardHeader>
+      <Card>
+        <CardBody className="p-0">
           <CardTitle>Forecast by month</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
+          <div className="flex flex-col gap-3">
             {result.buckets.map((b) => (
-              <Stack key={b.month} gap={1}>
-                <Stack direction="row" justify="between" align="center">
-                  <Stack direction="row" align="center" gap={2}>
-                    <Text size="sm" weight="medium">
-                      {b.month}
-                    </Text>
+              <div key={b.month} className="flex flex-col gap-1">
+                <div className="flex flex-row items-center justify-between">
+                  <div className="flex flex-row items-center gap-2">
+                    <p className="text-sm font-medium">{b.month}</p>
                     <Badge color="neutral" variant="soft" size="sm">
                       {b.dealCount} deal{b.dealCount === 1 ? '' : 's'}
                     </Badge>
-                  </Stack>
-                  <Text size="sm" className="tabular-nums">
-                    ${b.weightedValue.toLocaleString()}
-                  </Text>
-                </Stack>
+                  </div>
+                  <p className="text-sm tabular-nums">${b.weightedValue.toLocaleString()}</p>
+                </div>
                 <div className="h-2 rounded-full bg-[var(--color-surface-subtle)]">
                   <div
                     className="h-full rounded-full bg-[var(--module-active)]"
@@ -101,51 +81,43 @@ export async function PipelineForecast({ pipelineId }: PipelineForecastProps) {
                   />
                 </div>
                 {b.closedWonValue > 0 && (
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Closed-won: ${b.closedWonValue.toLocaleString()}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
+              </div>
             ))}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card padding="none">
-        <CardHeader>
+      <Card>
+        <CardBody className="p-0">
           <CardTitle>Breakdown</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Month</TableHead>
-                <TableHead className="text-right">Deals</TableHead>
-                <TableHead className="text-right">Open (weighted)</TableHead>
-                <TableHead className="text-right">Closed-won</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th className="text-right">Deals</th>
+                <th className="text-right">Open (weighted)</th>
+                <th className="text-right">Closed-won</th>
+                <th className="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
               {result.buckets.map((b) => (
-                <TableRow key={b.month}>
-                  <TableCell>{b.month}</TableCell>
-                  <TableCell className="text-right tabular-nums">{b.dealCount}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    ${b.openValue.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    ${b.closedWonValue.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    ${b.weightedValue.toLocaleString()}
-                  </TableCell>
-                </TableRow>
+                <tr key={b.month}>
+                  <td>{b.month}</td>
+                  <td className="text-right tabular-nums">{b.dealCount}</td>
+                  <td className="text-right tabular-nums">${b.openValue.toLocaleString()}</td>
+                  <td className="text-right tabular-nums">${b.closedWonValue.toLocaleString()}</td>
+                  <td className="text-right tabular-nums">${b.weightedValue.toLocaleString()}</td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash } from 'lucide-react';
 
-import { Button, Text, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { deleteCategoryAction } from '../../category-actions';
 
@@ -48,17 +49,13 @@ export function CategoryDeleteButton({ categoryId, name }: { categoryId: string;
 
   return (
     <div className="flex items-center gap-2">
-      {error && (
-        <Text size="xs" variant="danger">
-          {error}
-        </Text>
-      )}
+      {error && <p className="text-danger text-xs">{error}</p>}
       <Button
         type="button"
         color="danger"
         variant="ghost"
         onClick={() => void onDelete()}
-        leftIcon={<Trash className="h-4 w-4" />}
+        iconStart={<Trash className="h-4 w-4" />}
         disabled={pending}
       >
         {pending ? 'Deleting…' : 'Delete'}

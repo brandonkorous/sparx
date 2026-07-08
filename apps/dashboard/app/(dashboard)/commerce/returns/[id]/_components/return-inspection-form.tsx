@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, NativeSelect } from 'silicaui-react';
+
 import type { RecordReturnInspectionInput } from '@sparx/commerce-schemas';
 
 import { recordReturnInspectionAction } from '../../../return-actions';
@@ -85,21 +86,16 @@ export function ReturnInspectionForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={3}>
+      <div className="flex flex-col gap-3">
         {items.map((it) => {
           const line = state[it.id]!;
           const disabled = it.approvedQuantity === 0;
           return (
-            <Stack
+            <div
               key={it.id}
-              direction="row"
-              gap={2}
-              align="center"
-              className={disabled ? 'opacity-60' : ''}
+              className={`flex flex-row items-center gap-2 ${disabled ? 'opacity-60' : ''}`}
             >
-              <Text size="xs" className="w-32 font-mono">
-                {it.orderItemId.slice(0, 8)}
-              </Text>
+              <p className="w-32 font-mono text-xs">{it.orderItemId.slice(0, 8)}</p>
               <NativeSelect
                 value={line.condition}
                 onChange={(e) => update(it.id, { condition: e.target.value as Condition })}
@@ -116,10 +112,10 @@ export function ReturnInspectionForm({
                 <Checkbox
                   color="module"
                   checked={line.restockable}
-                  onCheckedChange={(checked) => update(it.id, { restockable: checked === true })}
+                  onChange={(e) => update(it.id, { restockable: e.target.checked })}
                   disabled={disabled}
                 />
-                <Text size="xs">restock</Text>
+                <span className="text-xs">restock</span>
               </label>
               <Input
                 placeholder="note"
@@ -128,20 +124,20 @@ export function ReturnInspectionForm({
                 disabled={disabled}
                 className="flex-1"
               />
-            </Stack>
+            </div>
           );
         })}
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>
             {pending ? 'Recording…' : 'Record inspection'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

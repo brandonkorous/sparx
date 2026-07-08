@@ -1,17 +1,8 @@
 import Link from 'next/link';
 import { PackageCheck, ClipboardList } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -35,8 +26,8 @@ export default async function ReceivingPage() {
   const receipts = recent.data;
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<PackageCheck className="h-5 w-5" />}
           title="Receiving"
@@ -44,47 +35,45 @@ export default async function ReceivingPage() {
         />
 
         <Card>
-          <CardContent>
-            <Stack gap={3} className="py-2">
-              <Stack direction="row" align="center" gap={2}>
-                <Heading level={3}>Awaiting receipt</Heading>
+          <CardBody>
+            <div className="flex flex-col gap-3 py-2">
+              <div className="flex flex-row items-center gap-2">
+                <h3 className="text-xl font-semibold">Awaiting receipt</h3>
                 <Badge color="module">{awaiting.length}</Badge>
-              </Stack>
+              </div>
               {awaiting.length === 0 ? (
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Nothing awaiting receipt. Submit a purchase order to start receiving against it.
-                </Text>
+                </p>
               ) : (
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   {awaiting.map((po) => (
                     <AwaitingRow key={po.id} po={po} />
                   ))}
-                </Stack>
+                </div>
               )}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardContent>
-            <Stack gap={3} className="py-2">
-              <Heading level={3}>Recent receipts</Heading>
+          <CardBody>
+            <div className="flex flex-col gap-3 py-2">
+              <h3 className="text-xl font-semibold">Recent receipts</h3>
               {receipts.length === 0 ? (
-                <Text size="sm" variant="muted">
-                  No goods received yet.
-                </Text>
+                <p className="text-base-content/70 text-sm">No goods received yet.</p>
               ) : (
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   {receipts.map((r) => (
                     <ReceiptRow key={r.id} receipt={r} />
                   ))}
-                </Stack>
+                </div>
               )}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -92,65 +81,53 @@ function AwaitingRow({ po }: { po: PurchaseOrderRow }) {
   const outstanding = Math.max(0, po.quantityOrdered - po.quantityReceived);
   const s = purchaseOrderStatus(po.status);
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
       <Link
         href={`/inventory/purchase-orders/${po.id}`}
         className="font-mono text-xs hover:text-[var(--module-active)]"
       >
         {po.number}
       </Link>
-      <Stack gap={0} className="min-w-[10rem] flex-1">
-        <Text size="sm" className="font-medium">
-          {po.supplierName ?? po.supplierCode ?? 'Supplier'}
-        </Text>
-        <Text size="xs" variant="muted">
+      <div className="flex min-w-[10rem] flex-1 flex-col gap-0">
+        <p className="text-sm font-medium">{po.supplierName ?? po.supplierCode ?? 'Supplier'}</p>
+        <p className="text-base-content/70 text-xs">
           {po.warehouseName ?? po.warehouseCode ?? '—'} · exp {formatDate(po.expectedArrivalAt)}
-        </Text>
-      </Stack>
+        </p>
+      </div>
       <Badge color={s.color}>{s.label}</Badge>
-      <Text size="sm" variant="muted">
-        {outstanding} outstanding
-      </Text>
-      <Button color="module" size="sm" asChild>
-        <Link href={`/inventory/purchase-orders/${po.id}/receive`}>Receive</Link>
+      <p className="text-base-content/70 text-sm">{outstanding} outstanding</p>
+      <Button
+        color="module"
+        size="sm"
+        render={<Link href={`/inventory/purchase-orders/${po.id}/receive`} />}
+      >
+        Receive
       </Button>
-    </Stack>
+    </div>
   );
 }
 
 function ReceiptRow({ receipt }: { receipt: GoodsReceiptRow }) {
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
       <Link
         href={`/inventory/receiving/${receipt.id}`}
         className="font-mono text-xs hover:text-[var(--module-active)]"
       >
         {receipt.number}
       </Link>
-      <Stack direction="row" align="center" gap={2} className="flex-1">
+      <div className="flex flex-1 flex-row items-center gap-2">
         <ClipboardList className="h-3.5 w-3.5 opacity-60" />
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {receipt.purchaseOrderNumber ?? '—'} · {formatDate(receipt.receivedAt)}
           {receipt.reference ? ` · ${receipt.reference}` : ''}
-        </Text>
-      </Stack>
-      <Text size="sm">
+        </p>
+      </div>
+      <p className="text-sm">
         {receipt.quantityReceived} unit{receipt.quantityReceived === 1 ? '' : 's'} ·{' '}
         {receipt.lineCount} line{receipt.lineCount === 1 ? '' : 's'}
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 }
 

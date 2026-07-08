@@ -1,26 +1,8 @@
 import Link from 'next/link';
 import { Boxes } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -155,16 +137,16 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   const view = (pickString(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Boxes className="h-5 w-5" />}
           title="Inventory"
           badge={fallbackWarehouse && <Badge color="module">{fallbackWarehouse.code}</Badge>}
           description="On-hand is the authoritative count; allocated is the active reservation total across carts, orders, and subscriptions; available = on-hand − allocated."
           actions={
-            <Button asChild variant="outline">
-              <Link href="/inventory/warehouses">Manage warehouses</Link>
+            <Button variant="outline" render={<Link href="/inventory/warehouses" />}>
+              Manage warehouses
             </Button>
           }
         />
@@ -174,9 +156,9 @@ export default async function InventoryPage({ searchParams }: PageProps) {
             icon={<Boxes className="h-5 w-5" />}
             title="No warehouses yet"
             description="Create a warehouse before tracking inventory."
-            action={
-              <Button color="module" asChild>
-                <Link href="/inventory/warehouses/new">Add warehouse</Link>
+            actions={
+              <Button color="module" render={<Link href="/inventory/warehouses/new" />}>
+                Add warehouse
               </Button>
             }
           />
@@ -190,73 +172,71 @@ export default async function InventoryPage({ searchParams }: PageProps) {
 
             {lowStock.length > 0 && (
               <Card>
-                <CardHeader>
-                  <Stack gap={1}>
-                    <Heading level={3}>Reorder watch</Heading>
-                    <CardDescription>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="text-xl font-semibold">Reorder watch</h3>
+                    <p className="opacity-70">
                       Variants at or below their reorder point. Filtered to{' '}
                       {warehouseFilter ? 'the selected warehouse' : 'every warehouse'}.
-                    </CardDescription>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
+                    </p>
+                  </div>
                   <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>SKU</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Warehouse</TableHead>
-                        <TableHead>Available</TableHead>
-                        <TableHead>Reorder at</TableHead>
-                        <TableHead>Suggested order</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                    <thead>
+                      <tr>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Warehouse</th>
+                        <th>Available</th>
+                        <th>Reorder at</th>
+                        <th>Suggested order</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {lowStock.map((row) => (
-                        <TableRow key={`${row.variantId}:${row.warehouseId}`}>
-                          <TableCell>
+                        <tr key={`${row.variantId}:${row.warehouseId}`}>
+                          <td>
                             <span className="font-mono text-xs">{row.sku}</span>
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td>
                             <Link
                               href={`/commerce/products/${row.productId}`}
                               className="hover:text-[var(--module-active)]"
                             >
                               {row.title}
                             </Link>
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td>
                             <Badge color="neutral" variant="soft" size="sm">
                               {row.warehouseCode}
                             </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Text className="text-[var(--color-warning)]">{row.available}</Text>
-                          </TableCell>
-                          <TableCell>{row.reorderPoint}</TableCell>
-                          <TableCell>{row.reorderQuantity ?? '—'}</TableCell>
-                        </TableRow>
+                          </td>
+                          <td>
+                            <p className="text-base text-[var(--color-warning)]">{row.available}</p>
+                          </td>
+                          <td>{row.reorderPoint}</td>
+                          <td>{row.reorderQuantity ?? '—'}</td>
+                        </tr>
                       ))}
-                    </TableBody>
+                    </tbody>
                   </Table>
-                </CardContent>
+                </CardBody>
               </Card>
             )}
 
-            <Stack gap={2}>
-              <Heading level={3}>
+            <div className="flex flex-col gap-2">
+              <h3 className="text-xl font-semibold">
                 Stock at {fallbackWarehouse?.code ?? '—'}
                 <Badge color="neutral" variant="soft" size="sm" className="ml-2">
                   {gridRows.length} variants
                 </Badge>
-              </Heading>
-              <Text size="sm" variant="muted">
+              </h3>
+              <p className="text-base-content/70 text-sm">
                 Each row shows the latest counts; the inline editor records every change as an
                 audited adjustment (sale, recount, manual…).
-              </Text>
+              </p>
 
               {gridRows.length === 0 ? (
-                <Card variant="module" padding="none">
+                <Card className="bg-module bg-soft">
                   <EmptyState
                     icon={<Boxes className="h-5 w-5" />}
                     title="No stock tracked at this warehouse"
@@ -266,12 +246,12 @@ export default async function InventoryPage({ searchParams }: PageProps) {
               ) : (
                 <InventoryList rows={gridRows} warehouseId={fallbackWarehouse!.id} view={view} />
               )}
-            </Stack>
+            </div>
           </>
         )}
 
         <ListPager total={gridTotal} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -2,17 +2,8 @@
 
 import Link from 'next/link';
 import { ExternalLink, Star } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  Code,
-  SelectionList,
-  Stack,
-  Text,
-  type SelectionCard,
-  type SelectionColumn,
-} from '@sparx/ui';
+import { Code, SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
 
 import type { Domain, Property } from '@/lib/sites';
 import { resolveActiveProperty } from '@/lib/site-scope';
@@ -120,23 +111,21 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
   const identityCell = (p: Property) => {
     const primary = primaryDomainOf(siteDomains(p));
     return (
-      <Stack direction="row" align="start" gap={3} className="min-w-0">
+      <div className="flex min-w-0 flex-row items-start gap-3">
         <SiteChip site={p} />
-        <Stack gap={1} className="min-w-0">
-          <Stack direction="row" align="center" gap={2} wrap>
+        <div className="flex min-w-0 flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             {nameLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
             <Code>{p.slug}</Code>
             {badges(p)}
-          </Stack>
+          </div>
           {primary ? (
             domainLink(primary.host, 'text-xs')
           ) : (
-            <Text size="xs" variant="muted">
-              No domain yet
-            </Text>
+            <p className="text-base-content/70 text-xs">No domain yet</p>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     );
   };
 
@@ -146,19 +135,15 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
     {
       header: 'Domains',
       align: 'right',
-      cell: (p) => (
-        <Text size="sm" variant="muted">
-          {siteDomains(p).length}
-        </Text>
-      ),
+      cell: (p) => <p className="text-base-content/70 text-sm">{siteDomains(p).length}</p>,
     },
     {
       header: '',
       id: 'actions',
       align: 'right',
       cell: (p) => (
-        <Button asChild variant="ghost" size="sm">
-          <Link href={`/settings/sites/${p.id}`}>Manage</Link>
+        <Button variant="ghost" size="sm" render={<Link href={`/settings/sites/${p.id}`} />}>
+          Manage
         </Button>
       ),
     },
@@ -170,37 +155,41 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
       const primary = primaryDomainOf(siteDomains(p));
       const s = siteStatusBadge(p);
       return (
-        <Card variant="default" padding="md">
-          <Stack gap={3}>
-            <Stack direction="row" align="start" gap={3}>
-              <SiteChip site={p} />
-              <Stack gap={1} className="min-w-0 flex-1">
-                <Stack direction="row" align="center" gap={2} wrap>
-                  {nameLink(
-                    p,
-                    'text-base font-medium hover:text-[var(--module-active)] hover:underline'
-                  )}
-                  <Code>{p.slug}</Code>
-                  {badges(p)}
-                </Stack>
-              </Stack>
-              <Badge color={s.color} variant="soft">
-                {s.label}
-              </Badge>
-            </Stack>
-            <Stack direction="row" align="center" justify="between" gap={2}>
-              {primary ? (
-                domainLink(primary.host, 'text-sm')
-              ) : (
-                <Text size="sm" variant="muted">
-                  {siteDomains(p).length} domains
-                </Text>
-              )}
-              <Button asChild variant="ghost" size="sm">
-                <Link href={`/settings/sites/${p.id}`}>Manage</Link>
-              </Button>
-            </Stack>
-          </Stack>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-row items-start gap-3">
+                <SiteChip site={p} />
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <div className="flex flex-row flex-wrap items-center gap-2">
+                    {nameLink(
+                      p,
+                      'text-base font-medium hover:text-[var(--module-active)] hover:underline'
+                    )}
+                    <Code>{p.slug}</Code>
+                    {badges(p)}
+                  </div>
+                </div>
+                <Badge color={s.color} variant="soft">
+                  {s.label}
+                </Badge>
+              </div>
+              <div className="flex flex-row items-center justify-between gap-2">
+                {primary ? (
+                  domainLink(primary.host, 'text-sm')
+                ) : (
+                  <p className="text-base-content/70 text-sm">{siteDomains(p).length} domains</p>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  render={<Link href={`/settings/sites/${p.id}`} />}
+                >
+                  Manage
+                </Button>
+              </div>
+            </div>
+          </CardBody>
         </Card>
       );
     },

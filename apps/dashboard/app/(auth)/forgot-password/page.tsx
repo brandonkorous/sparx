@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Heading, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label } from 'silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
 
@@ -35,23 +35,23 @@ export default function ForgotPasswordPage() {
         blurb: "Enter your email and we'll send a secure link to set a new password.",
       }}
     >
-      <Stack gap={6}>
+      <div className="flex flex-col gap-6">
         <div>
-          <Heading level={2}>Reset your password</Heading>
-          <Text variant="muted">
+          <h2 className="text-2xl font-semibold tracking-tight">Reset your password</h2>
+          <p className="text-base-content/70">
             Enter the email tied to your account and we&apos;ll send you a reset link.
-          </Text>
+          </p>
         </div>
 
         {submitted ? (
-          <Text size="sm">
+          <p className="text-sm">
             If an account exists for <strong>{email}</strong>, you&apos;ll get an email within a
             minute. Check your spam folder if you don&apos;t see it.
-          </Text>
+          </p>
         ) : (
           <form onSubmit={onSubmit} noValidate>
-            <Stack gap={4}>
-              <Stack gap={2}>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
@@ -62,25 +62,25 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-              </Stack>
+              </div>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
 
               <Button type="submit" disabled={submitting} loading={submitting}>
                 Send reset link
               </Button>
-            </Stack>
+            </div>
           </form>
         )}
 
-        <Button color="primary" variant="link" size="sm" asChild>
-          <Link href="/sign-in">Back to sign in</Link>
+        <Button color="primary" variant="link" size="sm" render={<Link href="/sign-in" />}>
+          Back to sign in
         </Button>
-      </Stack>
+      </div>
     </AuthScreen>
   );
 }

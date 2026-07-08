@@ -2,18 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  Input,
-  Label,
-  NativeSelect,
-  RadioGroup,
-  RadioGroupItem,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label, NativeSelect, Radio } from 'silicaui-react';
 import { PARTNER_KINDS } from '../_lib/kinds';
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
 import { applyForPartnerAction } from '../actions';
@@ -52,16 +41,16 @@ export function JoinForm() {
   }
 
   return (
-    <Card variant="default">
-      <CardContent className="py-6">
+    <Card>
+      <CardBody>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             if (!pending) submit();
           }}
         >
-          <Stack gap={5}>
-            <Stack gap={2}>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="partner-name">Practice name</Label>
               <Input
                 id="partner-name"
@@ -70,13 +59,13 @@ export function JoinForm() {
                 placeholder="e.g. Northwind Studio"
                 maxLength={255}
               />
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 How you’ll appear in the public partner directory. You can refine your full listing
                 later.
-              </Text>
-            </Stack>
+              </p>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="partner-kind">What best describes you?</Label>
               <NativeSelect
                 id="partner-kind"
@@ -89,11 +78,11 @@ export function JoinForm() {
                   </option>
                 ))}
               </NativeSelect>
-            </Stack>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label>Tier you’re applying for</Label>
-              <RadioGroup value={requestedTier} onValueChange={setRequestedTier}>
+              <div className="grid gap-2">
                 {TIER_ORDER.map((t) => {
                   const meta = TIERS[t];
                   return (
@@ -101,30 +90,38 @@ export function JoinForm() {
                       key={t}
                       className="flex items-start gap-3 rounded-lg border border-[var(--color-border-default)] p-3"
                     >
-                      <RadioGroupItem id={`tier-${t}`} value={t} color="module" className="mt-1" />
-                      <Stack gap={0} className="min-w-0">
+                      <Radio
+                        name="requested-tier"
+                        id={`tier-${t}`}
+                        value={t}
+                        checked={requestedTier === t}
+                        onChange={() => setRequestedTier(t)}
+                        color="module"
+                        className="mt-1"
+                      />
+                      <div className="flex min-w-0 flex-col gap-0">
                         <Label htmlFor={`tier-${t}`}>
                           {meta.label} · {meta.commission}
                         </Label>
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Reviewed before approval — we confirm within 3 business days.
-                        </Text>
-                      </Stack>
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
-              </RadioGroup>
-            </Stack>
+              </div>
+            </div>
 
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               We review every application to keep the partner directory high-quality. You’ll hear
               back within 3 business days — nothing activates until we approve it.
-            </Text>
+            </p>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
 
             <div>
@@ -132,9 +129,9 @@ export function JoinForm() {
                 Submit application
               </Button>
             </div>
-          </Stack>
+          </div>
         </form>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

@@ -1,20 +1,7 @@
 import Link from 'next/link';
 import { Lock } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  Grid,
-  Heading,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 import type { ModuleSlug } from '@sparx/auth';
 
 import { moduleCatalog } from './module-catalog';
@@ -45,57 +32,53 @@ export function ModuleUpsell({
 
   return (
     <ModuleProvider module={module}>
-      <Container size="xl">
-        <Stack gap={8} className="py-10">
-          <Stack gap={2}>
-            <Stack direction="row" align="center" gap={2}>
-              <span aria-hidden className="text-[var(--module-active)]">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-center gap-2">
+              <span aria-hidden className="text-module">
                 <Icon className="h-5 w-5" />
               </span>
-              <Heading level={1}>{title}</Heading>
+              <h1 className="text-3xl font-semibold">{title}</h1>
               <Badge color="module" variant="soft">
                 Not in your plan
               </Badge>
-            </Stack>
-            <Text variant="muted">{tagline}</Text>
-          </Stack>
+            </div>
+            <p className="text-base-content/70">{tagline}</p>
+          </div>
 
           <EmptyState
             icon={<Lock className="h-5 w-5" />}
             title={`Activate ${title} to unlock this area`}
             description={description}
-            action={
+            actions={
               canActivate ? (
-                <Button asChild color="module" variant="solid">
-                  <Link href="/settings/modules">Activate {title}</Link>
+                <Button color="module" variant="solid" render={<Link href="/settings/modules" />}>
+                  Activate {title}
                 </Button>
               ) : (
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Ask a workspace owner or admin to activate {title}.
-                </Text>
+                </p>
               )
             }
           />
 
-          <Stack gap={3}>
-            <Heading level={3}>What you get with {title}</Heading>
-            <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+          <div className="flex flex-col gap-3">
+            <h3 className="text-xl font-semibold">What you get with {title}</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {features.map((f) => (
-                <Card key={f.title} variant="module">
-                  <CardHeader>
+                <Card key={f.title} className="bg-module bg-soft">
+                  <CardBody>
                     <CardTitle>{f.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Text size="sm" variant="muted">
-                      {f.description}
-                    </Text>
-                  </CardContent>
+                    <p className="text-base-content/70 text-sm">{f.description}</p>
+                  </CardBody>
                 </Card>
               ))}
-            </Grid>
-          </Stack>
-        </Stack>
-      </Container>
+            </div>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

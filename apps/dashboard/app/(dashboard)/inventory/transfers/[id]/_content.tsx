@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeftRight, ArrowRight } from 'lucide-react';
 
-import { Badge, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -31,33 +31,31 @@ export async function InventoryTransferDetailContent({ id }: { id: string }) {
   const status = transferStatus(transfer.status);
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="start" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <ArrowLeftRight className="h-5 w-5" />
-            <Heading level={1}>{transfer.number}</Heading>
+            <h1 className="text-3xl font-semibold">{transfer.number}</h1>
             <Badge color={status.color}>{status.label}</Badge>
-          </Stack>
-          <Stack direction="row" align="center" gap={2} wrap>
-            <Text size="sm" variant="muted">
+          </div>
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <p className="text-base-content/70 text-sm">
               {warehouseLabel(transfer.fromWarehouseName, transfer.fromWarehouseCode)}
-            </Text>
+            </p>
             <ArrowRight className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {warehouseLabel(transfer.toWarehouseName, transfer.toWarehouseCode)}
-            </Text>
+            </p>
             {transfer.note ? (
-              <Text size="sm" variant="muted">
-                · {transfer.note}
-              </Text>
+              <p className="text-base-content/70 text-sm">· {transfer.note}</p>
             ) : null}
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         <TransferActionsBar id={transfer.id} status={transfer.status} />
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Units" value={String(transfer.totalQuantity)} />
         <Stat label="Lines" value={String(transfer.lineCount)} />
         <Stat label="Shipped" value={formatDate(transfer.shippedAt)} />
@@ -67,24 +65,22 @@ export async function InventoryTransferDetailContent({ id }: { id: string }) {
             transfer.status === 'cancelled' ? transfer.cancelledAt : transfer.receivedAt
           )}
         />
-      </Stack>
+      </div>
 
       <TransferLinesPanel id={transfer.id} status={transfer.status} lines={transfer.lines} />
-    </Stack>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[9rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

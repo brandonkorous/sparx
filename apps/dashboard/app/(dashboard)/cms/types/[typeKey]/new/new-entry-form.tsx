@@ -16,16 +16,8 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { FieldDef } from '@sparx/cms-schemas';
 
-import {
-  Card,
-  CardContent,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
 
 import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
 import { createEntry } from '../../actions';
@@ -114,8 +106,8 @@ export function NewEntryForm({ surface, typeKey, typeName, urlPattern, schema }:
           }}
         >
           <Card>
-            <CardContent>
-              <Stack gap={5}>
+            <CardBody>
+              <div className="flex flex-col gap-5">
                 <ContentEntryForm
                   schema={schema}
                   body={body}
@@ -124,12 +116,12 @@ export function NewEntryForm({ surface, typeKey, typeName, urlPattern, schema }:
                 />
 
                 {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
                     {error}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

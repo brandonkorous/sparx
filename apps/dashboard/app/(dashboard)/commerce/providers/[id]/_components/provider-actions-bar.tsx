@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Power, Trash2 } from 'lucide-react';
 
-import { Button, Stack, Text, useConfirm } from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import {
   setProviderEnabledAction,
@@ -71,25 +72,33 @@ export function ProviderActionsBar({
   }
 
   return (
-    <Stack gap={1} align="end">
-      <Stack direction="row" gap={2}>
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-row gap-2">
         <Button variant="ghost" disabled={pending} onClick={onTest}>
           Test
         </Button>
-        <Button variant="ghost" disabled={pending} onClick={onToggle}>
-          <Power className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          disabled={pending}
+          onClick={onToggle}
+          iconStart={<Power className="h-4 w-4" />}
+        >
           {enabled ? 'Disable' : 'Enable'}
         </Button>
-        <Button variant="ghost" disabled={pending} onClick={onUninstall}>
-          <Trash2 className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          disabled={pending}
+          onClick={onUninstall}
+          iconStart={<Trash2 className="h-4 w-4" />}
+        >
           Uninstall
         </Button>
-      </Stack>
+      </div>
       {testResult && (
-        <Text size="xs" variant="muted" role="status" aria-live="polite">
+        <p className="text-base-content/70 text-xs" role="status" aria-live="polite">
           {testResult}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

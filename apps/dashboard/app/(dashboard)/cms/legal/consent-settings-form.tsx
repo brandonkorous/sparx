@@ -6,23 +6,14 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   CardTitle,
   Checkbox,
-  Heading,
   Input,
   Label,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
   Textarea,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { saveConsentSettings } from './actions';
 
 export interface ConsentConfig {
@@ -91,61 +82,52 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
   }
 
   return (
-    <Stack gap={4}>
-      <Heading level={3}>Cookie consent</Heading>
-      <Card variant="default">
-        <CardHeader>
+    <div className="flex flex-col gap-4">
+      <h3 className="text-xl font-semibold">Cookie consent</h3>
+      <Card>
+        <CardBody>
           <CardTitle>Consent mode</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             Controls the cookie banner on your site. The banner only appears when a non-essential
             category (analytics or marketing) is active.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={5}>
-            <Stack gap={2}>
+          </p>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="consent-mode">Mode</Label>
-              <Select value={mode} onValueChange={(v) => setMode(v as ConsentConfig['mode'])}>
-                <SelectTrigger id="consent-mode" className="max-w-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="off">Off</SelectItem>
-                  <SelectItem value="gdpr">GDPR (opt-in)</SelectItem>
-                  <SelectItem value="ccpa">CCPA (opt-out)</SelectItem>
-                </SelectContent>
-              </Select>
-              <Text size="xs" variant="muted">
-                {MODE_HELP[mode]}
-              </Text>
-            </Stack>
+              <Select
+                id="consent-mode"
+                className="max-w-xs"
+                value={mode}
+                onValueChange={(v) => setMode(v as ConsentConfig['mode'])}
+                items={{ off: 'Off', gdpr: 'GDPR (opt-in)', ccpa: 'CCPA (opt-out)' }}
+              />
+              <p className="text-base-content/70 text-xs">{MODE_HELP[mode]}</p>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label>Cookie categories in use</Label>
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 Strictly-necessary cookies are always on. Enable the categories your site actually
                 uses — enabling analytics or marketing turns the banner on.
-              </Text>
-              <Stack gap={2} className="pt-1">
+              </p>
+              <div className="flex flex-col gap-2 pt-1">
                 {CATEGORIES.map((c) => (
                   <div key={c.key} className="flex items-start gap-3">
                     <Checkbox
                       id={`consent-cat-${c.key}`}
                       checked={categories.has(c.key)}
-                      onCheckedChange={(v) => toggle(c.key, v === true)}
+                      onChange={(e) => toggle(c.key, e.target.checked)}
                     />
                     <Label htmlFor={`consent-cat-${c.key}`} className="font-normal">
-                      <Text weight="medium">{c.label}</Text>
-                      <Text size="xs" variant="muted">
-                        {c.desc}
-                      </Text>
+                      <p className="font-medium">{c.label}</p>
+                      <p className="text-base-content/70 text-xs">{c.desc}</p>
                     </Label>
                   </div>
                 ))}
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="consent-policy">Cookie policy page slug</Label>
               <Input
                 id="consent-policy"
@@ -154,9 +136,9 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
                 placeholder="cookie-policy"
                 className="max-w-xs"
               />
-            </Stack>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="consent-title">Banner title (optional)</Label>
               <Input
                 id="consent-title"
@@ -164,9 +146,9 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
                 onChange={(e) => setBannerTitle(e.target.value)}
                 placeholder="We value your privacy"
               />
-            </Stack>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="consent-body">Banner text (optional)</Label>
               <Textarea
                 id="consent-body"
@@ -175,7 +157,7 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
                 rows={3}
                 placeholder="We use cookies to run this site and, with your consent, to improve it."
               />
-            </Stack>
+            </div>
 
             <div className="flex items-center gap-3">
               <Button color="primary" onClick={save} disabled={pending}>
@@ -184,20 +166,12 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
               <Badge color={bannerEnabled ? 'warning' : 'neutral'} variant="soft">
                 {bannerEnabled ? 'Banner: shown' : 'Banner: quiet notice'}
               </Badge>
-              {saved ? (
-                <Text size="sm" variant="muted">
-                  Saved.
-                </Text>
-              ) : null}
-              {error ? (
-                <Text size="sm" variant="danger">
-                  {error}
-                </Text>
-              ) : null}
+              {saved ? <p className="text-base-content/70 text-sm">Saved.</p> : null}
+              {error ? <p className="text-danger text-sm">{error}</p> : null}
             </div>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

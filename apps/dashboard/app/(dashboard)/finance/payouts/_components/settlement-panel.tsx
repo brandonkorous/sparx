@@ -3,24 +3,8 @@
 // weekly settlement-run history. Server component (no interactivity beyond the
 // status badges), so it renders straight from the settlement reads.
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import { formatMoney } from '../_format';
 import type { MarketSettlementRun, MarketSettlementSummary } from '../_types';
@@ -51,19 +35,18 @@ export function SettlementPanel({
     // tinted (primary) card — a second finance tint here would be competing washes,
     // not wayfinding (one-tinted-card-per-hue). The hue rides the chrome + badges.
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={2} wrap>
+      <CardBody>
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>Marketplace earnings</CardTitle>
           {summary && (
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               {summary.orderCount.toLocaleString()} order{summary.orderCount === 1 ? '' : 's'} all
               time
-            </Text>
+            </p>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={5}>
+        </div>
+
+        <div className="flex flex-col gap-5">
           {summary ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <Stat label="Gross sales" value={formatMoney(summary.grossCents, currency)} />
@@ -80,69 +63,63 @@ export function SettlementPanel({
               />
             </div>
           ) : (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Earnings will appear here once you make your first sale on sparx.market.
-            </Text>
+            </p>
           )}
 
-          <Stack gap={2}>
-            <Text size="sm" weight="medium">
-              Payout history
-            </Text>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium">Payout history</p>
             {runs.length === 0 ? (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No payouts yet. Settlements run weekly — your net (gross minus commission and
                 refunds) is sent to your bank account on file.
-              </Text>
+              </p>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-right">Orders</TableHead>
-                      <TableHead className="text-right">Gross</TableHead>
-                      <TableHead className="text-right">Commission</TableHead>
-                      <TableHead className="text-right">Net</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Payout ref</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {runs.map((run) => (
-                      <TableRow key={run.id}>
-                        <TableCell className="font-medium whitespace-nowrap">
-                          {periodLabel(run.periodStart, run.periodEnd)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {run.orderCount.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatMoney(run.grossCents, run.currency)}
-                        </TableCell>
-                        <TableCell className="text-right text-[var(--color-text-secondary)] tabular-nums">
-                          {formatMoney(run.commissionCents, run.currency)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatMoney(run.netCents, run.currency)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge color={statusTone(run.status)} variant="soft" size="sm">
-                            {statusLabel(run.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-[var(--color-text-secondary)]">
-                          {run.disbursementRef ?? '—'}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Period</th>
+                    <th className="text-right">Orders</th>
+                    <th className="text-right">Gross</th>
+                    <th className="text-right">Commission</th>
+                    <th className="text-right">Net</th>
+                    <th>Status</th>
+                    <th>Payout ref</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {runs.map((run) => (
+                    <tr key={run.id}>
+                      <td className="font-medium whitespace-nowrap">
+                        {periodLabel(run.periodStart, run.periodEnd)}
+                      </td>
+                      <td className="text-right tabular-nums">{run.orderCount.toLocaleString()}</td>
+                      <td className="text-right tabular-nums">
+                        {formatMoney(run.grossCents, run.currency)}
+                      </td>
+                      <td className="text-base-content/70 text-right tabular-nums">
+                        {formatMoney(run.commissionCents, run.currency)}
+                      </td>
+                      <td className="text-right tabular-nums">
+                        {formatMoney(run.netCents, run.currency)}
+                      </td>
+                      <td>
+                        <Badge color={statusTone(run.status)} variant="soft" size="sm">
+                          {statusLabel(run.status)}
+                        </Badge>
+                      </td>
+                      <td className="text-base-content/70 font-mono text-xs">
+                        {run.disbursementRef ?? '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             )}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -2,7 +2,7 @@
 // Module-gated: a tenant without chat sees the activation upsell.
 
 import { MessagesSquare } from 'lucide-react';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { requireModuleOrUpsell } from '@/components/module-gate';
@@ -22,15 +22,15 @@ export default async function ChatSettingsPage(): Promise<React.JSX.Element> {
   ]);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<MessagesSquare className="h-5 w-5" />}
           title="Live Chat"
           description="Configure the storefront chat widget, AI behavior, and your team's quick replies."
         />
         <ChatSettingsForm initialConfig={config} initialQuickReplies={quickReplies} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

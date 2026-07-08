@@ -2,16 +2,14 @@
 
 import * as React from 'react';
 import { Archive, DollarSign, ShoppingBag, Store, Trash2 } from 'lucide-react';
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
   toast,
 } from '@sparx/ui';
 
@@ -181,51 +179,39 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
     {
       header: 'Title',
       cell: (p) => (
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           {titleLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
-          <Text size="xs" variant="muted">
-            /{p.handle}
-          </Text>
-        </Stack>
+          <p className="text-base-content/70 text-xs">/{p.handle}</p>
+        </div>
       ),
     },
     { header: 'Status', cell: statusBadge },
     {
       header: 'Vendor',
-      cell: (p) => (
-        <Text size="sm" variant="muted">
-          {p.vendor ?? '—'}
-        </Text>
-      ),
+      cell: (p) => <p className="text-base-content/70 text-sm">{p.vendor ?? '—'}</p>,
     },
     {
       header: 'Type',
-      cell: (p) => (
-        <Text size="sm" variant="muted">
-          {p.productType ?? '—'}
-        </Text>
-      ),
+      cell: (p) => <p className="text-base-content/70 text-sm">{p.productType ?? '—'}</p>,
     },
     {
       header: 'Variants',
       align: 'right',
-      cell: (p) => <Text size="sm">{Number.isNaN(p.variantCount) ? '—' : p.variantCount}</Text>,
+      cell: (p) => <p className="text-sm">{Number.isNaN(p.variantCount) ? '—' : p.variantCount}</p>,
     },
     {
       header: 'Price',
       align: 'right',
       cell: (p) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Updated',
       cell: (p) => (
-        <Text size="sm" variant="muted">
-          {new Date(p.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(p.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -236,25 +222,19 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
         p,
         'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
       ),
-    subtitle: (p) => (
-      <Text size="xs" variant="muted">
-        /{p.handle}
-      </Text>
-    ),
+    subtitle: (p) => <p className="text-base-content/70 text-xs">/{p.handle}</p>,
     badge: statusBadge,
     body: (p) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            {p.vendor ?? '—'}
-          </Text>
-          <Text size="sm" className="tabular-nums">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">{p.vendor ?? '—'}</p>
+          <p className="text-sm tabular-nums">
             {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {variantsLabel(p.variantCount)} · updated {new Date(p.updatedAt).toLocaleDateString()}
-        </Text>
+        </p>
       </>
     ),
   };

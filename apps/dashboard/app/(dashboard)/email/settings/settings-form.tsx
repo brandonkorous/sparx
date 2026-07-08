@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
-import { Button, Card, CardContent, Input, Label, Stack, Text, Textarea, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
 
 import { updateEmailSettingsAction } from './actions';
 import type { EmailSettingsView } from '../_lib/types';
@@ -48,8 +49,8 @@ export function SettingsForm({ initial }: SettingsFormProps) {
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={5} className="max-w-2xl">
-        <Stack gap={2}>
+      <div className="flex max-w-2xl flex-col gap-5">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="fromName">From name</Label>
           <Input
             id="fromName"
@@ -58,17 +59,15 @@ export function SettingsForm({ initial }: SettingsFormProps) {
             placeholder="Acme Store"
             disabled={pending}
           />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             The display name recipients see in their inbox.
-          </Text>
+          </p>
           {fieldErrors.fromName ? (
-            <Text size="sm" variant="danger">
-              {fieldErrors.fromName}
-            </Text>
+            <p className="text-danger text-sm">{fieldErrors.fromName}</p>
           ) : null}
-        </Stack>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="fromAddress">From address</Label>
           <Input
             id="fromAddress"
@@ -78,17 +77,15 @@ export function SettingsForm({ initial }: SettingsFormProps) {
             placeholder="orders@yourstore.com"
             disabled={pending}
           />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Must be on a verified sending domain to send from your own brand.
-          </Text>
+          </p>
           {fieldErrors.fromAddress ? (
-            <Text size="sm" variant="danger">
-              {fieldErrors.fromAddress}
-            </Text>
+            <p className="text-danger text-sm">{fieldErrors.fromAddress}</p>
           ) : null}
-        </Stack>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="replyTo">Reply-to address</Label>
           <Input
             id="replyTo"
@@ -99,13 +96,11 @@ export function SettingsForm({ initial }: SettingsFormProps) {
             disabled={pending}
           />
           {fieldErrors.replyTo ? (
-            <Text size="sm" variant="danger">
-              {fieldErrors.replyTo}
-            </Text>
+            <p className="text-danger text-sm">{fieldErrors.replyTo}</p>
           ) : null}
-        </Stack>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="physicalAddress">Physical mailing address</Label>
           <Textarea
             id="physicalAddress"
@@ -115,35 +110,38 @@ export function SettingsForm({ initial }: SettingsFormProps) {
             rows={3}
             disabled={pending}
           />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Required by CAN-SPAM / GDPR — shown in the footer of every email.
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
-        <Card variant="ghost">
-          <CardContent>
-            <Stack gap={2}>
-              <Text size="sm" weight="medium">
-                Brand is set once, for everything
-              </Text>
-              <Text size="sm" variant="muted">
+        <Card className="border-transparent bg-transparent shadow-none">
+          <CardBody>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">Brand is set once, for everything</p>
+              <p className="text-base-content/70 text-sm">
                 Email colors, fonts, and logo come from your brand — there&apos;s nothing to set per
                 channel. Update your brand once and every transactional and marketing email adopts
                 it automatically.
-              </Text>
-              <Button color="primary" variant="link" size="sm" asChild>
-                <Link href="/sitebuilder/brand">Manage brand →</Link>
+              </p>
+              <Button
+                color="primary"
+                variant="link"
+                size="sm"
+                render={<Link href="/sitebuilder/brand" />}
+              >
+                Manage brand →
               </Button>
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
-        <Stack direction="row" gap={2}>
+        <div className="flex flex-row gap-2">
           <Button type="submit" color="module" loading={pending} disabled={pending}>
             Save settings
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

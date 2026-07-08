@@ -1,15 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -45,52 +36,48 @@ export async function ShippingProfileDetailContent({ id }: Props) {
   }
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Heading level={1}>{profile.name}</Heading>
-          {profile.description && <Text variant="muted">{profile.description}</Text>}
-        </Stack>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold">{profile.name}</h1>
+          {profile.description && <p className="text-base-content/70">{profile.description}</p>}
+        </div>
         <ProfileDeleteButton profileId={profile.id} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Carrier eligibility</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Carrier eligibility</h3>
+            <p className="opacity-70">
               What this profile allows. Edit via direct API for now; visual editor lands in Phase
               5.x.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
             <Field label="Hazmat classes allowed">
-              <Stack direction="row" gap={1} wrap>
+              <div className="flex flex-row flex-wrap gap-1">
                 {profile.hazmatClassesAllowed.map((c) => (
                   <Badge key={c} color="neutral" variant="soft" size="sm">
                     {c}
                   </Badge>
                 ))}
-              </Stack>
+              </div>
             </Field>
             <Field label="Allowed carrier services">
               {profile.allowedCarrierServices.length > 0 ? (
-                <Stack direction="row" gap={1} wrap>
+                <div className="flex flex-row flex-wrap gap-1">
                   {profile.allowedCarrierServices.map((s) => (
                     <Badge key={s} color="neutral" variant="soft" size="sm" className="font-mono">
                       {s}
                     </Badge>
                   ))}
-                </Stack>
+                </div>
               ) : (
-                <Text size="sm" variant="muted">
-                  any
-                </Text>
+                <p className="text-base-content/70 text-sm">any</p>
               )}
             </Field>
-            <Stack direction="row" gap={4}>
+            <div className="flex flex-row gap-4">
               {profile.requiresSignature && (
                 <Badge color="neutral" variant="soft" size="sm">
                   Signature required
@@ -101,50 +88,44 @@ export async function ShippingProfileDetailContent({ id }: Props) {
                   Freight only
                 </Badge>
               )}
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Attached</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Attached</h3>
+            <p className="opacity-70">
               Products / variants / collections currently routed through this profile.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack direction="row" gap={6}>
+            </p>
+          </div>
+          <div className="flex flex-row gap-6">
             <Counter label="Products" value={profile.productCount} />
             <Counter label="Variants" value={profile.variantCount} />
             <Counter label="Collections" value={profile.collectionCount} />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <Stack gap={1}>
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-xs">{label}</p>
       {children}
-    </Stack>
+    </div>
   );
 }
 
 function Counter({ label, value }: { label: string; value: number }) {
   return (
-    <Stack gap={1}>
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Heading level={3}>{value}</Heading>
-    </Stack>
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <h3 className="text-xl font-semibold">{value}</h3>
+    </div>
   );
 }

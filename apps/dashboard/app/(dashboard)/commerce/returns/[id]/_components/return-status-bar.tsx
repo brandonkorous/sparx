@@ -4,17 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
 
-import {
-  Button,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
 
 import { denyReturnAction, markReturnReceivedAction } from '../../../return-actions';
 
@@ -61,11 +51,15 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
     status === 'approved' || status === 'awaiting_shipment' || status === 'in_transit';
 
   return (
-    <Stack gap={1} align="end">
-      <Stack direction="row" gap={2}>
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-row gap-2">
         {canMarkReceived && (
-          <Button variant="outline" disabled={pending} onClick={onMarkReceived}>
-            <Package className="h-4 w-4" />
+          <Button
+            variant="outline"
+            disabled={pending}
+            onClick={onMarkReceived}
+            iconStart={<Package className="h-4 w-4" />}
+          >
             Mark received
           </Button>
         )}
@@ -74,50 +68,48 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
             Deny
           </Button>
         )}
-      </Stack>
+      </div>
       {error && (
-        <Text size="xs" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-xs" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
 
-      <Modal
+      <Dialog
         open={denyOpen}
         onOpenChange={(open) => {
           if (!open) onDenyCancel();
         }}
       >
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Deny return?</ModalTitle>
-          </ModalHeader>
-          <Stack gap={3} className="px-6 pb-2">
-            <Text size="sm" variant="muted">
+        <DialogContent>
+          <div>
+            <DialogTitle>Deny return?</DialogTitle>
+          </div>
+          <div className="flex flex-col gap-3 px-6 pb-2">
+            <p className="text-base-content/70 text-sm">
               The customer is notified the return was rejected. They may re-open if circumstances
               change.
-            </Text>
-            <Stack gap={1}>
-              <Text size="sm" as="label">
-                Reason for denial (shown to customer)
-              </Text>
+            </p>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm">Reason for denial (shown to customer)</label>
               <Textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Explain why the return is being denied…"
                 rows={3}
               />
-            </Stack>
-          </Stack>
-          <ModalFooter>
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" disabled={pending} onClick={onDenyCancel}>
               Cancel
             </Button>
             <Button color="danger" disabled={pending || !reason.trim()} onClick={onDenySubmit}>
               {pending ? 'Denying…' : 'Deny return'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Stack>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

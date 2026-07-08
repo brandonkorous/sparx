@@ -2,16 +2,14 @@
 
 import Link from 'next/link';
 import { Check, Flag, Star, Trash2, X } from 'lucide-react';
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   type BulkAction,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
 
 import { bulkDeleteReviewsAction, bulkModerateReviewsAction } from '../../review-actions';
@@ -93,7 +91,7 @@ function VerifiedBadge() {
 
 function Stars({ value }: { value: number }) {
   return (
-    <Stack direction="row" gap={0} align="center">
+    <div className="flex flex-row items-center gap-0">
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
@@ -104,7 +102,7 @@ function Stars({ value }: { value: number }) {
           }
         />
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -166,9 +164,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
         {r.productTitle}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        Deleted product
-      </Text>
+      <p className="text-base-content/70 text-sm">Deleted product</p>
     );
 
   const columns: SelectionColumn<ReviewListRow>[] = [
@@ -180,13 +176,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
     {
       header: 'Verified',
       cell: (r) =>
-        r.verifiedPurchase ? (
-          <VerifiedBadge />
-        ) : (
-          <Text size="xs" variant="muted">
-            —
-          </Text>
-        ),
+        r.verifiedPurchase ? <VerifiedBadge /> : <p className="text-base-content/70 text-xs">—</p>,
     },
     { header: 'Submitted', cell: (r) => new Date(r.createdAt).toLocaleDateString() },
   ];
@@ -194,24 +184,22 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
   const card: SelectionCard<ReviewListRow> = {
     title: (r) => titleLink(r, 'truncate hover:text-[var(--module-active)]'),
     subtitle: (r) => (
-      <Stack direction="row" gap={2} align="center">
+      <div className="flex flex-row items-center gap-2">
         <Stars value={r.rating} />
         {productCell(r)}
-      </Stack>
+      </div>
     ),
     badge: (r) => <StatusBadge status={r.status} />,
     body: (r) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="sm" variant="muted">
-          {authorLabel(r)}
-        </Text>
-        <Stack direction="row" gap={2} align="center">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-sm">{authorLabel(r)}</p>
+        <div className="flex flex-row items-center gap-2">
           {r.verifiedPurchase ? <VerifiedBadge /> : null}
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             {new Date(r.createdAt).toLocaleDateString()}
-          </Text>
-        </Stack>
-      </Stack>
+          </p>
+        </div>
+      </div>
     ),
   };
 

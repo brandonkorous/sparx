@@ -1,6 +1,6 @@
 import { BarChart3 } from 'lucide-react';
 
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -22,8 +22,8 @@ export default async function InventoryReportsPage() {
   ]);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<BarChart3 className="h-5 w-5" />}
           title="Reports"
@@ -33,7 +33,7 @@ export default async function InventoryReportsPage() {
         <TurnoverPanel report={turnover} />
         <ReorderAnalysisPanel report={reorder} />
         <AgingPanel report={aging} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

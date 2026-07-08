@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
-import { Button, Label, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Label, Textarea } from 'silicaui-react';
 import type { PartnerTier } from '@sparx/partner-schemas';
 
 import { TIERS } from '../../_lib/tiers';
@@ -37,15 +37,15 @@ export function TierApply({ requestedTier }: { requestedTier: PartnerTier }) {
 
   if (done) {
     return (
-      <Text size="sm" variant="success" role="status" aria-live="polite">
+      <p className="text-success text-sm" role="status" aria-live="polite">
         Request submitted. We’ll review your {target.label} application within 3 business days.
-      </Text>
+      </p>
     );
   }
 
   return (
-    <Stack gap={3}>
-      <Stack gap={2}>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="tier-note">Why you’re ready (optional)</Label>
         <Textarea
           id="tier-note"
@@ -55,11 +55,11 @@ export function TierApply({ requestedTier }: { requestedTier: PartnerTier }) {
           maxLength={2000}
           placeholder={`Tell us about the client launches or experience that qualify you for ${target.label}.`}
         />
-      </Stack>
+      </div>
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
       <div>
         <Button
@@ -68,11 +68,11 @@ export function TierApply({ requestedTier }: { requestedTier: PartnerTier }) {
           onClick={submit}
           loading={pending}
           disabled={pending}
-          rightIcon={<ArrowUpRight className="h-4 w-4" />}
+          iconEnd={<ArrowUpRight className="h-4 w-4" />}
         >
           Apply for {target.label}
         </Button>
       </div>
-    </Stack>
+    </div>
   );
 }

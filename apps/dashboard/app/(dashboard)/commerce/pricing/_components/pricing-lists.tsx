@@ -2,18 +2,13 @@
 
 import type { ReactNode } from 'react';
 
+import { Badge, Card, EmptyState } from 'silicaui-react';
 import {
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
-  Badge,
-  Card,
-  EmptyState,
-  Heading,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
 import { DollarSign, Plus } from 'lucide-react';
 
@@ -65,18 +60,18 @@ interface PricingListsProps {
 
 export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: PricingListsProps) {
   return (
-    <Stack gap={8}>
+    <div className="flex flex-col gap-8">
       <PricingSection
         title="Price lists"
         description="Channel/segment/B2B-targeted price overrides. Higher priority wins when multiple lists are eligible."
       >
         {priceLists.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<DollarSign className="h-5 w-5" />}
               title="No price lists yet"
               description="Create one to offer per-channel pricing (e.g. B2B portal at 15% off) or per-segment pricing (e.g. wholesale customers)."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="price-list"
                   newHref="/commerce/pricing/new"
@@ -108,7 +103,7 @@ export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: Pr
         description="Quantity ramps without a discount code. Variant-scoped tiers override list-scoped tiers when both apply."
       >
         {bulkTiers.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<DollarSign className="h-5 w-5" />}
               title="No bulk tiers yet"
@@ -128,7 +123,7 @@ export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: Pr
           />
         )}
       </PricingSection>
-    </Stack>
+    </div>
   );
 }
 
@@ -148,17 +143,13 @@ function PricingSection({
   children: ReactNode;
 }) {
   return (
-    <Stack gap={4}>
-      <Stack gap={1}>
-        <Heading level={3} as="h2">
-          {title}
-        </Heading>
-        <Text variant="muted" size="sm">
-          {description}
-        </Text>
-      </Stack>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-xl font-semibold">{title}</h2>
+        <p className="text-base-content/70 text-sm">{description}</p>
+      </div>
       {children}
-    </Stack>
+    </div>
   );
 }
 
@@ -179,9 +170,7 @@ const priceListChannel = (list: PriceListRow) =>
       {statusLabel(list.channel)}
     </Badge>
   ) : (
-    <Text size="xs" variant="muted">
-      all
-    </Text>
+    <p className="text-base-content/70 text-xs">all</p>
   );
 
 // Status pill: color resolved from the canonical statusTone() map (docs/35 §9) so
@@ -209,20 +198,16 @@ const priceListCard: SelectionCard<PriceListRow> = {
   title: priceListName,
   badge: priceListStatus,
   body: (list) => (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" gap={2} wrap>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <span className="font-mono text-xs">{list.currency}</span>
         {priceListChannel(list)}
-      </Stack>
-      <Stack direction="row" gap={4} wrap>
-        <Text size="xs" variant="muted">
-          Priority: {list.priority}
-        </Text>
-        <Text size="xs" variant="muted">
-          Entries: {list.entryCount}
-        </Text>
-      </Stack>
-    </Stack>
+      </div>
+      <div className="flex flex-row flex-wrap gap-4">
+        <p className="text-base-content/70 text-xs">Priority: {list.priority}</p>
+        <p className="text-base-content/70 text-xs">Entries: {list.entryCount}</p>
+      </div>
+    </div>
   ),
 };
 
@@ -246,9 +231,5 @@ const bulkTierColumns: SelectionColumn<BulkPriceTierRow>[] = [
 const bulkTierCard: SelectionCard<BulkPriceTierRow> = {
   title: (tier) => moneyFmt.format(tier.unitPriceCents / 100),
   badge: bulkTierScope,
-  body: (tier) => (
-    <Text size="xs" variant="muted">
-      Min qty: {tier.minQuantity}+
-    </Text>
-  ),
+  body: (tier) => <p className="text-base-content/70 text-xs">Min qty: {tier.minQuantity}+</p>,
 };

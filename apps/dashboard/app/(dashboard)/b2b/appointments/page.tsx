@@ -1,6 +1,7 @@
 import { Calendar } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -76,8 +77,8 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Calendar className="h-5 w-5" />}
           title="Appointments"
@@ -98,28 +99,30 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
         />
 
         {appointments.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<Calendar className="h-5 w-5" />}
-              title={status ? 'No appointments match this filter' : 'No appointments'}
-              description={
-                status
-                  ? 'Clear the status filter to see every appointment.'
-                  : 'Appointments booked from the B2B portal or created here will appear in this list.'
-              }
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<Calendar className="h-5 w-5" />}
+                title={status ? 'No appointments match this filter' : 'No appointments'}
+                description={
+                  status
+                    ? 'Clear the status filter to see every appointment.'
+                    : 'Appointments booked from the B2B portal or created here will appear in this list.'
+                }
+              />
+            </CardBody>
           </Card>
         ) : (
           <>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {total} appointment{total !== 1 ? 's' : ''} total
-            </Text>
+            </p>
             <AppointmentsList appointments={appointments} view={view} />
           </>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

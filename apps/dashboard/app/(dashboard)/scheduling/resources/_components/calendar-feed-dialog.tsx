@@ -11,14 +11,12 @@ import { useEffect, useState } from 'react';
 import {
   Button,
   Input,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalHeader,
-  ModalTitle,
-  Text,
-  toast,
-} from '@sparx/ui';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { Copy } from 'lucide-react';
 
 import { getResourceFeedUrlAction } from '../../_lib/actions';
@@ -64,22 +62,20 @@ export function CalendarFeedDialog({
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="max-w-xl">
-        <ModalHeader>
-          <ModalTitle>Calendar sync — {resourceName}</ModalTitle>
-          <ModalDescription>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-xl">
+        <div>
+          <DialogTitle>Calendar sync — {resourceName}</DialogTitle>
+          <DialogDescription>
             Two-way at a glance: subscribe to this resource&rsquo;s sparx bookings, and import an
             outside calendar so its events block sparx slots.
-          </ModalDescription>
-        </ModalHeader>
+          </DialogDescription>
+        </div>
 
         <p className="px-1 pt-1 text-sm font-medium">Subscribe to this resource&rsquo;s bookings</p>
         <div className="flex flex-col gap-3 px-1 py-2">
           {error ? (
-            <Text size="sm" variant="danger">
-              {error}
-            </Text>
+            <p className="text-danger text-sm">{error}</p>
           ) : (
             <div className="flex items-center gap-2">
               <Input
@@ -112,7 +108,7 @@ export function CalendarFeedDialog({
         <div className="px-1 py-2">
           <CalendarConnectionsSection resourceId={resourceId} />
         </div>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

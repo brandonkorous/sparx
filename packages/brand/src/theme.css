@@ -1,0 +1,203 @@
+/* ── sparx brand theme, expressed as a silicaui theme ──────────────────────────
+ *
+ * This is the SHARED, platform-wide definition of the sparx brand as a NAMED
+ * silicaui theme (`[data-theme="sparx"]`), NOT an override of silicaui's built-in
+ * `light`/`dark`. Every app (web, dashboard, site, market, admin, b2b-portal)
+ * imports this file via `@import '@sparx/brand/theme.css'`, so the brand is
+ * defined ONCE and silicaui stays the component layer everywhere. The root layout
+ * sets `<html data-theme="sparx">`, so the whole surface resolves against these
+ * tokens; a nested `[data-theme="dark"]` / `[data-theme="sparx-dark"]` island
+ * still works because silicaui themes are DOM-scoped, not global.
+ *
+ * Each brand theme answers to TWO selectors: its explicit name (`sparx` /
+ * `sparx-dark`, used by market + nested islands) AND the generic `light` / `dark`
+ * that the platform theme toggle (@sparx/ui `useTheme` / `THEME_INIT_SCRIPT`)
+ * already writes to `data-theme`. So in ANY sparx app, `data-theme="light"` IS the
+ * sparx light brand and `data-theme="dark"` IS the sparx dark brand — every app's
+ * existing toggle works with zero per-app renaming, and these unlayered blocks
+ * outrank silicaui's base-layer `light`/`dark` defaults so the sparx brand wins.
+ *
+ * SOURCE OF TRUTH = silicaui's standard token names: `--color-{name}` paired with
+ * `--color-{name}-content` (the legible foreground on that fill), plus the
+ * `base-100/200/300` + `base-content` neutral ramp. That standard naming is on
+ * purpose — every colored silicaui object (`.btn-primary`, `.badge-danger`, …)
+ * is generated from a `{name}` + `{name}-content` pair, so adding a color is just
+ * adding a pair here and listing the name in `@plugin "silicaui" { colors }` (in
+ * each app's globals.css). `danger` below is exactly that: an N-th named color
+ * beyond silicaui's defaults, so sparx's `statusTone()` vocabulary (which emits
+ * `danger`, not silicaui's `error`) maps 1:1.
+ *
+ * There is NO sparx alias layer and NO bespoke text/border colors: surfaces are
+ * styled with silicaui utilities + components reading these tokens directly
+ * (`bg-base-100`, `text-primary`, `<Card>`, …). The secondary / tertiary text inks
+ * and the emphasis border are just OPACITY on the base ink —
+ * `text-base-content/70`, `text-base-content/50`, `border-base-content/20` — which
+ * silicaui supports natively, so no `muted` / `faint` color is invented. The
+ * pre-migration `--color-bg-*` / `--color-text-*` / `--sparx-primary` chrome
+ * aliases are retired. */
+
+[data-theme='sparx'],
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* ── silicaui standard palette (source of truth) ─────────────────────────── */
+
+  /* Neutral ramp: base-100 is the topmost surface (card white), stepping darker
+     with depth. sparx's page background (#fafafa) is intentionally distinct from
+     the card surface, so `base-200` carries the page canvas below. */
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f4f5;
+  --color-base-300: #e4e4e7;
+  --color-base-content: #0a0a0a;
+
+  --color-primary: #6366f1;
+  --color-primary-content: #eef2ff;
+
+  --color-secondary: #db2777;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #8b5cf6;
+  --color-accent-content: #ffffff;
+
+  --color-neutral: #1f2937;
+  --color-neutral-content: #ffffff;
+
+  --color-info: #0ea5e9;
+  --color-info-content: #ffffff;
+
+  --color-success: #10b981;
+  --color-success-content: #ffffff;
+
+  --color-warning: #f59e0b;
+  --color-warning-content: #422006; /* dark ink — white fails AA on amber */
+
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+
+  /* danger — the N-th named color. sparx `statusTone()` returns `danger`, so we
+     register it (see the plugin `colors:` list) and pair it here. Same hue as
+     `error`; kept as its own name so the platform's status vocabulary is exact. */
+  --color-danger: #ef4444;
+  --color-danger-content: #ffffff;
+
+  /* ── silicaui shape + type tokens ────────────────────────────────────────── */
+  --radius-box: 8px; /* cards, alerts, larger surfaces (rounded-box) */
+  --radius-field: 6px; /* inputs, buttons (rounded-field) */
+  --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
+
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+/* Dark variant of the sparx brand — production-complete so a dark island (or a
+   future surface-wide dark toggle) resolves correctly. The chrome adapts because
+   every silicaui object reads the tokens below. */
+[data-theme='sparx-dark'],
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-base-100: #1a1a1a;
+  --color-base-200: #1f1f1f;
+  --color-base-300: #2a2a2a;
+  --color-base-content: #f0f0f0;
+
+  --color-primary: #818cf8;
+  --color-primary-content: #14122e;
+
+  --color-secondary: #f472b6;
+  --color-secondary-content: #2a0a1a;
+
+  --color-accent: #a78bfa;
+  --color-accent-content: #17102e;
+
+  --color-neutral: #e5e7eb;
+  --color-neutral-content: #1f2937;
+
+  --color-info: #38bdf8;
+  --color-info-content: #082438;
+
+  --color-success: #34d399;
+  --color-success-content: #052e22;
+
+  --color-warning: #fbbf24;
+  --color-warning-content: #422006;
+
+  --color-error: #f87171;
+  --color-error-content: #2a0a0a;
+
+  --color-danger: #f87171;
+  --color-danger-content: #2a0a0a;
+
+  --radius-box: 8px;
+  --radius-field: 6px;
+  --radius-selector: 9999px;
+
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+/* ── Module identity palette ───────────────────────────────────────────────────
+ *
+ * Every sparx module owns a brand hue (Builder = indigo, Commerce = orange, CMS =
+ * teal, CRM = cyan, …). These are BRAND tokens, so they live HERE — the single
+ * source of truth — not hardcoded in a TS provider. `ModuleProvider` points the
+ * active subtree's `--module-active` / `--module-active-content` role vars at the
+ * matching pair below, so a module-tinted card / nav highlight / status chip
+ * resolves to the wrapping module's hue with zero hardcoded color in app code.
+ *
+ * TWO tokens per module — the solid fill and its on-fill ink:
+ *   --color-module-<name>          solid fill hue
+ *   --color-module-<name>-content  legible ink ON that solid fill (white, or dark
+ *                                  ink for amber/yellow modules where white fails AA)
+ *
+ * There is deliberately NO pre-baked `-tint` / `-text` token. A module tint is the
+ * solid hue rendered under silicaui's universal `soft` treatment (`soft` /
+ * `bg-soft` / `text-soft` / `border-soft`), which derives the SAME soft/tinted
+ * rendering from any solid color, theme-aware, in ONE place — so a module tint can
+ * never drift the way 18 hand-rolled per-theme `color-mix` values would. Solid +
+ * content are theme-independent (a saturated fill reads on either surface), so one
+ * block serves both brand themes. Module hues are consumed through the
+ * `--module-active` indirection (or `soft` on the solid); they are intentionally
+ * kept OUT of the silicaui `@plugin { colors }` list to keep generated CSS lean. */
+
+[data-theme='sparx'],
+[data-theme='sparx-dark'],
+[data-theme='light'],
+[data-theme='dark'] {
+  --color-module-storefront: #6366f1; /* legacy Site Builder indigo */
+  --color-module-storefront-content: #ffffff;
+  --color-module-builder: #6366f1; /* indigo — the site-building foundation module */
+  --color-module-builder-content: #ffffff;
+  --color-module-commerce: #f97316; /* orange */
+  --color-module-commerce-content: #ffffff;
+  --color-module-cms: #14b8a6; /* teal */
+  --color-module-cms-content: #ffffff;
+  --color-module-crm: #06b6d4; /* cyan */
+  --color-module-crm-content: #ffffff;
+  --color-module-email: #0ea5e9; /* sky */
+  --color-module-email-content: #ffffff;
+  --color-module-b2b: #475569; /* slate */
+  --color-module-b2b-content: #ffffff;
+  --color-module-invoicing: #65a30d; /* lime-green */
+  --color-module-invoicing-content: #ffffff;
+  --color-module-ai: #ec4899; /* pink */
+  --color-module-ai-content: #ffffff;
+  --color-module-dropship: #10b981; /* emerald */
+  --color-module-dropship-content: #ffffff;
+  --color-module-inventory: #f59e0b; /* amber — white ink fails AA, so dark ink */
+  --color-module-inventory-content: #422006;
+  --color-module-chat: #8b5cf6; /* violet-500 */
+  --color-module-chat-content: #ffffff;
+  --color-module-scheduling: #f43f5e; /* rose */
+  --color-module-scheduling-content: #ffffff;
+  --color-module-automations: #d946ef; /* fuchsia */
+  --color-module-automations-content: #ffffff;
+  --color-module-seo: #eab308; /* yellow — dark on-fill ink for legibility */
+  --color-module-seo-content: #422006;
+  --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
+  --color-module-finance-content: #ffffff;
+  --color-module-partner: #7c3aed; /* violet-600, one notch deeper than chat */
+  --color-module-partner-content: #ffffff;
+  --color-module-platform: #6366f1; /* indigo — the neutral platform surface */
+  --color-module-platform-content: #ffffff;
+}

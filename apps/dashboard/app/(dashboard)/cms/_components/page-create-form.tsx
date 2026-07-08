@@ -2,18 +2,8 @@
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Input, Label } from 'silicaui-react';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 
 import { createPage } from '../actions';
@@ -139,12 +129,15 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack gap={2}>
-                  <Label htmlFor="title" required>
-                    Title
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="title">
+                    Title{' '}
+                    <span className="text-error" aria-hidden="true">
+                      *
+                    </span>
                   </Label>
                   <Input
                     id="title"
@@ -152,8 +145,8 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
                     onChange={(e) => setTitle(e.target.value)}
                     aria-required
                   />
-                </Stack>
-                <Stack gap={2}>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="slug">Slug (optional)</Label>
                   <Input
                     id="slug"
@@ -161,11 +154,11 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="auto-derived from title"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Lowercase letters, numbers, and dashes only.
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="page-body-editor">Content (optional)</Label>
                   <ContentBlockEditor
                     id="page-body-editor"
@@ -174,14 +167,14 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
                     placeholder="Write the initial body. You can always edit after creation."
                     ariaLabel="Page body editor"
                   />
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

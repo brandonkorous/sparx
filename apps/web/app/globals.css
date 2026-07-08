@@ -1,8 +1,33 @@
 @import 'tailwindcss';
+
+/* ── silicaui migration: coexistence layer ───────────────────────────────────
+   apps/web is migrating off @sparx/ui onto silicaui (see
+   project_silicaui_migration). During the migration BOTH token systems load:
+     • @sparx/brand/theme.css — the sparx brand as silicaui tokens (the base-100/
+       200/300 surface ramp, the semantic palette, and the --color-module-*
+       identity hues). Sole source for silicaui's surface ramp + module hues.
+     • @sparx/ui/tokens.css — the legacy tokens the un-migrated @sparx/ui
+       components + the marketing.css `--color-*` classes still read.
+   Brand is imported FIRST so @sparx/ui stays authoritative for the SHARED
+   semantic names during coexistence (identical values in light, so nothing
+   shifts). Phase 3 deletes @sparx/ui/tokens.css and brand becomes sole. */
+@import '@sparx/brand/theme.css';
 @import '@sparx/ui/tokens.css';
 
+/* silicaui is the incoming component layer — a Tailwind v4 plugin whose semantic
+   classes (`.btn`, `.badge`, `.card`, the universal `soft`/`bg-soft` treatment)
+   read the theme tokens above. Beyond silicaui's defaults we register two extra
+   named colors: `danger` (sparx's statusTone() vocabulary → `.badge-danger`) and
+   `module` (the ACTIVE-module bridge — <ModuleProvider> points --color-module at
+   the wrapping module's hue, so `color="module"` resolves through the standard
+   silica color machinery). Per-module solid hues live in @sparx/brand/theme.css. */
+@plugin 'silicaui' {
+  colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module;
+}
+
 /* Tailwind v4 needs to see @sparx/ui sources so utility classes used inside the
-   library are emitted in this app's CSS bundle. */
+   (still-present) library are emitted in this app's CSS bundle. Removed in
+   Phase 3 with @sparx/ui itself. silicaui-react emits only plugin classes. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 @theme {

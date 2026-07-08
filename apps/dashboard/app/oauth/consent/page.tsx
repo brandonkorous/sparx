@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { redirect } from 'next/navigation';
-import { Alert, Heading, Stack, Text, Wordmark } from '@sparx/ui';
+import { AlertCircle, AlertTriangle } from 'lucide-react';
+import { Alert, AlertContent, AlertDescription, AlertTitle } from 'silicaui-react';
+import { Wordmark } from '@sparx/ui';
 import {
   getSession,
   grantableScopesForRole,
@@ -30,10 +32,10 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-[var(--color-surface-300)] p-4">
       <div className="w-full max-w-xl rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-100)] p-6 shadow-sm sm:p-8">
-        <Stack gap={6}>
+        <div className="flex flex-col gap-6">
           <Wordmark />
           {children}
-        </Stack>
+        </div>
       </div>
     </main>
   );
@@ -54,15 +56,19 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
   if (!validation.ok) {
     return (
       <Shell>
-        <Stack gap={3}>
-          <Heading level={2}>Can’t complete this connection</Heading>
-          <Alert color="danger" title="Authorization blocked">
-            {validation.error}
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight">Can’t complete this connection</h2>
+          <Alert color="danger" variant="soft">
+            <AlertCircle />
+            <AlertContent>
+              <AlertTitle>Authorization blocked</AlertTitle>
+              <AlertDescription>{validation.error}</AlertDescription>
+            </AlertContent>
           </Alert>
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Close this window and start the connection again from your assistant.
-          </Text>
-        </Stack>
+          </p>
+        </div>
       </Shell>
     );
   }
@@ -86,48 +92,57 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
   if (catalog.length === 0) {
     return (
       <Shell>
-        <Stack gap={3}>
-          <Heading level={2}>Connect {clientName}</Heading>
-          <Alert color="warning" title="Your role can’t grant MCP access">
-            Your account role ({role}) has no MCP permissions to grant. Ask an owner or admin to
-            connect this assistant.
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h2>
+          <Alert color="warning" variant="soft">
+            <AlertTriangle />
+            <AlertContent>
+              <AlertTitle>Your role can’t grant MCP access</AlertTitle>
+              <AlertDescription>
+                Your account role ({role}) has no MCP permissions to grant. Ask an owner or admin to
+                connect this assistant.
+              </AlertDescription>
+            </AlertContent>
           </Alert>
-        </Stack>
+        </div>
       </Shell>
     );
   }
 
   return (
     <Shell>
-      <Stack gap={2}>
-        <Heading level={2}>Connect {clientName}</Heading>
-        <Text variant="muted">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h2>
+        <p className="text-base-content/70">
           {clientName} is requesting access to your sparx workspace through the MCP server. Choose
           exactly what it can do — you can revoke this anytime in AI Integrations.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
-      <Alert
-        color="warning"
-        variant="soft"
-        title="This grants an external app live access to your data"
-      >
-        <Text size="sm">
-          Access tokens will be delivered to <strong>{redirectHost}</strong>. Only continue if you
-          started this connection yourself.
-        </Text>
+      <Alert color="warning" variant="soft">
+        <AlertTriangle />
+        <AlertContent>
+          <AlertTitle>This grants an external app live access to your data</AlertTitle>
+          <AlertDescription>
+            Access tokens will be delivered to <strong>{redirectHost}</strong>. Only continue if you
+            started this connection yourself.
+          </AlertDescription>
+        </AlertContent>
       </Alert>
 
-      {queryError ? <Alert color="danger">{queryError}</Alert> : null}
+      {queryError ? (
+        <Alert color="danger" variant="soft">
+          <AlertCircle />
+          {queryError}
+        </Alert>
+      ) : null}
 
-      <Stack gap={1}>
-        <Text size="sm" weight="medium">
-          Signed in as
-        </Text>
-        <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-medium">Signed in as</p>
+        <p className="text-base-content/70 text-sm">
           {session.user.email} · {role}
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       <ConsentForm
         params={authorizeParamsRecord(params)}

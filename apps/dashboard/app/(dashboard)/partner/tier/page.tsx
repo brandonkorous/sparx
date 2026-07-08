@@ -1,20 +1,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Award, Check } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  Grid,
-  Heading,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { ModuleProvider, PageHeader, statusLabel, statusTone } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -40,8 +28,8 @@ export default async function PartnerTierPage() {
 
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <PageHeader
             icon={<Award className="h-5 w-5" />}
             title="Tier"
@@ -55,48 +43,44 @@ export default async function PartnerTierPage() {
             description="Every tier earns more and unlocks more. Here’s where you stand and what it takes to move up."
           />
 
-          <Grid cols={1} mdCols={3} gap={4}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {TIER_ORDER.map((t) => {
               const meta = TIERS[t];
               const isCurrent = currentTier === t;
               const passed =
                 currentTier != null && TIER_ORDER.indexOf(t) < TIER_ORDER.indexOf(currentTier);
               return (
-                <Card key={t} variant={isCurrent ? 'module' : 'default'} padding="lg">
-                  <Stack gap={3}>
-                    <Stack direction="row" align="center" justify="between" gap={2}>
-                      <Text size="lg" weight="medium">
-                        {meta.label}
-                      </Text>
-                      {isCurrent ? (
-                        <Badge color="module" variant="soft">
-                          Your tier
-                        </Badge>
-                      ) : passed ? (
-                        <Badge color={statusTone('active')} variant="soft">
-                          Unlocked
-                        </Badge>
-                      ) : null}
-                    </Stack>
-                    <Text size="sm" className="text-[var(--module-active-text)]">
-                      {meta.commission}
-                    </Text>
-                    <ul className="flex flex-col gap-2">
-                      {meta.unlocks.map((u) => (
-                        <li key={u} className="flex items-start gap-2">
-                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
-                          <Text size="sm">{u}</Text>
-                        </li>
-                      ))}
-                    </ul>
-                    <Text size="xs" variant="muted">
-                      {meta.howToReach}
-                    </Text>
-                  </Stack>
+                <Card key={t} className={isCurrent ? 'bg-module bg-soft' : undefined}>
+                  <CardBody>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-row items-center justify-between gap-2">
+                        <p className="text-lg font-medium">{meta.label}</p>
+                        {isCurrent ? (
+                          <Badge color="module" variant="soft">
+                            Your tier
+                          </Badge>
+                        ) : passed ? (
+                          <Badge color={statusTone('active')} variant="soft">
+                            Unlocked
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <p className="text-sm text-[var(--module-active-text)]">{meta.commission}</p>
+                      <ul className="flex flex-col gap-2">
+                        {meta.unlocks.map((u) => (
+                          <li key={u} className="flex items-start gap-2">
+                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                            <p className="text-sm">{u}</p>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-base-content/70 text-xs">{meta.howToReach}</p>
+                    </div>
+                  </CardBody>
                 </Card>
               );
             })}
-          </Grid>
+          </div>
 
           {profile ? (
             upcoming ? (
@@ -105,50 +89,54 @@ export default async function PartnerTierPage() {
                 icon={<Award className="h-4 w-4" />}
                 description={TIERS[upcoming].commission}
               >
-                <Stack gap={3}>
-                  <Text size="sm" variant="muted">
-                    {TIERS[upcoming].howToReach}
-                  </Text>
+                <div className="flex flex-col gap-3">
+                  <p className="text-base-content/70 text-sm">{TIERS[upcoming].howToReach}</p>
                   {canOperate ? (
                     <TierApply requestedTier={upcoming} />
                   ) : (
-                    <Text size="sm" variant="muted">
+                    <p className="text-base-content/70 text-sm">
                       Ask an owner or admin to apply for the next tier.
-                    </Text>
+                    </p>
                   )}
-                </Stack>
+                </div>
               </OverviewCard>
             ) : (
-              <Card variant="default" padding="lg">
-                <Stack gap={1}>
-                  <Heading level={2}>You’re at the top tier</Heading>
-                  <Text size="sm" variant="muted">
-                    You earn ongoing commission on managed accounts and can publish bootcamps
-                    publicly. Keep growing — the directory rewards active certified partners.
-                  </Text>
-                </Stack>
+              <Card>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      You’re at the top tier
+                    </h2>
+                    <p className="text-base-content/70 text-sm">
+                      You earn ongoing commission on managed accounts and can publish bootcamps
+                      publicly. Keep growing — the directory rewards active certified partners.
+                    </p>
+                  </div>
+                </CardBody>
               </Card>
             )
           ) : (
-            <Card variant="default" padding="lg">
-              <Stack gap={3}>
-                <Stack gap={1}>
-                  <Heading level={2}>Not a partner yet?</Heading>
-                  <Text size="sm" variant="muted">
-                    Join the program to claim your referral link and start earning. You can apply to
-                    move up a tier any time.
-                  </Text>
-                </Stack>
-                <div>
-                  <Button asChild color="module">
-                    <Link href="/partner">Become a partner</Link>
-                  </Button>
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1">
+                    <h2 className="text-2xl font-semibold tracking-tight">Not a partner yet?</h2>
+                    <p className="text-base-content/70 text-sm">
+                      Join the program to claim your referral link and start earning. You can apply
+                      to move up a tier any time.
+                    </p>
+                  </div>
+                  <div>
+                    <Button render={<Link href="/partner" />} color="module">
+                      Become a partner
+                    </Button>
+                  </div>
                 </div>
-              </Stack>
+              </CardBody>
             </Card>
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

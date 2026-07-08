@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Card,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
 
 import { SeoScoreBadge } from '@/components/seo/seo-score';
 import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';
@@ -40,29 +34,25 @@ export function SeoAuditList({ rows, view }: SeoAuditListProps) {
     { header: 'Page', cell: rowLink },
     {
       header: 'Top fix',
-      cell: (r) => (
-        <Text size="sm" variant="muted">
-          {r.fixFirst ?? '—'}
-        </Text>
-      ),
+      cell: (r) => <p className="text-base-content/70 text-sm">{r.fixFirst ?? '—'}</p>,
     },
   ];
 
   const card: SelectionCard<SeoAuditRow> = {
     title: rowLink,
     render: (r) => (
-      <Card variant="default" padding="md">
-        <Stack direction="row" gap={3} align="start">
-          <SeoScoreBadge score={r.score} grade={r.grade} size={36} />
-          <Stack gap={1} className="min-w-0 flex-1">
-            {rowLink(r)}
-            {r.fixFirst ? (
-              <Text size="xs" variant="muted">
-                Top fix: {r.fixFirst}
-              </Text>
-            ) : null}
-          </Stack>
-        </Stack>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row items-start gap-3">
+            <SeoScoreBadge score={r.score} grade={r.grade} size={36} />
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              {rowLink(r)}
+              {r.fixFirst ? (
+                <p className="text-base-content/70 text-xs">Top fix: {r.fixFirst}</p>
+              ) : null}
+            </div>
+          </div>
+        </CardBody>
       </Card>
     ),
   };

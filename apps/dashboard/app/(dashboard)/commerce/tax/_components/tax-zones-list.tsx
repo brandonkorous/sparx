@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  Badge,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -62,12 +56,7 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
     { header: 'Country', cell: (z) => countryLink(z) },
     {
       header: 'Region',
-      cell: (z) =>
-        z.region ?? (
-          <Text size="xs" variant="muted">
-            —
-          </Text>
-        ),
+      cell: (z) => z.region ?? <p className="text-base-content/70 text-xs">—</p>,
     },
     {
       header: 'Nexus',
@@ -79,11 +68,7 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
     },
     {
       header: 'Registration #',
-      cell: (z) => (
-        <Text size="xs" className="font-mono">
-          {z.registrationNumber ?? '—'}
-        </Text>
-      ),
+      cell: (z) => <p className="font-mono text-xs">{z.registrationNumber ?? '—'}</p>,
     },
     { header: 'Rates', cell: (z) => z.rateCount },
     { header: 'Status', cell: statusBadge },
@@ -91,23 +76,18 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
 
   const card: SelectionCard<TaxZoneRow> = {
     title: (z) => countryLink(z, 'truncate font-medium hover:text-[var(--module-active)]'),
-    subtitle: (z) =>
-      z.region ? (
-        <Text size="xs" variant="muted">
-          {z.region}
-        </Text>
-      ) : null,
+    subtitle: (z) => (z.region ? <p className="text-base-content/70 text-xs">{z.region}</p> : null),
     badge: statusBadge,
     body: (z) => (
-      <Stack direction="row" align="center" gap={2} wrap>
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge color="neutral" variant="soft" size="sm">
           {statusLabel(z.nexusType)}
         </Badge>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           {z.rateCount} rate{z.rateCount === 1 ? '' : 's'}
           {z.registrationNumber ? ` · reg ${z.registrationNumber}` : ''}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 

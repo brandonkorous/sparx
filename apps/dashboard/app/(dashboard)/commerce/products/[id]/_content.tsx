@@ -1,14 +1,7 @@
 import { notFound } from 'next/navigation';
 
-import {
-  Badge,
-  Heading,
-  ModuleProvider,
-  Stack,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { ModuleProvider, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
@@ -346,9 +339,7 @@ export async function ProductDetailContent({ id }: Props) {
           once" in the editable Title field (no visible read-only restatement),
           but screen readers + the document outline still get a real h1 to anchor
           the h2 section headings beneath it — the frame chrome label is a span. */}
-      <Heading level={1} as="h1" className="sr-only">
-        {product.title}
-      </Heading>
+      <h1 className="sr-only text-3xl font-semibold">{product.title}</h1>
 
       {/* Identity (name + handle) lives ONLY in the editable Title/Handle fields
           on the Overview tab — no read-only header restating them. Status + the
@@ -406,14 +397,14 @@ export async function ProductDetailContent({ id }: Props) {
               </TabsList>
 
               <TabsContent value="overview">
-                <Stack gap={6}>
+                <div className="flex flex-col gap-6">
                   <ProductEditForm
                     product={product}
                     sites={sites}
                     initialPropertyIds={product.propertyIds ?? []}
                     facets={facets}
                   />
-                </Stack>
+                </div>
               </TabsContent>
 
               <TabsContent value="variants">

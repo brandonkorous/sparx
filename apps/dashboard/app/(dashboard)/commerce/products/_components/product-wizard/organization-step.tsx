@@ -10,7 +10,8 @@
 // router.refresh, which doesn't fit the client wizard).
 
 import * as React from 'react';
-import { Card, CardContent, Checkbox, Label, Spinner, Text, SurfaceStep } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Label, Loading } from 'silicaui-react';
+import { SurfaceStep } from '@sparx/ui';
 
 import { updateProductAction } from '../../../product-actions';
 import { listSitesAction, type SiteOption } from '../../../product-actions';
@@ -113,11 +114,11 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
         nextDisabled: submitting,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           {loading ? (
             <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-              <Spinner className="h-4 w-4" /> Loading collections & categories…
+              <Loading className="h-4 w-4" /> Loading collections & categories…
             </div>
           ) : (
             <div className="flex flex-col gap-7">
@@ -139,13 +140,11 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
 
               {sites.length > 1 && (
                 <div className="flex flex-col gap-2">
-                  <Text size="sm" weight="medium">
-                    Visible on
-                  </Text>
+                  <p className="text-sm font-medium">Visible on</p>
                   <div className="flex items-center gap-2">
                     <Checkbox
                       checked={allSites}
-                      onCheckedChange={(v) => setAllSites(v === true)}
+                      onChange={(e) => setAllSites(e.target.checked)}
                       aria-label="All sites"
                     />
                     <span className="text-sm">All sites</span>
@@ -155,7 +154,7 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
                       <div key={s.id} className="flex items-center gap-2 pl-6">
                         <Checkbox
                           checked={siteIds.has(s.id)}
-                          onCheckedChange={() => setSiteIds((set) => toggle(set, s.id))}
+                          onChange={() => setSiteIds((set) => toggle(set, s.id))}
                           aria-label={s.name}
                         />
                         <span className="text-sm">
@@ -168,13 +167,13 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
               )}
 
               {error && (
-                <Text size="sm" variant="danger" role="alert">
+                <p className="text-danger text-sm" role="alert">
                   {error}
-                </Text>
+                </p>
               )}
             </div>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -197,9 +196,7 @@ function PickerSection({
     <div className="flex flex-col gap-2">
       <Label>{title}</Label>
       {items.length === 0 ? (
-        <Text size="sm" variant="muted">
-          {empty}
-        </Text>
+        <p className="text-base-content/70 text-sm">{empty}</p>
       ) : (
         <div className="grid max-h-56 grid-cols-1 gap-1.5 overflow-y-auto sm:grid-cols-2">
           {items.map((it) => (
@@ -209,7 +206,7 @@ function PickerSection({
             >
               <Checkbox
                 checked={selected.has(it.id)}
-                onCheckedChange={() => onToggle(it.id)}
+                onChange={() => onToggle(it.id)}
                 aria-label={it.label}
               />
               <span className="truncate text-sm">{it.label}</span>

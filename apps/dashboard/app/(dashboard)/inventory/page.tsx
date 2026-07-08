@@ -14,26 +14,15 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
   BarList,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTime,
@@ -216,33 +205,41 @@ export default async function InventoryPage() {
   const hasActivity = !!(activity && activity.length > 0);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Boxes className="h-5 w-5" />}
           title="Inventory"
           description="Stock & locations — across every location."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Warehouse className="h-4 w-4" />}>
-                <Link href="/inventory/warehouses">Warehouses</Link>
+              <Button
+                variant="outline"
+                iconStart={<Warehouse className="h-4 w-4" />}
+                render={<Link href="/inventory/warehouses" />}
+              >
+                Warehouses
               </Button>
               <Button
-                asChild
                 variant="outline"
-                leftIcon={<SlidersHorizontal className="h-4 w-4" />}
+                iconStart={<SlidersHorizontal className="h-4 w-4" />}
+                render={<Link href="/inventory/sources" />}
               >
-                <Link href="/inventory/sources">Sources</Link>
+                Sources
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/inventory/receiving">Receive stock</Link>
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/inventory/receiving" />}
+              >
+                Receive stock
               </Button>
             </>
           }
         />
 
         {/* KPI strip — live from the inventory reporting summary */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<Box className="h-4 w-4" />}
             label="SKUs tracked"
@@ -271,7 +268,7 @@ export default async function InventoryPage() {
                 : 'Stocking locations'
             }
           />
-        </Grid>
+        </div>
 
         {/* Needs attention — all live from the reporting summary */}
         {summary && (
@@ -396,27 +393,23 @@ export default async function InventoryPage() {
         >
           {hasLowOut ? (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead className="text-right">On hand</TableHead>
-                  <TableHead className="text-right">Available</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Location</th>
+                  <th className="text-right">On hand</th>
+                  <th className="text-right">Available</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
                 {summary.lowOrOut.map((r) => (
-                  <TableRow key={`${r.variantId}-${r.location}`}>
-                    <TableCell className="font-medium">{r.title}</TableCell>
-                    <TableCell className="text-[var(--color-text-tertiary)]">
-                      {r.location}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">{fmtNumber(r.onHand)}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {fmtNumber(r.available)}
-                    </TableCell>
-                    <TableCell>
+                  <tr key={`${r.variantId}-${r.location}`}>
+                    <td className="font-medium">{r.title}</td>
+                    <td className="text-[var(--color-text-tertiary)]">{r.location}</td>
+                    <td className="text-right tabular-nums">{fmtNumber(r.onHand)}</td>
+                    <td className="text-right tabular-nums">{fmtNumber(r.available)}</td>
+                    <td>
                       {r.status === 'out' ? (
                         <Badge color="danger" variant="soft">
                           Out of stock
@@ -426,10 +419,10 @@ export default async function InventoryPage() {
                           Low
                         </Badge>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           ) : (
             <EmptyState
@@ -501,7 +494,7 @@ export default async function InventoryPage() {
             )}
           </OverviewCard>
         </div>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

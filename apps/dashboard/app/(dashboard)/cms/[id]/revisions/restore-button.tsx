@@ -8,7 +8,8 @@
 
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
-import { Button, toast, useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { RotateCcw } from 'lucide-react';
 import { restoreRevision } from '../../actions';
 
@@ -54,7 +55,7 @@ export function RestoreButton({
       size="sm"
       color="module"
       variant="outline"
-      leftIcon={<RotateCcw className="h-3.5 w-3.5" />}
+      iconStart={<RotateCcw className="h-3.5 w-3.5" />}
       onClick={handleRestore}
       disabled={pending}
       loading={pending}

@@ -23,17 +23,15 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   EmptyState,
-  Heading,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  Text,
   Textarea,
+} from 'silicaui-react';
+import {
+  ModuleProvider,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -178,14 +176,18 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   if (warehouses.length < 2) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Card padding="none" className="w-full max-w-lg">
+        <Card className="w-full max-w-lg">
           <EmptyState
             icon={<WarehouseIcon className="h-5 w-5" />}
             title="Add a second warehouse first"
             description="A transfer moves stock between two warehouses, so you need at least two. Create another, then come back to start a transfer."
-            action={
-              <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/inventory/warehouses/new">New warehouse</Link>
+            actions={
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/inventory/warehouses/new" />}
+              >
+                New warehouse
               </Button>
             }
           />
@@ -236,17 +238,17 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
       >
         <div className="flex flex-col gap-5">
           {/* Route */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Route</Heading>
-              <Text size="sm" variant="muted">
-                Choose where the stock moves from and to — they must be different warehouses.
-              </Text>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Route</h3>
+                <p className="text-base-content/70 text-sm">
+                  Choose where the stock moves from and to — they must be different warehouses.
+                </p>
+              </div>
               <div className="flex flex-col gap-4">
-                <Stack direction="row" gap={3} align="end" wrap>
-                  <Stack gap={1} className="min-w-[12rem] flex-1">
+                <div className="flex flex-row flex-wrap items-end gap-3">
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                     <Label htmlFor="tw-from">From</Label>
                     <NativeSelect
                       id="tw-from"
@@ -259,9 +261,9 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
+                  </div>
                   <ArrowRight className="mb-2 h-5 w-5 shrink-0 text-[var(--color-text-muted)]" />
-                  <Stack gap={1} className="min-w-[12rem] flex-1">
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                     <Label htmlFor="tw-to">To</Label>
                     <NativeSelect id="tw-to" value={toId} onChange={(e) => setToId(e.target.value)}>
                       {warehouses.map((w) => (
@@ -270,12 +272,12 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
                 {sameWarehouse && (
-                  <Text size="xs" className="text-[var(--color-warning-text)]">
+                  <p className="text-xs text-[var(--color-warning-text)]">
                     Source and destination must be different warehouses.
-                  </Text>
+                  </p>
                 )}
                 <div>
                   <Label htmlFor="tw-note">Note</Label>
@@ -287,44 +289,36 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Items */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Items to move</Heading>
-              <Text size="sm" variant="muted">
-                Add the variants to transfer by SKU and set a quantity — optional; you can add items
-                once the transfer is open.
-              </Text>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Items to move</h3>
+                <p className="text-base-content/70 text-sm">
+                  Add the variants to transfer by SKU and set a quantity — optional; you can add
+                  items once the transfer is open.
+                </p>
+              </div>
               <div className="flex flex-col gap-4">
                 {lines.length === 0 ? (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     No items yet — add a SKU below, or start empty and add them later.
-                  </Text>
+                  </p>
                 ) : (
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     {lines.map((l) => (
-                      <Stack
+                      <div
                         key={l.variantId}
-                        direction="row"
-                        align="center"
-                        gap={3}
-                        wrap
-                        className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                        className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
                       >
-                        <Stack gap={0} className="min-w-[12rem] flex-1">
-                          <Text size="sm" className="font-medium">
-                            {l.title ?? l.sku}
-                          </Text>
-                          <Text size="xs" variant="muted" className="font-mono">
-                            {l.sku}
-                          </Text>
-                        </Stack>
-                        <Stack gap={0} className="w-[6rem]">
+                        <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                          <p className="text-sm font-medium">{l.title ?? l.sku}</p>
+                          <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
+                        </div>
+                        <div className="flex w-[6rem] flex-col gap-0">
                           <Label htmlFor={`tw-qty-${l.variantId}`} className="sr-only">
                             Quantity
                           </Label>
@@ -341,7 +335,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                               )
                             }
                           />
-                        </Stack>
+                        </div>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -350,19 +344,19 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                         >
                           Remove
                         </Button>
-                      </Stack>
+                      </div>
                     ))}
-                  </Stack>
+                  </div>
                 )}
                 <SkuAddRow onAdd={addLine} disabled={submitting} />
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </div>
       </SurfaceStep>
@@ -406,15 +400,9 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (line: PickedLine) => void; dis
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="transfer-add-sku">Variant SKU</Label>
           <Input
             id="transfer-add-sku"
@@ -428,16 +416,16 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (line: PickedLine) => void; dis
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
-      </Stack>
+      </div>
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { type SelectionCard, type SelectionColumn, SelectionList, Stack, Text } from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
 
 import { ApproveRejectActions } from './approve-reject-actions';
 
@@ -43,47 +43,35 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
         {order.companyName ?? order.b2bAccountId}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const buyerCell = (order: QueuedOrder) => (
-    <Stack gap={1}>
-      <Text size="sm">{order.customerName ?? order.customerEmail}</Text>
-      {order.customerName && (
-        <Text size="xs" variant="muted">
-          {order.customerEmail}
-        </Text>
-      )}
-    </Stack>
+    <div className="flex flex-col gap-1">
+      <p className="text-sm">{order.customerName ?? order.customerEmail}</p>
+      {order.customerName && <p className="text-base-content/70 text-xs">{order.customerEmail}</p>}
+    </div>
   );
 
   const columns: SelectionColumn<QueuedOrder>[] = [
     {
       header: 'Order #',
-      cell: (order) => (
-        <Text size="sm" className="font-medium tabular-nums">
-          #{order.orderNumber}
-        </Text>
-      ),
+      cell: (order) => <p className="text-sm font-medium tabular-nums">#{order.orderNumber}</p>,
     },
     { header: 'Account', cell: accountCell },
     { header: 'Buyer', cell: buyerCell },
     {
       header: 'Amount',
       cell: (order) => (
-        <Text size="sm" className="font-medium tabular-nums">
-          {formatCents(order.totalCents)}
-        </Text>
+        <p className="text-sm font-medium tabular-nums">{formatCents(order.totalCents)}</p>
       ),
     },
     {
       header: 'Submitted',
       cell: (order) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {new Date(order.createdAt).toLocaleDateString()}
-        </Text>
+        </p>
       ),
     },
     {
@@ -96,35 +84,25 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
 
   const card: SelectionCard<QueuedOrder> = {
     title: (order) => (
-      <Text size="sm" className="truncate font-medium tabular-nums">
-        #{order.orderNumber}
-      </Text>
+      <p className="truncate text-sm font-medium tabular-nums">#{order.orderNumber}</p>
     ),
     subtitle: (order) => buyerCell(order),
     body: (order) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Account
-          </Text>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Account</p>
           {accountCell(order)}
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Amount
-          </Text>
-          <Text size="sm" className="font-medium tabular-nums">
-            {formatCents(order.totalCents)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Submitted
-          </Text>
-          <Text size="sm" variant="muted">
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Amount</p>
+          <p className="text-sm font-medium tabular-nums">{formatCents(order.totalCents)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Submitted</p>
+          <p className="text-base-content/70 text-sm">
             {new Date(order.createdAt).toLocaleDateString()}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <ApproveRejectActions orderId={order.id} orderNumber={order.orderNumber} />
       </>
     ),

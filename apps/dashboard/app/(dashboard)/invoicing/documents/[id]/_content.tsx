@@ -1,18 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Printer, Receipt } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  Text,
-} from '@sparx/ui';
+import { Stat } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -163,36 +153,32 @@ export async function DocumentEditorContent({ id }: Props) {
   const marginPct = revenueCents > 0 ? ((revenueCents - costCents) / revenueCents) * 100 : null;
 
   return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{doc.number ?? 'Draft'}</Heading>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-semibold">{doc.number ?? 'Draft'}</h1>
             {currentStage && (
               <Badge color="module" variant="soft">
                 {currentStage.customerLabel}
               </Badge>
             )}
             <Badge color={AR_STATUS_VARIANT[doc.status] ?? 'neutral'}>{doc.status}</Badge>
-            {partyName && (
-              <Text size="sm" variant="muted">
-                {partyName}
-              </Text>
-            )}
-          </Stack>
+            {partyName && <p className="text-base-content/70 text-sm">{partyName}</p>}
+          </div>
           <Button
-            asChild
             variant="outline"
             size="sm"
             color="module"
-            leftIcon={<Printer className="h-4 w-4" />}
+            iconStart={<Printer className="h-4 w-4" />}
+            render={
+              <a href={`/invoicing/documents/${doc.id}/print`} target="_blank" rel="noreferrer" />
+            }
           >
-            <a href={`/invoicing/documents/${doc.id}/print`} target="_blank" rel="noreferrer">
-              Print
-            </a>
+            Print
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <StageBar
         documentId={doc.id}
@@ -208,25 +194,25 @@ export async function DocumentEditorContent({ id }: Props) {
       />
 
       <div className="grid gap-4 md:grid-cols-4">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat label="Total" value={formatMoney(doc.total, doc.currency)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Balance due" value={formatMoney(doc.balance, doc.currency)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Amount paid" value={formatMoney(doc.amountPaid, doc.currency)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Margin" value={marginPct !== null ? `${marginPct.toFixed(1)}%` : '—'} />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
@@ -268,11 +254,9 @@ export async function DocumentEditorContent({ id }: Props) {
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-1">
-          <CardHeader>
+          <CardBody>
             <CardTitle>Totals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <TotalRow label="Subtotal" value={formatMoney(doc.subtotal, doc.currency)} />
               {Number(doc.discountTotal) > 0 && (
                 <TotalRow
@@ -312,8 +296,8 @@ export async function DocumentEditorContent({ id }: Props) {
                   strong
                 />
               </div>
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
         <div className="md:col-span-2">
@@ -335,88 +319,69 @@ export async function DocumentEditorContent({ id }: Props) {
 
       {snapshots.length > 0 && (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <Receipt className="h-4 w-4" /> Frozen records
                 <Badge color="neutral" variant="soft" size="sm">
                   {snapshots.length}
                 </Badge>
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {snapshots.map((s) => (
-                <Stack
+                <div
                   key={s.id}
-                  direction="row"
-                  align="center"
-                  justify="between"
-                  className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row items-center justify-between rounded-md border border-[var(--color-border-default)] px-3 py-2"
                 >
-                  <Stack direction="row" align="center" gap={3} wrap>
-                    <Text size="sm" className="font-medium">
-                      {s.documentNumber ?? s.customerLabel}
-                    </Text>
+                  <div className="flex flex-row flex-wrap items-center gap-3">
+                    <p className="text-sm font-medium">{s.documentNumber ?? s.customerLabel}</p>
                     <Badge color="neutral" variant="soft" size="sm">
                       {s.customerLabel}
                     </Badge>
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       {new Date(s.createdAt).toLocaleString()}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                   <Button
-                    asChild
                     variant="ghost"
                     size="sm"
-                    leftIcon={<Printer className="h-3.5 w-3.5" />}
+                    iconStart={<Printer className="h-3.5 w-3.5" />}
+                    render={
+                      <a
+                        href={`/invoicing/documents/${doc.id}/print?snapshotId=${s.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      />
+                    }
                   >
-                    <a
-                      href={`/invoicing/documents/${doc.id}/print?snapshotId=${s.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Print
-                    </a>
+                    Print
                   </Button>
-                </Stack>
+                </div>
               ))}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
       )}
 
       {doc.notes && (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Text size="sm" className="whitespace-pre-wrap">
-              {doc.notes}
-            </Text>
-          </CardContent>
+            <p className="text-sm whitespace-pre-wrap">{doc.notes}</p>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }
 
 function TotalRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <Stack direction="row" justify="between" align="center">
-      <Text
-        size="sm"
-        variant={strong ? 'default' : 'muted'}
-        className={strong ? 'font-semibold' : ''}
-      >
-        {label}
-      </Text>
-      <Text size="sm" className={`tabular-nums ${strong ? 'font-semibold' : ''}`}>
-        {value}
-      </Text>
-    </Stack>
+    <div className="flex flex-row items-center justify-between">
+      <p className={`text-sm ${strong ? 'font-semibold' : 'text-base-content/70'}`}>{label}</p>
+      <p className={`text-sm tabular-nums ${strong ? 'font-semibold' : ''}`}>{value}</p>
+    </div>
   );
 }
 

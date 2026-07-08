@@ -4,7 +4,9 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Button, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+
+import { useConfirm } from '@sparx/ui';
 
 import { deleteTaxRateAction } from '../../../../tax-actions';
 
@@ -34,7 +36,7 @@ export function TaxRateDeleteButton({ rateId, zoneId }: { rateId: string; zoneId
   }
 
   return (
-    <Button variant="ghost" size="sm" onClick={onDelete} disabled={pending}>
+    <Button variant="ghost" size="sm" shape="square" onClick={onDelete} disabled={pending}>
       <Trash2 className="h-3.5 w-3.5" />
     </Button>
   );

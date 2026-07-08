@@ -1,15 +1,5 @@
-import {
-  AreaChart,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  LineChart,
-  ModuleProvider,
-  Stack,
-  Text,
-  cn,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { AreaChart, LineChart, ModuleProvider, cn } from '@sparx/ui';
 
 import { SampleBadge } from '../_components/overview-bits';
 import { MetricSwitcher } from './controls';
@@ -60,9 +50,9 @@ export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeL
   return (
     <ModuleProvider module={metric.module}>
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="start" justify="between" gap={3} className="flex-wrap">
-            <Stack gap={1}>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-1">
               <CardTitle>Performance</CardTitle>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-semibold tracking-tight text-[var(--color-text-primary)] tabular-nums">
@@ -74,17 +64,17 @@ export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeL
                   </span>
                 )}
               </div>
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 {metric.caption} · {rangeLabel}
-              </Text>
-            </Stack>
-            <Stack align="end" gap={2}>
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-2">
               {isSample && <SampleBadge reason="no-data" />}
               <MetricSwitcher active={metric.key} metrics={available} />
-            </Stack>
-          </Stack>
-        </CardHeader>
-        <CardContent>{chart}</CardContent>
+            </div>
+          </div>
+          {chart}
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

@@ -8,24 +8,8 @@ import {
   PackageCheck,
 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Stat } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { B2bTierAssigner } from './_components/b2b-tier-assigner';
@@ -92,11 +76,11 @@ interface ApprovalRule {
   createdAt: string;
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
+const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'neutral' | 'danger'> = {
   active: 'success',
   credit_hold: 'warning',
   suspended: 'danger',
-  inactive: 'outline',
+  inactive: 'neutral',
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -173,12 +157,12 @@ export async function B2bAccountDetailContent({ id }: Props) {
   const fleetVehicles: FleetVehicleView[] = account.fleetVehicles ?? [];
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       {/* Header */}
-      <Stack direction="row" align="center" justify="between" wrap gap={3}>
-        <Stack direction="row" align="center" gap={3} wrap>
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-row flex-wrap items-center gap-3">
           <Building2 className="h-5 w-5" />
-          <Heading level={1}>{account.companyName}</Heading>
+          <h1 className="text-3xl font-semibold">{account.companyName}</h1>
           <Badge color={STATUS_VARIANT[account.status] ?? 'neutral'} variant="soft" size="sm">
             {STATUS_LABEL[account.status] ?? account.status}
           </Badge>
@@ -197,46 +181,44 @@ export async function B2bAccountDetailContent({ id }: Props) {
               <Globe className="h-3.5 w-3.5" /> Website
             </a>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       {/* Credit stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat label="Credit limit" value={formatDollars(account.creditLimitCents)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Used" value={formatDollars(account.creditUsedCents)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Remaining" value={formatDollars(account.creditRemainingCents)} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Account discount"
               value={account.discountPercent > 0 ? `${account.discountPercent}%` : '—'}
             />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
       {/* Credit utilization bar */}
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Credit utilization</CardTitle>
           {account.paymentTerms && (
-            <CardDescription>Payment terms: {account.paymentTerms}</CardDescription>
+            <p className="opacity-70">Payment terms: {account.paymentTerms}</p>
           )}
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <div className="h-3 rounded-full bg-[var(--color-surface-subtle)]">
               <div
                 className="h-full rounded-full transition-all"
@@ -246,156 +228,134 @@ export async function B2bAccountDetailContent({ id }: Props) {
                 }}
               />
             </div>
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                {util.toFixed(1)}% used
-              </Text>
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">{util.toFixed(1)}% used</p>
               {util >= 75 && (
-                <Stack direction="row" align="center" gap={1}>
+                <div className="flex flex-row items-center gap-1">
                   <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                  <Text size="sm" className="text-[var(--color-warning-500)]">
-                    Near credit limit
-                  </Text>
-                </Stack>
+                  <p className="text-sm text-[var(--color-warning-500)]">Near credit limit</p>
+                </div>
               )}
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       {/* Pricing tier assignment */}
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center gap-2">
             <DollarSign className="h-4 w-4" />
             <CardTitle>Pricing tier</CardTitle>
-          </Stack>
-          <CardDescription>
+          </div>
+          <p className="opacity-70">
             Assign a pricing tier to apply automatic discounts. Account-level overrides below take
             precedence.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           <B2bTierAssigner
             accountId={account.id}
             currentTierId={account.pricingTierId}
             tiers={tiers}
           />
-        </CardContent>
+        </CardBody>
       </Card>
 
       {/* Account-level product overrides */}
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Product overrides</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             Variant or collection-specific prices that override the assigned tier for this account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <B2bAccountOverridesTable accountId={account.id} overrides={overrides} />
-        </CardContent>
+          </p>
+        </CardBody>
+        <B2bAccountOverridesTable accountId={account.id} overrides={overrides} />
       </Card>
 
       {/* Fleet */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Fleet</CardTitle>
-            {account.fleetSize !== null && (
-              <CardDescription>{account.fleetSize} vehicles in fleet</CardDescription>
-            )}
+        <CardBody>
+          <div className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Fleet</CardTitle>
+              {account.fleetSize !== null && (
+                <p className="opacity-70">{account.fleetSize} vehicles in fleet</p>
+              )}
+            </div>
+            <FleetProfileEditor accountId={account.id} initialVehicles={fleetVehicles} />
           </div>
-          <FleetProfileEditor accountId={account.id} initialVehicles={fleetVehicles} />
-        </CardHeader>
-        {fleetVehicles.length > 0 && (
-          <CardContent>
+          {fleetVehicles.length > 0 && (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Label</TableHead>
-                  <TableHead>Fitment</TableHead>
-                  <TableHead>Details</TableHead>
-                  <TableHead>Count</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Label</th>
+                  <th>Fitment</th>
+                  <th>Details</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
                 {fleetVehicles.map((v, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      <Text size="sm" className="font-medium">
-                        {v.label ?? '—'}
-                      </Text>
-                      {v.vin && (
-                        <Text size="sm" variant="muted">
-                          VIN {v.vin}
-                        </Text>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">{fleetFitmentLabel(v)}</Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">{fleetDetailLabel(v)}</Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">×{v.count ?? 1}</Text>
-                    </TableCell>
-                  </TableRow>
+                  <tr key={idx}>
+                    <td>
+                      <p className="text-sm font-medium">{v.label ?? '—'}</p>
+                      {v.vin && <p className="text-base-content/70 text-sm">VIN {v.vin}</p>}
+                    </td>
+                    <td>
+                      <p className="text-sm">{fleetFitmentLabel(v)}</p>
+                    </td>
+                    <td>
+                      <p className="text-sm">{fleetDetailLabel(v)}</p>
+                    </td>
+                    <td>
+                      <p className="text-sm">×{v.count ?? 1}</p>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
-          </CardContent>
-        )}
+          )}
+        </CardBody>
       </Card>
 
       {/* Fleet / work-order holds */}
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center gap-2">
             <PackageCheck className="h-4 w-4" />
             <CardTitle>Fleet holds</CardTitle>
-          </Stack>
-          <CardDescription>
+          </div>
+          <p className="opacity-70">
             Reserve stock against inventory for this account&apos;s work orders before the order is
             placed. Release frees the stock; consume commits it when the job ships.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           <FleetHoldsPanel accountId={account.id} holds={holds} />
-        </CardContent>
+        </CardBody>
       </Card>
 
       {/* Approval rules */}
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center gap-2">
             <CheckCircle className="h-4 w-4" />
             <CardTitle>Order approval rules</CardTitle>
-          </Stack>
-          <CardDescription>
+          </div>
+          <p className="opacity-70">
             Orders from this account above the configured threshold will be held for staff approval
             before being placed.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           <ApprovalRulesEditor accountId={account.id} rules={accountRules} />
-        </CardContent>
+        </CardBody>
       </Card>
 
       {/* Internal notes */}
       {account.notes && (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Internal notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Text size="sm" className="whitespace-pre-wrap">
-              {account.notes}
-            </Text>
-          </CardContent>
+            <p className="text-sm whitespace-pre-wrap">{account.notes}</p>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }

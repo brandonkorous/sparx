@@ -1,14 +1,12 @@
 'use client';
 
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -65,17 +63,15 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     {
       header: 'Valid until',
       cell: (q) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Created',
       cell: (q) => (
-        <Text size="sm" variant="muted">
-          {new Date(q.createdAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(q.createdAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -87,21 +83,19 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
         'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
       ),
     subtitle: (q) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {q.validUntil ? `Valid until ${new Date(q.validUntil).toLocaleDateString()}` : 'No expiry'}
-      </Text>
+      </p>
     ),
     badge: statusBadge,
     body: (q) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {new Date(q.createdAt).toLocaleDateString()}
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {totalText(q)}
-          </Text>
-        </Stack>
+          </p>
+          <p className="text-sm tabular-nums">{totalText(q)}</p>
+        </div>
       </>
     ),
   };

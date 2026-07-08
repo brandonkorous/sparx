@@ -17,7 +17,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arrayMove } from '@dnd-kit/sortable';
 import { History, Minus, Plus, Workflow } from 'lucide-react';
-import { Button, cn, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { cn, toast, useConfirm } from '@sparx/ui';
 import type { Action, AutomationStatus, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 
 import { actionDef, availableActions } from '../_lib/catalog';
@@ -487,13 +488,13 @@ export function AutomationEditor({ enabledModules, initial }: Props) {
                 type="button"
                 variant={showHistory ? 'soft' : 'ghost'}
                 color="module"
-                leftIcon={<History className="h-4 w-4" />}
+                iconStart={<History className="h-4 w-4" />}
                 onClick={toggleHistory}
               >
                 History
               </Button>
-              <Button variant="ghost" asChild>
-                <Link href={cancelHref}>Close</Link>
+              <Button variant="ghost" render={<Link href={cancelHref} />}>
+                Close
               </Button>
               <Button
                 type="button"
@@ -516,8 +517,8 @@ export function AutomationEditor({ enabledModules, initial }: Props) {
             </>
           ) : (
             <>
-              <Button variant="ghost" asChild>
-                <Link href={cancelHref}>Cancel</Link>
+              <Button variant="ghost" render={<Link href={cancelHref} />}>
+                Cancel
               </Button>
               <Button color="module" loading={pending} disabled={pending} onClick={onCreate}>
                 Create automation

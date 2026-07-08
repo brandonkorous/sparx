@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { archiveWarehouseAction } from '../../../_lib/inventory-actions';
 
@@ -36,20 +36,12 @@ export function WarehouseArchiveButton({
   }
 
   if (!isActive) {
-    return (
-      <Text size="xs" variant="muted">
-        Already inactive
-      </Text>
-    );
+    return <p className="text-base-content/70 text-xs">Already inactive</p>;
   }
 
   return (
     <div className="flex items-center gap-2">
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
       {armed ? (
         <>
           <Button variant="ghost" size="sm" onClick={() => setArmed(false)} disabled={pending}>

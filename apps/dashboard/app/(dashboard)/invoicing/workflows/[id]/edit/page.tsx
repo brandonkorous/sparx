@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
-import { Button, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -37,10 +38,15 @@ export default async function EditWorkflowPage({ params }: PageProps) {
   const stages = workflow.stages.slice().sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-8">
-        <Button asChild variant="ghost" size="sm" leftIcon={<ArrowLeft className="h-4 w-4" />}>
-          <Link href="/invoicing/workflows">All workflows</Link>
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
+        <Button
+          variant="ghost"
+          size="sm"
+          iconStart={<ArrowLeft className="h-4 w-4" />}
+          render={<Link href="/invoicing/workflows" />}
+        >
+          All workflows
         </Button>
         <PageHeader
           title={workflow.name}
@@ -55,7 +61,7 @@ export default async function EditWorkflowPage({ params }: PageProps) {
             stages,
           }}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

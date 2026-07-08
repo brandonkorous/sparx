@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { History } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import type { AutomationDto, RunDto } from '../../_lib/types';
@@ -32,8 +33,8 @@ export default async function AutomationRunsPage({ params }: PageProps) {
   const runs = await api.get<RunDto[]>(`/v1/automations/${id}/runs?limit=100`).catch(() => []);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<History className="h-5 w-5" />}
           title={`Runs · ${automation.name}`}
@@ -48,7 +49,7 @@ export default async function AutomationRunsPage({ params }: PageProps) {
         />
 
         {runs.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<History className="h-5 w-5" />}
               title="No runs yet"
@@ -56,39 +57,39 @@ export default async function AutomationRunsPage({ params }: PageProps) {
             />
           </Card>
         ) : (
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             {runs.map((run) => (
               <Link
                 key={run.id}
                 href={`/automations/${automation.id}/runs/${run.id}`}
                 className="block rounded-md border border-[var(--color-border-default)] px-4 py-3 hover:bg-[var(--color-bg-subtle)]"
               >
-                <Stack direction="row" align="center" justify="between" wrap gap={3}>
-                  <Stack direction="row" align="center" gap={3}>
+                <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-row items-center gap-3">
                     <RunStatusBadge status={run.status} />
-                    <Text size="sm" variant="muted">
+                    <span className="text-base-content/70 text-sm">
                       Started {formatTimestamp(run.startedAt)}
-                    </Text>
-                  </Stack>
-                  <Stack direction="row" align="center" gap={4}>
+                    </span>
+                  </div>
+                  <div className="flex flex-row items-center gap-4">
                     {run.errorMessage && (
-                      <Text size="sm" variant="danger" className="max-w-md truncate">
+                      <span className="text-danger max-w-md truncate text-sm">
                         {run.errorMessage}
-                      </Text>
+                      </span>
                     )}
-                    <Text size="sm" variant="muted">
+                    <span className="text-base-content/70 text-sm">
                       {run.completedAt ? `Done ${formatTimestamp(run.completedAt)}` : 'In progress'}
-                    </Text>
-                    <Text size="sm" variant="muted">
+                    </span>
+                    <span className="text-base-content/70 text-sm">
                       {run.actionsTotal} step{run.actionsTotal === 1 ? '' : 's'}
-                    </Text>
-                  </Stack>
-                </Stack>
+                    </span>
+                  </div>
+                </div>
               </Link>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

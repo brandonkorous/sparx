@@ -3,23 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createWarehouseAction } from '../../_lib/inventory-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -179,16 +164,12 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Stack gap={6}>
-            <Card variant="default">
-              <CardHeader>
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody>
                 <CardTitle>Basics</CardTitle>
-                <CardDescription>
-                  Name shows in the dashboard; code is the SKU prefix.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={4}>
+                <p className="opacity-70">Name shows in the dashboard; code is the SKU prefix.</p>
+                <div className="flex flex-col gap-4">
                   <Field
                     label="Name"
                     id="name"
@@ -206,7 +187,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                     hint="A-Z, 0-9, _, -. Used as the SKU prefix. Examples: MAIN, EAST, 3PL-NYC."
                     error={fieldErrors.code}
                   />
-                  <Stack gap={1}>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="type">Type</Label>
                     <NativeSelect id="type" value={type} onChange={(e) => setType(e.target.value)}>
                       {TYPES.map((t) => (
@@ -215,24 +196,22 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       `dropship` warehouses are populated by supplier feeds; `virtual` is a
                       placeholder for digital-only catalogs.
-                    </Text>
-                  </Stack>
-                </Stack>
-              </CardContent>
+                    </p>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardHeader>
+            <Card>
+              <CardBody>
                 <CardTitle>Address</CardTitle>
-                <CardDescription>
+                <p className="opacity-70">
                   Country is required and ISO 3166-1 alpha-2 (US, CA, GB…).
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={4}>
+                </p>
+                <div className="flex flex-col gap-4">
                   <Field
                     label="Line 1"
                     id="line1"
@@ -242,7 +221,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                     error={fieldErrors['address.line1']}
                   />
                   <Field label="Line 2" id="line2" value={line2} onChange={setLine2} />
-                  <Stack direction="row" gap={3} wrap>
+                  <div className="flex flex-row flex-wrap gap-3">
                     <Field
                       label="City"
                       id="city"
@@ -277,50 +256,48 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                       className="flex-1"
                       error={fieldErrors['address.country']}
                     />
-                  </Stack>
-                </Stack>
-              </CardContent>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardHeader>
+            <Card>
+              <CardBody>
                 <CardTitle>Default channels</CardTitle>
-                <CardDescription>
+                <p className="opacity-70">
                   When a cart on the named channel has no explicit warehouse, the picker uses this
                   as a fallback. Optional — leave empty if you want every channel routed the same
                   way.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={2}>
+                </p>
+                <div className="flex flex-col gap-2">
                   {CHANNELS.map((c) => (
                     <label key={c} className="flex items-center gap-2">
                       <Checkbox
                         color="module"
                         checked={!!channels[c]}
-                        onCheckedChange={(v) =>
-                          setChannels((prev) => ({ ...prev, [c]: v === true }))
+                        onChange={(e) =>
+                          setChannels((prev) => ({ ...prev, [c]: e.target.checked }))
                         }
                       />
-                      <Text size="sm">{c}</Text>
+                      <p className="text-sm">{c}</p>
                     </label>
                   ))}
                   <label className="flex items-center gap-2 pt-2">
                     <Checkbox
                       color="module"
                       checked={isActive}
-                      onCheckedChange={(v) => setIsActive(v === true)}
+                      onChange={(e) => setIsActive(e.target.checked)}
                     />
-                    <Text size="sm">Active</Text>
+                    <p className="text-sm">Active</p>
                   </label>
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
-          </Stack>
+          </div>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -352,7 +329,7 @@ function Field({
   className?: string;
 }) {
   return (
-    <Stack gap={1} className={className}>
+    <div className={`flex flex-col gap-1${className ? ` ${className}` : ''}`}>
       <Label htmlFor={id}>
         {label}
         {required && <span className="text-[var(--color-danger)]">*</span>}
@@ -364,16 +341,8 @@ function Field({
         maxLength={maxLength}
         placeholder={placeholder}
       />
-      {hint && (
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      )}
-      {error && (
-        <Text size="xs" variant="danger">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {hint && <p className="text-base-content/70 text-xs">{hint}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
+    </div>
   );
 }

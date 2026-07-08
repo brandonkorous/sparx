@@ -2,23 +2,17 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
+  CardActions,
+  CardBody,
   Checkbox,
-  Heading,
   Input,
   Label,
-  Stack,
-  Text,
   Textarea,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteContentType, updateContentType } from '../../actions';
 
@@ -112,26 +106,28 @@ export function SchemaEditor({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={5}>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Identity</Heading>
-            <CardDescription>
-              The key is immutable. Name and labels can change freely.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack direction="row" gap={3}>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="name" required>
-                    Name
+      <div className="flex flex-col gap-5">
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Identity</h3>
+            <p className="opacity-70">The key is immutable. Name and labels can change freely.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row gap-3">
+                <div className="flex flex-1 flex-col gap-1">
+                  <Label htmlFor="name">
+                    Name{' '}
+                    <span className="text-error" aria-hidden="true">
+                      *
+                    </span>
                   </Label>
                   <Input id="name" name="name" defaultValue={initial.name} required aria-required />
-                </Stack>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="plural_name" required>
-                    Plural
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
+                  <Label htmlFor="plural_name">
+                    Plural{' '}
+                    <span className="text-error" aria-hidden="true">
+                      *
+                    </span>
                   </Label>
                   <Input
                     id="plural_name"
@@ -140,9 +136,9 @@ export function SchemaEditor({
                     required
                     aria-required
                   />
-                </Stack>
-              </Stack>
-              <Stack gap={1}>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
@@ -150,9 +146,9 @@ export function SchemaEditor({
                   defaultValue={initial.description}
                   rows={2}
                 />
-              </Stack>
-              <Stack direction="row" gap={3}>
-                <Stack gap={1} className="flex-1">
+              </div>
+              <div className="flex flex-row gap-3">
+                <div className="flex flex-1 flex-col gap-1">
                   <Label htmlFor="url_pattern">URL pattern</Label>
                   <Input
                     id="url_pattern"
@@ -160,35 +156,31 @@ export function SchemaEditor({
                     defaultValue={initial.urlPattern}
                     placeholder="/case-studies/{slug}"
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="is_singleton">Singleton</Label>
-                  <Stack direction="row" align="center" gap={2}>
+                  <div className="flex flex-row items-center gap-2">
                     <Checkbox
                       id="is_singleton"
                       checked={isSingleton}
-                      onCheckedChange={(next) => setIsSingleton(next === true)}
+                      onChange={(e) => setIsSingleton(e.target.checked)}
                     />
-                    <Text size="xs" variant="muted">
-                      Only one entry can exist.
-                    </Text>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </Stack>
-          </CardContent>
+                    <p className="text-base-content/70 text-xs">Only one entry can exist.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardBody>
         </Card>
 
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Schema JSON</Heading>
-            <CardDescription>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Schema JSON</h3>
+            <p className="opacity-70">
               Same FieldDef union the platform validators use. Saving an invalid schema gets
               rejected with the validation error.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+            </p>
+            <div className="flex flex-col gap-2">
               <Textarea
                 value={schemaText}
                 onChange={(e) => setSchemaText(e.target.value)}
@@ -197,45 +189,46 @@ export function SchemaEditor({
                 aria-label="Schema JSON"
               />
               {hint && (
-                <Text
-                  size="xs"
-                  variant={hint.startsWith('Looks good') ? 'muted' : 'danger'}
+                <p
+                  className={`text-xs ${
+                    hint.startsWith('Looks good') ? 'text-base-content/70' : 'text-danger'
+                  }`}
                   aria-live="polite"
                 >
                   {hint}
-                </Text>
+                </p>
               )}
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            <Stack direction="row" align="center" gap={3}>
-              <Button
-                type="submit"
-                color="module"
-                leftIcon={<Save className="h-4 w-4" />}
-                disabled={pending}
-                loading={pending}
-              >
-                Save schema
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                leftIcon={<Trash2 className="h-4 w-4" />}
-                onClick={handleDelete}
-                disabled={pending}
-              >
-                Delete type
-              </Button>
-              {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                  {error}
-                </Text>
-              )}
-            </Stack>
-          </CardFooter>
+            </div>
+            <CardActions>
+              <div className="flex flex-row items-center gap-3">
+                <Button
+                  type="submit"
+                  color="module"
+                  iconStart={<Save className="h-4 w-4" />}
+                  disabled={pending}
+                  loading={pending}
+                >
+                  Save schema
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  iconStart={<Trash2 className="h-4 w-4" />}
+                  onClick={handleDelete}
+                  disabled={pending}
+                >
+                  Delete type
+                </Button>
+                {error && (
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                    {error}
+                  </p>
+                )}
+              </div>
+            </CardActions>
+          </CardBody>
         </Card>
-      </Stack>
+      </div>
     </form>
   );
 }

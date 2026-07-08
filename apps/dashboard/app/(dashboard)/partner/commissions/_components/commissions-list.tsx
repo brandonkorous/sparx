@@ -1,9 +1,8 @@
 'use client';
 
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   SelectionList,
-  Text,
   statusLabel,
   statusTone,
   type SelectionCard,
@@ -55,15 +54,13 @@ export function CommissionsList({
 
   const card: SelectionCard<PartnerCommission> = {
     title: (c) => (
-      <Text size="sm" className="font-medium tabular-nums">
-        {fmtMoneyCents(c.amountCents, c.currency)}
-      </Text>
+      <p className="text-sm font-medium tabular-nums">{fmtMoneyCents(c.amountCents, c.currency)}</p>
     ),
     subtitle: (c) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {c.kind === 'ongoing' ? 'Ongoing' : 'First payment'}
         {c.period ? ` · ${c.period}` : ''} · {fmtDate(c.createdAt) ?? '—'}
-      </Text>
+      </p>
     ),
     badge: statusBadge,
   };

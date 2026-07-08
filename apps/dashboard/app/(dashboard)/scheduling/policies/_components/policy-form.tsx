@@ -13,21 +13,14 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Grid,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
   Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import type { BookingPolicy, DepositType, FeeType } from '../../_lib/types';
 import { createBookingPolicyAction, updateBookingPolicyAction } from '../../_lib/actions';
@@ -202,12 +195,10 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardHeader>
+      <Card>
+        <CardBody className="py-6">
           <CardTitle>Policy terms</CardTitle>
-        </CardHeader>
-        <CardContent className="py-6">
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div>
               <Label htmlFor="pol-name">Name</Label>
               <Input
@@ -235,7 +226,7 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
             </div>
 
             {showDepositAmount ? (
-              <Grid cols={2} gap={3}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label htmlFor="pol-dep-amt">Deposit amount ($)</Label>
                   <Input
@@ -258,7 +249,7 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
                     onChange={(e) => setDepositPercent(Number(e.target.value) || 0)}
                   />
                 </div>
-              </Grid>
+              </div>
             ) : null}
 
             <div>
@@ -309,8 +300,8 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
                 placeholder="Please give at least 24 hours notice to cancel or reschedule."
               />
             </div>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -369,7 +360,7 @@ function FeeField({
   onValue: (n: number) => void;
 }) {
   return (
-    <Grid cols={2} gap={3}>
+    <div className="grid grid-cols-2 gap-3">
       <div>
         <Label>{label}</Label>
         <NativeSelect value={mode} onChange={(e) => onMode(e.target.value as FeeMode)}>
@@ -390,6 +381,6 @@ function FeeField({
           />
         </div>
       ) : null}
-    </Grid>
+    </div>
   );
 }

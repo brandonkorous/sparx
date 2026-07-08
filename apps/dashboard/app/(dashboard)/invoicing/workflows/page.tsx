@@ -1,17 +1,8 @@
 import Link from 'next/link';
 import { GitBranch, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -37,8 +28,8 @@ export default async function InvoicingWorkflowsPage() {
   const workflows = await api.get<WorkflowRow[]>('/v1/invoicing/workflows');
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<GitBranch className="h-5 w-5" />}
           title="Workflows"
@@ -61,69 +52,72 @@ export default async function InvoicingWorkflowsPage() {
         />
 
         {workflows.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<GitBranch className="h-5 w-5" />}
-              title="No workflows yet"
-              description="Create a workflow to define the stages your documents move through."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<GitBranch className="h-5 w-5" />}
+                title="No workflows yet"
+                description="Create a workflow to define the stages your documents move through."
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={3}>
+          <div className="flex flex-col gap-3">
             {workflows.map((wf) => {
               const stages = wf.stages.slice().sort((a, b) => a.sortOrder - b.sortOrder);
               return (
-                <Card key={wf.id} variant="default">
-                  <CardContent className="py-4">
-                    <Stack direction="row" align="center" justify="between" gap={3} wrap>
-                      <Stack gap={2} className="min-w-0">
-                        <Stack direction="row" align="center" gap={2} wrap>
-                          <Text className="font-medium">{wf.name}</Text>
+                <Card key={wf.id}>
+                  <CardBody className="py-4">
+                    <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+                      <div className="flex min-w-0 flex-col gap-2">
+                        <div className="flex flex-row flex-wrap items-center gap-2">
+                          <p className="font-medium">{wf.name}</p>
                           {wf.isDefault && (
                             <Badge color="module" variant="soft" className="text-xs">
                               Default
                             </Badge>
                           )}
-                          <Text size="xs" variant="muted">
-                            {wf.slug}
-                          </Text>
-                        </Stack>
-                        <Stack direction="row" align="center" gap={2} wrap>
+                          <p className="text-base-content/70 text-xs">{wf.slug}</p>
+                        </div>
+                        <div className="flex flex-row flex-wrap items-center gap-2">
                           {stages.length === 0 ? (
-                            <Text size="xs" variant="muted">
-                              No stages yet
-                            </Text>
+                            <p className="text-base-content/70 text-xs">No stages yet</p>
                           ) : (
                             stages.map((s, i) => (
-                              <Stack key={s.id} direction="row" align="center" gap={2}>
+                              <div key={s.id} className="flex flex-row items-center gap-2">
                                 <Badge color="neutral" variant="soft" size="sm">
                                   {s.customerLabel}
                                 </Badge>
                                 {i < stages.length - 1 && (
                                   <span className="text-[var(--color-text-tertiary)]">→</span>
                                 )}
-                              </Stack>
+                              </div>
                             ))
                           )}
-                        </Stack>
-                      </Stack>
-                      <Button asChild variant="outline" size="sm" color="module">
-                        <Link href={`/invoicing/workflows/${wf.id}/edit`}>Edit</Link>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        color="module"
+                        render={<Link href={`/invoicing/workflows/${wf.id}/edit`} />}
+                      >
+                        Edit
                       </Button>
-                    </Stack>
-                  </CardContent>
+                    </div>
+                  </CardBody>
                 </Card>
               );
             })}
-          </Stack>
+          </div>
         )}
 
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           Stages key off a semantic <strong>type</strong> (draft, open, committed, final, paid,
           void) that drives behavior — the label stays yours, so the same engine serves estimates,
           work orders, invoices and tickets.
-        </Text>
-      </Stack>
-    </Container>
+        </p>
+      </div>
+    </div>
   );
 }

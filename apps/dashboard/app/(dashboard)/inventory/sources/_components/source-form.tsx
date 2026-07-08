@@ -2,28 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
-  Text,
-  Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Input, Label, Select, Textarea } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import { createSource, updateSource } from '../_lib/actions';
 import {
@@ -192,12 +172,10 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardHeader>
+      <Card>
+        <CardBody className="py-6">
           <CardTitle>Connection</CardTitle>
-        </CardHeader>
-        <CardContent className="py-6">
-          <Stack gap={5}>
+          <div className="flex flex-col gap-5">
             <div>
               <Label htmlFor="src-name">
                 Name <span className="text-[var(--color-danger)]">*</span>
@@ -211,21 +189,14 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
             </div>
 
             {!source && (
-              <Stack gap={1}>
+              <div className="flex flex-col gap-1">
                 <Label>Source type</Label>
-                <Select value={type} onValueChange={setType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TYPE_OPTIONS.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Stack>
+                <Select
+                  value={type}
+                  onValueChange={(v) => setType(v as string)}
+                  items={TYPE_OPTIONS}
+                />
+              </div>
             )}
 
             {type === 'csv' && (
@@ -240,11 +211,11 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
                   value={csvUrl}
                   onChange={(e) => setCsvUrl(e.target.value)}
                 />
-                <Text size="xs" variant="muted" className="mt-1">
+                <p className="text-base-content/70 mt-1 text-xs">
                   Required columns: <span className="font-mono">sku</span>,{' '}
                   <span className="font-mono">quantity</span>. Optional:{' '}
                   <span className="font-mono">location</span>.
-                </Text>
+                </p>
               </div>
             )}
 
@@ -253,37 +224,25 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
             )}
 
             {type === 'agent' && (
-              <Stack
-                gap={2}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3"
-              >
-                <Text size="sm" weight="medium">
-                  On-prem bridge agent
-                </Text>
-                <Text size="xs" variant="muted">
+              <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3">
+                <p className="text-sm font-medium">On-prem bridge agent</p>
+                <p className="text-base-content/70 text-xs">
                   For an ERP whose API only lives on your local network (e.g. Fishbowl). After
                   creating this source, open it and choose{' '}
                   <span className="font-medium">Pair agent</span> to mint a key, then install the
                   sparx Inventory Bridge on a machine on your network.
-                </Text>
-              </Stack>
+                </p>
+              </div>
             )}
 
-            <Stack gap={1}>
+            <div className="flex flex-col gap-1">
               <Label>Sync interval</Label>
-              <Select value={interval} onValueChange={setInterval}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {INTERVAL_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Stack>
+              <Select
+                value={interval}
+                onValueChange={(v) => setInterval(v as string)}
+                items={INTERVAL_OPTIONS}
+              />
+            </div>
 
             <div>
               <Label htmlFor="src-notes">Internal notes</Label>
@@ -297,12 +256,12 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
             </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

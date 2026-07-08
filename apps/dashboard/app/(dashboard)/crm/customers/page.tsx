@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Users, Plus, UserPlus } from 'lucide-react';
 
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Button, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
@@ -137,8 +138,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
     : [];
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           className="mb-0"
           icon={<Users className="h-5 w-5" />}
@@ -151,8 +152,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
           description="Customer intelligence for the whole platform — orders, segments, deals, and activity."
           actions={
             <>
-              <Button asChild variant="outline">
-                <Link href="/crm/duplicates">Find duplicates</Link>
+              <Button variant="outline" render={<Link href="/crm/duplicates" />}>
+                Find duplicates
               </Button>
               <CustomersImportExport />
               <EntityCreateButton
@@ -176,12 +177,12 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
         />
 
         {customers.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<UserPlus className="h-5 w-5" />}
               title="No customers match"
               description="Adjust the filters above, or add a new customer manually."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="customer"
                   newHref="/crm/customers/new"
@@ -198,8 +199,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

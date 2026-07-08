@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardContent, Checkbox, Heading, Label, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody, Checkbox, Label } from 'silicaui-react';
 
 import { clearRecallAction, initiateRecallAction } from '../../../_lib/lot-actions';
 
@@ -57,51 +57,43 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
 
   if (open) {
     return (
-      <Stack gap={2} align="end">
+      <div className="flex flex-col items-end gap-2">
         {armedClear ? (
-          <Stack direction="row" gap={1} align="center">
+          <div className="flex flex-row items-center gap-1">
             <Button variant="ghost" size="sm" disabled={busy} onClick={() => setArmedClear(false)}>
               Keep
             </Button>
             <Button color="warning" size="sm" disabled={busy} onClick={clear}>
               {busy ? 'Clearing…' : 'Confirm clear'}
             </Button>
-          </Stack>
+          </div>
         ) : (
           <Button variant="outline" size="sm" onClick={() => setArmedClear(true)}>
             Clear recall
           </Button>
         )}
-        {error && (
-          <Text size="xs" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-      </Stack>
+        {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      </div>
     );
   }
 
   if (!recalling) {
     return (
-      <Stack gap={2} align="end">
+      <div className="flex flex-col items-end gap-2">
         <Button color="danger" size="sm" onClick={() => setRecalling(true)}>
           Recall lot
         </Button>
-        {error && (
-          <Text size="xs" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-      </Stack>
+        {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      </div>
     );
   }
 
   return (
     <Card className="w-full max-w-md">
-      <CardContent>
-        <Stack gap={3}>
-          <Heading level={4}>Recall this lot</Heading>
-          <Stack gap={1}>
+      <CardBody>
+        <div className="flex flex-col gap-3">
+          <h4 className="text-lg font-semibold">Recall this lot</h4>
+          <div className="flex flex-col gap-1">
             <Label htmlFor="recall-reason">Reason</Label>
             <textarea
               id="recall-reason"
@@ -111,30 +103,26 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
               className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
               placeholder="What's wrong with this batch?"
             />
-          </Stack>
+          </div>
           <label className="flex items-center gap-2 text-sm">
             <Checkbox
               color="module"
               checked={notify}
-              onCheckedChange={(v) => setNotify(v === true)}
+              onChange={(e) => setNotify(e.target.checked)}
             />
             Flag affected customers to notify
           </label>
-          {error && (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
-          <Stack direction="row" gap={2} justify="end">
+          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          <div className="flex flex-row justify-end gap-2">
             <Button variant="ghost" size="sm" disabled={busy} onClick={() => setRecalling(false)}>
               Cancel
             </Button>
             <Button color="danger" size="sm" disabled={busy} onClick={recall}>
               {busy ? 'Recalling…' : 'Recall lot'}
             </Button>
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

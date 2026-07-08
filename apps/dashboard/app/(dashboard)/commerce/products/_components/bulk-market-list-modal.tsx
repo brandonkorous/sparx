@@ -9,22 +9,14 @@ import * as React from 'react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Label,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { bulkSetProductMarketStateAction } from '../../product-actions';
 
@@ -70,44 +62,39 @@ export function BulkMarketListModal({ open, onOpenChange, productIds, onListed }
   const count = productIds.length;
 
   return (
-    <Modal open={open} onOpenChange={handleOpenChange}>
-      <ModalContent>
-        <ModalHeader>
-          <ModalTitle>List on sparx.market</ModalTitle>
-          <ModalDescription>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        <div>
+          <DialogTitle>List on sparx.market</DialogTitle>
+          <DialogDescription>
             List {count} product{count === 1 ? '' : 's'} on the first-party marketplace. Pick the
             category they belong in.
-          </ModalDescription>
-        </ModalHeader>
-        <Stack gap={2} className="px-6 py-2">
+          </DialogDescription>
+        </div>
+        <div className="flex flex-col gap-2 px-6 py-2">
           <Label htmlFor="bulk-market-category">Category</Label>
-          <Select value={category} onValueChange={setCategory} disabled={busy}>
-            <SelectTrigger id="bulk-market-category">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {MARKET_CATEGORIES.map((c) => (
-                <SelectItem key={c.slug} value={c.slug}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Select
+            id="bulk-market-category"
+            value={category}
+            onValueChange={(v) => setCategory(v as string)}
+            disabled={busy}
+            items={Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name]))}
+          />
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
+            <p className="text-danger text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
-        </Stack>
-        <ModalFooter>
+        </div>
+        <div className="mt-4 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={busy}>
             Cancel
           </Button>
           <Button color="module" onClick={() => void onConfirm()} loading={busy} disabled={busy}>
             List {count} product{count === 1 ? '' : 's'}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

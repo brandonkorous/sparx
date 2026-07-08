@@ -1,16 +1,7 @@
 import { Settings2 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -68,8 +59,8 @@ export default async function CommerceSiteSettingsPage() {
   };
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Settings2 className="h-5 w-5" />}
           title="Storefront settings"
@@ -78,23 +69,21 @@ export default async function CommerceSiteSettingsPage() {
         />
 
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Defaults</Heading>
-              <CardDescription>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Defaults</h3>
+              <p className="opacity-70">
                 Currency + locale + default warehouse get picked up by new carts, new orders, and
                 checkout sessions. Existing rows keep their frozen values.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+              </p>
+            </div>
             <CommerceSiteSettingsForm
               initial={initialForForm}
               warehouses={warehouses.map((w) => ({ id: w.id, name: w.name, code: w.code }))}
             />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

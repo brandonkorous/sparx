@@ -1,9 +1,8 @@
 'use client';
 
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   SelectionList,
-  Text,
   statusLabel,
   statusTone,
   type SelectionCard,
@@ -45,22 +44,18 @@ export function PayoutsList({ rows, view }: { rows: PartnerPayoutRun[]; view: 't
 
   const card: SelectionCard<PartnerPayoutRun> = {
     title: (p) => (
-      <Text size="sm" className="font-medium tabular-nums">
-        {fmtMoneyCents(p.amountCents, p.currency)}
-      </Text>
+      <p className="text-sm font-medium tabular-nums">{fmtMoneyCents(p.amountCents, p.currency)}</p>
     ),
     subtitle: (p) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {fmtDateRange(p.periodStart, p.periodEnd)} · {p.commissionCount} commission
         {p.commissionCount === 1 ? '' : 's'}
-      </Text>
+      </p>
     ),
     badge: statusBadge,
     body: (p) =>
       p.status === 'failed' && p.failureReason ? (
-        <Text size="xs" variant="danger">
-          {p.failureReason}
-        </Text>
+        <p className="text-danger text-xs">{p.failureReason}</p>
       ) : null,
   };
 

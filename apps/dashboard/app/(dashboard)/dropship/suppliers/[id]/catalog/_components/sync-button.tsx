@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { RefreshCw } from 'lucide-react';
 import { syncSupplier } from '../../../_lib/actions';
 
@@ -22,6 +22,7 @@ export function SyncButton({ supplierId }: Props) {
         variant="outline"
         size="sm"
         disabled={pending}
+        iconStart={<RefreshCw className={`h-4 w-4 ${pending ? 'animate-spin' : ''}`} />}
         onClick={() =>
           startSync(async () => {
             setSyncError(null);
@@ -34,14 +35,9 @@ export function SyncButton({ supplierId }: Props) {
           })
         }
       >
-        <RefreshCw className={`mr-1 h-4 w-4 ${pending ? 'animate-spin' : ''}`} />
         {pending ? 'Syncing…' : 'Sync now'}
       </Button>
-      {syncError && (
-        <Text size="xs" className="text-right text-[var(--color-danger)]">
-          {syncError}
-        </Text>
-      )}
+      {syncError && <p className="text-right text-xs text-[var(--color-danger)]">{syncError}</p>}
     </div>
   );
 }

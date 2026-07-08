@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Database } from 'lucide-react';
 
-import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -50,23 +50,26 @@ export async function SourceDetailContent({ id }: { id: string }) {
         : null;
 
   return (
-    <Stack gap={6}>
-      <Button variant="ghost" size="sm" asChild className="self-start">
-        <Link href="/inventory/sources">
-          <ArrowLeft className="mr-1 size-4" /> Sources
-        </Link>
+    <div className="flex flex-col gap-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        render={<Link href="/inventory/sources" />}
+        className="self-start"
+      >
+        <ArrowLeft className="mr-1 size-4" /> Sources
       </Button>
 
-      <Stack direction="row" align="start" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Database className="h-5 w-5" />
-            <Heading level={1}>{source.name}</Heading>
+            <h1 className="text-3xl font-semibold">{source.name}</h1>
             <Badge color={sourceStatusColor(source.status)} variant="soft">
               {source.status}
             </Badge>
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {SOURCE_TYPE_LABEL[source.type] ?? source.type}
             {endpoint ? (
               <>
@@ -74,15 +77,15 @@ export async function SourceDetailContent({ id }: { id: string }) {
                 <span className="font-mono">{endpoint}</span>
               </>
             ) : null}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <SourceDetailActions source={source} />
-      </Stack>
+      </div>
 
       {source.type === 'agent' ? <AgentPanel sourceId={id} health={health} /> : null}
       <SyncHealthPanel health={health} />
       <UnmappedQueue sourceId={id} rows={unmapped.data} warehouses={warehouses.data} />
       <MappingsPanel sourceId={id} links={links.data} warehouses={warehouses.data} />
-    </Stack>
+    </div>
   );
 }

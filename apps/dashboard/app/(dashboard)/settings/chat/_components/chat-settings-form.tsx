@@ -6,18 +6,8 @@
 // schedule via the config blob; a richer scheduler UI is a future iteration).
 
 import { useState, useTransition } from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Stack,
-  Switch,
-  Textarea,
-  useConfirm,
-} from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Input, Switch, Textarea } from 'silicaui-react';
 import { Trash2 } from 'lucide-react';
 
 import {
@@ -83,13 +73,11 @@ export function ChatSettingsForm({
   }
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Widget</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <label htmlFor="chat-ai-enabled" className="flex items-center justify-between gap-4">
               <span>
                 <span className="block text-sm font-medium">AI first responses</span>
@@ -164,16 +152,14 @@ export function ChatSettingsForm({
                 <span className="text-xs text-[var(--color-text-secondary)]">Saved {savedAt}</span>
               ) : null}
             </div>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Quick replies</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             {replies.length === 0 ? (
               <p className="text-sm text-[var(--color-text-secondary)]">No quick replies yet.</p>
             ) : (
@@ -235,9 +221,9 @@ export function ChatSettingsForm({
                 Add quick reply
               </Button>
             </div>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

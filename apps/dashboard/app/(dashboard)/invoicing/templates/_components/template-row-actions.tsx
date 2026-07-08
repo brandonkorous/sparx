@@ -9,16 +9,14 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, Eye, MoreHorizontal, Star, Trash2 } from 'lucide-react';
 
+import { useConfirm } from '@sparx/ui';
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Stack,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import {
   publishTemplateAction,
@@ -63,48 +61,46 @@ export function TemplateRowActions({ id, name, isDefault, published }: Props) {
   }
 
   return (
-    <Stack direction="row" align="center" justify="end" gap={2}>
+    <div className="flex flex-row items-center justify-end gap-2">
       {error && (
-        <Text size="xs" variant="danger" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
       <Button
-        asChild
         variant="ghost"
         size="sm"
-        leftIcon={<Eye className="h-3.5 w-3.5" />}
+        iconStart={<Eye className="h-3.5 w-3.5" />}
         disabled={pending}
+        render={<a href={`/invoicing/templates/${id}/preview`} target="_blank" rel="noreferrer" />}
       >
-        <a href={`/invoicing/templates/${id}/preview`} target="_blank" rel="noreferrer">
-          Preview
-        </a>
+        Preview
       </Button>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button variant="ghost" size="sm" shape="square" disabled={pending} aria-label="More">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => run(() => publishTemplateAction(id))}>
+          <DropdownMenuItem onClick={() => run(() => publishTemplateAction(id))}>
             <CheckCircle className="mr-2 h-4 w-4" />
             {published ? 'Re-publish draft' : 'Publish'}
           </DropdownMenuItem>
           {!isDefault && (
-            <DropdownMenuItem onSelect={() => run(() => setDefaultTemplateAction(id))}>
+            <DropdownMenuItem onClick={() => run(() => setDefaultTemplateAction(id))}>
               <Star className="mr-2 h-4 w-4" />
               Make default
             </DropdownMenuItem>
           )}
           {!isDefault && (
-            <DropdownMenuItem onSelect={() => void onDelete()}>
+            <DropdownMenuItem onClick={() => void onDelete()}>
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-    </Stack>
+    </div>
   );
 }

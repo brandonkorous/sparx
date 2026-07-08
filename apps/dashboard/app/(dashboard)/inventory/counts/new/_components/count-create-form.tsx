@@ -8,22 +8,15 @@ import { Plus, Warehouse as WarehouseIcon } from 'lucide-react';
 import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   CardTitle,
   EmptyState,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  Text,
   Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createInventoryCountAction } from '../../../_lib/count-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
@@ -141,14 +134,18 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
     return (
       <ModuleProvider module="inventory" className="h-full">
         <div className="flex h-full items-center justify-center p-8">
-          <Card padding="none" className="w-full max-w-lg">
+          <Card className="w-full max-w-lg">
             <EmptyState
               icon={<WarehouseIcon className="h-5 w-5" />}
               title="Add a warehouse first"
               description="A count is scoped to one warehouse. Create one, then come back to start counting."
-              action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/warehouses/new">New warehouse</Link>
+              actions={
+                <Button
+                  color="module"
+                  iconStart={<Plus className="h-4 w-4" />}
+                  render={<Link href="/inventory/warehouses/new" />}
+                >
+                  New warehouse
                 </Button>
               }
             />
@@ -187,21 +184,19 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
             onChange={recomputeDirty}
             className="contents"
           >
-            <Stack gap={6}>
+            <div className="flex flex-col gap-6">
               <Card>
-                <CardHeader>
-                  <Stack gap={1}>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
                     <CardTitle>Count details</CardTitle>
-                    <CardDescription>
+                    <p className="opacity-70">
                       A count is scoped to one warehouse. Choose how much to count and the variance
                       value above which a manager must approve before it posts.
-                    </CardDescription>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={4}>
-                    <Stack direction="row" gap={3} wrap>
-                      <Stack gap={1} className="min-w-[14rem] flex-1">
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-row flex-wrap gap-3">
+                      <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
                         <Label htmlFor="warehouseId">Warehouse</Label>
                         <NativeSelect
                           id="warehouseId"
@@ -214,8 +209,8 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
                             </option>
                           ))}
                         </NativeSelect>
-                      </Stack>
-                      <Stack gap={1} className="min-w-[12rem] flex-1">
+                      </div>
+                      <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                         <Label htmlFor="type">Type</Label>
                         <NativeSelect
                           id="type"
@@ -225,24 +220,24 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
                           <option value="cycle">Cycle — chosen SKUs</option>
                           <option value="full">Full — every level in the warehouse</option>
                         </NativeSelect>
-                      </Stack>
-                      <Stack gap={1} className="min-w-[10rem]">
+                      </div>
+                      <div className="flex min-w-[10rem] flex-col gap-1">
                         <Label htmlFor="threshold">Approval over ($)</Label>
                         <Input id="threshold" name="threshold" type="number" placeholder="50.00" />
-                      </Stack>
-                    </Stack>
-                    <Stack gap={1}>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="note">Note</Label>
                       <Textarea id="note" name="note" rows={2} />
-                    </Stack>
+                    </div>
 
                     {error && (
-                      <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                      <p className="text-danger text-sm" role="alert" aria-live="polite">
                         {error}
-                      </Text>
+                      </p>
                     )}
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
 
               {type === 'cycle' ? (
@@ -254,15 +249,15 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
                 />
               ) : (
                 <Card>
-                  <CardContent>
-                    <Text size="sm" variant="muted" className="py-2">
+                  <CardBody>
+                    <p className="text-base-content/70 py-2 text-sm">
                       A full count snapshots every active level in the warehouse — you&apos;ll enter
                       a counted quantity for each on the next screen.
-                    </Text>
-                  </CardContent>
+                    </p>
+                  </CardBody>
                 </Card>
               )}
-            </Stack>
+            </div>
           </form>
         </SurfaceStep>
       </SurfaceFrame>
@@ -283,39 +278,29 @@ function CyclePicker({
 }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack gap={1}>
+      <CardBody>
+        <div className="flex flex-col gap-1">
           <CardTitle>Items to count</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             Add the variants to count by SKU. You can also add more once the count is open.
-          </CardDescription>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
           {variants.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No items yet — add a SKU below, or start empty and add them on the next screen.
-            </Text>
+            </p>
           ) : (
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {variants.map((v) => (
-                <Stack
+                <div
                   key={v.variantId}
-                  direction="row"
-                  align="center"
-                  gap={3}
-                  wrap
-                  className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
                 >
-                  <Stack gap={0} className="min-w-[12rem] flex-1">
-                    <Text size="sm" className="font-medium">
-                      {v.title ?? v.sku}
-                    </Text>
-                    <Text size="xs" variant="muted" className="font-mono">
-                      {v.sku}
-                    </Text>
-                  </Stack>
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                    <p className="text-sm font-medium">{v.title ?? v.sku}</p>
+                    <p className="text-base-content/70 font-mono text-xs">{v.sku}</p>
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -324,13 +309,13 @@ function CyclePicker({
                   >
                     Remove
                   </Button>
-                </Stack>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
           <SkuAddRow onAdd={onAdd} disabled={busy} />
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -366,15 +351,9 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (v: PickedVariant) => void; dis
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="count-add-sku">Variant SKU</Label>
           <Input
             id="count-add-sku"
@@ -388,17 +367,13 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (v: PickedVariant) => void; dis
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="sm" variant="danger">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-danger text-sm">{error}</p>}
+    </div>
   );
 }
 

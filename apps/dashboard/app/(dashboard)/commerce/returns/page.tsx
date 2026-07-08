@@ -1,17 +1,8 @@
 import { Inbox } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -59,8 +50,8 @@ export default async function ReturnsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Inbox className="h-5 w-5" />}
           title="Returns"
@@ -76,13 +67,13 @@ export default async function ReturnsPage({
 
         {items.length === 0 ? (
           <Card>
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>{status ? labelForStatus(status) : 'All returns'}</Heading>
-                <CardDescription>Click an ID to open the inspection queue.</CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">
+                  {status ? labelForStatus(status) : 'All returns'}
+                </h3>
+                <p className="opacity-70">Click an ID to open the inspection queue.</p>
+              </div>
               <EmptyState
                 icon={<Inbox className="h-5 w-5" />}
                 title="No returns"
@@ -92,19 +83,21 @@ export default async function ReturnsPage({
                     : 'Returns are created when customers submit one from /account/orders.'
                 }
               />
-            </CardContent>
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={1}>
-            <Heading level={3}>{status ? labelForStatus(status) : 'All returns'}</Heading>
-            <CardDescription>Click an ID to open the inspection queue.</CardDescription>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">
+              {status ? labelForStatus(status) : 'All returns'}
+            </h3>
+            <p className="opacity-70">Click an ID to open the inspection queue.</p>
             <ReturnsList rows={items} view={view} />
-          </Stack>
+          </div>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

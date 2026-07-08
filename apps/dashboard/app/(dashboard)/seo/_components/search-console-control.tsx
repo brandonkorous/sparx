@@ -8,7 +8,8 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Badge, Button, toast, useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 import { Check, Link2, Plug, RefreshCw } from 'lucide-react';
 
 import {

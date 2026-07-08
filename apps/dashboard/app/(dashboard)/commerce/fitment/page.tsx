@@ -1,6 +1,7 @@
 import { Boxes } from 'lucide-react';
 
-import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -27,8 +28,8 @@ export default async function FitmentReferencePage() {
   ]);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Boxes className="h-5 w-5" />}
           title="Fitment dictionaries"
@@ -48,7 +49,7 @@ export default async function FitmentReferencePage() {
         />
 
         <FitmentManager domains={domains} presets={presets} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

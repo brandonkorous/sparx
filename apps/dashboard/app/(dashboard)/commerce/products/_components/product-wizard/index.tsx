@@ -26,14 +26,15 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
+  CardBody,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
   Switch,
-  Text,
   Textarea,
+} from 'silicaui-react';
+import {
+  ModuleProvider,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -576,8 +577,8 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           <div className="flex flex-col gap-5">
             <div>
               <Label htmlFor="pw-title">Title</Label>
@@ -638,17 +639,17 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                 <option value="digital">Digital download</option>
                 <option value="service">Service / booking</option>
               </NativeSelect>
-              <Text size="sm" variant="muted" className="mt-1.5">
+              <p className="text-base-content/70 mt-1.5 text-sm">
                 Physical ships and tracks stock. Digital and service skip shipping.
-              </Text>
+              </p>
             </div>
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -669,8 +670,8 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextLoading: submitting,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           <div className="flex flex-col gap-5">
             <div>
               <Label htmlFor="pw-sku">SKU</Label>
@@ -723,12 +724,12 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
               />
             </div>
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -748,17 +749,15 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         nextDisabled: submitting,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           <div className="flex flex-col gap-5">
             <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
               <span className="flex flex-col gap-0.5">
-                <Text size="sm" weight="medium">
-                  Track inventory
-                </Text>
-                <Text size="sm" variant="muted">
+                <span className="text-sm font-medium">Track inventory</span>
+                <span className="text-base-content/70 text-sm">
                   Count stock and stop selling at zero. Turn off to always allow purchase.
-                </Text>
+                </span>
               </span>
               <Switch
                 checked={trackInventory}
@@ -813,9 +812,9 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                   </div>
                 </div>
                 {warehouses.length === 0 && (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     No warehouse yet — create one here to seed stock without leaving the wizard.
-                  </Text>
+                  </p>
                 )}
                 <InlineWarehouseCreate onCreated={(id) => refreshWarehouses(id)} />
               </div>
@@ -880,18 +879,18 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                 <option value="radioactive">Radioactive</option>
                 <option value="misc">Other regulated</option>
               </NativeSelect>
-              <Text size="sm" variant="muted" className="mt-1.5">
+              <p className="text-base-content/70 mt-1.5 text-sm">
                 Most products are Standard. Set this only for regulated goods (batteries, aerosols,
                 chemicals) so carriers route them correctly.
-              </Text>
+              </p>
             </div>
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -916,8 +915,8 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         ),
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           <div className="flex flex-col gap-4">
             <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">
               <dt className="text-[var(--color-text-muted)]">Title</dt>
@@ -952,22 +951,22 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
             </dl>
 
             <div className="rounded-xl border border-[var(--color-border-default)] p-4">
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 Next, from the product’s tabs you can add{' '}
                 <span className="text-[var(--color-text-primary)]">variants &amp; options</span>,{' '}
                 <span className="text-[var(--color-text-primary)]">media</span>, and{' '}
                 <span className="text-[var(--color-text-primary)]">fitment</span>. These become
                 guided steps here as the wizard is completed.
-              </Text>
+              </p>
             </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

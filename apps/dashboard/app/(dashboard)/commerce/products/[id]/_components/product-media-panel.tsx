@@ -12,19 +12,8 @@
 
 import * as React from 'react';
 import { ImageIcon, Plus, Star, Trash } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Loading } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import {
   addVariantImageAction,
@@ -163,35 +152,28 @@ export function ProductMediaPanel({
   }
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={3} wrap>
-          <Stack gap={1}>
-            <Heading level={3}>Photos</Heading>
-            <Text variant="muted" size="sm">
+    <Card>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Photos</h3>
+            <p className="text-base-content/70 text-sm">
               Images shown on the product across every variant. Star one as the main image used in
               lists, search, and social shares.
-            </Text>
-          </Stack>
+            </p>
+          </div>
           {images.length > 0 && (
             <Badge color="neutral" variant="soft" size="sm">
               {images.length} {images.length === 1 ? 'photo' : 'photos'}
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
+        </div>
         {loading ? (
-          <Stack
-            direction="row"
-            align="center"
-            gap={2}
-            className="py-8 text-[var(--color-text-muted)]"
-          >
-            <Spinner className="h-4 w-4" /> Loading photos…
-          </Stack>
+          <div className="flex flex-row items-center gap-2 py-8 text-[var(--color-text-muted)]">
+            <Loading className="h-4 w-4" /> Loading photos…
+          </div>
         ) : (
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
               {ordered.map((img) => (
                 <div
@@ -219,7 +201,7 @@ export function ProductMediaPanel({
                         size="sm"
                         onClick={() => void makePrimary(img.id)}
                         disabled={busy}
-                        leftIcon={<Star className="h-3.5 w-3.5" />}
+                        iconStart={<Star className="h-3.5 w-3.5" />}
                       >
                         Star
                       </Button>
@@ -251,21 +233,16 @@ export function ProductMediaPanel({
             </div>
 
             {images.length === 0 && (
-              <Stack
-                direction="row"
-                align="center"
-                gap={2}
-                className="text-[var(--color-text-muted)]"
-              >
+              <div className="flex flex-row items-center gap-2 text-[var(--color-text-muted)]">
                 <ImageIcon className="h-4 w-4" />
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   No photos yet. Add at least one so the product looks its best.
-                </Text>
-              </Stack>
+                </p>
+              </div>
             )}
-          </Stack>
+          </div>
         )}
-      </CardContent>
+      </CardBody>
 
       <MediaPicker
         open={pickerOpen}

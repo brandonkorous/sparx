@@ -1,17 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Package2 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { statusLabel } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -94,38 +85,36 @@ export async function BundleDetailContent({ id }: Props) {
   }));
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Package2 className="h-5 w-5" />
-            <Heading level={1}>{bundle.bundleProductTitle}</Heading>
+            <h1 className="text-3xl font-semibold">{bundle.bundleProductTitle}</h1>
             <Badge color="info" variant="soft" size="sm">
               {statusLabel(bundle.pricingMode)}
             </Badge>
             <Badge color="neutral" variant="soft" size="sm">
               {statusLabel(bundle.inventoryMode)}
             </Badge>
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {bundle.componentCount} component{bundle.componentCount === 1 ? '' : 's'} · updated{' '}
             {new Date(bundle.updatedAt).toLocaleDateString()}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <BundleDeleteButton bundleId={bundle.id} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Configuration</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Configuration</h3>
+            <p className="opacity-70">
               Edit pricing, inventory mode, and component list. Saving replaces the entire component
               list (small + simple beats diffing).
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <BundleEditor
             bundleId={bundle.id}
             products={[]}
@@ -141,8 +130,8 @@ export async function BundleDetailContent({ id }: Props) {
             }
             initialComponents={initialComponents}
           />
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

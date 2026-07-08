@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { ClipboardList, Plus } from 'lucide-react';
 
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Button, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -39,8 +40,8 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<ClipboardList className="h-5 w-5" />}
           title="Purchase orders"
@@ -62,7 +63,7 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
           }
         />
 
-        <Stack direction="row" gap={2} wrap>
+        <div className="flex flex-row flex-wrap gap-2">
           {STATUS_FILTERS.map((f) => {
             const active = f.value === status;
             const href = f.value
@@ -71,28 +72,26 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
             return (
               <Button
                 key={f.value || 'all'}
-                asChild
                 size="sm"
                 color={active ? 'module' : 'neutral'}
                 variant={active ? 'solid' : 'outline'}
+                render={<Link href={href} aria-current={active ? 'page' : undefined} />}
               >
-                <Link href={href} aria-current={active ? 'page' : undefined}>
-                  {f.label}
-                </Link>
+                {f.label}
               </Button>
             );
           })}
-        </Stack>
+        </div>
 
         <ListToolbar enableViewToggle searchable={false} />
 
         {orders.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<ClipboardList className="h-5 w-5" />}
               title={status ? `No ${status} purchase orders` : 'No purchase orders yet'}
               description="Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="purchase-order"
                   newHref="/inventory/purchase-orders/new"
@@ -109,8 +108,8 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

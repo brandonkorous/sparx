@@ -1,12 +1,47 @@
 @import 'tailwindcss';
+
+/* ── silicaui migration: coexistence layer ───────────────────────────────────
+   The dashboard is migrating off @sparx/ui onto silicaui (see
+   project_silicaui_migration). During the migration BOTH token systems load:
+     • @sparx/brand/theme.css — the sparx brand as silicaui tokens (base-100/200/
+       300 ramp, semantic palette, the --color-module-* identity palette). Sole
+       source for silicaui's surface ramp + module hues.
+     • @sparx/ui/tokens.css — the legacy tokens the un-migrated @sparx/ui
+       components still read (the --color-bg and --color-surface neutrals, the
+       .sx-c role-var classes, …).
+   Brand is imported FIRST so @sparx/ui stays authoritative for the SHARED
+   semantic names (--color-primary/success/…) during coexistence — identical
+   values in light, so no existing component shifts. Phase 3 deletes
+   @sparx/ui/tokens.css and brand becomes the sole authority. The cascade-layer
+   order is declared in @sparx/brand/layers.css (imported before this file). */
+@import '@sparx/brand/theme.css';
 @import '@sparx/ui/tokens.css';
 /* The content editor ships its own surface styles as real CSS (not Tailwind
    utilities) so they don't depend on this app scanning that package's source.
    See packages/cms-editor/src/editor.css. */
 @import '@sparx/cms-editor/editor.css';
 
+/* silicaui is the incoming component layer — a Tailwind v4 plugin whose semantic
+   classes (`.btn`, `.badge`, `.alert`, the universal `soft`/`bg-soft`/… treatment)
+   emit via addBase and read the theme tokens above. Beyond silicaui's defaults we
+   register two extra named colors:
+     • `danger` — sparx's statusTone() vocabulary, so `.badge-danger` / `.btn-danger`
+       exist and pair with --color-danger in @sparx/brand/theme.css.
+     • `module` — the ACTIVE-module bridge. It generates `.btn-module` / `.badge-module`
+       / `.bg-module`/… reading --color-module / --color-module-content, which
+       <ModuleProvider> points at the wrapping module's hue. So `color="module"`
+       (used pervasively across the dashboard) keeps resolving to the current
+       module's brand color through the standard silica color machinery — no
+       bespoke recipe. The per-module solid hues themselves live in
+       @sparx/brand/theme.css (--color-module-<name>). */
+@plugin 'silicaui' {
+  colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module;
+}
+
 /* Tell Tailwind to scan @sparx/ui sources so utility classes used inside the
-   component library are emitted in this app's CSS bundle. */
+   (still-present) component library are emitted in this app's CSS bundle.
+   Removed in Phase 3 with @sparx/ui itself. silicaui-react components emit only
+   plugin classes, so they need no @source scan. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
 /* Bridge a small set of sparx tokens into the Tailwind v4 theme so apps can

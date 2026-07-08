@@ -9,8 +9,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 import { updateServiceType, deleteServiceType } from '../_lib/actions';
 import { ServiceTypeForm } from './service-type-form';
 
@@ -75,21 +75,21 @@ export function ServiceTypeActions({ type }: Props) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button size="sm" variant="ghost" disabled={isPending || submitting}>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => void toggleActive()}>
+          <DropdownMenuItem onClick={() => void toggleActive()}>
             <Power className="mr-2 h-4 w-4" />
             {type.isActive ? 'Deactivate' : 'Activate'}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onDelete()} className="text-[var(--color-danger)]">
+          <DropdownMenuItem onClick={() => onDelete()} className="text-[var(--color-danger)]">
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>

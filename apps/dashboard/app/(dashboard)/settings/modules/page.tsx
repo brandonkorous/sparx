@@ -10,7 +10,8 @@
 
 import { Layers } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Card, CardContent, CardHeader, CardTitle, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { listModuleStateForCurrentTenant } from './actions';
 import { ModuleSwitchboard } from './_components/module-switchboard';
@@ -23,8 +24,8 @@ export default async function ModulesSettingsPage() {
   const canEdit = session.user.role === 'owner' || session.user.role === 'admin';
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Layers className="h-5 w-5" />}
           title="Modules"
@@ -39,14 +40,12 @@ export default async function ModulesSettingsPage() {
         />
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Module activation</CardTitle>
-          </CardHeader>
-          <CardContent>
             <ModuleSwitchboard states={states} canEdit={canEdit} />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

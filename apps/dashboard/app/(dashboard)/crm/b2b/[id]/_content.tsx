@@ -1,19 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Building2, AlertTriangle, Globe } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  statusLabel,
-  statusTone,
-  Text,
-} from '@sparx/ui';
+import { Stat, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -60,12 +49,12 @@ export async function B2bAccountDetailContent({ id }: Props) {
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Building2 className="h-5 w-5" />
-            <Heading level={1}>{account.companyName}</Heading>
+            <h1 className="text-3xl font-semibold">{account.companyName}</h1>
             <Badge color={statusTone(account.status)} variant="soft">
               {statusLabel(account.status)}
             </Badge>
@@ -80,40 +69,38 @@ export async function B2bAccountDetailContent({ id }: Props) {
                 <Globe className="h-3.5 w-3.5" /> Website
               </a>
             )}
-          </Stack>
+          </div>
           <CreditHoldToggle accountId={account.id} currentStatus={account.status} />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <div className="grid gap-4 @[440px]:grid-cols-2 @[820px]:grid-cols-4">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat label="Credit limit" value={`$${limit.toLocaleString()}`} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Used" value={`$${used.toLocaleString()}`} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Remaining" value={`$${remaining.toLocaleString()}`} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Discount" value={`${Number(account.discountPercent)}%`} />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Credit utilization</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <div className="h-3 rounded-full bg-[var(--color-surface-subtle)]">
               <div
                 className="h-full rounded-full"
@@ -128,72 +115,60 @@ export async function B2bAccountDetailContent({ id }: Props) {
                 }}
               />
             </div>
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                {utilization.toFixed(1)}% used
-              </Text>
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">{utilization.toFixed(1)}% used</p>
               {utilization >= 75 && (
-                <Stack direction="row" align="center" gap={1}>
+                <div className="flex flex-row items-center gap-1">
                   <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                  <Text size="sm" className="text-[var(--color-warning-500)]">
-                    Near credit limit
-                  </Text>
-                </Stack>
+                  <p className="text-sm text-[var(--color-warning-500)]">Near credit limit</p>
+                </div>
               )}
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       {profiles.length > 0 && (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Engine profiles</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {profiles.map((p: unknown, idx: number) => (
-                <Stack
+                <div
                   key={idx}
-                  direction="row"
-                  gap={3}
-                  className="rounded-md border border-[var(--color-border-default)] p-3"
+                  className="flex flex-row gap-3 rounded-md border border-[var(--color-border-default)] p-3"
                 >
                   <Badge color="neutral" variant="soft" size="sm">
                     {(p as { year?: number }).year ?? '—'}
                   </Badge>
-                  <Text size="sm">
+                  <p className="text-sm">
                     {(p as { make?: string }).make ?? '—'} {(p as { model?: string }).model ?? ''}
-                  </Text>
+                  </p>
                   {(p as { engine?: string }).engine && (
-                    <Text size="sm" variant="muted">
+                    <p className="text-base-content/70 text-sm">
                       {(p as { engine?: string }).engine}
-                    </Text>
+                    </p>
                   )}
                   {(p as { count?: number }).count !== undefined && (
                     <Badge color="neutral" variant="soft" size="sm" className="ml-auto">
                       ×{(p as { count?: number }).count}
                     </Badge>
                   )}
-                </Stack>
+                </div>
               ))}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
       )}
 
       {account.notes && (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Text size="sm" className="whitespace-pre-wrap">
-              {account.notes}
-            </Text>
-          </CardContent>
+            <p className="text-sm whitespace-pre-wrap">{account.notes}</p>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }

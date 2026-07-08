@@ -1,25 +1,9 @@
 import { notFound } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+
+import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -64,14 +48,14 @@ export async function TaxZoneDetailContent({ id }: Props) {
   const rates = await api.get<TaxRateRow[]>(`/v1/commerce/tax/zones/${id}/rates`);
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Heading level={1}>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold">
             {zone.country}
             {zone.region ? ` — ${zone.region}` : ''}
-          </Heading>
-          <Stack direction="row" gap={2} align="center">
+          </h1>
+          <div className="flex flex-row items-center gap-2">
             <Badge
               color={statusTone(zone.isActive ? 'active' : 'inactive')}
               variant="soft"
@@ -83,30 +67,26 @@ export async function TaxZoneDetailContent({ id }: Props) {
               {statusLabel(zone.nexusType)}
             </Badge>
             {zone.registrationNumber && (
-              <Text size="xs" className="font-mono" variant="muted">
-                {zone.registrationNumber}
-              </Text>
+              <p className="text-base-content/70 font-mono text-xs">{zone.registrationNumber}</p>
             )}
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         <TaxZoneDeleteButton zoneId={zone.id} />
-      </Stack>
+      </div>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack gap={1}>
-            <Stack direction="row" align="center" gap={2}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center gap-2">
               <Plus className="h-4 w-4" />
-              <Heading level={3}>Manual rates</Heading>
-            </Stack>
-            <CardDescription>
+              <h3 className="text-xl font-semibold">Manual rates</h3>
+            </div>
+            <p className="opacity-70">
               Used when no TaxProvider is installed. Each rate&apos;s basis points (e.g. 825 =
               8.25%) stack additively per matching line.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
             {rates.length === 0 ? (
               <EmptyState
                 icon={<Plus className="h-5 w-5" />}
@@ -115,44 +95,40 @@ export async function TaxZoneDetailContent({ id }: Props) {
               />
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Rate</TableHead>
-                    <TableHead>Applies to shipping</TableHead>
-                    <TableHead>Product class</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Rate</th>
+                    <th>Applies to shipping</th>
+                    <th>Product class</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
                   {rates.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell>{r.name}</TableCell>
-                      <TableCell>
-                        <Text className="font-mono">{(r.rateBasisPoints / 100).toFixed(2)}%</Text>
-                      </TableCell>
-                      <TableCell>{r.appliesToShipping ? 'yes' : 'no'}</TableCell>
-                      <TableCell>
-                        {r.productTaxClass ?? (
-                          <Text size="xs" variant="muted">
-                            all
-                          </Text>
-                        )}
-                      </TableCell>
-                      <TableCell>
+                    <tr key={r.id}>
+                      <td>{r.name}</td>
+                      <td>
+                        <p className="font-mono">{(r.rateBasisPoints / 100).toFixed(2)}%</p>
+                      </td>
+                      <td>{r.appliesToShipping ? 'yes' : 'no'}</td>
+                      <td>
+                        {r.productTaxClass ?? <p className="text-base-content/70 text-xs">all</p>}
+                      </td>
+                      <td>
                         <TaxRateDeleteButton rateId={r.id} zoneId={zone.id} />
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
 
-            <Heading level={4}>Add a rate</Heading>
+            <h4 className="text-lg font-semibold">Add a rate</h4>
             <NewTaxRateForm zoneId={zone.id} />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

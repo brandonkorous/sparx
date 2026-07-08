@@ -1,20 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
 import { GitCompare, History } from 'lucide-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { RestoreButton } from './restore-button';
@@ -62,9 +49,9 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
   const authorNameById = new Map(users.map((u) => [u.id, u.name ?? u.email ?? null]));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
-        <Stack gap={2}>
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
+        <div className="flex flex-col gap-2">
           <PageHeader
             className="mb-0"
             icon={<History className="h-5 w-5" />}
@@ -82,7 +69,7 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
               </>
             }
           />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Editing: <strong>{entry.body.title ?? '(untitled)'}</strong>
             {entry.slug && (
               <>
@@ -90,23 +77,23 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
                 <code>/{entry.slug}</code>
               </>
             )}
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
         {revisions.length === 0 ? (
-          <Card variant="module">
-            <CardContent>
-              <Text>No revisions yet. Save the entry to create the first one.</Text>
-            </CardContent>
+          <Card className="bg-module bg-soft">
+            <CardBody>
+              <p>No revisions yet. Save the entry to create the first one.</p>
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={3}>
+          <div className="flex flex-col gap-3">
             {revisions.map((r) => (
-              <Card key={r.revision_number} variant="default">
-                <CardHeader>
-                  <Stack direction="row" align="center" justify="between">
-                    <Stack direction="row" align="center" gap={3}>
-                      <Heading level={4}>#{r.revision_number}</Heading>
+              <Card key={r.revision_number}>
+                <CardBody>
+                  <div className="flex flex-row items-center justify-between gap-4">
+                    <div className="flex flex-row items-center gap-3">
+                      <h4 className="text-lg font-semibold">#{r.revision_number}</h4>
                       <Badge
                         color={r.kind === 'manual' ? 'module' : 'neutral'}
                         variant="soft"
@@ -117,21 +104,21 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
                       <Badge color={statusTone(r.status)} variant="soft" size="sm">
                         {statusLabel(r.status)}
                       </Badge>
-                    </Stack>
-                    <Stack direction="row" align="center" gap={2}>
+                    </div>
+                    <div className="flex flex-row items-center gap-2">
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        asChild
-                        leftIcon={<GitCompare className="h-3.5 w-3.5" />}
+                        render={<Link href={`/cms/${id}/revisions/${r.revision_number}`} />}
+                        iconStart={<GitCompare className="h-3.5 w-3.5" />}
                       >
-                        <Link href={`/cms/${id}/revisions/${r.revision_number}`}>Compare</Link>
+                        Compare
                       </Button>
                       <RestoreButton entryId={id} revisionNumber={r.revision_number} />
-                    </Stack>
-                  </Stack>
-                  <CardDescription>
+                    </div>
+                  </div>
+                  <p className="opacity-70">
                     {r.summary ?? 'Autosaved'} —{' '}
                     {new Date(r.created_at).toLocaleString(undefined, {
                       dateStyle: 'medium',
@@ -140,13 +127,13 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
                     {r.author_id
                       ? ` · ${authorNameById.get(r.author_id) ?? `author ${r.author_id.slice(0, 8)}`}`
                       : ' · system'}
-                  </CardDescription>
-                </CardHeader>
+                  </p>
+                </CardBody>
               </Card>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

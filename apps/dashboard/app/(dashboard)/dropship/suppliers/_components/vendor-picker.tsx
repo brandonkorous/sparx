@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 import { ChevronRight } from 'lucide-react';
 import type { Vendor } from './supplier-form';
 
@@ -15,7 +15,7 @@ interface Props {
 // entering credentials.
 export function VendorPicker({ vendors, onSelect }: Props) {
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       {vendors.map((v) => (
         <button
           key={v.slug}
@@ -23,9 +23,9 @@ export function VendorPicker({ vendors, onSelect }: Props) {
           onClick={() => onSelect(v)}
           className="group flex items-center gap-4 rounded-lg border border-[var(--color-border)] p-4 text-left transition-colors hover:border-[var(--color-module)] hover:bg-[var(--color-muted)]"
         >
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" gap={2} className="flex-wrap items-center">
-              <Text className="font-medium">{v.label}</Text>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <p className="text-base font-medium">{v.label}</p>
               {v.pod && (
                 <Badge color="module" variant="soft" size="sm">
                   Print on demand
@@ -38,14 +38,12 @@ export function VendorPicker({ vendors, onSelect }: Props) {
               >
                 {v.connectionMethod === 'api' ? 'Automated' : 'Manual'}
               </Badge>
-            </Stack>
-            <Text size="sm" className="text-[var(--color-muted-foreground)]">
-              {v.tagline}
-            </Text>
-          </Stack>
+            </div>
+            <p className="text-sm text-[var(--color-muted-foreground)]">{v.tagline}</p>
+          </div>
           <ChevronRight className="h-5 w-5 shrink-0 text-[var(--color-muted-foreground)] transition-transform group-hover:translate-x-0.5" />
         </button>
       ))}
-    </Stack>
+    </div>
   );
 }

@@ -10,14 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { BookingPolicy, FeeType } from '../../_lib/types';
@@ -72,22 +66,22 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
   return (
     <>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Deposit</TableHead>
-            <TableHead>Notice</TableHead>
-            <TableHead>Late fee</TableHead>
-            <TableHead>No-show fee</TableHead>
-            <TableHead>Reminders</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Deposit</th>
+            <th>Notice</th>
+            <th>Late fee</th>
+            <th>No-show fee</th>
+            <th>Reminders</th>
+            <th className="w-10" />
+          </tr>
+        </thead>
+        <tbody>
           {policies.map((p) => (
-            <TableRow key={p.id}>
-              <TableCell className="font-medium">{p.name}</TableCell>
-              <TableCell>
+            <tr key={p.id}>
+              <td className="font-medium">{p.name}</td>
+              <td>
                 {p.depositType === 'none' ? (
                   <span className="text-[var(--color-muted-foreground)]">—</span>
                 ) : (
@@ -95,27 +89,27 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
                     {depositSummary(p)}
                   </Badge>
                 )}
-              </TableCell>
-              <TableCell>{p.cancellationWindowHours}h</TableCell>
-              <TableCell>{feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue)}</TableCell>
-              <TableCell>{feeSummary(p.noShowFeeType, p.noShowFeeValue)}</TableCell>
-              <TableCell>
+              </td>
+              <td>{p.cancellationWindowHours}h</td>
+              <td>{feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue)}</td>
+              <td>{feeSummary(p.noShowFeeType, p.noShowFeeValue)}</td>
+              <td>
                 {p.reminderOffsetsMin.length ? `${p.reminderOffsetsMin.join(', ')} min` : '—'}
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" shape="square" size="sm" aria-label="Policy actions">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => setEditing(p)}>
+                    <DropdownMenuItem onClick={() => setEditing(p)}>
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={() => void remove(p)}
+                      onClick={() => void remove(p)}
                       className="text-[var(--color-danger)]"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -123,10 +117,10 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
 
       {editing ? (

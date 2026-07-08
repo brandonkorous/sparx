@@ -1,5 +1,5 @@
 import { Plus, ShieldOff } from 'lucide-react';
-import { Card, EmptyState, Text } from '@sparx/ui';
+import { Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -50,30 +50,32 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
         </EntityCreateButton>
       }
     >
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         {total} suppressed address{total === 1 ? '' : 'es'}
-      </Text>
+      </p>
 
       <ListToolbar enableViewToggle searchable={false} />
 
       {items.length === 0 ? (
-        <Card padding="none">
-          <EmptyState
-            icon={<ShieldOff className="h-5 w-5" />}
-            title="No suppressed addresses"
-            description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually with the New button."
-            action={
-              <EntityCreateButton
-                entityType="suppression"
-                newHref="/email/suppressions/new"
-                variant="outline"
-                size="sm"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
-            }
-          />
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<ShieldOff className="h-5 w-5" />}
+              title="No suppressed addresses"
+              description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually with the New button."
+              actions={
+                <EntityCreateButton
+                  entityType="suppression"
+                  newHref="/email/suppressions/new"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              }
+            />
+          </CardBody>
         </Card>
       ) : (
         <SuppressionsList rows={items} view={view} />

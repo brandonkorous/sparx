@@ -2,25 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star, Archive, Users, Code2 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Heading,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
+import { Stat, statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -74,11 +57,11 @@ export async function SegmentDetailContent({ id }: Props) {
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{segment.name}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-semibold">{segment.name}</h1>
             {segment.isBuiltIn && (
               <Badge color="neutral" variant="soft" size="sm">
                 <Star className="h-3 w-3" /> Built-in
@@ -90,62 +73,60 @@ export async function SegmentDetailContent({ id }: Props) {
               </Badge>
             )}
             <code className="text-xs text-[var(--color-text-tertiary)]">{segment.slug}</code>
-          </Stack>
+          </div>
           <RecomputeButton segmentId={segment.id} />
-        </Stack>
-        {segment.description && <Text variant="muted">{segment.description}</Text>}
-      </Stack>
+        </div>
+        {segment.description && (
+          <p className="text-base-content/70 text-base">{segment.description}</p>
+        )}
+      </div>
 
       <div className="grid gap-4 @[600px]:grid-cols-3">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat label="Members" value={total.toLocaleString()} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Created" value={new Date(segment.createdAt).toLocaleDateString()} />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat label="Updated" value={new Date(segment.updatedAt).toLocaleDateString()} />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               <Code2 className="h-4 w-4" /> Rule
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           <pre className="overflow-x-auto rounded-md bg-[var(--color-surface-subtle)] p-3 text-xs">
             {JSON.stringify(segment.rules, null, 2)}
           </pre>
-          <Text size="xs" variant="muted" className="mt-2">
+          <p className="text-base-content/70 mt-2 text-xs">
             {segment.isBuiltIn
               ? 'Built-in segments are read-only — clone to customize. (Visual rule editor lands in the next dashboard iteration.)'
               : 'Visual rule editor lands in the next dashboard iteration; until then the JSON above is the source of truth and can be edited via the API.'}
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               <Users className="h-4 w-4" /> Members
               <Badge color="neutral" variant="soft" size="sm">
                 {total}
               </Badge>
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           {members.length === 0 ? (
             <EmptyState
               title="No members yet"
@@ -157,46 +138,46 @@ export async function SegmentDetailContent({ id }: Props) {
             />
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Spent</TableHead>
-                  <TableHead>Entered</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Type</th>
+                  <th className="text-right">Spent</th>
+                  <th>Entered</th>
+                </tr>
+              </thead>
+              <tbody>
                 {members.map((m) => (
-                  <TableRow key={m.customerId}>
-                    <TableCell>
+                  <tr key={m.customerId}>
+                    <td>
                       <Link
                         href={`/crm/customers/${m.customerId}`}
                         className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
                       >
                         {customerLabel(m.customer)}
                       </Link>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td>
                       <Badge color="neutral" variant="soft" size="sm">
                         {statusLabel(m.customer.type)}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
+                    </td>
+                    <td className="text-right tabular-nums">
                       ${Number(m.customer.totalSpent).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
+                    </td>
+                    <td>
+                      <p className="text-base-content/70 text-sm">
                         {new Date(m.enteredAt).toLocaleDateString()}
-                      </Text>
-                    </TableCell>
-                  </TableRow>
+                      </p>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 

@@ -7,18 +7,8 @@
 import Link from 'next/link';
 import { Store } from 'lucide-react';
 import { channelKeyLabel } from '@sparx/crm-schemas';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -43,8 +33,8 @@ export default async function FinanceChannelsPage({
 
   return (
     <ModuleProvider module="finance">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Store className="h-5 w-5" />}
             title="Channels"
@@ -53,63 +43,54 @@ export default async function FinanceChannelsPage({
 
           {revenue && revenue.byChannel.length > 0 ? (
             <>
-              <Card variant="module">
-                <CardHeader>
-                  <Stack direction="row" align="center" justify="between" gap={2}>
+              <Card className="bg-module bg-soft">
+                <CardBody>
+                  <div className="flex items-center justify-between gap-2">
                     <CardTitle>Revenue by channel</CardTitle>
-                    <Text size="xs" variant="muted">
-                      {revenue.rangeLabel}
-                    </Text>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
+                    <p className="text-base-content/70 text-xs">{revenue.rangeLabel}</p>
+                  </div>
                   <ChannelRevenuePanel report={revenue} selectedChannel={selectedChannel} />
-                </CardContent>
+                </CardBody>
               </Card>
 
               {selectedChannel && topProducts && (
-                <Card variant="module">
-                  <CardContent className="pt-6">
+                <Card className="bg-module bg-soft">
+                  <CardBody>
                     <ChannelTopProductsPanel
                       label={channelKeyLabel(selectedChannel)}
                       products={topProducts}
                       currency={revenue.currency}
                     />
-                  </CardContent>
+                  </CardBody>
                 </Card>
               )}
             </>
           ) : (
-            <Card variant="module">
-              <CardContent>
-                <Stack gap={3}>
-                  <Text size="sm" variant="muted" className="max-w-prose">
-                    No channel sales in the last 30 days yet. Once orders come in — through your own
-                    storefront or a connected marketplace — your revenue, fees, and net break down
-                    by channel here.
-                  </Text>
-                  <div>
-                    <Button asChild color="module">
-                      <Link href="/commerce/channels">Connect a sales channel</Link>
-                    </Button>
-                  </div>
-                </Stack>
-              </CardContent>
+            <Card className="bg-module bg-soft">
+              <CardBody>
+                <p className="text-base-content/70 max-w-prose text-sm">
+                  No channel sales in the last 30 days yet. Once orders come in — through your own
+                  storefront or a connected marketplace — your revenue, fees, and net break down by
+                  channel here.
+                </p>
+                <div>
+                  <Button color="module" render={<Link href="/commerce/channels" />}>
+                    Connect a sales channel
+                  </Button>
+                </div>
+              </CardBody>
             </Card>
           )}
 
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Connect, disconnect, or sync channels in{' '}
-            <Link
-              href="/commerce/channels"
-              className="font-medium text-[var(--module-active-text)] hover:underline"
-            >
+            <Link href="/commerce/channels" className="text-module font-medium hover:underline">
               Commerce → Sales channels
             </Link>
             .
-          </Text>
-        </Stack>
-      </Container>
+          </p>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

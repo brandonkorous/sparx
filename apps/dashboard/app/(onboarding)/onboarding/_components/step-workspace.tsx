@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input, Label, Spinner, Text } from '@sparx/ui';
+import { Button, Input, Label, Loading } from 'silicaui-react';
 import { Check } from 'lucide-react';
 import type { SlugCheck } from './onboarding-wizard';
 
@@ -65,36 +65,30 @@ export function StepWorkspace({
               autoComplete="off"
               spellCheck={false}
             />
-            <Text variant="muted" className="whitespace-nowrap">
-              .{SITE_ZONE}
-            </Text>
+            <p className="text-base-content/70 whitespace-nowrap">.{SITE_ZONE}</p>
           </div>
           {check.status === 'checking' && (
             <div className="flex items-center gap-2">
-              <Spinner size="sm" />
-              <Text size="xs" variant="muted">
-                Checking availability…
-              </Text>
+              <Loading size="sm" />
+              <p className="text-base-content/70 text-xs">Checking availability…</p>
             </div>
           )}
           {!unchangedSlug && check.status === 'done' && check.result.available && (
             <div className="flex items-center gap-1.5">
               <Check className="h-4 w-4 text-[var(--color-success-text)]" />
-              <Text size="xs" className="text-[var(--color-success-text)]">
+              <p className="text-xs text-[var(--color-success-text)]">
                 {normalized}.{SITE_ZONE} is available
-              </Text>
+              </p>
             </div>
           )}
           {!unchangedSlug && check.status === 'done' && !check.result.available && (
             <div className="flex flex-col gap-1">
-              <Text size="xs" variant="danger">
+              <p className="text-danger text-xs">
                 {REASON_COPY[check.result.reason] ?? 'That address is unavailable.'}
-              </Text>
+              </p>
               {check.result.suggestions.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <Text size="xs" variant="muted">
-                    Try:
-                  </Text>
+                  <p className="text-base-content/70 text-xs">Try:</p>
                   {check.result.suggestions.map((s) => (
                     <Button
                       key={s}

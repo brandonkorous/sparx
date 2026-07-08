@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Card, CardContent, CardHeader, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
 import { ArrowRight, Check, Circle } from 'lucide-react';
 import { dismissOnboarding } from './actions';
 import type { OnboardingProgress } from './onboarding';
@@ -27,83 +27,77 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
   }
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between">
-            <Heading level={3}>Setup progress</Heading>
-            <Text size="sm" variant="muted">
-              {completionPct}% complete
-            </Text>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-4">
+            <h3 className="text-xl font-semibold">Setup progress</h3>
+            <p className="text-base-content/70 text-sm">{completionPct}% complete</p>
+          </div>
           <ProgressBar value={progress.completion} />
-        </CardContent>
+        </CardBody>
       </Card>
 
-      <Stack gap={3}>
+      <div className="flex flex-col gap-3">
         {progress.steps.map((step) => (
           <Card key={step.id}>
-            <Stack direction="row" align="start" gap={3}>
-              <span
-                aria-hidden
-                // eslint-disable-next-line no-restricted-syntax -- step indicator icon container, not a reimplemented control
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]"
-              >
-                {step.done ? (
-                  <Check className="h-4 w-4 text-[var(--color-success-text)]" />
-                ) : (
-                  <Circle className="h-4 w-4" />
-                )}
-              </span>
-              <Stack gap={1} className="flex-1">
-                <Stack direction="row" align="center" gap={2}>
-                  <Text weight="medium">{step.title}</Text>
-                  {step.comingSoon && (
-                    <Badge color="neutral" variant="soft" size="sm">
-                      Coming soon
-                    </Badge>
-                  )}
-                  {step.done && !step.comingSoon && (
-                    <Badge color="success" variant="soft" size="sm">
-                      Done
-                    </Badge>
-                  )}
-                </Stack>
-                <Text size="sm" variant="muted">
-                  {step.description}
-                </Text>
-              </Stack>
-              {step.cta && !step.done && (
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
+            <CardBody>
+              <div className="flex flex-row items-start gap-3">
+                <span
+                  aria-hidden
+                  // eslint-disable-next-line no-restricted-syntax -- step indicator icon container, not a reimplemented control
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]"
                 >
-                  <Link href={step.cta.href}>{step.cta.label}</Link>
-                </Button>
-              )}
-            </Stack>
+                  {step.done ? (
+                    <Check className="h-4 w-4 text-[var(--color-success-text)]" />
+                  ) : (
+                    <Circle className="h-4 w-4" />
+                  )}
+                </span>
+                <div className="flex flex-1 flex-col gap-1">
+                  <div className="flex flex-row items-center gap-2">
+                    <p className="font-medium">{step.title}</p>
+                    {step.comingSoon && (
+                      <Badge color="neutral" variant="soft" size="sm">
+                        Coming soon
+                      </Badge>
+                    )}
+                    {step.done && !step.comingSoon && (
+                      <Badge color="success" variant="soft" size="sm">
+                        Done
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-base-content/70 text-sm">{step.description}</p>
+                </div>
+                {step.cta && !step.done && (
+                  <Button
+                    render={<Link href={step.cta.href} />}
+                    variant="ghost"
+                    size="sm"
+                    iconEnd={<ArrowRight className="h-3.5 w-3.5" />}
+                  >
+                    {step.cta.label}
+                  </Button>
+                )}
+              </div>
+            </CardBody>
           </Card>
         ))}
-      </Stack>
+      </div>
 
-      <Stack direction="row" align="center" justify="between">
-        <Text size="sm" variant="muted">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <p className="text-base-content/70 text-sm">
           You can finish the rest from the dashboard anytime.
-        </Text>
-        <Stack direction="row" gap={2}>
+        </p>
+        <div className="flex flex-row gap-2">
           <Button variant="ghost" onClick={onSkip} disabled={pending}>
             Skip for now
           </Button>
-          <Button asChild>
-            <Link href="/">Go to dashboard</Link>
-          </Button>
-        </Stack>
-      </Stack>
-    </Stack>
+          <Button render={<Link href="/" />}>Go to dashboard</Button>
+        </div>
+      </div>
+    </div>
   );
 }
 

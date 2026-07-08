@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 // Client wrapper for the B2B invoices list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
@@ -29,12 +23,12 @@ export interface InvoiceRow {
   account: { id: string; companyName: string } | null;
 }
 
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger'> = {
-  unpaid: 'outline',
+const STATUS_VARIANT: Record<string, 'neutral' | 'warning' | 'success' | 'danger'> = {
+  unpaid: 'neutral',
   partial: 'warning',
   overdue: 'danger',
   paid: 'success',
-  void: 'outline',
+  void: 'neutral',
 };
 
 function formatCents(cents: number): string {
@@ -62,9 +56,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
         {inv.account.companyName}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const statusBadge = (inv: InvoiceRow) => (
@@ -83,34 +75,30 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     { header: 'Status', cell: statusBadge },
     {
       header: 'Amount',
-      cell: (inv) => (
-        <Text size="sm" className="tabular-nums">
-          {formatCents(inv.amountCents)}
-        </Text>
-      ),
+      cell: (inv) => <p className="text-sm tabular-nums">{formatCents(inv.amountCents)}</p>,
     },
     {
       header: 'Due',
       cell: (inv) => (
-        <Text size="sm" className={inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}>
+        <p className={`text-sm ${inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}`}>
           {new Date(inv.dueAt).toLocaleDateString()}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Overdue days',
       cell: (inv) => (
-        <Text size="sm" variant={inv.overdueDays > 0 ? 'default' : 'muted'}>
+        <p className={inv.overdueDays > 0 ? 'text-sm' : 'text-base-content/70 text-sm'}>
           {inv.overdueDays > 0 ? `${inv.overdueDays}d` : '—'}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Paid',
       cell: (inv) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {inv.paidAt ? new Date(inv.paidAt).toLocaleDateString() : '—'}
-        </Text>
+        </p>
       ),
     },
   ];
@@ -130,26 +118,20 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     badge: statusBadge,
     body: (inv) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Amount
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatCents(inv.amountCents)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Due
-          </Text>
-          <Text size="sm" className={inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Amount</p>
+          <p className="text-sm tabular-nums">{formatCents(inv.amountCents)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Due</p>
+          <p className={`text-sm ${inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}`}>
             {new Date(inv.dueAt).toLocaleDateString()}
             {inv.overdueDays > 0 ? ` · ${inv.overdueDays}d overdue` : ''}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {inv.paidAt ? `Paid ${new Date(inv.paidAt).toLocaleDateString()}` : 'Unpaid'}
-        </Text>
+        </p>
       </>
     ),
   };

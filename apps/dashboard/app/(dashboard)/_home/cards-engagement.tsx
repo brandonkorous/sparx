@@ -1,13 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Grid,
-  ModuleProvider,
-  Sparkline,
-  Stack,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, Sparkline } from '@sparx/ui';
 
 import { CardLink, MetricTile } from '../_components/overview-bits';
 import { fmtMoneyCompact, fmtNumber, fmtPercent, ratio } from './format';
@@ -35,26 +27,24 @@ export function CrmPipelineCard({
   const spark = (acquisition ?? []).map((p) => p.newCustomers);
   return (
     <ModuleProvider module="crm">
-      <Card variant="module">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+      <Card className="bg-module bg-soft">
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>CRM & pipeline</CardTitle>
             <CardLink href="/crm">Open</CardLink>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+          </div>
+          <div className="flex flex-col gap-4">
             {spark.length > 1 && <Sparkline data={spark} color="module" height={44} />}
-            <Grid cols={3} gap={3}>
+            <div className="grid grid-cols-3 gap-3">
               <MetricTile value={fmtNumber(crm.customers)} label="Customers" tone="module" />
               <MetricTile value={fmtNumber(crm.openDeals)} label="Open deals" />
               <MetricTile
                 value={fmtMoneyCompact(Math.round(crm.pipelineValue * 100))}
                 label="Pipeline"
               />
-            </Grid>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );
@@ -74,17 +64,15 @@ export function EmailCard({
     : null;
   return (
     <ModuleProvider module="email">
-      <Card variant="module">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+      <Card className="bg-module bg-soft">
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Email</CardTitle>
             <CardLink href="/email">Open</CardLink>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+          </div>
+          <div className="flex flex-col gap-4">
             {spark.length > 1 && <Sparkline data={spark} color="module" height={44} />}
-            <Grid cols={3} gap={3}>
+            <div className="grid grid-cols-3 gap-3">
               <MetricTile
                 value={growth ? fmtNumber(growth.currentSubscribers) : '—'}
                 label="Subscribers"
@@ -95,9 +83,9 @@ export function EmailCard({
                 value={clickRate != null ? fmtPercent(clickRate) : '—'}
                 label="Click rate"
               />
-            </Grid>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );
@@ -116,17 +104,15 @@ export function ContentCard({
   const top = topContent?.items.slice(0, 3) ?? [];
   return (
     <ModuleProvider module="cms">
-      <Card variant="module">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+      <Card className="bg-module bg-soft">
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Content</CardTitle>
             <CardLink href="/cms/content">Open</CardLink>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+          </div>
+          <div className="flex flex-col gap-4">
             {spark.length > 1 && <Sparkline data={spark} color="module" height={44} />}
-            <Grid cols={3} gap={3}>
+            <div className="grid grid-cols-3 gap-3">
               <MetricTile
                 value={fmtNumber(summary?.byStatus.published)}
                 label="Published"
@@ -134,9 +120,9 @@ export function ContentCard({
               />
               <MetricTile value={fmtNumber(summary?.byStatus.draft)} label="Drafts" />
               <MetricTile value={fmtNumber(summary?.scheduledUpcoming)} label="Scheduled" />
-            </Grid>
+            </div>
             {top.length > 0 && (
-              <Stack gap={0}>
+              <div className="flex flex-col gap-0">
                 {top.map((c) => (
                   <div
                     key={c.id}
@@ -150,10 +136,10 @@ export function ContentCard({
                     </span>
                   </div>
                 ))}
-              </Stack>
+              </div>
             )}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

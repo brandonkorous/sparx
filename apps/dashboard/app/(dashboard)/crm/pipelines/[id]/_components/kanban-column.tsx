@@ -5,7 +5,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 
-import { Badge, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { KanbanCard } from './kanban-card';
 import { type KanbanDeal, type KanbanStage, stageColor } from './kanban-types';
@@ -26,30 +26,24 @@ export function KanbanColumn({ stage, deals }: KanbanColumnProps) {
         isOver ? 'border-[var(--module-active)] bg-[var(--module-active-soft)]' : ''
       }`}
     >
-      <Stack gap={3}>
-        <Stack direction="row" align="center" justify="between">
-          <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-row items-center gap-2">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: stageColor(stage) }} />
-            <Text size="sm" weight="medium">
-              {stage.name}
-            </Text>
+            <p className="text-sm font-medium">{stage.name}</p>
             <Badge color="neutral" variant="soft" size="sm">
               {deals.length}
             </Badge>
-          </Stack>
-          <Text size="xs" variant="muted">
-            {stage.probability}%
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
-          ${stageValue.toLocaleString()}
-        </Text>
-        <Stack gap={2} className="min-h-[120px]">
+          </div>
+          <p className="text-base-content/70 text-xs">{stage.probability}%</p>
+        </div>
+        <p className="text-base-content/70 text-xs">${stageValue.toLocaleString()}</p>
+        <div className="flex min-h-[120px] flex-col gap-2">
           {deals.map((deal) => (
             <KanbanCard key={deal.id} deal={deal} />
           ))}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </div>
   );
 }

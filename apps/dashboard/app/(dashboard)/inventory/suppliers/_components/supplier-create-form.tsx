@@ -3,22 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createSupplierAction } from '../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -177,18 +163,16 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
             onChange={recomputeDirty}
             className="contents"
           >
-            <Stack gap={6}>
+            <div className="flex flex-col gap-6">
               <Card>
-                <CardHeader>
-                  <Stack gap={1}>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
                     <CardTitle>Basics</CardTitle>
-                    <CardDescription>
+                    <p className="opacity-70">
                       Name shows in the dashboard; code is a short unique handle.
-                    </CardDescription>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={4}>
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-4">
                     <Field label="Name" name="name" required error={fieldErrors.name} />
                     <Field
                       label="Code"
@@ -198,63 +182,57 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
                       pattern="[A-Za-z0-9_-]+"
                       error={fieldErrors.code}
                     />
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
 
               <Card>
-                <CardHeader>
+                <CardBody>
                   <CardTitle>Contact</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={4}>
-                    <Stack direction="row" gap={3} wrap>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-row flex-wrap gap-3">
                       <Field label="Contact name" name="contactName" />
                       <Field label="Email" name="email" type="email" error={fieldErrors.email} />
-                    </Stack>
-                    <Stack direction="row" gap={3} wrap>
+                    </div>
+                    <div className="flex flex-row flex-wrap gap-3">
                       <Field label="Phone" name="phone" />
                       <Field label="Website" name="website" placeholder="https://" />
-                    </Stack>
-                  </Stack>
-                </CardContent>
+                    </div>
+                  </div>
+                </CardBody>
               </Card>
 
               <Card>
-                <CardHeader>
+                <CardBody>
                   <CardTitle>Address</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={4}>
+                  <div className="flex flex-col gap-4">
                     <Field label="Line 1" name="line1" />
                     <Field label="Line 2" name="line2" />
-                    <Stack direction="row" gap={3} wrap>
+                    <div className="flex flex-row flex-wrap gap-3">
                       <Field label="City" name="city" />
                       <Field label="Region / State" name="region" />
                       <Field label="Postal code" name="postalCode" />
                       <Field label="Country" name="country" maxLength={2} placeholder="US" />
-                    </Stack>
-                  </Stack>
-                </CardContent>
+                    </div>
+                  </div>
+                </CardBody>
               </Card>
 
               <Card>
-                <CardHeader>
-                  <Stack gap={1}>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
                     <CardTitle>Terms</CardTitle>
-                    <CardDescription>
+                    <p className="opacity-70">
                       Defaults applied to purchase orders for this supplier; overridable per PO.
-                    </CardDescription>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={4}>
-                    <Stack direction="row" gap={3} wrap>
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-row flex-wrap gap-3">
                       <Field label="Payment terms" name="paymentTerms" placeholder="net30" />
                       <Field label="Lead time (days)" name="leadTimeDays" type="number" />
                       <Field label="Currency" name="currency" maxLength={3} placeholder="USD" />
-                    </Stack>
-                    <Stack gap={1}>
+                    </div>
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="notes">Notes</Label>
                       <textarea
                         id="notes"
@@ -262,21 +240,21 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
                         rows={3}
                         className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
                       />
-                    </Stack>
+                    </div>
                     <label className="flex items-center gap-2">
                       <Checkbox color="module" name="isActive" defaultChecked />
-                      <Text size="sm">Active</Text>
+                      <p className="text-sm">Active</p>
                     </label>
 
                     {error && (
-                      <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                      <p className="text-danger text-sm" role="alert" aria-live="polite">
                         {error}
-                      </Text>
+                      </p>
                     )}
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
-            </Stack>
+            </div>
           </form>
         </SurfaceStep>
       </SurfaceFrame>
@@ -306,7 +284,7 @@ function Field({
   type?: string;
 }) {
   return (
-    <Stack gap={1} className="flex-1">
+    <div className="flex flex-1 flex-col gap-1">
       <Label htmlFor={name}>
         {label}
         {required && <span className="text-[var(--color-danger)]">*</span>}
@@ -320,17 +298,9 @@ function Field({
         maxLength={maxLength}
         placeholder={placeholder}
       />
-      {hint && (
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      )}
-      {error && (
-        <Text size="xs" variant="danger">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {hint && <p className="text-base-content/70 text-xs">{hint}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
+    </div>
   );
 }
 

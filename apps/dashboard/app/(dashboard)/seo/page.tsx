@@ -17,27 +17,15 @@ import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
   BarList,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';
@@ -292,14 +280,18 @@ export default async function SeoPage() {
     : { clicks: '—', impressions: '—', ctr: '—', position: '—' };
 
   const allAuditsBtn = (
-    <Button asChild variant="outline" leftIcon={<Gauge className="h-4 w-4" />}>
-      <Link href="/seo/audits">All audits</Link>
+    <Button
+      variant="outline"
+      iconStart={<Gauge className="h-4 w-4" />}
+      render={<Link href="/seo/audits" />}
+    >
+      All audits
     </Button>
   );
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Search className="h-5 w-5" />}
           title="SEO"
@@ -317,19 +309,21 @@ export default async function SeoPage() {
         />
 
         {count === 0 ? (
-          <Card variant="module" padding="none">
-            <EmptyState
-              icon={<Gauge className="h-5 w-5" />}
-              title="No audits yet"
-              description="Run a scan to score every page, product, and collection across your site — then this overview lights up with your health score, top fixes, and worst pages."
-              action={canScan ? <RescanButton size="md" /> : undefined}
-            />
+          <Card className="bg-module bg-soft">
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<Gauge className="h-5 w-5" />}
+                title="No audits yet"
+                description="Run a scan to score every page, product, and collection across your site — then this overview lights up with your health score, top fixes, and worst pages."
+                actions={canScan ? <RescanButton size="md" /> : undefined}
+              />
+            </CardBody>
           </Card>
         ) : (
           <>
             {/* KPI strip — pages scored + issues live; organic live once Search
                 Console is connected, else em dashes */}
-            <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Stat
                 icon={<Globe className="h-4 w-4" />}
                 label="Pages scored"
@@ -354,7 +348,7 @@ export default async function SeoPage() {
                 value={fmtNumber(issuesTotal)}
                 hint={issuesTotal ? 'Pages with a top fix' : 'No outstanding fixes'}
               />
-            </Grid>
+            </div>
 
             {/* Needs attention — live top fixes */}
             {issues.length > 0 && (
@@ -494,20 +488,20 @@ export default async function SeoPage() {
             >
               {worst.length ? (
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Page</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Score</TableHead>
-                      <TableHead>Top fix</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  <thead>
+                    <tr>
+                      <th>Page</th>
+                      <th>Type</th>
+                      <th className="text-right">Score</th>
+                      <th>Top fix</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {worst.map((r) => {
                       const rb = healthBand(r.score);
                       return (
-                        <TableRow key={r.id}>
-                          <TableCell>
+                        <tr key={r.id}>
+                          <td>
                             <div className="font-medium text-[var(--color-text-primary)]">
                               {r.title ?? '(untitled)'}
                             </div>
@@ -516,22 +510,22 @@ export default async function SeoPage() {
                                 {r.path}
                               </div>
                             )}
-                          </TableCell>
-                          <TableCell className="text-[var(--color-text-tertiary)]">
+                          </td>
+                          <td className="text-[var(--color-text-tertiary)]">
                             {ENTITY_LABEL[r.entityType]}
-                          </TableCell>
-                          <TableCell className="text-right">
+                          </td>
+                          <td className="text-right">
                             <Badge color={rb.color} variant="soft">
                               {r.score}
                             </Badge>
-                          </TableCell>
-                          <TableCell className="text-[var(--color-text-secondary)]">
+                          </td>
+                          <td className="text-[var(--color-text-secondary)]">
                             {r.fixFirst ?? '—'}
-                          </TableCell>
-                        </TableRow>
+                          </td>
+                        </tr>
                       );
                     })}
-                  </TableBody>
+                  </tbody>
                 </Table>
               ) : (
                 <EmptyState
@@ -543,7 +537,7 @@ export default async function SeoPage() {
             </OverviewCard>
 
             {/* Issues by type (live) + top queries + recent activity */}
-            <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <OverviewCard
                 title="Issues by type"
                 icon={<AlertTriangle className="h-4 w-4" />}
@@ -604,10 +598,10 @@ export default async function SeoPage() {
                   />
                 )}
               </OverviewCard>
-            </Grid>
+            </div>
           </>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

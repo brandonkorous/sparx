@@ -15,20 +15,15 @@ import { Plus, Trash2 } from 'lucide-react';
 import {
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, toast } from '@sparx/ui';
 
 import { createFitmentDomainAction } from '../../fitment-actions';
 
@@ -144,21 +139,21 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
   }
 
   return (
-    <Modal open={open} onOpenChange={close}>
-      <ModalContent size="lg">
+    <Dialog open={open} onOpenChange={close}>
+      <DialogContent className="sm:max-w-lg">
         <ModuleProvider module="commerce">
-          <ModalHeader>
-            <ModalTitle>New fitment domain</ModalTitle>
-            <ModalDescription>
+          <div className="flex flex-col gap-1">
+            <DialogTitle>New fitment domain</DialogTitle>
+            <DialogDescription>
               Name your compatibility vocabulary, then add its dimensions — each a level (a tier in
               the tree) or a range (a numeric axis like a year or a weight). Add as many as your
               catalog needs.
-            </ModalDescription>
-          </ModalHeader>
+            </DialogDescription>
+          </div>
           <form onSubmit={onSubmit} noValidate>
-            <Stack gap={4}>
-              <Stack direction="row" gap={3} className="flex-wrap">
-                <Stack gap={1} className="min-w-[200px] flex-1">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row flex-wrap gap-3">
+                <div className="flex min-w-[200px] flex-1 flex-col gap-1">
                   <Label htmlFor="nd-name">Name</Label>
                   <Input
                     id="nd-name"
@@ -167,8 +162,8 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                     placeholder="What you're matching against"
                     required
                   />
-                </Stack>
-                <Stack gap={1} className="min-w-[160px] flex-1">
+                </div>
+                <div className="flex min-w-[160px] flex-1 flex-col gap-1">
                   <Label htmlFor="nd-slug">Slug</Label>
                   <Input
                     id="nd-slug"
@@ -179,19 +174,19 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                     }}
                     required
                   />
-                </Stack>
-              </Stack>
+                </div>
+              </div>
 
-              <Stack gap={2}>
-                <Stack direction="row" align="center" justify="between">
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row items-center justify-between">
                   <Label>Dimensions</Label>
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Levels nest top → bottom; ranges narrow a match
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
                 {dimensions.map((dim, i) => (
-                  <Stack key={i} direction="row" gap={2} align="end" className="flex-wrap">
-                    <Stack gap={1} className="min-w-[160px] flex-1">
+                  <div key={i} className="flex flex-row flex-wrap items-end gap-2">
+                    <div className="flex min-w-[160px] flex-1 flex-col gap-1">
                       {i === 0 && <Label htmlFor={`nd-dim-label-${i}`}>Label</Label>}
                       <Input
                         id={`nd-dim-label-${i}`}
@@ -199,8 +194,8 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                         onChange={(e) => patchDimension(i, { label: e.target.value })}
                         placeholder="Level or axis name"
                       />
-                    </Stack>
-                    <Stack gap={1} className="w-[120px]">
+                    </div>
+                    <div className="flex w-[120px] flex-col gap-1">
                       {i === 0 && <Label htmlFor={`nd-dim-kind-${i}`}>Type</Label>}
                       <NativeSelect
                         id={`nd-dim-kind-${i}`}
@@ -212,8 +207,8 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                         <option value="level">Level</option>
                         <option value="range">Range</option>
                       </NativeSelect>
-                    </Stack>
-                    <Stack gap={1} className="w-[120px]">
+                    </div>
+                    <div className="flex w-[120px] flex-col gap-1">
                       {i === 0 && <Label htmlFor={`nd-dim-unit-${i}`}>Unit</Label>}
                       <Input
                         id={`nd-dim-unit-${i}`}
@@ -222,7 +217,7 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                         placeholder="e.g. year"
                         disabled={dim.kind !== 'range'}
                       />
-                    </Stack>
+                    </div>
                     <Button
                       shape="square"
                       type="button"
@@ -235,15 +230,15 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </Stack>
+                  </div>
                 ))}
-                <Stack direction="row" align="center" justify="between">
+                <div className="flex flex-row items-center justify-between">
                   <Button
                     type="button"
                     color="neutral"
                     variant="outline"
                     size="sm"
-                    leftIcon={<Plus className="h-3.5 w-3.5" />}
+                    iconStart={<Plus className="h-3.5 w-3.5" />}
                     onClick={addDimension}
                   >
                     Add dimension
@@ -254,26 +249,26 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
                       ? ''
                       : 's'}
                   </Badge>
-                </Stack>
-              </Stack>
+                </div>
+              </div>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert">
+                <p className="text-danger text-sm" role="alert">
                   {error}
-                </Text>
+                </p>
               )}
-            </Stack>
-            <ModalFooter>
+            </div>
+            <div className="mt-6 flex flex-row justify-end gap-2">
               <Button type="button" color="neutral" variant="ghost" onClick={() => close(false)}>
                 Cancel
               </Button>
               <Button type="submit" color="module" loading={pending} disabled={pending}>
                 Create domain
               </Button>
-            </ModalFooter>
+            </div>
           </form>
         </ModuleProvider>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

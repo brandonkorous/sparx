@@ -2,24 +2,16 @@
 
 import * as React from 'react';
 import {
-  Card,
-  CardContent,
   Drawer,
   DrawerContent,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  Stack,
-  Switch,
   SurfaceFrame,
   SurfaceStep,
-  Text,
-  Textarea,
   toast,
   useConfirm,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { Card, CardBody, Input, Label, NativeSelect, Switch, Textarea } from 'silicaui-react';
 
 import {
   createPromptAction,
@@ -232,26 +224,22 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={5}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                     <Label htmlFor="prompt-name">Name</Label>
                     <Input
                       id="prompt-name"
                       value={name}
                       onChange={(e) => onNameChange(e.target.value)}
                       placeholder="Support greeting"
-                      variant={fieldErrors.name ? 'error' : 'default'}
+                      color={fieldErrors.name ? 'error' : undefined}
                     />
-                    {fieldErrors.name && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.name}
-                      </Text>
-                    )}
-                  </Stack>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
+                  </div>
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                     <Label htmlFor="prompt-category">Category</Label>
                     <NativeSelect
                       id="prompt-category"
@@ -264,11 +252,11 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
 
                 {!isEdit && (
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="prompt-key">Key</Label>
                     <Input
                       id="prompt-key"
@@ -278,21 +266,19 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                         setKey(e.target.value);
                       }}
                       placeholder="support-greeting"
-                      variant={fieldErrors.key ? 'error' : 'default'}
+                      color={fieldErrors.key ? 'error' : undefined}
                     />
                     {fieldErrors.key ? (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.key}
-                      </Text>
+                      <p className="text-danger text-xs">{fieldErrors.key}</p>
                     ) : (
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         A stable, lowercase identifier your flows reference. It can’t change later.
-                      </Text>
+                      </p>
                     )}
-                  </Stack>
+                  </div>
                 )}
 
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="prompt-description">Description (optional)</Label>
                   <Input
                     id="prompt-description"
@@ -300,9 +286,9 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="A warm first reply for new support conversations."
                   />
-                </Stack>
+                </div>
 
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="prompt-body">Body</Label>
                   <Textarea
                     id="prompt-body"
@@ -313,21 +299,19 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                     placeholder={
                       'You are a friendly assistant for {{store_name}}. Greet {{customer_name}} and offer help.'
                     }
-                    variant={fieldErrors.body ? 'error' : 'default'}
+                    color={fieldErrors.body ? 'error' : undefined}
                   />
                   {fieldErrors.body ? (
-                    <Text size="xs" variant="danger">
-                      {fieldErrors.body}
-                    </Text>
+                    <p className="text-danger text-xs">{fieldErrors.body}</p>
                   ) : (
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       Wrap fill-in values in <code>{'{{double braces}}'}</code> — the consuming flow
                       substitutes them at call time.
-                    </Text>
+                    </p>
                   )}
-                </Stack>
+                </div>
 
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="prompt-model">Model override (optional)</Label>
                   <Input
                     id="prompt-model"
@@ -335,41 +319,41 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                     onChange={(e) => setModel(e.target.value)}
                     placeholder="Inherit the tenant default"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Pin a specific model for this prompt, or leave blank to use the tenant default.
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
 
-                <Stack direction="row" align="center" gap={3}>
+                <div className="flex flex-row items-center gap-3">
                   <Switch
                     id="prompt-enabled"
                     color="module"
                     checked={enabled}
                     onCheckedChange={setEnabled}
                   />
-                  <Stack gap={1}>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="prompt-enabled">Enabled</Label>
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       {category === 'persona'
                         ? 'Only the active enabled persona grounds the chat assistant.'
                         : 'Disabled prompts stay in the library but won’t be offered to flows.'}
-                    </Text>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </CardContent>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardBody>
           </Card>
 
-          <Card variant="default" className="mt-4">
-            <CardContent className="py-6">
+          <Card className="mt-4">
+            <CardBody className="py-6">
               <VariableRepeater variables={variables} onChange={setVariables} />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

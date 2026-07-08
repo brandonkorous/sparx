@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Badge,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { AppointmentActions } from './appointment-actions';
 
@@ -40,8 +34,8 @@ interface AppointmentRow {
   createdAt: string;
 }
 
-const STATUS_BADGE: Record<string, 'outline' | 'info' | 'success' | 'warning' | 'danger'> = {
-  requested: 'outline',
+const STATUS_BADGE: Record<string, 'neutral' | 'info' | 'success' | 'warning' | 'danger'> = {
+  requested: 'neutral',
   confirmed: 'info',
   in_progress: 'warning',
   completed: 'success',
@@ -87,9 +81,7 @@ export function AppointmentsList({ appointments, view }: AppointmentsListProps) 
         {appt.companyName ?? appt.b2bAccountId}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const statusBadge = (appt: AppointmentRow) => (
@@ -102,40 +94,34 @@ export function AppointmentsList({ appointments, view }: AppointmentsListProps) 
     {
       header: 'Scheduled',
       cell: (appt) => (
-        <Stack gap={1}>
-          <Text size="sm" className="font-medium whitespace-nowrap tabular-nums">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium whitespace-nowrap tabular-nums">
             {formatDateTime(appt.scheduledAt)}
-          </Text>
-          <Text size="xs" variant="muted">
-            {appt.durationMinutes} min
-          </Text>
-        </Stack>
+          </p>
+          <p className="text-base-content/70 text-xs">{appt.durationMinutes} min</p>
+        </div>
       ),
     },
     {
       header: 'Service',
-      cell: (appt) => <Text size="sm">{appt.serviceTypeName ?? '—'}</Text>,
+      cell: (appt) => <p className="text-sm">{appt.serviceTypeName ?? '—'}</p>,
     },
     { header: 'Account', cell: accountCell },
     {
       header: 'Customer',
       cell: (appt) => (
-        <Stack gap={1}>
-          <Text size="sm">{appt.customerName ?? appt.customerEmail ?? '—'}</Text>
+        <div className="flex flex-col gap-1">
+          <p className="text-sm">{appt.customerName ?? appt.customerEmail ?? '—'}</p>
           {appt.customerName && appt.customerEmail && (
-            <Text size="xs" variant="muted">
-              {appt.customerEmail}
-            </Text>
+            <p className="text-base-content/70 text-xs">{appt.customerEmail}</p>
           )}
-        </Stack>
+        </div>
       ),
     },
     {
       header: 'Vehicle',
       cell: (appt) => (
-        <Text size="sm" variant="muted">
-          {vehicleLabel(appt.vehicleRef) ?? '—'}
-        </Text>
+        <p className="text-base-content/70 text-sm">{vehicleLabel(appt.vehicleRef) ?? '—'}</p>
       ),
     },
     { header: 'Status', cell: statusBadge },
@@ -149,41 +135,31 @@ export function AppointmentsList({ appointments, view }: AppointmentsListProps) 
 
   const card: SelectionCard<AppointmentRow> = {
     title: (appt) => (
-      <Text size="sm" className="truncate font-medium whitespace-nowrap tabular-nums">
+      <p className="truncate text-sm font-medium whitespace-nowrap tabular-nums">
         {formatDateTime(appt.scheduledAt)}
-      </Text>
+      </p>
     ),
     subtitle: (appt) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {appt.serviceTypeName ?? '—'} · {appt.durationMinutes} min
-      </Text>
+      </p>
     ),
     badge: statusBadge,
     body: (appt) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Account
-          </Text>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Account</p>
           {accountCell(appt)}
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Customer
-          </Text>
-          <Text size="sm" className="truncate">
-            {appt.customerName ?? appt.customerEmail ?? '—'}
-          </Text>
-        </Stack>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Customer</p>
+          <p className="truncate text-sm">{appt.customerName ?? appt.customerEmail ?? '—'}</p>
+        </div>
         {vehicleLabel(appt.vehicleRef) ? (
-          <Stack direction="row" align="center" justify="between" gap={2}>
-            <Text size="sm" variant="muted">
-              Vehicle
-            </Text>
-            <Text size="sm" className="truncate">
-              {vehicleLabel(appt.vehicleRef)}
-            </Text>
-          </Stack>
+          <div className="flex flex-row items-center justify-between gap-2">
+            <p className="text-base-content/70 text-sm">Vehicle</p>
+            <p className="truncate text-sm">{vehicleLabel(appt.vehicleRef)}</p>
+          </div>
         ) : null}
         <AppointmentActions appointment={appt} />
       </>

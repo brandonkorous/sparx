@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import { Plus } from 'lucide-react';
-import { Button, Input, Label, NativeSelect, Text } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { createWarehouseAction } from '../../../../inventory/_lib/inventory-actions';
 
@@ -81,7 +81,7 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
         type="button"
         variant="ghost"
         size="sm"
-        leftIcon={<Plus className="h-3.5 w-3.5" />}
+        iconStart={<Plus className="h-3.5 w-3.5" />}
         onClick={() => setOpen(true)}
       >
         Create a warehouse
@@ -91,9 +91,7 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
-      <Text size="sm" weight="medium">
-        New warehouse
-      </Text>
+      <p className="text-sm font-medium">New warehouse</p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <Label htmlFor="iw-name">Name</Label>
@@ -157,9 +155,9 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
       </div>
 
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
 
       <div className="flex justify-end gap-2">

@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { CornerDownLeft } from 'lucide-react';
 
-import { Button, Heading, Input, Label, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Input, Label, Textarea } from 'silicaui-react';
+import { cn } from '@sparx/ui';
 import type { EntityType } from '@sparx/seo-audit';
 
 import { SeoScoreChip } from './seo-score';
@@ -83,14 +84,14 @@ export function SeoMetaFields({
     : 'A short pitch shown under the title in search results';
 
   return (
-    <Stack gap={2} className={className}>
+    <div className={cn('flex flex-col gap-2', className)}>
       <div className="flex items-center justify-between gap-3">
-        <Heading level={4}>SEO</Heading>
+        <h4 className="text-lg font-semibold">SEO</h4>
         {/* Live SEO health for the saved entity; hover for the full report. */}
         <SeoScoreChip type={type} id={id} size={30} />
       </div>
 
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor={titleId}>Page title</Label>
           {seoTitle.trim().length === 0 && nameFill.length > 0 && (
@@ -99,7 +100,7 @@ export function SeoMetaFields({
               variant="link"
               size="sm"
               color="module"
-              leftIcon={<CornerDownLeft className="h-3 w-3" />}
+              iconStart={<CornerDownLeft className="h-3 w-3" />}
               onClick={() => onSeoTitleChange(nameFill)}
             >
               Use name
@@ -113,13 +114,11 @@ export function SeoMetaFields({
           onChange={(e) => onSeoTitleChange(e.target.value)}
         />
         {seoTitle.trim().length === 0 && nameFill.length > 0 && (
-          <Text size="xs" variant="muted">
-            Blank uses the name — “{nameFill}”.
-          </Text>
+          <p className="text-base-content/70 text-xs">Blank uses the name — “{nameFill}”.</p>
         )}
-      </Stack>
+      </div>
 
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor={descId}>Meta description</Label>
           {seoDescription.trim().length === 0 && descFill.length > 0 && (
@@ -128,7 +127,7 @@ export function SeoMetaFields({
               variant="link"
               size="sm"
               color="module"
-              leftIcon={<CornerDownLeft className="h-3 w-3" />}
+              iconStart={<CornerDownLeft className="h-3 w-3" />}
               onClick={() => onSeoDescriptionChange(descFill)}
             >
               Use description
@@ -143,11 +142,11 @@ export function SeoMetaFields({
           onChange={(e) => onSeoDescriptionChange(e.target.value)}
         />
         {seoDescription.trim().length === 0 && descFill.length > 0 && (
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Blank uses the description (trimmed to {DESC_FILL_MAX} characters).
-          </Text>
+          </p>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

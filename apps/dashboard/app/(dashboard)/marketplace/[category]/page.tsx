@@ -12,16 +12,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 import type { MarketplaceListResponse } from '../_types';
 
 import { api } from '@/lib/api-rest-client';
@@ -51,18 +43,16 @@ export default async function CategoryBrowsePage({
 
   const Icon = category.icon;
   const back = (
-    <Button variant="ghost" size="sm" asChild className="mb-1 -ml-2">
-      <Link href="/marketplace">
-        <ArrowLeft className="mr-1 h-4 w-4" />
-        Marketplace
-      </Link>
+    <Button variant="ghost" size="sm" className="mb-1 -ml-2" render={<Link href="/marketplace" />}>
+      <ArrowLeft className="mr-1 h-4 w-4" />
+      Marketplace
     </Button>
   );
 
   if (category.status !== 'live') {
     return (
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <div>
             {back}
             <PageHeader
@@ -75,17 +65,17 @@ export default async function CategoryBrowsePage({
               }
             />
           </div>
-          <Card padding="none">
-            <CardContent className="p-0">
+          <Card>
+            <CardBody className="p-0">
               <EmptyState
                 icon={<Icon className="h-5 w-5" />}
                 title={`${category.label} are coming soon`}
                 description={`The ${category.singular} catalog isn't open yet. Check back shortly — your tenant will be able to browse and add ${category.singular}s here.`}
               />
-            </CardContent>
+            </CardBody>
           </Card>
-        </Stack>
-      </Container>
+        </div>
+      </div>
     );
   }
 
@@ -107,8 +97,8 @@ export default async function CategoryBrowsePage({
   const data = await api.get<MarketplaceListResponse>(`/v1/marketplace/${category.id}?${qs}`);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <div>
           {back}
           <PageHeader title={category.label} description={category.tagline} />
@@ -126,7 +116,7 @@ export default async function CategoryBrowsePage({
           initialCursor={data.next_cursor}
           canInstall={canInstall}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

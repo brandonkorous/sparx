@@ -7,13 +7,11 @@ import {
   type SelectionCard,
   type SelectionColumn,
   Badge,
-  Button,
   Code,
-  Stack,
-  Text,
   toast,
   type BadgeProps,
 } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { removeSuppressionAction } from '../actions';
 import type { SuppressionRow } from '../../_lib/types';
@@ -90,17 +88,17 @@ export function SuppressionsList({ rows, view }: SuppressionsListProps) {
     title: emailCell,
     badge: scopeBadge,
     body: (row) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
           {reasonBadge(row)}
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             {row.source ?? '—'} · {new Date(row.createdAt).toLocaleDateString()}
-          </Text>
-        </Stack>
-        <Stack direction="row" justify="end">
+          </p>
+        </div>
+        <div className="flex flex-row justify-end">
           <RemoveButton id={row.id} email={row.email} />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     ),
   };
 

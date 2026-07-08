@@ -6,7 +6,7 @@
 // defensive so a malformed legacy row degrades to a raw view instead of throwing.
 
 import * as React from 'react';
-import { Badge } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 import {
   Action as ActionSchema,
   ConditionGroup as ConditionGroupSchema,

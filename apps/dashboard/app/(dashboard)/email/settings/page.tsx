@@ -1,5 +1,5 @@
 import { Settings as SettingsIcon } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EmailShell } from '../_components/email-shell';
@@ -18,16 +18,14 @@ export default async function EmailSettingsPage() {
       description="Sender identity, reply-to, and physical mailing address."
     >
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Sender identity</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             These defaults apply to every transactional and marketing email unless a specific
             template or broadcast overrides them. Brand styling is inherited from your site theme.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           <SettingsForm initial={settings} />
-        </CardContent>
+        </CardBody>
       </Card>
     </EmailShell>
   );

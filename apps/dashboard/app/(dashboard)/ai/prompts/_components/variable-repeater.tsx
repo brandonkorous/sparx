@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { Button, Card, CardContent, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label } from 'silicaui-react';
 
 import type { PromptVariable } from './prompt-types';
 
@@ -30,26 +30,23 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
   }
 
   return (
-    <Stack gap={3}>
-      <Stack gap={1}>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
         <Label>Variables</Label>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           Declare each <code>{'{{placeholder}}'}</code> your body uses. The consuming flow fills
           these in; the keys you list here surface as hint chips on the prompt.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       {variables.length > 0 && (
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           {variables.map((variable, index) => (
-            <Card key={index} variant="subtle" padding="sm">
-              <CardContent className="p-0">
-                <Stack direction="row" gap={2} align="start" wrap>
-                  <Stack gap={1} className="min-w-[8rem] flex-1">
-                    <Label
-                      htmlFor={`var-key-${index}`}
-                      className="text-[var(--color-text-tertiary)]"
-                    >
+            <Card key={index} className="bg-base-200">
+              <CardBody className="p-3">
+                <div className="flex flex-row flex-wrap items-start gap-2">
+                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
+                    <Label htmlFor={`var-key-${index}`} className="text-base-content/50">
                       Key
                     </Label>
                     <Input
@@ -58,12 +55,9 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                       onChange={(e) => update(index, { key: e.target.value })}
                       placeholder="customer_name"
                     />
-                  </Stack>
-                  <Stack gap={1} className="min-w-[8rem] flex-1">
-                    <Label
-                      htmlFor={`var-label-${index}`}
-                      className="text-[var(--color-text-tertiary)]"
-                    >
+                  </div>
+                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
+                    <Label htmlFor={`var-label-${index}`} className="text-base-content/50">
                       Label
                     </Label>
                     <Input
@@ -72,12 +66,9 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                       onChange={(e) => update(index, { label: e.target.value })}
                       placeholder="Customer name"
                     />
-                  </Stack>
-                  <Stack gap={1} className="min-w-[8rem] flex-1">
-                    <Label
-                      htmlFor={`var-example-${index}`}
-                      className="text-[var(--color-text-tertiary)]"
-                    >
+                  </div>
+                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
+                    <Label htmlFor={`var-example-${index}`} className="text-base-content/50">
                       Example (optional)
                     </Label>
                     <Input
@@ -86,7 +77,7 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                       onChange={(e) => update(index, { example: e.target.value })}
                       placeholder="Jordan"
                     />
-                  </Stack>
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"
@@ -99,11 +90,11 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           ))}
-        </Stack>
+        </div>
       )}
 
       <div>
@@ -112,12 +103,12 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
           variant="outline"
           color="module"
           size="sm"
-          leftIcon={<Plus className="h-4 w-4" />}
+          iconStart={<Plus className="h-4 w-4" />}
           onClick={add}
         >
           Add variable
         </Button>
       </div>
-    </Stack>
+    </div>
   );
 }

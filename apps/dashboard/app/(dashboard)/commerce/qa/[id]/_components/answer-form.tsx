@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Textarea } from 'silicaui-react';
 
 import { submitOfficialAnswerAction } from '../../../review-actions';
 
@@ -35,23 +35,23 @@ export function AnswerForm({ questionId }: { questionId: string }) {
   }
 
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={4}
         placeholder="Post an official answer as staff. The storefront pins official answers to the top."
       />
-      <Stack direction="row" gap={2} justify="between" align="center">
+      <div className="flex flex-row items-center justify-between gap-2">
         {error && (
-          <Text size="xs" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-xs" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
         <Button color="module" disabled={pending} onClick={onSubmit} className="ml-auto">
           Post staff answer
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

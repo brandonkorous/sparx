@@ -1,6 +1,7 @@
 import { Gift, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -34,8 +35,8 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Gift className="h-5 w-5" />}
           title="Gift cards"
@@ -58,12 +59,12 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
         <ListToolbar searchPlaceholder="Search code, recipient name or email…" enableViewToggle />
 
         {cards.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<Gift className="h-5 w-5" />}
               title="No gift cards yet"
               description="Issue one with the New button. Cards stay active until spent, expired, or cancelled."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="gift-card"
                   newHref="/commerce/gift-cards/new"
@@ -80,8 +81,8 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
         ) : (
           <GiftCardsList cards={cards} view={view} />
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

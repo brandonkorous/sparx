@@ -1,6 +1,7 @@
 import { Plus, Tag } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -43,8 +44,8 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Tag className="h-5 w-5" />}
           title="Discounts"
@@ -55,7 +56,7 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
           }
           description="Codes activate when a shopper enters them; automatic discounts apply silently when their conditions match. Stacking rules govern combining with subscribe-and-save and loyalty."
           actions={
-            <Stack direction="row" gap={2}>
+            <div className="flex flex-row gap-2">
               <DiscountsImportExport />
               <EntityCreateButton
                 entityType="discount"
@@ -65,7 +66,7 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
               >
                 New
               </EntityCreateButton>
-            </Stack>
+            </div>
           }
         />
 
@@ -76,12 +77,12 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
         />
 
         {discounts.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<Tag className="h-5 w-5" />}
               title="No discounts yet"
               description="Create a code (e.g. WELCOME10) for new-customer promos, or an automatic discount that applies when conditions are met."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="discount"
                   newHref="/commerce/discounts/new"
@@ -95,17 +96,17 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
           </Card>
         ) : (
           <>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Higher-priority discounts evaluate first when multiple are eligible. Per-customer
               limits and total caps are enforced at redemption time.
-            </Text>
+            </p>
             <DiscountsList discounts={discounts} view={view} />
           </>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Textarea } from 'silicaui-react';
 
 import { updateTemplateAction } from '../../../configurator-actions';
 
@@ -48,7 +48,7 @@ export function TemplateJsonEditor({
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <Textarea
         value={json}
         onChange={(e) => setJson(e.target.value)}
@@ -56,15 +56,15 @@ export function TemplateJsonEditor({
         className="font-mono text-xs"
       />
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
-      <Stack direction="row" gap={2} justify="end">
+      <div className="flex flex-row justify-end gap-2">
         <Button color="module" type="button" disabled={pending} onClick={onSave}>
           {pending ? 'Saving…' : 'Save definition'}
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

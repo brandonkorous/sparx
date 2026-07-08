@@ -3,19 +3,9 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createTaxZoneAction } from '../../../../tax-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -149,11 +139,11 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={1} className="w-24">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex w-24 flex-col gap-1">
                     <Label htmlFor="country">Country *</Label>
                     <Input
                       id="country"
@@ -162,8 +152,8 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
                       maxLength={2}
                       placeholder="US"
                     />
-                  </Stack>
-                  <Stack gap={1} className="w-32">
+                  </div>
+                  <div className="flex w-32 flex-col gap-1">
                     <Label htmlFor="region">Region</Label>
                     <Input
                       id="region"
@@ -172,8 +162,8 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
                       maxLength={6}
                       placeholder="US-CA"
                     />
-                  </Stack>
-                  <Stack gap={1} className="min-w-[10rem] flex-1">
+                  </div>
+                  <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                     <Label htmlFor="nexusType">Nexus *</Label>
                     <NativeSelect
                       id="nexusType"
@@ -186,9 +176,9 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                </Stack>
-                <Stack gap={1}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="registrationNumber">Registration number</Label>
                   <Input
                     id="registrationNumber"
@@ -196,17 +186,17 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
                     onChange={(e) => setRegistrationNumber(e.target.value)}
                     maxLength={63}
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Sales-tax permit, VAT ID, or equivalent.
-                  </Text>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  </p>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

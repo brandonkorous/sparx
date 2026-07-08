@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 /* The sparx brand, expressed as a silicaui theme (`[data-theme="sparx"]`). Holds
    the standard `--color-{name}` / `--color-{name}-content` palette silicaui reads.
-   Graduates to a shared `@sparx/brand` package in the platform-wide rollout. */
-@import './sparx-theme.css';
+   Now the shared @sparx/brand package — defined once, imported by every app. */
+@import '@sparx/brand/theme.css';
 
 /* silicaui is the component layer — a Tailwind v4 plugin whose semantic classes
    (`.btn`, `.badge`, `.alert`, …) are emitted via addBase and read the theme
@@ -11,7 +11,7 @@
    `colors:` lists every semantic color that gets component variants. Beyond
    silicaui's defaults we register `danger` (sparx's `statusTone()` vocabulary),
    so `.badge-danger` / `.alert-danger` / `.btn-danger` exist and pair with the
-   `--color-danger` / `--color-danger-content` tokens in sparx-theme.css. No
+   `--color-danger` / `--color-danger-content` tokens in @sparx/brand/theme.css. No
    `@source` for silicaui-react: its components emit only these plugin classes,
    never internal Tailwind utilities, so there's nothing extra to scan.
 
@@ -20,7 +20,7 @@
    checkout/ui) — the bespoke `mx-*` chrome vocabulary has been fully retired. */
 /* `colors:` is silicaui's "wrap this color onto everything" list — every name here
    gets the full `text-`/`bg-`/`border-` utility trio + component variants, paired
-   with its `--color-<name>` / `--color-<name>-content` tokens in sparx-theme.css.
+   with its `--color-<name>` / `--color-<name>-content` tokens in @sparx/brand/theme.css.
    Beyond silicaui's defaults we register `danger` (sparx's statusTone vocabulary).
    The text/border hierarchy needs no new colors — it's expressed with opacity
    modifiers on the base ink (`text-base-content/70` muted, `/50` faint,

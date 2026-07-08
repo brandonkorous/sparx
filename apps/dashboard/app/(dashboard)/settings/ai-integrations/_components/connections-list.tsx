@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Card,
-  SelectionList,
-  Stack,
-  Text,
-  type SelectionCard,
-  type SelectionColumn,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { revokeMcpConnectionAction } from '../actions';
 import { RevokeButton } from './revoke-button';
@@ -39,20 +32,16 @@ function capabilityScopes(c: Connection): string[] {
 
 function scopeBadges(scopes: string[]) {
   if (scopes.length === 0) {
-    return (
-      <Text size="xs" variant="muted">
-        No capability scopes
-      </Text>
-    );
+    return <p className="text-base-content/70 text-xs">No capability scopes</p>;
   }
   return (
-    <Stack direction="row" gap={1} className="flex-wrap">
+    <div className="flex flex-row flex-wrap gap-1">
       {scopes.map((s) => (
         <Badge key={s} color="neutral" variant="soft" size="sm">
           <code>{s}</code>
         </Badge>
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -73,50 +62,46 @@ export function ConnectionsList({ connections }: { connections: Connection[] }) 
     {
       header: 'Assistant',
       cell: (c) => (
-        <Stack direction="row" align="center" gap={2} className="min-w-0">
-          <Text size="sm" weight="medium" className="truncate">
-            {displayName(c)}
-          </Text>
+        <div className="flex min-w-0 flex-row items-center gap-2">
+          <p className="truncate text-sm font-medium">{displayName(c)}</p>
           <Badge color="success" variant="soft" size="sm">
             OAuth
           </Badge>
-        </Stack>
+        </div>
       ),
     },
     { header: 'Scopes', cell: (c) => scopeBadges(capabilityScopes(c)) },
     {
       header: 'Connected',
       cell: (c) => (
-        <Text size="sm" variant="muted">
-          {c.firstAuthorizedAt.toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{c.firstAuthorizedAt.toLocaleDateString()}</p>
       ),
     },
     { header: '', id: 'actions', align: 'right', cell: revokeButton },
   ];
 
   const card: SelectionCard<Connection> = {
-    title: (c) => <Text weight="medium">{displayName(c)}</Text>,
+    title: (c) => <p className="font-medium">{displayName(c)}</p>,
     render: (c) => (
-      <Card variant="default" padding="md">
-        <Stack gap={2}>
-          <Stack direction="row" align="start" justify="between" gap={2}>
-            <Stack direction="row" align="center" gap={2} className="min-w-0">
-              <Text weight="medium" className="truncate">
-                {displayName(c)}
-              </Text>
-              <Badge color="success" variant="soft" size="sm">
-                OAuth
-              </Badge>
-            </Stack>
-            {revokeButton(c)}
-          </Stack>
-          {scopeBadges(capabilityScopes(c))}
-          <Text size="xs" variant="muted">
-            Connected {c.firstAuthorizedAt.toLocaleDateString()} · last authorized{' '}
-            {c.lastAuthorizedAt.toLocaleString()}
-          </Text>
-        </Stack>
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-start justify-between gap-2">
+              <div className="flex min-w-0 flex-row items-center gap-2">
+                <p className="truncate font-medium">{displayName(c)}</p>
+                <Badge color="success" variant="soft" size="sm">
+                  OAuth
+                </Badge>
+              </div>
+              {revokeButton(c)}
+            </div>
+            {scopeBadges(capabilityScopes(c))}
+            <p className="text-base-content/70 text-xs">
+              Connected {c.firstAuthorizedAt.toLocaleDateString()} · last authorized{' '}
+              {c.lastAuthorizedAt.toLocaleString()}
+            </p>
+          </div>
+        </CardBody>
       </Card>
     ),
   };

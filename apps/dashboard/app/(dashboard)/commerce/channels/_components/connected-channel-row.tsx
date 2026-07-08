@@ -6,7 +6,8 @@
 // and the count loss (the platform destructive-action rule).
 
 import * as React from 'react';
-import { Badge, Button, Stack, Text, statusTone, useConfirm } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
+import { statusTone, useConfirm } from '@sparx/ui';
 import { disconnectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelConnectionView } from '../_types';
 
@@ -52,39 +53,34 @@ export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) 
   }
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      className="rounded-md border border-[var(--color-border-default)] p-3"
-    >
-      <Stack gap={1} className="flex-1">
-        <Stack direction="row" align="center" gap={2}>
-          <Text weight="medium">{name}</Text>
+    <div className="flex flex-row items-center gap-3 rounded-md border border-[var(--color-border-default)] p-3">
+      <div className="flex flex-1 flex-col gap-1">
+        <div className="flex flex-row items-center gap-2">
+          <p className="text-base font-medium">{name}</p>
           <Badge color={statusTone(connection.status)} variant="soft" className="text-xs">
             {connection.status}
           </Badge>
-        </Stack>
-        <Text size="xs" variant="muted">
+        </div>
+        <p className="text-base-content/70 text-xs">
           {connection.shopName ? `${connection.shopName} · ` : ''}
           {links} product{links === 1 ? '' : 's'} linked
           {connection.lastSyncedAt
             ? ` · last synced ${new Date(connection.lastSyncedAt).toLocaleString()}`
             : ' · not synced yet'}
-        </Text>
+        </p>
         {metrics && metrics.orders > 0 && (
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Last 30 days · {fmtCents(metrics.grossRevenueCents, metrics.currency)} ·{' '}
             {metrics.orders.toLocaleString()} order{metrics.orders === 1 ? '' : 's'} ·{' '}
             {fmtCents(metrics.averageOrderValueCents, metrics.currency)} AOV
-          </Text>
+          </p>
         )}
         {error && (
-          <Text size="xs" variant="danger" role="alert">
+          <p className="text-danger text-xs" role="alert">
             {error}
-          </Text>
+          </p>
         )}
-      </Stack>
+      </div>
       <Button
         type="button"
         variant="ghost"
@@ -96,6 +92,6 @@ export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) 
       >
         Disconnect
       </Button>
-    </Stack>
+    </div>
   );
 }

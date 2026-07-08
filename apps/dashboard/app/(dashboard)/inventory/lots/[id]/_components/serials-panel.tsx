@@ -3,19 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { createSerialUnitAction, updateSerialStatusAction } from '../../../_lib/lot-actions';
 import {
@@ -42,26 +30,24 @@ export function SerialsPanel({
 }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Heading level={3}>Serials</Heading>
-          <Text size="sm" variant="muted">
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold">Serials</h3>
+          <p className="text-base-content/70 text-sm">
             {serials.length} unit{serials.length === 1 ? '' : 's'}
-          </Text>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
           {serials.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No serials on this lot yet — add one below.
-            </Text>
+            </p>
           ) : (
             serials.map((s) => <SerialRowItem key={s.id} lotId={lotId} serial={s} />)
           )}
           <AddSerialRow lotId={lotId} variantId={variantId} warehouseId={warehouseId} />
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -82,25 +68,15 @@ function SerialRowItem({ lotId, serial: s }: { lotId: string; serial: SerialRow 
   }
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
-      <Stack gap={0} className="min-w-[12rem] flex-1">
-        <Text size="sm" className="font-mono font-medium">
-          {s.serial}
-        </Text>
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+      <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+        <p className="font-mono text-sm font-medium">{s.serial}</p>
         {s.soldOnOrderItemId ? (
-          <Text size="xs" variant="muted">
-            sold on order item
-          </Text>
+          <p className="text-base-content/70 text-xs">sold on order item</p>
         ) : null}
-      </Stack>
+      </div>
       <Badge color={serialStatusColor(s.status)}>{serialStatusLabel(s.status)}</Badge>
-      <Stack gap={0} className="w-[9rem]">
+      <div className="flex w-[9rem] flex-col gap-0">
         <Label htmlFor={`status-${s.id}`} className="sr-only">
           Change status
         </Label>
@@ -116,13 +92,9 @@ function SerialRowItem({ lotId, serial: s }: { lotId: string; serial: SerialRow 
             </option>
           ))}
         </NativeSelect>
-      </Stack>
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }
 
@@ -170,15 +142,9 @@ function AddSerialRow({
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="add-serial">Add serial number</Label>
           <Input
             id="add-serial"
@@ -192,8 +158,8 @@ function AddSerialRow({
             }}
             placeholder="e.g. SN-0001"
           />
-        </Stack>
-        <Stack gap={1} className="w-[9rem]">
+        </div>
+        <div className="flex w-[9rem] flex-col gap-1">
           <Label htmlFor="add-serial-status">Status</Label>
           <NativeSelect
             id="add-serial-status"
@@ -206,16 +172,12 @@ function AddSerialRow({
               </option>
             ))}
           </NativeSelect>
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={add} disabled={busy}>
           {busy ? 'Adding…' : 'Add serial'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }

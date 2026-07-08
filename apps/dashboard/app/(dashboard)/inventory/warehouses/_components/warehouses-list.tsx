@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -60,17 +53,15 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
 
   const channels = (w: WarehouseRow) =>
     w.defaultForChannel.length > 0 ? (
-      <Stack direction="row" gap={1} wrap>
+      <div className="flex flex-row flex-wrap gap-1">
         {w.defaultForChannel.map((c) => (
           <Badge key={c} color="neutral" variant="soft" size="sm">
             {statusLabel(c)}
           </Badge>
         ))}
-      </Stack>
+      </div>
     ) : (
-      <Text size="xs" variant="muted">
-        none
-      </Text>
+      <p className="text-base-content/70 text-xs">none</p>
     );
 
   const statusBadge = (w: WarehouseRow) =>
@@ -101,25 +92,19 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
   ];
 
   const card: SelectionCard<WarehouseRow> = {
-    title: (w) => (
-      <Text size="sm" className="truncate font-medium">
-        {w.name}
-      </Text>
-    ),
+    title: (w) => <p className="truncate text-sm font-medium">{w.name}</p>,
     subtitle: codeLink,
     badge: statusBadge,
     body: (w) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
           <Badge color="info" variant="soft" size="sm">
             {statusLabel(w.type)}
           </Badge>
-          <Text size="xs" variant="muted">
-            {location(w)}
-          </Text>
-        </Stack>
+          <p className="text-base-content/70 text-xs">{location(w)}</p>
+        </div>
         {channels(w)}
-      </Stack>
+      </div>
     ),
   };
 

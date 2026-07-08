@@ -7,7 +7,8 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { Badge, Button, Stack, Text, statusLabel } from '@sparx/ui';
+import { statusLabel } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { mergeCustomersAction } from '../../actions';
 
@@ -80,25 +81,22 @@ export function MergeCandidatesGroup({ customers }: Props) {
   }
 
   return (
-    <Stack gap={4}>
-      <Stack gap={2}>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {customers.map((c) => {
           const isPrimary = c.id === primaryId;
           const isDup = duplicateIds.has(c.id);
           return (
-            <Stack
+            <div
               key={c.id}
-              direction="row"
-              align="center"
-              justify="between"
-              className={`rounded-md border p-3 ${
+              className={`flex flex-row items-center justify-between rounded-md border p-3 ${
                 isPrimary
                   ? 'border-[var(--module-active)] bg-[var(--module-active-subtle,transparent)]'
                   : 'border-[var(--color-border-default)]'
               }`}
             >
-              <Stack gap={1}>
-                <Stack direction="row" align="center" gap={2} wrap>
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row flex-wrap items-center gap-2">
                   <Link
                     href={`/crm/customers/${c.id}`}
                     className="text-sm font-medium hover:underline"
@@ -108,23 +106,19 @@ export function MergeCandidatesGroup({ customers }: Props) {
                   <Badge color="neutral" variant="soft" size="sm">
                     {statusLabel(c.type)}
                   </Badge>
-                  {c.email && (
-                    <Text size="xs" variant="muted">
-                      {c.email}
-                    </Text>
-                  )}
+                  {c.email && <p className="text-base-content/70 text-xs">{c.email}</p>}
                   {c.orderCount > 0 && (
                     <Badge color="success" variant="soft" size="sm">
                       {c.orderCount} order{c.orderCount === 1 ? '' : 's'}
                     </Badge>
                   )}
-                </Stack>
-                <Text size="xs" variant="muted">
+                </div>
+                <p className="text-base-content/70 text-xs">
                   Updated {new Date(c.updatedAt).toLocaleString()} · Total spent $
                   {Number(c.totalSpent).toLocaleString()}
-                </Text>
-              </Stack>
-              <Stack direction="row" gap={2}>
+                </p>
+              </div>
+              <div className="flex flex-row gap-2">
                 <Button
                   size="sm"
                   color={isPrimary ? 'module' : 'neutral'}
@@ -143,28 +137,24 @@ export function MergeCandidatesGroup({ customers }: Props) {
                 >
                   {isDup ? 'Will merge' : 'Skip'}
                 </Button>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           );
         })}
-      </Stack>
+      </div>
 
-      {error && (
-        <Text size="sm" variant="danger">
-          {error}
-        </Text>
-      )}
+      {error && <p className="text-danger text-sm">{error}</p>}
 
-      <Stack direction="row" gap={2}>
+      <div className="flex flex-row gap-2">
         <Button onClick={onMerge} color="module" disabled={pending}>
           {pending ? 'Merging…' : `Merge ${duplicateIds.size} into primary`}
         </Button>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           Activities, deals, tasks, and addresses on the duplicates reattach to the primary. The
           duplicates are soft-deleted with a pointer to the primary.
-        </Text>
-      </Stack>
-    </Stack>
+        </p>
+      </div>
+    </div>
   );
 }
 

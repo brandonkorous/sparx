@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Stack, Text } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
 
 import { adjustInventoryAction, setReorderPolicyAction } from '../../_lib/inventory-actions';
 
@@ -116,8 +116,8 @@ export function InventoryRowControls({
   }
 
   return (
-    <Stack gap={2}>
-      <Stack direction="row" gap={1}>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row gap-1">
         <Button
           variant="ghost"
           size="sm"
@@ -132,21 +132,17 @@ export function InventoryRowControls({
         >
           Reorder
         </Button>
-      </Stack>
+      </div>
 
       {mode === 'adjust' && (
         <form onSubmit={onAdjust} className="rounded bg-[var(--color-bg-subtle)] p-3">
-          <Stack direction="row" gap={3} align="end" wrap>
-            <Stack gap={1}>
-              <Text size="xs" variant="muted">
-                Delta (±)
-              </Text>
+          <div className="flex flex-row flex-wrap items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Delta (±)</p>
               <Input name="delta" defaultValue="0" className="w-[6rem]" />
-            </Stack>
-            <Stack gap={1}>
-              <Text size="xs" variant="muted">
-                Reason
-              </Text>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Reason</p>
               <select
                 name="reason"
                 defaultValue="manual"
@@ -158,80 +154,64 @@ export function InventoryRowControls({
                   </option>
                 ))}
               </select>
-            </Stack>
-            <Stack gap={1} className="min-w-[14rem] flex-1">
-              <Text size="xs" variant="muted">
-                Note (optional)
-              </Text>
+            </div>
+            <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Note (optional)</p>
               <Input name="note" placeholder="e.g. damaged in transit, recount after audit" />
-            </Stack>
-            <Stack direction="row" gap={2}>
+            </div>
+            <div className="flex flex-row gap-2">
               <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                 Cancel
               </Button>
               <Button color="module" size="sm" type="submit" disabled={pending}>
                 {pending ? 'Saving…' : 'Apply'}
               </Button>
-            </Stack>
-          </Stack>
-          {error && (
-            <Text size="xs" className="mt-2 text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
+            </div>
+          </div>
+          {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
         </form>
       )}
 
       {mode === 'reorder' && (
         <form onSubmit={onSetReorder} className="rounded bg-[var(--color-bg-subtle)] p-3">
-          <Stack direction="row" gap={3} align="end" wrap>
-            <Stack gap={1}>
-              <Text size="xs" variant="muted">
-                Reorder point
-              </Text>
+          <div className="flex flex-row flex-wrap items-end gap-3">
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Reorder point</p>
               <Input
                 name="reorderPoint"
                 defaultValue={row.reorderPoint?.toString() ?? '0'}
                 className="w-[6rem]"
               />
-            </Stack>
-            <Stack gap={1}>
-              <Text size="xs" variant="muted">
-                Reorder qty
-              </Text>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Reorder qty</p>
               <Input
                 name="reorderQuantity"
                 defaultValue={row.reorderQuantity?.toString() ?? ''}
                 className="w-[6rem]"
               />
-            </Stack>
-            <Stack gap={1}>
-              <Text size="xs" variant="muted">
-                Lead time (days)
-              </Text>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Lead time (days)</p>
               <Input
                 name="leadTimeDays"
                 defaultValue={row.leadTimeDays?.toString() ?? ''}
                 className="w-[8rem]"
               />
-            </Stack>
-            <Stack direction="row" gap={2}>
+            </div>
+            <div className="flex flex-row gap-2">
               <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                 Cancel
               </Button>
               <Button color="module" size="sm" type="submit" disabled={pending}>
                 {pending ? 'Saving…' : 'Save policy'}
               </Button>
-            </Stack>
-          </Stack>
-          {error && (
-            <Text size="xs" className="mt-2 text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
+            </div>
+          </div>
+          {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
         </form>
       )}
-    </Stack>
+    </div>
   );
 }
 

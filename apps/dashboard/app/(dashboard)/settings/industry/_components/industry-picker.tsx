@@ -22,7 +22,8 @@ import {
   Utensils,
   Warehouse,
 } from 'lucide-react';
-import { Badge, Button, Card, Grid, ModuleProvider, Stack, Text, toast } from '@sparx/ui';
+import { Card, ModuleProvider, toast } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { installIndustryStarterAction, type IndustryStarterView } from '../actions';
 
@@ -83,7 +84,7 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
   }
 
   return (
-    <Grid cols={1} mdCols={2} lgCols={3} gap={3}>
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
       {starters.map((starter) => {
         const Icon = ICONS[starter.iconKey] ?? Compass;
         const isActive = starter.slug === activeSlug;
@@ -95,24 +96,20 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
             padding="md"
             className={isActive ? 'h-full ring-1 ring-[var(--color-success)]' : 'h-full'}
           >
-            <Stack gap={2} className="h-full">
-              <Stack direction="row" gap={2} align="center">
+            <div className="flex h-full flex-col gap-2">
+              <div className="flex flex-row items-center gap-2">
                 <Icon className="h-4 w-4 text-[var(--color-text-muted)]" />
-                <Text weight="medium" className="flex-1">
-                  {starter.name}
-                </Text>
+                <p className="flex-1 font-medium">{starter.name}</p>
                 {isActive && (
                   <Badge color="success" variant="soft" size="sm">
                     Current
                   </Badge>
                 )}
-              </Stack>
+              </div>
 
-              <Text size="xs" variant="muted" className="flex-1">
-                {starter.description}
-              </Text>
+              <p className="text-base-content/70 flex-1 text-xs">{starter.description}</p>
 
-              <Stack direction="row" gap={1} className="flex-wrap">
+              <div className="flex flex-row flex-wrap gap-1">
                 {starter.modules.map((m) =>
                   enabled.has(m) ? (
                     <ModuleProvider key={m} module={m as SparxModuleName} className="inline-flex">
@@ -126,12 +123,12 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
                     </Badge>
                   )
                 )}
-              </Stack>
+              </div>
 
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 {starter.applicablePresetCount} of {starter.totalPresetCount} packs apply to your
                 enabled modules.
-              </Text>
+              </p>
 
               <Button
                 color="primary"
@@ -143,10 +140,10 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
               >
                 {isActive ? 'Re-run setup' : 'Set up this industry'}
               </Button>
-            </Stack>
+            </div>
           </Card>
         );
       })}
-    </Grid>
+    </div>
   );
 }

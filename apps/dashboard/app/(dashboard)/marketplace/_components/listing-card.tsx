@@ -5,7 +5,7 @@
 // card renders blueprints, themes, components, and integrations alike.
 
 import Link from 'next/link';
-import { Badge, Card, CardContent, CardHeader, CardTitle, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
 import type { MarketplaceListing } from '../_types';
 
 import { ListingCardActions } from './listing-card-actions';
@@ -55,7 +55,7 @@ export function ListingCard({
   const badges = listingBadges(item);
 
   return (
-    <Card variant="default" className="flex flex-col overflow-hidden">
+    <Card className="flex flex-col overflow-hidden">
       {preview ? (
         <Link href={href} className="block">
           <img
@@ -65,21 +65,19 @@ export function ListingCard({
           />
         </Link>
       ) : null}
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2} className="justify-between">
+      <CardBody className="flex flex-1 flex-col">
+        <div className="flex flex-row items-center justify-between gap-2">
           <CardTitle className="min-w-0 truncate">
             <Link href={href} className="hover:underline">
               {item.name}
             </Link>
           </CardTitle>
           {tag ? <Badge variant="soft">{tag}</Badge> : null}
-        </Stack>
-      </CardHeader>
-      <CardContent className="flex flex-1 flex-col">
-        <Stack gap={3} className="flex-1">
-          <Text size="sm" variant="muted" className="line-clamp-2">
+        </div>
+        <div className="flex flex-1 flex-col gap-3">
+          <p className="text-base-content/70 line-clamp-2 text-sm">
             {item.tagline ?? item.description ?? ''}
-          </Text>
+          </p>
           {badges.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {badges.map((b) => (
@@ -92,8 +90,8 @@ export function ListingCard({
           <div className="mt-auto pt-1">
             <ListingCardActions item={item} canInstall={canInstall} />
           </div>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -55,14 +48,12 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
         {statusLabel(b.pricingMode)}
       </Badge>
       {b.pricingMode === 'fixed' && b.fixedPriceCents != null && (
-        <Text size="xs" variant="muted" className="mt-1">
+        <p className="text-base-content/70 mt-1 text-xs">
           {moneyFmt.format(b.fixedPriceCents / 100)}
-        </Text>
+        </p>
       )}
       {b.pricingMode === 'percent_off_sum' && b.percentOffSum != null && (
-        <Text size="xs" variant="muted" className="mt-1">
-          {b.percentOffSum}% off
-        </Text>
+        <p className="text-base-content/70 mt-1 text-xs">{b.percentOffSum}% off</p>
       )}
     </>
   );
@@ -81,9 +72,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     {
       header: 'Updated',
       cell: (b) => (
-        <Text size="xs" variant="muted">
-          {new Date(b.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -92,15 +81,13 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     title: (b) => titleLink(b, 'truncate hover:text-[var(--module-active)]'),
     badge: inventoryBadge,
     body: (b) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          {pricingCell(b)}
-        </Stack>
-        <Text size="xs" variant="muted">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">{pricingCell(b)}</div>
+        <p className="text-base-content/70 text-xs">
           {b.componentCount} component{b.componentCount === 1 ? '' : 's'} · updated{' '}
           {new Date(b.updatedAt).toLocaleDateString()}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 

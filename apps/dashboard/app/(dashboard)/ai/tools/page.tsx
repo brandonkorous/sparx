@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { ChevronLeft, Wrench } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { Button, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ToolPolicyManager } from './_components/tool-policy-manager';
@@ -25,14 +26,18 @@ export default async function AiToolsPage() {
     .catch(() => [] as ToolPolicyDto[]);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <div>
-          <Button asChild variant="link" color="module" size="sm" className="mb-2 -ml-2">
-            <Link href="/ai">
-              <ChevronLeft className="mr-0.5 h-3.5 w-3.5" />
-              AI
-            </Link>
+          <Button
+            variant="link"
+            color="module"
+            size="sm"
+            className="mb-2 -ml-2"
+            render={<Link href="/ai" />}
+          >
+            <ChevronLeft className="mr-0.5 h-3.5 w-3.5" />
+            AI
           </Button>
           <PageHeader
             icon={<Wrench className="h-5 w-5" />}
@@ -42,7 +47,7 @@ export default async function AiToolsPage() {
         </div>
 
         <ToolPolicyManager tools={tools} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

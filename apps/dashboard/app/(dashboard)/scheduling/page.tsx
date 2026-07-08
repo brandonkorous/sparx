@@ -12,20 +12,8 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import {
-  ActionQueue,
-  ActionTile,
-  Badge,
-  BarList,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Stat,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { ActionQueue, ActionTile, BarList, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { CardLink, OverviewCard, fmtMoneyCents, fmtNumber } from '../_components/overview-bits';
@@ -150,8 +138,8 @@ export default async function SchedulingOverviewPage() {
   }));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<CalendarClock className="h-5 w-5" />}
           title="Scheduling"
@@ -160,25 +148,25 @@ export default async function SchedulingOverviewPage() {
         />
 
         {services.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<CalendarClock className="h-5 w-5" />}
-              title="Set up scheduling"
-              description="Create a service, add the staff or resources that deliver it, then set their hours — and you're taking bookings."
-              action={
-                <Button color="module" asChild>
-                  <Link href="/scheduling/services">
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<CalendarClock className="h-5 w-5" />}
+                title="Set up scheduling"
+                description="Create a service, add the staff or resources that deliver it, then set their hours — and you're taking bookings."
+                actions={
+                  <Button color="module" render={<Link href="/scheduling/services" />}>
                     Create your first service
                     <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
-              }
-            />
+                  </Button>
+                }
+              />
+            </CardBody>
           </Card>
         ) : (
           <>
             {/* Headline KPIs — operational counts (live) + 30-day performance. */}
-            <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Stat
                 icon={<CalendarClock className="h-4 w-4" />}
                 label="Today"
@@ -203,7 +191,7 @@ export default async function SchedulingOverviewPage() {
                 value={report ? `${report.noShowRatePct}%` : '—'}
                 hint="last 30 days"
               />
-            </Grid>
+            </div>
 
             {/* Needs attention — confirmations + waitlist, wired to live counts. */}
             {(pending > 0 || waitlistCount > 0) && (
@@ -247,7 +235,7 @@ export default async function SchedulingOverviewPage() {
                   description="No bookings in the next 7 days. New bookings will show up here."
                 />
               ) : (
-                <Stack gap={4}>
+                <div className="flex flex-col gap-4">
                   {[...groups.entries()].map(([key, dayEvents]) => (
                     <div key={key}>
                       <p className="mb-1 text-xs font-medium text-[var(--color-text-tertiary)]">
@@ -279,12 +267,12 @@ export default async function SchedulingOverviewPage() {
                       ))}
                     </div>
                   ))}
-                </Stack>
+                </div>
               )}
             </OverviewCard>
 
             {/* Outcome mix + busiest services (last 30 days) — neutral analytics. */}
-            <Grid cols={1} lgCols={2} gap={4}>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <OverviewCard
                 title="Booking outcomes"
                 icon={<TrendingUp className="h-4 w-4" />}
@@ -319,10 +307,10 @@ export default async function SchedulingOverviewPage() {
                   />
                 )}
               </OverviewCard>
-            </Grid>
+            </div>
           </>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

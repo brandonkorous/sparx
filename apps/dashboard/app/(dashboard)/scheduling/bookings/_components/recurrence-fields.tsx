@@ -4,7 +4,7 @@
 // RFC 5545 RRULE the API expands into child bookings. Kept presentation-only —
 // the booking form owns the on/off toggle and submit.
 
-import { Button, Grid, Input, Label, NativeSelect } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect } from 'silicaui-react';
 
 export type RecurrenceFrequency = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 export type RecurrenceEnd =
@@ -69,7 +69,7 @@ export function RecurrenceFields({
 
   return (
     <div className="flex flex-col gap-3 rounded-md border border-[var(--color-border)] p-3">
-      <Grid cols={2} gap={3}>
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor="rec-freq">Repeat</Label>
           <NativeSelect
@@ -98,7 +98,7 @@ export function RecurrenceFields({
             </span>
           </div>
         </div>
-      </Grid>
+      </div>
 
       {value.frequency === 'WEEKLY' ? (
         <div>

@@ -3,20 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Checkbox, Input, Label } from 'silicaui-react';
 
 import {
   lookupVariantBySkuAction,
@@ -103,44 +90,38 @@ export function SupplierVariantsPanel({
 
   return (
     <Card>
-      <CardHeader>
-        <Stack gap={1}>
-          <Heading level={3}>Purchasing catalog</Heading>
-          <CardDescription>
+      <CardBody>
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">Purchasing catalog</h3>
+          <p className="opacity-70">
             The variants you buy from this supplier — their part number, your cost, and MOQ. Cost
             seeds purchase-order lines and the moving-average basis when stock is received.
-          </CardDescription>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
           {links.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No variants linked yet. Add one below by its SKU.
-            </Text>
+            </p>
           ) : (
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {links.map((l) => (
-                <Stack
+                <div
                   key={l.id}
-                  direction="row"
-                  align="center"
-                  gap={3}
-                  wrap
-                  className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
                 >
-                  <Stack gap={0} className="min-w-[12rem] flex-1">
-                    <Stack direction="row" align="center" gap={2}>
-                      <Text size="sm" className="font-medium">
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                    <div className="flex flex-row items-center gap-2">
+                      <p className="text-sm font-medium">
                         {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
-                      </Text>
+                      </p>
                       {l.isPreferred && <Badge color="module">preferred</Badge>}
-                    </Stack>
-                    <Text size="xs" variant="muted" className="font-mono">
+                    </div>
+                    <p className="text-base-content/70 font-mono text-xs">
                       {l.variantSku ?? l.variantId}
                       {l.supplierSku ? ` · their #${l.supplierSku}` : ''}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                   <Detail
                     label="Cost"
                     value={l.unitCostCents !== null ? money(l.unitCostCents) : '—'}
@@ -157,52 +138,40 @@ export function SupplierVariantsPanel({
                   >
                     Remove
                   </Button>
-                </Stack>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
 
           <form ref={formRef} onSubmit={onAdd}>
-            <Stack
-              direction="row"
-              gap={3}
-              align="end"
-              wrap
-              className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-            >
+            <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
               <AddField label="Variant SKU" name="sku" required placeholder="e.g. FUEL-FILTER-1" />
               <AddField label="Their part #" name="supplierSku" placeholder="optional" />
               <AddField label="Cost ($)" name="unitCost" type="number" placeholder="0.00" />
               <AddField label="MOQ" name="minOrderQty" type="number" placeholder="1" />
               <label className="flex items-center gap-2 pb-2">
                 <Checkbox color="module" name="isPreferred" />
-                <Text size="sm">Preferred</Text>
+                <p className="text-sm">Preferred</p>
               </label>
               <Button color="module" type="submit" disabled={pending}>
                 {pending ? 'Saving…' : 'Add'}
               </Button>
-            </Stack>
+            </div>
           </form>
 
-          {error && (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
-        </Stack>
-      </CardContent>
+          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
-    <Stack gap={0} className="w-[5rem]">
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm">{value}</Text>
-    </Stack>
+    <div className="flex w-[5rem] flex-col gap-0">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-sm">{value}</p>
+    </div>
   );
 }
 
@@ -220,7 +189,7 @@ function AddField({
   type?: string;
 }) {
   return (
-    <Stack gap={1} className="min-w-[8rem] flex-1">
+    <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
       <Label htmlFor={`add-${name}`}>{label}</Label>
       <Input
         id={`add-${name}`}
@@ -229,7 +198,7 @@ function AddField({
         placeholder={placeholder}
         type={type}
       />
-    </Stack>
+    </div>
   );
 }
 

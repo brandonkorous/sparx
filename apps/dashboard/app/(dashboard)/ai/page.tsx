@@ -16,22 +16,16 @@ import {
 import { requireSession } from '@sparx/auth';
 import {
   AreaChart,
-  Badge,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
   StatusDot,
-  Text,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -194,39 +188,43 @@ export default async function AiPage() {
       : [];
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Bot className="h-5 w-5" />}
           title="AI"
           description="Your MCP server — let Claude, ChatGPT, and Copilot work with your live business data."
           actions={
-            <Stack direction="row" gap={2} wrap>
+            <div className="flex flex-row flex-wrap gap-2">
               <Button
-                asChild
                 variant="outline"
                 color="module"
-                leftIcon={<MessageSquareText className="h-4 w-4" />}
+                iconStart={<MessageSquareText className="h-4 w-4" />}
+                render={<Link href="/ai/prompts" />}
               >
-                <Link href="/ai/prompts">Prompt library</Link>
+                Prompt library
               </Button>
               <Button
-                asChild
                 variant="outline"
                 color="module"
-                leftIcon={<Wrench className="h-4 w-4" />}
+                iconStart={<Wrench className="h-4 w-4" />}
+                render={<Link href="/ai/tools" />}
               >
-                <Link href="/ai/tools">MCP tools</Link>
+                MCP tools
               </Button>
-              <Button asChild color="module" leftIcon={<Key className="h-4 w-4" />}>
-                <Link href="/settings/ai-integrations">Manage API keys</Link>
+              <Button
+                color="module"
+                iconStart={<Key className="h-4 w-4" />}
+                render={<Link href="/settings/ai-integrations" />}
+              >
+                Manage API keys
               </Button>
-            </Stack>
+            </div>
           }
         />
 
         {/* Headline KPIs — MCP usage + success from the summary, all live. */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<Server className="h-4 w-4" />}
             label="MCP requests · 30d"
@@ -251,7 +249,7 @@ export default async function AiPage() {
             value={apiKeysKpi}
             hint={apiKeysHint}
           />
-        </Grid>
+        </div>
 
         {/* MCP server status (signature, tinted) + AI activity chart */}
         <div className={MCP_ROW}>
@@ -286,8 +284,13 @@ export default async function AiPage() {
               hint="Last 30 days"
               right={successRateLabel}
             />
-            <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/settings/ai-integrations">Manage API keys</Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4 w-full"
+              render={<Link href="/settings/ai-integrations" />}
+            >
+              Manage API keys
             </Button>
           </OverviewCard>
 
@@ -307,10 +310,10 @@ export default async function AiPage() {
                   valueFormat="number"
                   ariaLabel="MCP requests per day, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {activityFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -382,37 +385,35 @@ export default async function AiPage() {
         >
           <div className="grid gap-5 sm:grid-cols-3">
             {CONNECT_STEPS.map((step, i) => (
-              <Stack key={step.title} gap={2}>
-                <Stack direction="row" align="center" gap={2}>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--module-active-tint)] text-xs font-semibold text-[var(--module-active)]">
+              <div key={step.title} className="flex flex-col gap-2">
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-module flex h-6 w-6 items-center justify-center rounded-full bg-[var(--module-active-tint)] text-xs font-semibold">
                     {i + 1}
                   </span>
-                  <Text size="sm" weight="medium">
-                    {step.title}
-                  </Text>
-                </Stack>
-                <Text size="sm" variant="muted">
-                  {step.body}
-                </Text>
-              </Stack>
+                  <p className="text-sm font-medium">{step.title}</p>
+                </div>
+                <p className="text-base-content/70 text-sm">{step.body}</p>
+              </div>
             ))}
           </div>
-          <Stack direction="row" align="center" gap={3} wrap className="mt-5">
-            <Button asChild color="module" leftIcon={<Key className="h-4 w-4" />}>
-              <Link href="/settings/ai-integrations">
-                {hasKeys ? 'Manage API keys' : 'Create your first key'}
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
+          <div className="mt-5 flex flex-row flex-wrap items-center gap-3">
+            <Button
+              color="module"
+              iconStart={<Key className="h-4 w-4" />}
+              render={<Link href="/settings/ai-integrations" />}
+            >
+              {hasKeys ? 'Manage API keys' : 'Create your first key'}
+              <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
-            <Stack direction="row" align="center" gap={2}>
-              <ShieldCheck className="h-4 w-4 text-[var(--color-text-tertiary)]" />
-              <Text size="xs" variant="muted">
+            <div className="flex flex-row items-center gap-2">
+              <ShieldCheck className="text-base-content/50 h-4 w-4" />
+              <p className="text-base-content/70 text-xs">
                 Keys are scoped and revocable — the assistant only does what you allow.
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
         </OverviewCard>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

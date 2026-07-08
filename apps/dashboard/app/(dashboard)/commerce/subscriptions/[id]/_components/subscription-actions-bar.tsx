@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pause, Play, SkipForward, X } from 'lucide-react';
 
-import { Button, Stack, useConfirm } from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import {
   cancelSubscriptionAction,
@@ -92,30 +93,46 @@ export function SubscriptionActionsBar({
   }
 
   return (
-    <Stack direction="row" gap={2}>
+    <div className="flex flex-row gap-2">
       {status === 'active' || status === 'trialing' ? (
-        <Button variant="ghost" disabled={pending} onClick={onPause}>
-          <Pause className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          disabled={pending}
+          onClick={onPause}
+          iconStart={<Pause className="h-4 w-4" />}
+        >
           Pause
         </Button>
       ) : status === 'paused' ? (
-        <Button variant="outline" disabled={pending} onClick={onResume}>
-          <Play className="h-4 w-4" />
+        <Button
+          variant="outline"
+          disabled={pending}
+          onClick={onResume}
+          iconStart={<Play className="h-4 w-4" />}
+        >
           Resume
         </Button>
       ) : null}
       {(status === 'active' || status === 'trialing') && (
-        <Button variant="ghost" disabled={pending} onClick={onSkip}>
-          <SkipForward className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          disabled={pending}
+          onClick={onSkip}
+          iconStart={<SkipForward className="h-4 w-4" />}
+        >
           Skip next
         </Button>
       )}
       {status !== 'cancelled' && (
-        <Button variant="ghost" disabled={pending} onClick={onCancel}>
-          <X className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          disabled={pending}
+          onClick={onCancel}
+          iconStart={<X className="h-4 w-4" />}
+        >
           Cancel
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

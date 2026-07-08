@@ -1,36 +1,24 @@
 import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Container,
-  Grid,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Button, Card, CardActions, CardBody, CardTitle } from 'silicaui-react';
 import { SETTINGS_NAV } from './nav';
 
 export default function SettingsPage() {
   return (
-    <Container size="xl">
-      <Stack gap={8} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-8 py-10">
         <PageHeader
           title="Settings"
           description="Manage your site, team, and integrations. Each section will land here as the platform comes online."
         />
 
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {SETTINGS_NAV.map((g) => {
             const Icon = g.icon;
             return (
               <Card key={g.id}>
-                <CardHeader>
-                  <Stack direction="row" align="center" gap={2}>
+                <CardBody>
+                  <div className="flex flex-row items-center gap-2">
                     <span aria-hidden className="text-[var(--color-text-secondary)]">
                       <Icon className="h-4 w-4" />
                     </span>
@@ -40,26 +28,25 @@ export default function SettingsPage() {
                         Soon
                       </Badge>
                     )}
-                  </Stack>
-                  <CardDescription>{g.description}</CardDescription>
-                </CardHeader>
-                <CardContent />
-                <CardFooter>
-                  {g.ready ? (
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={g.href}>Open</Link>
-                    </Button>
-                  ) : (
-                    <Button variant="ghost" size="sm" disabled>
-                      Open
-                    </Button>
-                  )}
-                </CardFooter>
+                  </div>
+                  <p className="opacity-70">{g.description}</p>
+                  <CardActions className="justify-start">
+                    {g.ready ? (
+                      <Button variant="ghost" size="sm" render={<Link href={g.href} />}>
+                        Open
+                      </Button>
+                    ) : (
+                      <Button variant="ghost" size="sm" disabled>
+                        Open
+                      </Button>
+                    )}
+                  </CardActions>
+                </CardBody>
               </Card>
             );
           })}
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

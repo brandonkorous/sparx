@@ -3,19 +3,9 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
+
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createShippingZoneAction } from '../../../../shipping-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -148,10 +138,10 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack gap={1}>
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="zone-name">Name *</Label>
                   <Input
                     id="zone-name"
@@ -159,8 +149,8 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Domestic US"
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="zone-priority">Priority</Label>
                   <Input
                     id="zone-priority"
@@ -169,11 +159,11 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Higher numbers evaluate first. Use catch-all zones at priority 0.
-                  </Text>
-                </Stack>
-                <Stack gap={1}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="zone-countries">Countries</Label>
                   <Textarea
                     id="zone-countries"
@@ -183,11 +173,11 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
                     placeholder="US, CA"
                     className="font-mono text-xs"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     ISO 3166-1 alpha-2 codes. Leave empty to match any country.
-                  </Text>
-                </Stack>
-                <Stack gap={1}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="zone-regions">Regions (optional)</Label>
                   <Textarea
                     id="zone-regions"
@@ -197,17 +187,17 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
                     placeholder="US-CA, US-OR"
                     className="font-mono text-xs"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     ISO 3166-2 subdivision codes for narrower targeting.
-                  </Text>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  </p>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

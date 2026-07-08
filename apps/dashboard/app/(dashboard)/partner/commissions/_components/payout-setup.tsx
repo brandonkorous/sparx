@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Banknote, CheckCircle2 } from 'lucide-react';
-import { Badge, Button, Stack, Text } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { setupPayoutsAction } from '../actions';
 
@@ -29,24 +29,24 @@ export function PayoutSetup({ connected }: { connected: boolean }) {
 
   if (connected) {
     return (
-      <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-row items-center gap-2">
         <Badge color="success" variant="soft">
           <CheckCircle2 className="h-3.5 w-3.5" />
           Payout account connected
         </Badge>
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           Approved commissions are paid to your connected account each month.
-        </Text>
-      </Stack>
+        </p>
+      </div>
     );
   }
 
   return (
-    <Stack gap={3}>
-      <Text size="sm" variant="muted">
+    <div className="flex flex-col gap-3">
+      <p className="text-base-content/70 text-sm">
         Connect a Stripe payout account to receive your commissions. We pay out monthly once your
         approved balance clears your threshold.
-      </Text>
+      </p>
       <div>
         <Button
           type="button"
@@ -54,16 +54,16 @@ export function PayoutSetup({ connected }: { connected: boolean }) {
           onClick={start}
           loading={pending}
           disabled={pending}
-          leftIcon={<Banknote className="h-4 w-4" />}
+          iconStart={<Banknote className="h-4 w-4" />}
         >
           Set up payouts
         </Button>
       </div>
       {notice && (
-        <Text size="sm" variant="muted" role="status" aria-live="polite">
+        <p className="text-base-content/70 text-sm" role="status" aria-live="polite">
           {notice}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

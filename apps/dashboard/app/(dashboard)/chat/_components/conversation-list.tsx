@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Badge, Button } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { useChatSocket } from './chat-socket-provider';
 import type { ConversationStatus, ConversationSummaryDto } from '../_lib/types';

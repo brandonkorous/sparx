@@ -7,21 +7,14 @@ import { Check } from 'lucide-react';
 import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   Checkbox,
-  Combobox,
-  type ComboboxOption,
-  Heading,
   Input,
   Label,
-  MultiCombobox,
   NativeSelect,
-  Stack,
-  Text,
   Textarea,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { Combobox, type ComboboxOption, MultiCombobox } from '@sparx/ui';
 
 import type { Property } from '@/lib/sites';
 import { SiteScopeField } from '../../../../_components/site-scope-field';
@@ -170,17 +163,13 @@ export function ProductEditForm({
 
   return (
     <form id="product-edit-form" onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3} as="h2">
-              Basics
-            </Heading>
-            <CardDescription>Title, handle, description.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={2}>
+      <div className="flex flex-col gap-4">
+        <Card>
+          <CardBody>
+            <h2 className="text-xl font-semibold">Basics</h2>
+            <p className="opacity-70">Title, handle, description.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
@@ -188,8 +177,8 @@ export function ProductEditForm({
                   onChange={(e) => set('title', e.target.value)}
                 />
                 <FieldError msg={fieldErrors.title} />
-              </Stack>
-              <Stack gap={2}>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="handle">Handle</Label>
                 <Input
                   id="handle"
@@ -197,8 +186,8 @@ export function ProductEditForm({
                   onChange={(e) => set('handle', e.target.value)}
                 />
                 <FieldError msg={fieldErrors.handle} />
-              </Stack>
-              <Stack gap={2}>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
@@ -206,36 +195,28 @@ export function ProductEditForm({
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
                 />
-              </Stack>
-            </Stack>
-          </CardContent>
+              </div>
+            </div>
+          </CardBody>
         </Card>
 
         {sites.length > 1 && (
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3} as="h2">
-                Sites
-              </Heading>
-              <CardDescription>Which of your sites show this product.</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h2 className="text-xl font-semibold">Sites</h2>
+              <p className="opacity-70">Which of your sites show this product.</p>
               <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3} as="h2">
-              Organization
-            </Heading>
-            <CardDescription>Type, vendor, tags, tax class.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack direction="row" gap={4} wrap>
-                <Stack gap={2} className="min-w-[12rem] flex-1">
+        <Card>
+          <CardBody>
+            <h2 className="text-xl font-semibold">Organization</h2>
+            <p className="opacity-70">Type, vendor, tags, tax class.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row flex-wrap gap-4">
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                   <Label htmlFor="productType">Product type</Label>
                   <Combobox
                     id="productType"
@@ -247,8 +228,8 @@ export function ProductEditForm({
                     customHint="Add this product type"
                     aria-label="Product type"
                   />
-                </Stack>
-                <Stack gap={2} className="min-w-[12rem] flex-1">
+                </div>
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                   <Label htmlFor="vendor">Vendor</Label>
                   <Combobox
                     id="vendor"
@@ -260,9 +241,9 @@ export function ProductEditForm({
                     customHint="Add this vendor"
                     aria-label="Vendor"
                   />
-                </Stack>
-              </Stack>
-              <Stack gap={2}>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="tags">Tags</Label>
                 <MultiCombobox
                   id="tags"
@@ -275,12 +256,12 @@ export function ProductEditForm({
                   customHint="Add this tag"
                   aria-label="Tags"
                 />
-                <Text size="xs" variant="muted">
+                <p className="text-base-content/70 text-xs">
                   Pick from existing tags or type a new one. Up to 50.
-                </Text>
+                </p>
                 <FieldError msg={fieldErrors['tags.0'] ?? fieldErrors.tags} />
-              </Stack>
-              <Stack gap={2} className="max-w-xs">
+              </div>
+              <div className="flex max-w-xs flex-col gap-2">
                 <Label htmlFor="taxClass">Tax class</Label>
                 <Combobox
                   id="taxClass"
@@ -292,24 +273,20 @@ export function ProductEditForm({
                   customHint="Add this tax class"
                   aria-label="Tax class"
                 />
-                <Text size="xs" variant="muted">
+                <p className="text-base-content/70 text-xs">
                   Matches a tax rate&apos;s product class. Blank uses the standard rate.
-                </Text>
-              </Stack>
-            </Stack>
-          </CardContent>
+                </p>
+              </div>
+            </div>
+          </CardBody>
         </Card>
 
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3} as="h2">
-              Shipping &amp; fulfillment
-            </Heading>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack direction="row" gap={4} wrap>
-                <Stack gap={2} className="min-w-[12rem] flex-1">
+        <Card>
+          <CardBody>
+            <h2 className="text-xl font-semibold">Shipping &amp; fulfillment</h2>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row flex-wrap gap-4">
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                   <Label htmlFor="fulfillmentType">Fulfillment</Label>
                   <NativeSelect
                     id="fulfillmentType"
@@ -323,8 +300,8 @@ export function ProductEditForm({
                     <option value="bundle">Bundle / kit</option>
                     <option value="subscription">Subscription</option>
                   </NativeSelect>
-                </Stack>
-                <Stack gap={2} className="min-w-[12rem] flex-1">
+                </div>
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                   <Label htmlFor="hazmatClass">Hazmat class</Label>
                   <NativeSelect
                     id="hazmatClass"
@@ -341,21 +318,21 @@ export function ProductEditForm({
                     <option value="radioactive">Radioactive</option>
                     <option value="misc">Miscellaneous</option>
                   </NativeSelect>
-                </Stack>
-              </Stack>
-              <Stack direction="row" align="center" gap={2}>
+                </div>
+              </div>
+              <div className="flex flex-row items-center gap-2">
                 <Checkbox
                   id="requiresShipping"
                   color="module"
                   checked={form.requiresShipping}
-                  onCheckedChange={(v) => set('requiresShipping', v === true)}
+                  onChange={(e) => set('requiresShipping', e.target.checked)}
                 />
                 <Label htmlFor="requiresShipping">Requires shipping</Label>
-              </Stack>
-            </Stack>
-          </CardContent>
+              </div>
+            </div>
+          </CardBody>
         </Card>
-      </Stack>
+      </div>
 
       {/* The primary action floors the active frame (drawer / modal / full page)
           via the footer teleport — it renders OUTSIDE the scrolling body, so it
@@ -366,22 +343,15 @@ export function ProductEditForm({
       <DetailFooterSlot>
         <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mr-auto">
+            <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {savedAt !== null && !dirty && (
-            <Stack
-              direction="row"
-              align="center"
-              gap={1}
-              className="text-[var(--color-success-text)]"
-            >
+            <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
               <Check className="h-4 w-4" />
-              <Text size="sm" variant="success">
-                Saved
-              </Text>
-            </Stack>
+              <p className="text-success text-sm">Saved</p>
+            </div>
           )}
           <Button
             type="submit"
@@ -400,9 +370,5 @@ export function ProductEditForm({
 
 function FieldError({ msg }: { msg: string | undefined }) {
   if (!msg) return null;
-  return (
-    <Text size="xs" variant="danger">
-      {msg}
-    </Text>
-  );
+  return <p className="text-danger text-xs">{msg}</p>;
 }

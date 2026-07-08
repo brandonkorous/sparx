@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { DownloadCloud, Check, RefreshCw } from 'lucide-react';
 import { importSupplierProduct, resyncSupplierProduct } from '../../../_lib/catalog-actions';
 
@@ -31,6 +32,7 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
           variant="ghost"
           size="sm"
           disabled={resyncing}
+          iconStart={<RefreshCw className={`h-4 w-4 ${resyncing ? 'animate-spin' : ''}`} />}
           onClick={() =>
             startResync(async () => {
               const { imagesAdded, error } = await resyncSupplierProduct(supplierId, productId);
@@ -48,7 +50,6 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
             })
           }
         >
-          <RefreshCw className={`mr-1 h-4 w-4 ${resyncing ? 'animate-spin' : ''}`} />
           {resyncing ? 'Re-syncing…' : 'Re-sync'}
         </Button>
       </div>
@@ -61,6 +62,7 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
       variant="soft"
       size="sm"
       disabled={pending}
+      iconStart={<DownloadCloud className="h-4 w-4" />}
       onClick={() =>
         startImport(async () => {
           const { error } = await importSupplierProduct(supplierId, productId);
@@ -78,7 +80,6 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
         })
       }
     >
-      <DownloadCloud className="mr-1 h-4 w-4" />
       {pending ? 'Importing…' : 'Import'}
     </Button>
   );

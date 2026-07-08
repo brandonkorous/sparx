@@ -1,18 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  EmptyState,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { Avatar, Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { UserX } from 'lucide-react';
 
 import { roleLabel } from '../../team/_lib/roles';
@@ -39,7 +29,7 @@ export function PartnerAccessList({
 }) {
   if (consultants.length === 0) {
     return (
-      <Card padding="none">
+      <Card>
         <EmptyState
           icon={<UserX className="h-5 w-5" />}
           title="No partner has access"
@@ -50,11 +40,11 @@ export function PartnerAccessList({
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       {consultants.map((c) => (
         <ConsultantCard key={c.id} consultant={c} canManage={canManage} />
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -86,20 +76,16 @@ function ConsultantCard({
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-          <Stack direction="row" align="center" gap={3} className="min-w-0">
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-row items-center gap-3">
             <Avatar alt={displayName} size="md" />
-            <Stack gap={0} className="min-w-0">
-              <Text weight="medium" className="truncate">
-                {displayName}
-              </Text>
-              <Text size="sm" variant="muted" className="truncate">
-                {consultant.email}
-              </Text>
-            </Stack>
-          </Stack>
-          <Stack direction="row" align="center" gap={3}>
+            <div className="flex min-w-0 flex-col gap-0">
+              <p className="truncate font-medium">{displayName}</p>
+              <p className="text-base-content/70 truncate text-sm">{consultant.email}</p>
+            </div>
+          </div>
+          <div className="flex flex-row items-center gap-3">
             <Badge color="neutral" variant="soft" size="sm">
               {roleLabel(consultant.role)}
             </Badge>
@@ -111,14 +97,14 @@ function ConsultantCard({
                 onClick={onRevoke}
                 loading={pending}
                 disabled={pending}
+                iconStart={<UserX className="h-4 w-4" />}
               >
-                <UserX className="h-4 w-4" />
                 Revoke
               </Button>
             ) : null}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -1,22 +1,7 @@
 import { notFound } from 'next/navigation';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -73,12 +58,10 @@ export async function CartDetailContent({ id }: Props) {
   if (!cart) notFound();
 
   return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={1} className="font-mono text-2xl">
-            {cart.cartId.slice(0, 8)}
-          </Heading>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <h1 className="font-mono text-2xl font-semibold">{cart.cartId.slice(0, 8)}</h1>
           <Badge color="neutral" variant="soft" size="sm">
             {statusLabel(cart.channel)}
           </Badge>
@@ -87,76 +70,66 @@ export async function CartDetailContent({ id }: Props) {
               abandoned
             </Badge>
           )}
-        </Stack>
-        <Text variant="muted">
+        </div>
+        <p className="text-base-content/70 text-base">
           {cart.customerId ? (
             <>
               Customer{' '}
-              <Text as="span" size="sm">
-                {cart.customerName ?? cart.customerId.slice(0, 8)}
-              </Text>
+              <span className="text-sm">{cart.customerName ?? cart.customerId.slice(0, 8)}</span>
             </>
           ) : (
             'Guest cart'
           )}
           {' · '}
           currency {cart.currency}
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Items</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Items</h3>
+            <p className="opacity-70">
               Frozen at the moment of last storefront write; reopening recomputes totals.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Variant</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Qty</TableHead>
-                <TableHead>Unit</TableHead>
-                <TableHead>Subtotal</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
               {cart.items.map((it) => (
-                <TableRow key={it.cartItemId}>
-                  <TableCell>
-                    <Text size="xs" className="font-mono">
-                      {it.variantId.slice(0, 8)}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="xs" className="font-mono">
-                      {it.sku}
-                    </Text>
-                  </TableCell>
-                  <TableCell>{it.name}</TableCell>
-                  <TableCell>{it.quantity}</TableCell>
-                  <TableCell>${(it.unitPriceCents / 100).toFixed(2)}</TableCell>
-                  <TableCell>${(it.subtotalCents / 100).toFixed(2)}</TableCell>
-                </TableRow>
+                <tr key={it.cartItemId}>
+                  <td>
+                    <p className="font-mono text-xs">{it.variantId.slice(0, 8)}</p>
+                  </td>
+                  <td>
+                    <p className="font-mono text-xs">{it.sku}</p>
+                  </td>
+                  <td>{it.name}</td>
+                  <td>{it.quantity}</td>
+                  <td>${(it.unitPriceCents / 100).toFixed(2)}</td>
+                  <td>${(it.subtotalCents / 100).toFixed(2)}</td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Totals</Heading>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Totals</h3>
+          </div>
+          <div className="flex flex-col gap-2">
             <Row label="Subtotal" value={fmt(cart.totals.subtotalCents, cart.currency)} />
             <Row
               label="Discounts"
@@ -174,18 +147,18 @@ export async function CartDetailContent({ id }: Props) {
             />
             <Row label="Total" value={fmt(cart.totals.totalCents, cart.currency)} bold />
             {cart.appliedDiscountCodes.length > 0 && (
-              <Stack direction="row" gap={1} wrap className="pt-1">
+              <div className="flex flex-row flex-wrap gap-1 pt-1">
                 {cart.appliedDiscountCodes.map((code) => (
                   <Badge key={code} color="neutral" variant="soft" size="sm" className="font-mono">
                     {code}
                   </Badge>
                 ))}
-              </Stack>
+              </div>
             )}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -195,13 +168,9 @@ function fmt(cents: number, currency: string): string {
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
-    <Stack direction="row" gap={4}>
-      <Text size="sm" className="w-40" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm" className={bold ? 'font-semibold' : ''}>
-        {value}
-      </Text>
-    </Stack>
+    <div className="flex flex-row gap-4">
+      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className={`text-sm ${bold ? 'font-semibold' : ''}`}>{value}</p>
+    </div>
   );
 }

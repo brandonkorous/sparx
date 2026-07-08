@@ -1,6 +1,6 @@
 import { LayoutTemplate } from 'lucide-react';
 
-import { Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -34,8 +34,8 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<LayoutTemplate className="h-5 w-5" />}
           title="Print templates"
@@ -46,15 +46,15 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
 
         <TemplatesList rows={templates} view={view} />
 
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           Templates reuse the builder framework (the same node-tree machinery as the page + email
           builders). The visual template editor is coming; today the default ships ready to publish,
           and you can preview any template against sample data.
-        </Text>
+        </p>
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

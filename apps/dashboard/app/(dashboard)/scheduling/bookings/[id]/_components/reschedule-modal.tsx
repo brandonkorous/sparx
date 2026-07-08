@@ -6,19 +6,8 @@
 // the create form uses to surface slots.
 
 import { useState } from 'react';
-import {
-  Button,
-  Input,
-  Label,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  Spinner,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { Button, Input, Label, Dialog, DialogContent, DialogTitle, Loading } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { loadSlotsAction, rescheduleBookingAction } from '../../../_lib/actions';
 import type { AvailabilitySlot } from '../../../_lib/types';
@@ -79,13 +68,13 @@ export function RescheduleModal({
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="max-w-lg">
-        <ModalHeader>
-          <ModalTitle>Reschedule booking</ModalTitle>
-        </ModalHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <div>
+          <DialogTitle>Reschedule booking</DialogTitle>
+        </div>
         <div className="flex flex-col gap-4 px-1 py-2">
-          <Stack direction="row" align="end" gap={2}>
+          <div className="flex flex-row items-end gap-2">
             <div className="flex-1">
               <Label htmlFor="rs-date">New date</Label>
               <Input
@@ -103,20 +92,18 @@ export function RescheduleModal({
             >
               Find times
             </Button>
-          </Stack>
+          </div>
 
           {loading ? (
-            <Stack direction="row" align="center" gap={2}>
-              <Spinner size="sm" />
-              <Text size="sm" variant="muted">
-                Checking availability…
-              </Text>
-            </Stack>
+            <div className="flex flex-row items-center gap-2">
+              <Loading size="sm" />
+              <p className="text-base-content/70 text-sm">Checking availability…</p>
+            </div>
           ) : slots ? (
             slots.length === 0 ? (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No open times that day. Try another date.
-              </Text>
+              </p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {slots.map((slot) => (
@@ -134,13 +121,13 @@ export function RescheduleModal({
               </div>
             )
           ) : (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Pick a date and find open times — only slots that respect availability and buffers are
               offered.
-            </Text>
+            </p>
           )}
 
-          <Stack direction="row" justify="end" gap={2}>
+          <div className="flex flex-row justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
@@ -153,9 +140,9 @@ export function RescheduleModal({
             >
               Reschedule
             </Button>
-          </Stack>
+          </div>
         </div>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

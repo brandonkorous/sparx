@@ -4,20 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { createSourceLinkAction, removeSourceLinkAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
@@ -43,37 +30,35 @@ interface MappingsPanelProps {
 export function MappingsPanel({ sourceId, links, warehouses }: MappingsPanelProps) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={3}>SKU mappings</Heading>
-            <CardDescription>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">SKU mappings</h3>
+            <p className="opacity-70">
               How this source’s external SKUs resolve to your items. A feed row matching one of
               these reconciles that item’s stock.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           <Badge color="neutral" variant="soft">
             {links.length} mapping{links.length === 1 ? '' : 's'}
           </Badge>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        </div>
+        <div className="flex flex-col gap-4">
           <AddMappingForm sourceId={sourceId} warehouses={warehouses} />
 
           {links.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No mappings yet. Add one above, or map an unmapped SKU from the queue.
-            </Text>
+            </p>
           ) : (
-            <Stack gap={1}>
+            <div className="flex flex-col gap-1">
               {links.map((link) => (
                 <MappingRow key={link.id} sourceId={sourceId} link={link} />
               ))}
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -96,35 +81,25 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
   }
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      justify="between"
-      gap={3}
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
-      <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
-        <Text size="sm" className="font-mono">
-          {externalRef(link.externalSku, link.externalLocation)}
-        </Text>
+    <div className="flex flex-row items-center justify-between gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+      <div className="flex min-w-0 flex-row flex-wrap items-center gap-3">
+        <p className="font-mono text-sm">{externalRef(link.externalSku, link.externalLocation)}</p>
         {link.isStale ? (
           <Badge color="danger" variant="soft" size="sm">
             stale
           </Badge>
         ) : null}
-        <Text size="xs" variant="muted">
-          →
-        </Text>
-        <Stack gap={0} className="min-w-0">
-          <Text size="sm" className="font-medium">
+        <p className="text-base-content/70 text-xs">→</p>
+        <div className="flex min-w-0 flex-col gap-0">
+          <p className="text-sm font-medium">
             {link.variant?.title ?? link.variant?.sku ?? 'Unknown item'}
-          </Text>
-          <Text size="xs" variant="muted" className="font-mono">
+          </p>
+          <p className="text-base-content/70 font-mono text-xs">
             {link.variant?.sku ?? '—'} · {link.warehouse?.name ?? link.warehouse?.code ?? '—'}
-          </Text>
-        </Stack>
-      </Stack>
-      <Stack direction="row" align="center" gap={2} wrap justify="end">
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-row flex-wrap items-center justify-end gap-2">
         {link.unitsPerExternal > 1 ? (
           <Badge color="neutral" variant="soft" size="sm">
             ×{link.unitsPerExternal}
@@ -136,16 +111,12 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
             buffer {link.safetyBuffer}
           </Badge>
         ) : null}
-        {error ? (
-          <Text size="xs" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        ) : null}
+        {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
         <Button variant="ghost" size="sm" onClick={remove} disabled={pending}>
           <Trash2 className="size-4" />
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -200,12 +171,9 @@ function AddMappingForm({
   }
 
   return (
-    <Stack
-      gap={3}
-      className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-    >
-      <Stack direction="row" gap={3} wrap align="end">
-        <Stack gap={1} className="min-w-[10rem] flex-1">
+    <div className="flex flex-col gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+      <div className="flex flex-row flex-wrap items-end gap-3">
+        <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
           <Label htmlFor="map-external-sku">External SKU</Label>
           <Input
             id="map-external-sku"
@@ -213,8 +181,8 @@ function AddMappingForm({
             onChange={(e) => setExternalSku(e.target.value)}
             placeholder="As it appears in the feed"
           />
-        </Stack>
-        <Stack gap={1} className="min-w-[8rem]">
+        </div>
+        <div className="flex min-w-[8rem] flex-col gap-1">
           <Label htmlFor="map-external-loc">Location</Label>
           <Input
             id="map-external-loc"
@@ -222,8 +190,8 @@ function AddMappingForm({
             onChange={(e) => setExternalLocation(e.target.value)}
             placeholder="Optional"
           />
-        </Stack>
-        <Stack gap={1} className="min-w-[12rem]">
+        </div>
+        <div className="flex min-w-[12rem] flex-col gap-1">
           <Label htmlFor="map-warehouse">Warehouse</Label>
           <NativeSelect
             id="map-warehouse"
@@ -236,29 +204,25 @@ function AddMappingForm({
               </option>
             ))}
           </NativeSelect>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <MappingControlsFields idPrefix="add-link" state={controls} onChange={setControls} />
 
-      <Stack direction="row" gap={3} wrap align="end" justify="between">
-        <Stack gap={1} className="min-w-[16rem] flex-1">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-3">
+        <div className="flex min-w-[16rem] flex-1 flex-col gap-1">
           <Label>Map to item</Label>
           <VariantPicker
             variant={variant}
             onResolve={setVariant}
             onClear={() => setVariant(null)}
           />
-        </Stack>
+        </div>
         <Button color="module" onClick={add} disabled={pending}>
           {pending ? 'Adding…' : 'Add mapping'}
         </Button>
-      </Stack>
-      {error ? (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      ) : null}
-    </Stack>
+      </div>
+      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+    </div>
   );
 }

@@ -4,27 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Boxes, Plus, Trash } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label, NativeSelect, Table } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import type {
   FitmentDimension,
@@ -64,47 +45,43 @@ function rangesOf(d: DomainOption): FitmentDimension[] {
 export function FitmentPanel({ productId, productTitle, fitments, domains }: Props) {
   const domainsById = new Map(domains.map((d) => [d.id, d]));
   return (
-    <Stack gap={4}>
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2}>
-            <Boxes className="h-4 w-4 text-[var(--module-active)]" />
-            <Heading level={3}>Fitment rules</Heading>
-            <Badge color="module" variant="soft">
-              {fitments.length} rule{fitments.length === 1 ? '' : 's'}
-            </Badge>
-          </Stack>
-          <CardDescription>
-            Each row is one compatibility rule for {productTitle}. Narrower rows win on the
-            storefront — match runs OR across rows. A brake pad that fits both the 6.7L Power Stroke
-            2011–2016 and the 7.3L 1999–2003 is two rows; a dog harness fitting Labs 40–80 lb and
-            Goldens 50–90 lb is also two.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
+    <div className="flex flex-col gap-4">
+      <Card>
+        <CardBody className="p-0">
+          <div className="flex flex-col gap-2 p-6">
+            <div className="flex flex-row items-center gap-2">
+              <Boxes className="h-4 w-4 text-[var(--module-active)]" />
+              <h3 className="text-xl font-semibold">Fitment rules</h3>
+              <Badge color="module" variant="soft">
+                {fitments.length} rule{fitments.length === 1 ? '' : 's'}
+              </Badge>
+            </div>
+            <p className="opacity-70">
+              Each row is one compatibility rule for {productTitle}. Narrower rows win on the
+              storefront — match runs OR across rows. A brake pad that fits both the 6.7L Power
+              Stroke 2011–2016 and the 7.3L 1999–2003 is two rows; a dog harness fitting Labs 40–80
+              lb and Goldens 50–90 lb is also two.
+            </p>
+          </div>
           {fitments.length === 0 ? (
-            <Stack
-              gap={2}
-              align="center"
-              className="border-t border-[var(--color-border-default)] py-10 text-center"
-            >
+            <div className="flex flex-col items-center gap-2 border-t border-[var(--color-border-default)] py-10 text-center">
               <Boxes className="h-5 w-5 text-[var(--color-text-muted)]" />
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No fitment rules yet. Add one below so storefront filters can find this product.
-              </Text>
-            </Stack>
+              </p>
+            </div>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Domain</TableHead>
-                  <TableHead>Fits</TableHead>
-                  <TableHead>Narrowing</TableHead>
-                  <TableHead>Notes</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Domain</th>
+                  <th>Fits</th>
+                  <th>Narrowing</th>
+                  <th>Notes</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {fitments.map((row) => (
                   <FitmentRowDisplay
                     key={row.id}
@@ -113,34 +90,32 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
                     domain={domainsById.get(row.domainId)}
                   />
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row items-center gap-2">
             <Plus className="h-4 w-4 text-[var(--module-active)]" />
-            <Heading level={3}>Add fitment rule</Heading>
-          </Stack>
-          <CardDescription>
+            <h3 className="text-xl font-semibold">Add fitment rule</h3>
+          </div>
+          <p className="opacity-70">
             Pick a domain, then drill as deep as the rule needs. Stop at any level — a rule that
             stops at the make fits every model under it. Add a year/size window to narrow further.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           {domains.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No fitment domains configured. Add one in <strong>Commerce → Fitment</strong> first.
-            </Text>
+            </p>
           ) : (
             <NewFitmentForm productId={productId} fitments={fitments} domains={domains} />
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -180,70 +155,58 @@ function FitmentRowDisplay({
   }
 
   return (
-    <TableRow>
-      <TableCell>
-        <Text size="sm">{domain?.displayName ?? row.domainSlug}</Text>
-      </TableCell>
-      <TableCell>
+    <tr>
+      <td>
+        <span className="text-sm">{domain?.displayName ?? row.domainSlug}</span>
+      </td>
+      <td>
         {row.nodePath.length > 0 ? (
-          <Stack direction="row" gap={1} className="flex-wrap">
+          <div className="flex flex-row flex-wrap gap-1">
             {row.nodePath.map((name, i) => (
               <React.Fragment key={i}>
-                {i > 0 && (
-                  <Text size="xs" variant="muted">
-                    /
-                  </Text>
-                )}
-                <Text size="sm" weight={i === row.nodePath.length - 1 ? 'medium' : 'regular'}>
+                {i > 0 && <span className="text-base-content/70 text-xs">/</span>}
+                <span className={i === row.nodePath.length - 1 ? 'text-sm font-medium' : 'text-sm'}>
                   {name}
-                </Text>
+                </span>
               </React.Fragment>
             ))}
-          </Stack>
+          </div>
         ) : (
           <Badge variant="soft" size="sm">
             Any (whole domain)
           </Badge>
         )}
-      </TableCell>
-      <TableCell>
+      </td>
+      <td>
         {row.ranges.length > 0 ? (
-          <Stack direction="row" gap={1} className="flex-wrap">
+          <div className="flex flex-row flex-wrap gap-1">
             {row.ranges.map((r) => (
               <Badge key={r.dimensionKey} variant="soft" size="sm">
                 {rangeLabel(domain, r)}
               </Badge>
             ))}
-          </Stack>
+          </div>
         ) : (
-          <Text size="sm" variant="muted">
-            —
-          </Text>
+          <span className="text-base-content/70 text-sm">—</span>
         )}
-      </TableCell>
-      <TableCell>
-        <Text size="xs" variant="muted">
-          {row.notes ?? '—'}
-        </Text>
-      </TableCell>
-      <TableCell className="text-right">
+      </td>
+      <td>
+        <span className="text-base-content/70 text-xs">{row.notes ?? '—'}</span>
+      </td>
+      <td className="text-right">
         <Button
           type="button"
           variant="ghost"
           size="sm"
           onClick={() => void onDelete()}
           disabled={pending}
-          leftIcon={<Trash className="h-3.5 w-3.5" />}
+          iconStart={<Trash className="h-3.5 w-3.5" />}
         >
           Remove
         </Button>
-        {error && (
-          <Text size="xs" variant="danger" className="mt-1">
-            {error}
-          </Text>
-        )}
-      </TableCell>
-    </TableRow>
+        {error && <p className="text-danger mt-1 text-xs">{error}</p>}
+      </td>
+    </tr>
   );
 }
 
@@ -339,18 +302,14 @@ function NewFitmentForm({
   }
 
   if (!domain) {
-    return (
-      <Text size="sm" variant="muted">
-        Pick a domain to start.
-      </Text>
-    );
+    return <p className="text-base-content/70 text-sm">Pick a domain to start.</p>;
   }
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={3}>
-        <Stack direction="row" gap={3} wrap>
-          <Stack gap={1} className="min-w-[160px] flex-1">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row flex-wrap gap-3">
+          <div className="flex min-w-[160px] flex-1 flex-col gap-1">
             <Label htmlFor="fit-domain">Domain</Label>
             <NativeSelect
               id="fit-domain"
@@ -364,20 +323,20 @@ function NewFitmentForm({
                 </option>
               ))}
             </NativeSelect>
-          </Stack>
+          </div>
           <FitmentNodeDrill
             key={domainId}
             domainId={domain.id}
             levels={levelsOf(domain)}
             onChange={setNodeId}
           />
-        </Stack>
+        </div>
 
         {ranges.length > 0 && (
-          <Stack direction="row" gap={3} wrap>
+          <div className="flex flex-row flex-wrap gap-3">
             {ranges.map((dim) => (
-              <Stack key={dim.key} direction="row" gap={2} align="end">
-                <Stack gap={1} className="w-28">
+              <div key={dim.key} className="flex flex-row items-end gap-2">
+                <div className="flex w-28 flex-col gap-1">
                   <Label htmlFor={`fit-range-${dim.key}-min`}>
                     {dim.label} from{dim.unit ? ` (${dim.unit})` : ''}
                   </Label>
@@ -393,8 +352,8 @@ function NewFitmentForm({
                       }))
                     }
                   />
-                </Stack>
-                <Stack gap={1} className="w-28">
+                </div>
+                <div className="flex w-28 flex-col gap-1">
                   <Label htmlFor={`fit-range-${dim.key}-max`}>{dim.label} to</Label>
                   <Input
                     id={`fit-range-${dim.key}-max`}
@@ -408,13 +367,13 @@ function NewFitmentForm({
                       }))
                     }
                   />
-                </Stack>
-              </Stack>
+                </div>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
 
-        <Stack gap={1} className="min-w-[200px]">
+        <div className="flex min-w-[200px] flex-col gap-1">
           <Label htmlFor="fit-notes">Notes</Label>
           <Input
             id="fit-notes"
@@ -422,26 +381,26 @@ function NewFitmentForm({
             onChange={(e) => setNotes(e.target.value)}
             placeholder="e.g. requires harness adapter, fleet-only"
           />
-        </Stack>
+        </div>
 
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
 
-        <Stack direction="row" justify="end">
+        <div className="flex flex-row justify-end">
           <Button
             type="submit"
             color="module"
             disabled={pending}
             loading={pending}
-            leftIcon={<Plus className="h-4 w-4" />}
+            iconStart={<Plus className="h-4 w-4" />}
           >
             Add rule
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

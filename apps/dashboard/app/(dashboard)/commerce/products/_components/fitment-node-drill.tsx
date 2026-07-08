@@ -8,7 +8,7 @@
 // and the product-creation wizard. Reset by remounting with `key={domainId}`.
 
 import * as React from 'react';
-import { Label, NativeSelect, Stack } from '@sparx/ui';
+import { Label, NativeSelect } from 'silicaui-react';
 
 import type { FitmentDimension, FitmentNodeRow } from '../../fitment-actions';
 import { listFitmentNodesAction } from '../../fitment-actions';
@@ -63,7 +63,10 @@ export function FitmentNodeDrill({ domainId, levels, onChange, className }: Prop
         const options = optionsByDepth[depth] ?? [];
         const parentPicked = depth === 0 || Boolean(picks[depth - 1]);
         return (
-          <Stack key={level.key} gap={1} className={className ?? 'min-w-[160px] flex-1'}>
+          <div
+            key={level.key}
+            className={`flex flex-col gap-1 ${className ?? 'min-w-[160px] flex-1'}`}
+          >
             <Label htmlFor={`fit-level-${domainId}-${depth}`}>
               {level.label}
               {depth > 0 ? ' (optional)' : ''}
@@ -85,7 +88,7 @@ export function FitmentNodeDrill({ domainId, levels, onChange, className }: Prop
                 </option>
               ))}
             </NativeSelect>
-          </Stack>
+          </div>
         );
       })}
     </>

@@ -5,7 +5,8 @@
 
 import { notFound } from 'next/navigation';
 
-import { Card, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
 import type { EntityType } from '@sparx/seo-audit';
 
 import { ENTITY_LABEL } from '@/components/seo/types';
@@ -25,16 +26,18 @@ export default async function SeoReportPage({ params }: PageProps) {
   const entityType = type as EntityType;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="SEO report"
           description={`${ENTITY_LABEL[entityType]} · the full scorecard and every check behind the score.`}
         />
-        <Card variant="module" padding="none" className="overflow-hidden">
-          <SeoReportPanel type={entityType} id={id} />
+        <Card className="bg-module bg-soft overflow-hidden">
+          <CardBody className="p-0">
+            <SeoReportPanel type={entityType} id={id} />
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

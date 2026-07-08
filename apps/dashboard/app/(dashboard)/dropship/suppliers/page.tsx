@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Truck } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -58,8 +59,8 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Suppliers"
@@ -75,16 +76,18 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
         <ListToolbar searchPlaceholder="Search suppliers…" enableViewToggle />
 
         {suppliers.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title={q ? `No suppliers match "${q}"` : 'No suppliers connected'}
-              description={
-                q
-                  ? 'Try a different search term.'
-                  : 'Connect your first supplier to start importing dropship products.'
-              }
-              action={!q ? <NewSupplierButton /> : undefined}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title={q ? `No suppliers match "${q}"` : 'No suppliers connected'}
+                description={
+                  q
+                    ? 'Try a different search term.'
+                    : 'Connect your first supplier to start importing dropship products.'
+                }
+                actions={!q ? <NewSupplierButton /> : undefined}
+              />
+            </CardBody>
           </Card>
         ) : (
           <SuppliersList
@@ -97,8 +100,8 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

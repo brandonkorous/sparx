@@ -4,7 +4,7 @@
 // Recursive: a group's children are rendered as RuleNodes themselves.
 
 import { Plus, Trash2 } from 'lucide-react';
-import { Badge, Button, Stack } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { PredicateRow } from './predicate-row';
 import { type GroupKind, type Rule, emptyGroup, emptyNot, emptyPredicate } from './types';
@@ -42,11 +42,8 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
 
   if (rule.kind === 'not') {
     return (
-      <Stack
-        gap={2}
-        className="rounded-md border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack direction="row" align="center" justify="between">
+      <div className="flex flex-col gap-2 rounded-md border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex flex-row items-center justify-between">
           <Badge color="warning" variant="soft" size="sm">
             NOT
           </Badge>
@@ -61,24 +58,21 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           )}
-        </Stack>
+        </div>
         <RuleNode
           rule={rule.child}
           depth={depth + 1}
           onChange={(child) => onChange({ kind: 'not', child })}
         />
-      </Stack>
+      </div>
     );
   }
 
   // AND / OR
   const groupKind: GroupKind = rule.kind;
   return (
-    <Stack
-      gap={2}
-      className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3"
-    >
-      <Stack direction="row" align="center" justify="between">
+    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3">
+      <div className="flex flex-row items-center justify-between">
         <select
           className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-xs font-medium uppercase"
           value={groupKind}
@@ -98,9 +92,9 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
-      </Stack>
+      </div>
 
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         {rule.children.map((child, idx) => (
           <RuleNode
             key={idx}
@@ -123,9 +117,9 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
             }
           />
         ))}
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={2}>
+      <div className="flex flex-row gap-2">
         <Button
           type="button"
           variant="ghost"
@@ -133,7 +127,7 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
           onClick={() =>
             onChange({ kind: groupKind, children: [...rule.children, emptyPredicate()] })
           }
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           Add condition
         </Button>
@@ -144,7 +138,7 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
           onClick={() =>
             onChange({ kind: groupKind, children: [...rule.children, emptyGroup('and')] })
           }
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           Add group
         </Button>
@@ -153,11 +147,11 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
           variant="ghost"
           size="sm"
           onClick={() => onChange({ kind: groupKind, children: [...rule.children, emptyNot()] })}
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           Add NOT
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

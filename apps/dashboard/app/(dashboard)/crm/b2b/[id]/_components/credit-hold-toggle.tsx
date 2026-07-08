@@ -8,7 +8,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
 
-import { Button, toast, useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { setB2bAccountStatusAction } from '../../../b2b-actions';
 
@@ -54,7 +55,7 @@ export function CreditHoldToggle({ accountId, currentStatus }: CreditHoldToggleP
       size="sm"
       onClick={() => void toggle()}
       disabled={pending}
-      leftIcon={onHold ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+      iconStart={onHold ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
     >
       {onHold ? 'Release credit hold' : 'Put on credit hold'}
     </Button>

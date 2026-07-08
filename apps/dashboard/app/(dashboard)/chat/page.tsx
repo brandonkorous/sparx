@@ -17,27 +17,16 @@ import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
   BarList,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -254,29 +243,41 @@ export default async function ChatPage() {
       : null;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<MessagesSquare className="h-5 w-5" />}
           title="Live Chat"
           description="Conversations & inbox — across every channel."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Settings className="h-4 w-4" />}>
-                <Link href="/settings/chat">Settings</Link>
+              <Button
+                render={<Link href="/settings/chat" />}
+                variant="outline"
+                iconStart={<Settings className="h-4 w-4" />}
+              >
+                Settings
               </Button>
-              <Button asChild variant="outline" leftIcon={<Zap className="h-4 w-4" />}>
-                <Link href="/settings/chat">Quick replies</Link>
+              <Button
+                render={<Link href="/settings/chat" />}
+                variant="outline"
+                iconStart={<Zap className="h-4 w-4" />}
+              >
+                Quick replies
               </Button>
-              <Button asChild color="module" leftIcon={<Inbox className="h-4 w-4" />}>
-                <Link href="/chat/inbox">Open inbox</Link>
+              <Button
+                render={<Link href="/chat/inbox" />}
+                color="module"
+                iconStart={<Inbox className="h-4 w-4" />}
+              >
+                Open inbox
               </Button>
             </>
           }
         />
 
         {/* KPI strip — conversation counts live, quality metrics sample */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<MessagesSquare className="h-4 w-4" />}
             label="Open conversations"
@@ -301,7 +302,7 @@ export default async function ChatPage() {
             value="—"
             hint="No ratings captured yet"
           />
-        </Grid>
+        </div>
 
         {/* Needs attention — unassigned + active open conversations, both live */}
         <ActionQueue
@@ -414,29 +415,29 @@ export default async function ChatPage() {
               icon={<MessagesSquare className="h-5 w-5" />}
               title="No conversations yet"
               description="Conversations appear here as customers reach out across your channels."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/chat/inbox">Open inbox</Link>
+              actions={
+                <Button variant="outline" size="sm" render={<Link href="/chat/inbox" />}>
+                  Open inbox
                 </Button>
               }
             />
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Last message</TableHead>
-                  <TableHead>Channel</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Wait</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Last message</th>
+                  <th>Channel</th>
+                  <th>Status</th>
+                  <th className="text-right">Wait</th>
+                </tr>
+              </thead>
+              <tbody>
                 {recent.map((c) => {
                   const meta = STATUS_META[c.status];
                   return (
-                    <TableRow key={c.id}>
-                      <TableCell className="font-medium">
+                    <tr key={c.id}>
+                      <td className="font-medium">
                         <Link
                           href={`/chat/inbox/${c.id}`}
                           className="text-[var(--color-text-primary)] hover:text-[var(--module-active-text)]"
@@ -448,31 +449,29 @@ export default async function ChatPage() {
                             {c.unreadStaff}
                           </Badge>
                         )}
-                      </TableCell>
-                      <TableCell className="max-w-[22rem] truncate text-[var(--color-text-secondary)]">
+                      </td>
+                      <td className="max-w-[22rem] truncate text-[var(--color-text-secondary)]">
                         {c.lastMessageSnippet ?? 'No messages yet'}
-                      </TableCell>
-                      <TableCell className="text-[var(--color-text-tertiary)] capitalize">
-                        {c.source}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="text-[var(--color-text-tertiary)] capitalize">{c.source}</td>
+                      <td>
                         <Badge color={meta.color} variant="soft">
                           {meta.label}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      </td>
+                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                         {waitLabel(c)}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
+              </tbody>
             </Table>
           )}
         </OverviewCard>
 
         {/* By channel + agent performance + recent activity */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard title="By channel" icon={<TrendingUp className="h-4 w-4" />} plain>
             {channelRows ? (
               <>
@@ -532,8 +531,8 @@ export default async function ChatPage() {
               />
             )}
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

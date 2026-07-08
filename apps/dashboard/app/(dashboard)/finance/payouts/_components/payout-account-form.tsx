@@ -9,18 +9,7 @@
 // the drawer + refreshes — `onSaved` is the hook.
 
 import * as React from 'react';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Input, Label, Select } from 'silicaui-react';
 
 import { updatePayoutAccountAction } from '../actions';
 import type { MarketPayoutAccount } from '../_types';
@@ -93,8 +82,8 @@ export function PayoutAccountForm({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Stack gap={2}>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="payout-holder">Account holder name</Label>
           <Input
             id="payout-holder"
@@ -104,10 +93,10 @@ export function PayoutAccountForm({
             placeholder="Name on the bank account"
             onChange={(e) => set('accountHolderName', e.target.value)}
           />
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={4} wrap>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+        <div className="flex flex-wrap gap-4">
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="payout-bank">Bank name</Label>
             <Input
               id="payout-bank"
@@ -117,26 +106,20 @@ export function PayoutAccountForm({
               placeholder="Optional"
               onChange={(e) => set('bankName', e.target.value)}
             />
-          </Stack>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+          </div>
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="payout-type">Account type</Label>
             <Select
+              id="payout-type"
               value={form.accountType}
               onValueChange={(v) => set('accountType', v as 'checking' | 'savings')}
-            >
-              <SelectTrigger id="payout-type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="checking">Checking</SelectItem>
-                <SelectItem value="savings">Savings</SelectItem>
-              </SelectContent>
-            </Select>
-          </Stack>
-        </Stack>
+              items={{ checking: 'Checking', savings: 'Savings' }}
+            />
+          </div>
+        </div>
 
-        <Stack direction="row" gap={4} wrap>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+        <div className="flex flex-wrap gap-4">
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="payout-routing">Routing number</Label>
             <Input
               id="payout-routing"
@@ -144,14 +127,12 @@ export function PayoutAccountForm({
               inputMode="numeric"
               autoComplete="off"
               placeholder="9 digits"
-              variant={form.routingNumber.length > 0 && !routingValid ? 'error' : 'default'}
+              color={form.routingNumber.length > 0 && !routingValid ? 'error' : undefined}
               onChange={(e) => set('routingNumber', e.target.value.replace(DIGITS, '').slice(0, 9))}
             />
-            <Text size="xs" variant="muted">
-              The 9-digit ABA number from your bank.
-            </Text>
-          </Stack>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+            <p className="text-base-content/70 text-xs">The 9-digit ABA number from your bank.</p>
+          </div>
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="payout-account">Account number</Label>
             <Input
               id="payout-account"
@@ -159,21 +140,21 @@ export function PayoutAccountForm({
               inputMode="numeric"
               autoComplete="off"
               placeholder="4–17 digits"
-              variant={form.accountNumber.length > 0 && !accountValid ? 'error' : 'default'}
+              color={form.accountNumber.length > 0 && !accountValid ? 'error' : undefined}
               onChange={(e) =>
                 set('accountNumber', e.target.value.replace(DIGITS, '').slice(0, 17))
               }
             />
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               We store only the last 4 digits in the clear; the rest is encrypted.
-            </Text>
-          </Stack>
-        </Stack>
+            </p>
+          </div>
+        </div>
 
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
 
         <Button
@@ -185,7 +166,7 @@ export function PayoutAccountForm({
         >
           {account ? 'Replace account' : 'Save account'}
         </Button>
-      </Stack>
+      </div>
     </form>
   );
 }

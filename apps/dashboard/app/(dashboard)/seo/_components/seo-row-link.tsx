@@ -14,16 +14,13 @@ import { useRouter } from 'next/navigation';
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-  DrawerBody,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-} from '@sparx/ui';
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from 'silicaui-react';
 import type { EntityType } from '@sparx/seo-audit';
 
 import { SeoReport, useSeoAudit } from '@/components/seo/seo-score';
@@ -97,25 +94,25 @@ export function SeoRowLink({
       {overlay === 'drawer' ? (
         <Drawer open onOpenChange={(o) => !o && setOverlay(null)}>
           <DrawerContent side="right" className="sm:max-w-md">
-            <DrawerHeader>
+            <div>
               <DrawerTitle>{title}</DrawerTitle>
               <DrawerDescription>{subtitle}</DrawerDescription>
-            </DrawerHeader>
-            <DrawerBody className="p-0">{report}</DrawerBody>
+            </div>
+            <div className="p-0">{report}</div>
           </DrawerContent>
         </Drawer>
       ) : null}
 
       {overlay === 'modal' ? (
-        <Modal open onOpenChange={(o) => !o && setOverlay(null)}>
-          <ModalContent size="md" className="p-0">
-            <ModalHeader className="border-b border-[var(--color-border-default)] p-4 pr-10">
-              <ModalTitle>{title}</ModalTitle>
-              <ModalDescription>{subtitle}</ModalDescription>
-            </ModalHeader>
+        <Dialog open onOpenChange={(o) => !o && setOverlay(null)}>
+          <DialogContent className="p-0">
+            <div className="border-b border-[var(--color-border-default)] p-4 pr-10">
+              <DialogTitle>{title}</DialogTitle>
+              <DialogDescription>{subtitle}</DialogDescription>
+            </div>
             {report}
-          </ModalContent>
-        </Modal>
+          </DialogContent>
+        </Dialog>
       ) : null}
     </>
   );

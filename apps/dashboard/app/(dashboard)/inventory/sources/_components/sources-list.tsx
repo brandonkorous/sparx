@@ -2,14 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { SourceActions } from './source-actions';
 
@@ -55,9 +49,7 @@ function syncInterval(sec: number): string {
 
 export function SourcesList({ sources, view }: SourcesListProps) {
   const typeText = (s: InventorySource) => (
-    <Text size="sm" className="text-[var(--color-muted-foreground)]">
-      {TYPE_LABELS[s.type] ?? s.type}
-    </Text>
+    <p className="text-sm text-[var(--color-muted-foreground)]">{TYPE_LABELS[s.type] ?? s.type}</p>
   );
 
   const statusBadge = (s: InventorySource) => (
@@ -67,15 +59,15 @@ export function SourcesList({ sources, view }: SourcesListProps) {
   );
 
   const intervalText = (s: InventorySource) => (
-    <Text size="sm" className="text-[var(--color-muted-foreground)]">
+    <p className="text-sm text-[var(--color-muted-foreground)]">
       {syncInterval(s.syncIntervalSec)}
-    </Text>
+    </p>
   );
 
   const lastSyncText = (s: InventorySource) => (
-    <Text size="sm" className="text-[var(--color-muted-foreground)]">
+    <p className="text-sm text-[var(--color-muted-foreground)]">
       {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
-    </Text>
+    </p>
   );
 
   const nameLink = (s: InventorySource) => (
@@ -108,13 +100,13 @@ export function SourcesList({ sources, view }: SourcesListProps) {
     badge: statusBadge,
     body: (s) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
           {intervalText(s)}
           {lastSyncText(s)}
-        </Stack>
-        <Stack direction="row" justify="end">
+        </div>
+        <div className="flex flex-row justify-end">
           <SourceActions source={s} />
-        </Stack>
+        </div>
       </>
     ),
   };

@@ -9,16 +9,14 @@ import Link from 'next/link';
 import { CheckCircle2, Store } from 'lucide-react';
 import {
   Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -59,8 +57,8 @@ export default async function CommerceChannelsPage({
     // Channels ARE Commerce functionality — tint the page with the Commerce hue
     // per the color-follows-functionality rule.
     <ModuleProvider module="commerce">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Store className="h-5 w-5" />}
             title="Sales channels"
@@ -68,28 +66,30 @@ export default async function CommerceChannelsPage({
           />
 
           {connectedName && (
-            <Alert
-              color="success"
-              variant="soft"
-              icon={<CheckCircle2 />}
-              title={`${connectedName} connected`}
-            >
-              Your catalog will start syncing to {connectedName} shortly.
+            <Alert color="success" variant="soft">
+              <CheckCircle2 />
+              <AlertContent>
+                <AlertTitle>{`${connectedName} connected`}</AlertTitle>
+                <AlertDescription>
+                  Your catalog will start syncing to {connectedName} shortly.
+                </AlertDescription>
+              </AlertContent>
             </Alert>
           )}
           {error && (
-            <Alert color="danger" variant="soft" title="Couldn’t connect that channel">
-              {error}
+            <Alert color="danger" variant="soft">
+              <AlertContent>
+                <AlertTitle>Couldn’t connect that channel</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </AlertContent>
             </Alert>
           )}
 
           {connections.length > 0 && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Connected ({connections.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   {connections.map((c) => {
                     const m = revenueByKey.get(c.channel);
                     return (
@@ -110,13 +110,13 @@ export default async function CommerceChannelsPage({
                       />
                     );
                   })}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           )}
 
           {hasRevenue && (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               See the full revenue breakdown — gross, fees, net, and top products by channel — in{' '}
               <Link
                 href="/finance/channels"
@@ -125,18 +125,16 @@ export default async function CommerceChannelsPage({
                 Finance → Channels
               </Link>
               .
-            </Text>
+            </p>
           )}
 
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Available channels</CardTitle>
-            </CardHeader>
-            <CardContent>
               {available.length === 0 ? (
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Every available channel is connected.
-                </Text>
+                </p>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {available.map((c) => (
@@ -144,10 +142,10 @@ export default async function CommerceChannelsPage({
                   ))}
                 </div>
               )}
-            </CardContent>
+            </CardBody>
           </Card>
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

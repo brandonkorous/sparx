@@ -3,19 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2 } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Input,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Input, Table } from 'silicaui-react';
 import { addApprovalRule, deleteApprovalRule } from '../../_lib/actions';
 
 interface ApprovalRule {
@@ -76,36 +64,40 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {rules.length > 0 ? (
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Threshold</TableHead>
-              <TableHead>Required approver</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Threshold</th>
+              <th>Required approver</th>
+              <th>Status</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
             {rules.map((rule) => (
-              <TableRow key={rule.id}>
-                <TableCell>
-                  <Text size="sm" className="font-medium tabular-nums">
+              <tr key={rule.id}>
+                <td>
+                  <p className="text-sm font-medium tabular-nums">
                     Orders over {rule.minAmountFormatted}
-                  </Text>
-                </TableCell>
-                <TableCell>
-                  <Text size="sm" variant={rule.requiredApproverName ? 'default' : 'muted'}>
+                  </p>
+                </td>
+                <td>
+                  <p
+                    className={
+                      rule.requiredApproverName ? 'text-sm' : 'text-base-content/70 text-sm'
+                    }
+                  >
                     {rule.requiredApproverName ?? 'Any staff member'}
-                  </Text>
-                </TableCell>
-                <TableCell>
+                  </p>
+                </td>
+                <td>
                   <Badge color={rule.isActive ? 'success' : 'neutral'} variant="soft">
                     {rule.isActive ? 'Active' : 'Inactive'}
                   </Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Button
                     size="sm"
                     color="danger"
@@ -115,24 +107,22 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
+          </tbody>
         </Table>
       ) : (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           No approval rules. Orders from this account are placed immediately.
-        </Text>
+        </p>
       )}
 
       {showAdd ? (
-        <Stack gap={3}>
-          <Stack direction="row" align="end" gap={3}>
-            <Stack gap={2}>
-              <Text size="sm" className="font-medium">
-                Require approval for orders over
-              </Text>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-row items-end gap-3">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">Require approval for orders over</p>
               <Input
                 type="text"
                 placeholder="e.g. 500"
@@ -144,7 +134,7 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
                 className="w-40"
                 disabled={saving}
               />
-            </Stack>
+            </div>
             <Button
               color="module"
               size="sm"
@@ -165,25 +155,21 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
             >
               Cancel
             </Button>
-          </Stack>
-          {error && (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
-        </Stack>
+          </div>
+          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+        </div>
       ) : (
         <Button
           variant="outline"
           size="sm"
           color="module"
           className="self-start"
+          iconStart={<Plus className="h-3.5 w-3.5" />}
           onClick={() => setShowAdd(true)}
         >
-          <Plus className="mr-1.5 h-3.5 w-3.5" />
           Add approval rule
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

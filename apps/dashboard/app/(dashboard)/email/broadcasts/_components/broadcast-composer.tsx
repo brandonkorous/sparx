@@ -3,19 +3,8 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button, Input, Label, Select } from 'silicaui-react';
 
 import { createBroadcastAction } from '../actions';
 import type { SegmentOption } from '../../_lib/types';
@@ -64,10 +53,13 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
     });
   }
 
+  const segmentItems = Object.fromEntries(segments.map((s) => [s.id, s.name]));
+  const emailItems = Object.fromEntries(designedEmails.map((e) => [e.id, e.name]));
+
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={5} className="max-w-2xl">
-        <Stack gap={2}>
+      <div className="flex max-w-2xl flex-col gap-5">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="name">Campaign name</Label>
           <Input
             id="name"
@@ -76,8 +68,8 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
             placeholder="Spring sale"
             disabled={pending}
           />
-        </Stack>
-        <Stack gap={2}>
+        </div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="subject">Subject</Label>
           <Input
             id="subject"
@@ -86,8 +78,8 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
             placeholder="20% off this week"
             disabled={pending}
           />
-        </Stack>
-        <Stack gap={2}>
+        </div>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="preheader">Preheader</Label>
           <Input
             id="preheader"
@@ -96,62 +88,56 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
             placeholder="Inbox preview line"
             disabled={pending}
           />
-        </Stack>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="segment">Audience (CRM segment)</Label>
           {segments.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No segments found. Create one in the CRM module to target an audience.
-            </Text>
+            </p>
           ) : (
-            <Select value={segmentId} onValueChange={setSegmentId} disabled={pending}>
-              <SelectTrigger id="segment" className="w-full">
-                <SelectValue placeholder="Choose a segment" />
-              </SelectTrigger>
-              <SelectContent>
-                {segments.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Select
+              id="segment"
+              className="w-full"
+              value={segmentId}
+              onValueChange={(v) => setSegmentId(v as string)}
+              disabled={pending}
+              placeholder="Choose a segment"
+              items={segmentItems}
+            />
           )}
-        </Stack>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="designed-email">Email</Label>
           {designedEmails.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No published emails yet.{' '}
               <Link href="/builder/email" className="underline">
                 Design one in the Email Builder
               </Link>{' '}
               and publish it to use as the body.
-            </Text>
+            </p>
           ) : (
-            <Select value={builderEmailId} onValueChange={setBuilderEmailId} disabled={pending}>
-              <SelectTrigger id="designed-email" className="w-full">
-                <SelectValue placeholder="Choose a designed email" />
-              </SelectTrigger>
-              <SelectContent>
-                {designedEmails.map((e) => (
-                  <SelectItem key={e.id} value={e.id}>
-                    {e.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Select
+              id="designed-email"
+              className="w-full"
+              value={builderEmailId}
+              onValueChange={(v) => setBuilderEmailId(v as string)}
+              disabled={pending}
+              placeholder="Choose a designed email"
+              items={emailItems}
+            />
           )}
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={2}>
+        <div className="flex flex-row gap-2">
           <Button type="submit" color="module" loading={pending} disabled={pending}>
             Create draft
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

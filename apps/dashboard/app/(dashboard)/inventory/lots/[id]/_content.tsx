@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { CircleAlert } from 'lucide-react';
 
-import { Badge, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -36,65 +36,57 @@ export async function LotDetailContent({ id }: { id: string }) {
   const recall = recallBadge(lot.recallStatus);
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="start" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <CircleAlert className="h-5 w-5" />
-            <Heading level={1} className="font-mono">
-              {lot.lotNumber}
-            </Heading>
+            <h1 className="font-mono text-3xl font-semibold">{lot.lotNumber}</h1>
             {recall ? <Badge color={recall.color}>{recall.label}</Badge> : null}
             {lot.hazmatClass !== 'none' ? (
               <Badge color="warning" variant="soft">
                 {hazmatLabel(lot.hazmatClass)}
               </Badge>
             ) : null}
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {lot.productTitle ?? lot.variantSku ?? lot.variantId.slice(0, 8)}
             {lot.variantSku ? ` · ${lot.variantSku}` : ''} ·{' '}
             {lot.warehouseName ?? lot.warehouseCode ?? 'Warehouse'}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <LotActionsBar id={lot.id} recallStatus={lot.recallStatus} />
-      </Stack>
+      </div>
 
       {recall && lot.recallStatus === 'active' ? (
         <Card>
-          <CardContent>
-            <Stack gap={1} className="py-1">
-              <Text size="sm" className="font-medium text-[var(--color-danger)]">
-                Recall active
-              </Text>
-              <Text size="sm">{lot.recallReason ?? 'No reason recorded.'}</Text>
-              <Text size="xs" variant="muted">
-                Recalled {formatDate(lot.recalledAt)}
-              </Text>
-            </Stack>
-          </CardContent>
+          <CardBody>
+            <div className="flex flex-col gap-1 py-1">
+              <p className="text-sm font-medium text-[var(--color-danger)]">Recall active</p>
+              <p className="text-sm">{lot.recallReason ?? 'No reason recorded.'}</p>
+              <p className="text-base-content/70 text-xs">Recalled {formatDate(lot.recalledAt)}</p>
+            </div>
+          </CardBody>
         </Card>
       ) : null}
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Quantity" value={String(lot.quantity)} />
         <Stat label="Serials" value={String(lot.serialCount)} />
         <Stat label="Manufactured" value={formatDate(lot.manufacturedAt)} />
         <Stat label="Expires" value={formatDate(lot.expiresAt)} />
         <Stat label="Supplier ref" value={lot.supplierBatchRef ?? '—'} />
-      </Stack>
+      </div>
 
       {lot.serialCounts.length > 0 ? (
-        <Stack direction="row" gap={2} wrap align="center">
-          <Text size="sm" variant="muted">
-            Serial status:
-          </Text>
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <p className="text-base-content/70 text-sm">Serial status:</p>
           {lot.serialCounts.map((c) => (
             <Badge key={c.status} color={serialStatusColor(c.status)} variant="soft">
               {serialStatusLabel(c.status)} · {c.count}
             </Badge>
           ))}
-        </Stack>
+        </div>
       ) : null}
 
       <SerialsPanel
@@ -103,21 +95,19 @@ export async function LotDetailContent({ id }: { id: string }) {
         warehouseId={lot.warehouseId}
         serials={serials}
       />
-    </Stack>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[8rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

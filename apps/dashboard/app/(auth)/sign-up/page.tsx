@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
-import { Button, Checkbox, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Label } from 'silicaui-react';
+import { PasswordInput } from '@sparx/ui';
 import { AuthScreen, RailPoints } from '../_components/auth-screen';
 import { SocialAuthSection } from '../_components/social-auth';
 
@@ -95,27 +96,27 @@ export default function SignUpPage() {
         />
       }
     >
-      <Stack gap={6}>
+      <div className="flex flex-col gap-6">
         <div>
-          <Heading level={2}>Create your account</Heading>
-          <Text variant="muted">
+          <h2 className="text-2xl font-semibold tracking-tight">Create your account</h2>
+          <p className="text-base-content/70">
             Start a 14-day free trial. Next, tell us about your business and we&apos;ll set it up.
-          </Text>
+          </p>
         </div>
 
         <SocialAuthSection />
 
         <form onSubmit={onSubmit} noValidate>
-          <Stack gap={4}>
-            <Stack gap={2}>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="name">Your name</Label>
               <Input id="name" name="name" autoComplete="name" required />
-            </Stack>
-            <Stack gap={2}>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="email">Work email</Label>
               <Input id="email" name="email" type="email" autoComplete="email" required />
-            </Stack>
-            <Stack gap={2}>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="password">Password</Label>
               <PasswordInput
                 id="password"
@@ -124,11 +125,9 @@ export default function SignUpPage() {
                 minLength={8}
                 required
               />
-              <Text size="xs" variant="muted">
-                At least 8 characters.
-              </Text>
-            </Stack>
-            <Stack gap={2}>
+              <p className="text-base-content/70 text-xs">At least 8 characters.</p>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="confirmPassword">Confirm password</Label>
               <PasswordInput
                 id="confirmPassword"
@@ -137,7 +136,7 @@ export default function SignUpPage() {
                 minLength={8}
                 required
               />
-            </Stack>
+            </div>
 
             <div className="flex items-start gap-2">
               <Checkbox
@@ -147,7 +146,7 @@ export default function SignUpPage() {
                 className="mt-1"
                 required
               />
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 I agree to the{' '}
                 <a
                   href={`${LEGAL_BASE}/terms`}
@@ -176,30 +175,28 @@ export default function SignUpPage() {
                   Acceptable Use Policy
                 </a>
                 .
-              </Text>
+              </p>
             </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
 
             <Button type="submit" disabled={pending} loading={pending}>
               Create account
             </Button>
-          </Stack>
+          </div>
         </form>
 
-        <Stack direction="row" align="center" gap={1}>
-          <Text size="sm" variant="muted">
-            Already have an account?
-          </Text>
-          <Button color="primary" variant="link" size="sm" asChild>
-            <Link href="/sign-in">Sign in</Link>
+        <div className="flex flex-row items-center gap-1">
+          <p className="text-base-content/70 text-sm">Already have an account?</p>
+          <Button color="primary" variant="link" size="sm" render={<Link href="/sign-in" />}>
+            Sign in
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </AuthScreen>
   );
 }

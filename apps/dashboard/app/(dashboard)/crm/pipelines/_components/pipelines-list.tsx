@@ -13,19 +13,8 @@
 
 import Link from 'next/link';
 import { ArrowRight, Archive, Settings } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 export interface PipelineStageRow {
   id: string;
@@ -51,14 +40,11 @@ interface PipelinesListProps {
 
 function StageFunnel({ stages }: { stages: PipelineStageRow[] }) {
   return (
-    <Stack direction="row" gap={2} wrap>
+    <div className="flex flex-row flex-wrap gap-2">
       {stages.map((stage) => (
-        <Stack
+        <div
           key={stage.id}
-          direction="row"
-          align="center"
-          gap={1}
-          className="rounded-md border border-[var(--color-border-default)] px-2 py-1"
+          className="flex flex-row items-center gap-1 rounded-md border border-[var(--color-border-default)] px-2 py-1"
         >
           <span
             className="h-2 w-2 rounded-full"
@@ -72,19 +58,17 @@ function StageFunnel({ stages }: { stages: PipelineStageRow[] }) {
                     : 'var(--module-active)'),
             }}
           />
-          <Text size="sm">{stage.name}</Text>
-          <Text size="xs" variant="muted">
-            {Number(stage.probability)}%
-          </Text>
-        </Stack>
+          <p className="text-sm">{stage.name}</p>
+          <p className="text-base-content/70 text-xs">{Number(stage.probability)}%</p>
+        </div>
       ))}
-    </Stack>
+    </div>
   );
 }
 
 export function PipelinesList({ pipelines, view }: PipelinesListProps) {
   const nameCell = (p: PipelineRow, className: string) => (
-    <Stack direction="row" align="center" gap={2} wrap>
+    <div className="flex flex-row flex-wrap items-center gap-2">
       <Link href={`/crm/pipelines/${p.id}`} className={className}>
         {p.name}
       </Link>
@@ -98,47 +82,60 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
           <Archive className="h-3 w-3" /> Archived
         </Badge>
       )}
-    </Stack>
+    </div>
   );
 
   const rowActions = (p: PipelineRow) => (
-    <Stack direction="row" gap={2} wrap>
-      <Button asChild variant="ghost" shape="square" size="sm" aria-label="Edit pipeline">
-        <Link href={`/crm/pipelines/${p.id}/edit`}>
-          <Settings className="h-4 w-4" />
-        </Link>
+    <div className="flex flex-row flex-wrap gap-2">
+      <Button
+        render={<Link href={`/crm/pipelines/${p.id}/edit`} />}
+        variant="ghost"
+        shape="square"
+        size="sm"
+        aria-label="Edit pipeline"
+      >
+        <Settings className="h-4 w-4" />
       </Button>
-      <Button asChild variant="ghost" size="sm">
-        <Link href={`/crm/pipelines/${p.id}?view=list`}>List</Link>
+      <Button render={<Link href={`/crm/pipelines/${p.id}?view=list`} />} variant="ghost" size="sm">
+        List
       </Button>
-      <Button asChild variant="ghost" size="sm">
-        <Link href={`/crm/pipelines/${p.id}?view=forecast`}>Forecast</Link>
+      <Button
+        render={<Link href={`/crm/pipelines/${p.id}?view=forecast`} />}
+        variant="ghost"
+        size="sm"
+      >
+        Forecast
       </Button>
-      <Button asChild color="module" size="sm" rightIcon={<ArrowRight className="h-4 w-4" />}>
-        <Link href={`/crm/pipelines/${p.id}`}>Open Kanban</Link>
+      <Button
+        render={<Link href={`/crm/pipelines/${p.id}`} />}
+        color="module"
+        size="sm"
+        iconEnd={<ArrowRight className="h-4 w-4" />}
+      >
+        Open Kanban
       </Button>
-    </Stack>
+    </div>
   );
 
   const columns: SelectionColumn<PipelineRow>[] = [
     {
       header: 'Name',
       cell: (p) => (
-        <Stack gap={1} className="min-w-0">
+        <div className="flex min-w-0 flex-col gap-1">
           {nameCell(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             slug <code>{p.slug}</code>
-          </Text>
-        </Stack>
+          </p>
+        </div>
       ),
     },
     {
       header: 'Stages',
       align: 'right',
       cell: (p) => (
-        <Text size="sm">
+        <p className="text-sm">
           {p.stages.length} stage{p.stages.length === 1 ? '' : 's'}
-        </Text>
+        </p>
       ),
     },
     { header: 'Funnel', cell: (p) => <StageFunnel stages={p.stages} /> },
@@ -148,24 +145,22 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
   const card: SelectionCard<PipelineRow> = {
     title: (p) => nameCell(p, 'hover:text-[var(--module-active)] hover:underline'),
     render: (p) => (
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" wrap>
-            <Stack gap={1}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between">
+            <div className="flex flex-col gap-1">
               <CardTitle>
                 {nameCell(p, 'hover:text-[var(--module-active)] hover:underline')}
               </CardTitle>
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 {p.stages.length} stage{p.stages.length === 1 ? '' : 's'} — slug{' '}
                 <code>{p.slug}</code>
-              </Text>
-            </Stack>
+              </p>
+            </div>
             {rowActions(p)}
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           <StageFunnel stages={p.stages} />
-        </CardContent>
+        </CardBody>
       </Card>
     ),
   };

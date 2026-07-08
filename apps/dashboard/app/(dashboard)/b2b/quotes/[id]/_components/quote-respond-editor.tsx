@@ -2,25 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Badge,
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Badge, Button, Input, Select, Table, Textarea } from 'silicaui-react';
 import {
   applyMarkupRule,
   type BandMethod,
@@ -202,55 +184,45 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Item</TableHead>
-            <TableHead>Qty</TableHead>
-            <TableHead>Requested</TableHead>
-            <TableHead>Pricing</TableHead>
-            <TableHead className="text-right">Line total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Requested</th>
+            <th>Pricing</th>
+            <th className="text-right">Line total</th>
+          </tr>
+        </thead>
+        <tbody>
           {items.map((item) => {
             const st = state[item.id]!;
             const result = st.mode === 'markup' ? markupResult(st) : null;
             const cents = unitPriceCents(item, st);
             const lineTotal = cents != null ? (cents / 100) * item.quantity : null;
             return (
-              <TableRow key={item.id}>
-                <TableCell className="align-top">
-                  <Stack gap={1}>
-                    <Text size="sm">{item.name}</Text>
-                    <Text size="xs" variant="muted">
-                      {item.sku}
-                    </Text>
-                  </Stack>
-                </TableCell>
-                <TableCell className="align-top">
-                  <Text size="sm">{item.quantity}</Text>
-                </TableCell>
-                <TableCell className="align-top">
-                  <Text size="sm" variant="muted">
-                    {fmt(Number(item.unitPrice))}
-                  </Text>
-                </TableCell>
-                <TableCell className="align-top">
-                  <Stack gap={2} className="min-w-[16rem]">
+              <tr key={item.id}>
+                <td className="align-top">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm">{item.name}</p>
+                    <p className="text-base-content/70 text-xs">{item.sku}</p>
+                  </div>
+                </td>
+                <td className="align-top">
+                  <p className="text-sm">{item.quantity}</p>
+                </td>
+                <td className="align-top">
+                  <p className="text-base-content/70 text-sm">{fmt(Number(item.unitPrice))}</p>
+                </td>
+                <td className="align-top">
+                  <div className="flex min-w-[16rem] flex-col gap-2">
                     <Select
                       value={st.mode}
                       onValueChange={(v) => patch(item.id, { mode: v as Mode })}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="manual">Manual price</SelectItem>
-                        <SelectItem value="markup">Price by markup</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      className="w-40"
+                      items={{ manual: 'Manual price', markup: 'Price by markup' }}
+                    />
 
                     {st.mode === 'manual' ? (
                       <Input
@@ -263,12 +235,12 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
                         onChange={(e) => patch(item.id, { price: e.target.value })}
                       />
                     ) : (
-                      <Stack gap={2}>
-                        <Stack direction="row" gap={2} align="end" wrap>
-                          <Stack gap={1}>
-                            <Text size="xs" variant="muted">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-row flex-wrap items-end gap-2">
+                          <div className="flex flex-col gap-1">
+                            <p className="text-base-content/70 text-xs">
                               Cost {item.variantId ? '(blank = catalog cost)' : ''}
-                            </Text>
+                            </p>
                             <Input
                               type="number"
                               min={0}
@@ -278,55 +250,41 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
                               value={st.cost}
                               onChange={(e) => patch(item.id, { cost: e.target.value })}
                             />
-                          </Stack>
-                          <Stack gap={1}>
-                            <Text size="xs" variant="muted">
-                              Markup
-                            </Text>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <p className="text-base-content/70 text-xs">Markup</p>
                             <Select
                               value={st.source}
-                              onValueChange={(v) => patch(item.id, { source: v })}
-                            >
-                              <SelectTrigger className="w-44">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {rules.map((r) => (
-                                  <SelectItem key={r.id} value={r.id}>
-                                    {r.name}
-                                  </SelectItem>
-                                ))}
-                                <SelectItem value={ADHOC}>Ad-hoc markup…</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </Stack>
-                        </Stack>
+                              onValueChange={(v) => patch(item.id, { source: v as string })}
+                              className="w-44"
+                              items={[
+                                ...rules.map((r) => ({ value: r.id, label: r.name })),
+                                { value: ADHOC, label: 'Ad-hoc markup…' },
+                              ]}
+                            />
+                          </div>
+                        </div>
 
                         {st.source === ADHOC && (
-                          <Stack direction="row" gap={2} align="end" wrap>
-                            <Stack gap={1}>
-                              <Text size="xs" variant="muted">
-                                Method
-                              </Text>
+                          <div className="flex flex-row flex-wrap items-end gap-2">
+                            <div className="flex flex-col gap-1">
+                              <p className="text-base-content/70 text-xs">Method</p>
                               <Select
                                 value={st.method}
                                 onValueChange={(v) => patch(item.id, { method: v as BandMethod })}
-                              >
-                                <SelectTrigger className="w-40">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="percentage">Markup %</SelectItem>
-                                  <SelectItem value="margin_target">Target margin %</SelectItem>
-                                  <SelectItem value="multiplier">Multiplier ×</SelectItem>
-                                  <SelectItem value="flat">Add fixed $</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </Stack>
-                            <Stack gap={1}>
-                              <Text size="xs" variant="muted">
+                                className="w-40"
+                                items={{
+                                  percentage: 'Markup %',
+                                  margin_target: 'Target margin %',
+                                  multiplier: 'Multiplier ×',
+                                  flat: 'Add fixed $',
+                                }}
+                              />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <p className="text-base-content/70 text-xs">
                                 {METHOD_META[st.method].label}
-                              </Text>
+                              </p>
                               <Input
                                 type="number"
                                 step={0.01}
@@ -334,49 +292,43 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
                                 value={st.value}
                                 onChange={(e) => patch(item.id, { value: e.target.value })}
                               />
-                            </Stack>
-                          </Stack>
+                            </div>
+                          </div>
                         )}
 
                         {result ? (
-                          <Stack direction="row" gap={2} align="center" wrap>
+                          <div className="flex flex-row flex-wrap items-center gap-2">
                             <Badge color="module" variant="soft">
                               {fmt(result.priceCents / 100)} / unit
                             </Badge>
-                            <Text size="xs" variant="muted">
+                            <p className="text-base-content/70 text-xs">
                               {result.marginPct}% margin · {result.markupPct}% markup
-                            </Text>
-                          </Stack>
+                            </p>
+                          </div>
                         ) : (
-                          <Text size="xs" variant="muted">
+                          <p className="text-base-content/70 text-xs">
                             {item.variantId
                               ? 'Priced from catalog cost on send.'
                               : 'Enter a cost to preview the price.'}
-                          </Text>
+                          </p>
                         )}
-                      </Stack>
+                      </div>
                     )}
-                  </Stack>
-                </TableCell>
-                <TableCell className="text-right align-top">
-                  <Text size="sm">{lineTotal != null ? fmt(lineTotal) : '—'}</Text>
-                </TableCell>
-              </TableRow>
+                  </div>
+                </td>
+                <td className="text-right align-top">
+                  <p className="text-sm">{lineTotal != null ? fmt(lineTotal) : '—'}</p>
+                </td>
+              </tr>
             );
           })}
-        </TableBody>
+        </tbody>
       </Table>
 
-      {error && (
-        <Text size="sm" variant="danger" className="px-4">
-          {error}
-        </Text>
-      )}
+      {error && <p className="text-danger px-4 text-sm">{error}</p>}
 
-      <Stack gap={2} className="px-4 pb-4">
-        <Text size="sm" variant="muted">
-          Note to customer (optional)
-        </Text>
+      <div className="flex flex-col gap-2 px-4 pb-4">
+        <p className="text-base-content/70 text-sm">Note to customer (optional)</p>
         <Textarea
           rows={2}
           placeholder="Any notes or conditions to include with the quoted prices…"
@@ -389,7 +341,7 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
             {saving ? 'Sending…' : 'Send quoted prices to customer'}
           </Button>
         </div>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

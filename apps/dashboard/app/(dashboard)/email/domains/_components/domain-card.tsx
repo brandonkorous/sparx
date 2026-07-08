@@ -2,17 +2,8 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Code,
-  Stack,
-  Text,
-  type BadgeProps,
-} from '@sparx/ui';
+import { Badge, Code, type BadgeProps } from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
 
 import { DnsRecordsTable } from './dns-records-table';
 import { DomainActions } from './domain-actions';
@@ -43,10 +34,10 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
   const badge = STATE_BADGE[domain.state];
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={3} className="flex-wrap">
-          <Stack direction="row" align="center" gap={2}>
+    <Card>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row items-center gap-2">
             <Code>{domain.domain}</Code>
             <Badge color={badge.variant} variant="soft" size="sm">
               {badge.label}
@@ -59,15 +50,11 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
             <Badge color="neutral" variant="soft" size="sm">
               {domain.region.toUpperCase()}
             </Badge>
-          </Stack>
+          </div>
           <DomainActions domain={domain} />
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
-          <Text size="sm" variant="muted">
-            {STATE_HINT[domain.state]}
-          </Text>
+        </div>
+        <div className="flex flex-col gap-3">
+          <p className="text-base-content/70 text-sm">{STATE_HINT[domain.state]}</p>
           <Button
             type="button"
             variant="ghost"
@@ -79,8 +66,8 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
             DNS records
           </Button>
           {open ? <DnsRecordsTable records={domain.dnsRecords} /> : null}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

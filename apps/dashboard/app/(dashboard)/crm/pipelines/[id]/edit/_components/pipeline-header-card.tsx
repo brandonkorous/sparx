@@ -6,18 +6,7 @@
 import * as React from 'react';
 import { Archive } from 'lucide-react';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
 
 export interface PipelineHeader {
   id: string;
@@ -46,34 +35,30 @@ export function PipelineHeaderCard({
 
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>Header</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
-          <Stack direction="row" gap={4}>
-            <Stack gap={2} className="flex-1">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row gap-4">
+            <div className="flex flex-1 flex-col gap-2">
               <Label htmlFor="name">Name</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-            </Stack>
-            <Stack gap={2} className="w-64">
+            </div>
+            <div className="flex w-64 flex-col gap-2">
               <Label>Slug</Label>
               <Input value={pipeline.slug} disabled />
-              <Text size="xs" variant="muted">
-                Slug is immutable to keep URLs stable.
-              </Text>
-            </Stack>
-          </Stack>
-          <Stack direction="row" align="center" gap={2}>
+              <p className="text-base-content/70 text-xs">Slug is immutable to keep URLs stable.</p>
+            </div>
+          </div>
+          <div className="flex flex-row items-center gap-2">
             <Checkbox
               color="module"
               checked={isDefault}
-              onCheckedChange={(v) => setIsDefault(v === true)}
+              onChange={(e) => setIsDefault(e.target.checked)}
               id="isDefault-edit"
             />
             <Label htmlFor="isDefault-edit">Default pipeline</Label>
-          </Stack>
-          <Stack direction="row" gap={2}>
+          </div>
+          <div className="flex flex-row gap-2">
             <Button
               color="module"
               size="sm"
@@ -88,14 +73,14 @@ export function PipelineHeaderCard({
                 size="sm"
                 onClick={onArchive}
                 disabled={pending}
-                leftIcon={<Archive className="h-3.5 w-3.5" />}
+                iconStart={<Archive className="h-3.5 w-3.5" />}
               >
                 Archive pipeline
               </Button>
             )}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

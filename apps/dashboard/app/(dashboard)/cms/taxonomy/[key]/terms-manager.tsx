@@ -11,25 +11,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+} from '@sparx/ui';
+import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
+  CardActions,
+  CardBody,
   EmptyState,
-  Heading,
   Input,
   Label,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
   Textarea,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { ListTree, Plus, Trash2 } from 'lucide-react';
 import { createTerm, deleteTerm } from '../actions';
 
@@ -100,11 +93,11 @@ export function TermsManager({
   }
 
   return (
-    <Stack gap={5}>
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Add term</Heading>
-          <CardDescription>
+    <div className="flex flex-col gap-5">
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">Add term</h3>
+          <p className="opacity-70">
             Slug auto-derives from the name when blank.
             {hierarchical && (
               <>
@@ -112,81 +105,74 @@ export function TermsManager({
                 Pick <em>(top level)</em> for a root-level term.
               </>
             )}
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={onCreate}>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack direction="row" gap={3}>
-                <Stack gap={1} className="flex-1">
-                  <Label htmlFor="name" required>
-                    Name
+          </p>
+          <form onSubmit={onCreate}>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row gap-3">
+                <div className="flex flex-1 flex-col gap-1">
+                  <Label htmlFor="name">
+                    Name{' '}
+                    <span className="text-error" aria-hidden="true">
+                      *
+                    </span>
                   </Label>
                   <Input id="name" name="name" required aria-required />
-                </Stack>
-                <Stack gap={1} className="flex-1">
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
                   <Label htmlFor="slug">Slug (optional)</Label>
                   <Input id="slug" name="slug" />
-                </Stack>
+                </div>
                 {hierarchical && (
-                  <Stack gap={1} className="flex-1">
+                  <div className="flex flex-1 flex-col gap-1">
                     <Label htmlFor="parent_term_id">Parent</Label>
                     <Select
+                      id="parent_term_id"
+                      aria-label="Parent term"
                       value={parentId || 'top'}
-                      onValueChange={(v) => setParentId(v === 'top' ? '' : v)}
-                    >
-                      <SelectTrigger id="parent_term_id" aria-label="Parent term">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="top">— (top level)</SelectItem>
-                        {terms.map((t) => (
-                          <SelectItem key={t.id} value={t.id}>
-                            {t.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Stack>
+                      onValueChange={(v) => setParentId(v === 'top' ? '' : (v as string))}
+                      items={{
+                        top: '— (top level)',
+                        ...Object.fromEntries(terms.map((t) => [t.id, t.name])),
+                      }}
+                    />
+                  </div>
                 )}
-              </Stack>
-              <Stack gap={1}>
+              </div>
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="description">Description</Label>
                 <Textarea id="description" name="description" rows={2} />
-              </Stack>
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            <Stack direction="row" align="center" gap={3}>
-              <Button
-                type="submit"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-                disabled={pending}
-                loading={pending}
-              >
-                Add term
-              </Button>
-              {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
-                  {error}
-                </Text>
-              )}
-              {message && (
-                <Text size="sm" variant="success" aria-live="polite">
-                  {message}
-                </Text>
-              )}
-            </Stack>
-          </CardFooter>
-        </form>
+              </div>
+            </div>
+            <CardActions>
+              <div className="flex flex-row items-center gap-3">
+                <Button
+                  type="submit"
+                  color="module"
+                  iconStart={<Plus className="h-4 w-4" />}
+                  disabled={pending}
+                  loading={pending}
+                >
+                  Add term
+                </Button>
+                {error && (
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                    {error}
+                  </p>
+                )}
+                {message && (
+                  <p className="text-success text-sm" aria-live="polite">
+                    {message}
+                  </p>
+                )}
+              </div>
+            </CardActions>
+          </form>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Terms</Heading>
-        </CardHeader>
-        <CardContent>
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">Terms</h3>
           {terms.length === 0 ? (
             <EmptyState
               icon={<ListTree className="h-5 w-5" />}
@@ -194,40 +180,37 @@ export function TermsManager({
               description="Add your first term above. Tagging entries with a term groups them on storefront index pages and feeds."
             />
           ) : (
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {terms.map((t) => (
-                <Stack
+                <div
                   key={t.id}
-                  direction="row"
-                  align="center"
-                  justify="between"
-                  className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] px-3 py-2"
                 >
-                  <Stack gap={0}>
-                    <Text size="sm">{t.name}</Text>
-                    <Text size="xs" variant="muted">
+                  <div className="flex flex-col gap-0">
+                    <p className="text-sm">{t.name}</p>
+                    <p className="text-base-content/70 text-xs">
                       <code>{t.slug}</code>
                       {t.parent_term_id
                         ? ` · parent ${termNameById.get(t.parent_term_id) ?? t.parent_term_id.slice(0, 8)}`
                         : ''}
                       {t.description ? ` · ${t.description.slice(0, 60)}` : ''}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"
                     size="xs"
-                    leftIcon={<Trash2 className="h-3 w-3" />}
+                    iconStart={<Trash2 className="h-3 w-3" />}
                     onClick={() => setPendingDelete(t)}
                     disabled={pending}
                   >
                     Remove
                   </Button>
-                </Stack>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
       <AlertDialog
@@ -250,6 +233,6 @@ export function TermsManager({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Stack>
+    </div>
   );
 }

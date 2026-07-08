@@ -31,7 +31,8 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { Badge, Button, Input, Label, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Input, Label } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import type { FitmentDimension, FitmentDomainRow, FitmentNodeRow } from '../../fitment-actions';
 import {
@@ -58,11 +59,11 @@ function rangeDimensions(dimensions: FitmentDimension[]): FitmentDimension[] {
 
 export function FitmentReferenceEditor({ domains }: Props) {
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       {domains.map((domain) => (
         <DomainBlock key={domain.id} domain={domain} />
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -101,11 +102,8 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
   }
 
   return (
-    <Stack
-      gap={0}
-      className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]"
-    >
-      <Stack direction="row" align="center" gap={2} className="p-3">
+    <div className="flex flex-col gap-0 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+      <div className="flex flex-row items-center gap-2 p-3">
         <Button
           shape="square"
           variant="ghost"
@@ -116,15 +114,13 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
         <Boxes className="h-4 w-4 text-[var(--color-text-muted)]" />
-        <Stack gap={0} className="flex-1">
-          <Text size="sm" weight="medium">
-            {domain.displayName}
-          </Text>
-          <Text size="xs" variant="muted">
+        <div className="flex flex-1 flex-col gap-0">
+          <p className="text-sm font-medium">{domain.displayName}</p>
+          <p className="text-base-content/70 text-xs">
             {levels.map((l) => l.label).join(' → ')}
             {ranges.length > 0 ? ` · narrow by ${ranges.map((r) => r.label).join(', ')}` : ''}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <Badge color="module" variant="soft" size="sm">
           {domain.rootCount} {pluralizeLabel(rootLabel.toLowerCase(), domain.rootCount)}
         </Badge>
@@ -139,13 +135,13 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-      </Stack>
+      </div>
       {expanded && (
         <div className="px-3 pb-3 pl-8">
           <NodeChildren domainId={domain.id} parentId={null} levels={levels} depth={0} />
         </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -199,11 +195,11 @@ function NodeChildren({
   }
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       {loading && nodes === null && (
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           Loading {pluralizeLabel(levelLabel.toLowerCase(), 2)}…
-        </Text>
+        </p>
       )}
       {nodes && nodes.length > 0 && (
         <DndContext
@@ -219,7 +215,7 @@ function NodeChildren({
         </DndContext>
       )}
       <AddNodeForm domainId={domainId} parentId={parentId} label={levelLabel} onAdded={reload} />
-    </Stack>
+    </div>
   );
 }
 
@@ -277,11 +273,10 @@ function NodeRow({
   }
 
   return (
-    <Stack
+    <div
       ref={setNodeRef}
       style={style}
-      gap={0}
-      className="border-b border-[var(--color-border-default)] last:border-b-0"
+      className="flex flex-col gap-0 border-b border-[var(--color-border-default)] last:border-b-0"
     >
       {editing ? (
         <RenameForm
@@ -293,11 +288,8 @@ function NodeRow({
           }}
         />
       ) : (
-        <Stack
-          direction="row"
-          align="center"
-          gap={1}
-          className="cursor-grab py-2 active:cursor-grabbing"
+        <div
+          className="flex cursor-grab flex-row items-center gap-1 py-2 active:cursor-grabbing"
           {...attributes}
           {...listeners}
         >
@@ -319,12 +311,8 @@ function NodeRow({
           ) : (
             <span className="inline-block h-4 w-4" />
           )}
-          <Text size="sm" className="flex-1">
-            {node.name}
-          </Text>
-          <Text size="xs" variant="muted">
-            /{node.slug}
-          </Text>
+          <p className="flex-1 text-sm">{node.name}</p>
+          <p className="text-base-content/70 text-xs">/{node.slug}</p>
           <Button
             shape="square"
             variant="ghost"
@@ -346,7 +334,7 @@ function NodeRow({
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
-        </Stack>
+        </div>
       )}
       {expanded && hasChildren && (
         <div className="pb-2 pl-8">
@@ -358,7 +346,7 @@ function NodeRow({
           />
         </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -403,8 +391,8 @@ function RenameForm({
 
   return (
     <form onSubmit={onSubmit} noValidate className="py-2">
-      <Stack direction="row" gap={2} align="end" wrap>
-        <Stack gap={1} className="min-w-[180px] flex-1">
+      <div className="flex flex-row flex-wrap items-end gap-2">
+        <div className="flex min-w-[180px] flex-1 flex-col gap-1">
           <Label htmlFor={`rename-name-${node.id}`}>Name</Label>
           <Input
             id={`rename-name-${node.id}`}
@@ -413,8 +401,8 @@ function RenameForm({
             onChange={(e) => setName(e.target.value)}
             size="sm"
           />
-        </Stack>
-        <Stack gap={1} className="min-w-[140px] flex-1">
+        </div>
+        <div className="flex min-w-[140px] flex-1 flex-col gap-1">
           <Label htmlFor={`rename-slug-${node.id}`}>Slug</Label>
           <Input
             id={`rename-slug-${node.id}`}
@@ -422,7 +410,7 @@ function RenameForm({
             onChange={(e) => setSlug(e.target.value)}
             size="sm"
           />
-        </Stack>
+        </div>
         <Button
           shape="square"
           type="submit"
@@ -446,11 +434,11 @@ function RenameForm({
         >
           <X className="h-4 w-4" />
         </Button>
-      </Stack>
+      </div>
       {error && (
-        <Text size="xs" variant="danger" className="mt-2" role="alert">
+        <p className="text-danger mt-2 text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
     </form>
   );
@@ -513,29 +501,24 @@ function AddNodeForm({
   }
 
   return (
-    <Stack
-      gap={2}
-      className="rounded border border-dashed border-[var(--color-border-default)] p-2"
-    >
-      <Stack direction="row" align="center" justify="between">
-        <Text size="xs" variant="muted">
-          Add a {label.toLowerCase()}
-        </Text>
+    <div className="flex flex-col gap-2 rounded border border-dashed border-[var(--color-border-default)] p-2">
+      <div className="flex flex-row items-center justify-between">
+        <p className="text-base-content/70 text-xs">Add a {label.toLowerCase()}</p>
         <Button
           type="button"
           color="neutral"
           variant={open ? 'ghost' : 'outline'}
           size="sm"
           onClick={() => setOpen((v) => !v)}
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           {open ? 'Cancel' : `New ${label.toLowerCase()}`}
         </Button>
-      </Stack>
+      </div>
       {open && (
         <form onSubmit={onSubmit} noValidate>
-          <Stack direction="row" gap={2} align="end" wrap>
-            <Stack gap={1} className="min-w-[180px] flex-1">
+          <div className="flex flex-row flex-wrap items-end gap-2">
+            <div className="flex min-w-[180px] flex-1 flex-col gap-1">
               <Label htmlFor={`add-name-${parentId ?? domainId}`}>{label} name</Label>
               <Input
                 id={`add-name-${parentId ?? domainId}`}
@@ -544,8 +527,8 @@ function AddNodeForm({
                 onChange={(e) => setName(e.target.value)}
                 size="sm"
               />
-            </Stack>
-            <Stack gap={1} className="min-w-[140px] flex-1">
+            </div>
+            <div className="flex min-w-[140px] flex-1 flex-col gap-1">
               <Label htmlFor={`add-slug-${parentId ?? domainId}`}>Slug (optional)</Label>
               <Input
                 id={`add-slug-${parentId ?? domainId}`}
@@ -554,18 +537,18 @@ function AddNodeForm({
                 size="sm"
                 placeholder="auto from name"
               />
-            </Stack>
+            </div>
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Add
             </Button>
-          </Stack>
+          </div>
           {error && (
-            <Text size="xs" variant="danger" className="mt-2" role="alert">
+            <p className="text-danger mt-2 text-xs" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </form>
       )}
-    </Stack>
+    </div>
   );
 }

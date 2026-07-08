@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Label } from 'silicaui-react';
 
 import { formBool, formNumber, formString } from '../../../../../../../lib/forms';
 import { createTaxRateAction } from '../../../../tax-actions';
@@ -45,13 +45,13 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={3}>
-        <Stack direction="row" gap={3} wrap>
-          <Stack gap={1} className="min-w-[14rem]">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row flex-wrap gap-3">
+          <div className="flex min-w-[14rem] flex-col gap-1">
             <Label htmlFor="name">Name *</Label>
             <Input id="name" name="name" required placeholder="California sales tax" />
-          </Stack>
-          <Stack gap={1} className="w-32">
+          </div>
+          <div className="flex w-32 flex-col gap-1">
             <Label htmlFor="percent">Rate (%) *</Label>
             <Input
               id="percent"
@@ -63,8 +63,8 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
               required
               placeholder="8.25"
             />
-          </Stack>
-          <Stack gap={1} className="min-w-[10rem]">
+          </div>
+          <div className="flex min-w-[10rem] flex-col gap-1">
             <Label htmlFor="productTaxClass">Product tax class</Label>
             <Input
               id="productTaxClass"
@@ -72,23 +72,23 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
               placeholder="prepared_food"
               maxLength={63}
             />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         <label className="flex items-center gap-2">
           <Checkbox color="module" name="appliesToShipping" />
-          <Text size="sm">Apply this rate to shipping charges too</Text>
+          <span className="text-sm">Apply this rate to shipping charges too</span>
         </label>
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>
             {pending ? 'Adding…' : 'Add rate'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

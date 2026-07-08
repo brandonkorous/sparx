@@ -1,6 +1,7 @@
 import { Percent } from 'lucide-react';
 
-import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -25,8 +26,8 @@ export default async function MarkupRulesPage() {
   const collections = collectionList.data;
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Percent className="h-5 w-5" />}
           title="Markup rules"
@@ -37,12 +38,12 @@ export default async function MarkupRulesPage() {
           }
           description="Derive a product's price from its cost — cost + 40%, keystone (×2), a target margin, or a flat markup. Bind a rule to variants on the product's Variants tab, or apply one across a scope here."
         />
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           Markup is a cost → list-price step. B2B tiers and discounts apply on top of the list price
           it produces, so margin reporting stays honest.
-        </Text>
+        </p>
         <MarkupRulesManager initialRules={rules} collections={collections} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

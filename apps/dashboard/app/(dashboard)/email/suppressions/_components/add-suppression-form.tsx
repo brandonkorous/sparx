@@ -3,24 +3,8 @@
 import { useCallback, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Label,
-  ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-  toast,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef, toast } from '@sparx/ui';
+import { Card, CardBody, Label, Select, Textarea } from 'silicaui-react';
 
 import { addSuppressionAction, importSuppressionsAction } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -141,10 +125,10 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack gap={2}>
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="emails">Email addresses</Label>
                   <Textarea
                     id="emails"
@@ -154,25 +138,27 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
                     rows={3}
                     disabled={pending}
                   />
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     Paste one or many addresses (comma, space, or newline separated).
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="scope">Scope</Label>
-                  <Select value={scope} onValueChange={setScope} disabled={pending}>
-                    <SelectTrigger id="scope" className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All email</SelectItem>
-                      <SelectItem value="marketing">Marketing only</SelectItem>
-                      <SelectItem value="transactional">Transactional only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  <Select
+                    id="scope"
+                    className="w-48"
+                    value={scope}
+                    onValueChange={(v) => setScope(v as string)}
+                    disabled={pending}
+                    items={{
+                      all: 'All email',
+                      marketing: 'Marketing only',
+                      transactional: 'Transactional only',
+                    }}
+                  />
+                </div>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

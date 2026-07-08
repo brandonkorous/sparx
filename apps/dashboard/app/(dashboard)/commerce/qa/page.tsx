@@ -1,17 +1,7 @@
 import { HelpCircle } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -120,8 +110,8 @@ export default async function QaPage({
   }
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<HelpCircle className="h-5 w-5" />}
           title="Questions & answers"
@@ -137,37 +127,35 @@ export default async function QaPage({
 
         {rows.length === 0 ? (
           <Card>
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>{labelFor(statusParam)}</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
+                <p className="opacity-70">
                   Click a question to publish or reject, and post an official answer.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
+                </p>
+              </div>
               <EmptyState
                 icon={<HelpCircle className="h-5 w-5" />}
                 title="No questions"
                 description="Questions arrive here once the storefront PDP starts accepting them."
               />
-            </CardContent>
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={1}>
-            <Heading level={3}>{labelFor(statusParam)}</Heading>
-            <CardDescription>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
+            <p className="opacity-70">
               Click a question to publish or reject, and post an official answer.
-            </CardDescription>
+            </p>
             <QaList rows={rows} view={view} />
-          </Stack>
+          </div>
         )}
 
         {/* The pending queue is the full pending set (its own endpoint), so the
             pager only applies to the paged (search / status-filtered) list. */}
         {paged ? <ListPager total={total} /> : null}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

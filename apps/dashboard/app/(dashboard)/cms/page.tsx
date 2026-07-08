@@ -18,27 +18,16 @@ import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
   BarList,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -224,29 +213,41 @@ export default async function CmsPage() {
   const showActionQueue = !!summary;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Layers className="h-5 w-5" />}
           title="CMS"
           description="Your content — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Eye className="h-4 w-4" />}>
-                <Link href="/cms/preview">Preview</Link>
+              <Button
+                variant="outline"
+                iconStart={<Eye className="h-4 w-4" />}
+                render={<Link href="/cms/preview" />}
+              >
+                Preview
               </Button>
-              <Button asChild variant="outline" leftIcon={<ImageIcon className="h-4 w-4" />}>
-                <Link href="/cms/media">Media library</Link>
+              <Button
+                variant="outline"
+                iconStart={<ImageIcon className="h-4 w-4" />}
+                render={<Link href="/cms/media" />}
+              >
+                Media library
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/cms/new">New post</Link>
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/cms/new" />}
+              >
+                New post
               </Button>
             </>
           }
         />
 
         {/* Headline KPIs — live counts from the content catalog */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<FileText className="h-4 w-4" />}
             label="Published · 30d"
@@ -271,7 +272,7 @@ export default async function CmsPage() {
             value={summary ? fmtNumber(summary.total) : '—'}
             hint="Entries across all types"
           />
-        </Grid>
+        </div>
 
         {/* Needs attention — both tiles wired to live status counts */}
         {showActionQueue && (
@@ -314,9 +315,9 @@ export default async function CmsPage() {
               icon={<Layers className="h-5 w-5" />}
               title="No content yet"
               description="Your editorial pipeline fills in as you create content."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/cms/new">New post</Link>
+              actions={
+                <Button variant="outline" size="sm" render={<Link href="/cms/new" />}>
+                  New post
                 </Button>
               }
             />
@@ -403,35 +404,35 @@ export default async function CmsPage() {
           >
             {recent && recent.published.length > 0 ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="text-right">Published</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th className="text-right">Published</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {recent.published.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="font-medium">
+                    <tr key={c.id}>
+                      <td className="font-medium">
                         <Link
                           href={`/cms/content/${c.id}`}
                           className="hover:text-[var(--module-active)] hover:underline"
                         >
                           {c.title}
                         </Link>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         <Badge color="neutral" variant="soft">
                           {c.typeName}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-secondary)] tabular-nums">
+                      </td>
+                      <td className="text-right text-[var(--color-text-secondary)] tabular-nums">
                         {shortDate(c.publishedAt)}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             ) : (
               <EmptyState
@@ -489,30 +490,30 @@ export default async function CmsPage() {
         >
           {topContentRows ? (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Views</TableHead>
-                  <TableHead className="text-right">Visitors</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th className="text-right">Views</th>
+                  <th className="text-right">Visitors</th>
+                </tr>
+              </thead>
+              <tbody>
                 {topContentRows.map((c) => (
-                  <TableRow key={c.key}>
-                    <TableCell className="font-medium">{c.title}</TableCell>
-                    <TableCell>
+                  <tr key={c.key}>
+                    <td className="font-medium">{c.title}</td>
+                    <td>
                       <Badge color="neutral" variant="soft">
                         {c.typeName}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">{c.views}</TableCell>
-                    <TableCell className="text-right text-[var(--color-text-secondary)] tabular-nums">
+                    </td>
+                    <td className="text-right tabular-nums">{c.views}</td>
+                    <td className="text-right text-[var(--color-text-secondary)] tabular-nums">
                       {c.visitors}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           ) : (
             <EmptyState
@@ -524,7 +525,7 @@ export default async function CmsPage() {
         </OverviewCard>
 
         {/* Content types + recent activity + SEO health */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard
             title="Content types"
             icon={<Layers className="h-4 w-4" />}
@@ -578,8 +579,8 @@ export default async function CmsPage() {
               description="Indexing and meta coverage appear once your site is crawled."
             />
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

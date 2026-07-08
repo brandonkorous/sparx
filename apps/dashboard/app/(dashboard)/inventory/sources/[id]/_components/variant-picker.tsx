@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Input, Stack, Text } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 
@@ -56,25 +56,21 @@ export function VariantPicker({ variant, onResolve, onClear, defaultSku }: Varia
 
   if (variant) {
     return (
-      <Stack direction="row" align="center" gap={2} wrap>
-        <Stack gap={0} className="min-w-0">
-          <Text size="sm" className="font-medium">
-            {variant.title ?? variant.sku}
-          </Text>
-          <Text size="xs" variant="muted" className="font-mono">
-            {variant.sku}
-          </Text>
-        </Stack>
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-col gap-0">
+          <p className="text-sm font-medium">{variant.title ?? variant.sku}</p>
+          <p className="text-base-content/70 font-mono text-xs">{variant.sku}</p>
+        </div>
         <Button variant="ghost" size="sm" type="button" onClick={onClear}>
           Change
         </Button>
-      </Stack>
+      </div>
     );
   }
 
   return (
-    <Stack gap={1}>
-      <Stack direction="row" gap={2} align="center">
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-row items-center gap-2">
         <Input
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -90,12 +86,8 @@ export function VariantPicker({ variant, onResolve, onClear, defaultSku }: Varia
         <Button color="module" size="sm" type="button" onClick={resolve} disabled={busy}>
           {busy ? 'Finding…' : 'Find'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }

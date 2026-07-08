@@ -1,17 +1,7 @@
 import { ShoppingCart } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -56,8 +46,8 @@ export default async function CartsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<ShoppingCart className="h-5 w-5" />}
           title="Carts"
@@ -73,39 +63,37 @@ export default async function CartsPage({
 
         {carts.length === 0 ? (
           <Card>
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">
                   {showRecovered ? 'Recovered' : showActive ? 'Active' : 'Abandoned'} carts
-                </Heading>
-                <CardDescription>
+                </h3>
+                <p className="opacity-70">
                   Storefront writes through cartService; this dashboard is read-only.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
+                </p>
+              </div>
               <EmptyState
                 icon={<ShoppingCart className="h-5 w-5" />}
                 title="No carts"
                 description="Carts surface here when the storefront / B2B portal starts writing."
               />
-            </CardContent>
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={1}>
-            <Heading level={3}>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">
               {showRecovered ? 'Recovered' : showActive ? 'Active' : 'Abandoned'} carts
-            </Heading>
-            <CardDescription>
+            </h3>
+            <p className="opacity-70">
               Storefront writes through cartService; this dashboard is read-only.
-            </CardDescription>
+            </p>
             <CartsList rows={carts} view={view} />
-          </Stack>
+          </div>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

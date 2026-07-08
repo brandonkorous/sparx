@@ -1,6 +1,7 @@
 import { RefreshCw } from 'lucide-react';
 
-import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -19,8 +20,8 @@ export default async function PriceReviewsPage() {
   const reviews = await api.get<PriceReviewRow[]>('/v1/markup-recompute-reviews?status=pending');
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<RefreshCw className="h-5 w-5" />}
           title="Price changes"
@@ -29,12 +30,12 @@ export default async function PriceReviewsPage() {
           }
           description="Cost-driven price changes a markup rule recomputed but didn't apply on its own — because the rule is set to always review, or the new price moved beyond its auto-apply tolerance. Approve to update the price, or reject to keep the current one."
         />
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           A rule set to “Auto-apply within tolerance” reprices small cost moves automatically; only
           changes beyond the band land here. Adjust a rule’s recompute behaviour on its editor.
-        </Text>
+        </p>
         <PriceReviewsManager initialReviews={reviews} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -7,17 +7,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { History } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 import type { GateLogEntry } from '@sparx/automation-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -48,9 +39,7 @@ function JsonBlock({ value }: { value: unknown }) {
 function GateLog({ entries }: { entries: GateLogEntry[] }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Text size="sm" variant="muted">
-        Gate decisions
-      </Text>
+      <p className="text-base-content/70 text-sm">Gate decisions</p>
       <ul className="flex flex-col gap-1">
         {entries.map((g, i) => (
           <li key={i} className="flex flex-wrap items-center gap-2 text-sm">
@@ -58,11 +47,7 @@ function GateLog({ entries }: { entries: GateLogEntry[] }) {
               {g.decision}
             </Badge>
             <code className="font-mono text-xs">{g.gate}</code>
-            {g.reason && (
-              <Text size="sm" variant="muted">
-                — {g.reason}
-              </Text>
-            )}
+            {g.reason && <span className="text-base-content/70 text-sm">— {g.reason}</span>}
           </li>
         ))}
       </ul>
@@ -83,8 +68,8 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
   }
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<History className="h-5 w-5" />}
           title="Run detail"
@@ -100,44 +85,38 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
         />
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Meta label="Started" value={formatTimestamp(run.startedAt)} />
-              <Meta
-                label="Completed"
-                value={run.completedAt ? formatTimestamp(run.completedAt) : 'In progress'}
-              />
-              <Meta label="Steps" value={String(run.actionsTotal)} />
-              <Meta label="Cascade depth" value={String(run.causeDepth)} />
-            </div>
-            {run.errorMessage && (
-              <Text size="sm" variant="danger">
-                {run.errorMessage}
-              </Text>
-            )}
-            <details>
-              <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
-                Trigger event
-              </summary>
-              <div className="mt-2">
-                <JsonBlock value={run.triggerEvent} />
+            <div className="flex flex-col gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Meta label="Started" value={formatTimestamp(run.startedAt)} />
+                <Meta
+                  label="Completed"
+                  value={run.completedAt ? formatTimestamp(run.completedAt) : 'In progress'}
+                />
+                <Meta label="Steps" value={String(run.actionsTotal)} />
+                <Meta label="Cascade depth" value={String(run.causeDepth)} />
               </div>
-            </details>
-          </CardContent>
+              {run.errorMessage && <p className="text-danger text-sm">{run.errorMessage}</p>}
+              <details>
+                <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                  Trigger event
+                </summary>
+                <div className="mt-2">
+                  <JsonBlock value={run.triggerEvent} />
+                </div>
+              </details>
+            </div>
+          </CardBody>
         </Card>
 
-        <Stack gap={3}>
+        <div className="flex flex-col gap-3">
           {run.steps.length === 0 ? (
-            <Text size="sm" variant="muted">
-              No steps recorded for this run.
-            </Text>
+            <p className="text-base-content/70 text-sm">No steps recorded for this run.</p>
           ) : (
             run.steps.map((step) => (
               <Card key={step.id}>
-                <CardHeader>
+                <CardBody>
                   <CardTitle>
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="text-sm text-[var(--color-text-tertiary)]">
@@ -147,55 +126,49 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                       <StepStatusBadge status={step.status} />
                     </span>
                   </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-3">
-                  <Text size="sm" variant="muted">
-                    {formatTimestamp(step.startedAt)}
-                    {step.completedAt ? ` → ${formatTimestamp(step.completedAt)}` : ''}
-                  </Text>
-                  {step.error && (
-                    <Text size="sm" variant="danger">
-                      {step.error}
-                    </Text>
-                  )}
-                  {step.gateLog && step.gateLog.length > 0 && <GateLog entries={step.gateLog} />}
-                  {step.input !== null && step.input !== undefined && (
-                    <details>
-                      <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
-                        Input
-                      </summary>
-                      <div className="mt-2">
-                        <JsonBlock value={step.input} />
-                      </div>
-                    </details>
-                  )}
-                  {step.output !== null && step.output !== undefined && (
-                    <details>
-                      <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
-                        Output
-                      </summary>
-                      <div className="mt-2">
-                        <JsonBlock value={step.output} />
-                      </div>
-                    </details>
-                  )}
-                </CardContent>
+                  <div className="flex flex-col gap-3">
+                    <p className="text-base-content/70 text-sm">
+                      {formatTimestamp(step.startedAt)}
+                      {step.completedAt ? ` → ${formatTimestamp(step.completedAt)}` : ''}
+                    </p>
+                    {step.error && <p className="text-danger text-sm">{step.error}</p>}
+                    {step.gateLog && step.gateLog.length > 0 && <GateLog entries={step.gateLog} />}
+                    {step.input !== null && step.input !== undefined && (
+                      <details>
+                        <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                          Input
+                        </summary>
+                        <div className="mt-2">
+                          <JsonBlock value={step.input} />
+                        </div>
+                      </details>
+                    )}
+                    {step.output !== null && step.output !== undefined && (
+                      <details>
+                        <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                          Output
+                        </summary>
+                        <div className="mt-2">
+                          <JsonBlock value={step.output} />
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                </CardBody>
               </Card>
             ))
           )}
-        </Stack>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm">{value}</Text>
+      <span className="text-base-content/70 text-xs">{label}</span>
+      <span className="text-sm">{value}</span>
     </div>
   );
 }

@@ -3,23 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Input, NativeSelect, Textarea } from 'silicaui-react';
+import { Label, ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createTemplateAction } from '../../../configurator-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -200,17 +185,13 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Stack gap={6}>
-            <Card variant="default">
-              <CardHeader>
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody className="py-6">
                 <CardTitle>Basics</CardTitle>
-                <CardDescription>
-                  Pick the configurable product and name this template.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Stack gap={1}>
+                <p className="opacity-70">Pick the configurable product and name this template.</p>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="productId" required>
                       Product
                     </Label>
@@ -226,8 +207,8 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={1}>
+                  </div>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="name" required>
                       Template name
                     </Label>
@@ -237,29 +218,27 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Default configuration"
                     />
-                  </Stack>
-                  <Stack gap={1}>
+                  </div>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="description">Description</Label>
                     <Input
                       id="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
-                  </Stack>
-                </Stack>
-              </CardContent>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardHeader>
+            <Card>
+              <CardBody className="py-6">
                 <CardTitle>Definition</CardTitle>
-                <CardDescription>
+                <p className="opacity-70">
                   The starter payload below is a minimal valid template. Edit it as JSON, save, then
                   expand from the detail editor.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={2}>
+                </p>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="json">Definition (JSON)</Label>
                   <Textarea
                     id="json"
@@ -268,20 +247,20 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
                     rows={20}
                     className="font-mono text-xs"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Must validate against CreateConfigurationTemplateInput in
                     @sparx/commerce-schemas. The starter has one option with two choices — edit,
                     then iterate after save.
-                  </Text>
-                </Stack>
-              </CardContent>
+                  </p>
+                </div>
+              </CardBody>
             </Card>
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
-          </Stack>
+          </div>
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>

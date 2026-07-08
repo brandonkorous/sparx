@@ -24,20 +24,10 @@
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
   SchemaFieldRenderer,
-  Stack,
-  Text,
-  Textarea,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -546,14 +536,12 @@ function CustomerWizardInner({
       >
         <div className="flex flex-col gap-5">
           {/* Contact — the only required group */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Contact details</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Contact details</h3>
+              <p className="text-base-content/70 text-sm">
                 Only an email is required — fill in the rest now or after the contact exists.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <SchemaFieldRenderer
                 fields={CONTACT_FIELDS}
                 values={contact}
@@ -561,37 +549,35 @@ function CustomerWizardInner({
                 errors={contactErrors}
                 disabled={submitting}
               />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Classification */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Classification</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Classification</h3>
+              <p className="text-base-content/70 text-sm">
                 Type, contact preferences, and tags — they drive segments and campaigns.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <SchemaFieldRenderer
                 fields={CLASSIFY_FIELDS}
                 values={classify}
                 onChange={(key, value) => setClassify((prev) => ({ ...prev, [key]: value }))}
                 disabled={submitting}
               />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Primary address (optional, skippable) */}
           {!skipAddress ? (
-            <Card variant="default">
-              <CardHeader>
-                <Stack direction="row" align="center" justify="between">
+            <Card>
+              <CardBody>
+                <div className="flex flex-row items-center justify-between gap-4">
                   <div className="flex flex-col gap-1">
-                    <Heading level={3}>Primary address</Heading>
-                    <Text size="sm" variant="muted">
+                    <h3 className="text-xl font-semibold">Primary address</h3>
+                    <p className="text-base-content/70 text-sm">
                       Add a primary address now, or skip and add one later from the profile.
-                    </Text>
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -603,9 +589,7 @@ function CustomerWizardInner({
                   >
                     Skip for now
                   </button>
-                </Stack>
-              </CardHeader>
-              <CardContent>
+                </div>
                 <SchemaFieldRenderer
                   fields={ADDRESS_FIELDS}
                   values={address}
@@ -613,41 +597,41 @@ function CustomerWizardInner({
                   errors={addressErrors}
                   disabled={submitting}
                 />
-              </CardContent>
+              </CardBody>
             </Card>
           ) : (
-            <Card padding="sm" className="bg-[var(--color-bg-subtle)]">
-              <Stack direction="row" align="center" gap={3}>
-                <UserPlus className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
-                <Text size="sm" variant="muted">
-                  No address will be added. You can add one from the customer’s profile.
-                </Text>
-                <button
-                  type="button"
-                  className="ml-auto shrink-0 text-xs text-[var(--module-active)] hover:underline"
-                  onClick={() => setSkipAddress(false)}
-                >
-                  Add address
-                </button>
-              </Stack>
+            <Card className="bg-[var(--color-bg-subtle)]">
+              <CardBody className="p-3">
+                <div className="flex flex-row items-center gap-3">
+                  <UserPlus className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
+                  <p className="text-base-content/70 text-sm">
+                    No address will be added. You can add one from the customer’s profile.
+                  </p>
+                  <button
+                    type="button"
+                    className="ml-auto shrink-0 text-xs text-[var(--module-active)] hover:underline"
+                    onClick={() => setSkipAddress(false)}
+                  >
+                    Add address
+                  </button>
+                </div>
+              </CardBody>
             </Card>
           )}
 
           {/* Optional "fill to create" zone */}
           <div className="pt-1">
-            <Heading level={3}>Get a head start</Heading>
-            <Text size="sm" variant="muted">
+            <h3 className="text-xl font-semibold">Get a head start</h3>
+            <p className="text-base-content/70 text-sm">
               All optional — capture a first interaction, set a follow-up, or open a deal and draft
               quote now. Fill a section to create it; leave it blank to skip.
-            </Text>
+            </p>
           </div>
 
           {/* Follow-up — note + task */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>What just happened?</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">What just happened?</h3>
               <div className="flex flex-col gap-3">
                 <div>
                   <Label htmlFor="cw-note-kind">Interaction</Label>
@@ -672,14 +656,12 @@ function CustomerWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Follow-up task</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Follow-up task</h3>
               <div className="flex flex-col gap-3">
                 <div>
                   <Label htmlFor="cw-task">Task</Label>
@@ -715,24 +697,22 @@ function CustomerWizardInner({
                   </div>
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Opportunity — deal + draft quote */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Start a deal</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Start a deal</h3>
               {pipelines.length === 0 ? (
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   No pipelines yet. Create one in CRM → Pipelines to open deals from here.
-                </Text>
+                </p>
               ) : (
                 <div className="flex flex-col gap-3">
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     Name the opportunity to open it on a pipeline. Leave the name blank to skip.
-                  </Text>
+                  </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="cw-deal-pipeline">Pipeline</Label>
@@ -788,19 +768,17 @@ function CustomerWizardInner({
                   </div>
                 </div>
               )}
-            </CardContent>
+            </CardBody>
           </Card>
 
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Start a draft quote</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Start a draft quote</h3>
               <div className="flex flex-col gap-3">
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Add a first line item to open a draft quote. You can add more lines and send it
                   from the quote later. Leave the item blank to skip.
-                </Text>
+                </p>
                 <div>
                   <Label htmlFor="cw-quote-name">Item</Label>
                   <Input
@@ -873,13 +851,13 @@ function CustomerWizardInner({
                   </div>
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </div>
       </SurfaceStep>

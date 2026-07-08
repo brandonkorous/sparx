@@ -8,19 +8,13 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+  CardBody,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { enrollAgentAction, revokeAgentAction } from '../../_lib/agent-actions';
 import { formatDateTime, type SyncHealth } from './types';
@@ -79,18 +73,18 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
 
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Stack direction="row" align="center" gap={2}>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center gap-2">
               <Cpu className="size-5" />
-              <Heading level={3}>Bridge agent</Heading>
-            </Stack>
-            <CardDescription>
+              <h3 className="text-xl font-semibold">Bridge agent</h3>
+            </div>
+            <p className="opacity-70">
               The on-prem agent reads stock from your local ERP and pushes it to sparx over outbound
               HTTPS. Pair it to mint a key, then install the bridge on a machine on your network.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           {health.agentEnrolled ? (
             <Badge color={health.agentOnline ? 'success' : 'danger'} variant="soft">
               {health.agentOnline ? 'Online' : 'Offline'}
@@ -100,13 +94,11 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
               Not paired
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        </div>
+        <div className="flex flex-col gap-4">
           {health.agentEnrolled ? (
             <>
-              <Stack direction="row" gap={3} wrap>
+              <div className="flex flex-row flex-wrap gap-3">
                 <Tile label="Key" value={`${health.apiKeyPrefix ?? '—'}…`} mono />
                 <Tile label="Paired" value={formatDateTime(health.enrolledAt)} />
                 <Tile
@@ -115,35 +107,31 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
                   emphasis={!health.agentOnline}
                 />
                 <Tile label="Agent version" value={health.agentVersion ?? '—'} />
-              </Stack>
-              <Stack direction="row" gap={2} wrap>
+              </div>
+              <div className="flex flex-row flex-wrap gap-2">
                 <Button color="module" variant="soft" onClick={pair} disabled={pending}>
                   {pending ? 'Working…' : 'Rotate key'}
                 </Button>
                 <Button color="danger" variant="ghost" onClick={onUnpair} disabled={pending}>
                   Unpair
                 </Button>
-              </Stack>
-              <Text size="xs" variant="muted">
+              </div>
+              <p className="text-base-content/70 text-xs">
                 Rotating issues a new key and revokes the old one — update the bridge config with
                 the new key to keep it connected.
-              </Text>
+              </p>
             </>
           ) : (
-            <Stack direction="row" gap={2} align="center" wrap>
+            <div className="flex flex-row flex-wrap items-center gap-2">
               <Button color="module" onClick={pair} disabled={pending}>
                 {pending ? 'Pairing…' : 'Pair agent'}
               </Button>
-            </Stack>
+            </div>
           )}
 
-          {error ? (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          ) : null}
-        </Stack>
-      </CardContent>
+          {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+        </div>
+      </CardBody>
 
       <KeyModal sourceId={sourceId} issued={issued} onClose={() => setIssued(null)} />
     </Card>
@@ -162,20 +150,14 @@ function Tile({
   emphasis?: boolean;
 }) {
   return (
-    <Stack
-      gap={1}
-      className="min-w-[10rem] flex-1 rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text
-        size="sm"
-        className={`${mono ? 'font-mono' : ''} ${emphasis ? 'text-[var(--color-warning)]' : ''}`.trim()}
+    <div className="flex min-w-[10rem] flex-1 flex-col gap-1 rounded border border-[var(--color-border-default)] px-3 py-2">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p
+        className={`text-sm ${mono ? 'font-mono' : ''} ${emphasis ? 'text-[var(--color-warning)]' : ''}`.trim()}
       >
         {value}
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 }
 
@@ -194,29 +176,29 @@ function KeyModal({
     : '';
 
   return (
-    <Modal open={issued !== null} onOpenChange={(open) => (open ? null : onClose())}>
-      <ModalContent>
-        <ModalHeader>
-          <ModalTitle>{issued?.rotated ? 'New bridge key' : 'Bridge paired'}</ModalTitle>
-          <ModalDescription>
+    <Dialog open={issued !== null} onOpenChange={(open) => (open ? null : onClose())}>
+      <DialogContent>
+        <div>
+          <DialogTitle>{issued?.rotated ? 'New bridge key' : 'Bridge paired'}</DialogTitle>
+          <DialogDescription>
             Copy this configuration into the bridge agent now — the key is shown{' '}
             <strong>once</strong> and can&apos;t be retrieved later.
-          </ModalDescription>
-        </ModalHeader>
-        <Stack gap={3}>
+          </DialogDescription>
+        </div>
+        <div className="flex flex-col gap-3">
           <CodeBlock text={snippet} />
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Set <span className="font-mono">SPARX_BASE_URL</span> to your sparx API URL. See the
             bridge README for install + the local-export setup.
-          </Text>
-          <Stack direction="row" justify="end">
+          </p>
+          <div className="flex flex-row justify-end">
             <Button color="module" onClick={onClose}>
               I&apos;ve saved it
             </Button>
-          </Stack>
-        </Stack>
-      </ModalContent>
-    </Modal>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -229,21 +211,18 @@ function CodeBlock({ text }: { text: string }) {
     });
   }
   return (
-    <Stack
-      gap={2}
-      className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-    >
+    <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
       <pre className="overflow-x-auto font-mono text-xs break-all whitespace-pre-wrap">{text}</pre>
-      <Stack direction="row" justify="end">
+      <div className="flex flex-row justify-end">
         <Button
           size="sm"
           variant="ghost"
           onClick={copy}
-          leftIcon={copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+          iconStart={copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         >
           {copied ? 'Copied' : 'Copy'}
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

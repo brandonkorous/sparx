@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, Card, CardContent, Container, Grid, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
 import type { MarketplaceListing, MarketplaceListResponse } from '../../_types';
 
 import { api } from '@/lib/api-rest-client';
@@ -71,14 +71,19 @@ export default async function ListingDetailPage({
   const requires = item.blueprint?.requiredModules ?? [];
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <Button variant="ghost" size="sm" asChild className="-ml-2 self-start">
-          <Link href={`/marketplace/${category.id}`}>
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {category.label}
-          </Link>
-        </Button>
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="-ml-2 self-start"
+          render={
+            <Link href={`/marketplace/${category.id}`}>
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {category.label}
+            </Link>
+          }
+        />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div>
@@ -91,40 +96,34 @@ export default async function ListingDetailPage({
             ) : (
               <div className="aspect-[16/10] w-full rounded-lg border border-[var(--color-border)]" />
             )}
-            <Text variant="muted" className="mt-4">
-              {item.description ?? item.tagline ?? ''}
-            </Text>
+            <p className="text-base-content/70 mt-4">{item.description ?? item.tagline ?? ''}</p>
           </div>
 
-          <Card variant="module">
-            <CardContent>
-              <Stack gap={4}>
+          <Card className="bg-module bg-soft">
+            <CardBody>
+              <div className="flex flex-col gap-4">
                 {tag ? (
                   <Badge variant="soft" className="self-start">
                     {tag}
                   </Badge>
                 ) : null}
-                <Heading level={1}>{item.name}</Heading>
+                <h1 className="text-3xl font-semibold">{item.name}</h1>
                 <ListingCardActions item={item} canInstall={canInstall} detail />
                 {included.length > 0 ? (
                   <div>
-                    <Text size="sm" weight="medium" className="mb-2">
-                      What&apos;s included
-                    </Text>
-                    <Stack gap={1}>
+                    <p className="mb-2 text-sm font-medium">What&apos;s included</p>
+                    <div className="flex flex-col gap-1">
                       {included.map((line) => (
-                        <Text key={line} size="sm" variant="muted">
+                        <p key={line} className="text-base-content/70 text-sm">
                           {line}
-                        </Text>
+                        </p>
                       ))}
-                    </Stack>
+                    </div>
                   </div>
                 ) : null}
                 {requires.length > 0 ? (
                   <div>
-                    <Text size="sm" weight="medium" className="mb-2">
-                      Requires
-                    </Text>
+                    <p className="mb-2 text-sm font-medium">Requires</p>
                     <div className="flex flex-wrap gap-2">
                       {requires.map((m) => (
                         <Badge key={m} color="neutral" variant="soft" size="sm">
@@ -134,25 +133,28 @@ export default async function ListingDetailPage({
                     </div>
                   </div>
                 ) : null}
-                <Text size="xs" variant="muted">
-                  Version {item.version}
-                </Text>
-              </Stack>
-            </CardContent>
+                <p className="text-base-content/70 text-xs">Version {item.version}</p>
+              </div>
+            </CardBody>
           </Card>
         </div>
 
         {related.length > 0 ? (
-          <Stack gap={4}>
-            <Heading level={2}>Related {category.label.toLowerCase()}</Heading>
-            <Grid minItemWidth="16rem" gap={4}>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Related {category.label.toLowerCase()}
+            </h2>
+            <div
+              className="grid gap-4"
+              style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(min(16rem,100%),1fr))' }}
+            >
               {related.map((r) => (
                 <ListingCard key={r.slug} item={r} canInstall={canInstall} />
               ))}
-            </Grid>
-          </Stack>
+            </div>
+          </div>
         ) : null}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

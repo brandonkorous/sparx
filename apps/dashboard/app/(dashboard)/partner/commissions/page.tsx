@@ -1,15 +1,6 @@
 import { Banknote, Coins, Wallet } from 'lucide-react';
-import {
-  Card,
-  Container,
-  EmptyState,
-  Grid,
-  Heading,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Stat,
-} from '@sparx/ui';
+import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { ModuleProvider, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -49,15 +40,15 @@ export default async function PartnerCommissionsPage() {
 
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Coins className="h-5 w-5" />}
             title="Commissions"
             description="What you’ve earned, what’s still accruing, and your monthly payout history."
           />
 
-          <Grid cols={1} mdCols={3} gap={4}>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Stat
               icon={<Wallet className="h-4 w-4" />}
               label="Paid to date"
@@ -76,44 +67,48 @@ export default async function PartnerCommissionsPage() {
               value={fmtMoneyCents(profile.payoutMinCents)}
               hint="Minimum before a payout runs"
             />
-          </Grid>
+          </div>
 
           {/* The single tinted accent card — the payout account. */}
           <OverviewCard title="Payouts" icon={<Banknote className="h-4 w-4" />}>
             <PayoutSetup connected={profile.stripePayoutAccountId != null} />
           </OverviewCard>
 
-          <Stack gap={3}>
-            <Heading level={2}>Commission ledger</Heading>
+          <div className="flex flex-col gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight">Commission ledger</h2>
             {commissions.length === 0 ? (
-              <Card padding="none">
-                <EmptyState
-                  icon={<Coins className="h-5 w-5" />}
-                  title="No commissions yet"
-                  description="When a referred account makes its first payment, your commission accrues here at your snapshot rate."
-                />
+              <Card>
+                <CardBody className="p-0">
+                  <EmptyState
+                    icon={<Coins className="h-5 w-5" />}
+                    title="No commissions yet"
+                    description="When a referred account makes its first payment, your commission accrues here at your snapshot rate."
+                  />
+                </CardBody>
               </Card>
             ) : (
               <CommissionsList rows={commissions} view="table" />
             )}
-          </Stack>
+          </div>
 
-          <Stack gap={3}>
-            <Heading level={2}>Payout history</Heading>
+          <div className="flex flex-col gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight">Payout history</h2>
             {payouts.length === 0 ? (
-              <Card padding="none">
-                <EmptyState
-                  icon={<Banknote className="h-5 w-5" />}
-                  title="No payouts yet"
-                  description="Approved commissions are grouped into a monthly payout once they clear your threshold. Each run shows up here."
-                />
+              <Card>
+                <CardBody className="p-0">
+                  <EmptyState
+                    icon={<Banknote className="h-5 w-5" />}
+                    title="No payouts yet"
+                    description="Approved commissions are grouped into a monthly payout once they clear your threshold. Each run shows up here."
+                  />
+                </CardBody>
               </Card>
             ) : (
               <PayoutsList rows={payouts} view="table" />
             )}
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ClipboardCheck } from 'lucide-react';
 
-import { Badge, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -32,33 +32,33 @@ export async function InventoryCountDetailContent({ id }: { id: string }) {
   const postedAt = count.postedAt;
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="start" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <ClipboardCheck className="h-5 w-5" />
-            <Heading level={1}>{count.number}</Heading>
+            <h1 className="text-3xl font-semibold">{count.number}</h1>
             <Badge color={status.color}>{status.label}</Badge>
             {count.requiresApproval && count.status !== 'posted' && count.status !== 'cancelled' ? (
               <Badge color="warning" variant="soft">
                 needs approval
               </Badge>
             ) : null}
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {countTypeLabel(count.type)} ·{' '}
             {count.warehouseName ?? count.warehouseCode ?? 'Warehouse'}
             {count.note ? ` · ${count.note}` : ''}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <CountActionsBar
           id={count.id}
           status={count.status}
           requiresApproval={count.requiresApproval}
         />
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Counted" value={`${count.countedLineCount}/${count.lineCount} lines`} />
         <Stat
           label="Variance value"
@@ -70,24 +70,22 @@ export async function InventoryCountDetailContent({ id }: { id: string }) {
           label={postedAt ? 'Posted' : 'Submitted'}
           value={formatDate(postedAt ?? count.countedAt)}
         />
-      </Stack>
+      </div>
 
       <CountLinesPanel id={count.id} type={count.type} status={count.status} lines={count.lines} />
-    </Stack>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[9rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

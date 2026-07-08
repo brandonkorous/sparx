@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect } from 'silicaui-react';
+
 import type { CreateShippingRateInput } from '@sparx/commerce-schemas';
 
 import { formNumber, formString } from '../../../../../../../lib/forms';
@@ -76,13 +77,13 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={3}>
-        <Stack direction="row" gap={3} wrap>
-          <Stack gap={1} className="min-w-[12rem]">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row flex-wrap gap-3">
+          <div className="flex min-w-[12rem] flex-col gap-1">
             <Label htmlFor="name">Name *</Label>
             <Input id="name" name="name" required placeholder="Ground" />
-          </Stack>
-          <Stack gap={1} className="min-w-[12rem]">
+          </div>
+          <div className="flex min-w-[12rem] flex-col gap-1">
             <Label htmlFor="profileId">Profile *</Label>
             <NativeSelect id="profileId" name="profileId" required>
               {profiles.map((p) => (
@@ -91,8 +92,8 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
                 </option>
               ))}
             </NativeSelect>
-          </Stack>
-          <Stack gap={1} className="min-w-[8rem]">
+          </div>
+          <div className="flex min-w-[8rem] flex-col gap-1">
             <Label htmlFor="type">Type *</Label>
             <NativeSelect
               id="type"
@@ -106,10 +107,10 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
                 </option>
               ))}
             </NativeSelect>
-          </Stack>
-        </Stack>
-        <Stack direction="row" gap={3} wrap>
-          <Stack gap={1} className="min-w-[8rem]">
+          </div>
+        </div>
+        <div className="flex flex-row flex-wrap gap-3">
+          <div className="flex min-w-[8rem] flex-col gap-1">
             <Label htmlFor="amount">
               {type === 'flat' || type === 'free_above_threshold'
                 ? 'Amount (dollars)'
@@ -117,37 +118,37 @@ export function NewRateForm({ zoneId, profiles }: { zoneId: string; profiles: Pr
               *
             </Label>
             <Input id="amount" name="amount" type="number" step="0.01" min="0" required />
-          </Stack>
+          </div>
           {type === 'free_above_threshold' && (
-            <Stack gap={1} className="min-w-[8rem]">
+            <div className="flex min-w-[8rem] flex-col gap-1">
               <Label htmlFor="freeAbove">Free above (dollars)</Label>
               <Input id="freeAbove" name="freeAbove" type="number" step="0.01" min="0" required />
-            </Stack>
+            </div>
           )}
-          <Stack gap={1} className="w-24">
+          <div className="flex w-24 flex-col gap-1">
             <Label htmlFor="currency">Currency</Label>
             <Input id="currency" name="currency" defaultValue="USD" maxLength={3} />
-          </Stack>
-          <Stack gap={1} className="min-w-[8rem]">
+          </div>
+          <div className="flex min-w-[8rem] flex-col gap-1">
             <Label htmlFor="carrier">Carrier label</Label>
             <Input id="carrier" name="carrier" placeholder="USPS Priority" />
-          </Stack>
-          <Stack gap={1} className="w-24">
+          </div>
+          <div className="flex w-24 flex-col gap-1">
             <Label htmlFor="etaDays">ETA (days)</Label>
             <Input id="etaDays" name="etaDays" type="number" min={0} max={60} />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>
             {pending ? 'Adding…' : 'Add rate'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

@@ -4,21 +4,8 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Eye } from 'lucide-react';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Input, Label } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createSegmentAction, previewSegmentCountAction } from '../../segment-actions';
 import { type Rule, RuleBuilder, defaultRule } from './rule-builder';
@@ -176,15 +163,13 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Stack gap={6}>
-            <Card variant="default">
-              <CardHeader>
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody>
                 <CardTitle>Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={4}>
-                  <Stack direction="row" gap={4} wrap>
-                    <Stack gap={2} className="flex-1">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row flex-wrap gap-4">
+                    <div className="flex flex-1 flex-col gap-2">
                       <Label htmlFor="seg-name">Name</Label>
                       <Input
                         id="seg-name"
@@ -192,8 +177,8 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="High-value customers"
                       />
-                    </Stack>
-                    <Stack gap={2} className="flex-1">
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2">
                       <Label htmlFor="seg-slug">Slug</Label>
                       <Input
                         id="seg-slug"
@@ -202,23 +187,23 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                         placeholder="high-value-customers"
                         pattern="^[a-z][a-z0-9-]*$"
                       />
-                    </Stack>
-                  </Stack>
-                  <Stack gap={2}>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="seg-description">Description</Label>
                     <Input
                       id="seg-description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
-                  </Stack>
-                </Stack>
-              </CardContent>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardHeader>
-                <Stack direction="row" align="center" justify="between">
+            <Card>
+              <CardBody>
+                <div className="flex flex-row items-center justify-between">
                   <CardTitle>Rule</CardTitle>
                   <Button
                     type="button"
@@ -227,39 +212,32 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                     onClick={runPreview}
                     disabled={pending || previewing}
                     loading={previewing}
-                    leftIcon={!previewing ? <Eye className="h-3.5 w-3.5" /> : undefined}
+                    iconStart={!previewing ? <Eye className="h-3.5 w-3.5" /> : undefined}
                   >
                     Preview count
                   </Button>
-                </Stack>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={3}>
+                </div>
+                <div className="flex flex-col gap-3">
                   <RuleBuilder value={rule} onChange={setRule} />
                   {preview && (
-                    <Stack
-                      direction="row"
-                      align="center"
-                      gap={2}
-                      className="rounded-md border border-[var(--color-border-default)] bg-[var(--module-active-soft)] p-3"
-                    >
-                      <Text size="sm">
+                    <div className="flex flex-row items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--module-active-soft)] p-3">
+                      <p className="text-sm">
                         <span className="font-medium tabular-nums">{preview.matches}</span> of{' '}
                         <span className="tabular-nums">{preview.sampled}</span> sampled match
-                      </Text>
-                      <Text size="xs" variant="muted">
+                      </p>
+                      <p className="text-base-content/70 text-xs">
                         ({preview.total} customers total)
-                      </Text>
-                    </Stack>
+                      </p>
+                    </div>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
-          </Stack>
+          </div>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

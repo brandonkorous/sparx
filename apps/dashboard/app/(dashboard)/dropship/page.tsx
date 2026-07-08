@@ -18,26 +18,15 @@ import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -277,22 +266,34 @@ export default async function DropshipPage() {
   }));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Dropship"
           description="Supplier orders & routing — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Factory className="h-4 w-4" />}>
-                <Link href="/dropship/suppliers">Suppliers</Link>
+              <Button
+                variant="outline"
+                iconStart={<Factory className="h-4 w-4" />}
+                render={<Link href="/dropship/suppliers" />}
+              >
+                Suppliers
               </Button>
-              <Button asChild variant="outline" leftIcon={<Scale className="h-4 w-4" />}>
-                <Link href="/dropship/reconciliation">Reconciliation</Link>
+              <Button
+                variant="outline"
+                iconStart={<Scale className="h-4 w-4" />}
+                render={<Link href="/dropship/reconciliation" />}
+              >
+                Reconciliation
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/dropship/suppliers/new">Add supplier</Link>
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/dropship/suppliers/new" />}
+              >
+                Add supplier
               </Button>
             </>
           }
@@ -300,7 +301,7 @@ export default async function DropshipPage() {
 
         {/* Headline KPIs — revenue, orders, margin from the analytics summary;
             on-time from the supplier-SLA report. */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<DollarSign className="h-4 w-4" />}
             label="Dropship revenue · 30d"
@@ -325,7 +326,7 @@ export default async function DropshipPage() {
             value={onTimeValue}
             hint={onTimeHint}
           />
-        </Grid>
+        </div>
 
         {/* Routing / exception queue — the one wireable tile is failed routes
             from the supplier-SLA report; it only renders once any have failed. */}
@@ -455,50 +456,48 @@ export default async function DropshipPage() {
           >
             {supplierRows.length ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Supplier</TableHead>
-                    <TableHead className="text-right">Orders</TableHead>
-                    <TableHead className="text-right">Revenue</TableHead>
-                    <TableHead className="text-right">Profit</TableHead>
-                    <TableHead className="text-right">Margin</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Supplier</th>
+                    <th className="text-right">Orders</th>
+                    <th className="text-right">Revenue</th>
+                    <th className="text-right">Profit</th>
+                    <th className="text-right">Margin</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {supplierRows.map((s) => {
                     const status = marginTone(s.marginPct);
                     return (
-                      <TableRow key={s.name}>
-                        <TableCell className="font-medium">{s.name}</TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {fmtNumber(s.orders)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {fmtMoneyCents(s.revenueCents)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {fmtMoneyCents(s.profitCents)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">{s.marginPct}%</TableCell>
-                        <TableCell>
+                      <tr key={s.name}>
+                        <td className="font-medium">{s.name}</td>
+                        <td className="text-right tabular-nums">{fmtNumber(s.orders)}</td>
+                        <td className="text-right tabular-nums">{fmtMoneyCents(s.revenueCents)}</td>
+                        <td className="text-right tabular-nums">{fmtMoneyCents(s.profitCents)}</td>
+                        <td className="text-right tabular-nums">{s.marginPct}%</td>
+                        <td>
                           <Badge color={status.tone} variant="soft">
                             {status.label}
                           </Badge>
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     );
                   })}
-                </TableBody>
+                </tbody>
               </Table>
             ) : (
               <EmptyState
                 icon={<Factory className="h-5 w-5" />}
                 title="No suppliers yet"
                 description="Supplier profitability ranks here once you route orders."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/dropship/suppliers/new">Add supplier</Link>
+                actions={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    render={<Link href="/dropship/suppliers/new" />}
+                  >
+                    Add supplier
                   </Button>
                 }
               />
@@ -539,43 +538,37 @@ export default async function DropshipPage() {
         >
           {recentOrders.length ? (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead className="text-right">Profit</TableHead>
-                  <TableHead className="text-right">Margin</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Supplier</th>
+                  <th>Status</th>
+                  <th className="text-right">Revenue</th>
+                  <th className="text-right">Cost</th>
+                  <th className="text-right">Profit</th>
+                  <th className="text-right">Margin</th>
+                </tr>
+              </thead>
+              <tbody>
                 {recentOrders.map((o) => {
                   const meta = statusMeta(o.status);
                   return (
-                    <TableRow key={o.id}>
-                      <TableCell className="font-medium">{o.orderNumber ?? '—'}</TableCell>
-                      <TableCell className="truncate">{o.supplierName}</TableCell>
-                      <TableCell>
+                    <tr key={o.id}>
+                      <td className="font-medium">{o.orderNumber ?? '—'}</td>
+                      <td className="truncate">{o.supplierName}</td>
+                      <td>
                         <Badge color={meta.tone} variant="soft">
                           {meta.label}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {fmtMoneyCents(o.revenueCents)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {fmtMoneyCents(o.costCents)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {fmtMoneyCents(o.profitCents)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{o.marginPct}%</TableCell>
-                    </TableRow>
+                      </td>
+                      <td className="text-right tabular-nums">{fmtMoneyCents(o.revenueCents)}</td>
+                      <td className="text-right tabular-nums">{fmtMoneyCents(o.costCents)}</td>
+                      <td className="text-right tabular-nums">{fmtMoneyCents(o.profitCents)}</td>
+                      <td className="text-right tabular-nums">{o.marginPct}%</td>
+                    </tr>
                   );
                 })}
-              </TableBody>
+              </tbody>
             </Table>
           ) : (
             <EmptyState
@@ -598,9 +591,9 @@ export default async function DropshipPage() {
               icon={<Route className="h-5 w-5" />}
               title="No routing rules yet"
               description="Map products to suppliers so orders route automatically."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/dropship/products">Set up routing</Link>
+              actions={
+                <Button variant="outline" size="sm" render={<Link href="/dropship/products" />}>
+                  Set up routing
                 </Button>
               }
             />
@@ -630,7 +623,7 @@ export default async function DropshipPage() {
             )}
           </OverviewCard>
         </div>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

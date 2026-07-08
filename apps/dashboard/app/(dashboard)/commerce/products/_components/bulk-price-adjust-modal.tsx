@@ -10,24 +10,15 @@ import * as React from 'react';
 import { ArrowDown, ArrowUp, DollarSign, Percent, Tag } from 'lucide-react';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Spinner,
-  Stack,
+  Loading,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import { applyBulkPriceAction, previewBulkPriceAction } from '../../product-actions';
 import type { BulkPricePreview, PriceAdjustment } from '../_lib/bulk-price-types';
@@ -113,23 +104,23 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
   const amountLabel = mode === 'set' ? 'New price' : mode === 'percent' ? 'Percentage' : 'Amount';
 
   return (
-    <Modal open={open} onOpenChange={handleOpenChange}>
-      <ModalContent size="lg">
-        <ModalHeader>
-          <ModalTitle>Adjust prices</ModalTitle>
-          <ModalDescription>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <div>
+          <DialogTitle>Adjust prices</DialogTitle>
+          <DialogDescription>
             {productIds.length} product{productIds.length === 1 ? '' : 's'} selected. Changes apply
             to every variant and can be undone for 30 minutes.
-          </ModalDescription>
-        </ModalHeader>
+          </DialogDescription>
+        </div>
 
         {preview ? (
           <PreviewStep preview={preview} />
         ) : (
-          <Stack gap={5} className="py-2">
-            <Stack gap={2}>
+          <div className="flex flex-col gap-5 py-2">
+            <div className="flex flex-col gap-2">
               <Label>Adjustment</Label>
-              <Stack direction="row" gap={2} wrap>
+              <div className="flex flex-row flex-wrap gap-2">
                 {MODES.map((m) => (
                   <Button
                     key={m.value}
@@ -137,25 +128,25 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                     size="sm"
                     color="module"
                     variant={mode === m.value ? 'solid' : 'outline'}
-                    leftIcon={<m.icon className="h-4 w-4" />}
+                    iconStart={<m.icon className="h-4 w-4" />}
                     onClick={() => setMode(m.value)}
                   >
                     {m.label}
                   </Button>
                 ))}
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
             {mode !== 'set' ? (
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 <Label>Direction</Label>
-                <Stack direction="row" gap={2}>
+                <div className="flex flex-row gap-2">
                   <Button
                     type="button"
                     size="sm"
                     color={direction === 'increase' ? 'success' : 'neutral'}
                     variant={direction === 'increase' ? 'solid' : 'outline'}
-                    leftIcon={<ArrowUp className="h-4 w-4" />}
+                    iconStart={<ArrowUp className="h-4 w-4" />}
                     onClick={() => setDirection('increase')}
                   >
                     Increase
@@ -165,23 +156,19 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                     size="sm"
                     color={direction === 'decrease' ? 'danger' : 'neutral'}
                     variant={direction === 'decrease' ? 'solid' : 'outline'}
-                    leftIcon={<ArrowDown className="h-4 w-4" />}
+                    iconStart={<ArrowDown className="h-4 w-4" />}
                     onClick={() => setDirection('decrease')}
                   >
                     Decrease
                   </Button>
-                </Stack>
-              </Stack>
+                </div>
+              </div>
             ) : null}
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="bulk-price-amount">{amountLabel}</Label>
-              <Stack direction="row" align="center" gap={2}>
-                {unit === '$' ? (
-                  <Text size="sm" variant="muted">
-                    $
-                  </Text>
-                ) : null}
+              <div className="flex flex-row items-center gap-2">
+                {unit === '$' ? <span className="text-base-content/70 text-sm">$</span> : null}
                 <Input
                   id="bulk-price-amount"
                   type="number"
@@ -193,28 +180,20 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                   placeholder={mode === 'percent' ? '10' : '0.00'}
                   className="max-w-40"
                 />
-                {unit === '%' ? (
-                  <Text size="sm" variant="muted">
-                    %
-                  </Text>
-                ) : null}
-              </Stack>
+                {unit === '%' ? <span className="text-base-content/70 text-sm">%</span> : null}
+              </div>
               {amountFilled && !amountValid ? (
-                <Text size="xs" className="text-[var(--color-danger)]">
+                <p className="text-xs text-[var(--color-danger)]">
                   A decrease can’t be more than 100%.
-                </Text>
+                </p>
               ) : null}
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         )}
 
-        {error ? (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        ) : null}
+        {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
 
-        <ModalFooter>
+        <div className="mt-4 flex justify-end gap-2">
           {preview ? (
             <>
               <Button
@@ -229,7 +208,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                 color="module"
                 onClick={() => void runApply()}
                 disabled={busy || preview.changedVariantCount === 0}
-                leftIcon={busy ? <Spinner className="h-4 w-4" /> : undefined}
+                iconStart={busy ? <Loading className="h-4 w-4" /> : undefined}
               >
                 Apply to {preview.changedVariantCount} variant
                 {preview.changedVariantCount === 1 ? '' : 's'}
@@ -244,71 +223,71 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                 color="module"
                 onClick={() => void runPreview()}
                 disabled={busy || !amountValid}
-                leftIcon={busy ? <Spinner className="h-4 w-4" /> : undefined}
+                iconStart={busy ? <Loading className="h-4 w-4" /> : undefined}
               >
                 Preview changes
               </Button>
             </>
           )}
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 function PreviewStep({ preview }: { preview: BulkPricePreview }) {
   return (
-    <Stack gap={3} className="py-2">
-      <Text size="sm" variant="muted">
+    <div className="flex flex-col gap-3 py-2">
+      <p className="text-base-content/70 text-sm">
         <span className="font-medium text-[var(--color-text-primary)]">{preview.label}.</span>{' '}
         {preview.changedVariantCount} of {preview.variantCount} variant
         {preview.variantCount === 1 ? '' : 's'} across {preview.productCount} product
         {preview.productCount === 1 ? '' : 's'} will change.
-      </Text>
+      </p>
       <div className="max-h-80 overflow-y-auto">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead className="text-right">Current</TableHead>
-              <TableHead className="text-right">New</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th className="text-right">Current</th>
+              <th className="text-right">New</th>
+            </tr>
+          </thead>
+          <tbody>
             {preview.products.map((p) => {
               const changed =
                 p.newMinCents !== p.currentMinCents || p.newMaxCents !== p.currentMaxCents;
               return (
-                <TableRow key={p.productId}>
-                  <TableCell>
-                    <Text size="sm" className="font-medium">
-                      {p.title}
-                    </Text>
-                    <Text size="xs" variant="muted">
+                <tr key={p.productId}>
+                  <td>
+                    <p className="text-sm font-medium">{p.title}</p>
+                    <p className="text-base-content/70 text-xs">
                       {p.variantCount} variant{p.variantCount === 1 ? '' : 's'}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <Text size="sm" variant="muted">
+                    </p>
+                  </td>
+                  <td className="text-right tabular-nums">
+                    <span className="text-base-content/70 text-sm">
                       {priceRange(p.currentMinCents, p.currentMaxCents)}
-                    </Text>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    <Text
-                      size="sm"
-                      className={changed ? 'font-medium text-[var(--module-active)]' : undefined}
-                      variant={changed ? undefined : 'muted'}
+                    </span>
+                  </td>
+                  <td className="text-right tabular-nums">
+                    <span
+                      className={
+                        changed
+                          ? 'text-sm font-medium text-[var(--module-active)]'
+                          : 'text-base-content/70 text-sm'
+                      }
                     >
                       {priceRange(p.newMinCents, p.newMaxCents)}
-                    </Text>
-                  </TableCell>
-                </TableRow>
+                    </span>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
+          </tbody>
         </Table>
       </div>
-    </Stack>
+    </div>
   );
 }
 

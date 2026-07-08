@@ -1,25 +1,8 @@
 // Server-rendered analytics summary for the Email Overview page — headline
 // engagement tiles + recent activity, from /v1/email/analytics/overview.
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Grid,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  type BadgeProps,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, type BadgeProps, statusLabel } from '@sparx/ui';
+import { Card, CardBody, CardTitle, Table } from 'silicaui-react';
 
 import type { OverviewResult } from '../_lib/types';
 
@@ -51,56 +34,50 @@ export function OverviewStats({ overview }: { overview: OverviewResult }) {
   ];
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Last {days} days</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Grid cols={2} mdCols={3} lgCols={6} gap={4}>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {tiles.map((t) => (
-              <Stack key={t.label} gap={1}>
-                <Heading level={2}>{t.value}</Heading>
-                <Text size="sm" variant="muted">
-                  {t.label}
-                </Text>
-              </Stack>
+              <div key={t.label} className="flex flex-col gap-1">
+                <h2 className="text-2xl font-semibold tracking-tight">{t.value}</h2>
+                <p className="text-base-content/70 text-sm">{t.label}</p>
+              </div>
             ))}
-          </Grid>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       {recent.length > 0 ? (
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Recent activity</CardTitle>
-          </CardHeader>
-          <CardContent>
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Event</TableHead>
-                  <TableHead>Recipient</TableHead>
-                  <TableHead>When</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Recipient</th>
+                  <th>When</th>
+                </tr>
+              </thead>
+              <tbody>
                 {recent.map((e, i) => (
-                  <TableRow key={`${e.recipient}-${e.occurredAt}-${i}`}>
-                    <TableCell>
+                  <tr key={`${e.recipient}-${e.occurredAt}-${i}`}>
+                    <td>
                       <Badge color={EVENT_BADGE[e.type] ?? 'neutral'} variant="soft" size="sm">
                         {statusLabel(e.type)}
                       </Badge>
-                    </TableCell>
-                    <TableCell>{e.recipient}</TableCell>
-                    <TableCell>{new Date(e.occurredAt).toLocaleString()}</TableCell>
-                  </TableRow>
+                    </td>
+                    <td>{e.recipient}</td>
+                    <td>{new Date(e.occurredAt).toLocaleString()}</td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
-          </CardContent>
+          </CardBody>
         </Card>
       ) : null}
-    </Stack>
+    </div>
   );
 }

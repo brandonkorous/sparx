@@ -1,20 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Badge,
-  Button,
-  Code,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Code } from '@sparx/ui';
+import { Badge, Button, Input, Label, Select } from 'silicaui-react';
 import { sendTestEmail, type DevLastSend, type TestSendResult } from './actions';
 
 export interface TestSendFormProps {
@@ -41,71 +29,64 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <form onSubmit={onSubmit} noValidate>
-        <Stack gap={4}>
-          <Stack gap={2}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="to">Recipient</Label>
             <Input id="to" name="to" type="email" defaultValue="dev@example.test" required />
-          </Stack>
-          <Stack gap={2}>
+          </div>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="template">Template</Label>
             <Select
+              id="template"
               value={template}
-              onValueChange={(v: string) => setTemplate(v as 'welcome-merchant' | 'password-reset')}
-            >
-              <SelectTrigger id="template">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="welcome-merchant">Welcome (tenant)</SelectItem>
-                <SelectItem value="password-reset">Password reset</SelectItem>
-              </SelectContent>
-            </Select>
-          </Stack>
-          <Stack direction="row" gap={2}>
+              onValueChange={(v) => setTemplate(v as 'welcome-merchant' | 'password-reset')}
+              items={{
+                'welcome-merchant': 'Welcome (tenant)',
+                'password-reset': 'Password reset',
+              }}
+            />
+          </div>
+          <div className="flex flex-row gap-2">
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Send test
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </form>
 
       {result?.ok && result.send && (
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
             <Badge color="success">Accepted</Badge>
-            <Text size="sm">
+            <p className="text-sm">
               <Code>{result.send.templateId}</Code> → {result.send.to}
-            </Text>
-          </Stack>
-          <Text size="xs" variant="muted">
+            </p>
+          </div>
+          <p className="text-base-content/70 text-xs">
             id <Code>{result.send.id}</Code> · via <Code>{result.send.provider}</Code> ·{' '}
             {new Date(result.send.acceptedAt).toLocaleString()}
-          </Text>
-        </Stack>
+          </p>
+        </div>
       )}
 
       {result && !result.ok && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {result.error ?? 'Send failed.'}
-        </Text>
+        </p>
       )}
 
       {devLastSend.enabled && devLastSend.send && (
-        <Stack gap={1}>
-          <Text size="xs" weight="medium">
-            Last dev send
-          </Text>
-          <Text size="xs" variant="muted">
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-medium">Last dev send</p>
+          <p className="text-base-content/70 text-xs">
             <Code>{devLastSend.send.template ?? 'unknown'}</Code> → {devLastSend.send.to} ·{' '}
             {new Date(devLastSend.send.acceptedAt).toLocaleString()}
-          </Text>
-          <Text size="xs" variant="muted">
-            Subject: {devLastSend.send.subject}
-          </Text>
-        </Stack>
+          </p>
+          <p className="text-base-content/70 text-xs">Subject: {devLastSend.send.subject}</p>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

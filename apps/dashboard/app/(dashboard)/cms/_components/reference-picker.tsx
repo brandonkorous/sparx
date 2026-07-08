@@ -6,17 +6,7 @@
 // version the schema-driven form uses for `reference` fields.
 
 import * as React from 'react';
-import {
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Input } from 'silicaui-react';
 import { Search } from 'lucide-react';
 import { searchEntries } from './cms-internal-api';
 
@@ -75,14 +65,14 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
   }, [q, typeKey, open]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="max-w-xl">
-        <ModalHeader>
-          <ModalTitle>Pick an entry to reference</ModalTitle>
-        </ModalHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-xl">
+        <div className="px-6 pt-6">
+          <DialogTitle>Pick an entry to reference</DialogTitle>
+        </div>
         <div className="px-6 py-2">
-          <Stack gap={3}>
-            <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-row items-center gap-2">
               <Search className="h-4 w-4 text-[var(--color-text-tertiary)]" />
               <Input
                 placeholder={
@@ -92,13 +82,13 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
                 onChange={(e) => setQ(e.target.value)}
                 aria-label="Search entries"
               />
-            </Stack>
-            {loading && <Text variant="muted">Searching…</Text>}
-            {error && <Text variant="danger">{error}</Text>}
+            </div>
+            {loading && <p className="text-base-content/70 text-base">Searching…</p>}
+            {error && <p className="text-danger text-base">{error}</p>}
             {!loading && !error && results.length === 0 && (
-              <Text variant="muted">No entries match yet.</Text>
+              <p className="text-base-content/70 text-base">No entries match yet.</p>
             )}
-            <Stack gap={1} className="max-h-[50vh] overflow-y-auto">
+            <div className="flex max-h-[50vh] flex-col gap-1 overflow-y-auto">
               {results.map((r) => (
                 <button
                   key={r.id}
@@ -115,25 +105,25 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
                   }
                   className="rounded-md border border-[var(--color-border-default)] px-3 py-2 text-left hover:bg-[var(--color-bg-subtle)] focus:ring-2 focus:ring-[var(--color-border-focus)] focus:outline-none"
                 >
-                  <Stack gap={0}>
+                  <div className="flex flex-col gap-0">
                     {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */}
-                    <Text size="sm">{r.title || r.slug || r.id}</Text>
-                    <Text size="xs" variant="muted">
+                    <p className="text-sm">{r.title || r.slug || r.id}</p>
+                    <p className="text-base-content/70 text-xs">
                       {r.typeKey}
                       {r.slug ? ` · /${r.slug}` : ''} · {r.status}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                 </button>
               ))}
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         </div>
-        <ModalFooter>
+        <div className="flex justify-end gap-2 px-6 pb-6">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

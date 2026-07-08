@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Sparkles } from 'lucide-react';
-import { EmptyState } from '@sparx/ui';
+import { EmptyState } from 'silicaui-react';
 
 // Placeholder body for Email surfaces whose full UI lands in a later delivery
 // phase. Keeps the section nav functional (no 404s) between phased deploys.

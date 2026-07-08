@@ -1,17 +1,8 @@
 import Link from 'next/link';
 import { RefreshCw, Truck } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -39,15 +30,15 @@ export default async function ReorderPage() {
   const currency = groups[0]?.currency ?? 'USD';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<RefreshCw className="h-5 w-5" />}
           title="Reorder"
           description="Items at or below their reorder point, grouped by supplier. Confirm the quantities and draft a purchase order to the preferred supplier — lead time sets the expected arrival."
         />
 
-        <Stack direction="row" gap={4} wrap>
+        <div className="flex flex-row flex-wrap gap-4">
           <Stat label="Suppliers to order from" value={String(counts.groups)} />
           <Stat label="Items to reorder" value={String(counts.lines)} />
           <Stat
@@ -55,44 +46,47 @@ export default async function ReorderPage() {
             value={estimatedTotalCents > 0 ? formatMoney(estimatedTotalCents, currency) : '—'}
           />
           <Stat label="No supplier linked" value={String(counts.unsupplied)} />
-        </Stack>
+        </div>
 
         {groups.length === 0 && unsupplied.length === 0 ? (
           <Card>
-            <CardContent>
-              <Stack gap={2} align="center" className="py-12">
-                <Heading level={3}>Nothing to reorder</Heading>
-                <Text size="sm" variant="muted">
+            <CardBody>
+              <div className="flex flex-col items-center gap-2 py-12">
+                <h3 className="text-xl font-semibold">Nothing to reorder</h3>
+                <p className="text-base-content/70 text-sm">
                   Every tracked item is above its reorder point. Set reorder points on the stock
                   grid to have low items surface here.
-                </Text>
-                <Button asChild variant="outline" size="sm" className="mt-2">
-                  <Link href="/inventory/stock">Go to stock</Link>
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  render={<Link href="/inventory/stock" />}
+                >
+                  Go to stock
                 </Button>
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         ) : (
           <ReorderBoard groups={groups} />
         )}
 
         {unsupplied.length > 0 ? <UnsuppliedPanel items={unsupplied} /> : null}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[10rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -100,46 +94,46 @@ function Stat({ label, value }: { label: string; value: string }) {
 function UnsuppliedPanel({ items }: { items: UnsuppliedSuggestion[] }) {
   return (
     <Card>
-      <CardContent>
-        <Stack gap={3} className="py-2">
-          <Stack direction="row" align="center" gap={2}>
+      <CardBody>
+        <div className="flex flex-col gap-3 py-2">
+          <div className="flex flex-row items-center gap-2">
             <Truck className="h-4 w-4" />
-            <Heading level={3}>Low — no supplier linked</Heading>
+            <h3 className="text-xl font-semibold">Low — no supplier linked</h3>
             <Badge color="warning">{items.length}</Badge>
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             These items are low but have no purchasing supplier. Link one to a supplier&apos;s
             catalog and they&apos;ll become draftable reorder suggestions.
-          </Text>
-          <Stack gap={2}>
+          </p>
+          <div className="flex flex-col gap-2">
             {items.map((it) => (
-              <Stack
+              <div
                 key={`${it.variantId}-${it.warehouseId}`}
-                direction="row"
-                align="center"
-                gap={3}
-                wrap
-                className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
               >
-                <Stack gap={0} className="min-w-[12rem] flex-1">
-                  <Text size="sm" className="font-medium">
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                  <p className="text-sm font-medium">
                     {it.title ?? it.sku ?? it.variantId.slice(0, 8)}
-                  </Text>
-                  <Text size="xs" variant="muted" className="font-mono">
+                  </p>
+                  <p className="text-base-content/70 font-mono text-xs">
                     {it.sku ?? it.variantId} · {it.warehouseName ?? it.warehouseCode}
-                  </Text>
-                </Stack>
-                <Text size="sm" variant="muted">
+                  </p>
+                </div>
+                <p className="text-base-content/70 text-sm">
                   {it.available} / {it.reorderPoint} reorder pt
-                </Text>
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/inventory/suppliers?variant=${it.variantId}`}>Link supplier</Link>
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  render={<Link href={`/inventory/suppliers?variant=${it.variantId}`} />}
+                >
+                  Link supplier
                 </Button>
-              </Stack>
+              </div>
             ))}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

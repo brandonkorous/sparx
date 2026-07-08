@@ -2,16 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { KanbanSquare, List, BarChart3, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Container,
-  PageHeader,
-  Stack,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from '@sparx/ui';
+import { Badge, Button, Tabs, TabsList, TabsTab } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -77,19 +69,19 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
         requestId: apiError.requestId,
       });
       return (
-        <Container size="full" className="px-6">
-          <Stack gap={6} className="py-8">
+        <div className="mx-auto w-full max-w-none px-6 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6 py-8">
             <PageHeader
               title="Pipeline temporarily unavailable"
               description="We couldn't load this pipeline right now. Please refresh or try again in a moment."
               actions={
-                <Button asChild variant="outline">
-                  <Link href="/crm/pipelines">Back to pipelines</Link>
+                <Button render={<Link href="/crm/pipelines" />} variant="outline">
+                  Back to pipelines
                 </Button>
               }
             />
-          </Stack>
-        </Container>
+          </div>
+        </div>
       );
     }
     throw err;
@@ -104,8 +96,8 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
   }));
 
   return (
-    <Container size="full" className="px-6">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-none px-6 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           title={pipeline.name}
           badge={
@@ -130,25 +122,29 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
             <>
               <Tabs value={view}>
                 <TabsList>
-                  <TabsTrigger value="kanban" asChild>
-                    <Link href={`/crm/pipelines/${pipeline.id}`}>
-                      <KanbanSquare className="h-3.5 w-3.5" /> Kanban
-                    </Link>
-                  </TabsTrigger>
-                  <TabsTrigger value="list" asChild>
-                    <Link href={`/crm/pipelines/${pipeline.id}?view=list`}>
-                      <List className="h-3.5 w-3.5" /> List
-                    </Link>
-                  </TabsTrigger>
-                  <TabsTrigger value="forecast" asChild>
-                    <Link href={`/crm/pipelines/${pipeline.id}?view=forecast`}>
-                      <BarChart3 className="h-3.5 w-3.5" /> Forecast
-                    </Link>
-                  </TabsTrigger>
+                  <TabsTab value="kanban" render={<Link href={`/crm/pipelines/${pipeline.id}`} />}>
+                    <KanbanSquare className="h-3.5 w-3.5" /> Kanban
+                  </TabsTab>
+                  <TabsTab
+                    value="list"
+                    render={<Link href={`/crm/pipelines/${pipeline.id}?view=list`} />}
+                  >
+                    <List className="h-3.5 w-3.5" /> List
+                  </TabsTab>
+                  <TabsTab
+                    value="forecast"
+                    render={<Link href={`/crm/pipelines/${pipeline.id}?view=forecast`} />}
+                  >
+                    <BarChart3 className="h-3.5 w-3.5" /> Forecast
+                  </TabsTab>
                 </TabsList>
               </Tabs>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href={`/crm/deals/new?pipelineId=${pipeline.id}`}>New deal</Link>
+              <Button
+                render={<Link href={`/crm/deals/new?pipelineId=${pipeline.id}`} />}
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+              >
+                New deal
               </Button>
             </>
           }
@@ -180,7 +176,7 @@ export default async function PipelineDetailPage({ params, searchParams }: PageP
         )}
         {view === 'list' && <PipelineList pipelineId={pipeline.id} />}
         {view === 'forecast' && <PipelineForecast pipelineId={pipeline.id} />}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

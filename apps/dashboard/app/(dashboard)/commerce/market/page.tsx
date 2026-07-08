@@ -8,18 +8,8 @@
 
 import Link from 'next/link';
 import { Store } from 'lucide-react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -43,75 +33,71 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
 
   return (
     <ModuleProvider module="commerce">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Store className="h-5 w-5" />}
             title="sparx.market"
             description="Sell your products on sparx.market, the first-party marketplace — one network where shoppers discover independent sellers across every category. List products from your catalog; sparx handles checkout as merchant-of-record and pays you weekly, minus commission."
           />
 
-          <Card variant="module">
-            <CardHeader>
+          <Card className="bg-module bg-soft">
+            <CardBody>
               <CardTitle>Participation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 <ParticipationToggle profile={profile} />
                 {!profile.enabled && (
-                  <Text size="sm" variant="muted" className="max-w-prose">
+                  <p className="text-base-content/70 max-w-prose text-sm">
                     When you join, your eligible products can be listed on sparx.market and your
                     seller profile appears in the marketplace directory. You keep selling on your
                     own site too — sparx.market is an additional channel, not a replacement.
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
 
           {profile.enabled && (
             <>
-              <Card variant="default">
-                <CardHeader>
+              <Card>
+                <CardBody>
                   <CardTitle>Earnings & payouts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={3}>
-                    <Text size="sm" variant="muted" className="max-w-prose">
+                  <div className="flex flex-col gap-3">
+                    <p className="text-base-content/70 max-w-prose text-sm">
                       Your marketplace settlement earnings, weekly payout history, and the bank
                       account sparx pays you to all live in Finance — alongside the rest of your
                       money.
-                    </Text>
+                    </p>
                     <div>
-                      <Button asChild variant="soft" color="module">
-                        <Link href="/finance/payouts">Go to Payouts</Link>
+                      <Button
+                        variant="soft"
+                        color="module"
+                        render={<Link href="/finance/payouts" />}
+                      >
+                        Go to Payouts
                       </Button>
                     </div>
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
 
-              <Card variant="default">
-                <CardHeader>
+              <Card>
+                <CardBody>
                   <CardTitle>Seller profile</CardTitle>
-                </CardHeader>
-                <CardContent>
                   <ProfileForm profile={profile} />
-                </CardContent>
+                </CardBody>
               </Card>
 
-              <Card variant="default">
-                <CardHeader>
+              <Card>
+                <CardBody>
                   <CardTitle>Listed products</CardTitle>
-                </CardHeader>
-                <CardContent>
                   <ListedProductsTable products={listed.rows} total={listed.total} />
-                </CardContent>
+                </CardBody>
               </Card>
             </>
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

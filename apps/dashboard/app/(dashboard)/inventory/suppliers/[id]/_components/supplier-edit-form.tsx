@@ -3,20 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardActions, Checkbox, Input, Label } from 'silicaui-react';
 
 import { updateSupplierAction } from '../../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -132,15 +119,13 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
   return (
     <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Details</Heading>
-            <CardDescription>Contact, address, and default purchasing terms.</CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Details</h3>
+            <p className="opacity-70">Contact, address, and default purchasing terms.</p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Name" name="name" defaultValue={supplier.name} required />
               <Field
                 label="Code"
@@ -150,8 +135,8 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 pattern="[A-Za-z0-9_-]+"
                 error={fieldErrors.code}
               />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
+            </div>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field
                 label="Contact name"
                 name="contactName"
@@ -164,14 +149,14 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 defaultValue={supplier.email ?? ''}
                 error={fieldErrors.email}
               />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
+            </div>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Phone" name="phone" defaultValue={supplier.phone ?? ''} />
               <Field label="Website" name="website" defaultValue={supplier.website ?? ''} />
-            </Stack>
+            </div>
             <Field label="Address line 1" name="line1" defaultValue={supplier.line1 ?? ''} />
             <Field label="Address line 2" name="line2" defaultValue={supplier.line2 ?? ''} />
-            <Stack direction="row" gap={3} wrap>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="City" name="city" defaultValue={supplier.city ?? ''} />
               <Field label="Region" name="region" defaultValue={supplier.region ?? ''} />
               <Field
@@ -185,8 +170,8 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 defaultValue={supplier.country ?? ''}
                 maxLength={2}
               />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
+            </div>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field
                 label="Payment terms"
                 name="paymentTerms"
@@ -204,8 +189,8 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 defaultValue={supplier.currency}
                 maxLength={3}
               />
-            </Stack>
-            <Stack gap={1}>
+            </div>
+            <div className="flex flex-col gap-1">
               <Label htmlFor="notes">Notes</Label>
               <textarea
                 id="notes"
@@ -214,30 +199,22 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 defaultValue={supplier.notes ?? ''}
                 className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
               />
-            </Stack>
+            </div>
             <label className="flex items-center gap-2">
               <Checkbox color="module" name="isActive" defaultChecked={supplier.isActive} />
-              <Text size="sm">Active</Text>
+              <p className="text-sm">Active</p>
             </label>
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={2} justify="between" align="center" className="w-full">
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            {savedAt && !error && (
-              <Text size="xs" variant="muted">
-                Saved {savedAt}
-              </Text>
-            )}
+          </div>
+        </CardBody>
+        <CardActions>
+          <div className="flex w-full flex-row items-center justify-between gap-2">
+            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {savedAt && !error && <p className="text-base-content/70 text-xs">Saved {savedAt}</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save'}
             </Button>
-          </Stack>
-        </CardFooter>
+          </div>
+        </CardActions>
       </Card>
     </form>
   );
@@ -263,7 +240,7 @@ function Field({
   type?: string;
 }) {
   return (
-    <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
       <Label htmlFor={name}>
         {label}
         {required && <span className="text-[var(--color-danger)]">*</span>}
@@ -277,12 +254,8 @@ function Field({
         pattern={pattern}
         maxLength={maxLength}
       />
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }
 

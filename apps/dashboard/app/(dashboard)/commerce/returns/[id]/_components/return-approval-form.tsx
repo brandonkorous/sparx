@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input } from 'silicaui-react';
 
 import { formBool, formString } from '../../../../../../lib/forms';
 import { approveReturnAction } from '../../../return-actions';
@@ -59,15 +59,11 @@ export function ReturnApprovalForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={3}>
+      <div className="flex flex-col gap-3">
         {items.map((it) => (
-          <Stack key={it.id} direction="row" gap={3} align="center">
-            <Text size="xs" className="w-32 font-mono">
-              {it.orderItemId.slice(0, 8)}
-            </Text>
-            <Text size="xs" variant="muted" className="w-20">
-              req {it.quantity}
-            </Text>
+          <div key={it.id} className="flex flex-row items-center gap-3">
+            <p className="w-32 font-mono text-xs">{it.orderItemId.slice(0, 8)}</p>
+            <p className="text-base-content/70 w-20 text-xs">req {it.quantity}</p>
             <Input
               type="number"
               min={0}
@@ -78,34 +74,32 @@ export function ReturnApprovalForm({
               }
               className="w-24"
             />
-            <Text size="xs" variant="muted">
-              approved qty
-            </Text>
-          </Stack>
+            <p className="text-base-content/70 text-xs">approved qty</p>
+          </div>
         ))}
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           <label className="flex items-center gap-2">
             <Checkbox color="module" name="generateLabel" defaultChecked />
-            <Text size="sm">Generate return label (when ShippingProvider is installed)</Text>
+            <span className="text-sm">
+              Generate return label (when ShippingProvider is installed)
+            </span>
           </label>
-        </Stack>
-        <Stack gap={1}>
-          <Text size="xs" variant="muted">
-            Staff note (optional)
-          </Text>
+        </div>
+        <div className="flex flex-col gap-1">
+          <p className="text-base-content/70 text-xs">Staff note (optional)</p>
           <Input name="staffNote" placeholder="Optional internal note" />
-        </Stack>
+        </div>
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>
             {pending ? 'Approving…' : 'Approve return'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

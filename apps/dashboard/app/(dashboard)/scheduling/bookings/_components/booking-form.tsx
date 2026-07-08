@@ -5,24 +5,16 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Grid,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Spinner,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
+  Loading,
   Switch,
-  Text,
   Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import type { AvailabilitySlot, SchedulingService } from '../../_lib/types';
 import { duration, formatTime, money } from '../../_lib/format';
@@ -188,12 +180,12 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
             'Pick a service and a time — only open slots that respect availability are shown.',
         }}
       >
-        <Card variant="default">
-          <CardContent className="py-6">
-            <Text size="sm" variant="muted">
+        <Card>
+          <CardBody className="py-6">
+            <p className="text-base-content/70 text-sm">
               No active services to book. Create a service first.
-            </Text>
-          </CardContent>
+            </p>
+          </CardBody>
         </Card>
       </SurfaceStep>
     );
@@ -212,13 +204,11 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
           nextDisabled: saving || !selected,
         }}
       >
-        <Card variant="default">
-          <CardHeader>
+        <Card>
+          <CardBody className="py-6">
             <CardTitle>Service &amp; time</CardTitle>
-          </CardHeader>
-          <CardContent className="py-6">
-            <Stack gap={4}>
-              <Grid cols={2} gap={3}>
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label htmlFor="bk-service">Service</Label>
                   <NativeSelect
@@ -247,7 +237,7 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
                     onChange={(e) => setDate(e.target.value)}
                   />
                 </div>
-              </Grid>
+              </div>
 
               {isReservation ? (
                 <div className="max-w-[12rem]">
@@ -269,17 +259,15 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
               </div>
 
               {loading ? (
-                <Stack direction="row" align="center" gap={2}>
-                  <Spinner size="sm" />
-                  <Text size="sm" variant="muted">
-                    Checking availability…
-                  </Text>
-                </Stack>
+                <div className="flex flex-row items-center gap-2">
+                  <Loading size="sm" />
+                  <p className="text-base-content/70 text-sm">Checking availability…</p>
+                </div>
               ) : slots ? (
                 slots.length === 0 ? (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     No open times that day. Try another date or adjust the resource&apos;s hours.
-                  </Text>
+                  </p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {slots.map((slot) => (
@@ -335,8 +323,8 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
               </div>
 
               {repeat ? <RecurrenceFields value={recurrence} onChange={setRecurrence} /> : null}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
       </SurfaceStep>
     );

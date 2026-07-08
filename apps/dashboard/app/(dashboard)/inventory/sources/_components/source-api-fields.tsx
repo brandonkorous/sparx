@@ -1,16 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Input, Select } from 'silicaui-react';
 
 // The declarative config for a `type: 'api'` (Tier B) inventory source — endpoint,
 // auth, the dot-paths that map a JSON response onto stock rows, and pagination. The
@@ -113,7 +104,7 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
     onChange({ ...value, [key]: v });
 
   return (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       <Field label="API endpoint" required hint="The URL the worker fetches stock from.">
         <Input
           type="url"
@@ -124,20 +115,15 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
       </Field>
 
       <Field label="Authentication">
-        <Select value={value.authScheme} onValueChange={(v) => set('authScheme', v as never)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">None</SelectItem>
-            <SelectItem value="bearer">Bearer token</SelectItem>
-            <SelectItem value="header">Custom header</SelectItem>
-          </SelectContent>
-        </Select>
+        <Select
+          value={value.authScheme}
+          onValueChange={(v) => set('authScheme', v as never)}
+          items={{ none: 'None', bearer: 'Bearer token', header: 'Custom header' }}
+        />
       </Field>
 
       {value.authScheme !== 'none' && (
-        <Stack direction="row" gap={3} wrap>
+        <div className="flex flex-row flex-wrap gap-3">
           {value.authScheme === 'header' && (
             <Field label="Header name" className="min-w-[12rem] flex-1">
               <Input
@@ -160,19 +146,17 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
               onChange={(e) => set('apiKey', e.target.value)}
             />
           </Field>
-        </Stack>
+        </div>
       )}
 
-      <Stack gap={2}>
-        <Text size="sm" className="font-medium">
-          Response mapping
-        </Text>
-        <Text size="xs" className="text-[var(--color-muted-foreground)]">
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium">Response mapping</p>
+        <p className="text-xs text-[var(--color-muted-foreground)]">
           Dot-paths into the JSON response. Leave “Items path” blank if the response{' '}
           <span className="font-mono">is</span> the array of rows.
-        </Text>
-      </Stack>
-      <Stack direction="row" gap={3} wrap>
+        </p>
+      </div>
+      <div className="flex flex-row flex-wrap gap-3">
         <Field label="Items path" className="min-w-[12rem] flex-1">
           <Input
             placeholder="data.items"
@@ -194,8 +178,8 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
             onChange={(e) => set('quantityField', e.target.value)}
           />
         </Field>
-      </Stack>
-      <Stack direction="row" gap={3} wrap>
+      </div>
+      <div className="flex flex-row flex-wrap gap-3">
         <Field label="Location field" className="min-w-[10rem] flex-1">
           <Input
             placeholder="warehouse"
@@ -211,15 +195,11 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
           />
         </Field>
         <Field label="Cost unit" className="min-w-[8rem]">
-          <Select value={value.costUnit} onValueChange={(v) => set('costUnit', v as never)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cents">Cents</SelectItem>
-              <SelectItem value="dollars">Dollars</SelectItem>
-            </SelectContent>
-          </Select>
+          <Select
+            value={value.costUnit}
+            onValueChange={(v) => set('costUnit', v as never)}
+            items={{ cents: 'Cents', dollars: 'Dollars' }}
+          />
         </Field>
         <Field
           label="Updated-at field"
@@ -232,23 +212,15 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
             onChange={(e) => set('syncedAtField', e.target.value)}
           />
         </Field>
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={3} wrap align="start">
+      <div className="flex flex-row flex-wrap items-start gap-3">
         <Field label="Pagination" className="min-w-[10rem]">
           <Select
             value={value.paginationMode}
             onValueChange={(v) => set('paginationMode', v as never)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Single page</SelectItem>
-              <SelectItem value="page">Page number</SelectItem>
-              <SelectItem value="cursor">Cursor</SelectItem>
-            </SelectContent>
-          </Select>
+            items={{ none: 'Single page', page: 'Page number', cursor: 'Cursor' }}
+          />
         </Field>
         {value.paginationMode === 'page' && (
           <Field label="Page param" className="min-w-[10rem] flex-1">
@@ -279,8 +251,8 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
             />
           </Field>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -298,16 +270,12 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <Stack gap={2} className={className}>
-      <Text size="sm" className="font-medium">
+    <div className={`flex flex-col gap-2${className ? ` ${className}` : ''}`}>
+      <p className="text-sm font-medium">
         {label} {required ? <span className="text-[var(--color-danger)]">*</span> : null}
-      </Text>
+      </p>
       {children}
-      {hint ? (
-        <Text size="xs" className="text-[var(--color-muted-foreground)]">
-          {hint}
-        </Text>
-      ) : null}
-    </Stack>
+      {hint ? <p className="text-xs text-[var(--color-muted-foreground)]">{hint}</p> : null}
+    </div>
   );
 }

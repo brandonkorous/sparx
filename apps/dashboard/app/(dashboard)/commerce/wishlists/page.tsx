@@ -1,24 +1,7 @@
 import { Heart } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -45,8 +28,8 @@ export default async function WishlistsPage() {
   const { wishlistCount, itemCount, topVariants } = analytics;
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Heart className="h-5 w-5" />}
           title="Wishlists"
@@ -59,15 +42,13 @@ export default async function WishlistsPage() {
         />
 
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Most-saved variants</Heading>
-              <CardDescription>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Most-saved variants</h3>
+              <p className="opacity-70">
                 Aggregated across every customer wishlist in the tenant. Top 50.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+              </p>
+            </div>
             {topVariants.length === 0 ? (
               <EmptyState
                 icon={<Heart className="h-5 w-5" />}
@@ -76,45 +57,41 @@ export default async function WishlistsPage() {
               />
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Variant</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead className="text-right">Saved by</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Variant</th>
+                    <th>SKU</th>
+                    <th>Product</th>
+                    <th className="text-right">Saved by</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {topVariants.map((row) => (
-                    <TableRow key={row.variantId}>
-                      <TableCell>
+                    <tr key={row.variantId}>
+                      <td>
                         {row.variantTitle ? (
-                          <Text size="sm">{row.variantTitle}</Text>
+                          <p className="text-sm">{row.variantTitle}</p>
                         ) : (
-                          <Text size="sm" variant="muted">
-                            Default
-                          </Text>
+                          <p className="text-base-content/70 text-sm">Default</p>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" className="font-mono">
-                          {row.sku}
-                        </Text>
-                      </TableCell>
-                      <TableCell>{row.productTitle}</TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td>
+                        <p className="font-mono text-xs">{row.sku}</p>
+                      </td>
+                      <td>{row.productTitle}</td>
+                      <td className="text-right">
                         <Badge color="module" variant="soft" size="sm">
                           {row.saveCount}
                         </Badge>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

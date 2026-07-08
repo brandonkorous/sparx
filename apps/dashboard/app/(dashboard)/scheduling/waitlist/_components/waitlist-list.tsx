@@ -8,23 +8,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  Spinner,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Loading,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Input,
   Label,
   DropdownMenuTrigger,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { CalendarPlus, MoreHorizontal, Send, Trash2 } from 'lucide-react';
 
 import type { AvailabilitySlot, WaitlistEntry } from '../../_lib/types';
@@ -91,11 +84,11 @@ function BookOfferModal({
   }
 
   return (
-    <Modal open onOpenChange={(o) => !o && onClose(false)}>
-      <ModalContent className="max-w-lg">
-        <ModalHeader>
-          <ModalTitle>Book for {entry.customerName}</ModalTitle>
-        </ModalHeader>
+    <Dialog open onOpenChange={(o) => !o && onClose(false)}>
+      <DialogContent className="max-w-lg">
+        <div>
+          <DialogTitle>Book for {entry.customerName}</DialogTitle>
+        </div>
         <div className="flex flex-col gap-3 px-1 py-2">
           <p className="text-xs text-[var(--color-muted-foreground)]">
             {entry.serviceName} · requested {formatDate(entry.desiredFrom)} –{' '}
@@ -119,7 +112,7 @@ function BookOfferModal({
           </div>
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
-              <Spinner size="sm" /> Checking…
+              <Loading size="sm" /> Checking…
             </div>
           ) : slots ? (
             slots.length === 0 ? (
@@ -145,8 +138,8 @@ function BookOfferModal({
             )
           ) : null}
         </div>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -185,33 +178,33 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
   return (
     <>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Customer</TableHead>
-            <TableHead>Service</TableHead>
-            <TableHead>Requested window</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Service</th>
+            <th>Requested window</th>
+            <th>Status</th>
+            <th className="w-10" />
+          </tr>
+        </thead>
+        <tbody>
           {entries.map((e) => {
             const active = e.status === 'waiting' || e.status === 'offered';
             return (
-              <TableRow key={e.id}>
-                <TableCell className="font-medium">{e.customerName}</TableCell>
-                <TableCell>{e.serviceName ?? 'Service'}</TableCell>
-                <TableCell className="text-[var(--color-muted-foreground)]">
+              <tr key={e.id}>
+                <td className="font-medium">{e.customerName}</td>
+                <td>{e.serviceName ?? 'Service'}</td>
+                <td className="text-[var(--color-muted-foreground)]">
                   {formatDate(e.desiredFrom)} – {formatDate(e.desiredTo)}
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Badge color={STATUS_COLOR[e.status] ?? 'neutral'} variant="soft">
                     {e.status}
                   </Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger>
                       <Button
                         variant="ghost"
                         shape="square"
@@ -224,16 +217,16 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
                     <DropdownMenuContent align="end">
                       {active ? (
                         <>
-                          <DropdownMenuItem onSelect={() => void offer(e)}>
+                          <DropdownMenuItem onClick={() => void offer(e)}>
                             <Send className="mr-2 h-4 w-4" />
                             Send offer
                           </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => setBooking(e)}>
+                          <DropdownMenuItem onClick={() => setBooking(e)}>
                             <CalendarPlus className="mr-2 h-4 w-4" />
                             Book a slot
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onSelect={() => void remove(e)}
+                            onClick={() => void remove(e)}
                             className="text-[var(--color-danger)]"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
@@ -243,11 +236,11 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
                       ) : null}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             );
           })}
-        </TableBody>
+        </tbody>
       </Table>
 
       {booking ? (

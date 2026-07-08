@@ -7,7 +7,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { Badge, Button, Card, CardContent, Stack, Text, cn } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { cn } from '@sparx/ui';
 
 import type { GatewayDescriptor } from '../actions';
 import { GatewayMark } from './gateway-mark';
@@ -68,28 +69,24 @@ export function GatewayTile({
         }
       }}
       className={cn(
-        'cursor-pointer transition-colors hover:border-[var(--color-border-strong)]',
-        status === 'active' && 'border-[var(--color-success-border)]',
+        'hover:border-base-content/30 cursor-pointer transition-colors',
+        status === 'active' && 'border-success',
         disabled && 'pointer-events-none opacity-70'
       )}
     >
-      <CardContent>
-        <Stack direction="row" align="center" gap={3} className="py-1">
+      <CardBody className="p-4">
+        <div className="flex items-center gap-3">
           <GatewayMark gatewayId={gateway.id} size="md" />
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              <Text weight="medium" className="truncate">
-                {gateway.name}
-              </Text>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="truncate font-medium">{gateway.name}</p>
               <GatewayStatusBadge status={status} />
-            </Stack>
-            <Text size="xs" variant="muted" className="truncate">
-              {checkoutTag(gateway)}
-            </Text>
-          </Stack>
-          <ChevronRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-        </Stack>
-      </CardContent>
+            </div>
+            <p className="text-base-content/70 truncate text-xs">{checkoutTag(gateway)}</p>
+          </div>
+          <ChevronRight className="text-base-content/50 h-4 w-4 shrink-0" />
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -98,26 +95,22 @@ export function GatewayTile({
 // §12), so it connects through the provider-install flow rather than the picker.
 export function PayPalTile(): React.JSX.Element {
   return (
-    <Card className="transition-colors hover:border-[var(--color-border-strong)]">
-      <CardContent>
+    <Card className="hover:border-base-content/30 transition-colors">
+      <CardBody className="p-4">
         <Link
           href="/commerce/providers/install?slug=paypal&kind=payment"
           className="block focus-visible:outline-none"
         >
-          <Stack direction="row" align="center" gap={3} className="py-1">
+          <div className="flex items-center gap-3">
             <GatewayMark gatewayId="paypal" size="md" />
-            <Stack gap={1} className="min-w-0 flex-1">
-              <Text weight="medium" className="truncate">
-                PayPal
-              </Text>
-              <Text size="xs" variant="muted" className="truncate">
-                No sparx fee · Hosted page
-              </Text>
-            </Stack>
-            <ChevronRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-          </Stack>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <p className="truncate font-medium">PayPal</p>
+              <p className="text-base-content/70 truncate text-xs">No sparx fee · Hosted page</p>
+            </div>
+            <ChevronRight className="text-base-content/50 h-4 w-4 shrink-0" />
+          </div>
         </Link>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -135,33 +128,31 @@ export function ManualRow({
 }): React.JSX.Element {
   return (
     <Card>
-      <CardContent>
-        <Stack direction="row" align="center" gap={3} className="py-1">
+      <CardBody className="p-4">
+        <div className="flex items-center gap-3">
           <GatewayMark gatewayId={gateway.id} size="md" />
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              <Text weight="medium">{gateway.name}</Text>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-medium">{gateway.name}</p>
               {active ? (
                 <Badge color="success" variant="soft" size="sm">
                   Active
                 </Badge>
               ) : null}
-            </Stack>
-            <Text size="xs" variant="muted">
+            </div>
+            <p className="text-base-content/70 text-xs">
               Record check, cash, wire, or ACH by hand. No online card payments, no fee.
-            </Text>
-          </Stack>
+            </p>
+          </div>
           {active ? (
-            <Text size="sm" variant="muted">
-              In use
-            </Text>
+            <p className="text-base-content/70 text-sm">In use</p>
           ) : (
             <Button color="module" variant="outline" size="sm" onClick={onUse} disabled={disabled}>
               Use manual
             </Button>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

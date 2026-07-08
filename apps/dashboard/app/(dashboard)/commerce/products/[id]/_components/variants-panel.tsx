@@ -13,27 +13,8 @@ import {
   X,
 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Input,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-  NativeSelect,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, NativeSelect, Table } from 'silicaui-react';
+import { useConfirm, statusLabel } from '@sparx/ui';
 
 import {
   archiveVariantAction,
@@ -117,43 +98,39 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
   const archivedVariants = variants.filter((v) => v.deletedAt);
 
   return (
-    <Stack gap={4}>
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" wrap gap={3}>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-col gap-4">
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <Sliders className="h-4 w-4 text-[var(--module-active)]" />
-                <Heading level={3}>Options</Heading>
+                <h3 className="text-xl font-semibold">Options</h3>
                 <Badge color="neutral" variant="soft" size="sm">
                   {options.length} option{options.length === 1 ? '' : 's'}
                 </Badge>
-              </Stack>
-              <CardDescription>
+              </div>
+              <p className="opacity-70">
                 Define the axes shoppers pick — Color, Size, Material, etc. Each variant binds to
                 one value per option.
-              </CardDescription>
-            </Stack>
+              </p>
+            </div>
             <Button
               variant="outline"
               onClick={() => setOptionsOpen((v) => !v)}
-              leftIcon={optionsOpen ? <X className="h-4 w-4" /> : <Sliders className="h-4 w-4" />}
+              iconStart={optionsOpen ? <X className="h-4 w-4" /> : <Sliders className="h-4 w-4" />}
             >
               {optionsOpen ? 'Cancel' : options.length === 0 ? 'Set up options' : 'Edit options'}
             </Button>
-          </Stack>
-        </CardHeader>
-        {!optionsOpen && options.length > 0 && (
-          <CardContent>
-            <Stack gap={3}>
+          </div>
+          {!optionsOpen && options.length > 0 && (
+            <div className="flex flex-col gap-3">
               {options.map((option) => (
                 <OptionPreview key={option.id} option={option} />
               ))}
-            </Stack>
-          </CardContent>
-        )}
-        {optionsOpen && (
-          <CardContent>
+            </div>
+          )}
+          {optionsOpen && (
             <OptionsEditor
               productId={productId}
               productTitle={productTitle}
@@ -164,74 +141,70 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
               }}
               onCancel={() => setOptionsOpen(false)}
             />
-          </CardContent>
-        )}
+          )}
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" wrap gap={3}>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
-                <Boxes className="h-4 w-4 text-[var(--module-active)]" />
-                <Heading level={3}>Variants</Heading>
-                <Badge color="neutral" variant="soft" size="sm">
-                  {activeVariants.length} active
-                  {archivedVariants.length > 0 ? ` · ${archivedVariants.length} archived` : ''}
-                </Badge>
-              </Stack>
-              <CardDescription>
-                One row per purchasable SKU. Each variant ties to one value per option (or none for
-                option-less products). Price + inventory policy edit inline.
-              </CardDescription>
-            </Stack>
-            <Button
-              color="module"
-              onClick={() => setNewVariantOpen((v) => !v)}
-              leftIcon={newVariantOpen ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            >
-              {newVariantOpen ? 'Cancel' : 'Add variant'}
-            </Button>
-          </Stack>
-        </CardHeader>
-        {newVariantOpen && (
-          <CardContent>
-            <NewVariantForm
-              productId={productId}
-              options={options}
-              onCreated={() => {
-                setNewVariantOpen(false);
-                router.refresh();
-              }}
-              onCancel={() => setNewVariantOpen(false)}
-            />
-          </CardContent>
-        )}
-        <CardContent className="p-0">
+      <Card>
+        <CardBody className="p-0">
+          <div className="flex flex-col gap-4 p-6">
+            <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-center gap-2">
+                  <Boxes className="h-4 w-4 text-[var(--module-active)]" />
+                  <h3 className="text-xl font-semibold">Variants</h3>
+                  <Badge color="neutral" variant="soft" size="sm">
+                    {activeVariants.length} active
+                    {archivedVariants.length > 0 ? ` · ${archivedVariants.length} archived` : ''}
+                  </Badge>
+                </div>
+                <p className="opacity-70">
+                  One row per purchasable SKU. Each variant ties to one value per option (or none
+                  for option-less products). Price + inventory policy edit inline.
+                </p>
+              </div>
+              <Button
+                color="module"
+                onClick={() => setNewVariantOpen((v) => !v)}
+                iconStart={
+                  newVariantOpen ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />
+                }
+              >
+                {newVariantOpen ? 'Cancel' : 'Add variant'}
+              </Button>
+            </div>
+            {newVariantOpen && (
+              <NewVariantForm
+                productId={productId}
+                options={options}
+                onCreated={() => {
+                  setNewVariantOpen(false);
+                  router.refresh();
+                }}
+                onCancel={() => setNewVariantOpen(false)}
+              />
+            )}
+          </div>
           {activeVariants.length === 0 && archivedVariants.length === 0 ? (
-            <Stack
-              gap={2}
-              align="center"
-              className="border-t border-[var(--color-border-default)] py-10 text-center"
-            >
+            <div className="flex flex-col items-center gap-2 border-t border-[var(--color-border-default)] py-10 text-center">
               <Boxes className="h-5 w-5 text-[var(--color-text-muted)]" />
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No variants yet. Add at least one before publishing.
-              </Text>
-            </Stack>
+              </p>
+            </div>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Options</TableHead>
-                  <TableHead className="text-right">Price (cents)</TableHead>
-                  <TableHead>Inventory policy</TableHead>
-                  <TableHead className="text-right">Images</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Options</th>
+                  <th className="text-right">Price (cents)</th>
+                  <th>Inventory policy</th>
+                  <th className="text-right">Images</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {[...activeVariants, ...archivedVariants].map((variant) => (
                   <VariantRowEditor
                     key={variant.id}
@@ -242,40 +215,32 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
                     onChanged={() => router.refresh()}
                   />
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
 function OptionPreview({ option }: { option: OptionRow }) {
   return (
-    <Stack
-      gap={2}
-      className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-    >
-      <Stack direction="row" align="center" gap={2}>
-        <Text size="sm" weight="medium">
-          {option.name}
-        </Text>
+    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+      <div className="flex flex-row items-center gap-2">
+        <span className="text-sm font-medium">{option.name}</span>
         <Badge color="neutral" variant="soft" size="sm">
           {statusLabel(option.displayType)}
         </Badge>
-        <Text size="xs" variant="muted">
+        <span className="text-base-content/70 text-xs">
           {option.values.length} value{option.values.length === 1 ? '' : 's'}
-        </Text>
-      </Stack>
-      <Stack direction="row" gap={2} wrap>
+        </span>
+      </div>
+      <div className="flex flex-row flex-wrap gap-2">
         {option.values.map((v) => (
-          <Stack
+          <div
             key={v.id}
-            direction="row"
-            align="center"
-            gap={1}
-            className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 py-1"
+            className="flex flex-row items-center gap-1 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 py-1"
           >
             {v.swatchHex && (
               <span
@@ -284,11 +249,11 @@ function OptionPreview({ option }: { option: OptionRow }) {
                 style={{ backgroundColor: v.swatchHex }}
               />
             )}
-            <Text size="xs">{v.value}</Text>
-          </Stack>
+            <span className="text-xs">{v.value}</span>
+          </div>
         ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -399,13 +364,11 @@ function VariantRowEditor({
   }
 
   return (
-    <TableRow className={variant.deletedAt ? 'opacity-50' : undefined}>
-      <TableCell>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
-            <Text size="sm" weight="medium">
-              {variant.sku}
-            </Text>
+    <tr className={variant.deletedAt ? 'opacity-50' : undefined}>
+      <td>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <span className="text-sm font-medium">{variant.sku}</span>
             {variant.isDefault && (
               <Badge color="module" className="text-xs">
                 default
@@ -416,21 +379,15 @@ function VariantRowEditor({
                 archived
               </Badge>
             )}
-          </Stack>
-          {variant.title && (
-            <Text size="xs" variant="muted">
-              {variant.title}
-            </Text>
-          )}
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Text size="sm" variant="muted">
-          {optionsLabel || '—'}
-        </Text>
-      </TableCell>
-      <TableCell className="text-right tabular-nums">
-        <Stack gap={1} align="end">
+          </div>
+          {variant.title && <span className="text-base-content/70 text-xs">{variant.title}</span>}
+        </div>
+      </td>
+      <td>
+        <span className="text-base-content/70 text-sm">{optionsLabel || '—'}</span>
+      </td>
+      <td className="text-right tabular-nums">
+        <div className="flex flex-col items-end gap-1">
           <Input
             type="number"
             inputMode="numeric"
@@ -461,9 +418,9 @@ function VariantRowEditor({
               ))}
             </NativeSelect>
           )}
-        </Stack>
-      </TableCell>
-      <TableCell>
+        </div>
+      </td>
+      <td>
         <NativeSelect
           size="sm"
           className="w-auto"
@@ -476,14 +433,12 @@ function VariantRowEditor({
           <option value="continue">Continue selling</option>
           <option value="preorder">Preorder</option>
         </NativeSelect>
-      </TableCell>
-      <TableCell className="text-right tabular-nums">
-        <Text size="sm" variant="muted">
-          {variant.imageCount}
-        </Text>
-      </TableCell>
-      <TableCell className="text-right">
-        <Stack direction="row" gap={1} justify="end">
+      </td>
+      <td className="text-right tabular-nums">
+        <span className="text-base-content/70 text-sm">{variant.imageCount}</span>
+      </td>
+      <td className="text-right">
+        <div className="flex flex-row justify-end gap-1">
           {!variant.deletedAt && !variant.isDefault && (
             <Button
               type="button"
@@ -491,7 +446,7 @@ function VariantRowEditor({
               size="sm"
               onClick={makeDefault}
               disabled={pending}
-              leftIcon={<Star className="h-3.5 w-3.5" />}
+              iconStart={<Star className="h-3.5 w-3.5" />}
               title="Make default"
             >
               Default
@@ -504,19 +459,15 @@ function VariantRowEditor({
               size="sm"
               onClick={() => void archive()}
               disabled={pending}
-              leftIcon={<ArrowDownAZ className="h-3.5 w-3.5" />}
+              iconStart={<ArrowDownAZ className="h-3.5 w-3.5" />}
             >
               Archive
             </Button>
           )}
-        </Stack>
-        {error && (
-          <Text size="xs" variant="danger" className="mt-1">
-            {error}
-          </Text>
-        )}
-      </TableCell>
-    </TableRow>
+        </div>
+        {error && <p className="text-danger mt-1 text-xs">{error}</p>}
+      </td>
+    </tr>
   );
 }
 

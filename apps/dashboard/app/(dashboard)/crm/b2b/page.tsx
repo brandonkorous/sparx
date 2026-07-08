@@ -1,6 +1,7 @@
 import { Building2, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -47,8 +48,8 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Building2 className="h-5 w-5" />}
           title="B2B accounts"
@@ -77,12 +78,12 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
         />
 
         {accounts.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Building2 className="h-5 w-5" />}
               title="No B2B accounts yet"
               description="Add a wholesale or fleet customer to start tracking pricing tiers, credit, and engine profiles."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="b2b-account"
                   newHref="/crm/b2b/new"
@@ -99,8 +100,8 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

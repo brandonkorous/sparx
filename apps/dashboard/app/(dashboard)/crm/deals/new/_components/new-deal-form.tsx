@@ -15,22 +15,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createDealAction } from '../../../deal-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -208,13 +194,11 @@ export function NewDealForm({
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardHeader>
+          <Card>
+            <CardBody>
               <CardTitle>Deal details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack gap={2}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="deal-title">Title</Label>
                   <Input
                     id="deal-title"
@@ -223,10 +207,10 @@ export function NewDealForm({
                     placeholder="Q3 fleet renewal"
                   />
                   <FieldError msg={fieldErrors.title} />
-                </Stack>
+                </div>
 
-                <Stack direction="row" gap={4} wrap>
-                  <Stack gap={2} className="flex-1">
+                <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="deal-pipeline">Pipeline</Label>
                     <NativeSelect
                       id="deal-pipeline"
@@ -239,8 +223,8 @@ export function NewDealForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="deal-stage">Stage</Label>
                     <NativeSelect
                       id="deal-stage"
@@ -254,10 +238,10 @@ export function NewDealForm({
                       ))}
                     </NativeSelect>
                     <FieldError msg={fieldErrors.stageId} />
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
 
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="deal-customer">Customer</Label>
                   <NativeSelect
                     id="deal-customer"
@@ -271,10 +255,10 @@ export function NewDealForm({
                       </option>
                     ))}
                   </NativeSelect>
-                </Stack>
+                </div>
 
-                <Stack direction="row" gap={4} wrap>
-                  <Stack gap={2} className="flex-1">
+                <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="deal-value">Value</Label>
                     <Input
                       id="deal-value"
@@ -286,8 +270,8 @@ export function NewDealForm({
                       placeholder="0.00"
                     />
                     <FieldError msg={fieldErrors.value} />
-                  </Stack>
-                  <Stack gap={2} className="w-32">
+                  </div>
+                  <div className="flex w-32 flex-col gap-2">
                     <Label htmlFor="deal-currency">Currency</Label>
                     <Input
                       id="deal-currency"
@@ -296,8 +280,8 @@ export function NewDealForm({
                       className="uppercase"
                       onChange={(e) => setCurrency(e.target.value)}
                     />
-                  </Stack>
-                  <Stack gap={2} className="w-32">
+                  </div>
+                  <div className="flex w-32 flex-col gap-2">
                     <Label htmlFor="deal-probability">Probability</Label>
                     <Input
                       id="deal-probability"
@@ -308,11 +292,11 @@ export function NewDealForm({
                       onChange={(e) => setProbability(e.target.value)}
                       placeholder="0"
                     />
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
 
-                <Stack direction="row" gap={4} wrap>
-                  <Stack gap={2} className="flex-1">
+                <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="deal-close">Expected close</Label>
                     <Input
                       id="deal-close"
@@ -321,8 +305,8 @@ export function NewDealForm({
                       onChange={(e) => setExpectedCloseDate(e.target.value)}
                     />
                     <FieldError msg={fieldErrors.expectedCloseDate} />
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="deal-source">Source</Label>
                     <Input
                       id="deal-source"
@@ -330,10 +314,10 @@ export function NewDealForm({
                       onChange={(e) => setSource(e.target.value)}
                       placeholder="trade show, referral, …"
                     />
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
 
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="deal-tags">Tags</Label>
                   <Textarea
                     id="deal-tags"
@@ -342,15 +326,15 @@ export function NewDealForm({
                     rows={2}
                     placeholder="fleet, q3, gillett (comma-separated)"
                   />
-                </Stack>
+                </div>
 
                 {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
                     {error}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>
@@ -366,9 +350,5 @@ function numOrZero(value: string): number {
 
 function FieldError({ msg }: { msg: string | undefined }) {
   if (!msg) return null;
-  return (
-    <Text size="xs" variant="danger">
-      {msg}
-    </Text>
-  );
+  return <p className="text-danger text-xs">{msg}</p>;
 }

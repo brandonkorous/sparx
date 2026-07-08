@@ -13,21 +13,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
 
 import { createWorkflowAction } from '../../../workflow-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -133,12 +120,10 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
           }}
         >
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Workflow details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack gap={2}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="workflow-name">Name</Label>
                   <Input
                     id="workflow-name"
@@ -146,12 +131,12 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Repair order"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     The internal name for this lifecycle (e.g. Repair Order, Quick Invoice, Tattoo
                     Booking).
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="workflow-slug">Slug</Label>
                   <Input
                     id="workflow-slug"
@@ -162,27 +147,27 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
                     }}
                     placeholder="repair-order"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Lowercase kebab-case. Used as the stable identifier.
-                  </Text>
-                </Stack>
-                <Stack direction="row" align="center" gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     color="module"
                     id="workflow-default"
                     checked={isDefault}
-                    onCheckedChange={(v) => setIsDefault(v === true)}
+                    onChange={(e) => setIsDefault(e.target.checked)}
                   />
                   <Label htmlFor="workflow-default">Make this the default workflow</Label>
-                </Stack>
+                </div>
 
                 {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
                     {error}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

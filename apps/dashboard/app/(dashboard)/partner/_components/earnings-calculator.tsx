@@ -1,17 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Card,
-  CardContent,
-  Heading,
-  Input,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Card, CardBody, Input, Label, Radio } from 'silicaui-react';
 import type { PartnerTier } from '@sparx/partner-schemas';
 
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
@@ -55,18 +45,18 @@ export function EarningsCalculator() {
   const firstYear = firstPayment + ongoingMonthly * 12;
 
   return (
-    <Card variant="default" padding="lg">
-      <CardContent className="p-0">
-        <Stack gap={5}>
-          <Stack gap={1}>
-            <Heading level={2}>Estimate your earnings</Heading>
-            <Text size="sm" variant="muted">
+    <Card>
+      <CardBody>
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl font-semibold tracking-tight">Estimate your earnings</h2>
+            <p className="text-base-content/70 text-sm">
               A rough projection — adjust the numbers to match the clients you have in mind.
-            </Text>
-          </Stack>
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="calc-clients">Clients you’ll bring in a year</Label>
               <Input
                 id="calc-clients"
@@ -77,8 +67,8 @@ export function EarningsCalculator() {
                 value={clients}
                 onChange={(e) => setClients(clampInt(e.target.value, 1, 500, 1))}
               />
-            </Stack>
-            <Stack gap={2}>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="calc-monthly">Their average monthly Sparx bill</Label>
               <Input
                 id="calc-monthly"
@@ -89,27 +79,30 @@ export function EarningsCalculator() {
                 value={monthly}
                 onChange={(e) => setMonthly(clampInt(e.target.value, 0, 100000, 0))}
               />
-            </Stack>
+            </div>
           </div>
 
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label>Your tier</Label>
-            <RadioGroup
-              value={tier}
-              onValueChange={(v) => setTier(v as PartnerTier)}
-              className="grid grid-cols-1 gap-2 sm:grid-cols-3"
-            >
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {TIER_ORDER.map((t) => (
                 <div
                   key={t}
                   className="flex items-center gap-2 rounded-lg border border-[var(--color-border-default)] p-3"
                 >
-                  <RadioGroupItem id={`calc-tier-${t}`} value={t} color="module" />
+                  <Radio
+                    name="calc-tier"
+                    id={`calc-tier-${t}`}
+                    value={t}
+                    checked={tier === t}
+                    onChange={() => setTier(t as PartnerTier)}
+                    color="module"
+                  />
                   <Label htmlFor={`calc-tier-${t}`}>{TIERS[t].label}</Label>
                 </div>
               ))}
-            </RadioGroup>
-          </Stack>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 border-t border-[var(--color-border-default)] pt-5 sm:grid-cols-3">
             <Figure label="First-payment commissions" value={usd.format(firstPayment)} />
@@ -121,8 +114,8 @@ export function EarningsCalculator() {
             />
             <Figure label="Estimated first-year total" value={usd.format(firstYear)} emphasis />
           </div>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -141,10 +134,8 @@ function Figure({
   muted?: boolean;
 }) {
   return (
-    <Stack gap={1}>
-      <Text size="sm" variant="muted">
-        {label}
-      </Text>
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-sm">{label}</p>
       <span
         className={
           emphasis
@@ -156,11 +147,7 @@ function Figure({
       >
         {value}
       </span>
-      {hint ? (
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      ) : null}
-    </Stack>
+      {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
+    </div>
   );
 }

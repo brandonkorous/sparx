@@ -2,17 +2,15 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   Button,
-  Text,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { MoreHorizontal, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { syncSupplier, deleteSupplier } from '../_lib/actions';
 import {
@@ -100,32 +98,28 @@ export function SupplierActions({ supplier, sites, vendors }: Props) {
     <>
       <div className="flex flex-col items-end gap-1">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <Button color="neutral" variant="ghost" size="sm">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={handleSync} disabled={syncing}>
+            <DropdownMenuItem onClick={handleSync} disabled={syncing}>
               <RefreshCw className="mr-2 h-4 w-4" />
               {syncing ? 'Queuing refresh…' : 'Refresh catalog'}
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
               <Edit2 className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={onDisconnect} className="text-[var(--color-danger)]">
+            <DropdownMenuItem onClick={onDisconnect} className="text-[var(--color-danger)]">
               <Trash2 className="mr-2 h-4 w-4" />
               Disconnect
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {syncError && (
-          <Text size="xs" variant="danger" className="max-w-[200px] text-right">
-            {syncError}
-          </Text>
-        )}
+        {syncError && <p className="text-danger max-w-[200px] text-right text-xs">{syncError}</p>}
       </div>
 
       {editOpen ? (

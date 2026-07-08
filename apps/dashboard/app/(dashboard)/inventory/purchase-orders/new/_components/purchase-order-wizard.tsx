@@ -26,17 +26,15 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   EmptyState,
-  Heading,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  Text,
   Textarea,
+} from 'silicaui-react';
+import {
+  ModuleProvider,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -254,14 +252,12 @@ function PurchaseOrderWizardInner({
       >
         <div className="flex flex-col gap-5">
           {/* Supplier & warehouse */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Supplier &amp; warehouse</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Supplier &amp; warehouse</h3>
+              <p className="text-base-content/70 text-sm">
                 Who you’re buying from and where it lands.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex flex-col gap-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
@@ -304,50 +300,40 @@ function PurchaseOrderWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Lines */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Lines</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Lines</h3>
+              <p className="text-base-content/70 text-sm">
                 Add the variants to order by SKU. Leave the cost blank to use the supplier’s agreed
                 cost (falls back to the variant cost). You can save an empty draft and add lines
                 later.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex flex-col gap-4">
                 {lines.length === 0 ? (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     No lines yet — you can still save an empty draft and add them later.
-                  </Text>
+                  </p>
                 ) : (
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     {lines.map((l) => (
-                      <Stack
+                      <div
                         key={l.variantId}
-                        direction="row"
-                        align="center"
-                        gap={3}
-                        wrap
-                        className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                        className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
                       >
-                        <Stack gap={0} className="min-w-[12rem] flex-1">
-                          <Text size="sm" className="font-medium">
-                            {l.title ?? l.sku}
-                          </Text>
-                          <Text size="xs" variant="muted" className="font-mono">
-                            {l.sku}
-                          </Text>
-                        </Stack>
-                        <Text size="sm">×{l.quantity}</Text>
-                        <Text size="sm" variant="muted">
+                        <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                          <p className="text-sm font-medium">{l.title ?? l.sku}</p>
+                          <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
+                        </div>
+                        <p className="text-sm">×{l.quantity}</p>
+                        <p className="text-base-content/70 text-sm">
                           {l.unitCostCents !== undefined
                             ? formatMoney(l.unitCostCents, currency)
                             : 'default'}
-                        </Text>
+                        </p>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -356,30 +342,28 @@ function PurchaseOrderWizardInner({
                         >
                           Remove
                         </Button>
-                      </Stack>
+                      </div>
                     ))}
-                    <Stack direction="row" justify="end">
-                      <Text size="sm" variant="muted">
+                    <div className="flex flex-row justify-end">
+                      <p className="text-base-content/70 text-sm">
                         Subtotal {formatMoney(knownSubtotal, currency)}
                         {hasDefaults ? ' + default-priced lines' : ''}
-                      </Text>
-                    </Stack>
-                  </Stack>
+                      </p>
+                    </div>
+                  </div>
                 )}
                 <LineAddRow onAdd={addLine} disabled={submitting} />
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Terms */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Terms &amp; dates</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Terms &amp; dates</h3>
+              <p className="text-base-content/70 text-sm">
                 All optional — terms default onto the order and can be overridden per line later.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex flex-col gap-3">
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div>
@@ -432,13 +416,13 @@ function PurchaseOrderWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </div>
       </SurfaceStep>
@@ -461,14 +445,18 @@ function GuardPanel({
 }) {
   return (
     <div className="flex h-full items-center justify-center p-8">
-      <Card padding="none" className="w-full max-w-lg">
+      <Card className="w-full max-w-lg">
         <EmptyState
           icon={<Truck className="h-5 w-5" />}
           title={title}
           description={description}
-          action={
-            <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-              <Link href={href}>{cta}</Link>
+          actions={
+            <Button
+              color="module"
+              render={<Link href={href} />}
+              iconStart={<Plus className="h-4 w-4" />}
+            >
+              {cta}
             </Button>
           }
         />

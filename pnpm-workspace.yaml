@@ -2,3 +2,23 @@ packages:
   - 'apps/*'
   - 'packages/*'
   - 'services/*'
+
+# Single source of truth for the silicaui family versions. Consuming apps
+# reference these as "catalog:" in their package.json (e.g. "silicaui": "catalog:")
+# so a version bump happens in one place, not across market/dashboard/site/web.
+# These are the RELEASED pins used when installing from the registry — LOCAL
+# builder-migration testing overrides them to the local checkout via the
+# `pnpm.overrides` link: block in the root package.json (uncommitted). Keep these
+# in sync with what actually ships when a family package is published.
+catalog:
+  silicaui: ^1.1.1
+  silicaui-react: ^1.1.1
+  silicaui-html: ^1.1.1
+  silicaui-behaviors: ^1.1.1
+  silicaui-mcp: ^1.1.1
+  silicaui-editor: ^1.1.1
+  silicaui-dnd: ^1.1.1
+  silicaui-panels: ^1.1.1
+  silicaui-charts: ^1.1.1
+  silicaui-table: ^1.1.1
+  silicaui-builder: ^1.1.1 # published as of v1.1.1 (the family ships unified)

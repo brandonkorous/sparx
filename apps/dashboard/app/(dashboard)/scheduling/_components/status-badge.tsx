@@ -1,4 +1,4 @@
-import { Badge } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import type { BookingStatus } from '../_lib/types';
 import { STATUS_LABEL, statusColor } from '../_lib/format';

@@ -13,17 +13,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal } from 'lucide-react';
-import {
-  Button,
-  Checkbox,
-  Drawer,
-  DrawerContent,
-  DrawerTitle,
-  Grid,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerTitle, NativeSelect } from 'silicaui-react';
 import type { MarketplaceFacetBucket, MarketplaceListing } from '../../_types';
 
 import { ListingCard } from '../../_components/listing-card';
@@ -124,7 +114,7 @@ export function CategoryBrowse({
   }
 
   const rail = (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {facetSpecs.map((spec) => {
         const counts = facets[spec.key] ?? {};
         const entries = sortedEntries(counts);
@@ -143,7 +133,7 @@ export function CategoryBrowse({
           </FacetBlock>
         );
       })}
-    </Stack>
+    </div>
   );
 
   return (
@@ -153,10 +143,10 @@ export function CategoryBrowse({
       </aside>
 
       <div className="min-w-0">
-        <Stack direction="row" align="center" gap={3} className="mb-4 flex-wrap">
-          <Text size="sm" variant="muted">
+        <div className="mb-4 flex flex-row flex-wrap items-center gap-3">
+          <p className="text-base-content/70 text-sm">
             {total.toLocaleString()} {total === 1 ? singular : `${singular}s`}
-          </Text>
+          </p>
           <div className="ml-auto flex items-center gap-2">
             <Button
               variant="outline"
@@ -181,7 +171,7 @@ export function CategoryBrowse({
               ))}
             </NativeSelect>
           </div>
-        </Stack>
+        </div>
 
         {chips.length > 0 ? (
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -208,31 +198,32 @@ export function CategoryBrowse({
         ) : null}
 
         {items.length === 0 ? (
-          <Stack
-            gap={3}
-            align="center"
-            className="rounded-lg border border-[var(--color-border)] p-10 text-center"
-          >
-            <Text variant="muted">No {singular}s match these filters.</Text>
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-[var(--color-border)] p-10 text-center">
+            <p className="text-base-content/70">No {singular}s match these filters.</p>
             <Button variant="outline" size="sm" onClick={() => router.push(pathname)}>
               Clear filters
             </Button>
-          </Stack>
+          </div>
         ) : (
           <>
-            <Grid minItemWidth="14rem" gap={4}>
+            <div
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fill,minmax(min(14rem,100%),1fr))',
+              }}
+            >
               {items.map((item) => (
                 <ListingCard key={item.slug} item={item} canInstall={canInstall} />
               ))}
-            </Grid>
+            </div>
             {cursor ? (
               <div className="mt-6 text-center">
                 <Button variant="outline" onClick={loadMore} loading={loading} disabled={loading}>
                   Load more
                 </Button>
-                <Text size="sm" variant="muted" className="mt-2">
+                <p className="text-base-content/70 mt-2 text-sm">
                   Showing {items.length} of {total.toLocaleString()}
-                </Text>
+                </p>
               </div>
             ) : null}
           </>
@@ -268,9 +259,9 @@ function sortedEntries(counts: Record<string, number>): [string, number][] {
 function FacetBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <Text size="xs" variant="muted" weight="medium" className="mb-2 tracking-wide uppercase">
+      <p className="text-base-content/70 mb-2 text-xs font-medium tracking-wide uppercase">
         {title}
-      </Text>
+      </p>
       <div>{children}</div>
     </div>
   );
@@ -289,7 +280,7 @@ function FacetRow({
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2 py-1 text-sm">
-      <Checkbox checked={checked} onCheckedChange={() => onToggle()} />
+      <Checkbox checked={checked} onChange={() => onToggle()} />
       <span className="text-[var(--color-text-secondary)]">{label}</span>
       <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
         {count.toLocaleString()}

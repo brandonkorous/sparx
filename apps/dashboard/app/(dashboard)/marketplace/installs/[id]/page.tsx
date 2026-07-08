@@ -7,19 +7,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { LayoutTemplate } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  Grid,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { ReviewActions } from './_components/review-actions';
@@ -121,8 +110,8 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
   ].filter((g) => g.items.length > 0);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<LayoutTemplate className="h-5 w-5" />}
           title={`Review “${name}”`}
@@ -133,7 +122,7 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
           }
         />
 
-        <Stack direction="row" gap={3} align="center" className="flex-wrap">
+        <div className="flex flex-row flex-wrap items-center gap-3">
           <Badge color={isLive ? 'success' : 'neutral'} variant="soft">
             {isLive ? 'Live' : 'Installed · draft'}
           </Badge>
@@ -148,31 +137,36 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
               <Badge color="warning" variant="soft">
                 v{latestVersion} available
               </Badge>
-              <Button color="primary" variant="soft" asChild>
-                <Link href={`/marketplace/installs/${install.id}/update`}>Review update</Link>
-              </Button>
+              <Button
+                color="primary"
+                variant="soft"
+                render={
+                  <Link href={`/marketplace/installs/${install.id}/update`}>Review update</Link>
+                }
+              />
             </>
           ) : null}
-        </Stack>
+        </div>
 
         {groups.length === 0 ? (
           <Card>
-            <CardContent>
-              <Text variant="muted">This install recorded no artifacts.</Text>
-            </CardContent>
+            <CardBody>
+              <p className="text-base-content/70">This install recorded no artifacts.</p>
+            </CardBody>
           </Card>
         ) : (
-          <Grid minItemWidth="18rem" gap={4}>
+          <div
+            className="grid gap-4"
+            style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(min(18rem,100%),1fr))' }}
+          >
             {groups.map((g) => (
               <Card key={g.title}>
-                <CardHeader>
-                  <Stack direction="row" align="center" gap={2} className="justify-between">
+                <CardBody>
+                  <div className="flex flex-row items-center justify-between gap-2">
                     <CardTitle>{g.title}</CardTitle>
                     <Badge variant="outline">{g.items.length}</Badge>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={1}>
+                  </div>
+                  <div className="flex flex-col gap-1">
                     {g.items.map((item) => (
                       <Link
                         key={item.href + item.label}
@@ -182,13 +176,13 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
                         {item.label}
                       </Link>
                     ))}
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
             ))}
-          </Grid>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -12,7 +12,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-import { Button, Popover, PopoverTrigger, PopoverContent } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { Popover, PopoverTrigger, PopoverContent } from '@sparx/ui';
 import type {
   CategoryScore,
   CheckResult,

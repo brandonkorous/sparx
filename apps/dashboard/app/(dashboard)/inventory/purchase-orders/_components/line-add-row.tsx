@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label } from 'silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 
@@ -68,29 +68,19 @@ export function LineAddRow({
   }
 
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       <form ref={formRef} onSubmit={onSubmit}>
-        <Stack
-          direction="row"
-          gap={3}
-          align="end"
-          wrap
-          className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-        >
+        <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
           <AddField label="Variant SKU" name="sku" placeholder="e.g. FUEL-FILTER-1" grow />
           <AddField label="Qty" name="quantity" type="number" placeholder="1" />
           <AddField label="Unit cost ($)" name="unitCost" type="number" placeholder="default" />
           <Button color="module" type="submit" disabled={busy || disabled}>
             {busy ? 'Adding…' : 'Add line'}
           </Button>
-        </Stack>
+        </div>
       </form>
-      {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }
 
@@ -108,10 +98,10 @@ function AddField({
   grow?: boolean;
 }) {
   return (
-    <Stack gap={1} className={grow ? 'min-w-[12rem] flex-1' : 'min-w-[7rem]'}>
+    <div className={`flex flex-col gap-1 ${grow ? 'min-w-[12rem] flex-1' : 'min-w-[7rem]'}`}>
       <Label htmlFor={`po-add-${name}`}>{label}</Label>
       <Input id={`po-add-${name}`} name={name} type={type} placeholder={placeholder} />
-    </Stack>
+    </div>
   );
 }
 

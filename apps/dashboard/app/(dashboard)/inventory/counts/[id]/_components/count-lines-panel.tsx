@@ -4,19 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
 
 import {
   addCountLineAction,
@@ -111,22 +99,20 @@ export function CountLinesPanel({
 
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Heading level={3}>Lines</Heading>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold">Lines</h3>
           {editable && (
             <Button variant="outline" size="sm" disabled={pending} onClick={matchExpected}>
               Match expected
             </Button>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+        </div>
+        <div className="flex flex-col gap-2">
           {lines.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No lines on this count yet{editable ? ' — add a SKU below.' : '.'}
-            </Text>
+            </p>
           ) : (
             lines.map((l) => (
               <LineRow
@@ -142,32 +128,26 @@ export function CountLinesPanel({
             ))
           )}
           {editable && type === 'cycle' && <AddLineRow id={id} disabled={pending} />}
-        </Stack>
-      </CardContent>
-      {editable && (
-        <CardFooter>
-          <Stack direction="row" gap={3} align="center" justify="between" className="w-full">
-            <Stack direction="row" align="center" gap={2}>
-              {error && (
-                <Text size="sm" className="text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
-              {saved && !error && (
-                <Stack direction="row" align="center" gap={1}>
-                  <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
-                  <Text size="sm" variant="muted">
-                    Counts saved
-                  </Text>
-                </Stack>
-              )}
-            </Stack>
-            <Button color="module" disabled={pending} onClick={saveCounts}>
-              {pending ? 'Saving…' : 'Save counts'}
-            </Button>
-          </Stack>
-        </CardFooter>
-      )}
+        </div>
+        {editable && (
+          <CardActions>
+            <div className="flex w-full flex-row items-center justify-between gap-3">
+              <div className="flex flex-row items-center gap-2">
+                {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+                {saved && !error && (
+                  <div className="flex flex-row items-center gap-1">
+                    <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
+                    <p className="text-base-content/70 text-sm">Counts saved</p>
+                  </div>
+                )}
+              </div>
+              <Button color="module" disabled={pending} onClick={saveCounts}>
+                {pending ? 'Saving…' : 'Save counts'}
+              </Button>
+            </div>
+          </CardActions>
+        )}
+      </CardBody>
     </Card>
   );
 }
@@ -200,26 +180,18 @@ function LineRow({
     variance !== null && l.unitCostCents !== null ? Math.abs(variance) * l.unitCostCents : null;
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
-      <Stack gap={0} className="min-w-[12rem] flex-1">
-        <Text size="sm" className="font-medium">
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+      <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+        <p className="text-sm font-medium">
           {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
-        </Text>
-        <Text size="xs" variant="muted" className="font-mono">
-          {l.variantSku ?? l.variantId}
-        </Text>
-      </Stack>
+        </p>
+        <p className="text-base-content/70 font-mono text-xs">{l.variantSku ?? l.variantId}</p>
+      </div>
 
       <Stat label="Expected" value={String(l.expectedQuantity)} />
 
       {editable ? (
-        <Stack gap={0} className="w-[5.5rem]">
+        <div className="flex w-[5.5rem] flex-col gap-0">
           <Label htmlFor={`cnt-${l.id}`} className="sr-only">
             Counted
           </Label>
@@ -231,7 +203,7 @@ function LineRow({
             aria-label="Counted quantity"
             onChange={(e) => onChange(e.target.value)}
           />
-        </Stack>
+        </div>
       ) : (
         <Stat label="Counted" value={counted === null ? '—' : String(counted)} />
       )}
@@ -251,20 +223,20 @@ function LineRow({
 
       {editable &&
         (armed ? (
-          <Stack direction="row" gap={1} align="center">
+          <div className="flex flex-row items-center gap-1">
             <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setArmed(false)}>
               Keep
             </Button>
             <Button color="danger" size="sm" disabled={disabled} onClick={onRemove}>
               Remove
             </Button>
-          </Stack>
+          </div>
         ) : (
           <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setArmed(true)}>
             Remove
           </Button>
         ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -276,14 +248,10 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: 'po
         ? 'text-[var(--color-danger)]'
         : undefined;
   return (
-    <Stack gap={0} className="w-[5rem] text-right">
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm" className={color ? `font-medium ${color}` : 'font-medium'}>
-        {value}
-      </Text>
-    </Stack>
+    <div className="flex w-[5rem] flex-col gap-0 text-right">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className={color ? `text-sm font-medium ${color}` : 'text-sm font-medium'}>{value}</p>
+    </div>
   );
 }
 
@@ -321,15 +289,9 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="count-line-sku">Add item by SKU</Label>
           <Input
             id="count-line-sku"
@@ -343,17 +305,13 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }
 

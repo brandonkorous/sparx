@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Globe, Layers, Settings as SettingsIcon, Star } from 'lucide-react';
-import { Badge, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
+import { TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { getActivePropertyId, listDomains, listProperties, type Domain } from '@/lib/sites';

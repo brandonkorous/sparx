@@ -8,16 +8,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Card, CardBody, NativeSelect } from 'silicaui-react';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
 import { setEntryTemplate } from '../../actions';
@@ -59,16 +50,14 @@ export function EntryTemplatePicker({
   }
 
   return (
-    <Card variant="module">
-      <CardHeader>
-        <Heading level={3}>Page template</Heading>
-        <CardDescription>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <h3 className="text-xl font-semibold">Page template</h3>
+        <p className="opacity-70">
           Which builder template renders this {typeName.toLowerCase()} on your site. Leave it on the
           default unless this one needs a different layout.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+        </p>
+        <div className="flex flex-col gap-2">
           <NativeSelect
             value={value}
             aria-label="Page template"
@@ -87,12 +76,12 @@ export function EntryTemplatePicker({
             ))}
           </NativeSelect>
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -8,22 +8,13 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   Checkbox,
-  Heading,
   Input,
   NativeSelect,
-  Stack,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import {
   applyMarkupRuleAction,
@@ -203,39 +194,37 @@ export function BulkPricingTool({
   if (rules.length === 0) {
     return (
       <Card>
-        <CardContent>
-          <Text variant="muted" className="py-6 text-center">
+        <CardBody>
+          <p className="text-base-content/70 py-6 text-center">
             No catalog markup rules yet.{' '}
             <a className="underline" href="/commerce/markup-rules">
               Create one
             </a>{' '}
             to reprice products from their cost.
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
     );
   }
 
   return (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {notice && (
-        <Text size="sm" variant="success" role="status">
+        <p className="text-success text-sm" role="status">
           {notice}
-        </Text>
+        </p>
       )}
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
 
       <Card>
-        <CardHeader>
-          <Heading level={3}>Choose a rule &amp; scope</Heading>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap align="end">
+        <CardBody>
+          <h3 className="text-xl font-semibold">Choose a rule &amp; scope</h3>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row flex-wrap items-end gap-3">
               <Field label="Markup rule" className="min-w-[14rem] flex-1">
                 <NativeSelect value={ruleId} onChange={(e) => setRuleId(e.target.value)}>
                   {rules.map((r) => (
@@ -260,7 +249,7 @@ export function BulkPricingTool({
                   <option value="products">Specific products</option>
                 </NativeSelect>
               </Field>
-            </Stack>
+            </div>
 
             {scopeMode === 'collection' && (
               <CollectionPicker
@@ -287,11 +276,11 @@ export function BulkPricingTool({
               <ProductPicker selected={selectedProducts} onChange={setSelectedProducts} />
             )}
 
-            <Stack direction="row" gap={2} justify="end">
+            <div className="flex flex-row justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
-                leftIcon={<Sparkles className="h-4 w-4" />}
+                iconStart={<Sparkles className="h-4 w-4" />}
                 onClick={onPreview}
                 loading={busy === 'preview'}
                 disabled={busy !== null || !ruleId}
@@ -301,20 +290,20 @@ export function BulkPricingTool({
               <Button
                 type="button"
                 color="module"
-                leftIcon={<Play className="h-4 w-4" />}
+                iconStart={<Play className="h-4 w-4" />}
                 onClick={onApply}
                 loading={busy === 'apply'}
                 disabled={busy !== null || !ruleId}
               >
                 Apply markup
               </Button>
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       {preview && <PreviewTable preview={preview} />}
-    </Stack>
+    </div>
   );
 }
 
@@ -323,10 +312,10 @@ export function BulkPricingTool({
 function PreviewTable({ preview }: { preview: MarkupPreviewResult }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Heading level={3}>Preview</Heading>
-          <Stack direction="row" gap={2} align="center" wrap>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold">Preview</h3>
+          <div className="flex flex-row flex-wrap items-center gap-2">
             <Badge color="module" variant="soft" size="sm">
               {preview.totalVariants} in scope
             </Badge>
@@ -338,63 +327,51 @@ function PreviewTable({ preview }: { preview: MarkupPreviewResult }) {
                 {preview.unpriceableVariants} skipped
               </Badge>
             )}
-          </Stack>
-        </Stack>
-      </CardHeader>
-      <CardContent>
+          </div>
+        </div>
         {preview.truncated && (
-          <Text size="sm" variant="muted" className="mb-3">
+          <p className="text-base-content/70 mb-3 text-sm">
             Showing the first {preview.lines.length} of {preview.totalVariants}. Applying covers the
             whole scope (up to 5,000 per run).
-          </Text>
+          </p>
         )}
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead className="text-right">Cost</TableHead>
-              <TableHead className="text-right">Current</TableHead>
-              <TableHead className="text-right">New</TableHead>
-              <TableHead className="text-right">Margin</TableHead>
-              <TableHead className="text-right">Markup</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th className="text-right">Cost</th>
+              <th className="text-right">Current</th>
+              <th className="text-right">New</th>
+              <th className="text-right">Margin</th>
+              <th className="text-right">Markup</th>
+            </tr>
+          </thead>
+          <tbody>
             {preview.lines.map((l) => (
-              <TableRow key={l.variantId}>
-                <TableCell>
-                  <Text size="sm" weight="medium">
-                    {l.sku}
-                  </Text>
-                </TableCell>
-                <TableCell>
-                  <Text size="sm" variant="muted">
-                    {l.title ?? '—'}
-                  </Text>
-                </TableCell>
-                <TableCell className="text-right">{fmt(l.costCents)}</TableCell>
-                <TableCell className="text-right">{fmt(l.currentPriceCents)}</TableCell>
-                <TableCell className="text-right">
+              <tr key={l.variantId}>
+                <td>
+                  <span className="text-sm font-medium">{l.sku}</span>
+                </td>
+                <td>
+                  <span className="text-base-content/70 text-sm">{l.title ?? '—'}</span>
+                </td>
+                <td className="text-right">{fmt(l.costCents)}</td>
+                <td className="text-right">{fmt(l.currentPriceCents)}</td>
+                <td className="text-right">
                   {l.unpriceable ? (
-                    <Text size="sm" variant="muted">
-                      no cost
-                    </Text>
+                    <span className="text-base-content/70 text-sm">no cost</span>
                   ) : (
                     <PriceDelta from={l.currentPriceCents} to={l.newPriceCents} />
                   )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {l.marginPct == null ? '—' : `${l.marginPct}%`}
-                </TableCell>
-                <TableCell className="text-right">
-                  {l.markupPct == null ? '—' : `${l.markupPct}%`}
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="text-right">{l.marginPct == null ? '—' : `${l.marginPct}%`}</td>
+                <td className="text-right">{l.markupPct == null ? '—' : `${l.markupPct}%`}</td>
+              </tr>
             ))}
-          </TableBody>
+          </tbody>
         </Table>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -404,16 +381,14 @@ function PriceDelta({ from, to }: { from: number; to: number | null }) {
   const up = to > from;
   const down = to < from;
   return (
-    <Stack direction="row" gap={1} justify="end" align="center">
-      <Text size="sm" weight="medium">
-        {fmt(to)}
-      </Text>
+    <div className="flex flex-row items-center justify-end gap-1">
+      <span className="text-sm font-medium">{fmt(to)}</span>
       {(up || down) && (
-        <Text size="xs" variant={up ? 'success' : 'danger'}>
+        <span className={up ? 'text-success text-xs' : 'text-danger text-xs'}>
           {up ? '▲' : '▼'}
-        </Text>
+        </span>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -430,31 +405,28 @@ function CollectionPicker({
 }) {
   if (collections.length === 0) {
     return (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         No collections yet — create one under Collections, or scope by product type / vendor.
-      </Text>
+      </p>
     );
   }
   function toggle(id: string) {
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   }
   return (
-    <Stack
-      gap={1}
-      className="max-h-48 overflow-auto rounded border border-[var(--color-border-default)] p-3"
-    >
+    <div className="flex max-h-48 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-3">
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
             color="module"
             checked={selected.includes(c.id)}
-            onCheckedChange={() => toggle(c.id)}
+            onChange={() => toggle(c.id)}
             aria-label={c.name}
           />
-          <Text size="sm">{c.name}</Text>
+          <span className="text-sm">{c.name}</span>
         </label>
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -502,64 +474,51 @@ function ProductPicker({
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <Field label="Find products" className="max-w-md">
-        <Stack direction="row" gap={2} align="center">
+        <div className="flex flex-row items-center gap-2">
           <Search className="h-4 w-4 text-[var(--color-fg-muted)]" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the catalog by name…"
           />
-        </Stack>
+        </div>
       </Field>
 
       {query.trim().length >= 2 && (
-        <Stack
-          gap={1}
-          className="max-h-56 overflow-auto rounded border border-[var(--color-border-default)] p-2"
-        >
-          {searching && (
-            <Text size="sm" variant="muted" className="px-1 py-1">
-              Searching…
-            </Text>
-          )}
+        <div className="flex max-h-56 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-2">
+          {searching && <p className="text-base-content/70 px-1 py-1 text-sm">Searching…</p>}
           {!searching && results.length === 0 && (
-            <Text size="sm" variant="muted" className="px-1 py-1">
-              No matches.
-            </Text>
+            <p className="text-base-content/70 px-1 py-1 text-sm">No matches.</p>
           )}
           {results.map((p) => (
-            <Stack
+            <div
               key={p.id}
-              direction="row"
-              align="center"
-              justify="between"
-              gap={2}
-              className="rounded px-1 py-1 hover:bg-[var(--color-bg-subtle)]"
+              className="flex flex-row items-center justify-between gap-2 rounded px-1 py-1 hover:bg-[var(--color-bg-subtle)]"
             >
-              <Text size="sm">{p.title}</Text>
+              <span className="text-sm">{p.title}</span>
               <Button
                 type="button"
                 size="xs"
                 variant="ghost"
                 color="module"
-                leftIcon={<Plus className="h-3.5 w-3.5" />}
+                iconStart={<Plus className="h-3.5 w-3.5" />}
                 onClick={() => add(p)}
                 disabled={selectedIds.has(p.id)}
               >
                 {selectedIds.has(p.id) ? 'Added' : 'Add'}
               </Button>
-            </Stack>
+            </div>
           ))}
-        </Stack>
+        </div>
       )}
 
       {selected.length > 0 && (
-        <Stack direction="row" gap={2} wrap>
+        <div className="flex flex-row flex-wrap gap-2">
           {selected.map((p) => (
             <Badge key={p.id} variant="soft" color="module">
-              <Stack direction="row" gap={1} align="center">
+              <span className="inline-flex items-center gap-1">
                 {p.title}
                 <button
                   type="button"
@@ -569,12 +528,12 @@ function ProductPicker({
                 >
                   <X className="h-3 w-3" />
                 </button>
-              </Stack>
+              </span>
             </Badge>
           ))}
-        </Stack>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -588,11 +547,9 @@ function Field({
   className?: string;
 }) {
   return (
-    <Stack gap={1} className={className}>
-      <Text size="xs" variant="muted" weight="medium">
-        {label}
-      </Text>
+    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
+      <span className="text-base-content/70 text-xs font-medium">{label}</span>
       {children}
-    </Stack>
+    </div>
   );
 }

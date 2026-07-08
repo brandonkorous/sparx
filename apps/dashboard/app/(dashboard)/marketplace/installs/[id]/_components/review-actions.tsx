@@ -7,7 +7,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { deleteBlueprintAction, goLiveAction } from '../../../actions';
 
@@ -25,9 +26,9 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
 
   if (!canManage) {
     return (
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         Only an owner or admin can go live or delete this install.
-      </Text>
+      </p>
     );
   }
 
@@ -90,7 +91,7 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
   }
 
   return (
-    <Stack direction="row" gap={3} align="center" className="flex-wrap">
+    <div className="flex flex-row flex-wrap items-center gap-3">
       {isDraft ? (
         <Button color="primary" onClick={onGoLive} loading={pending} disabled={pending}>
           Go live
@@ -105,6 +106,6 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
       >
         Delete
       </Button>
-    </Stack>
+    </div>
   );
 }

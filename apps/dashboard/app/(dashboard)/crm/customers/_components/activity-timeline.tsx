@@ -20,10 +20,8 @@ export interface CrmActivity {
   actorType: string;
   correctsActivityId: string | null;
 }
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
-  Stack,
-  Text,
   Timeline,
   TimelineDescription,
   TimelineItem,
@@ -126,18 +124,14 @@ function renderForType(activity: CrmActivity): ActivityRender {
 
 export function ActivityTimeline({ activities }: Props) {
   if (activities.length === 0) {
-    return (
-      <Text variant="muted" size="sm">
-        No activity yet.
-      </Text>
-    );
+    return <p className="text-base-content/70 text-sm">No activity yet.</p>;
   }
 
   return (
-    <Stack gap={3}>
-      <Text variant="muted" size="xs">
+    <div className="flex flex-col gap-3">
+      <p className="text-base-content/70 text-xs">
         Activities are append-only — corrections appear as new entries marked Edited.
-      </Text>
+      </p>
       <Timeline>
         {activities.map((a, idx) => {
           const meta = renderForType(a);
@@ -156,8 +150,8 @@ export function ActivityTimeline({ activities }: Props) {
                 </span>
               }
             >
-              <Stack gap={1}>
-                <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row items-center gap-2">
                   <TimelineTitle>{meta.title}</TimelineTitle>
                   {isCorrection && (
                     <Badge color="info" variant="soft" size="sm">
@@ -167,16 +161,16 @@ export function ActivityTimeline({ activities }: Props) {
                   <Badge color="neutral" variant="soft" size="sm">
                     {statusLabel(a.actorType)}
                   </Badge>
-                </Stack>
+                </div>
                 {a.description && <TimelineDescription>{a.description}</TimelineDescription>}
                 <TimelineTime dateTime={a.occurredAt}>
                   {new Date(a.occurredAt).toLocaleString()}
                 </TimelineTime>
-              </Stack>
+              </div>
             </TimelineItem>
           );
         })}
       </Timeline>
-    </Stack>
+    </div>
   );
 }

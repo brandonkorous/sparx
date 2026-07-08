@@ -1,6 +1,7 @@
 import { DollarSign } from 'lucide-react';
 
-import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -29,8 +30,8 @@ export default async function BulkPricingPage() {
   const catalogRules = rules.filter((r) => r.appliesTo !== 'document');
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Bulk pricing"
@@ -41,7 +42,7 @@ export default async function BulkPricingPage() {
           }
           description="Apply a markup rule across a scope you choose — preview every before/after price, then commit. Variants without a cost are skipped."
         />
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           Applying binds each priced variant to the rule and stamps a snapshot, so a later cost
           change can re-derive the price. Bind individual variants on a product’s Variants tab;
           author the rules themselves under{' '}
@@ -49,9 +50,9 @@ export default async function BulkPricingPage() {
             Markup rules
           </a>
           .
-        </Text>
+        </p>
         <BulkPricingTool rules={catalogRules} collections={collectionList.data} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

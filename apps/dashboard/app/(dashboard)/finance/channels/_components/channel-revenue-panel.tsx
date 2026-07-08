@@ -7,19 +7,7 @@
 // share of total.
 
 import Link from 'next/link';
-import {
-  Badge,
-  Card,
-  CardContent,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
 
 import type { ChannelRevenueReport, ChannelTopProduct } from '../_types';
 
@@ -30,12 +18,10 @@ function fmtCents(cents: number, currency: string): string {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <Card>
-      <CardContent className="p-5">
-        <Text size="xs" className="mb-1 font-medium text-[var(--color-muted-foreground)]">
-          {label}
-        </Text>
+      <CardBody className="p-5">
+        <p className="text-base-content/60 mb-1 text-xs font-medium">{label}</p>
         <p className="text-2xl font-semibold tracking-tight">{value}</p>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -49,7 +35,7 @@ export function ChannelRevenuePanel({
 }) {
   const { currency } = report;
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard label="Gross revenue" value={fmtCents(report.totalGrossRevenueCents, currency)} />
         <StatCard label="Orders" value={report.totalOrders.toLocaleString()} />
@@ -60,26 +46,23 @@ export function ChannelRevenuePanel({
         />
       </div>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Channel</TableHead>
-            <TableHead className="text-right">Orders</TableHead>
-            <TableHead className="text-right">Gross</TableHead>
-            <TableHead className="text-right">Fees</TableHead>
-            <TableHead className="text-right">Net</TableHead>
-            <TableHead className="text-right">AOV</TableHead>
-            <TableHead className="text-right">Share</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th className="text-right">Orders</th>
+            <th className="text-right">Gross</th>
+            <th className="text-right">Fees</th>
+            <th className="text-right">Net</th>
+            <th className="text-right">AOV</th>
+            <th className="text-right">Share</th>
+          </tr>
+        </thead>
+        <tbody>
           {report.byChannel.map((row) => {
             const active = row.channel === selectedChannel;
             return (
-              <TableRow
-                key={row.channel}
-                className={active ? 'bg-[var(--color-muted)]' : undefined}
-              >
-                <TableCell className="font-medium">
+              <tr key={row.channel} className={active ? 'bg-base-200' : undefined}>
+                <td className="font-medium">
                   <Link
                     href={`/finance/channels?channel=${encodeURIComponent(row.channel)}#channel-top-products`}
                     className="hover:underline"
@@ -87,27 +70,21 @@ export function ChannelRevenuePanel({
                   >
                     {row.label}
                   </Link>
-                </TableCell>
-                <TableCell className="text-right">{row.orders.toLocaleString()}</TableCell>
-                <TableCell className="text-right">
-                  {fmtCents(row.grossRevenueCents, currency)}
-                </TableCell>
-                <TableCell className="text-right text-[var(--color-muted-foreground)]">
+                </td>
+                <td className="text-right">{row.orders.toLocaleString()}</td>
+                <td className="text-right">{fmtCents(row.grossRevenueCents, currency)}</td>
+                <td className="text-base-content/60 text-right">
                   {row.channelFeeCents > 0 ? fmtCents(row.channelFeeCents, currency) : '—'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {fmtCents(row.netAfterFeesCents, currency)}
-                </TableCell>
-                <TableCell className="text-right">
-                  {fmtCents(row.averageOrderValueCents, currency)}
-                </TableCell>
-                <TableCell className="text-right">{row.sharePct}%</TableCell>
-              </TableRow>
+                </td>
+                <td className="text-right">{fmtCents(row.netAfterFeesCents, currency)}</td>
+                <td className="text-right">{fmtCents(row.averageOrderValueCents, currency)}</td>
+                <td className="text-right">{row.sharePct}%</td>
+              </tr>
             );
           })}
-        </TableBody>
+        </tbody>
       </Table>
-    </Stack>
+    </div>
   );
 }
 
@@ -121,39 +98,35 @@ export function ChannelTopProductsPanel({
   currency: string;
 }) {
   return (
-    <Stack gap={4} id="channel-top-products">
-      <Stack direction="row" align="center" gap={2}>
-        <Text size="lg" className="font-semibold">
-          Top products
-        </Text>
+    <div className="flex flex-col gap-4" id="channel-top-products">
+      <div className="flex items-center gap-2">
+        <p className="text-lg font-semibold">Top products</p>
         <Badge color="info" variant="soft" size="sm">
           {label}
         </Badge>
-      </Stack>
+      </div>
       {products.length === 0 ? (
-        <Text variant="muted" size="sm">
-          No sales on {label} in the last 30 days yet.
-        </Text>
+        <p className="text-base-content/70 text-sm">No sales on {label} in the last 30 days yet.</p>
       ) : (
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead className="text-right">Units</TableHead>
-              <TableHead className="text-right">Revenue</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th className="text-right">Units</th>
+              <th className="text-right">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
             {products.map((p) => (
-              <TableRow key={p.productId || p.productTitle}>
-                <TableCell className="font-medium">{p.productTitle}</TableCell>
-                <TableCell className="text-right">{p.unitsSold.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{fmtCents(p.revenueCents, currency)}</TableCell>
-              </TableRow>
+              <tr key={p.productId || p.productTitle}>
+                <td className="font-medium">{p.productTitle}</td>
+                <td className="text-right">{p.unitsSold.toLocaleString()}</td>
+                <td className="text-right">{fmtCents(p.revenueCents, currency)}</td>
+              </tr>
             ))}
-          </TableBody>
+          </tbody>
         </Table>
       )}
-    </Stack>
+    </div>
   );
 }

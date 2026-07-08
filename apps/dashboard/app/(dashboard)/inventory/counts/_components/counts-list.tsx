@@ -2,14 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import {
   countStatus,
@@ -41,21 +35,21 @@ export function CountsList({ rows, view }: CountsListProps) {
   const statusBadge = (c: InventoryCountRow) => {
     const s = countStatus(c.status);
     return (
-      <Stack direction="row" align="center" gap={1} wrap>
+      <div className="flex flex-row flex-wrap items-center gap-1">
         <Badge color={s.color}>{s.label}</Badge>
         {c.requiresApproval && c.status !== 'posted' && c.status !== 'cancelled' ? (
           <Badge color="warning" variant="soft">
             needs approval
           </Badge>
         ) : null}
-      </Stack>
+      </div>
     );
   };
 
   const progress = (c: InventoryCountRow) => (
-    <Text size="xs" variant="muted">
+    <p className="text-base-content/70 text-xs">
       {c.countedLineCount}/{c.lineCount} counted
-    </Text>
+    </p>
   );
 
   const variance = (c: InventoryCountRow) =>
@@ -73,24 +67,20 @@ export function CountsList({ rows, view }: CountsListProps) {
 
   const card: SelectionCard<InventoryCountRow> = {
     title: (c) => (
-      <Text size="sm" className="truncate font-medium">
+      <p className="truncate text-sm font-medium">
         {countTypeLabel(c.type)} · {c.warehouseName ?? c.warehouseCode ?? '—'}
-      </Text>
+      </p>
     ),
     subtitle: numberLink,
     badge: statusBadge,
     body: (c) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
           {progress(c)}
-          <Text size="sm" className="font-medium">
-            {variance(c)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
-          started {formatDate(c.startedAt)}
-        </Text>
-      </Stack>
+          <p className="text-sm font-medium">{variance(c)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">started {formatDate(c.startedAt)}</p>
+      </div>
     ),
   };
 

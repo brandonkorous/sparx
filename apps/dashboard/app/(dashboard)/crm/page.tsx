@@ -18,23 +18,12 @@ import {
   ActionQueue,
   ActionTile,
   AreaChart,
-  Badge,
   BarList,
-  Button,
-  Container,
   DonutChart,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -334,22 +323,34 @@ export default async function CrmOverviewPage() {
   }));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Users className="h-5 w-5" />}
           title="CRM"
           description="Customers & pipeline — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Download className="h-4 w-4" />}>
-                <Link href="/crm/import">Import</Link>
+              <Button
+                variant="outline"
+                iconStart={<Download className="h-4 w-4" />}
+                render={<Link href="/crm/import" />}
+              >
+                Import
               </Button>
-              <Button asChild variant="outline" leftIcon={<CheckSquare className="h-4 w-4" />}>
-                <Link href="/crm/tasks/new">New task</Link>
+              <Button
+                variant="outline"
+                iconStart={<CheckSquare className="h-4 w-4" />}
+                render={<Link href="/crm/tasks/new" />}
+              >
+                New task
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/crm/customers/new">Add customer</Link>
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/crm/customers/new" />}
+              >
+                Add customer
               </Button>
             </>
           }
@@ -357,7 +358,7 @@ export default async function CrmOverviewPage() {
 
         {/* Headline KPIs — all live: customers + open pipeline from the snapshot,
             new·30d from acquisition, win rate from the win/loss report. */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<Users className="h-4 w-4" />}
             label="Customers"
@@ -382,7 +383,7 @@ export default async function CrmOverviewPage() {
             value={winRate}
             hint="Won ÷ closed deals"
           />
-        </Grid>
+        </div>
 
         {/* Needs attention — wired to the live task metrics. */}
         {taskStats && (
@@ -512,19 +513,19 @@ export default async function CrmOverviewPage() {
           >
             {topCustomers.length ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="text-right">Orders</TableHead>
-                    <TableHead className="text-right">Lifetime value</TableHead>
-                    <TableHead className="text-right">Last order</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th className="text-right">Orders</th>
+                    <th className="text-right">Lifetime value</th>
+                    <th className="text-right">Last order</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {topCustomers.map((c, i) => (
-                    <TableRow key={`${c.name}-${i}`}>
-                      <TableCell>
+                    <tr key={`${c.name}-${i}`}>
+                      <td>
                         <div className="flex items-center gap-2.5">
                           <span
                             aria-hidden
@@ -535,31 +536,29 @@ export default async function CrmOverviewPage() {
                           </span>
                           <span className="font-medium">{c.name}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         <Badge color={TYPE_BADGE[c.type]} variant="soft">
                           {c.type}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {fmtNumber(c.orders)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{c.ltv}</TableCell>
-                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      </td>
+                      <td className="text-right tabular-nums">{fmtNumber(c.orders)}</td>
+                      <td className="text-right tabular-nums">{c.ltv}</td>
+                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                         {c.last}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             ) : (
               <EmptyState
                 icon={<Users className="h-5 w-5" />}
                 title="No customers yet"
                 description="Your highest-value customers will rank here."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/crm/customers/new">Add customer</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/crm/customers/new" />}>
+                    Add customer
                   </Button>
                 }
               />
@@ -598,7 +597,7 @@ export default async function CrmOverviewPage() {
         </div>
 
         {/* Segments + Recent activity + Open deals by stage */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard
             title="Segments"
             icon={<Tag className="h-4 w-4" />}
@@ -616,9 +615,9 @@ export default async function CrmOverviewPage() {
                 icon={<Tag className="h-5 w-5" />}
                 title="No segments yet"
                 description="Group customers into segments to target them."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/crm/segments">Create segment</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/crm/segments" />}>
+                    Create segment
                   </Button>
                 }
               />
@@ -660,8 +659,8 @@ export default async function CrmOverviewPage() {
               />
             )}
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

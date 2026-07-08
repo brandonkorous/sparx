@@ -13,7 +13,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Calendar } from 'lucide-react';
 
-import { Badge, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../../_components/entity-row-link';
 import { type KanbanDeal } from './kanban-types';
@@ -42,12 +42,10 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
         dragging ? 'ring-2 ring-[var(--module-active)]' : 'hover:border-[var(--module-active)]'
       }`}
     >
-      <Stack gap={2}>
-        <Stack direction="row" align="start" justify="between" gap={2}>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-start justify-between gap-2">
           {dragging ? (
-            <Text size="sm" weight="medium" className="truncate">
-              {deal.title}
-            </Text>
+            <p className="truncate text-sm font-medium">{deal.title}</p>
           ) : (
             <EntityRowLink
               href={`/crm/deals/${deal.id}`}
@@ -59,11 +57,11 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
               {deal.title}
             </EntityRowLink>
           )}
-          <Text size="xs" variant="muted" className="tabular-nums">
+          <p className="text-base-content/70 text-xs tabular-nums">
             ${deal.value.toLocaleString()}
-          </Text>
-        </Stack>
-        <Stack direction="row" gap={1} wrap>
+          </p>
+        </div>
+        <div className="flex flex-row flex-wrap gap-1">
           <Badge color="neutral" variant="soft" size="sm">
             {deal.probability}%
           </Badge>
@@ -78,8 +76,8 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
               {tag}
             </Badge>
           ))}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </div>
   );
 }

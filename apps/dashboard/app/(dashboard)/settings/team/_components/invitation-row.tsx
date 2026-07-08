@@ -1,20 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Badge,
-  Button,
-  statusTone,
-  TableCell,
-  TableRow,
-  Text,
-  toast,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, Tooltip } from 'silicaui-react';
+import { statusTone, toast, useConfirm } from '@sparx/ui';
 import { Trash2 } from 'lucide-react';
 import type { OrgInvitation } from '@sparx/auth';
 import { revokeInvitation } from '../actions';
@@ -48,49 +36,40 @@ export function InvitationRow({
   }
 
   return (
-    <TableRow>
-      <TableCell>
-        <Text weight="medium" className="truncate">
-          {invitation.email}
-        </Text>
-      </TableCell>
-      <TableCell>
+    <tr>
+      <td>
+        <p className="truncate font-medium">{invitation.email}</p>
+      </td>
+      <td>
         <Badge color="neutral" variant="soft" size="sm">
           {roleLabel(invitation.role)}
         </Badge>
-      </TableCell>
-      <TableCell>
-        <Text size="sm" variant="muted">
-          {invitation.inviterName}
-        </Text>
-      </TableCell>
-      <TableCell>
+      </td>
+      <td>
+        <p className="text-base-content/70 text-sm">{invitation.inviterName}</p>
+      </td>
+      <td>
         <Badge color={statusTone('pending')} variant="soft" size="sm">
           {invitation.expiresAt.toLocaleDateString()}
         </Badge>
-      </TableCell>
+      </td>
       {canManage ? (
-        <TableCell className="text-right">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  color="danger"
-                  shape="square"
-                  size="sm"
-                  onClick={onRevoke}
-                  disabled={pending}
-                  aria-label={`Revoke invitation to ${invitation.email}`}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Revoke invitation</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </TableCell>
+        <td className="text-right">
+          <Tooltip content="Revoke invitation">
+            <Button
+              variant="ghost"
+              color="danger"
+              shape="square"
+              size="sm"
+              onClick={onRevoke}
+              disabled={pending}
+              aria-label={`Revoke invitation to ${invitation.email}`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </Tooltip>
+        </td>
       ) : null}
-    </TableRow>
+    </tr>
   );
 }

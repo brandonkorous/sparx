@@ -2,25 +2,15 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { Badge, Card, CardBody, Input, Label, NativeSelect, Radio, Switch } from 'silicaui-react';
 import {
-  Badge,
-  Card,
-  CardContent,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  RadioGroup,
-  RadioGroupItem,
   RichTextEditor,
-  Stack,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
   SurfaceSummaryDivider,
   SurfaceSummaryRow,
-  Switch,
-  Text,
   statusLabel,
   statusTone,
   type SurfaceStepDef,
@@ -208,9 +198,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
               ) : undefined,
             extra:
               savedAt && !error ? (
-                <Text size="xs" variant="success">
-                  Saved {savedAt}
-                </Text>
+                <p className="text-success text-xs">Saved {savedAt}</p>
               ) : undefined,
           }}
         >
@@ -221,27 +209,25 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
               if (!pending) submit();
             }}
           >
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={5}>
-                  <Stack gap={2}>
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="bc-title">Title</Label>
                     <Input
                       id="bc-title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      variant={fieldErrors.title ? 'error' : 'default'}
+                      color={fieldErrors.title ? 'error' : undefined}
                       maxLength={255}
                       placeholder="Launch your store on Sparx in a weekend"
                     />
                     {fieldErrors.title && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.title}
-                      </Text>
+                      <p className="text-danger text-xs">{fieldErrors.title}</p>
                     )}
-                  </Stack>
+                  </div>
 
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label>Description</Label>
                     <RichTextEditor
                       value={description}
@@ -249,10 +235,10 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                       ariaLabel="Bootcamp description"
                       placeholder="What attendees will learn and walk away with…"
                     />
-                  </Stack>
+                  </div>
 
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-format">Format</Label>
                       <NativeSelect
                         id="bc-format"
@@ -265,8 +251,8 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                           </option>
                         ))}
                       </NativeSelect>
-                    </Stack>
-                    <Stack gap={2} className="min-w-[8rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[8rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-price">Price (USD)</Label>
                       <Input
                         id="bc-price"
@@ -276,15 +262,15 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                       />
-                    </Stack>
-                  </Stack>
-                  <Text size="xs" variant="muted">
+                    </div>
+                  </div>
+                  <p className="text-base-content/70 text-xs">
                     Collecting payment for a bootcamp is your responsibility — Sparx lists it and
                     drives registrations, but does not process the ticket price.
-                  </Text>
+                  </p>
 
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-starts">Starts</Label>
                       <Input
                         id="bc-starts"
@@ -292,8 +278,8 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={startsAt}
                         onChange={(e) => setStartsAt(e.target.value)}
                       />
-                    </Stack>
-                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-ends">Ends</Label>
                       <Input
                         id="bc-ends"
@@ -301,23 +287,23 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={endsAt}
                         onChange={(e) => setEndsAt(e.target.value)}
                       />
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={2} className="min-w-[10rem] flex-1">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[10rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-city">City</Label>
                       <Input id="bc-city" value={city} onChange={(e) => setCity(e.target.value)} />
-                    </Stack>
-                    <Stack gap={2} className="min-w-[10rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[10rem] flex-1 flex-col gap-2">
                       <Label htmlFor="bc-region">State / region</Label>
                       <Input
                         id="bc-region"
                         value={region}
                         onChange={(e) => setRegion(e.target.value)}
                       />
-                    </Stack>
-                    <Stack gap={2} className="w-24">
+                    </div>
+                    <div className="flex w-24 flex-col gap-2">
                       <Label htmlFor="bc-country">Country</Label>
                       <Input
                         id="bc-country"
@@ -326,25 +312,25 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         maxLength={2}
                         className="uppercase"
                       />
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
-                  <Stack direction="row" align="center" justify="between" gap={3}>
-                    <Stack gap={1} className="min-w-0">
+                  <div className="flex flex-row items-center justify-between gap-3">
+                    <div className="flex min-w-0 flex-col gap-1">
                       <Label htmlFor="bc-limited">Limit seats</Label>
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         Off means unlimited seats; on caps registrations and waitlists the rest.
-                      </Text>
-                    </Stack>
+                      </p>
+                    </div>
                     <Switch
                       id="bc-limited"
                       color="module"
                       checked={limited}
                       onCheckedChange={setLimited}
                     />
-                  </Stack>
+                  </div>
                   {limited && (
-                    <Stack gap={2} className="max-w-[12rem]">
+                    <div className="flex max-w-[12rem] flex-col gap-2">
                       <Label htmlFor="bc-seats">Total seats</Label>
                       <Input
                         id="bc-seats"
@@ -354,59 +340,58 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={seats}
                         onChange={(e) => setSeats(e.target.value)}
                       />
-                    </Stack>
+                    </div>
                   )}
 
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label>Registration</Label>
-                    <RadioGroup
-                      value={regMode}
-                      onValueChange={(v) => setRegMode(v as Bootcamp['registrationMode'])}
-                    >
+                    <div className="grid gap-2">
                       <RegOption
                         value="internal"
                         title="On Sparx"
                         hint="Attendees RSVP here and land as leads in your CRM."
+                        checked={regMode === 'internal'}
+                        onSelect={() => setRegMode('internal')}
                       />
                       <RegOption
                         value="external"
                         title="External link"
                         hint="Send registrations to Eventbrite, Luma, a form, or your own page."
+                        checked={regMode === 'external'}
+                        onSelect={() => setRegMode('external')}
                       />
-                    </RadioGroup>
-                  </Stack>
+                    </div>
+                  </div>
                   {regMode === 'external' && (
-                    <Stack gap={2}>
+                    <div className="flex flex-col gap-2">
                       <Label htmlFor="bc-regurl">Registration URL</Label>
                       <Input
                         id="bc-regurl"
                         value={regUrl}
                         onChange={(e) => setRegUrl(e.target.value)}
                         placeholder="https://…"
-                        variant={fieldErrors.registrationUrl ? 'error' : 'default'}
+                        color={fieldErrors.registrationUrl ? 'error' : undefined}
                       />
                       {fieldErrors.registrationUrl && (
-                        <Text size="xs" variant="danger">
-                          {fieldErrors.registrationUrl}
-                        </Text>
+                        <p className="text-danger text-xs">{fieldErrors.registrationUrl}</p>
                       )}
-                    </Stack>
+                    </div>
                   )}
 
                   {partnerTier !== 'certified' && (
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       You can build and save this as a draft now. Publishing it to the public
                       directory unlocks at the Certified tier.
-                    </Text>
+                    </p>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           </form>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -414,16 +399,34 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
   );
 }
 
-function RegOption({ value, title, hint }: { value: string; title: string; hint: string }) {
+function RegOption({
+  value,
+  title,
+  hint,
+  checked,
+  onSelect,
+}: {
+  value: string;
+  title: string;
+  hint: string;
+  checked: boolean;
+  onSelect: () => void;
+}) {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-[var(--color-border-default)] p-3">
-      <RadioGroupItem id={`reg-${value}`} value={value} color="module" className="mt-1" />
-      <Stack gap={0} className="min-w-0">
+      <Radio
+        name="bc-regmode"
+        id={`reg-${value}`}
+        value={value}
+        checked={checked}
+        onChange={onSelect}
+        color="module"
+        className="mt-1"
+      />
+      <div className="flex min-w-0 flex-col gap-0">
         <Label htmlFor={`reg-${value}`}>{title}</Label>
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      </Stack>
+        <p className="text-base-content/70 text-xs">{hint}</p>
+      </div>
     </div>
   );
 }
@@ -431,10 +434,10 @@ function RegOption({ value, title, hint }: { value: string; title: string; hint:
 function NewBootcampSummary() {
   return (
     <SurfaceSummary title="New bootcamp">
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         Save it as a draft first, then publish when you’re ready. On-platform RSVPs become leads in
         your CRM automatically.
-      </Text>
+      </p>
     </SurfaceSummary>
   );
 }

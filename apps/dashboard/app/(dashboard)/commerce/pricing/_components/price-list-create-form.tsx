@@ -3,23 +3,15 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 import {
-  Badge,
-  Card,
-  CardContent,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  Stack,
   statusTone,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
   SurfaceSummaryDivider,
   SurfaceSummaryRow,
-  Text,
-  Textarea,
   type SurfaceStepDef,
 } from '@sparx/ui';
 
@@ -185,10 +177,10 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack gap={2}>
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="pl-name">Name</Label>
                   <Input
                     id="pl-name"
@@ -196,13 +188,9 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Fleet wholesale"
                   />
-                  {fieldErrors.name && (
-                    <Text size="xs" variant="danger">
-                      {fieldErrors.name}
-                    </Text>
-                  )}
-                </Stack>
-                <Stack gap={2}>
+                  {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="pl-description">Description</Label>
                   <Textarea
                     id="pl-description"
@@ -210,9 +198,9 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
                   />
-                </Stack>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="w-28">
+                </div>
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex w-28 flex-col gap-2">
                     <Label htmlFor="pl-currency">Currency</Label>
                     <Input
                       id="pl-currency"
@@ -221,12 +209,10 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
                       maxLength={3}
                     />
                     {fieldErrors.currency && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.currency}
-                      </Text>
+                      <p className="text-danger text-xs">{fieldErrors.currency}</p>
                     )}
-                  </Stack>
-                  <Stack gap={2} className="min-w-[11rem] flex-1">
+                  </div>
+                  <div className="flex min-w-[11rem] flex-1 flex-col gap-2">
                     <Label htmlFor="pl-channel">Channel</Label>
                     <NativeSelect
                       id="pl-channel"
@@ -240,23 +226,23 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={2} className="w-28">
+                  </div>
+                  <div className="flex w-28 flex-col gap-2">
                     <Label htmlFor="pl-priority">Priority</Label>
                     <Input
                       id="pl-priority"
                       value={priority}
                       onChange={(e) => setPriority(e.target.value)}
                     />
-                  </Stack>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  </div>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -301,10 +287,10 @@ function PriceListDraftSummary({
       <SurfaceSummaryRow label="Currency" value={(currency.trim() || 'USD').toUpperCase()} />
       <SurfaceSummaryRow label="Priority" value={priority.trim() || '0'} />
       <SurfaceSummaryDivider />
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         Targeting — a customer segment or B2B account — is set on the detail page after the list
         exists.
-      </Text>
+      </p>
     </SurfaceSummary>
   );
 }

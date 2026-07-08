@@ -15,7 +15,8 @@
 // remaining combinations are created fresh.
 
 import * as React from 'react';
-import { Badge, Button, Card, CardContent, Input, Spinner, Text, SurfaceStep } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Loading } from 'silicaui-react';
+import { SurfaceStep } from '@sparx/ui';
 
 import {
   assignVariantOptionValuesAction,
@@ -195,11 +196,11 @@ export function VariantsStep({
         nextDisabled: generating,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           {loading ? (
             <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-              <Spinner className="h-4 w-4" /> Loading options & variants…
+              <Loading className="h-4 w-4" /> Loading options & variants…
             </div>
           ) : (
             <div className="flex flex-col gap-6">
@@ -207,9 +208,7 @@ export function VariantsStep({
               <section className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <Text size="sm" weight="medium">
-                      Options
-                    </Text>
+                    <p className="text-sm font-medium">Options</p>
                     <Badge color="neutral" variant="soft" size="sm">
                       {options.length}
                     </Badge>
@@ -237,17 +236,15 @@ export function VariantsStep({
                     />
                   </div>
                 ) : options.length === 0 ? (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     No options — this product is a single SKU (the one you priced). Add an option
                     like Size or Color to sell variations, or continue.
-                  </Text>
+                  </p>
                 ) : (
                   <div className="flex flex-col gap-2">
                     {options.map((o) => (
                       <div key={o.id} className="flex flex-wrap items-center gap-1.5">
-                        <Text size="sm" weight="medium">
-                          {o.name}:
-                        </Text>
+                        <p className="text-sm font-medium">{o.name}:</p>
                         {o.values.map((v) => (
                           <Badge key={v.id} variant="soft" size="sm">
                             {v.value}
@@ -264,9 +261,7 @@ export function VariantsStep({
                 <section className="flex flex-col gap-3">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                      <Text size="sm" weight="medium">
-                        Variants
-                      </Text>
+                      <p className="text-sm font-medium">Variants</p>
                       <Badge color="neutral" variant="soft" size="sm">
                         {combos.length} combination{combos.length === 1 ? '' : 's'}
                       </Badge>
@@ -285,10 +280,10 @@ export function VariantsStep({
                   </div>
 
                   {overCap ? (
-                    <Text size="sm" variant="danger" role="alert">
+                    <p className="text-danger text-sm" role="alert">
                       {combos.length} combinations exceeds the {MAX_COMBOS}-variant limit. Trim
                       option values, then generate.
-                    </Text>
+                    </p>
                   ) : (
                     <div className="overflow-hidden rounded-xl border border-[var(--color-border-default)]">
                       {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
@@ -350,13 +345,13 @@ export function VariantsStep({
               )}
 
               {error && (
-                <Text size="sm" variant="danger" role="alert">
+                <p className="text-danger text-sm" role="alert">
                   {error}
-                </Text>
+                </p>
               )}
             </div>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

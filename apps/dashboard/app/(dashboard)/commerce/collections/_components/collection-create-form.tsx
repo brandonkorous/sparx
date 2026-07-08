@@ -4,22 +4,14 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
   RadioGroup,
   RadioGroupItem,
-  Stack,
-  Text,
-  Textarea,
   SurfaceFrame,
   SurfaceStep,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 
 import { createCollectionAction } from '../../collection-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -181,11 +173,11 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="flex-1">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="col-name">Name</Label>
                     <Input
                       id="col-name"
@@ -193,13 +185,9 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Featured, New for Spring, Best sellers…"
                     />
-                    {fieldErrors.name && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.name}
-                      </Text>
-                    )}
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
+                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="col-handle">Handle (optional)</Label>
                     <Input
                       id="col-handle"
@@ -208,13 +196,11 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                       placeholder="auto-derived from the name"
                     />
                     {fieldErrors.handle && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.handle}
-                      </Text>
+                      <p className="text-danger text-xs">{fieldErrors.handle}</p>
                     )}
-                  </Stack>
-                </Stack>
-                <Stack gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="col-description">Description</Label>
                   <Textarea
                     id="col-description"
@@ -222,47 +208,44 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
                   />
-                </Stack>
-                <Stack direction="row" align="center" gap={2}>
+                </div>
+                <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     id="col-featured"
                     color="module"
                     checked={featured}
-                    onCheckedChange={(v) => setFeatured(v === true)}
+                    onChange={(e) => setFeatured(e.target.checked)}
                   />
                   <Label htmlFor="col-featured">Featured</Label>
-                </Stack>
-                <Stack gap={3}>
+                </div>
+                <div className="flex flex-col gap-3">
                   <RadioGroup
                     value={type}
                     onValueChange={(v) => setType(v as 'manual' | 'rules')}
                     className="gap-3"
                   >
-                    <Stack direction="row" align="center" gap={2}>
+                    <div className="flex flex-row items-center gap-2">
                       <RadioGroupItem color="module" value="manual" id="col-type-manual" />
-                      <Stack gap={0}>
+                      <div className="flex flex-col gap-0">
                         <Label htmlFor="col-type-manual">Manual</Label>
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Add products by hand on the detail page.
-                        </Text>
-                      </Stack>
-                    </Stack>
-                    <Stack direction="row" align="center" gap={2}>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-row items-center gap-2">
                       <RadioGroupItem color="module" value="rules" id="col-type-rules" />
-                      <Stack gap={0}>
+                      <div className="flex flex-col gap-0">
                         <Label htmlFor="col-type-rules">Rules-driven</Label>
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Membership re-projected on the next index flush.
-                        </Text>
-                      </Stack>
-                    </Stack>
+                        </p>
+                      </div>
+                    </div>
                   </RadioGroup>
                   {type === 'rules' && (
-                    <Stack
-                      gap={3}
-                      className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-                    >
-                      <Stack gap={2}>
+                    <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+                      <div className="flex flex-col gap-2">
                         <Label htmlFor="col-match">Match mode</Label>
                         <NativeSelect
                           id="col-match"
@@ -272,8 +255,8 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                           <option value="all">Match all (AND)</option>
                           <option value="any">Match any (OR)</option>
                         </NativeSelect>
-                      </Stack>
-                      <Stack gap={2}>
+                      </div>
+                      <div className="flex flex-col gap-2">
                         <Label htmlFor="col-seed-tag">Seed predicate — tag equals</Label>
                         <Input
                           id="col-seed-tag"
@@ -281,26 +264,24 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                           onChange={(e) => setSeedTag(e.target.value)}
                           placeholder="bestseller"
                         />
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Phase 1.3 seeds a single tag predicate. The full rule editor lands on the
                           detail page in Phase 1.5 (vendor / product_type / price / fitment).
-                        </Text>
+                        </p>
                         {fieldErrors.seedTag && (
-                          <Text size="xs" variant="danger">
-                            {fieldErrors.seedTag}
-                          </Text>
+                          <p className="text-danger text-xs">{fieldErrors.seedTag}</p>
                         )}
-                      </Stack>
-                    </Stack>
+                      </div>
+                    </div>
                   )}
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

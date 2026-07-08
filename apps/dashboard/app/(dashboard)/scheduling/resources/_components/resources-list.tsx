@@ -10,15 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Tag,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { Tag, toast, useConfirm } from '@sparx/ui';
 import { CalendarDays, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { SchedulingResource } from '../../_lib/types';
@@ -53,21 +46,21 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
   return (
     <>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Capacity</TableHead>
-            <TableHead>Skills</TableHead>
-            <TableHead>Mode</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Skills</th>
+            <th>Mode</th>
+            <th>Status</th>
+            <th className="w-10" />
+          </tr>
+        </thead>
+        <tbody>
           {resources.map((r) => (
-            <TableRow key={r.id}>
-              <TableCell className="font-medium">
+            <tr key={r.id}>
+              <td className="font-medium">
                 <span className="inline-flex items-center gap-2">
                   {r.color ? (
                     <span
@@ -77,14 +70,14 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                   ) : null}
                   {r.name}
                 </span>
-              </TableCell>
-              <TableCell>{RESOURCE_KIND_LABEL[r.kind]}</TableCell>
-              <TableCell>
+              </td>
+              <td>{RESOURCE_KIND_LABEL[r.kind]}</td>
+              <td>
                 {r.kind === 'table' && (r.capacityMin || r.capacityMax)
                   ? `${r.capacityMin ?? 1}–${r.capacityMax ?? r.capacity}`
                   : r.capacity}
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <span className="flex flex-wrap gap-1">
                   {r.skillTags.slice(0, 4).map((t) => (
                     <Tag key={t}>{t}</Tag>
@@ -95,35 +88,35 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                     </span>
                   ) : null}
                 </span>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <Badge variant="soft" size="sm" color={r.exclusive ? 'neutral' : 'info'}>
                   {r.exclusive ? 'Exclusive' : 'Pooled'}
                 </Badge>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                   {r.isActive ? 'Active' : 'Inactive'}
                 </Badge>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" shape="square" size="sm" aria-label="Resource actions">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => setEditing(r)}>
+                    <DropdownMenuItem onClick={() => setEditing(r)}>
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => setFeedFor(r)}>
+                    <DropdownMenuItem onClick={() => setFeedFor(r)}>
                       <CalendarDays className="mr-2 h-4 w-4" />
                       Calendar feed
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={() => void remove(r)}
+                      onClick={() => void remove(r)}
                       className="text-[var(--color-danger)]"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -131,10 +124,10 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
 
       {editing ? (

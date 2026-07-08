@@ -23,19 +23,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Badge,
-  Button,
-  Input,
-  Label,
-  ModuleProvider,
-  Switch,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  cn,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, cn, type SurfaceStepDef } from '@sparx/ui';
+import { Badge, Button, Input, Label, Switch } from 'silicaui-react';
 import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-react';
 
 import { createSiteWithBlueprint } from './actions';
@@ -219,16 +208,16 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
         >
           <span className="flex items-center gap-2">
             <PencilRuler className="h-4 w-4 text-[var(--color-text-tertiary)]" />
-            <Text weight="medium">Blank site</Text>
+            <p className="font-medium">Blank site</p>
             {choice === BLANK && (
               <Badge color="module" variant="solid" size="sm">
                 <Check className="h-3 w-3" /> Selected
               </Badge>
             )}
           </span>
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             An empty site with default chrome. Build it yourself in the Builder, or run it headless.
-          </Text>
+          </p>
         </button>
 
         {/* Blueprints */}
@@ -267,13 +256,9 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
                 </span>
               </div>
               <div className="flex flex-1 flex-col gap-1.5 p-4">
-                <Text weight="medium">{bp.name}</Text>
-                <Text size="sm" variant="muted" className="line-clamp-2">
-                  {bp.summary}
-                </Text>
-                <Text size="xs" variant="muted" className="mt-1">
-                  {contentsLine(bp.contents)}
-                </Text>
+                <p className="font-medium">{bp.name}</p>
+                <p className="text-base-content/70 line-clamp-2 text-sm">{bp.summary}</p>
+                <p className="text-base-content/70 mt-1 text-xs">{contentsLine(bp.contents)}</p>
               </div>
             </button>
           );
@@ -363,13 +348,11 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
         {selectedBlueprint && (
           <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
             <span className="flex flex-col gap-0.5">
-              <Text size="sm" weight="medium">
-                Publish immediately
-              </Text>
-              <Text size="sm" variant="muted">
+              <p className="text-sm font-medium">Publish immediately</p>
+              <p className="text-base-content/70 text-sm">
                 Your new site goes live at its address right away. Turn this off to install
                 everything as drafts and review before going live.
-              </Text>
+              </p>
             </span>
             <Switch
               checked={publish}
@@ -380,9 +363,9 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
         )}
 
         {error && (
-          <Text size="sm" variant="danger" role="alert">
+          <p className="text-danger text-sm" role="alert">
             {error}
-          </Text>
+          </p>
         )}
       </div>
     </SurfaceStep>
@@ -399,8 +382,8 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
       actions={{ onBack: () => setUpsell(null), backLabel: 'Back' }}
     >
       <div className="flex flex-wrap gap-2">
-        <Button color="module" asChild>
-          <Link href="/settings/modules">Activate Builder</Link>
+        <Button color="module" render={<Link href="/settings/modules" />}>
+          Activate Builder
         </Button>
         <Button variant="ghost" onClick={() => setUpsell(null)}>
           Not now
@@ -450,14 +433,15 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
         )}
 
         <div className="flex flex-wrap gap-2">
-          <Button color="module" asChild>
-            <Link href="/builder">
-              Open in Builder <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
+          <Button color="module" render={<Link href="/builder" />}>
+            Open in Builder <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
           {result.installId && !result.live && (
-            <Button variant="outline" asChild>
-              <Link href={`/marketplace/installs/${result.installId}`}>Review &amp; go live</Link>
+            <Button
+              variant="outline"
+              render={<Link href={`/marketplace/installs/${result.installId}`} />}
+            >
+              Review &amp; go live
             </Button>
           )}
         </div>

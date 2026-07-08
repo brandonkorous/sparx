@@ -1,13 +1,5 @@
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 
 import { SampleBadge } from '../_components/overview-bits';
 import type { SiteVitals } from './types';
@@ -47,32 +39,28 @@ export function WebVitalsCard({ vitals }: { vitals: SiteVitals | null }) {
   return (
     <ModuleProvider module="builder">
       <Card className="h-full">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Site speed</CardTitle>
             {!live && <SampleBadge reason="no-data" />}
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={0}>
+          </div>
+          <div className="flex flex-col gap-0">
             {rows.map((r) => (
               <div
                 key={r.label}
                 className="flex items-center justify-between gap-2 border-b border-[var(--color-border-default)] py-3 last:border-b-0"
               >
-                <Text size="sm" variant="muted">
-                  {r.label}
-                </Text>
+                <p className="text-base-content/70 text-sm">{r.label}</p>
                 <Badge color={r.tone} variant="soft">
                   {r.value}
                 </Badge>
               </div>
             ))}
-          </Stack>
-          <Text size="xs" variant="muted" className="mt-3 block">
+          </div>
+          <p className="text-base-content/70 mt-3 block text-xs">
             Core Web Vitals{live ? ` · ${v.samples} samples` : ''}
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

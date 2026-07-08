@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import {
   activateDiscountAction,
@@ -64,20 +64,12 @@ export function DiscountStatusToggle({
   void moveToDraft;
 
   if (status === 'archived') {
-    return (
-      <Text size="xs" variant="muted">
-        archived
-      </Text>
-    );
+    return <p className="text-base-content/70 text-xs">archived</p>;
   }
 
   return (
-    <Stack direction="row" gap={1} align="center">
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
+    <div className="flex flex-row items-center gap-1">
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
       {status === 'draft' && (
         <Button size="sm" variant="ghost" disabled={pending} onClick={activate}>
           Activate
@@ -86,6 +78,6 @@ export function DiscountStatusToggle({
       <Button size="sm" variant="ghost" disabled={pending} onClick={archive}>
         Archive
       </Button>
-    </Stack>
+    </div>
   );
 }

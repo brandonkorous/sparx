@@ -12,17 +12,7 @@
 // 2 follow-up flagged in the comment below.
 
 import * as React from 'react';
-import {
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Input } from 'silicaui-react';
 import { ImageIcon, Search } from 'lucide-react';
 
 import { listMediaAssetsAction } from './cms-actions';
@@ -146,14 +136,14 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
   }, [assets, q, accept]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="max-w-3xl">
-        <ModalHeader>
-          <ModalTitle>Select an asset</ModalTitle>
-        </ModalHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <div className="px-6 pt-6">
+          <DialogTitle>Select an asset</DialogTitle>
+        </div>
         <div className="px-6 py-2">
-          <Stack gap={3}>
-            <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-row items-center gap-2">
               <Search className="h-4 w-4 text-[var(--color-text-tertiary)]" />
               <Input
                 placeholder="Filter by filename or alt text"
@@ -161,11 +151,11 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                 onChange={(e) => setQ(e.target.value)}
                 aria-label="Filter assets"
               />
-            </Stack>
-            {loading && <Text variant="muted">Loading assets…</Text>}
-            {error && <Text variant="danger">{error}</Text>}
+            </div>
+            {loading && <p className="text-base-content/70 text-base">Loading assets…</p>}
+            {error && <p className="text-danger text-base">{error}</p>}
             {!loading && !error && filtered.length === 0 && (
-              <Text variant="muted">No assets matched.</Text>
+              <p className="text-base-content/70 text-base">No assets matched.</p>
             )}
             <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
               {filtered.map((a) => {
@@ -194,14 +184,14 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                 );
               })}
             </div>
-          </Stack>
+          </div>
         </div>
-        <ModalFooter>
+        <div className="flex justify-end gap-2 px-6 pb-6">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -10,21 +10,8 @@ import { useRouter } from 'next/navigation';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
 
 import {
   archiveWorkflowAction,
@@ -120,33 +107,31 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
   }
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Workflow</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack gap={2}>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="wf-name">Name</Label>
               <Input id="wf-name" value={name} onChange={(e) => setName(e.target.value)} />
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 Slug <code className="font-mono">{workflow.slug}</code> is the stable identifier and
                 can’t change.
-              </Text>
-            </Stack>
-            <Stack direction="row" align="center" gap={2}>
+              </p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
               <Checkbox
                 color="module"
                 id="wf-default"
                 checked={isDefault}
-                onCheckedChange={(v) => setIsDefault(v === true)}
+                onChange={(e) => setIsDefault(e.target.checked)}
               />
               <Label htmlFor="wf-default">
                 Default workflow (preselected in the create wizard)
               </Label>
-            </Stack>
-            <Stack direction="row" align="center" justify="between" gap={3} wrap>
+            </div>
+            <div className="flex flex-row flex-wrap items-center justify-between gap-3">
               <Button
                 variant="ghost"
                 color="danger"
@@ -164,39 +149,37 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
               >
                 Save
               </Button>
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               Stages{' '}
               <Badge color="neutral" variant="soft" size="sm">
                 {stages.length}
               </Badge>
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           {stages.length === 0 ? (
-            <Text size="sm" variant="muted" className="pb-4">
+            <p className="text-base-content/70 pb-4 text-sm">
               No stages yet. Add the first stage below — a one-stage “Invoice” workflow is perfectly
               valid.
-            </Text>
+            </p>
           ) : (
             <DndContext id={dndId} sensors={sensors} onDragEnd={handleDragEnd}>
               <SortableContext
                 items={stages.map((s) => s.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   {stages.map((s) => (
                     <SortableStageRow key={s.id} stage={s} workflowId={workflow.id} />
                   ))}
-                </Stack>
+                </div>
               </SortableContext>
             </DndContext>
           )}
@@ -208,8 +191,8 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
               onAdded={() => router.refresh()}
             />
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

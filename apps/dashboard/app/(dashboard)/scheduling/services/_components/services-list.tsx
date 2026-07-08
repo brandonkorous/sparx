@@ -10,14 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { SchedulingService } from '../../_lib/types';
@@ -51,46 +45,44 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
   return (
     <>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Duration</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Capacity</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Price</th>
+            <th>Capacity</th>
+            <th>Status</th>
+            <th className="w-10" />
+          </tr>
+        </thead>
+        <tbody>
           {services.map((svc) => (
-            <TableRow key={svc.id}>
-              <TableCell className="font-medium">{svc.name}</TableCell>
-              <TableCell>{BOOKING_TYPE_LABEL[svc.bookingType]}</TableCell>
-              <TableCell>{duration(svc.durationMinutes)}</TableCell>
-              <TableCell>
-                {svc.priceCents > 0 ? money(svc.priceCents, svc.currency) : '—'}
-              </TableCell>
-              <TableCell>{svc.capacity}</TableCell>
-              <TableCell>
+            <tr key={svc.id}>
+              <td className="font-medium">{svc.name}</td>
+              <td>{BOOKING_TYPE_LABEL[svc.bookingType]}</td>
+              <td>{duration(svc.durationMinutes)}</td>
+              <td>{svc.priceCents > 0 ? money(svc.priceCents, svc.currency) : '—'}</td>
+              <td>{svc.capacity}</td>
+              <td>
                 <Badge color={svc.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                   {svc.isActive ? 'Active' : 'Inactive'}
                 </Badge>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" shape="square" size="sm" aria-label="Service actions">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => setEditing(svc)}>
+                    <DropdownMenuItem onClick={() => setEditing(svc)}>
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onSelect={() => void remove(svc)}
+                      onClick={() => void remove(svc)}
                       className="text-[var(--color-danger)]"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -98,10 +90,10 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
 
       {editing ? (

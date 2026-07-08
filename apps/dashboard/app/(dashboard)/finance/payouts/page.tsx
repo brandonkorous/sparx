@@ -8,18 +8,8 @@
 
 import Link from 'next/link';
 import { Banknote } from 'lucide-react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -55,8 +45,8 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
 
   return (
     <ModuleProvider module="finance">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Banknote className="h-5 w-5" />}
             title="Payouts"
@@ -71,38 +61,32 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
               {/* Neutral — the sparx Pay balance card above is this page's single
                   finance-tinted (primary) card; the rest stay plain. */}
               <Card>
-                <CardHeader>
+                <CardBody>
                   <CardTitle>Marketplace payout account</CardTitle>
-                </CardHeader>
-                <CardContent>
                   <PayoutAccountCard account={account} />
-                </CardContent>
+                </CardBody>
               </Card>
             </>
           ) : (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>sparx.market earnings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={3}>
-                  <Text size="sm" variant="muted" className="max-w-prose">
-                    Join sparx.market — the first-party marketplace — to earn an additional sales
-                    channel. sparx handles checkout as merchant-of-record and pays you weekly, minus
-                    commission. Your settlement history and payout bank account will appear here
-                    once you join.
-                  </Text>
-                  <div>
-                    <Button asChild color="module">
-                      <Link href="/commerce/market">Join sparx.market</Link>
-                    </Button>
-                  </div>
-                </Stack>
-              </CardContent>
+                <p className="text-base-content/70 max-w-prose text-sm">
+                  Join sparx.market — the first-party marketplace — to earn an additional sales
+                  channel. sparx handles checkout as merchant-of-record and pays you weekly, minus
+                  commission. Your settlement history and payout bank account will appear here once
+                  you join.
+                </p>
+                <div>
+                  <Button color="module" render={<Link href="/commerce/market" />}>
+                    Join sparx.market
+                  </Button>
+                </div>
+              </CardBody>
             </Card>
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

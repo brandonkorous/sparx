@@ -1,6 +1,7 @@
 import { Layers, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
@@ -45,8 +46,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Layers className="h-5 w-5" />}
           title="Collections"
@@ -75,7 +76,7 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
         />
 
         {items.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Layers className="h-5 w-5" />}
               title={total === 0 ? 'No collections yet' : 'No collections match these filters'}
@@ -84,7 +85,7 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
                   ? 'Start with a hand-picked "Featured" list, then add rules-driven collections (best sellers, on sale, by tag) once you have a few products.'
                   : 'Adjust filters to broaden the results.'
               }
-              action={
+              actions={
                 total === 0 ? (
                   <EntityCreateButton
                     entityType="collection"
@@ -103,8 +104,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

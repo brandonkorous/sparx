@@ -9,17 +9,8 @@
 //                it reuses <ConditionEditor>.
 
 import * as React from 'react';
-import {
-  Button,
-  Combobox,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@sparx/ui';
+import { Button, Input, Label, Select } from 'silicaui-react';
+import { Combobox } from '@sparx/ui';
 import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
 import { DAYS_OF_WEEK, SCAN_ENTITIES, SCHEDULE_CADENCES, TRIGGER_EVENTS } from '../_lib/catalog';
 import { ConditionEditor } from './condition-editor';
@@ -145,18 +136,9 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
               <Select
                 value={value.schedule.cadence}
                 onValueChange={(v) => setCadence(v as ScheduleSpec['cadence'])}
-              >
-                <SelectTrigger className="w-36">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SCHEDULE_CADENCES.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>
-                      {c.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                items={SCHEDULE_CADENCES.map((c) => ({ value: c.value, label: c.label }))}
+                className="w-36"
+              />
             </div>
 
             {value.schedule.cadence === 'weekly' && (
@@ -165,18 +147,9 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
                 <Select
                   value={String(value.schedule.dayOfWeek)}
                   onValueChange={(v) => patchSchedule({ dayOfWeek: Number(v) })}
-                >
-                  <SelectTrigger className="w-36">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DAYS_OF_WEEK.map((d) => (
-                      <SelectItem key={d.value} value={String(d.value)}>
-                        {d.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  items={DAYS_OF_WEEK.map((d) => ({ value: String(d.value), label: d.label }))}
+                  className="w-36"
+                />
               </div>
             )}
 
@@ -250,20 +223,11 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
               <Select
                 value={value.predicate.entity}
                 onValueChange={(v) =>
-                  onChange({ ...value, predicate: { ...value.predicate, entity: v } })
+                  onChange({ ...value, predicate: { ...value.predicate, entity: v as string } })
                 }
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SCAN_ENTITIES.map((e) => (
-                    <SelectItem key={e.entity} value={e.entity}>
-                      {e.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                items={SCAN_ENTITIES.map((e) => ({ value: e.entity, label: e.label }))}
+                className="w-48"
+              />
             </div>
             <ConditionEditor
               label="rows"

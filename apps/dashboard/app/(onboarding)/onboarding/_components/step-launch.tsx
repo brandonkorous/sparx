@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Card, Heading, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
 import {
   ArrowRight,
   Boxes,
@@ -115,19 +115,19 @@ export function StepLaunch({
   if (!installId) {
     return (
       <div className="mx-auto max-w-xl">
-        <Stack gap={5} align="center" className="text-center">
+        <div className="flex flex-col items-center gap-5 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
             <PencilRuler className="h-7 w-7 text-[var(--module-active)]" />
           </span>
-          <Stack gap={2} align="center">
-            <Heading level={2}>Your workspace is ready</Heading>
-            <Text variant="muted">
+          <div className="flex flex-col items-center gap-2">
+            <h2 className="text-2xl font-semibold tracking-tight">Your workspace is ready</h2>
+            <p className="text-base-content/70">
               You&apos;re starting from a blank canvas. Hit{' '}
               <span className="font-medium text-[var(--color-text-primary)]">Finish setup</span> to
               open the Builder and design your site — publish whenever you&apos;re ready.
-            </Text>
-          </Stack>
-        </Stack>
+            </p>
+          </div>
+        </div>
         {pendingDomain && (
           <div className="mt-7">
             <DomainChargeCard domain={pendingDomain} />
@@ -152,13 +152,13 @@ export function StepLaunch({
 
   return (
     <div className="mx-auto max-w-xl">
-      <Stack gap={5} align="center" className="text-center">
+      <div className="flex flex-col items-center gap-5 text-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
           <Rocket className="h-7 w-7 text-[var(--module-active)]" />
         </span>
-        <Stack gap={2} align="center">
-          <Heading level={2}>Your site is ready</Heading>
-          <Text variant="muted">
+        <div className="flex flex-col items-center gap-2">
+          <h2 className="text-2xl font-semibold tracking-tight">Your site is ready</h2>
+          <p className="text-base-content/70">
             {blueprint ? (
               <>
                 The{' '}
@@ -176,9 +176,9 @@ export function StepLaunch({
                 you can keep editing it in the Builder afterward.
               </>
             )}
-          </Text>
-        </Stack>
-      </Stack>
+          </p>
+        </div>
+      </div>
 
       {/* ── Paid domain (charged at publish) ──────────────────────────────── */}
       {pendingDomain && (
@@ -201,7 +201,7 @@ export function StepLaunch({
 
       {/* ── Why that number is real (the platform value) ──────────────────── */}
       <div className="mt-5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5">
-        <Stack gap={4}>
+        <div className="flex flex-col gap-4">
           <ValuePoint
             icon={<Boxes className="h-4 w-4 text-[var(--module-active)]" />}
             title="One platform, not a patched-together stack"
@@ -217,14 +217,14 @@ export function StepLaunch({
             title="Built to grow with you"
             body="From your first sale to enterprise volume on the same platform — and an MCP-native API so AI can run it all, no re-platforming ever."
           />
-        </Stack>
+        </div>
       </div>
 
       {/* ── Already in your site (blueprint content) ──────────────────────── */}
       {facts.length > 0 && (
-        <Text size="sm" variant="muted" className="mt-4 block text-center">
+        <p className="text-base-content/70 mt-4 block text-center text-sm">
           {facts.join(' · ')} — installed and ready to edit.
-        </Text>
+        </p>
       )}
 
       {/* ── Secondary actions (Publish lives in the setup card) ───────────── */}
@@ -232,26 +232,26 @@ export function StepLaunch({
         <Button
           variant="outline"
           color="module"
-          asChild
           disabled={!previewHref}
-          rightIcon={<ExternalLink className="h-3.5 w-3.5" />}
+          iconEnd={<ExternalLink className="h-3.5 w-3.5" />}
+          render={
+            <a
+              href={previewHref ?? '#'}
+              target="_blank"
+              rel="noreferrer"
+              aria-disabled={!previewHref}
+            />
+          }
         >
-          <a
-            href={previewHref ?? '#'}
-            target="_blank"
-            rel="noreferrer"
-            aria-disabled={!previewHref}
-          >
-            Preview in a new tab
-          </a>
+          Preview in a new tab
         </Button>
         <Button
           variant="soft"
           color="neutral"
-          asChild
-          leftIcon={<PencilRuler className="h-4 w-4" />}
+          iconStart={<PencilRuler className="h-4 w-4" />}
+          render={<Link href={BUILDER_HREF} />}
         >
-          <Link href={BUILDER_HREF}>Customize first</Link>
+          Customize first
         </Button>
         {onDifferentTemplate && (
           <Button
@@ -259,7 +259,7 @@ export function StepLaunch({
             color="neutral"
             size="sm"
             onClick={onDifferentTemplate}
-            leftIcon={<Shuffle className="h-3.5 w-3.5" />}
+            iconStart={<Shuffle className="h-3.5 w-3.5" />}
           >
             Choose a different blueprint
           </Button>
@@ -282,23 +282,19 @@ function DomainChargeCard({ domain }: { domain: PendingDomain }) {
     <div className="rounded-2xl border border-[var(--module-active)] bg-[var(--module-active-tint)] px-6 py-5 text-left">
       <div className="flex items-center gap-2">
         <Globe className="h-4 w-4 text-[var(--module-active)]" />
-        <Text size="sm" weight="medium" className="text-[var(--module-active)]">
-          Custom domain
-        </Text>
+        <p className="text-sm font-medium text-[var(--module-active)]">Custom domain</p>
       </div>
       <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <Text weight="medium" className="text-lg">
-          {domain.domain}
-        </Text>
-        <Text size="sm" variant="muted">
+        <p className="text-lg font-medium">{domain.domain}</p>
+        <p className="text-base-content/70 text-sm">
           <span className="font-medium text-[var(--color-text-primary)]">{first}</span> charged when
           you publish{renews ? ` · then ${renews}/yr` : ''}
-        </Text>
+        </p>
       </div>
-      <Text size="xs" variant="muted" className="mt-2 block">
+      <p className="text-base-content/70 mt-2 block text-xs">
         We register it and point it at your site automatically — no DNS to set up. Not ready? Go
         back a step and switch to your free address; you won&apos;t be charged.
-      </Text>
+      </p>
     </div>
   );
 }
@@ -310,12 +306,8 @@ function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: strin
         {icon}
       </span>
       <div>
-        <Text size="sm" weight="medium">
-          {title}
-        </Text>
-        <Text size="sm" variant="muted">
-          {body}
-        </Text>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="text-base-content/70 text-sm">{body}</p>
       </div>
     </div>
   );
@@ -336,9 +328,7 @@ function SavingsBanner({
     <div className="rounded-2xl border border-[var(--color-success-border,var(--color-border-default))] bg-[var(--color-success-tint)] px-6 py-5 text-center">
       <div className="flex items-center justify-center gap-2">
         <Sparkles className="h-4 w-4 text-[var(--color-success-text)]" />
-        <Text size="sm" weight="medium" className="text-[var(--color-success-text)]">
-          You&apos;re saving
-        </Text>
+        <p className="text-sm font-medium text-[var(--color-success-text)]">You&apos;re saving</p>
       </div>
       <div className="mt-1 flex items-baseline justify-center gap-1">
         <span className="text-[3rem] leading-[1] font-medium tracking-[-0.04em] text-[var(--color-success-text)]">
@@ -346,12 +336,12 @@ function SavingsBanner({
         </span>
         <span className="text-lg text-[var(--color-success-text)]/70">/mo</span>
       </div>
-      <Text size="sm" variant="muted" className="mx-auto mt-2 block max-w-[42ch]">
+      <p className="text-base-content/70 mx-auto mt-2 block max-w-[42ch] text-sm">
         That&apos;s{' '}
         <span className="font-medium text-[var(--color-text-primary)]">${usd(annualSavings)}</span>{' '}
         a year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login,
         one invoice — for ${usd(monthlyTotal)}/mo after your free trial.
-      </Text>
+      </p>
     </div>
   );
 }
@@ -368,24 +358,26 @@ function LaunchSuccess({
   const liveUrl = buildSiteUrl(siteOrigin, slug, useTenantParam);
   return (
     <div className="mx-auto max-w-xl">
-      <Stack gap={5}>
-        <Stack gap={3} align="center" className="text-center">
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col items-center gap-3 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
             <PartyPopper className="h-7 w-7 text-[var(--module-active)]" />
           </span>
-          <Heading level={2}>You&apos;re live</Heading>
-          <Text variant="muted">
+          <h2 className="text-2xl font-semibold tracking-tight">You&apos;re live</h2>
+          <p className="text-base-content/70">
             Your site is published and ready for the world. Here&apos;s where to go next.
-          </Text>
-          <Button color="primary" variant="link" asChild>
-            <a href={liveUrl} target="_blank" rel="noreferrer">
-              {slug}.{SITE_ZONE}
-              <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-            </a>
+          </p>
+          <Button
+            color="primary"
+            variant="link"
+            render={<a href={liveUrl} target="_blank" rel="noreferrer" />}
+          >
+            {slug}.{SITE_ZONE}
+            <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
           </Button>
-        </Stack>
+        </div>
 
-        <Stack gap={3}>
+        <div className="flex flex-col gap-3">
           <NextCard
             href={BUILDER_HREF}
             title="Make it yours"
@@ -401,8 +393,8 @@ function LaunchSuccess({
             title="Finish the setup checklist"
             description="A few day-one tasks to get production-ready."
           />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </div>
   );
 }
@@ -418,16 +410,16 @@ function NextCard({
 }) {
   return (
     <Link href={href}>
-      <Card padding="md" className="hover:border-[var(--module-active)]">
-        <Stack direction="row" align="center" justify="between" gap={3}>
-          <Stack gap={1}>
-            <Text weight="medium">{title}</Text>
-            <Text size="sm" variant="muted">
-              {description}
-            </Text>
-          </Stack>
-          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-        </Stack>
+      <Card className="hover:border-[var(--module-active)]">
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <p className="font-medium">{title}</p>
+              <p className="text-base-content/70 text-sm">{description}</p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          </div>
+        </CardBody>
       </Card>
     </Link>
   );

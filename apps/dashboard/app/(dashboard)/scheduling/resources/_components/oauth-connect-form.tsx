@@ -9,7 +9,8 @@
 // push channel keeps it fresh — sparx still owns availability (the no-overlap guard).
 
 import { useEffect, useState } from 'react';
-import { Button, Input, toast } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { CalendarCheck2 } from 'lucide-react';
 
 import { getCalendarOAuthProvidersAction, startCalendarOAuthAction } from '../../_lib/actions';

@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -68,18 +61,14 @@ export function CartsList({ rows, view }: CartsListProps) {
   const customerCell = (c: CartRow) => {
     const displayName = customerName(c.customer);
     return c.customer?.email ? (
-      <Stack gap={0}>
-        <Text size="sm">{displayName ?? c.customer.email}</Text>
+      <div className="flex flex-col gap-0">
+        <p className="text-sm">{displayName ?? c.customer.email}</p>
         {displayName && displayName !== c.customer.email && (
-          <Text size="xs" variant="muted">
-            {c.customer.email}
-          </Text>
+          <p className="text-base-content/70 text-xs">{c.customer.email}</p>
         )}
-      </Stack>
+      </div>
     ) : c.guestToken ? (
-      <Text size="xs" variant="muted">
-        guest
-      </Text>
+      <p className="text-base-content/70 text-xs">guest</p>
     ) : (
       <>—</>
     );
@@ -124,27 +113,21 @@ export function CartsList({ rows, view }: CartsListProps) {
     subtitle: (c) => {
       const displayName = customerName(c.customer);
       const label = displayName ?? c.customer?.email ?? (c.guestToken ? 'guest' : '—');
-      return (
-        <Text size="xs" variant="muted">
-          {label}
-        </Text>
-      );
+      return <p className="text-base-content/70 text-xs">{label}</p>;
     },
     badge: lifecycleBadge,
     body: (c) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
           <Badge color="neutral" variant="soft" size="sm">
             {statusLabel(c.channel)}
           </Badge>
-          <Text size="sm" className="tabular-nums">
-            {totalLabel(c)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          <p className="text-sm tabular-nums">{totalLabel(c)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {c.itemCount} item{c.itemCount === 1 ? '' : 's'} ·{' '}
           {new Date(c.updatedAt).toLocaleString()}
-        </Text>
+        </p>
       </>
     ),
   };

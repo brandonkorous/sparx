@@ -28,20 +28,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Plus, Trash2 } from 'lucide-react';
 
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -49,6 +36,17 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Input,
+  Label,
+  NativeSelect,
+  Textarea,
+} from 'silicaui-react';
 
 import {
   advanceStageAction,
@@ -429,40 +427,40 @@ function InvoiceWizardInner({
         }}
       >
         {createdDocId ? (
-          <Card padding="sm" className="border-[var(--color-border-default)]">
-            <Stack direction="row" align="start" gap={3}>
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--module-active)]" />
-              <div className="flex flex-col gap-1">
-                <Text size="sm" className="font-medium">
-                  Document created — but {partialFailures.length} item
-                  {partialFailures.length === 1 ? '' : 's'} couldn’t be added automatically:
-                </Text>
-                <Text size="sm" variant="muted">
-                  {partialFailures.join(', ')}. Open the document to add{' '}
-                  {partialFailures.length === 1 ? 'it' : 'them'} by hand.
-                </Text>
+          <Card className="border-[var(--color-border-default)]">
+            <CardBody className="p-4">
+              <div className="flex flex-row items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--module-active)]" />
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium">
+                    Document created — but {partialFailures.length} item
+                    {partialFailures.length === 1 ? '' : 's'} couldn’t be added automatically:
+                  </p>
+                  <p className="text-base-content/70 text-sm">
+                    {partialFailures.join(', ')}. Open the document to add{' '}
+                    {partialFailures.length === 1 ? 'it' : 'them'} by hand.
+                  </p>
+                </div>
               </div>
-            </Stack>
+            </CardBody>
           </Card>
         ) : (
           <div className="flex flex-col gap-5">
             {/* Bill to */}
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Document</Heading>
-                <Text size="sm" variant="muted">
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Document</h3>
+                <p className="text-base-content/70 text-sm">
                   The workflow sets the stages and the customer-facing label. Bill a retail customer
                   or a B2B account — at least one is required.
-                </Text>
-              </CardHeader>
-              <CardContent>
+                </p>
                 <div className="flex flex-col gap-4">
                   <div>
                     <Label htmlFor="iw-workflow">Workflow</Label>
                     {workflows.length === 0 ? (
-                      <Text size="sm" variant="muted">
+                      <p className="text-base-content/70 text-sm">
                         No document workflows exist yet. Create one in Invoicing → Workflows first.
-                      </Text>
+                      </p>
                     ) : (
                       <NativeSelect
                         id="iw-workflow"
@@ -477,10 +475,10 @@ function InvoiceWizardInner({
                         ))}
                       </NativeSelect>
                     )}
-                    <Text size="xs" variant="muted" className="mt-1">
+                    <p className="text-base-content/70 mt-1 text-xs">
                       The workflow’s first stage is where this document starts — you can jump ahead
                       below.
-                    </Text>
+                    </p>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -532,67 +530,57 @@ function InvoiceWizardInner({
                         <Checkbox
                           color="module"
                           checked={assignToMe}
-                          onCheckedChange={(v) => setAssignToMe(v === true)}
+                          onChange={(e) => setAssignToMe(e.target.checked)}
                         />
                         Assign this document to me
                       </label>
                     )}
                   </div>
                 </div>
-              </CardContent>
+              </CardBody>
             </Card>
 
             {/* Line items */}
-            <Card variant="default">
-              <CardHeader>
-                <Stack direction="row" align="center" gap={2}>
-                  <Heading level={3}>Line items</Heading>
+            <Card>
+              <CardBody>
+                <div className="flex flex-row items-center gap-2">
+                  <h3 className="text-xl font-semibold">Line items</h3>
                   <Badge color="neutral" variant="soft" size="sm">
                     {lines.length}
                   </Badge>
-                </Stack>
-                <Text size="sm" variant="muted">
+                </div>
+                <p className="text-base-content/70 text-sm">
                   Manual lines take a unit price; marked-up parts and pass-through price live from a
                   cost basis. Lines are optional here — you can also add them on the document.
-                </Text>
-              </CardHeader>
-              <CardContent>
+                </p>
                 <div className="flex flex-col gap-2">
                   {lines.length === 0 ? (
-                    <Text size="sm" variant="muted">
+                    <p className="text-base-content/70 text-sm">
                       No lines yet. Add the first charge below — or continue and add them on the
                       document.
-                    </Text>
+                    </p>
                   ) : (
                     lines.map((l) => (
-                      <Stack
+                      <div
                         key={l.tempId}
-                        direction="row"
-                        align="center"
-                        justify="between"
-                        gap={3}
-                        className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                        className="flex flex-row items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2"
                       >
-                        <Stack direction="row" align="center" gap={2} wrap className="min-w-0">
+                        <div className="flex min-w-0 flex-row flex-wrap items-center gap-2">
                           <Badge color="info" variant="soft" size="sm">
                             {l.typeLabel}
                           </Badge>
-                          <Text size="sm" className="truncate">
-                            {l.description}
-                          </Text>
+                          <p className="truncate text-sm">{l.description}</p>
                           {!l.taxable && (
-                            <Text size="xs" variant="muted">
-                              (non-taxable)
-                            </Text>
+                            <p className="text-base-content/70 text-xs">(non-taxable)</p>
                           )}
-                        </Stack>
-                        <Stack direction="row" align="center" gap={3}>
-                          <Text size="xs" variant="muted" className="tabular-nums">
+                        </div>
+                        <div className="flex flex-row items-center gap-3">
+                          <p className="text-base-content/70 text-xs tabular-nums">
                             {l.quantity} × {formatMoney(l.unitPrice, currency)}
-                          </Text>
-                          <Text size="sm" className="tabular-nums">
+                          </p>
+                          <p className="text-sm tabular-nums">
                             {formatMoney(l.quantity * l.unitPrice, currency)}
-                          </Text>
+                          </p>
                           <Button
                             type="button"
                             variant="ghost"
@@ -603,18 +591,18 @@ function InvoiceWizardInner({
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        </Stack>
-                      </Stack>
+                        </div>
+                      </div>
                     ))
                   )}
                 </div>
-              </CardContent>
+              </CardBody>
             </Card>
 
             {lineTypes.length === 0 ? (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No line types are configured. They seed automatically when Invoicing is activated.
-              </Text>
+              </p>
             ) : (
               <LineComposer
                 lineTypes={lineTypes}
@@ -625,14 +613,12 @@ function InvoiceWizardInner({
             )}
 
             {/* Charges */}
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Tax, shipping &amp; surcharge</Heading>
-                <Text size="sm" variant="muted">
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Tax, shipping &amp; surcharge</h3>
+                <p className="text-base-content/70 text-sm">
                   Document-level charges. Tax applies to the lines you mark taxable. All optional.
-                </Text>
-              </CardHeader>
-              <CardContent>
+                </p>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div>
                     <Label htmlFor="iw-tax">Tax rate %</Label>
@@ -671,18 +657,16 @@ function InvoiceWizardInner({
                     />
                   </div>
                 </div>
-              </CardContent>
+              </CardBody>
             </Card>
 
             {/* Terms */}
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Terms</Heading>
-                <Text size="sm" variant="muted">
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Terms</h3>
+                <p className="text-base-content/70 text-sm">
                   Due date, validity, and notes — all optional.
-                </Text>
-              </CardHeader>
-              <CardContent>
+                </p>
                 <div className="flex flex-col gap-3">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
@@ -715,19 +699,17 @@ function InvoiceWizardInner({
                     />
                   </div>
                 </div>
-              </CardContent>
+              </CardBody>
             </Card>
 
             {/* Deposit */}
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Deposit / payment</Heading>
-                <Text size="sm" variant="muted">
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Deposit / payment</h3>
+                <p className="text-base-content/70 text-sm">
                   Record an upfront deposit or payment now — optional; leave the amount blank to
                   skip.
-                </Text>
-              </CardHeader>
-              <CardContent>
+                </p>
                 <div className="grid gap-3 sm:grid-cols-4">
                   <div>
                     <Label htmlFor="iw-dep-kind">Type</Label>
@@ -779,25 +761,23 @@ function InvoiceWizardInner({
                   </div>
                 </div>
                 {depositNum > 0 && (
-                  <Text size="xs" variant="muted" className="mt-3">
+                  <p className="text-base-content/70 mt-3 text-xs">
                     {formatMoney(depositNum, currency)} {depositKind} will be recorded on create —
                     balance after: {formatMoney(balance, currency)}.
-                  </Text>
+                  </p>
                 )}
-              </CardContent>
+              </CardBody>
             </Card>
 
             {/* Start at stage */}
             {stages.length > 1 && (
-              <Card variant="default">
-                <CardHeader>
-                  <Heading level={3}>Start at stage</Heading>
-                  <Text size="sm" variant="muted">
+              <Card>
+                <CardBody>
+                  <h3 className="text-xl font-semibold">Start at stage</h3>
+                  <p className="text-base-content/70 text-sm">
                     The document is created at the first stage; pick a later stage to advance it
                     straight away (e.g. issue the invoice now).
-                  </Text>
-                </CardHeader>
-                <CardContent>
+                  </p>
                   <div className="flex flex-col gap-2">
                     <NativeSelect
                       aria-label="Start stage"
@@ -813,19 +793,19 @@ function InvoiceWizardInner({
                       ))}
                     </NativeSelect>
                     {startStageId !== firstStageId && lines.length === 0 && (
-                      <Text size="xs" className="text-[var(--color-warning-text)]">
+                      <p className="text-xs text-[var(--color-warning-text)]">
                         This stage finalizes the document — consider adding at least one line first.
-                      </Text>
+                      </p>
                     )}
                   </div>
-                </CardContent>
+                </CardBody>
               </Card>
             )}
 
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
           </div>
         )}
@@ -937,10 +917,8 @@ function LineComposer({
 
   return (
     <Card>
-      <CardHeader>
-        <Heading level={3}>Add a charge</Heading>
-      </CardHeader>
-      <CardContent>
+      <CardBody>
+        <h3 className="text-xl font-semibold">Add a charge</h3>
         <div className="grid grid-cols-12 items-end gap-2">
           <div className="col-span-12 md:col-span-3">
             <Label className="text-xs">Type</Label>
@@ -980,7 +958,7 @@ function LineComposer({
               <Checkbox
                 color="module"
                 checked={taxable}
-                onCheckedChange={(v) => setTaxable(v === true)}
+                onChange={(e) => setTaxable(e.target.checked)}
               />
               Taxable
             </label>
@@ -1032,18 +1010,18 @@ function LineComposer({
               color="module"
               size="sm"
               onClick={add}
-              leftIcon={<Plus className="h-4 w-4" />}
+              iconStart={<Plus className="h-4 w-4" />}
             >
               Add charge
             </Button>
           </div>
         </div>
         {error && (
-          <Text size="xs" variant="danger" className="mt-2" role="alert">
+          <p className="text-danger mt-2 text-xs" role="alert">
             {error}
-          </Text>
+          </p>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

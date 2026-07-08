@@ -8,31 +8,21 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { statusLabel, statusTone, toast, useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
+  CardActions,
+  CardBody,
   DatePicker,
-  Heading,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  Stack,
-  statusLabel,
-  statusTone,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
 import { CalendarClock, History, Trash2 } from 'lucide-react';
@@ -246,13 +236,11 @@ export function EditPageForm({
           type="button"
           variant="ghost"
           size="sm"
-          asChild
+          render={<Link href={`/cms/${page.id}/revisions`} />}
           aria-label="Revisions"
           title="Revisions"
         >
-          <Link href={`/cms/${page.id}/revisions`}>
-            <History className="h-3.5 w-3.5" />
-          </Link>
+          <History className="h-3.5 w-3.5" />
         </Button>
         {page.status !== 'published' && (
           <Button
@@ -279,17 +267,15 @@ export function EditPageForm({
         </Button>
       </DetailHeaderSlot>
 
-      <Stack gap={6}>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Content</Heading>
-            <CardDescription>
+      <div className="flex flex-col gap-6">
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Content</h3>
+            <p className="opacity-70">
               Title, slug, and the body block editor. Edits are saved when you click Save changes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={2}>
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
@@ -298,8 +284,8 @@ export function EditPageForm({
                   onChange={(e) => setTitle(e.target.value)}
                   required
                 />
-              </Stack>
-              <Stack gap={2}>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="slug">Slug</Label>
                 <Input
                   id="slug"
@@ -308,11 +294,9 @@ export function EditPageForm({
                   onChange={(e) => setSlug(e.target.value)}
                   required
                 />
-                <Text size="xs" variant="muted">
-                  /{slug} is your site path.
-                </Text>
-              </Stack>
-              <Stack gap={2}>
+                <p className="text-base-content/70 text-xs">/{slug} is your site path.</p>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="entry-body-editor">Body</Label>
                 <ContentBlockEditor
                   id="entry-body-editor"
@@ -321,20 +305,18 @@ export function EditPageForm({
                   placeholder="Write the page body. Use the toolbar for formatting."
                   ariaLabel="Page body editor"
                 />
-              </Stack>
-            </Stack>
-          </CardContent>
+              </div>
+            </div>
+          </CardBody>
         </Card>
 
         {multiSite && (
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Sites</Heading>
-              <CardDescription>Which of your sites show this page.</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Sites</h3>
+              <p className="opacity-70">Which of your sites show this page.</p>
               <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
@@ -347,26 +329,26 @@ export function EditPageForm({
           entryId={page.id}
         />
 
-        <Card variant="default">
-          <CardContent>
-            <Stack gap={2}>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-2">
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
               {message && (
-                <Text size="sm" variant="success" aria-live="polite">
+                <p className="text-success text-sm" aria-live="polite">
                   {message}
-                </Text>
+                </p>
               )}
-            </Stack>
-          </CardContent>
-          <CardFooter>
+            </div>
+          </CardBody>
+          <CardActions>
             <Button
               type="button"
               variant="ghost"
-              leftIcon={<Trash2 className="h-4 w-4" />}
+              iconStart={<Trash2 className="h-4 w-4" />}
               onClick={handleDelete}
               disabled={pending}
             >
@@ -375,40 +357,47 @@ export function EditPageForm({
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Save changes
             </Button>
-          </CardFooter>
+          </CardActions>
         </Card>
-      </Stack>
+      </div>
 
-      <Modal open={scheduleOpen} onOpenChange={setScheduleOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Schedule publish</ModalTitle>
-            <ModalDescription>
+      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
+        <DialogContent>
+          <div className="px-6 pt-6">
+            <DialogTitle>Schedule publish</DialogTitle>
+            <DialogDescription>
               Pick when this page should flip to <strong>published</strong>. Times are interpreted
               in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone}) and stored
               as UTC on the server.
-            </ModalDescription>
-          </ModalHeader>
+            </DialogDescription>
+          </div>
           <div className="px-6 py-4">
-            <Stack gap={3}>
-              <Label htmlFor="schedule-at" required>
-                When
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="schedule-at">
+                When{' '}
+                <span className="text-error" aria-hidden="true">
+                  *
+                </span>
               </Label>
-              <DatePicker value={scheduleAt} onChange={setScheduleAt} />
+              <DatePicker
+                id="schedule-at"
+                value={scheduleAt ?? null}
+                onValueChange={(d) => setScheduleAt(d ?? undefined)}
+              />
               {scheduleAt && (
-                <Text size="xs" variant="muted" aria-live="polite">
+                <p className="text-base-content/70 text-xs" aria-live="polite">
                   Will publish at <strong>{scheduleAt.toLocaleString()}</strong>
                   {' · '}UTC <code>{scheduleAt.toISOString()}</code>
-                </Text>
+                </p>
               )}
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
-            </Stack>
+            </div>
           </div>
-          <ModalFooter>
+          <div className="flex justify-end gap-2 px-6 pb-6">
             <Button type="button" variant="ghost" onClick={() => setScheduleOpen(false)}>
               Cancel
             </Button>
@@ -421,9 +410,9 @@ export function EditPageForm({
             >
               Schedule publish
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

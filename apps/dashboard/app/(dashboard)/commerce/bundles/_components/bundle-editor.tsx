@@ -4,31 +4,19 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   CardTitle,
   Checkbox,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -265,15 +253,15 @@ export function BundleEditor({
   // The picker + components table is identical across both surfaces, so it's
   // composed once and dropped into the edit `<form>` and the create card alike.
   const componentsSection = (
-    <Stack gap={3}>
-      <Stack direction="row" align="center" justify="between" wrap gap={2}>
-        <Stack gap={0}>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-col gap-0">
           <Heading3>Components</Heading3>
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Sum of components: {moneyFmt.format(sumOfComponentsCents / 100)}
-          </Text>
-        </Stack>
-        <Stack direction="row" gap={2} align="center">
+          </p>
+        </div>
+        <div className="flex flex-row items-center gap-2">
           {isEdit ? (
             <select
               value={variantPick}
@@ -306,38 +294,38 @@ export function BundleEditor({
           <Button type="button" variant="outline" onClick={addComponent}>
             Add
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       {components.length === 0 ? (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           No components yet — pick a variant above to add one.
-        </Text>
+        </p>
       ) : (
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Variant</TableHead>
-              <TableHead>Default qty</TableHead>
-              <TableHead>Required</TableHead>
-              <TableHead>Swappable</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Variant</th>
+              <th>Default qty</th>
+              <th>Required</th>
+              <th>Swappable</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
             {components.map((c, i) => {
               const v = variantById.get(c.variantId);
               return (
-                <TableRow key={c.variantId}>
-                  <TableCell>
-                    <Stack gap={0}>
-                      <Text size="sm">{v?.productTitle ?? '—'}</Text>
-                      <Text size="xs" variant="muted">
+                <tr key={c.variantId}>
+                  <td>
+                    <div className="flex flex-col gap-0">
+                      <p className="text-sm">{v?.productTitle ?? '—'}</p>
+                      <p className="text-base-content/70 text-xs">
                         {v?.sku ?? c.variantId.slice(0, 8) + '…'}
-                      </Text>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
+                      </p>
+                    </div>
+                  </td>
+                  <td>
                     <Input
                       type="number"
                       min="1"
@@ -349,27 +337,27 @@ export function BundleEditor({
                       }
                       className="w-20"
                     />
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     <Checkbox
                       color="module"
                       checked={c.isRequired}
-                      onCheckedChange={(v) => updateComponent(i, { isRequired: v === true })}
+                      onChange={(e) => updateComponent(i, { isRequired: e.target.checked })}
                     />
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     <Checkbox
                       color="module"
                       checked={c.isSwappable}
-                      onCheckedChange={(v) => updateComponent(i, { isSwappable: v === true })}
+                      onChange={(e) => updateComponent(i, { isSwappable: e.target.checked })}
                     />
                     {c.isSwappable && (
                       <Badge color="accent" variant="soft" size="sm" className="ml-2">
                         same product
                       </Badge>
                     )}
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     <Button
                       type="button"
                       variant="ghost"
@@ -378,14 +366,14 @@ export function BundleEditor({
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
+          </tbody>
         </Table>
       )}
-    </Stack>
+    </div>
   );
 
   // ── EDIT path — render EXACTLY as before: inline <form> with raw <select>s and
@@ -398,9 +386,9 @@ export function BundleEditor({
           submit();
         }}
       >
-        <Stack gap={6}>
-          <Stack direction="row" gap={4} wrap>
-            <Stack gap={1} className="min-w-[12rem] flex-1">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row flex-wrap gap-4">
+            <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
               <Label htmlFor="pricingMode">Pricing mode</Label>
               <select
                 id="pricingMode"
@@ -416,9 +404,9 @@ export function BundleEditor({
                 <option value="fixed">Fixed price</option>
                 <option value="percent_off_sum">Percent off sum</option>
               </select>
-            </Stack>
+            </div>
             {pricingMode === 'fixed' && (
-              <Stack gap={1} className="min-w-[10rem] flex-1">
+              <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                 <Label htmlFor="fixedPrice">Fixed price (USD)</Label>
                 <Input
                   id="fixedPrice"
@@ -428,10 +416,10 @@ export function BundleEditor({
                   value={fixedPriceDollars}
                   onChange={(e) => setFixedPriceDollars(e.target.value)}
                 />
-              </Stack>
+              </div>
             )}
             {pricingMode === 'percent_off_sum' && (
-              <Stack gap={1} className="min-w-[10rem] flex-1">
+              <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                 <Label htmlFor="percentOff">Percent off sum</Label>
                 <Input
                   id="percentOff"
@@ -442,9 +430,9 @@ export function BundleEditor({
                   value={percentOff}
                   onChange={(e) => setPercentOff(e.target.value)}
                 />
-              </Stack>
+              </div>
             )}
-            <Stack gap={1} className="min-w-[12rem] flex-1">
+            <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
               <Label htmlFor="inventoryMode">Inventory mode</Label>
               <select
                 id="inventoryMode"
@@ -459,27 +447,23 @@ export function BundleEditor({
                 <option value="decrement_components">Decrement components</option>
                 <option value="decrement_bundle_sku">Decrement bundle SKU</option>
               </select>
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 Choose &ldquo;bundle SKU&rdquo; when the wrapper product itself carries assembled
                 stock.
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
 
           {componentsSection}
 
-          {error && (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
+          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
 
-          <Stack direction="row" gap={2} justify="end">
+          <div className="flex flex-row justify-end gap-2">
             <Button color="module" type="submit" disabled={pending}>
               {pending ? 'Saving…' : 'Save bundle'}
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </form>
     );
   }
@@ -509,18 +493,18 @@ export function BundleEditor({
             nextDisabled: pending,
           }}
         >
-          <Stack gap={6}>
-            <Card variant="default">
-              <CardHeader>
-                <CardTitle>Wrapper & pricing</CardTitle>
-                <CardDescription>
-                  The wrapper is the product the customer sees on the storefront, and it can&apos;t
-                  already wrap another bundle.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Stack gap={1}>
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody className="py-6">
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Wrapper & pricing</CardTitle>
+                  <p className="opacity-70">
+                    The wrapper is the product the customer sees on the storefront, and it
+                    can&apos;t already wrap another bundle.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="bundleProductId">Bundle wrapper product *</Label>
                     <NativeSelect
                       id="bundleProductId"
@@ -534,10 +518,10 @@ export function BundleEditor({
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
+                  </div>
 
-                  <Stack direction="row" gap={4} wrap>
-                    <Stack gap={1} className="min-w-[12rem] flex-1">
+                  <div className="flex flex-row flex-wrap gap-4">
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                       <Label htmlFor="pricingMode">Pricing mode</Label>
                       <NativeSelect
                         id="pricingMode"
@@ -552,9 +536,9 @@ export function BundleEditor({
                         <option value="fixed">Fixed price</option>
                         <option value="percent_off_sum">Percent off sum</option>
                       </NativeSelect>
-                    </Stack>
+                    </div>
                     {pricingMode === 'fixed' && (
-                      <Stack gap={1} className="min-w-[10rem] flex-1">
+                      <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                         <Label htmlFor="fixedPrice">Fixed price (USD)</Label>
                         <Input
                           id="fixedPrice"
@@ -564,10 +548,10 @@ export function BundleEditor({
                           value={fixedPriceDollars}
                           onChange={(e) => setFixedPriceDollars(e.target.value)}
                         />
-                      </Stack>
+                      </div>
                     )}
                     {pricingMode === 'percent_off_sum' && (
-                      <Stack gap={1} className="min-w-[10rem] flex-1">
+                      <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                         <Label htmlFor="percentOff">Percent off sum</Label>
                         <Input
                           id="percentOff"
@@ -578,9 +562,9 @@ export function BundleEditor({
                           value={percentOff}
                           onChange={(e) => setPercentOff(e.target.value)}
                         />
-                      </Stack>
+                      </div>
                     )}
-                    <Stack gap={1} className="min-w-[12rem] flex-1">
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                       <Label htmlFor="inventoryMode">Inventory mode</Label>
                       <NativeSelect
                         id="inventoryMode"
@@ -594,26 +578,22 @@ export function BundleEditor({
                         <option value="decrement_components">Decrement components</option>
                         <option value="decrement_bundle_sku">Decrement bundle SKU</option>
                       </NativeSelect>
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         Choose &ldquo;bundle SKU&rdquo; when the wrapper product itself carries
                         assembled stock.
-                      </Text>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </CardContent>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardContent className="py-6">{componentsSection}</CardContent>
+            <Card>
+              <CardBody className="py-6">{componentsSection}</CardBody>
             </Card>
-          </Stack>
+          </div>
 
-          {error && (
-            <Text size="sm" className="mt-4 text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
+          {error && <p className="mt-4 text-sm text-[var(--color-danger)]">{error}</p>}
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>

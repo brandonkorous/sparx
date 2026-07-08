@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Clock, Undo2 } from 'lucide-react';
-import { Button, Card, Spinner, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody, Loading } from 'silicaui-react';
 
 import { revertBulkPriceAction } from '../../product-actions';
 import type { ReversibleOp } from '../_lib/bulk-price-types';
@@ -53,31 +53,33 @@ export function BulkPriceRevertBanner({ op }: { op: ReversibleOp }) {
   }
 
   return (
-    <Card variant="module" padding="md">
-      <Stack direction="row" align="center" justify="between" gap={3} wrap>
-        <Stack direction="row" align="center" gap={2} className="min-w-0">
-          <Clock className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
-          <Text size="sm" className="min-w-0">
-            <span className="font-medium">{op.label}</span> — {op.productCount} product
-            {op.productCount === 1 ? '' : 's'}, {op.variantCount} variant
-            {op.variantCount === 1 ? '' : 's'}.{' '}
-            <span className="text-[var(--color-text-secondary)] tabular-nums">
-              Undo available for {countdown}
-            </span>
-            {error ? <span className="text-[var(--color-danger)]"> · {error}</span> : null}
-          </Text>
-        </Stack>
-        <Button
-          size="sm"
-          color="module"
-          variant="soft"
-          disabled={busy}
-          leftIcon={busy ? <Spinner className="h-4 w-4" /> : <Undo2 className="h-4 w-4" />}
-          onClick={() => void undo()}
-        >
-          Undo
-        </Button>
-      </Stack>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-row items-center gap-2">
+            <Clock className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
+            <p className="min-w-0 text-sm">
+              <span className="font-medium">{op.label}</span> — {op.productCount} product
+              {op.productCount === 1 ? '' : 's'}, {op.variantCount} variant
+              {op.variantCount === 1 ? '' : 's'}.{' '}
+              <span className="text-[var(--color-text-secondary)] tabular-nums">
+                Undo available for {countdown}
+              </span>
+              {error ? <span className="text-[var(--color-danger)]"> · {error}</span> : null}
+            </p>
+          </div>
+          <Button
+            size="sm"
+            color="module"
+            variant="soft"
+            disabled={busy}
+            iconStart={busy ? <Loading className="h-4 w-4" /> : <Undo2 className="h-4 w-4" />}
+            onClick={() => void undo()}
+          >
+            Undo
+          </Button>
+        </div>
+      </CardBody>
     </Card>
   );
 }

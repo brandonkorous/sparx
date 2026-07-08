@@ -1,4 +1,4 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 import { requireSession, listOrgMembers, listOrgInvitations } from '@sparx/auth';
 import { TeamManager } from './_components/team-manager';
 
@@ -17,8 +17,8 @@ export default async function TeamSettingsPage() {
   ]);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="Team"
           description="Invite people to your workspace, assign roles, and manage access."
@@ -29,7 +29,7 @@ export default async function TeamSettingsPage() {
           canManage={canManage}
           currentUserId={user.id}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

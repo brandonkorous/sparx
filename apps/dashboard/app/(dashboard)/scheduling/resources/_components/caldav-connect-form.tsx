@@ -8,7 +8,8 @@
 // constraint, §8.4).
 
 import { useState } from 'react';
-import { Button, Input, toast } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { createCaldavConnectionAction } from '../../_lib/actions';
 

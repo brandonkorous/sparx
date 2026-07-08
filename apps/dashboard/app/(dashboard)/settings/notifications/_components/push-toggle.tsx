@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Bell } from 'lucide-react';
-import { Spinner, Stack, Switch, Text } from '@sparx/ui';
+import { Loading, Switch } from 'silicaui-react';
 
 import { subscribePushAction, unsubscribePushAction } from '../actions';
 
@@ -101,17 +101,17 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
 
   if (supported === false) {
     return (
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         {vapidPublicKey
           ? 'This browser doesn’t support web push notifications.'
           : 'Push notifications aren’t configured for this environment yet.'}
-      </Text>
+      </p>
     );
   }
 
   return (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" gap={3}>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center gap-3">
         <Switch
           id="push-toggle"
           checked={enabled}
@@ -120,19 +120,15 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
           }}
           disabled={busy || supported === null}
         />
-        <Stack direction="row" align="center" gap={2}>
+        <div className="flex flex-row items-center gap-2">
           <Bell className="h-4 w-4 text-[var(--color-text-secondary)]" />
-          <Text size="sm">
+          <p className="text-sm">
             {enabled ? 'Browser notifications are on' : 'Enable browser notifications'}
-          </Text>
-          {busy ? <Spinner className="h-4 w-4" /> : null}
-        </Stack>
-      </Stack>
-      {error ? (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      ) : null}
-    </Stack>
+          </p>
+          {busy ? <Loading size="sm" /> : null}
+        </div>
+      </div>
+      {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
+    </div>
   );
 }

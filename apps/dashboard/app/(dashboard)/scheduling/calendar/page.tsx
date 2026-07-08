@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
-import { Button, Card, EmptyState, PageHeader } from '@sparx/ui';
+import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { CalendarEvent, SchedulingService } from '../_lib/types';
@@ -84,16 +85,18 @@ export default async function SchedulingCalendarPage({
       />
 
       {services.length === 0 ? (
-        <Card padding="none">
-          <EmptyState
-            title="Set up scheduling"
-            description="Create a service and set your hours — then your bookings appear here on the week grid."
-            action={
-              <Link href="/scheduling/services">
-                <Button color="module">Create your first service</Button>
-              </Link>
-            }
-          />
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              title="Set up scheduling"
+              description="Create a service and set your hours — then your bookings appear here on the week grid."
+              actions={
+                <Link href="/scheduling/services">
+                  <Button color="module">Create your first service</Button>
+                </Link>
+              }
+            />
+          </CardBody>
         </Card>
       ) : (
         <WeekCalendar

@@ -1,4 +1,3 @@
-import { Heading, Stack, Text } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { MenuEditor, type EditableMenuItem } from './menu-editor';
 
@@ -84,16 +83,16 @@ export async function MenuDetailContent({ id: location }: Props) {
   const initialName = menu?.name ?? defaultName(location);
 
   return (
-    <Stack gap={6}>
-      <Stack gap={2}>
-        <Heading level={1}>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-semibold">
           {menu ? 'Edit' : 'Create'} <code>/{location}</code> menu
-        </Heading>
-        <Text variant="muted">
+        </h1>
+        <p className="text-base-content/70">
           Each item must link to either a published entry or an external URL — not both. Use the
           move buttons to reorder.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       <MenuEditor
         location={location}
@@ -106,7 +105,7 @@ export async function MenuDetailContent({ id: location }: Props) {
           title: typeof e.body.title === 'string' ? e.body.title : (e.slug ?? '(untitled)'),
         }))}
       />
-    </Stack>
+    </div>
   );
 }
 

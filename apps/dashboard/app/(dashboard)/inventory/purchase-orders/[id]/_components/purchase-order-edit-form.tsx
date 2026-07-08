@@ -3,20 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardActions, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { updatePurchaseOrderAction } from '../../../_lib/purchase-order-actions';
 import type { PurchaseOrderDetail } from '../../_components/types';
@@ -74,19 +61,17 @@ export function PurchaseOrderEditForm({
   return (
     <form onSubmit={onSubmit}>
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Order details</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Order details</h3>
+            <p className="opacity-70">
               Supplier is fixed once the order exists. Everything else is editable while the order
               is a draft.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
-              <Stack gap={1} className="min-w-[14rem] flex-1">
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row flex-wrap gap-3">
+              <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
                 <Label htmlFor="warehouseId">Warehouse</Label>
                 <NativeSelect id="warehouseId" name="warehouseId" defaultValue={po.warehouseId}>
                   {warehouses.map((w) => (
@@ -95,7 +80,7 @@ export function PurchaseOrderEditForm({
                     </option>
                   ))}
                 </NativeSelect>
-              </Stack>
+              </div>
               <Field
                 label="Payment terms"
                 name="paymentTerms"
@@ -108,8 +93,8 @@ export function PurchaseOrderEditForm({
                 defaultValue={po.reference ?? ''}
                 placeholder="optional"
               />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
+            </div>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field
                 label="Expected arrival"
                 name="expectedArrival"
@@ -123,8 +108,8 @@ export function PurchaseOrderEditForm({
                 type="number"
                 defaultValue={(po.shippingCents / 100).toFixed(2)}
               />
-            </Stack>
-            <Stack gap={1}>
+            </div>
+            <div className="flex flex-col gap-1">
               <Label htmlFor="notes">Notes</Label>
               <textarea
                 id="notes"
@@ -133,26 +118,18 @@ export function PurchaseOrderEditForm({
                 defaultValue={po.notes ?? ''}
                 className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
               />
-            </Stack>
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={3} align="center" className="w-full">
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            {saved && !error && (
-              <Text size="sm" variant="muted">
-                Saved.
-              </Text>
-            )}
+            </div>
+          </div>
+        </CardBody>
+        <CardActions>
+          <div className="flex w-full flex-row items-center gap-3">
+            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {saved && !error && <p className="text-base-content/70 text-sm">Saved.</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save changes'}
             </Button>
-          </Stack>
-        </CardFooter>
+          </div>
+        </CardActions>
       </Card>
     </form>
   );
@@ -174,7 +151,7 @@ function Field({
   maxLength?: number;
 }) {
   return (
-    <Stack gap={1} className="min-w-[10rem] flex-1">
+    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
       <Label htmlFor={name}>{label}</Label>
       <Input
         id={name}
@@ -184,7 +161,7 @@ function Field({
         placeholder={placeholder}
         maxLength={maxLength}
       />
-    </Stack>
+    </div>
   );
 }
 

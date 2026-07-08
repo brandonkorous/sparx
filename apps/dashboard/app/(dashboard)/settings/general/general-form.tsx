@@ -2,19 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardActions, CardBody, CardTitle, Input, Label } from 'silicaui-react';
 import { updateGeneralSettings } from './actions';
 
 // Tenant-level account details. Social links are NOT here anymore — they are a
@@ -56,59 +44,57 @@ export function GeneralForm({ tenant }: GeneralFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate>
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>General</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             Your business and account details — used for billing and admin. Your customer-facing
             site name and social links live in Builder → Brand (each site has its own).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack gap={2}>
+          </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <Label htmlFor="name">Business name</Label>
               <Input id="name" name="name" defaultValue={tenant.name} required />
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 Your legal or organization name. Used for billing and account notices — never shown
                 to customers.
-              </Text>
-            </Stack>
-            <Stack gap={2}>
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="email">Contact email</Label>
               <Input id="email" name="email" type="email" defaultValue={tenant.email} required />
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 Receives billing and account notifications.
-              </Text>
-            </Stack>
-            <Stack gap={2}>
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="slug">Site URL</Label>
               <Input id="slug" name="slug" defaultValue={tenant.slug} disabled />
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 The slug your tenant is keyed by. Contact support to change.
-              </Text>
-            </Stack>
-            <Stack gap={2}>
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="plan">Plan</Label>
               <Input id="plan" name="plan" defaultValue={tenant.plan} disabled />
-            </Stack>
+            </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
             {message && (
-              <Text size="sm" variant="success" role="status" aria-live="polite">
+              <p className="text-success text-sm" role="status" aria-live="polite">
                 {message}
-              </Text>
+              </p>
             )}
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" disabled={pending} loading={pending}>
-            Save changes
-          </Button>
-        </CardFooter>
+          </div>
+          <CardActions className="justify-start">
+            <Button type="submit" disabled={pending} loading={pending}>
+              Save changes
+            </Button>
+          </CardActions>
+        </CardBody>
       </Card>
     </form>
   );

@@ -1,18 +1,5 @@
-import {
-  BarList,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  ModuleProvider,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { BarList, ModuleProvider } from '@sparx/ui';
 
 import { CardLink, SampleBadge } from '../_components/overview-bits';
 import { fmtNumber } from './format';
@@ -45,13 +32,11 @@ export function TrafficSourcesCard({
   return (
     <ModuleProvider module="builder">
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Traffic sources</CardTitle>
             {isSample && <SampleBadge reason="no-data" />}
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           <BarList
             color="module"
             items={sources.map((r) => ({
@@ -60,7 +45,7 @@ export function TrafficSourcesCard({
               display: `${Math.round((r.visits / total) * 100)}%`,
             }))}
           />
-        </CardContent>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );
@@ -70,40 +55,38 @@ export function TopPagesCard({ pages, isSample }: { pages: SiteTopPage[]; isSamp
   return (
     <ModuleProvider module="builder">
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Top pages</CardTitle>
             {isSample ? (
               <SampleBadge reason="no-data" />
             ) : (
               <CardLink href="/builder">All pages</CardLink>
             )}
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Page</TableHead>
-                <TableHead className="text-right">Views</TableHead>
-                <TableHead className="text-right">Visitors</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Page</th>
+                <th className="text-right">Views</th>
+                <th className="text-right">Visitors</th>
+              </tr>
+            </thead>
+            <tbody>
               {pages.map((p) => (
-                <TableRow key={p.path}>
-                  <TableCell>
+                <tr key={p.path}>
+                  <td>
                     <span className="font-mono text-xs text-[var(--module-active-text)]">
                       {p.path}
                     </span>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{fmtNumber(p.views)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{fmtNumber(p.visitors)}</TableCell>
-                </TableRow>
+                  </td>
+                  <td className="text-right tabular-nums">{fmtNumber(p.views)}</td>
+                  <td className="text-right tabular-nums">{fmtNumber(p.visitors)}</td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

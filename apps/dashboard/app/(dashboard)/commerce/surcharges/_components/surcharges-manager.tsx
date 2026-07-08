@@ -4,27 +4,18 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 
+import { useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   Checkbox,
-  Heading,
   Input,
   NativeSelect,
-  Stack,
   Switch,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import {
   createSurchargeRuleAction,
@@ -98,11 +89,11 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
   }
 
   return (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
 
       {editing && (
@@ -118,74 +109,72 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
       )}
 
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" wrap gap={3}>
-            <Heading level={3}>Surcharge rules</Heading>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <h3 className="text-xl font-semibold">Surcharge rules</h3>
             {!editing && (
               <Button
                 color="module"
                 size="sm"
-                leftIcon={<Plus className="h-4 w-4" />}
+                iconStart={<Plus className="h-4 w-4" />}
                 onClick={() => setEditing('new')}
               >
                 New surcharge
               </Button>
             )}
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {initialRules.length === 0 ? (
-            <Text variant="muted" className="py-6 text-center">
+            <p className="text-base-content/70 py-6 text-center text-base">
               No surcharges configured. Add one to pass a card fee or handling charge through to the
               order.
-            </Text>
+            </p>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Fee</TableHead>
-                  <TableHead>Payment methods</TableHead>
-                  <TableHead>Line label</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Fee</th>
+                  <th>Payment methods</th>
+                  <th>Line label</th>
+                  <th>Status</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {initialRules.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      <Text weight="medium">{r.name}</Text>
-                    </TableCell>
-                    <TableCell>
+                  <tr key={r.id}>
+                    <td>
+                      <p className="text-base font-medium">{r.name}</p>
+                    </td>
+                    <td>
                       <Badge color="info" variant="soft" size="sm">
                         {summary(r)}
                       </Badge>
                       {r.capCents != null && (
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           cap {money.format(r.capCents / 100)}
-                        </Text>
+                        </p>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
+                    </td>
+                    <td>
+                      <p className="text-base-content/70 text-sm">
                         {r.paymentMethods.map((m) => METHOD_LABELS[m]).join(', ')}
-                      </Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">{r.label}</Text>
-                    </TableCell>
-                    <TableCell>
+                      </p>
+                    </td>
+                    <td>
+                      <p className="text-sm">{r.label}</p>
+                    </td>
+                    <td>
                       <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                         {r.isActive ? 'Active' : 'Off'}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Stack direction="row" gap={1} justify="end">
+                    </td>
+                    <td className="text-right">
+                      <div className="flex flex-row justify-end gap-1">
                         <Button
                           size="xs"
                           variant="ghost"
-                          leftIcon={<Pencil className="h-3.5 w-3.5" />}
+                          iconStart={<Pencil className="h-3.5 w-3.5" />}
                           disabled={busyId === r.id}
                           onClick={() => setEditing(r)}
                         >
@@ -195,22 +184,22 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
                           size="xs"
                           variant="ghost"
                           color="danger"
-                          leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+                          iconStart={<Trash2 className="h-3.5 w-3.5" />}
                           disabled={busyId === r.id}
                           onClick={() => onDelete(r)}
                         >
                           Delete
                         </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
+                      </div>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -281,13 +270,11 @@ function RuleForm({
 
   return (
     <Card>
-      <CardHeader>
-        <Heading level={3}>{rule ? `Edit "${rule.name}"` : 'New surcharge'}</Heading>
-      </CardHeader>
-      <CardContent>
+      <CardBody>
+        <h3 className="text-xl font-semibold">{rule ? `Edit "${rule.name}"` : 'New surcharge'}</h3>
         <form onSubmit={onSubmit}>
-          <Stack gap={4}>
-            <Stack direction="row" gap={3} wrap>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Name" className="min-w-[14rem] flex-1">
                 <Input
                   value={name}
@@ -304,9 +291,9 @@ function RuleForm({
                   required
                 />
               </Field>
-            </Stack>
+            </div>
 
-            <Stack direction="row" gap={3} wrap align="end">
+            <div className="flex flex-row flex-wrap items-end gap-3">
               <Field label="Type" className="min-w-[9rem] flex-1">
                 <NativeSelect
                   value={type}
@@ -348,66 +335,57 @@ function RuleForm({
                   placeholder="none"
                 />
               </Field>
-            </Stack>
+            </div>
 
-            <Stack gap={2}>
-              <Text size="xs" variant="muted" weight="medium">
-                Apply to payment methods
-              </Text>
-              <Stack direction="row" gap={4} wrap>
+            <div className="flex flex-col gap-2">
+              <p className="text-base-content/70 text-xs font-medium">Apply to payment methods</p>
+              <div className="flex flex-row flex-wrap gap-4">
                 {ALL_METHODS.map((m) => (
                   <label key={m} className="inline-flex items-center gap-2">
                     <Checkbox
                       color="module"
                       checked={methods.includes(m)}
-                      onCheckedChange={() => toggleMethod(m)}
+                      onChange={() => toggleMethod(m)}
                       aria-label={METHOD_LABELS[m]}
                     />
-                    <Text size="sm">{METHOD_LABELS[m]}</Text>
+                    <p className="text-sm">{METHOD_LABELS[m]}</p>
                   </label>
                 ))}
-              </Stack>
-              <Text size="xs" variant="muted">
+              </div>
+              <p className="text-base-content/70 text-xs">
                 Card = any card-processor checkout; Net terms = B2B account orders. A card fee
                 normally targets Card only.
-              </Text>
-            </Stack>
+              </p>
+            </div>
 
-            <Stack
-              direction="row"
-              align="center"
-              gap={3}
-              className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-            >
-              <Text size="sm" variant="muted">
-                On a $100 order →
-              </Text>
-              <Text size="sm">
+            <div className="flex flex-row items-center gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+              <p className="text-base-content/70 text-sm">On a $100 order →</p>
+              <p className="text-sm">
                 fee <strong>{money.format(Math.max(0, sample))}</strong>
-              </Text>
-              <Stack direction="row" align="center" gap={2} className="ml-auto">
+              </p>
+              <div className="ml-auto flex flex-row items-center gap-2">
                 <Switch checked={isActive} onCheckedChange={setIsActive} aria-label="Active" />
-                <Text size="sm">{isActive ? 'Active' : 'Off'}</Text>
-              </Stack>
-            </Stack>
+                <p className="text-sm">{isActive ? 'Active' : 'Off'}</p>
+              </div>
+            </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
 
-            <Stack direction="row" gap={2} justify="end">
+            <div className="flex flex-row justify-end gap-2">
               <Button type="button" variant="ghost" onClick={onClose} disabled={pending}>
                 Cancel
               </Button>
               <Button type="submit" color="module" loading={pending}>
                 {rule ? 'Save changes' : 'Create surcharge'}
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         </form>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -422,11 +400,9 @@ function Field({
   className?: string;
 }) {
   return (
-    <Stack gap={1} className={className}>
-      <Text size="xs" variant="muted" weight="medium">
-        {label}
-      </Text>
+    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
+      <p className="text-base-content/70 text-xs font-medium">{label}</p>
       {children}
-    </Stack>
+    </div>
   );
 }

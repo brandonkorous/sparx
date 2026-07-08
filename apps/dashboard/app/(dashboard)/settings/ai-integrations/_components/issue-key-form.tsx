@@ -11,17 +11,13 @@ import { Copy, Plus } from 'lucide-react';
 import {
   Button,
   Checkbox,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import { createApiKeyAction } from '../actions';
 
@@ -72,58 +68,58 @@ export function IssueKeyForm() {
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <Button color="module" leftIcon={<Plus className="h-4 w-4" />} onClick={() => setOpen(true)}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <Button color="module" iconStart={<Plus className="h-4 w-4" />} onClick={() => setOpen(true)}>
         Issue key
       </Button>
-      <ModalContent size="lg">
-        <ModalHeader>
-          <ModalTitle>Issue a new key</ModalTitle>
-          <ModalDescription>
+      <DialogContent className="sm:max-w-lg">
+        <div>
+          <DialogTitle>Issue a new key</DialogTitle>
+          <DialogDescription>
             Scope the key to only what the assistant needs. The key is shown once at issuance — copy
             and store it securely.
-          </ModalDescription>
-        </ModalHeader>
+          </DialogDescription>
+        </div>
 
         {issued ? (
-          <Stack gap={3} className="py-2">
-            <Text size="sm" weight="medium">
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-sm font-medium">
               Key issued. Copy it now — you won&apos;t see this again.
-            </Text>
-            <Stack direction="row" align="center" gap={2}>
+            </p>
+            <div className="flex flex-row items-center gap-2">
               <code className="flex-1 rounded bg-[var(--color-bg-subtle)] p-2 font-mono text-xs break-all select-all">
                 {issued.plaintext}
               </code>
               <Button type="button" variant="outline" size="sm" onClick={copyKey}>
                 <Copy className="h-3.5 w-3.5" /> Copy
               </Button>
-            </Stack>
-            <Text size="xs" variant="muted">
+            </div>
+            <p className="text-base-content/70 text-xs">
               Prefix <code>{issued.prefix}</code> identifies this key in the list.
-            </Text>
-            <Stack direction="row" justify="end">
+            </p>
+            <div className="flex flex-row justify-end">
               <Button type="button" color="module" size="sm" onClick={() => onOpenChange(false)}>
                 Done
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         ) : (
           <form id="issue-key-form" onSubmit={onSubmit} noValidate>
-            <Stack gap={4}>
-              <Stack direction="row" gap={4} wrap>
-                <Stack gap={2} className="min-w-[14rem] flex-1">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row flex-wrap gap-4">
+                <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
                   <Label htmlFor="name">Label</Label>
                   <Input id="name" name="name" required placeholder="Claude Desktop — sales rep" />
-                </Stack>
-                <Stack gap={2} className="w-56">
+                </div>
+                <div className="flex w-56 flex-col gap-2">
                   <Label htmlFor="expiresAt">Expires at (optional)</Label>
                   <Input id="expiresAt" name="expiresAt" type="date" />
-                </Stack>
-              </Stack>
+                </div>
+              </div>
 
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 <Label>Scopes</Label>
-                <Stack gap={2}>
+                <div className="flex flex-col gap-2">
                   {SCOPE_OPTIONS.map((s) => (
                     <label key={s.value} className="flex items-start gap-2 text-sm">
                       <Checkbox
@@ -138,20 +134,20 @@ export function IssueKeyForm() {
                       </span>
                     </label>
                   ))}
-                </Stack>
-              </Stack>
+                </div>
+              </div>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
-            </Stack>
+            </div>
           </form>
         )}
 
         {!issued && (
-          <ModalFooter>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" disabled={pending} onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
@@ -164,9 +160,9 @@ export function IssueKeyForm() {
             >
               <Plus className="h-3.5 w-3.5" /> Issue key
             </Button>
-          </ModalFooter>
+          </div>
         )}
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

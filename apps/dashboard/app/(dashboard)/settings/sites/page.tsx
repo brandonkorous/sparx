@@ -1,5 +1,6 @@
 import { Globe, Plus } from 'lucide-react';
-import { Badge, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, EmptyState } from 'silicaui-react';
 import {
   getActivePropertyId,
   listDomains,
@@ -58,8 +59,8 @@ export default async function SitesSettingsPage({ searchParams }: PageProps) {
   );
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Globe className="h-5 w-5" />}
           title="Sites"
@@ -79,12 +80,12 @@ export default async function SitesSettingsPage({ searchParams }: PageProps) {
             icon={<Globe className="h-5 w-5" />}
             title="No sites yet"
             description="Spin up your first site — blank or from a blueprint — over your shared back office."
-            action={newSiteButton}
+            actions={newSiteButton}
           />
         ) : (
           <SitesList sites={properties} domains={domains} activePropertyId={activeId} view={view} />
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

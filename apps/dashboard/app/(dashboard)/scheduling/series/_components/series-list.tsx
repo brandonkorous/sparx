@@ -9,20 +9,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  Spinner,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Loading,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { CalendarRange, MoreHorizontal, XCircle } from 'lucide-react';
 
 import type { BookingSeriesDetail, BookingSeriesSummary } from '../../_lib/types';
@@ -110,53 +103,51 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
   return (
     <>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Service</TableHead>
-            <TableHead>Pattern</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Upcoming</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead className="w-10" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Pattern</th>
+            <th>Status</th>
+            <th>Upcoming</th>
+            <th>Total</th>
+            <th className="w-10" />
+          </tr>
+        </thead>
+        <tbody>
           {series.map((s) => (
-            <TableRow key={s.id}>
-              <TableCell className="font-medium">{s.serviceName ?? 'Service'}</TableCell>
-              <TableCell className="text-[var(--color-muted-foreground)]">
-                {describeRrule(s.rrule)}
-              </TableCell>
-              <TableCell>
+            <tr key={s.id}>
+              <td className="font-medium">{s.serviceName ?? 'Service'}</td>
+              <td className="text-[var(--color-muted-foreground)]">{describeRrule(s.rrule)}</td>
+              <td>
                 <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft">
                   {s.status}
                 </Badge>
-              </TableCell>
-              <TableCell>{s.upcomingBookings}</TableCell>
-              <TableCell>{s.totalBookings}</TableCell>
-              <TableCell>
+              </td>
+              <td>{s.upcomingBookings}</td>
+              <td>{s.totalBookings}</td>
+              <td>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" shape="square" size="sm" aria-label="Series actions">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => void view(s.id)}>
+                    <DropdownMenuItem onClick={() => void view(s.id)}>
                       <CalendarRange className="mr-2 h-4 w-4" />
                       View occurrences
                     </DropdownMenuItem>
                     {s.status === 'active' ? (
                       <>
                         <DropdownMenuItem
-                          onSelect={() => void cancel(s, 'future')}
+                          onClick={() => void cancel(s, 'future')}
                           className="text-[var(--color-danger)]"
                         >
                           <XCircle className="mr-2 h-4 w-4" />
                           Cancel future occurrences
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onSelect={() => void cancel(s, 'all')}
+                          onClick={() => void cancel(s, 'all')}
                           className="text-[var(--color-danger)]"
                         >
                           <XCircle className="mr-2 h-4 w-4" />
@@ -166,20 +157,20 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
                     ) : null}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
 
-      <Modal open={detail !== null || loadingDetail} onOpenChange={(o) => !o && setDetail(null)}>
-        <ModalContent className="max-w-lg">
-          <ModalHeader>
-            <ModalTitle>{detail ? (detail.serviceName ?? 'Series') : 'Loading…'}</ModalTitle>
-          </ModalHeader>
+      <Dialog open={detail !== null || loadingDetail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-lg">
+          <div>
+            <DialogTitle>{detail ? (detail.serviceName ?? 'Series') : 'Loading…'}</DialogTitle>
+          </div>
           {loadingDetail ? (
             <div className="flex items-center gap-2 px-1 py-6 text-sm text-[var(--color-muted-foreground)]">
-              <Spinner size="sm" /> Loading occurrences…
+              <Loading size="sm" /> Loading occurrences…
             </div>
           ) : detail ? (
             <div className="max-h-[60vh] overflow-y-auto px-1 py-2">
@@ -202,8 +193,8 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
               </ul>
             </div>
           ) : null}
-        </ModalContent>
-      </Modal>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -5,7 +5,7 @@
 // own body below the header.
 
 import type { ReactNode } from 'react';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 interface EmailShellProps {
   title: string;
@@ -31,8 +31,12 @@ export function EmailShell({
   children,
 }: EmailShellProps) {
   return (
-    <Container size={width === 'full' ? 'full' : 'xl'}>
-      <Stack gap={6} className="py-10">
+    <div
+      className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${
+        width === 'full' ? 'max-w-none' : 'max-w-screen-xl'
+      }`}
+    >
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           className="mb-0"
           icon={icon}
@@ -41,7 +45,7 @@ export function EmailShell({
           actions={actions}
         />
         {children}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

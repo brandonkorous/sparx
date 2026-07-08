@@ -3,18 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, RotateCcw, ShieldCheck } from 'lucide-react';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  Switch,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Alert, Badge, Button, Card, CardBody, Switch } from 'silicaui-react';
 
 import { resetAllToolPoliciesAction, resetToolPolicyAction, setToolPolicyAction } from '../actions';
 import { moduleGroupLabel, PLATFORM_GROUP_LABEL, type ToolPolicyDto } from './tool-types';
@@ -96,47 +86,48 @@ export function ToolPolicyManager({ tools }: ToolPolicyManagerProps) {
 
   return (
     <>
-      <Stack direction="row" gap={3} justify="between" align="center" wrap>
-        <Text size="sm" variant="muted">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <p className="text-base-content/70 text-sm">
           {tools.length} tool{tools.length === 1 ? '' : 's'} in your MCP catalog
           {disabledCount > 0 ? ` · ${disabledCount} disabled` : ' · all exposed'}.
-        </Text>
+        </p>
         <Button
           variant="outline"
           color="module"
-          leftIcon={<RotateCcw className="h-4 w-4" />}
+          iconStart={<RotateCcw className="h-4 w-4" />}
           onClick={resetAll}
           loading={resetting}
           disabled={resetting || overrideCount === 0}
         >
           Reset all
         </Button>
-      </Stack>
+      </div>
 
-      <Alert color="info" className="mt-4" icon={<ShieldCheck className="h-4 w-4" />}>
+      <Alert color="info" className="mt-4">
+        <ShieldCheck className="h-4 w-4" />
         Disabling a tool is a security control — it hides the tool from every connected MCP
         assistant, not just one. Re-enable it any time to expose it again.
       </Alert>
 
-      <Stack gap={6} className="mt-6">
+      <div className="mt-6 flex flex-col gap-6">
         {groups.map((group) => (
           <section key={group.label}>
-            <Stack direction="row" align="center" gap={2} className="mb-3">
-              <Text weight="medium">{group.label}</Text>
+            <div className="mb-3 flex flex-row items-center gap-2">
+              <p className="font-medium">{group.label}</p>
               <Badge variant="soft" size="sm">
                 {group.tools.length}
               </Badge>
-            </Stack>
-            <Card variant="default" padding="none">
-              <CardContent className="p-0">
+            </div>
+            <Card>
+              <CardBody className="p-0">
                 {group.tools.map((tool, index) => (
                   <ToolRow key={tool.name} tool={tool} isLast={index === group.tools.length - 1} />
                 ))}
-              </CardContent>
+              </CardBody>
             </Card>
           </section>
         ))}
-      </Stack>
+      </div>
     </>
   );
 }
@@ -183,17 +174,15 @@ function ToolRow({ tool, isLast }: ToolRowProps) {
     <div
       className={[
         'flex items-center gap-4 px-4 py-3.5',
-        isLast ? '' : 'border-b border-[var(--color-border-default)]',
+        isLast ? '' : 'border-base-300 border-b',
       ].join(' ')}
     >
-      <span aria-hidden className="mt-1 self-start text-[var(--color-text-tertiary)]">
+      <span aria-hidden className="text-base-content/50 mt-1 self-start">
         {tool.write ? <Pencil className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
       </span>
       <div className="min-w-0 flex-1">
-        <Stack direction="row" align="center" gap={2} wrap>
-          <Text weight="medium" className="font-mono text-[0.8125rem]">
-            {tool.name}
-          </Text>
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <p className="font-mono text-[0.8125rem] font-medium">{tool.name}</p>
           {tool.write ? (
             <Badge color="warning" variant="soft" size="sm">
               Write
@@ -208,13 +197,9 @@ function ToolRow({ tool, isLast }: ToolRowProps) {
               Overridden
             </Badge>
           )}
-        </Stack>
-        <Text size="sm" variant="muted" className="mt-1">
-          {tool.description}
-        </Text>
-        <Text size="xs" variant="subtle" className="mt-1 font-mono">
-          {tool.scope}
-        </Text>
+        </div>
+        <p className="text-base-content/70 mt-1 text-sm">{tool.description}</p>
+        <p className="text-base-content/50 mt-1 font-mono text-xs">{tool.scope}</p>
       </div>
       <Switch
         color="module"

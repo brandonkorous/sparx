@@ -1,17 +1,6 @@
 import { ArrowUpRight, Handshake } from 'lucide-react';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Avatar, Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 import { listOrgMembers, requireSession } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';
@@ -75,8 +64,8 @@ export default async function SettingsPartnerPage() {
     .map((m) => ({ id: m.id, name: m.name ?? '', email: m.email, role: m.role }));
 
   return (
-    <Container size="lg">
-      <Stack gap={8} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-8 py-10">
         <PageHeader
           icon={<Handshake className="h-5 w-5" />}
           title="Your Sparx partner"
@@ -84,7 +73,7 @@ export default async function SettingsPartnerPage() {
         />
 
         {!canManage ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Handshake className="h-5 w-5" />}
               title="Managed by owners and admins"
@@ -93,12 +82,12 @@ export default async function SettingsPartnerPage() {
           </Card>
         ) : (
           <>
-            <Stack gap={3}>
-              <Text weight="medium">Referred by</Text>
+            <div className="flex flex-col gap-3">
+              <p className="font-medium">Referred by</p>
               {relationship.referredBy ? (
                 <ReferredByCard partner={relationship.referredBy} />
               ) : (
-                <Card padding="none">
+                <Card>
                   <EmptyState
                     icon={<Handshake className="h-5 w-5" />}
                     title="No referring partner"
@@ -106,20 +95,20 @@ export default async function SettingsPartnerPage() {
                   />
                 </Card>
               )}
-            </Stack>
+            </div>
 
-            <Stack gap={3}>
-              <Text weight="medium">Who can manage this workspace</Text>
-              <Text size="sm" variant="muted">
+            <div className="flex flex-col gap-3">
+              <p className="font-medium">Who can manage this workspace</p>
+              <p className="text-base-content/70 text-sm">
                 External partners get access as consultants on your team. Revoke a seat any time —
                 your data always stays yours.
-              </Text>
+              </p>
               <PartnerAccessList consultants={consultants} canManage={canManage} />
-            </Stack>
+            </div>
           </>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -127,43 +116,44 @@ function ReferredByCard({ partner }: { partner: ReferredByPartner }) {
   const referred = fmtDate(partner.referredAt);
   return (
     <ModuleProvider module="partner">
-      <Card variant="module" padding="md">
-        <CardContent className="p-0">
-          <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-            <Stack direction="row" align="center" gap={3} className="min-w-0">
-              <Avatar size="lg" shape="square" aria-hidden>
+      <Card className="bg-module bg-soft">
+        <CardBody className="p-0">
+          <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-row items-center gap-3">
+              <Avatar size="lg" shape="rounded" aria-hidden>
                 <Handshake className="h-5 w-5" />
               </Avatar>
-              <Stack gap={1} className="min-w-0">
-                <Text weight="medium" className="truncate">
-                  {partner.displayName}
-                </Text>
-                <Stack direction="row" align="center" gap={2} className="flex-wrap">
+              <div className="flex min-w-0 flex-col gap-1">
+                <p className="truncate font-medium">{partner.displayName}</p>
+                <div className="flex flex-row flex-wrap items-center gap-2">
                   <Badge color="module" variant="soft" size="sm">
                     {tierLabel(partner.tier)}
                   </Badge>
                   {referred ? (
-                    <Text size="xs" variant="muted">
-                      Referred you {referred}
-                    </Text>
+                    <p className="text-base-content/70 text-xs">Referred you {referred}</p>
                   ) : null}
-                </Stack>
-              </Stack>
-            </Stack>
+                </div>
+              </div>
+            </div>
             {partner.directoryListed ? (
-              <Button asChild variant="soft" color="module" size="sm">
-                <a
-                  href={`${MARKETING_ORIGIN}/partners/${partner.partnerId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View profile
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
+              <Button
+                variant="soft"
+                color="module"
+                size="sm"
+                render={
+                  <a
+                    href={`${MARKETING_ORIGIN}/partners/${partner.partnerId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  />
+                }
+                iconEnd={<ArrowUpRight className="h-3.5 w-3.5" />}
+              >
+                View profile
               </Button>
             ) : null}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { ServiceTypeActions } from './service-type-actions';
 
@@ -36,24 +30,20 @@ interface ServiceTypesListProps {
 
 export function ServiceTypesList({ types, view }: ServiceTypesListProps) {
   const nameCell = (t: ServiceType) => (
-    <Stack direction="row" gap={2} className="items-center">
+    <div className="flex flex-row items-center gap-2">
       {t.color && (
         <span
           className="inline-block h-3 w-3 flex-shrink-0 rounded-full"
           style={{ backgroundColor: t.color }}
         />
       )}
-      <Stack gap={1}>
-        <Text size="sm" className="font-medium">
-          {t.name}
-        </Text>
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-medium">{t.name}</p>
         {t.description && (
-          <Text size="xs" variant="muted" className="line-clamp-1">
-            {t.description}
-          </Text>
+          <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 
   const statusBadge = (t: ServiceType) => (
@@ -66,11 +56,11 @@ export function ServiceTypesList({ types, view }: ServiceTypesListProps) {
     { header: 'Name', cell: nameCell },
     {
       header: 'Duration',
-      cell: (t) => <Text size="sm">{t.durationMinutes} min</Text>,
+      cell: (t) => <p className="text-sm">{t.durationMinutes} min</p>,
     },
     {
       header: 'Requires vehicle',
-      cell: (t) => <Text size="sm">{t.requiresVehicle ? 'Yes' : 'No'}</Text>,
+      cell: (t) => <p className="text-sm">{t.requiresVehicle ? 'Yes' : 'No'}</p>,
     },
     { header: 'Status', cell: statusBadge },
     {
@@ -83,42 +73,34 @@ export function ServiceTypesList({ types, view }: ServiceTypesListProps) {
 
   const card: SelectionCard<ServiceType> = {
     title: (t) => (
-      <Stack direction="row" gap={2} className="items-center">
+      <div className="flex flex-row items-center gap-2">
         {t.color && (
           <span
             className="inline-block h-3 w-3 flex-shrink-0 rounded-full"
             style={{ backgroundColor: t.color }}
           />
         )}
-        <Text size="sm" className="truncate font-medium">
-          {t.name}
-        </Text>
-      </Stack>
+        <p className="truncate text-sm font-medium">{t.name}</p>
+      </div>
     ),
     subtitle: (t) =>
       t.description ? (
-        <Text size="xs" variant="muted" className="line-clamp-1">
-          {t.description}
-        </Text>
+        <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
       ) : null,
     badge: statusBadge,
     body: (t) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Duration
-          </Text>
-          <Text size="sm">{t.durationMinutes} min</Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Requires vehicle
-          </Text>
-          <Text size="sm">{t.requiresVehicle ? 'Yes' : 'No'}</Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="end" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Duration</p>
+          <p className="text-sm">{t.durationMinutes} min</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Requires vehicle</p>
+          <p className="text-sm">{t.requiresVehicle ? 'Yes' : 'No'}</p>
+        </div>
+        <div className="flex flex-row items-center justify-end gap-2">
           <ServiceTypeActions type={t} />
-        </Stack>
+        </div>
       </>
     ),
   };

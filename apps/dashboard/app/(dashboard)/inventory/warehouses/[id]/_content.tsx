@@ -2,18 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Warehouse as WarehouseIcon } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -83,12 +73,12 @@ export async function WarehouseDetailContent({ id }: Props) {
   ).length;
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <WarehouseIcon className="h-5 w-5" />
-            <Heading level={1}>{warehouse.name}</Heading>
+            <h1 className="text-3xl font-semibold">{warehouse.name}</h1>
             <Badge color="neutral" variant="soft" size="sm" className="font-mono">
               {warehouse.code}
             </Badge>
@@ -104,15 +94,15 @@ export async function WarehouseDetailContent({ id }: Props) {
                 inactive
               </Badge>
             )}
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {[warehouse.city, warehouse.region, warehouse.country].filter(Boolean).join(', ')}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <WarehouseArchiveButton warehouseId={warehouse.id} isActive={warehouse.isActive} />
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Tracked variants" value={levelCount.toString()} />
         <Stat label="Total on hand" value={onHandTotal.toString()} />
         <Stat
@@ -120,15 +110,15 @@ export async function WarehouseDetailContent({ id }: Props) {
           value={lowCount.toString()}
           tone={lowCount > 0 ? 'warn' : 'ok'}
         />
-      </Stack>
+      </div>
 
       <WarehouseEditForm warehouse={warehouse} />
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Stock</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Stock</h3>
+            <p className="opacity-70">
               Full per-variant levels live on the{' '}
               <Link
                 href={`/inventory/stock?warehouse=${warehouse.id}`}
@@ -137,16 +127,17 @@ export async function WarehouseDetailContent({ id }: Props) {
                 inventory page
               </Link>{' '}
               — filter by this warehouse from there.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Button asChild variant="outline">
-            <Link href={`/inventory/stock?warehouse=${warehouse.id}`}>Manage stock</Link>
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            render={<Link href={`/inventory/stock?warehouse=${warehouse.id}`} />}
+          >
+            Manage stock
           </Button>
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -161,16 +152,14 @@ function Stat({
 }) {
   return (
     <Card className="min-w-[10rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg" className={tone === 'warn' ? 'text-[var(--color-warning)]' : undefined}>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className={`text-lg${tone === 'warn' ? 'text-[var(--color-warning)]' : ''}`}>
             {value}
-          </Text>
-        </Stack>
-      </CardContent>
+          </p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

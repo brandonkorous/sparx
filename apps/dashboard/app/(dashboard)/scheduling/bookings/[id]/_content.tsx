@@ -15,21 +15,8 @@ import {
   Users,
 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  Text,
-  Timeline,
-  TimelineItem,
-  TimelineTime,
-  TimelineTitle,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Stat, Timeline, TimelineItem, TimelineTime, TimelineTitle } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -178,15 +165,13 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <Stack direction="row" align="start" gap={3}>
+    <div className="flex flex-row items-start gap-3">
       <span className="mt-0.5 text-[var(--color-text-tertiary)]">{icon}</span>
-      <Stack gap={1} className="min-w-0">
-        <Text size="xs" variant="muted">
-          {label}
-        </Text>
+      <div className="flex min-w-0 flex-col gap-1">
+        <p className="text-base-content/70 text-xs">{label}</p>
         <div className="text-sm">{children}</div>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -231,10 +216,10 @@ export async function BookingDetailContent({ id }: { id: string }) {
     // @container so the body responds to its OWN width — the same content mounts
     // in a narrow drawer and a wide full page; viewport breakpoints can't tell
     // them apart, container queries can (matches commerce/products/[id]).
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={3} wrap>
-          <Heading level={1}>{booking.service.name}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{booking.service.name}</h1>
           <Badge color="module" variant="soft" size="sm">
             {BOOKING_TYPE_LABEL[booking.bookingType]}
           </Badge>
@@ -246,12 +231,12 @@ export async function BookingDetailContent({ id }: { id: string }) {
               <Repeat className="h-3.5 w-3.5" /> Recurring series
             </Link>
           )}
-        </Stack>
-        <Text variant="muted">
+        </div>
+        <p className="text-base-content/70 text-base">
           {formatDate(booking.startAt, tz)} · {formatTime(booking.startAt, tz)} –{' '}
           {formatTime(booking.endAt, tz)}
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
       <BookingDetailActions
         id={booking.id}
@@ -287,12 +272,10 @@ export async function BookingDetailContent({ id }: { id: string }) {
       </div>
 
       <div className="grid grid-cols-1 gap-6 @[820px]:grid-cols-3">
-        <Stack gap={6} className="@[820px]:col-span-2">
+        <div className="flex flex-col gap-6 @[820px]:col-span-2">
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Details</CardTitle>
-            </CardHeader>
-            <CardContent>
               <div className="grid gap-5 @[480px]:grid-cols-2">
                 <Field icon={<User className="h-4 w-4" />} label="Customer">
                   {customer ? (
@@ -308,7 +291,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                 </Field>
                 {custStats && custStats.total > 0 ? (
                   <Field icon={<History className="h-4 w-4" />} label="Customer reliability">
-                    <Stack direction="row" align="center" gap={2} wrap>
+                    <div className="flex flex-row flex-wrap items-center gap-2">
                       <span>
                         {custStats.completed} kept · {custStats.noShow} no-show ·{' '}
                         {custStats.cancelled} cancelled
@@ -318,7 +301,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                           High no-show rate
                         </Badge>
                       )}
-                    </Stack>
+                    </div>
                   </Field>
                 ) : null}
                 <Field icon={<Users className="h-4 w-4" />} label="Staff / resources">
@@ -355,37 +338,31 @@ export async function BookingDetailContent({ id }: { id: string }) {
                   {formatDateTime(booking.createdAt, tz)}
                 </Field>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           <BookingNotesCard id={booking.id} notes={booking.notes} staffNotes={booking.staffNotes} />
-        </Stack>
+        </div>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <History className="h-4 w-4" /> History
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             <Timeline>
               {events.map((e, i) => (
                 <TimelineItem key={e.key} showConnector={i < events.length - 1}>
                   <TimelineTitle>{e.title}</TimelineTitle>
                   <TimelineTime>{e.when}</TimelineTime>
-                  {e.detail && (
-                    <Text size="xs" variant="muted">
-                      {e.detail}
-                    </Text>
-                  )}
+                  {e.detail && <p className="text-base-content/70 text-xs">{e.detail}</p>}
                 </TimelineItem>
               ))}
             </Timeline>
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
-    </Stack>
+    </div>
   );
 }

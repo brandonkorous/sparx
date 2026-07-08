@@ -12,17 +12,8 @@
 // text, and values are lightly coerced (true/false → boolean, numeric → number)
 // so a natural entry like `customer.totalSpent ≥ 100` stores a real number.
 
-import {
-  Button,
-  Combobox,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@sparx/ui';
+import { Button, Input, Label, Select } from 'silicaui-react';
+import { Combobox } from '@sparx/ui';
 import { FolderPlus, Plus, Trash2 } from 'lucide-react';
 import {
   MAX_CONDITION_DEPTH,
@@ -100,18 +91,9 @@ function ConditionRow({
       <Select
         value={condition.operator}
         onValueChange={(v) => changeOperator(v as ConditionOperator)}
-      >
-        <SelectTrigger className="w-40">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {CONDITION_OPERATORS.map((o) => (
-            <SelectItem key={o.value} value={o.value}>
-              {o.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        items={CONDITION_OPERATORS.map((o) => ({ value: o.value, label: o.label }))}
+        className="w-40"
+      />
       {!def?.valueless && (
         <Input
           value={valueToInputText(condition.value)}
@@ -195,15 +177,12 @@ export function ConditionEditor({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Label className="text-sm">Match</Label>
-          <Select value={value.logic} onValueChange={(v) => setLogic(v as 'AND' | 'OR')}>
-            <SelectTrigger className="w-28">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="AND">All of</SelectItem>
-              <SelectItem value="OR">Any of</SelectItem>
-            </SelectContent>
-          </Select>
+          <Select
+            value={value.logic}
+            onValueChange={(v) => setLogic(v as 'AND' | 'OR')}
+            items={{ AND: 'All of', OR: 'Any of' }}
+            className="w-28"
+          />
           <span className="text-sm text-[var(--color-text-secondary)]">the following {label}</span>
         </div>
         {onRemove && (
@@ -255,7 +234,7 @@ export function ConditionEditor({
           type="button"
           variant="soft"
           size="sm"
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
           onClick={addCondition}
         >
           Add condition
@@ -265,7 +244,7 @@ export function ConditionEditor({
             type="button"
             variant="ghost"
             size="sm"
-            leftIcon={<FolderPlus className="h-3.5 w-3.5" />}
+            iconStart={<FolderPlus className="h-3.5 w-3.5" />}
             onClick={addGroup}
           >
             Add group

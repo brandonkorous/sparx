@@ -2,23 +2,8 @@
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Label, ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Textarea } from 'silicaui-react';
 
 import { createContentType } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -201,15 +186,13 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
             nextDisabled: pending,
           }}
         >
-          <Stack gap={5}>
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Identity</Heading>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={4}>
-                  <Stack direction="row" gap={3}>
-                    <Stack gap={1} className="flex-1">
+          <div className="flex flex-col gap-5">
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Identity</h3>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row gap-3">
+                    <div className="flex flex-1 flex-col gap-1">
                       <Label htmlFor="key" required>
                         Key
                       </Label>
@@ -221,11 +204,11 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                         required
                         aria-required
                       />
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         Immutable URL-safe identifier (lowercase, underscores).
-                      </Text>
-                    </Stack>
-                    <Stack gap={1} className="flex-1">
+                      </p>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1">
                       <Label htmlFor="name" required>
                         Name
                       </Label>
@@ -237,8 +220,8 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                         required
                         aria-required
                       />
-                    </Stack>
-                    <Stack gap={1} className="flex-1">
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1">
                       <Label htmlFor="plural_name" required>
                         Plural
                       </Label>
@@ -250,9 +233,9 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                         required
                         aria-required
                       />
-                    </Stack>
-                  </Stack>
-                  <Stack gap={1}>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
@@ -261,9 +244,9 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                       rows={2}
                       placeholder="Optional short note shown in the dashboard listing."
                     />
-                  </Stack>
-                  <Stack direction="row" gap={3}>
-                    <Stack gap={1} className="flex-1">
+                  </div>
+                  <div className="flex flex-row gap-3">
+                    <div className="flex flex-1 flex-col gap-1">
                       <Label htmlFor="url_pattern">URL pattern (optional)</Label>
                       <Input
                         id="url_pattern"
@@ -271,42 +254,40 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                         onChange={(e) => setUrlPattern(e.target.value)}
                         placeholder="/case-studies/{slug}"
                       />
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         Leave blank for non-routable types (referenced from other entries).
-                      </Text>
-                    </Stack>
-                    <Stack gap={1}>
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="is_singleton">Singleton?</Label>
-                      <Stack direction="row" align="center" gap={2}>
+                      <div className="flex flex-row items-center gap-2">
                         <Checkbox
                           id="is_singleton"
                           checked={isSingleton}
-                          onCheckedChange={(next) => setIsSingleton(next === true)}
+                          onChange={(e) => setIsSingleton(e.target.checked)}
                         />
-                        <Text size="xs" variant="muted">
+                        <p className="text-base-content/70 text-xs">
                           Only one entry of this type can ever exist.
-                        </Text>
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </CardContent>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Schema</Heading>
-                <CardDescription>
+            <Card>
+              <CardBody>
+                <h3 className="text-xl font-semibold">Schema</h3>
+                <p className="opacity-70">
                   JSON object with a <code>fields</code> array. Each field is one of:{' '}
                   <code>text</code>, <code>long_text</code>, <code>rich_text</code>,{' '}
                   <code>slug</code>, <code>number</code>, <code>boolean</code>, <code>date</code>,{' '}
                   <code>datetime</code>, <code>enum</code>, <code>url</code>, <code>email</code>,{' '}
                   <code>reference</code>, <code>asset</code>, <code>object</code>,{' '}
                   <code>repeater</code>.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={2}>
+                </p>
+                <div className="flex flex-col gap-2">
                   <Textarea
                     value={schemaText}
                     onChange={(e) => setSchemaText(e.target.value)}
@@ -315,23 +296,26 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                     aria-label="Schema JSON"
                   />
                   {validationHint && (
-                    <Text
-                      size="xs"
-                      variant={validationHint.startsWith('Looks good') ? 'muted' : 'danger'}
+                    <p
+                      className={`text-xs ${
+                        validationHint.startsWith('Looks good')
+                          ? 'text-base-content/70'
+                          : 'text-danger'
+                      }`}
                       aria-live="polite"
                     >
                       {validationHint}
-                    </Text>
+                    </p>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
-          </Stack>
+          </div>
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>

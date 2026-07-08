@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Hourglass } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { WaitlistEntry } from '../_lib/types';
@@ -15,8 +16,8 @@ export default async function SchedulingWaitlistPage() {
   const waiting = entries.filter((e) => e.status === 'waiting').length;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Hourglass className="h-5 w-5" />}
           title="Waitlist"
@@ -29,18 +30,22 @@ export default async function SchedulingWaitlistPage() {
         />
 
         {entries.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title="No one's waiting"
-              description="Customers join the waitlist from your booking page when their preferred time is full."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No one's waiting"
+                description="Customers join the waitlist from your booking page when their preferred time is full."
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Card padding="none">
-            <WaitlistList entries={entries} />
+          <Card>
+            <CardBody className="p-0">
+              <WaitlistList entries={entries} />
+            </CardBody>
           </Card>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

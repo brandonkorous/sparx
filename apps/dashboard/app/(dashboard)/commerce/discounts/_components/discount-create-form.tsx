@@ -3,21 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 
 import { createDiscountAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -195,11 +182,11 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
             nextDisabled: pending,
           }}
         >
-          <Stack gap={6}>
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Stack gap={1}>
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody className="py-6">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="disc-name">
                       Internal name<span className="text-[var(--color-danger)]">*</span>
                     </Label>
@@ -209,11 +196,11 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Welcome 10% off"
                     />
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       Shown in reports; never to customers.
-                    </Text>
-                  </Stack>
-                  <Stack gap={1}>
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="disc-description">Description</Label>
                     <Textarea
                       id="disc-description"
@@ -221,18 +208,18 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                       onChange={(e) => setDescription(e.target.value)}
                       rows={2}
                     />
-                  </Stack>
-                  <Stack direction="row" align="center" gap={2}>
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
                     <Checkbox
                       color="module"
                       id="disc-automatic"
                       checked={isAutomatic}
-                      onCheckedChange={(v) => setIsAutomatic(v === true)}
+                      onChange={(e) => setIsAutomatic(e.target.checked)}
                     />
                     <Label htmlFor="disc-automatic">Automatic — apply without a code</Label>
-                  </Stack>
+                  </div>
                   {!isAutomatic && (
-                    <Stack gap={1}>
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="disc-code">
                         Code<span className="text-[var(--color-danger)]">*</span>
                       </Label>
@@ -242,16 +229,16 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                         onChange={(e) => setCode(e.target.value)}
                         placeholder="WELCOME10"
                       />
-                    </Stack>
+                    </div>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Stack gap={1} className="max-w-[16rem]">
+            <Card>
+              <CardBody className="py-6">
+                <div className="flex flex-col gap-4">
+                  <div className="flex max-w-[16rem] flex-col gap-1">
                     <Label htmlFor="disc-type">Type</Label>
                     <NativeSelect
                       id="disc-type"
@@ -264,28 +251,28 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
+                  </div>
                   {type === 'percent' && (
-                    <Stack gap={1} className="w-[8rem]">
+                    <div className="flex w-[8rem] flex-col gap-1">
                       <Label htmlFor="disc-percent">% off</Label>
                       <Input
                         id="disc-percent"
                         value={valuePercent}
                         onChange={(e) => setValuePercent(e.target.value)}
                       />
-                    </Stack>
+                    </div>
                   )}
                   {type === 'fixed' && (
-                    <Stack direction="row" gap={3} wrap>
-                      <Stack gap={1} className="w-[8rem]">
+                    <div className="flex flex-row flex-wrap gap-3">
+                      <div className="flex w-[8rem] flex-col gap-1">
                         <Label htmlFor="disc-amount">Amount ($)</Label>
                         <Input
                           id="disc-amount"
                           value={valueDollars}
                           onChange={(e) => setValueDollars(e.target.value)}
                         />
-                      </Stack>
-                      <Stack gap={1} className="w-[6rem]">
+                      </div>
+                      <div className="flex w-[6rem] flex-col gap-1">
                         <Label htmlFor="disc-currency">Currency</Label>
                         <Input
                           id="disc-currency"
@@ -293,30 +280,30 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                           onChange={(e) => setCurrency(e.target.value)}
                           maxLength={3}
                         />
-                      </Stack>
-                    </Stack>
+                      </div>
+                    </div>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
 
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Text size="xs" variant="muted">
+            <Card>
+              <CardBody className="py-6">
+                <div className="flex flex-col gap-4">
+                  <p className="text-base-content/70 text-xs">
                     Per-customer limit defaults to 1 — set higher to allow repeat redemptions per
                     shopper. Total cap limits redemptions across all customers.
-                  </Text>
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={1} className="w-[8rem]">
+                  </p>
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex w-[8rem] flex-col gap-1">
                       <Label htmlFor="disc-per-customer">Per customer</Label>
                       <Input
                         id="disc-per-customer"
                         value={perCustomerLimit}
                         onChange={(e) => setPerCustomerLimit(e.target.value)}
                       />
-                    </Stack>
-                    <Stack gap={1} className="w-[8rem]">
+                    </div>
+                    <div className="flex w-[8rem] flex-col gap-1">
                       <Label htmlFor="disc-total-cap">Total cap</Label>
                       <Input
                         id="disc-total-cap"
@@ -324,16 +311,16 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                         onChange={(e) => setTotalUsageLimit(e.target.value)}
                         placeholder="unlimited"
                       />
-                    </Stack>
-                    <Stack gap={1} className="w-[8rem]">
+                    </div>
+                    <div className="flex w-[8rem] flex-col gap-1">
                       <Label htmlFor="disc-priority">Priority</Label>
                       <Input
                         id="disc-priority"
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
                       />
-                    </Stack>
-                    <Stack gap={1} className="min-w-[16rem]">
+                    </div>
+                    <div className="flex min-w-[16rem] flex-col gap-1">
                       <Label htmlFor="disc-stacking">Stacking</Label>
                       <NativeSelect
                         id="disc-stacking"
@@ -346,16 +333,16 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
                           </option>
                         ))}
                       </NativeSelect>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </CardContent>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
-          </Stack>
+          </div>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

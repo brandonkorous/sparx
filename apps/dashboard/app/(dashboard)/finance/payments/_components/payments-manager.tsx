@@ -9,7 +9,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Stack, Text, toast } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import {
   type GatewayDescriptor,
@@ -101,29 +102,28 @@ export function PaymentsManager({
       : (catalog.find((g) => g.id === config.gatewayId)?.name ?? null);
 
   return (
-    <Stack gap={8}>
-      <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-col gap-8">
+      <div className="flex items-center gap-2">
         {liveName && config.isActive ? (
           <>
             <Badge color="success" variant="soft" size="sm">
               Live
             </Badge>
-            <Text size="sm" variant="muted">
-              Accepting payments via{' '}
-              <span className="text-[var(--color-text-primary)]">{liveName}</span>.
-            </Text>
+            <p className="text-base-content/70 text-sm">
+              Accepting payments via <span className="text-base-content">{liveName}</span>.
+            </p>
           </>
         ) : (
           <>
             <Badge color="warning" variant="soft" size="sm">
               Not collecting
             </Badge>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No online payment method is live yet — set one up below.
-            </Text>
+            </p>
           </>
         )}
-      </Stack>
+      </div>
 
       <SparxPayHero
         config={config}
@@ -132,13 +132,13 @@ export function PaymentsManager({
         onActivate={() => activate('sparx_pay')}
       />
 
-      <Stack gap={4}>
-        <Stack gap={1}>
-          <Text weight="medium">Bring your own processor</Text>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <p className="font-medium">Bring your own processor</p>
+          <p className="text-base-content/70 text-sm">
             Already have a merchant account? Connect it — no sparx fee, you keep your rates.
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           {byo.map((g) => (
@@ -152,7 +152,7 @@ export function PaymentsManager({
           ))}
           <PayPalTile />
         </div>
-      </Stack>
+      </div>
 
       {manual ? (
         <ManualRow
@@ -170,6 +170,6 @@ export function PaymentsManager({
         onClose={() => setOpenId(null)}
         onSaved={() => openGateway && onSaved(openGateway.id)}
       />
-    </Stack>
+    </div>
   );
 }

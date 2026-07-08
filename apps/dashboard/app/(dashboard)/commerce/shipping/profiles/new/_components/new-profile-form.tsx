@@ -3,20 +3,9 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
+
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createShippingProfileAction } from '../../../../shipping-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -174,10 +163,10 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack gap={1}>
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="profile-name">Name *</Label>
                   <Input
                     id="profile-name"
@@ -185,16 +174,16 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="General goods"
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="profile-description">Description</Label>
                   <Input
                     id="profile-description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="profile-carriers">Allowed carrier services</Label>
                   <Textarea
                     id="profile-carriers"
@@ -204,50 +193,50 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
                     placeholder="usps_priority, ups_ground"
                     className="font-mono text-xs"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Carrier service slugs separated by commas. Leave empty to allow any.
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label>Hazmat classes allowed</Label>
-                  <Stack direction="row" gap={2} wrap>
+                  <div className="flex flex-row flex-wrap gap-2">
                     {HAZMAT_CLASSES.map((cls) => (
                       <label key={cls} className="flex items-center gap-1.5">
                         <Checkbox
                           color="module"
                           checked={hazmat.has(cls)}
-                          onCheckedChange={() => toggleHazmat(cls)}
+                          onChange={() => toggleHazmat(cls)}
                         />
-                        <Text size="xs">{cls}</Text>
+                        <span className="text-xs">{cls}</span>
                       </label>
                     ))}
-                  </Stack>
-                </Stack>
-                <Stack direction="row" gap={4}>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-4">
                   <label className="flex items-center gap-2">
                     <Checkbox
                       color="module"
                       checked={requiresSignature}
-                      onCheckedChange={(v) => setRequiresSignature(v === true)}
+                      onChange={(e) => setRequiresSignature(e.target.checked)}
                     />
-                    <Text size="sm">Requires signature</Text>
+                    <span className="text-sm">Requires signature</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <Checkbox
                       color="module"
                       checked={requiresFreight}
-                      onCheckedChange={(v) => setRequiresFreight(v === true)}
+                      onChange={(e) => setRequiresFreight(e.target.checked)}
                     />
-                    <Text size="sm">Freight only</Text>
+                    <span className="text-sm">Freight only</span>
                   </label>
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

@@ -3,20 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState, Label, NativeSelect } from 'silicaui-react';
 
 import { mapUnmappedSkuAction, ignoreUnmappedSkuAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
@@ -42,36 +29,34 @@ interface UnmappedQueueProps {
 export function UnmappedQueue({ sourceId, rows, warehouses }: UnmappedQueueProps) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={3}>Unmapped SKUs</Heading>
-            <CardDescription>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Unmapped SKUs</h3>
+            <p className="opacity-70">
               SKUs the feed reported that aren’t mapped to an item yet. Map each to a variant +
               warehouse, or ignore it.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           {rows.length > 0 ? (
             <Badge color="warning" variant="soft">
               {rows.length} pending
             </Badge>
           ) : null}
-        </Stack>
-      </CardHeader>
-      <CardContent>
+        </div>
         {rows.length === 0 ? (
           <EmptyState
             title="Nothing to map"
             description="Every SKU this source reported is mapped to an item."
           />
         ) : (
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             {rows.map((row) => (
               <UnmappedRow key={row.id} sourceId={sourceId} row={row} warehouses={warehouses} />
             ))}
-          </Stack>
+          </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -138,17 +123,17 @@ function UnmappedRow({
   }
 
   return (
-    <Stack gap={3} className="rounded border border-[var(--color-border-default)] px-3 py-3">
-      <Stack direction="row" align="center" justify="between" wrap gap={3}>
-        <Stack gap={0} className="min-w-0">
-          <Text size="sm" className="font-mono font-medium">
+    <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] px-3 py-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-0">
+          <p className="font-mono text-sm font-medium">
             {externalRef(row.externalSku, row.externalLocation)}
-          </Text>
-          <Text size="xs" variant="muted">
+          </p>
+          <p className="text-base-content/70 text-xs">
             qty {row.lastQuantity} · seen {row.seenCount}× · last {formatDateTime(row.lastSeenAt)}
-          </Text>
-        </Stack>
-        <Stack direction="row" gap={2} align="center">
+          </p>
+        </div>
+        <div className="flex flex-row items-center gap-2">
           {row.suggestedVariantId && !mapping ? (
             <Badge color="info" variant="soft">
               suggested: {row.suggestedVariantSku}
@@ -164,13 +149,13 @@ function UnmappedRow({
               </Button>
             </>
           ) : null}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       {mapping ? (
-        <Stack gap={3} className="border-t border-[var(--color-border-default)] pt-3">
-          <Stack direction="row" gap={4} wrap align="end">
-            <Stack gap={1} className="min-w-[16rem] flex-1">
+        <div className="flex flex-col gap-3 border-t border-[var(--color-border-default)] pt-3">
+          <div className="flex flex-row flex-wrap items-end gap-4">
+            <div className="flex min-w-[16rem] flex-1 flex-col gap-1">
               <Label>Map to item</Label>
               <VariantPicker
                 variant={variant}
@@ -178,8 +163,8 @@ function UnmappedRow({
                 onClear={() => setVariant(null)}
                 defaultSku={row.externalSku}
               />
-            </Stack>
-            <Stack gap={1} className="min-w-[12rem]">
+            </div>
+            <div className="flex min-w-[12rem] flex-col gap-1">
               <Label htmlFor={`wh-${row.id}`}>Warehouse</Label>
               <NativeSelect
                 id={`wh-${row.id}`}
@@ -192,10 +177,10 @@ function UnmappedRow({
                   </option>
                 ))}
               </NativeSelect>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
           <MappingControlsFields idPrefix={`u-${row.id}`} state={controls} onChange={setControls} />
-          <Stack direction="row" gap={2} justify="end">
+          <div className="flex flex-row justify-end gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -209,15 +194,11 @@ function UnmappedRow({
             <Button color="module" size="sm" onClick={confirmMap} disabled={pending}>
               {pending ? 'Mapping…' : 'Map SKU'}
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       ) : null}
 
-      {error ? (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      ) : null}
-    </Stack>
+      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+    </div>
   );
 }

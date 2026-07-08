@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Clock, Handshake } from 'lucide-react';
-import { Button, Card, ModuleProvider, Stack, Text } from '@sparx/ui';
+import { ModuleProvider } from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
 import { requireSession } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';
@@ -28,35 +29,41 @@ export async function BecomePartnerCard() {
 
   return (
     <ModuleProvider module="partner">
-      <Card variant="default" padding="lg">
-        <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-          <Stack direction="row" align="center" gap={3} className="min-w-0">
-            <span className="text-[var(--module-active)]">
-              <Handshake className="h-5 w-5" />
-            </span>
-            <Stack gap={1} className="min-w-0">
-              <Text weight="medium">Become a Sparx Partner</Text>
-              <Text size="sm" variant="muted">
-                {pending
-                  ? 'Your application is in review — we’ll be in touch within 3 business days.'
-                  : 'Refer clients, earn on every account you bring in, and get listed in the partner directory. Apply for review — every partner is vetted.'}
-              </Text>
-            </Stack>
-          </Stack>
-          {pending ? (
-            <span className="inline-flex items-center gap-1.5 text-sm text-[var(--module-active-text)]">
-              <Clock className="h-4 w-4" />
-              In review
-            </span>
-          ) : (
-            <Button asChild color="module" variant="soft" size="sm" className="self-start">
-              <Link href="/partner">
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-row items-center gap-3">
+              <span className="text-module">
+                <Handshake className="h-5 w-5" />
+              </span>
+              <div className="flex min-w-0 flex-col gap-1">
+                <p className="font-medium">Become a Sparx Partner</p>
+                <p className="text-base-content/70 text-sm">
+                  {pending
+                    ? 'Your application is in review — we’ll be in touch within 3 business days.'
+                    : 'Refer clients, earn on every account you bring in, and get listed in the partner directory. Apply for review — every partner is vetted.'}
+                </p>
+              </div>
+            </div>
+            {pending ? (
+              <span className="text-module inline-flex items-center gap-1.5 text-sm">
+                <Clock className="h-4 w-4" />
+                In review
+              </span>
+            ) : (
+              <Button
+                color="module"
+                variant="soft"
+                size="sm"
+                className="self-start"
+                render={<Link href="/partner" />}
+              >
                 Apply
                 <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
-          )}
-        </Stack>
+              </Button>
+            )}
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

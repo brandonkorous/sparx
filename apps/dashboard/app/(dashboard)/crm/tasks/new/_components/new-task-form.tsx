@@ -12,22 +12,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, CardTitle, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 
 import { createTaskAction } from '../../../activity-task-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -141,13 +127,11 @@ export function NewTaskForm({
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardHeader>
+          <Card>
+            <CardBody>
               <CardTitle>Task details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack gap={2}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="task-title">Title</Label>
                   <Input
                     id="task-title"
@@ -155,8 +139,8 @@ export function NewTaskForm({
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Follow up on Acme renewal"
                   />
-                </Stack>
-                <Stack gap={2}>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="task-description">Description</Label>
                   <Textarea
                     id="task-description"
@@ -164,9 +148,9 @@ export function NewTaskForm({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                </Stack>
-                <Stack direction="row" gap={4} wrap>
-                  <Stack gap={2} className="flex-1">
+                </div>
+                <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="task-assignee">Assigned to</Label>
                     <NativeSelect
                       id="task-assignee"
@@ -179,8 +163,8 @@ export function NewTaskForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={2} className="w-40">
+                  </div>
+                  <div className="flex w-40 flex-col gap-2">
                     <Label htmlFor="task-priority">Priority</Label>
                     <NativeSelect
                       id="task-priority"
@@ -192,8 +176,8 @@ export function NewTaskForm({
                       <option value="high">High</option>
                       <option value="urgent">Urgent</option>
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={2} className="w-44">
+                  </div>
+                  <div className="flex w-44 flex-col gap-2">
                     <Label htmlFor="task-due">Due date</Label>
                     <Input
                       id="task-due"
@@ -201,10 +185,10 @@ export function NewTaskForm({
                       value={dueAt}
                       onChange={(e) => setDueAt(e.target.value)}
                     />
-                  </Stack>
-                </Stack>
+                  </div>
+                </div>
                 {!preselectedDealId && (
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="task-customer">Customer</Label>
                     <NativeSelect
                       id="task-customer"
@@ -218,16 +202,16 @@ export function NewTaskForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
+                  </div>
                 )}
 
                 {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
                     {error}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

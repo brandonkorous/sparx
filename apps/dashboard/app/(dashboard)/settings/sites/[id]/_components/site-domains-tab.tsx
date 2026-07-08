@@ -3,21 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Globe, Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
 
 import type { Domain } from '@/lib/sites';
 import {
@@ -78,20 +65,18 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
   }
 
   return (
-    <Stack gap={4}>
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Domains</Heading>
-          <CardDescription>
+    <div className="flex flex-col gap-4">
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">Domains</h3>
+          <p className="opacity-70">
             Where people reach this site. The primary domain is what appears in links and emails.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
+          </p>
+          <div className="flex flex-col gap-3">
             {domains.length === 0 && (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 No domains yet — connect one you own below.
-              </Text>
+              </p>
             )}
 
             {domains.map((d) => {
@@ -138,7 +123,7 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
                             color="module"
                             disabled={pending}
                             onClick={() => run(() => verifyDomain(d.id), `${d.host} verified.`)}
-                            leftIcon={<RefreshCw className="size-3.5" />}
+                            iconStart={<RefreshCw className="size-3.5" />}
                           >
                             Verify
                           </Button>
@@ -154,7 +139,7 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
                                 `${d.host} is now the primary domain.`
                               )
                             }
-                            leftIcon={<CheckCircle2 className="size-3.5" />}
+                            iconStart={<CheckCircle2 className="size-3.5" />}
                           >
                             Set as primary
                           </Button>
@@ -202,14 +187,14 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
                 variant="soft"
                 color="module"
                 disabled={pending}
-                leftIcon={<Plus className="size-4" />}
+                iconStart={<Plus className="size-4" />}
               >
                 Connect
               </Button>
             </form>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

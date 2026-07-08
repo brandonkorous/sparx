@@ -1,17 +1,7 @@
 import { CreditCard } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -53,8 +43,8 @@ export default async function CheckoutSessionsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<CreditCard className="h-5 w-5" />}
           title="Checkout sessions"
@@ -70,37 +60,35 @@ export default async function CheckoutSessionsPage({
 
         {sessions.length === 0 ? (
           <Card>
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>{step ? labelForStep(step) : 'Active'}</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
+                <p className="opacity-70">
                   Click a cart ID to see the items + pricing trace; the session lifecycle is the
                   table here.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
+                </p>
+              </div>
               <EmptyState
                 icon={<CreditCard className="h-5 w-5" />}
                 title="No sessions"
                 description="Checkout sessions appear here when the storefront starts writing."
               />
-            </CardContent>
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={1}>
-            <Heading level={3}>{step ? labelForStep(step) : 'Active'}</Heading>
-            <CardDescription>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
+            <p className="opacity-70">
               Click a cart ID to see the items + pricing trace; the session lifecycle is the table
               here.
-            </CardDescription>
+            </p>
             <CheckoutSessionsList rows={sessions} view={view} />
-          </Stack>
+          </div>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

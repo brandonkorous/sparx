@@ -1,18 +1,8 @@
 import { notFound } from 'next/navigation';
 import { DollarSign } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  statusLabel,
-  statusTone,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
+import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -84,12 +74,12 @@ export async function PriceListDetailContent({ id }: Props) {
   }));
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={2}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <DollarSign className="h-5 w-5" />
-            <Heading level={1}>{priceList.name}</Heading>
+            <h1 className="text-3xl font-semibold">{priceList.name}</h1>
             <Badge color={statusTone(priceList.status)} variant="soft" size="sm">
               {statusLabel(priceList.status)}
             </Badge>
@@ -101,40 +91,38 @@ export async function PriceListDetailContent({ id }: Props) {
                 {statusLabel(priceList.channel)}
               </Badge>
             )}
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             Priority {priceList.priority} · {entries.length} entries
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <PriceListStatusBar priceListId={priceList.id} status={priceList.status} />
-      </Stack>
+      </div>
 
       {priceList.description && (
         <Card>
-          <CardContent>
-            <Text>{priceList.description}</Text>
-          </CardContent>
+          <CardBody>
+            <p className="text-base">{priceList.description}</p>
+          </CardBody>
         </Card>
       )}
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Per-variant entries</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Per-variant entries</h3>
+            <p className="opacity-70">
               Pick a variant from the dropdown, then set either a fixed price or a percent-off-list.
               Quantity ranges let you ladder pricing (e.g. 1-9 at $20, 10+ at $18).
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <PriceListEntriesEditor
             priceListId={priceList.id}
             entries={entries}
             variants={variantSummaries}
           />
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

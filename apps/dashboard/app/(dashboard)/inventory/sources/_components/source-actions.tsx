@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation';
 import { MoreHorizontal, RefreshCw, Pencil, Trash2 } from 'lucide-react';
 import {
   Button,
-  Text,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { syncSource, deleteSource } from '../_lib/actions';
 import { SourceForm } from './source-form';
 
@@ -68,31 +66,27 @@ export function SourceActions({ source }: { source: Source }) {
     <>
       <div className="flex flex-col items-end gap-1">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <Button color="neutral" variant="ghost" size="sm">
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={triggerSync} disabled={syncing}>
+            <DropdownMenuItem onClick={triggerSync} disabled={syncing}>
               <RefreshCw className="mr-2 size-4" />
               {syncing ? 'Syncing…' : 'Sync now'}
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
               <Pencil className="mr-2 size-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={onRemove} className="text-[var(--color-danger)]">
+            <DropdownMenuItem onClick={onRemove} className="text-[var(--color-danger)]">
               <Trash2 className="mr-2 size-4" />
               Remove
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {syncError && (
-          <Text size="xs" variant="danger" className="max-w-[200px] text-right">
-            {syncError}
-          </Text>
-        )}
+        {syncError && <p className="text-danger max-w-[200px] text-right text-xs">{syncError}</p>}
       </div>
 
       {editOpen ? (

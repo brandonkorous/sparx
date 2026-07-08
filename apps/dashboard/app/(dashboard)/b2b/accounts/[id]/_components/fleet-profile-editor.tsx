@@ -10,24 +10,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ModuleProvider, toast, useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Input,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalFooter,
-  ModuleProvider,
-  NativeSelect,
   Label,
-  Spinner,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+  Loading,
+  NativeSelect,
+} from 'silicaui-react';
 import { Plus, Trash2, Truck } from 'lucide-react';
 
 import {
@@ -179,32 +173,36 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        <Truck className="mr-1 h-4 w-4" />
+      <Button
+        variant="outline"
+        size="sm"
+        iconStart={<Truck className="h-4 w-4" />}
+        onClick={() => setOpen(true)}
+      >
         Edit fleet
       </Button>
 
-      <Modal open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <ModuleProvider module="b2b">
-          <ModalContent className="max-w-2xl">
-            <ModalHeader>
-              <ModalTitle>Fleet</ModalTitle>
-            </ModalHeader>
+          <DialogContent className="max-w-2xl">
+            <div>
+              <DialogTitle>Fleet</DialogTitle>
+            </div>
 
-            <Stack gap={3} className="max-h-96 overflow-y-auto">
+            <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
               {!domainsLoaded ? (
                 <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-                  <Spinner className="h-4 w-4" /> Loading fitment…
+                  <Loading className="h-4 w-4" /> Loading fitment…
                 </div>
               ) : domains.length === 0 ? (
-                <Text size="sm" variant="muted" className="py-4 text-center">
+                <p className="text-base-content/70 py-4 text-center text-sm">
                   No fitment domains installed. Install one from the Fitment surface to build a
                   fleet.
-                </Text>
+                </p>
               ) : vehicles.length === 0 ? (
-                <Text size="sm" variant="muted" className="py-4 text-center">
+                <p className="text-base-content/70 py-4 text-center text-sm">
                   No vehicles in fleet yet.
-                </Text>
+                </p>
               ) : (
                 vehicles.map((v, idx) => (
                   <div
@@ -212,17 +210,15 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
                     className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2"
                   >
                     <div className="min-w-0">
-                      <Stack direction="row" align="center" gap={2} wrap>
-                        <Text size="sm" className="font-medium">
-                          {v.label}
-                        </Text>
+                      <div className="flex flex-row flex-wrap items-center gap-2">
+                        <p className="text-sm font-medium">{v.label}</p>
                         <Badge color="module" variant="soft">
                           ×{v.count}
                         </Badge>
-                      </Stack>
-                      <Text size="sm" variant="muted" className="truncate">
+                      </div>
+                      <p className="text-base-content/70 truncate text-sm">
                         {vehicleSummary(v, domainById.get(v.domainId))}
-                      </Text>
+                      </p>
                     </div>
                     <Button
                       variant="ghost"
@@ -236,7 +232,7 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
                   </div>
                 ))
               )}
-            </Stack>
+            </div>
 
             {domains.length > 0 && (
               <AddVehicleForm
@@ -245,17 +241,17 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
               />
             )}
 
-            <ModalFooter>
+            <div className="mt-4 flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setOpen(false)} disabled={saving}>
                 Cancel
               </Button>
               <Button color="module" onClick={() => void handleSave()} disabled={saving}>
                 {saving ? 'Saving…' : 'Save fleet'}
               </Button>
-            </ModalFooter>
-          </ModalContent>
+            </div>
+          </DialogContent>
         </ModuleProvider>
-      </Modal>
+      </Dialog>
     </>
   );
 }
@@ -358,17 +354,21 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
   }
 
   return (
-    <Modal open={open} onOpenChange={setOpen}>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        <Plus className="mr-1 h-4 w-4" />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button
+        variant="outline"
+        size="sm"
+        iconStart={<Plus className="h-4 w-4" />}
+        onClick={() => setOpen(true)}
+      >
         Add vehicle
       </Button>
       <ModuleProvider module="b2b">
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Add vehicle to fleet</ModalTitle>
-          </ModalHeader>
-          <Stack gap={4} className="max-h-[28rem] overflow-y-auto py-2">
+        <DialogContent>
+          <div>
+            <DialogTitle>Add vehicle to fleet</DialogTitle>
+          </div>
+          <div className="flex max-h-[28rem] flex-col gap-4 overflow-y-auto py-2">
             <div className="flex gap-3">
               <div className="flex-1">
                 <Label htmlFor="fleet-label">Label</Label>
@@ -455,17 +455,17 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
                 ))}
               </div>
             )}
-          </Stack>
-          <ModalFooter>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button color="module" onClick={handleAdd}>
               Add to fleet
             </Button>
-          </ModalFooter>
-        </ModalContent>
+          </div>
+        </DialogContent>
       </ModuleProvider>
-    </Modal>
+    </Dialog>
   );
 }

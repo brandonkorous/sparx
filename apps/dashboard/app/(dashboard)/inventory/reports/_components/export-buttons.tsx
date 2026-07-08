@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Download } from 'lucide-react';
 
-import { Button, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { exportReportCsv } from '../_lib/report-actions';
 import type { ReportKind } from './types';
@@ -44,17 +44,13 @@ export function ExportCsvButton({
 
   return (
     <span className="inline-flex items-center gap-2">
-      {error ? (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      ) : null}
+      {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
       <Button
         variant="outline"
         size="sm"
         onClick={download}
         disabled={pending}
-        leftIcon={<Download className="size-4" />}
+        iconStart={<Download className="size-4" />}
       >
         {pending ? 'Exporting…' : (label ?? 'Export CSV')}
       </Button>

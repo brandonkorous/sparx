@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Grid, ModuleProvider, Sparkline, Stat } from '@sparx/ui';
+import { ModuleProvider, Sparkline, Stat } from '@sparx/ui';
 
 import { Icon } from './icons';
 import type { Kpi } from './types';
@@ -39,10 +39,10 @@ function KpiTile({ kpi }: { kpi: Kpi }) {
 export function KpiStrip({ kpis }: { kpis: Kpi[] }) {
   if (kpis.length === 0) return null;
   return (
-    <Grid cols={2} mdCols={3} lgCols={4} gap={4}>
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
       {kpis.map((kpi) => (
         <KpiTile key={kpi.key} kpi={kpi} />
       ))}
-    </Grid>
+    </div>
   );
 }

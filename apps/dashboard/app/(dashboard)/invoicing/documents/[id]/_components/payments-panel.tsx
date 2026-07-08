@@ -9,18 +9,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle, Input, Label } from 'silicaui-react';
 
 import { recordPaymentAction } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
@@ -99,18 +88,16 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
 
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>
-          <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-row items-center gap-2">
             Payments
             <Badge color="neutral" variant="soft" size="sm">
               {payments.length}
             </Badge>
-          </Stack>
+          </div>
         </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        <div className="flex flex-col gap-4">
           <div className="grid grid-cols-12 items-end gap-2">
             <div className="col-span-6 md:col-span-3">
               <Label className="text-xs">Type</Label>
@@ -178,26 +165,21 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
           </div>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
 
           {payments.length === 0 ? (
-            <Text size="sm" variant="muted">
-              No payments recorded yet.
-            </Text>
+            <p className="text-base-content/70 text-sm">No payments recorded yet.</p>
           ) : (
-            <Stack gap={1}>
+            <div className="flex flex-col gap-1">
               {payments.map((p) => (
-                <Stack
+                <div
                   key={p.id}
-                  direction="row"
-                  align="center"
-                  justify="between"
-                  className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row items-center justify-between rounded-md border border-[var(--color-border-default)] px-3 py-2"
                 >
-                  <Stack direction="row" align="center" gap={3} wrap>
+                  <div className="flex flex-row flex-wrap items-center gap-3">
                     <Badge
                       color={p.kind === 'refund' ? 'danger' : 'neutral'}
                       variant="soft"
@@ -205,28 +187,22 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                     >
                       {KIND_LABEL[p.kind] ?? p.kind}
                     </Badge>
-                    <Text size="sm" className="capitalize">
-                      {p.method.replace('_', ' ')}
-                    </Text>
-                    {p.reference && (
-                      <Text size="xs" variant="muted">
-                        {p.reference}
-                      </Text>
-                    )}
-                    <Text size="xs" variant="muted">
+                    <p className="text-sm capitalize">{p.method.replace('_', ' ')}</p>
+                    {p.reference && <p className="text-base-content/70 text-xs">{p.reference}</p>}
+                    <p className="text-base-content/70 text-xs">
                       {new Date(p.receivedAt).toLocaleDateString()}
-                    </Text>
-                  </Stack>
-                  <Text size="sm" className="tabular-nums">
+                    </p>
+                  </div>
+                  <p className="text-sm tabular-nums">
                     {p.kind === 'refund' ? '- ' : ''}
                     {formatMoney(p.amount, currency)}
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -8,6 +8,13 @@ const config = {
   reactStrictMode: true,
   transpilePackages: [
     '@sparx/ui',
+    '@sparx/brand',
+    'silicaui-react',
+    'silicaui-charts',
+    'silicaui-table',
+    'silicaui-editor',
+    'silicaui-dnd',
+    'silicaui-panels',
     '@sparx/query',
     '@sparx/attribution',
     '@sparx/auth',

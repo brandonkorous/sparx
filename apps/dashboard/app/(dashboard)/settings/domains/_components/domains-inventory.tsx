@@ -15,29 +15,28 @@ import {
   Trash2,
 } from 'lucide-react';
 import {
+  Code,
+  SelectionList,
+  toast,
+  useConfirm,
+  type SelectionCard,
+  type SelectionColumn,
+} from '@sparx/ui';
+import {
   Badge,
   Button,
   Card,
-  Code,
+  CardBody,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  SelectionList,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-  type SelectionCard,
-  type SelectionColumn,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import type { Domain, Property } from '@/lib/sites';
 import {
@@ -137,7 +136,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
       items.push(
         <DropdownMenuItem
           key="verify"
-          onSelect={() => run(() => verifyDomain(d.id), `${d.host} verified.`)}
+          onClick={() => run(() => verifyDomain(d.id), `${d.host} verified.`)}
         >
           <RefreshCw className="h-4 w-4" /> Verify
         </DropdownMenuItem>
@@ -145,7 +144,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     }
     if (d.instructions) {
       items.push(
-        <DropdownMenuItem key="dns" onSelect={() => setDnsFor(d)}>
+        <DropdownMenuItem key="dns" onClick={() => setDnsFor(d)}>
           <Globe className="h-4 w-4" /> DNS records
         </DropdownMenuItem>
       );
@@ -154,7 +153,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
       items.push(
         <DropdownMenuItem
           key="primary"
-          onSelect={() => run(() => makeCanonical(d.id), `${d.host} is now the primary domain.`)}
+          onClick={() => run(() => makeCanonical(d.id), `${d.host} is now the primary domain.`)}
         >
           <Star className="h-4 w-4" /> Set as primary domain
         </DropdownMenuItem>
@@ -162,12 +161,12 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     }
     if (isPurchased) {
       items.push(
-        <DropdownMenuItem key="renew" onSelect={() => setRenewing(d)}>
+        <DropdownMenuItem key="renew" onClick={() => setRenewing(d)}>
           <RotateCcw className="h-4 w-4" /> Renew…
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="privacy"
-          onSelect={() =>
+          onClick={() =>
             run(
               () => togglePrivacy(d.id, !d.whoisPrivacy),
               d.whoisPrivacy ? 'WHOIS privacy disabled.' : 'WHOIS privacy enabled.'
@@ -179,7 +178,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="autorenew"
-          onSelect={() =>
+          onClick={() =>
             run(
               () => toggleAutoRenew(d.id, !d.autoRenew),
               d.autoRenew ? 'Auto-renew disabled.' : 'Auto-renew enabled.'
@@ -189,7 +188,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
           <RefreshCw className="h-4 w-4" />{' '}
           {d.autoRenew ? 'Turn off auto-renew' : 'Turn on auto-renew'}
         </DropdownMenuItem>,
-        <DropdownMenuItem key="transfer" onSelect={() => void onTransferOut(d)}>
+        <DropdownMenuItem key="transfer" onClick={() => void onTransferOut(d)}>
           <ArrowRightLeft className="h-4 w-4" /> Transfer out…
         </DropdownMenuItem>
       );
@@ -199,7 +198,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
         <DropdownMenuItem
           key="disconnect"
           className="text-[var(--color-danger-text)]"
-          onSelect={() => void onDisconnect(d)}
+          onClick={() => void onDisconnect(d)}
         >
           <Trash2 className="h-4 w-4" /> Disconnect
         </DropdownMenuItem>
@@ -207,15 +206,11 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     }
 
     if (items.length === 0) {
-      return (
-        <Text size="sm" variant="muted">
-          —
-        </Text>
-      );
+      return <p className="text-base-content/70 text-sm">—</p>;
     }
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button variant="ghost" size="sm" aria-label={`Actions for ${d.host}`} disabled={pending}>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -226,24 +221,20 @@ export function DomainsInventory({ domains, properties, view }: Props) {
   }
 
   const hostCell = (d: Domain) => (
-    <Stack direction="row" align="center" gap={2} className="min-w-0">
+    <div className="flex min-w-0 flex-row items-center gap-2">
       <Globe className="h-4 w-4 shrink-0 text-[var(--color-text-secondary)]" />
-      <Stack gap={1} className="min-w-0">
-        <Stack direction="row" align="center" gap={2} wrap>
-          <Text size="sm" weight="medium" className="truncate">
-            {d.host}
-          </Text>
+      <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <p className="truncate text-sm font-medium">{d.host}</p>
           {d.isCanonical && (
             <Badge color="module" variant="soft" size="sm">
               <Star className="h-3 w-3" /> Primary
             </Badge>
           )}
-        </Stack>
-        <Text size="xs" variant="muted">
-          {typeLabel(d)}
-        </Text>
-      </Stack>
-    </Stack>
+        </div>
+        <p className="text-base-content/70 text-xs">{typeLabel(d)}</p>
+      </div>
+    </div>
   );
 
   const statusCell = (d: Domain) => {
@@ -260,62 +251,62 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     {
       header: 'Site',
       cell: (d) => (
-        <Text size="sm" variant="muted">
-          {propertyName(d.propertyId) ?? '—'}
-        </Text>
+        <p className="text-base-content/70 text-sm">{propertyName(d.propertyId) ?? '—'}</p>
       ),
     },
     { header: 'Status', cell: statusCell },
     {
       header: 'Expiry',
       cell: (d) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {d.type === 'purchased' && d.expiresAt ? formatDate(d.expiresAt) : '—'}
-        </Text>
+        </p>
       ),
     },
     { header: '', id: 'actions', align: 'right', cell: actionsFor },
   ];
 
   const card: SelectionCard<Domain> = {
-    title: (d) => <Text weight="medium">{d.host}</Text>,
+    title: (d) => <p className="font-medium">{d.host}</p>,
     render: (d) => {
       const s = domainStatus(d);
       const site = propertyName(d.propertyId);
       return (
-        <Card variant="default" padding="md">
-          <Stack gap={3}>
-            <Stack direction="row" align="start" justify="between" gap={2}>
-              {hostCell(d)}
-              <Badge color={s.color} variant="soft">
-                {s.label}
-              </Badge>
-            </Stack>
-            <Stack direction="row" align="center" justify="between" gap={2}>
-              <Text size="xs" variant="muted">
-                {site ?? '—'}
-                {d.type === 'purchased' && d.expiresAt
-                  ? ` · expires ${formatDate(d.expiresAt)}`
-                  : ''}
-              </Text>
-              {actionsFor(d)}
-            </Stack>
-          </Stack>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-row items-start justify-between gap-2">
+                {hostCell(d)}
+                <Badge color={s.color} variant="soft">
+                  {s.label}
+                </Badge>
+              </div>
+              <div className="flex flex-row items-center justify-between gap-2">
+                <p className="text-base-content/70 text-xs">
+                  {site ?? '—'}
+                  {d.type === 'purchased' && d.expiresAt
+                    ? ` · expires ${formatDate(d.expiresAt)}`
+                    : ''}
+                </p>
+                {actionsFor(d)}
+              </div>
+            </div>
+          </CardBody>
         </Card>
       );
     },
   };
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {transferResult && (
         <div className="flex items-start gap-3 rounded-lg border border-[var(--color-warning-border)] bg-[var(--color-warning-subtle)] p-4">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-[var(--color-warning-text)]" />
-          <Stack gap={1}>
-            <Text weight="medium">Transfer auth code for {transferResult.host}</Text>
-            <Text size="sm" variant="muted">
+          <div className="flex flex-col gap-1">
+            <p className="font-medium">Transfer auth code for {transferResult.host}</p>
+            <p className="text-base-content/70 text-sm">
               Copy this code and use it at your new registrar. It expires in 24 hours.
-            </Text>
+            </p>
             <Code>{transferResult.authCode}</Code>
             <Button
               size="sm"
@@ -325,7 +316,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
             >
               Dismiss
             </Button>
-          </Stack>
+          </div>
         </div>
       )}
 
@@ -368,7 +359,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
           }}
         />
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -386,13 +377,13 @@ function RenewDialog({
   const [years, setYears] = React.useState(1);
   const total = domain.renewalPriceCents ? formatPrice(domain.renewalPriceCents * years) : null;
   return (
-    <Modal open onOpenChange={(v) => !v && onClose()}>
-      <ModalContent className="sm:max-w-md">
-        <ModalHeader>
-          <ModalTitle>Renew {domain.host}</ModalTitle>
-        </ModalHeader>
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <div>
+          <DialogTitle>Renew {domain.host}</DialogTitle>
+        </div>
         <div className="px-6 pb-2">
-          <Stack gap={3}>
+          <div className="flex flex-col gap-3">
             <div>
               <Label htmlFor="renew-years">Years</Label>
               <Input
@@ -405,14 +396,10 @@ function RenewDialog({
                 className="w-28"
               />
             </div>
-            {total && (
-              <Text size="sm" variant="muted">
-                Total: {total}
-              </Text>
-            )}
-          </Stack>
+            {total && <p className="text-base-content/70 text-sm">Total: {total}</p>}
+          </div>
         </div>
-        <ModalFooter>
+        <div className="mt-4 flex justify-end gap-2 px-6 pb-2">
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
@@ -421,13 +408,13 @@ function RenewDialog({
             disabled={pending}
             loading={pending}
             onClick={() => onRenew(years)}
-            leftIcon={<RotateCcw className="h-4 w-4" />}
+            iconStart={<RotateCcw className="h-4 w-4" />}
           >
             Renew {years} yr
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -444,16 +431,16 @@ function DnsDialog({
 }) {
   const inst = domain.instructions;
   return (
-    <Modal open onOpenChange={(v) => !v && onClose()}>
-      <ModalContent className="sm:max-w-lg">
-        <ModalHeader>
-          <ModalTitle>DNS records for {domain.host}</ModalTitle>
-        </ModalHeader>
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-lg">
+        <div>
+          <DialogTitle>DNS records for {domain.host}</DialogTitle>
+        </div>
         <div className="px-6 pb-2">
-          <Stack gap={3}>
-            <Text size="sm" variant="muted">
+          <div className="flex flex-col gap-3">
+            <p className="text-base-content/70 text-sm">
               Add these records at your registrar, then verify:
-            </Text>
+            </p>
             {inst && (
               <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
                 <span className="text-[var(--color-text-secondary)]">CNAME</span>
@@ -470,9 +457,9 @@ function DnsDialog({
                 )}
               </div>
             )}
-          </Stack>
+          </div>
         </div>
-        <ModalFooter>
+        <div className="mt-4 flex justify-end gap-2 px-6 pb-2">
           <Button variant="ghost" onClick={onClose}>
             Close
           </Button>
@@ -481,12 +468,12 @@ function DnsDialog({
             disabled={pending}
             loading={pending}
             onClick={onVerify}
-            leftIcon={<RefreshCw className="h-4 w-4" />}
+            iconStart={<RefreshCw className="h-4 w-4" />}
           >
             Verify now
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

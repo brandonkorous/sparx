@@ -2,16 +2,14 @@
 
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { bulkDeleteB2bAccountsAction, bulkSetB2bStatusAction } from '../../b2b-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -90,12 +88,12 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     const used = Number(a.creditUsed);
     const utilization = limit > 0 ? used / limit : 0;
     return (
-      <Stack direction="row" gap={1} align="center" justify="end">
+      <div className="flex flex-row items-center justify-end gap-1">
         <span className="tabular-nums">${used.toLocaleString()}</span>
         {utilization >= 0.85 && (
           <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
         )}
-      </Stack>
+      </div>
     );
   };
 
@@ -108,11 +106,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     { header: 'Status', cell: statusBadge },
     {
       header: 'Pricing tier',
-      cell: (a) => (
-        <Text size="sm" variant="muted">
-          {a.pricingTier ?? '—'}
-        </Text>
-      ),
+      cell: (a) => <p className="text-base-content/70 text-sm">{a.pricingTier ?? '—'}</p>,
     },
     {
       header: 'Credit limit',
@@ -122,11 +116,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     { header: 'Used', align: 'right', cell: usedCell },
     {
       header: 'Fleet',
-      cell: (a) => (
-        <Text size="sm" variant="muted">
-          {a.fleetSize ?? '—'}
-        </Text>
-      ),
+      cell: (a) => <p className="text-base-content/70 text-sm">{a.fleetSize ?? '—'}</p>,
     },
   ];
 
@@ -137,22 +127,18 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
         'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
       ),
     subtitle: (a) => (
-      <Text size="xs" variant="muted">
-        {a.pricingTier ?? 'No pricing tier'}
-      </Text>
+      <p className="text-base-content/70 text-xs">{a.pricingTier ?? 'No pricing tier'}</p>
     ),
     badge: statusBadge,
     body: (a) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             Limit ${Number(a.creditLimit).toLocaleString()}
-          </Text>
+          </p>
           {usedCell(a)}
-        </Stack>
-        <Text size="xs" variant="muted">
-          Fleet: {a.fleetSize ?? '—'}
-        </Text>
+        </div>
+        <p className="text-base-content/70 text-xs">Fleet: {a.fleetSize ?? '—'}</p>
       </>
     ),
   };

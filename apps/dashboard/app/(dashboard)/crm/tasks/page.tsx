@@ -1,17 +1,8 @@
 import { CheckSquare, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -73,8 +64,8 @@ export default async function TasksPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<CheckSquare className="h-5 w-5" />}
           title="Tasks"
@@ -106,33 +97,29 @@ export default async function TasksPage({ searchParams }: PageProps) {
         />
 
         {overdueTasks.length > 0 && (
-          <Card variant="module">
-            <CardHeader>
+          <Card className="bg-module bg-soft">
+            <CardBody>
               <CardTitle>
-                <Stack direction="row" align="center" gap={2}>
+                <div className="flex flex-row items-center gap-2">
                   <AlertCircle className="h-4 w-4" /> Overdue
                   <Badge color="danger">{overdueTasks.length}</Badge>
-                </Stack>
+                </div>
               </CardTitle>
-            </CardHeader>
-            <CardContent>
               <TasksList tasks={overdueTasks.map(serializeTask)} view={view} overdue />
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <Calendar className="h-4 w-4" /> Open
                 <Badge color="neutral" variant="soft" size="sm">
                   {openTotal}
                 </Badge>
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             {openTasks.length === 0 ? (
               <EmptyState
                 title="No open tasks"
@@ -141,25 +128,23 @@ export default async function TasksPage({ searchParams }: PageProps) {
             ) : (
               <TasksList tasks={openTasks.map(serializeTask)} view={view} />
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         {completedTasks.length > 0 && (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Recently completed</CardTitle>
-            </CardHeader>
-            <CardContent>
               <TasksList tasks={completedTasks.map(serializeTask)} view={view} />
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
         {/* Paginates the OPEN list only — the overdue/completed groups above are
             capped helper queries, so the pager total reflects open tasks. */}
         <ListPager total={openTotal} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

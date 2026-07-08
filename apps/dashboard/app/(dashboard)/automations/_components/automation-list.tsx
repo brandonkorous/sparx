@@ -16,17 +16,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
-import {
-  Button,
-  Card,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Switch,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Switch } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
 import type { AutomationDto } from '../_lib/types';
 import {
   AutomationStatusBadge,
@@ -89,32 +80,32 @@ export function AutomationList({
     ) : null;
 
   const runStats = (a: AutomationDto) => (
-    <Stack gap={0}>
-      <Text size="xs" variant="muted">
+    <div className="flex flex-col gap-0">
+      <p className="text-base-content/70 text-xs">
         {a.runCount} run{a.runCount === 1 ? '' : 's'} ·{' '}
         {a.lastRunAt ? formatTimestamp(a.lastRunAt) : 'never run'}
-      </Text>
+      </p>
       {a.errorCount > 0 && (
-        <Text size="xs" variant="danger">
+        <p className="text-danger text-xs">
           {a.errorCount} error{a.errorCount === 1 ? '' : 's'}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 
   const columns: SelectionColumn<AutomationDto>[] = [
     {
       header: 'Name',
       cell: (a) => (
-        <Stack gap={1} className="min-w-0">
-          <Stack direction="row" align="center" gap={2} wrap>
+        <div className="flex min-w-0 flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             {nameLink(a, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
             <OriginBadge origin={a.origin} locked={a.locked} />
-          </Stack>
-          <Text size="xs" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-xs">
             {summarizeTrigger(a.triggerType, a.triggerConfig)}
-          </Text>
-        </Stack>
+          </p>
+        </div>
       ),
     },
     {
@@ -141,63 +132,65 @@ export function AutomationList({
     title: (a) =>
       nameLink(a, 'text-base font-medium hover:text-[var(--module-active)] hover:underline'),
     render: (a) => (
-      <Card variant="default" padding="md">
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              {nameLink(
-                a,
-                'text-base font-medium hover:text-[var(--module-active)] hover:underline'
-              )}
-              <OriginBadge origin={a.origin} locked={a.locked} />
-            </Stack>
-            <Text size="sm" variant="muted">
-              {summarizeTrigger(a.triggerType, a.triggerConfig)}
-            </Text>
-            <ModuleTags
-              trigger={{ triggerType: a.triggerType, triggerConfig: a.triggerConfig }}
-              actions={parseActions(a.actions)}
-            />
-          </Stack>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <div className="flex flex-row flex-wrap items-center gap-2">
+                {nameLink(
+                  a,
+                  'text-base font-medium hover:text-[var(--module-active)] hover:underline'
+                )}
+                <OriginBadge origin={a.origin} locked={a.locked} />
+              </div>
+              <p className="text-base-content/70 text-sm">
+                {summarizeTrigger(a.triggerType, a.triggerConfig)}
+              </p>
+              <ModuleTags
+                trigger={{ triggerType: a.triggerType, triggerConfig: a.triggerConfig }}
+                actions={parseActions(a.actions)}
+              />
+            </div>
 
-          <Stack direction="row" align="center" gap={4}>
-            <Stack gap={1} align="end" className="text-right">
-              <AutomationStatusBadge status={a.status} />
-              {runStats(a)}
-            </Stack>
-            {statusToggle(a)}
-            <Button asChild variant="ghost" size="sm">
-              <Link href={`/automations/${a.id}`}>Open</Link>
-            </Button>
-          </Stack>
-        </Stack>
+            <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-col items-end gap-1 text-right">
+                <AutomationStatusBadge status={a.status} />
+                {runStats(a)}
+              </div>
+              {statusToggle(a)}
+              <Button variant="ghost" size="sm" render={<Link href={`/automations/${a.id}`} />}>
+                Open
+              </Button>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     ),
   };
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {/* Action-type axis (a derived property, not a server facet): narrow to
           rules that send email — the unified replacement for the old standalone
           Email Automations page. */}
-      <Stack direction="row" align="center" gap={2} wrap>
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <Button
           type="button"
           size="sm"
           variant={emailOnly ? 'soft' : 'ghost'}
           color={emailOnly ? 'module' : 'neutral'}
-          leftIcon={<Mail className="h-4 w-4" />}
+          iconStart={<Mail className="h-4 w-4" />}
           onClick={() => setEmailOnly((v) => !v)}
           aria-pressed={emailOnly}
         >
           Email · {emailIds.size}
         </Button>
-      </Stack>
+      </div>
 
       {rows.length === 0 ? (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           No {emailOnly ? 'email ' : ''}automations match these filters.
-        </Text>
+        </p>
       ) : (
         <SelectionList
           items={rows}
@@ -210,6 +203,6 @@ export function AutomationList({
           card={card}
         />
       )}
-    </Stack>
+    </div>
   );
 }

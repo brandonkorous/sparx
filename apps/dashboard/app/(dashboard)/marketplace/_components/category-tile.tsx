@@ -4,7 +4,7 @@
 // chip), not a control variant.
 
 import Link from 'next/link';
-import { Badge, Card, CardContent, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import type { MarketplaceCategory } from '../_registry';
 
@@ -24,8 +24,8 @@ export function CategoryTile({
         className="absolute inset-x-0 top-0 h-[3px]"
         style={{ backgroundColor: category.accent }}
       />
-      <CardContent>
-        <Stack gap={3}>
+      <CardBody>
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <span
               className="flex h-9 w-9 items-center justify-center rounded-lg text-white"
@@ -35,9 +35,7 @@ export function CategoryTile({
             </span>
             {live ? (
               count != null ? (
-                <Text size="sm" weight="medium">
-                  {count.toLocaleString()}
-                </Text>
+                <p className="text-sm font-medium">{count.toLocaleString()}</p>
               ) : null
             ) : (
               <Badge color="info" variant="soft">
@@ -46,13 +44,11 @@ export function CategoryTile({
             )}
           </div>
           <div>
-            <Text weight="medium">{category.label}</Text>
-            <Text size="sm" variant="muted" className="mt-1">
-              {category.tagline}
-            </Text>
+            <p className="font-medium">{category.label}</p>
+            <p className="text-base-content/70 mt-1 text-sm">{category.tagline}</p>
           </div>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 

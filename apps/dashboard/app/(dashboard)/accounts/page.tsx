@@ -1,4 +1,4 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 import { requireSession, listMyMemberships, listPendingInvitations } from '@sparx/auth';
 import { AccountsList } from './_components/accounts-list';
 
@@ -16,8 +16,8 @@ export default async function AccountsPage() {
   ]);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="Your accounts"
           description="Switch between the workspaces you have access to, or accept an invitation to join another team."
@@ -27,7 +27,7 @@ export default async function AccountsPage() {
           invitations={invitations}
           activeOrgId={user.tenantId}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

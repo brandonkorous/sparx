@@ -12,7 +12,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2 } from 'lucide-react';
 
-import { Badge, Button, Checkbox, Input, Label, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Checkbox, Input, Label } from 'silicaui-react';
 
 import { deleteWorkflowStageAction, updateWorkflowStageAction } from '../../../../workflow-actions';
 
@@ -126,7 +127,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
       style={style}
       className="rounded-md border border-[var(--color-border-default)] p-3"
     >
-      <Stack direction="row" align="center" gap={3}>
+      <div className="flex flex-row items-center gap-3">
         <button
           type="button"
           {...attributes}
@@ -174,19 +175,19 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-      </Stack>
+      </div>
 
-      <Stack direction="row" align="center" gap={4} wrap className="mt-3 px-1">
+      <div className="mt-3 flex flex-row flex-wrap items-center gap-4 px-1">
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
           <Checkbox
             color="module"
             checked={numberOnEnter}
-            onCheckedChange={(v) => setNumberOnEnter(v === true)}
+            onChange={(e) => setNumberOnEnter(e.target.checked)}
           />
           Mint a number on entry
         </label>
         {numberOnEnter && (
-          <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-row items-center gap-2">
             <Label className="text-xs">Prefix</Label>
             <Input
               value={numberPrefix}
@@ -196,13 +197,13 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
               placeholder="INV-"
               aria-label="Number prefix"
             />
-          </Stack>
+          </div>
         )}
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
-            onCheckedChange={(v) => setSnapshotOnEnter(v === true)}
+            onChange={(e) => setSnapshotOnEnter(e.target.checked)}
           />
           Freeze a snapshot
         </label>
@@ -210,7 +211,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           <Checkbox
             color="module"
             checked={locksEditing}
-            onCheckedChange={(v) => setLocksEditing(v === true)}
+            onChange={(e) => setLocksEditing(e.target.checked)}
           />
           Lock editing
         </label>
@@ -218,7 +219,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           <Checkbox
             color="module"
             checked={color !== null}
-            onCheckedChange={(v) => setColor(v === true ? (color ?? '#6366f1') : null)}
+            onChange={(e) => setColor(e.target.checked ? (color ?? '#6366f1') : null)}
           />
           Color
         </label>
@@ -241,12 +242,12 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
             Save
           </Button>
         </div>
-      </Stack>
+      </div>
 
       {numberOnEnter && !numberPrefix.trim() && (
-        <Text size="xs" variant="muted" className="mt-1 px-1">
+        <p className="text-base-content/70 mt-1 px-1 text-xs">
           Without a prefix, numbers mint as plain sequence (e.g. 000123). Add one like INV- or EST-.
-        </Text>
+        </p>
       )}
     </div>
   );

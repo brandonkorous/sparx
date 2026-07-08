@@ -1,23 +1,19 @@
 'use client';
 
 import * as React from 'react';
+import { toast } from '@sparx/ui';
 import {
   Badge,
   Button,
   Checkbox,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Input,
   Label,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
+  Loading,
   NativeSelect,
-  Spinner,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { CheckCircle2, Globe, Lock } from 'lucide-react';
 import type { Property } from '@/lib/sites';
 import { purchaseDomain, type DomainSuggestion, type PurchaseResult } from './actions';
@@ -165,32 +161,30 @@ export function PurchaseDialog({
   const priceLabel = suggestion ? `${formatPrice(suggestion.displayPrice)}/yr` : '';
 
   return (
-    <Modal
+    <Dialog
       open={open}
       onOpenChange={(v) => {
         if (!v && step !== 'purchasing') onClose();
       }}
     >
-      <ModalContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
-        <ModalHeader>
-          <ModalTitle className="flex items-center gap-2">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+        <div>
+          <DialogTitle className="flex items-center gap-2">
             <Globe className="size-5 text-[var(--color-primary)]" />
             {step === 'success'
               ? 'Domain registered!'
               : `${mode === 'select' ? 'Add' : 'Purchase'} ${suggestion?.domain ?? ''}`}
-          </ModalTitle>
-        </ModalHeader>
+          </DialogTitle>
+        </div>
 
         {/* ── Success state ──────────────────────────────────────────────────── */}
         {step === 'success' && result && (
           <div className="px-6 pb-2">
-            <Stack gap={4} align="center" className="py-6 text-center">
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
               <CheckCircle2 className="size-12 text-[var(--color-success-text)]" />
               <div>
-                <Text weight="medium" className="text-lg">
-                  {result.domain.host}
-                </Text>
-                <Text size="sm" variant="muted" className="mt-1">
+                <p className="text-lg font-medium">{result.domain.host}</p>
+                <p className="text-base-content/70 mt-1 text-sm">
                   Registered through{' '}
                   {new Date(result.expiresAt).toLocaleDateString(undefined, {
                     year: 'numeric',
@@ -198,16 +192,16 @@ export function PurchaseDialog({
                     day: 'numeric',
                   })}
                   . DNS is propagating — your domain will be active within a few minutes.
-                </Text>
+                </p>
               </div>
-            </Stack>
+            </div>
           </div>
         )}
 
         {/* ── Purchasing progress ────────────────────────────────────────────── */}
         {step === 'purchasing' && (
           <div className="px-6 pb-2">
-            <Stack gap={5} className="py-8">
+            <div className="flex flex-col gap-5 py-8">
               {PURCHASE_STEPS.map((label, i) => {
                 const done = i < activeStep;
                 const current = i === activeStep;
@@ -217,23 +211,27 @@ export function PurchaseDialog({
                       {done ? (
                         <CheckCircle2 className="size-4 text-[var(--color-success-text)]" />
                       ) : current ? (
-                        <Spinner className="size-4" />
+                        <Loading className="size-4" />
                       ) : (
                         <span className="size-2 rounded-full bg-[var(--border)]" />
                       )}
                     </span>
-                    <Text
-                      size="sm"
-                      weight={current ? 'medium' : 'regular'}
-                      variant={done ? 'muted' : 'default'}
+                    <p
+                      className={[
+                        'text-sm',
+                        current ? 'font-medium' : '',
+                        done ? 'text-base-content/70' : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
                     >
                       {label}
                       {done ? '  ✓' : current ? '…' : ''}
-                    </Text>
+                    </p>
                   </div>
                 );
               })}
-            </Stack>
+            </div>
           </div>
         )}
 
@@ -241,15 +239,15 @@ export function PurchaseDialog({
         {step === 'form' && suggestion && (
           <form id="purchase-form" onSubmit={handleSubmit}>
             <div className="px-6 pb-2">
-              <Stack gap={6}>
+              <div className="flex flex-col gap-6">
                 {/* Pricing summary */}
                 <div className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
-                  <Stack gap={1}>
-                    <Text weight="medium">{suggestion.domain}</Text>
-                    <Text size="sm" variant="muted">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-medium">{suggestion.domain}</p>
+                    <p className="text-base-content/70 text-sm">
                       {suggestion.available ? 'Available' : 'Taken'}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                   <Badge color={suggestion.available ? 'success' : 'danger'} variant="soft">
                     {priceLabel}
                   </Badge>
@@ -304,22 +302,20 @@ export function PurchaseDialog({
                     <Label htmlFor="pd-privacy" className="flex items-center gap-1.5">
                       <Lock className="size-3.5" /> WHOIS privacy protection
                     </Label>
-                    <Text size="sm" variant="muted">
+                    <p className="text-base-content/70 text-sm">
                       Hides your personal details from the public WHOIS database.
-                    </Text>
+                    </p>
                   </div>
                 </div>
 
                 {/* Registrant contact */}
                 <div>
-                  <Text weight="medium" className="mb-3">
-                    Registrant contact
-                  </Text>
-                  <Text size="sm" variant="muted" className="mb-4">
+                  <p className="mb-3 font-medium">Registrant contact</p>
+                  <p className="text-base-content/70 mb-4 text-sm">
                     Required by ICANN for domain registration. This information may appear in the
                     public WHOIS record if privacy protection is disabled.
-                  </Text>
-                  <Stack gap={3}>
+                  </p>
+                  <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <Label htmlFor="pd-first">First name</Label>
@@ -386,13 +382,13 @@ export function PurchaseDialog({
                         required
                       />
                     </div>
-                  </Stack>
+                  </div>
                 </div>
 
                 {/* Payment notice — mode-aware. Select mode (onboarding) charges
                     at Launch, not now; purchase mode (Settings) charges on submit. */}
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     <strong className="font-medium text-[var(--color-text)]">Billing:</strong>{' '}
                     {mode === 'select' ? (
                       <>
@@ -407,31 +403,31 @@ export function PurchaseDialog({
                         auto-renew anytime.
                       </>
                     )}
-                  </Text>
+                  </p>
                 </div>
-              </Stack>
+              </div>
             </div>
 
-            <ModalFooter>
+            <div className="mt-4 flex justify-end gap-2 px-6 pb-2">
               <Button type="button" variant="ghost" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit" color="primary" form="purchase-form">
                 {mode === 'select' ? 'Add to my site' : 'Purchase & connect'} — {priceLabel}
               </Button>
-            </ModalFooter>
+            </div>
           </form>
         )}
 
         {/* ── Success footer ─────────────────────────────────────────────────── */}
         {step === 'success' && (
-          <ModalFooter>
+          <div className="mt-4 flex justify-end gap-2 px-6 pb-2">
             <Button color="primary" onClick={onClose}>
               Done
             </Button>
-          </ModalFooter>
+          </div>
         )}
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

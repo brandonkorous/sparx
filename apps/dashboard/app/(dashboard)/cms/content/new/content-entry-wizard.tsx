@@ -18,23 +18,13 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
   SchemaFieldRenderer,
-  Stack,
-  Text,
   SurfaceFrame,
   SurfaceStep,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { CheckCircle2, FileText } from 'lucide-react';
 
@@ -354,11 +344,7 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-4">
-        {loadingSchema && (
-          <Text size="sm" variant="muted">
-            Loading schema…
-          </Text>
-        )}
+        {loadingSchema && <p className="text-base-content/70 text-sm">Loading schema…</p>}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {types
             .filter((t) => !t.is_singleton)
@@ -370,24 +356,22 @@ function ContentEntryWizardInner({
                 onClick={() => void selectType(t.key)}
                 className="group rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 text-left transition-colors hover:border-[var(--module-active)] hover:bg-[var(--module-active-tint)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--module-active)] disabled:opacity-50"
               >
-                <Stack gap={2}>
-                  <Stack direction="row" align="center" gap={2}>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-row items-center gap-2">
                     <FileText className="h-4 w-4 text-[var(--module-active)]" />
-                    <Text className="font-medium">{t.name}</Text>
-                  </Stack>
+                    <p className="font-medium">{t.name}</p>
+                  </div>
                   {t.description && (
-                    <Text size="xs" variant="muted" className="line-clamp-2">
-                      {t.description}
-                    </Text>
+                    <p className="text-base-content/70 line-clamp-2 text-xs">{t.description}</p>
                   )}
-                </Stack>
+                </div>
               </button>
             ))}
         </div>
         {error && (
-          <Text size="sm" variant="danger" role="alert">
+          <p className="text-danger text-sm" role="alert">
             {error}
-          </Text>
+          </p>
         )}
       </div>
     </SurfaceStep>
@@ -409,17 +393,12 @@ function ContentEntryWizardInner({
     >
       <div className="flex flex-col gap-4">
         {typeSchema.schema_json.fields.filter((f) => f.required).length === 0 && (
-          <Stack
-            direction="row"
-            align="center"
-            gap={2}
-            className="rounded-md bg-[var(--color-success-subtle)] px-3 py-2"
-          >
+          <div className="flex flex-row items-center gap-2 rounded-md bg-[var(--color-success-subtle)] px-3 py-2">
             <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
-            <Text size="sm">
+            <p className="text-sm">
               This content type has no required fields — continue to publish settings.
-            </Text>
-          </Stack>
+            </p>
+          </div>
         )}
 
         <ContentEntryForm
@@ -430,9 +409,9 @@ function ContentEntryWizardInner({
         />
 
         {Object.keys(fieldErrors).length > 0 && (
-          <Text size="sm" variant="danger" role="alert">
+          <p className="text-danger text-sm" role="alert">
             Please fix the errors above before continuing.
-          </Text>
+          </p>
         )}
       </div>
     </SurfaceStep>
@@ -460,11 +439,9 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-5">
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Author</Heading>
-          </CardHeader>
-          <CardContent>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Author</h3>
             {creatingAuthor ? (
               <div className="flex flex-col gap-3">
                 <div>
@@ -476,7 +453,7 @@ function ContentEntryWizardInner({
                     placeholder="e.g. Jane Doe"
                   />
                 </div>
-                <Stack direction="row" align="center" gap={2}>
+                <div className="flex flex-row items-center gap-2">
                   <Button
                     type="button"
                     color="module"
@@ -501,18 +478,18 @@ function ContentEntryWizardInner({
                   >
                     Cancel
                   </Button>
-                </Stack>
+                </div>
                 {authorError && (
-                  <Text size="sm" variant="danger" role="alert">
+                  <p className="text-danger text-sm" role="alert">
                     {authorError}
-                  </Text>
+                  </p>
                 )}
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Attribute this content to an author, or create one on the fly. Optional.
-                </Text>
+                </p>
                 <div>
                   <Label htmlFor="cw-author">Author</Label>
                   <NativeSelect
@@ -540,19 +517,17 @@ function ContentEntryWizardInner({
                 </button>
               </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         {assetFields.length > 0 && (
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Media</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Media</h3>
               <div className="flex flex-col gap-3">
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   Add images and files — upload new or pick from your library.
-                </Text>
+                </p>
                 <ContentEntryForm
                   schema={{ fields: assetFields }}
                   body={body}
@@ -560,14 +535,14 @@ function ContentEntryWizardInner({
                   autoDeriveSlugs={false}
                 />
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
         {error && (
-          <Text size="sm" variant="danger" role="alert">
+          <p className="text-danger text-sm" role="alert">
             {error}
-          </Text>
+          </p>
         )}
       </div>
     </SurfaceStep>
@@ -589,11 +564,9 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-5">
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Visibility</Heading>
-          </CardHeader>
-          <CardContent>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Visibility</h3>
             <SchemaFieldRenderer
               fields={[
                 {
@@ -608,7 +581,7 @@ function ContentEntryWizardInner({
               onChange={(_k, v) => setStatus(v as 'draft' | 'published' | 'scheduled')}
             />
             {status === 'scheduled' && (
-              <Stack gap={1} className="mt-4">
+              <div className="mt-4 flex flex-col gap-1">
                 <Label htmlFor="wizard-scheduled-at">Publish on</Label>
                 <Input
                   id="wizard-scheduled-at"
@@ -616,18 +589,16 @@ function ContentEntryWizardInner({
                   value={scheduledAt}
                   onChange={(e) => setScheduledAt(e.target.value)}
                 />
-              </Stack>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         {typeSchema.url_pattern && (
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>URL</Heading>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={1}>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">URL</h3>
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="wizard-slug">
                   Slug
                   <Badge variant="soft" color="neutral" className="ml-2 font-mono text-xs">
@@ -643,18 +614,18 @@ function ContentEntryWizardInner({
                   }}
                   placeholder="my-entry-slug"
                 />
-                <Text size="xs" variant="muted">
+                <p className="text-base-content/70 text-xs">
                   Auto-derived from the title. Edit to customise.
-                </Text>
-              </Stack>
-            </CardContent>
+                </p>
+              </div>
+            </CardBody>
           </Card>
         )}
 
         {error && (
-          <Text size="sm" variant="danger" role="alert">
+          <p className="text-danger text-sm" role="alert">
             {error}
-          </Text>
+          </p>
         )}
       </div>
     </SurfaceStep>

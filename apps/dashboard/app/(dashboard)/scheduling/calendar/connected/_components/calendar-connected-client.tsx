@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button, Card, Text } from '@sparx/ui';
+import { Button, Card } from 'silicaui-react';
 import { CalendarCheck2, CircleAlert, Loader2 } from 'lucide-react';
 
 import { completeCalendarOAuthAction } from '../../../_lib/actions';
@@ -61,9 +61,9 @@ export function CalendarConnectedClient({
             <Loader2 className="h-8 w-8 animate-spin text-[var(--module-scheduling)]" />
             <div>
               <p className="text-base font-semibold">Finishing the connection…</p>
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 Exchanging tokens and importing your calendar.
-              </Text>
+              </p>
             </div>
           </>
         ) : phase.kind === 'connected' ? (
@@ -71,10 +71,10 @@ export function CalendarConnectedClient({
             <CalendarCheck2 className="h-8 w-8 text-[var(--color-success)]" />
             <div>
               <p className="text-base font-semibold">Calendar connected</p>
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 Your {phase.provider === 'google' ? 'Google' : 'Microsoft'} calendar is syncing.
                 Outside events now block this resource&rsquo;s availability.
-              </Text>
+              </p>
             </div>
             <Link href="/scheduling/resources">
               <Button color="module">Back to scheduling</Button>
@@ -87,9 +87,7 @@ export function CalendarConnectedClient({
               <p className="text-base font-semibold">
                 {phase.kind === 'declined' ? 'Connection cancelled' : 'Could not connect'}
               </p>
-              <Text size="sm" variant="muted">
-                {phase.reason}
-              </Text>
+              <p className="text-base-content/70 text-sm">{phase.reason}</p>
             </div>
             <Link href="/scheduling/resources">
               <Button variant="outline">Back to scheduling</Button>

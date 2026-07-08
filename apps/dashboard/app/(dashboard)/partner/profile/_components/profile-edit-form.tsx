@@ -6,20 +6,20 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
+  CardBody,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
+  Switch,
+  Textarea,
+} from 'silicaui-react';
+import {
+  ModuleProvider,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
   SurfaceSummaryDivider,
   SurfaceSummaryRow,
-  Switch,
-  Text,
-  Textarea,
   statusLabel,
   statusTone,
   type SurfaceStepDef,
@@ -152,9 +152,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
             nextDisabled: pending || !dirty,
             extra:
               savedAt && !error ? (
-                <Text size="xs" variant="success">
-                  Saved {savedAt}
-                </Text>
+                <p className="text-success text-xs">Saved {savedAt}</p>
               ) : undefined,
           }}
         >
@@ -166,15 +164,15 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
               submit();
             }}
           >
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={5}>
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-5">
                   <Field label="Practice name" htmlFor="p-name" error={fieldErrors.displayName}>
                     <Input
                       id="p-name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      variant={fieldErrors.displayName ? 'error' : 'default'}
+                      color={fieldErrors.displayName ? 'error' : undefined}
                       maxLength={255}
                     />
                   </Field>
@@ -190,7 +188,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                     />
                   </Field>
 
-                  <Stack direction="row" gap={3} wrap>
+                  <div className="flex flex-row flex-wrap gap-3">
                     <Field
                       label="Website"
                       htmlFor="p-website"
@@ -202,7 +200,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
                         placeholder="https://example.com"
-                        variant={fieldErrors.websiteUrl ? 'error' : 'default'}
+                        color={fieldErrors.websiteUrl ? 'error' : undefined}
                       />
                     </Field>
                     <Field
@@ -222,7 +220,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                         ))}
                       </NativeSelect>
                     </Field>
-                  </Stack>
+                  </div>
 
                   <Field label="Logo / photo URL" htmlFor="p-photo" error={fieldErrors.photoUrl}>
                     <Input
@@ -230,11 +228,11 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                       value={photoUrl}
                       onChange={(e) => setPhotoUrl(e.target.value)}
                       placeholder="https://…/logo.png"
-                      variant={fieldErrors.photoUrl ? 'error' : 'default'}
+                      color={fieldErrors.photoUrl ? 'error' : undefined}
                     />
                   </Field>
 
-                  <Stack direction="row" gap={3} wrap>
+                  <div className="flex flex-row flex-wrap gap-3">
                     <Field label="City" htmlFor="p-city" className="min-w-[10rem] flex-1">
                       <Input id="p-city" value={city} onChange={(e) => setCity(e.target.value)} />
                     </Field>
@@ -259,7 +257,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                         className="uppercase"
                       />
                     </Field>
-                  </Stack>
+                  </div>
 
                   <Toggle
                     id="p-remote"
@@ -269,12 +267,12 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                     onCheckedChange={setIsRemote}
                   />
 
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label>Specialties</Label>
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       The areas you focus on — these drive the directory’s specialty filter.
-                    </Text>
-                    <Stack direction="row" gap={2} wrap>
+                    </p>
+                    <div className="flex flex-row flex-wrap gap-2">
                       {KNOWN_SPECIALTIES.map((tag) => {
                         const on = specialties.includes(tag);
                         return (
@@ -291,8 +289,8 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                           </Button>
                         );
                       })}
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
                   <SurfaceSummaryDivider />
 
@@ -303,14 +301,14 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
                     checked={directoryVisible}
                     onCheckedChange={setDirectoryVisible}
                   />
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           </form>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -332,15 +330,11 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <Stack gap={2} className={className}>
+    <div className={`flex flex-col gap-2${className ? ` ${className}` : ''}`}>
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
-      {error && (
-        <Text size="xs" variant="danger">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {error && <p className="text-danger text-xs">{error}</p>}
+    </div>
   );
 }
 
@@ -358,15 +352,13 @@ function Toggle({
   onCheckedChange: (v: boolean) => void;
 }) {
   return (
-    <Stack direction="row" align="start" justify="between" gap={3}>
-      <Stack gap={1} className="min-w-0">
+    <div className="flex flex-row items-start justify-between gap-3">
+      <div className="flex min-w-0 flex-col gap-1">
         <Label htmlFor={id}>{label}</Label>
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      </Stack>
+        <p className="text-base-content/70 text-xs">{hint}</p>
+      </div>
       <Switch id={id} color="module" checked={checked} onCheckedChange={onCheckedChange} />
-    </Stack>
+    </div>
   );
 }
 

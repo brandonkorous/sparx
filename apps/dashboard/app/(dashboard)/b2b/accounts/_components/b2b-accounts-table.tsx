@@ -1,23 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Badge,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Table } from 'silicaui-react';
 import type { B2bAccountRow } from '../page';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'outline'> = {
+const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
   active: 'success',
   credit_hold: 'warning',
   suspended: 'danger',
-  inactive: 'outline',
+  inactive: 'neutral',
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -38,19 +29,19 @@ interface Props {
 export function B2bAccountsTable({ accounts }: Props) {
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Company</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Pricing tier</TableHead>
-          <TableHead>Credit limit</TableHead>
-          <TableHead>Used</TableHead>
-          <TableHead>Remaining</TableHead>
-          <TableHead>Terms</TableHead>
-          <TableHead>Discount</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Status</th>
+          <th>Pricing tier</th>
+          <th>Credit limit</th>
+          <th>Used</th>
+          <th>Remaining</th>
+          <th>Terms</th>
+          <th>Discount</th>
+        </tr>
+      </thead>
+      <tbody>
         {accounts.map((a) => {
           const utilPct = a.creditUtilizationPct;
           const utilizationColor =
@@ -61,52 +52,48 @@ export function B2bAccountsTable({ accounts }: Props) {
                 : '';
 
           return (
-            <TableRow key={a.id} className="hover:bg-[var(--color-surface-subtle)]">
-              <TableCell>
+            <tr key={a.id} className="hover:bg-[var(--color-surface-subtle)]">
+              <td>
                 <Link
                   href={`/b2b/accounts/${a.id}`}
                   className="font-medium hover:text-[var(--module-active)] hover:underline"
                 >
                   {a.companyName}
                 </Link>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 <Badge color={STATUS_VARIANT[a.status] ?? 'neutral'} variant="soft" size="sm">
                   {STATUS_LABEL[a.status] ?? a.status}
                 </Badge>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td>
                 {a.pricingTierName ? (
                   <Badge color="module" variant="soft" size="sm">
                     {a.pricingTierName}
                   </Badge>
                 ) : (
-                  <Text size="sm" variant="muted">
-                    —
-                  </Text>
+                  <p className="text-base-content/70 text-sm">—</p>
                 )}
-              </TableCell>
-              <TableCell>
-                <Text size="sm">{formatDollars(a.creditLimitCents)}</Text>
-              </TableCell>
-              <TableCell>
-                <Text size="sm" className={utilizationColor}>
-                  {formatDollars(a.creditUsedCents)}
-                </Text>
-              </TableCell>
-              <TableCell>
-                <Text size="sm">{formatDollars(a.creditRemainingCents)}</Text>
-              </TableCell>
-              <TableCell>
-                <Text size="sm">{a.paymentTerms ?? '—'}</Text>
-              </TableCell>
-              <TableCell>
-                <Text size="sm">{a.discountPercent > 0 ? `${a.discountPercent}%` : '—'}</Text>
-              </TableCell>
-            </TableRow>
+              </td>
+              <td>
+                <p className="text-sm">{formatDollars(a.creditLimitCents)}</p>
+              </td>
+              <td>
+                <p className={`text-sm ${utilizationColor}`}>{formatDollars(a.creditUsedCents)}</p>
+              </td>
+              <td>
+                <p className="text-sm">{formatDollars(a.creditRemainingCents)}</p>
+              </td>
+              <td>
+                <p className="text-sm">{a.paymentTerms ?? '—'}</p>
+              </td>
+              <td>
+                <p className="text-sm">{a.discountPercent > 0 ? `${a.discountPercent}%` : '—'}</p>
+              </td>
+            </tr>
           );
         })}
-      </TableBody>
+      </tbody>
     </Table>
   );
 }

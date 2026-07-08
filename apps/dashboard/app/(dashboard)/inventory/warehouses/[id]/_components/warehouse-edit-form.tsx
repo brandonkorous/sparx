@@ -3,20 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardActions, Checkbox, Input, Label } from 'silicaui-react';
 
 import { updateWarehouseAction } from '../../../_lib/inventory-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -115,47 +102,45 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
   return (
     <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Address + defaults</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Address + defaults</h3>
+            <p className="opacity-70">
               Code + type are fixed at creation. Need a different code? Archive this warehouse and
               create a fresh one.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack gap={1}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="name">Name</Label>
               <Input id="name" name="name" defaultValue={warehouse.name} required />
-            </Stack>
-            <Stack gap={1}>
+            </div>
+            <div className="flex flex-col gap-1">
               <Label htmlFor="line1">Address line 1</Label>
               <Input id="line1" name="line1" defaultValue={warehouse.line1 ?? ''} required />
-            </Stack>
-            <Stack gap={1}>
+            </div>
+            <div className="flex flex-col gap-1">
               <Label htmlFor="line2">Address line 2</Label>
               <Input id="line2" name="line2" defaultValue={warehouse.line2 ?? ''} />
-            </Stack>
-            <Stack direction="row" gap={3} wrap>
-              <Stack gap={1} className="min-w-[12rem] flex-1">
+            </div>
+            <div className="flex flex-row flex-wrap gap-3">
+              <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
                 <Label htmlFor="city">City</Label>
                 <Input id="city" name="city" defaultValue={warehouse.city ?? ''} required />
-              </Stack>
-              <Stack gap={1} className="min-w-[8rem]">
+              </div>
+              <div className="flex min-w-[8rem] flex-col gap-1">
                 <Label htmlFor="region">Region</Label>
                 <Input id="region" name="region" defaultValue={warehouse.region ?? ''} />
-              </Stack>
-              <Stack gap={1} className="min-w-[8rem]">
+              </div>
+              <div className="flex min-w-[8rem] flex-col gap-1">
                 <Label htmlFor="postalCode">Postal code</Label>
                 <Input
                   id="postalCode"
                   name="postalCode"
                   defaultValue={warehouse.postalCode ?? ''}
                 />
-              </Stack>
-              <Stack gap={1} className="w-[6rem]">
+              </div>
+              <div className="flex w-[6rem] flex-col gap-1">
                 <Label htmlFor="country">Country</Label>
                 <Input
                   id="country"
@@ -164,11 +149,11 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
                   maxLength={2}
                   required
                 />
-              </Stack>
-            </Stack>
-            <Stack gap={2} className="pt-2">
-              <Text size="sm">Default for channel</Text>
-              <Stack direction="row" gap={4} wrap>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 pt-2">
+              <p className="text-sm">Default for channel</p>
+              <div className="flex flex-row flex-wrap gap-4">
                 {CHANNELS.map((c) => (
                   <label key={c} className="flex items-center gap-2">
                     <Checkbox
@@ -176,34 +161,26 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
                       name={`channel:${c}`}
                       defaultChecked={warehouse.defaultForChannel.includes(c)}
                     />
-                    <Text size="sm">{c}</Text>
+                    <p className="text-sm">{c}</p>
                   </label>
                 ))}
-              </Stack>
+              </div>
               <label className="flex items-center gap-2 pt-2">
                 <Checkbox color="module" name="isActive" defaultChecked={warehouse.isActive} />
-                <Text size="sm">Active</Text>
+                <p className="text-sm">Active</p>
               </label>
-            </Stack>
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={2} justify="between" align="center" className="w-full">
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            {savedAt && !error && (
-              <Text size="xs" variant="muted">
-                Saved {savedAt}
-              </Text>
-            )}
+            </div>
+          </div>
+        </CardBody>
+        <CardActions>
+          <div className="flex w-full flex-row items-center justify-between gap-2">
+            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {savedAt && !error && <p className="text-base-content/70 text-xs">Saved {savedAt}</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save'}
             </Button>
-          </Stack>
-        </CardFooter>
+          </div>
+        </CardActions>
       </Card>
     </form>
   );

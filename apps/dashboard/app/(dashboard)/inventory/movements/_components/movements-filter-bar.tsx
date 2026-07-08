@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardContent, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 import { ACTOR_OPTIONS, REASON_OPTIONS } from './types';
@@ -87,9 +87,9 @@ export function MovementsFilterBar({
 
   return (
     <Card>
-      <CardContent>
-        <Stack gap={3}>
-          <Stack direction="row" gap={3} align="end" wrap>
+      <CardBody>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-row flex-wrap items-end gap-3">
             <Field label="Item SKU" className="min-w-[12rem] flex-1">
               <Input
                 value={sku}
@@ -131,30 +131,26 @@ export function MovementsFilterBar({
                 ))}
               </NativeSelect>
             </Field>
-          </Stack>
-          <Stack direction="row" gap={3} align="end" wrap>
+          </div>
+          <div className="flex flex-row flex-wrap items-end gap-3">
             <Field label="From" className="min-w-[9rem]">
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </Field>
             <Field label="To" className="min-w-[9rem]">
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </Field>
-            <Stack direction="row" gap={2} align="center" className="ml-auto">
-              {error && (
-                <Text size="sm" className="text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
+            <div className="ml-auto flex flex-row items-center gap-2">
+              {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
               <Button variant="ghost" size="sm" onClick={clear} disabled={busy}>
                 Clear
               </Button>
               <Button color="module" size="sm" onClick={() => void apply()} disabled={busy}>
                 {busy ? 'Applying…' : 'Apply filters'}
               </Button>
-            </Stack>
-          </Stack>
-        </Stack>
-      </CardContent>
+            </div>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -169,9 +165,9 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <Stack gap={1} className={className}>
+    <div className={`flex flex-col gap-1${className ? ` ${className}` : ''}`}>
       <Label>{label}</Label>
       {children}
-    </Stack>
+    </div>
   );
 }

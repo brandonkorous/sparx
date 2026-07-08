@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Button, Card, Container, Heading, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
 import { ArrowRight, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 
@@ -36,8 +37,8 @@ export default async function CmsNavigationPage() {
   const customMenus = menus.filter((m) => !PRESET_LOCATIONS.some((p) => p.location === m.location));
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="Navigation"
           description="Build your menu trees. Site Builder wires them into the header, footer, and announcement bar under its Header & footer settings."
@@ -48,66 +49,78 @@ export default async function CmsNavigationPage() {
             const existing = byLocation.get(location);
             const count = existing ? topLevelCount(existing.items) : 0;
             return (
-              <Card key={location} variant="default" padding="md">
-                <Stack direction="row" align="center" justify="between" gap={3}>
-                  <Stack gap={1}>
-                    <Stack direction="row" align="center" gap={2}>
-                      <Heading level={4}>{label}</Heading>
-                      <code className="text-xs text-[var(--color-text-tertiary)]">/{location}</code>
-                    </Stack>
-                    <Text size="sm" variant="muted">
-                      {existing
-                        ? `${count} top-level item${count === 1 ? '' : 's'} · ${existing.name}`
-                        : description}
-                    </Text>
-                  </Stack>
-                  <Button asChild color="module" size="sm">
-                    <Link href={`/cms/navigation/${location}`}>
+              <Card key={location}>
+                <CardBody>
+                  <div className="flex flex-row items-center justify-between gap-3">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-row items-center gap-2">
+                        <h4 className="text-lg font-semibold">{label}</h4>
+                        <code className="text-xs text-[var(--color-text-tertiary)]">
+                          /{location}
+                        </code>
+                      </div>
+                      <p className="text-base-content/70 text-sm">
+                        {existing
+                          ? `${count} top-level item${count === 1 ? '' : 's'} · ${existing.name}`
+                          : description}
+                      </p>
+                    </div>
+                    <Button
+                      color="module"
+                      size="sm"
+                      render={<Link href={`/cms/navigation/${location}`} />}
+                    >
                       {existing ? 'Edit' : 'Create'}
                       <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                    </Link>
-                  </Button>
-                </Stack>
+                    </Button>
+                  </div>
+                </CardBody>
               </Card>
             );
           })}
         </div>
 
         {customMenus.length > 0 && (
-          <Stack gap={2}>
-            <Heading level={4}>Custom menus</Heading>
+          <div className="flex flex-col gap-2">
+            <h4 className="text-lg font-semibold">Custom menus</h4>
             <div className="grid gap-2">
               {customMenus.map((m) => (
-                <Card key={m.id} variant="default" padding="md">
-                  <Stack direction="row" align="center" justify="between" gap={3}>
-                    <Stack gap={1}>
-                      <Heading level={4}>{m.name}</Heading>
-                      <code className="text-xs text-[var(--color-text-tertiary)]">
-                        /{m.location}
-                      </code>
-                    </Stack>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href={`/cms/navigation/${m.location}`}>Edit</Link>
-                    </Button>
-                  </Stack>
+                <Card key={m.id}>
+                  <CardBody>
+                    <div className="flex flex-row items-center justify-between gap-3">
+                      <div className="flex flex-col gap-1">
+                        <h4 className="text-lg font-semibold">{m.name}</h4>
+                        <code className="text-xs text-[var(--color-text-tertiary)]">
+                          /{m.location}
+                        </code>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        render={<Link href={`/cms/navigation/${m.location}`} />}
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  </CardBody>
                 </Card>
               ))}
             </div>
-          </Stack>
+          </div>
         )}
 
         <div>
           <Button
-            asChild
             color="module"
             variant="outline"
             size="sm"
-            leftIcon={<Plus className="h-4 w-4" />}
+            iconStart={<Plus className="h-4 w-4" />}
+            render={<Link href="/cms/navigation/custom" />}
           >
-            <Link href="/cms/navigation/custom">New custom menu</Link>
+            New custom menu
           </Button>
         </div>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

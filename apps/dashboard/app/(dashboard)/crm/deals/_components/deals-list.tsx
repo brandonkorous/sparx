@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  SelectionList,
-  type SelectionColumn,
-  type SelectionCard,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionColumn, type SelectionCard } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import { stageColor } from '../../pipelines/[id]/_components/kanban-types';
@@ -70,9 +64,7 @@ export function DealsList({ deals, view }: DealsListProps) {
         {d.stage.name}
       </Badge>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const valueText = (d: DealRow) => `${d.currency} ${Number(d.value).toLocaleString()}`;
@@ -87,29 +79,19 @@ export function DealsList({ deals, view }: DealsListProps) {
     },
     {
       header: 'Pipeline',
-      cell: (d) => (
-        <Text size="sm" variant="muted">
-          {d.pipelineName}
-        </Text>
-      ),
+      cell: (d) => <p className="text-base-content/70 text-sm">{d.pipelineName}</p>,
     },
     { header: 'Stage', cell: stageBadge },
     { header: 'Value', align: 'right', cell: valueText },
     { header: 'Probability', align: 'right', cell: (d) => `${Number(d.probability)}%` },
     {
       header: 'Expected close',
-      cell: (d) => (
-        <Text size="sm" variant="muted">
-          {closeText(d)}
-        </Text>
-      ),
+      cell: (d) => <p className="text-base-content/70 text-sm">{closeText(d)}</p>,
     },
     {
       header: 'Updated',
       cell: (d) => (
-        <Text size="sm" variant="muted">
-          {new Date(d.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -117,23 +99,17 @@ export function DealsList({ deals, view }: DealsListProps) {
   const card: SelectionCard<DealRow> = {
     title: (d) =>
       dealLink(d, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
-    subtitle: (d) => (
-      <Text size="xs" variant="muted">
-        {d.pipelineName}
-      </Text>
-    ),
+    subtitle: (d) => <p className="text-base-content/70 text-xs">{d.pipelineName}</p>,
     badge: stageBadge,
     body: (d) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {Number(d.probability)}% · close {closeText(d)}
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {valueText(d)}
-          </Text>
-        </Stack>
-      </Stack>
+          </p>
+          <p className="text-sm tabular-nums">{valueText(d)}</p>
+        </div>
+      </div>
     ),
   };
 

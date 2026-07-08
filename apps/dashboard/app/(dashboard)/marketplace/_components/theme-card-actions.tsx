@@ -9,7 +9,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { applyThemeAction } from '../actions';
 
@@ -26,9 +27,7 @@ export function ThemeCardActions({ themeSlug, themeName, canInstall }: Props) {
 
   if (!canInstall) {
     return (
-      <Text size="xs" variant="muted">
-        Only an owner or admin can apply a theme.
-      </Text>
+      <p className="text-base-content/70 text-xs">Only an owner or admin can apply a theme.</p>
     );
   }
 
@@ -66,14 +65,12 @@ export function ThemeCardActions({ themeSlug, themeName, canInstall }: Props) {
 
   if (applied) {
     return (
-      <Stack direction="row" gap={2} align="center" className="flex-wrap">
-        <Text size="sm" variant="muted">
-          Applied to draft
-        </Text>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/builder/_brand">Review &amp; publish</Link>
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <p className="text-base-content/70 text-sm">Applied to draft</p>
+        <Button variant="outline" size="sm" render={<Link href="/builder/_brand" />}>
+          Review &amp; publish
         </Button>
-      </Stack>
+      </div>
     );
   }
 

@@ -1,7 +1,7 @@
 // Live Chat inbox — CRM customer context (docs/69 A-5).
 // Presentational; data is fetched server-side and passed in.
 
-import { Badge } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import type { CustomerContextDto } from '../_lib/types';
 

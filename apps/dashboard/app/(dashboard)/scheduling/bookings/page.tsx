@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { CalendarClock } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -59,8 +60,8 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
   const total = ((meta as Record<string, unknown>)?.total as number | undefined) ?? bookings.length;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<CalendarClock className="h-5 w-5" />}
           title="Bookings"
@@ -96,25 +97,29 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
         </div>
 
         {bookings.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title={status ? `No ${status.replace('_', ' ')} bookings` : 'No bookings yet'}
-              description={
-                services.length === 0
-                  ? 'Create a service and set availability, then take your first booking.'
-                  : 'New bookings will appear here. Create one to get started.'
-              }
-              action={services.length > 0 ? <NewBookingButton /> : undefined}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title={status ? `No ${status.replace('_', ' ')} bookings` : 'No bookings yet'}
+                description={
+                  services.length === 0
+                    ? 'Create a service and set availability, then take your first booking.'
+                    : 'New bookings will appear here. Create one to get started.'
+                }
+                actions={services.length > 0 ? <NewBookingButton /> : undefined}
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Card padding="none">
-            <BookingsList bookings={bookings} />
+          <Card>
+            <CardBody className="p-0">
+              <BookingsList bookings={bookings} />
+            </CardBody>
           </Card>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

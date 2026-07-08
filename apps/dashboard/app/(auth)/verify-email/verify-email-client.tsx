@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Heading, Spinner, Stack, Text } from '@sparx/ui';
+import { Button, Loading } from 'silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
 
@@ -37,48 +37,46 @@ export function VerifyEmailClient({ email }: { email: string | null }) {
         blurb: 'Verifying unlocks custom domains, going live, and sending email.',
       }}
     >
-      <Stack gap={6}>
+      <div className="flex flex-col gap-6">
         {status === 'checking' && (
-          <Stack direction="row" align="center" gap={2}>
-            <Spinner className="h-4 w-4" />
-            <Text variant="muted">Confirming your email…</Text>
-          </Stack>
+          <div className="flex flex-row items-center gap-2">
+            <Loading className="h-4 w-4" />
+            <p className="text-base-content/70">Confirming your email…</p>
+          </div>
         )}
 
         {status === 'success' && (
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div>
-              <Heading level={2}>Email confirmed</Heading>
-              <Text variant="muted">Your email address is verified — you&apos;re all set.</Text>
+              <h2 className="text-2xl font-semibold tracking-tight">Email confirmed</h2>
+              <p className="text-base-content/70">
+                Your email address is verified — you&apos;re all set.
+              </p>
             </div>
-            <Button asChild>
-              <Link href="/">Go to dashboard</Link>
-            </Button>
-          </Stack>
+            <Button render={<Link href="/" />}>Go to dashboard</Button>
+          </div>
         )}
 
         {status === 'error' && (
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div>
-              <Heading level={2}>This link didn&apos;t work</Heading>
-              <Text variant="muted">
+              <h2 className="text-2xl font-semibold tracking-tight">This link didn&apos;t work</h2>
+              <p className="text-base-content/70">
                 The confirmation link is invalid or has expired. Request a fresh one below.
-              </Text>
+              </p>
             </div>
             {resent ? (
-              <Text size="sm">A new confirmation email is on its way. Check your inbox.</Text>
+              <p className="text-sm">A new confirmation email is on its way. Check your inbox.</p>
             ) : email ? (
               <Button onClick={resend} disabled={resending} loading={resending}>
                 Resend confirmation email
               </Button>
             ) : (
-              <Button asChild>
-                <Link href="/sign-in">Sign in to resend</Link>
-              </Button>
+              <Button render={<Link href="/sign-in" />}>Sign in to resend</Button>
             )}
-          </Stack>
+          </div>
         )}
-      </Stack>
+      </div>
     </AuthScreen>
   );
 }

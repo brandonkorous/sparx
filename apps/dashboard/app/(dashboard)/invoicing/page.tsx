@@ -14,26 +14,8 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import {
-  ActionQueue,
-  ActionTile,
-  AreaChart,
-  Badge,
-  BarList,
-  Button,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { AR_STATUS_VARIANT, formatMoney } from './_components/format';
@@ -264,26 +246,34 @@ export default async function InvoicingPage() {
   const liveDebtors = debtors && debtors.length > 0 ? debtors : null;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<ReceiptText className="h-5 w-5" />}
           title="Invoicing"
           description="Am I getting paid? — outstanding balances and collections at a glance."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<FileText className="h-4 w-4" />}>
-                <Link href="/invoicing/documents">All documents</Link>
+              <Button
+                variant="outline"
+                iconStart={<FileText className="h-4 w-4" />}
+                render={<Link href="/invoicing/documents" />}
+              >
+                All documents
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/invoicing/documents/new">New document</Link>
+              <Button
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+                render={<Link href="/invoicing/documents/new" />}
+              >
+                New document
               </Button>
             </>
           }
         />
 
         {/* Headline KPIs — outstanding & overdue live from the aging report */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<DollarSign className="h-4 w-4" />}
             label="Outstanding A/R"
@@ -324,7 +314,7 @@ export default async function InvoicingPage() {
                 : 'From finalize to payment'
             }
           />
-        </Grid>
+        </div>
 
         {/* Daily action queue — what's blocking the next dollar, every tile live */}
         <ActionQueue title="Needs attention" icon={<AlertTriangle className="h-4 w-4" />}>
@@ -451,51 +441,55 @@ export default async function InvoicingPage() {
           >
             {documents.length > 0 ? (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Number</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Number</th>
+                    <th>Kind</th>
+                    <th className="text-right">Total</th>
+                    <th className="text-right">Balance</th>
+                    <th>Status</th>
+                    <th className="text-right">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {documents.map((d) => (
-                    <TableRow key={d.id}>
-                      <TableCell className="font-mono text-xs text-[var(--module-active-text)]">
+                    <tr key={d.id}>
+                      <td className="font-mono text-xs text-[var(--module-active-text)]">
                         <Link href={`/invoicing/documents/${d.id}`} className="hover:underline">
                           {d.number ?? 'Draft'}
                         </Link>
-                      </TableCell>
-                      <TableCell className="font-medium">{stageLabels[d.stageId] ?? '—'}</TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      </td>
+                      <td className="font-medium">{stageLabels[d.stageId] ?? '—'}</td>
+                      <td className="text-right tabular-nums">
                         {formatMoney(d.total, d.currency)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      </td>
+                      <td className="text-right tabular-nums">
                         {formatMoney(d.balance, d.currency)}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         <Badge color={AR_STATUS_VARIANT[d.status] ?? 'neutral'} variant="soft">
                           {d.status}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      </td>
+                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                         {new Date(d.updatedAt).toLocaleDateString()}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             ) : (
               <EmptyState
                 icon={<FileText className="h-5 w-5" />}
                 title="No documents yet"
                 description="Create an estimate or invoice to get started."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/invoicing/documents/new">New document</Link>
+                actions={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    render={<Link href="/invoicing/documents/new" />}
+                  >
+                    New document
                   </Button>
                 }
               />
@@ -544,14 +538,19 @@ export default async function InvoicingPage() {
               hint="From finalize to settled"
               right={collections?.avgDaysToPay != null ? `${collections.avgDaysToPay} days` : '—'}
             />
-            <Button asChild variant="outline" size="sm" className="mt-4 w-full">
-              <Link href="/invoicing/documents?status=paid">View paid documents</Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4 w-full"
+              render={<Link href="/invoicing/documents?status=paid" />}
+            >
+              View paid documents
             </Button>
           </OverviewCard>
         </div>
 
         {/* Who owes you + status mix + send queue */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard
             title="Who owes you"
             icon={<Users className="h-4 w-4" />}
@@ -689,16 +688,20 @@ export default async function InvoicingPage() {
                 icon={<Send className="h-5 w-5" />}
                 title="Nothing to send"
                 description="Drafts to send and reminders due will surface here."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/invoicing/documents/new">New document</Link>
+                actions={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    render={<Link href="/invoicing/documents/new" />}
+                  >
+                    New document
                   </Button>
                 }
               />
             )}
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

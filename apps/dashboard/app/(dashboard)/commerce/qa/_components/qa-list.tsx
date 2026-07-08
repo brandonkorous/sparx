@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
+import { Badge } from 'silicaui-react';
 import {
   SelectionList,
   type BulkAction,
   type SelectionCard,
   type SelectionColumn,
-  Badge,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
 
 import { bulkModerateQuestionsAction } from '../../review-actions';
@@ -91,9 +90,7 @@ export function QaList({ rows, view }: QaListProps) {
         {q.productTitle}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        Deleted product
-      </Text>
+      <p className="text-base-content/70 text-sm">Deleted product</p>
     );
 
   const columns: SelectionColumn<DisplayRow>[] = [
@@ -108,16 +105,14 @@ export function QaList({ rows, view }: QaListProps) {
   const card: SelectionCard<DisplayRow> = {
     title: (q) => questionLink(q, 'truncate hover:text-[var(--module-active)]'),
     subtitle: (q) => (
-      <Text size="xs" variant="muted">
-        {q.productTitle ?? 'Deleted product'}
-      </Text>
+      <p className="text-base-content/70 text-xs">{q.productTitle ?? 'Deleted product'}</p>
     ),
     badge: (q) => <StatusBadge status={q.status} />,
     body: (q) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {q.authorLabel} · {q.answerCount ?? '—'} answer{q.answerCount === 1 ? '' : 's'} · asked{' '}
         {new Date(q.createdAt).toLocaleDateString()}
-      </Text>
+      </p>
     ),
   };
 

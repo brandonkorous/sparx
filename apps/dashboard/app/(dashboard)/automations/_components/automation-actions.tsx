@@ -9,7 +9,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { Copy, Pencil, Trash2 } from 'lucide-react';
 import type { AutomationDto } from '../_lib/types';
 import {
@@ -74,15 +75,15 @@ export function AutomationActions({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button asChild variant="outline">
-        <Link href={`/automations/${automation.id}/runs`}>View runs</Link>
+      <Button variant="outline" render={<Link href={`/automations/${automation.id}/runs`} />}>
+        View runs
       </Button>
 
       {automation.locked ? (
         <Button
           type="button"
           color="module"
-          leftIcon={<Copy className="h-4 w-4" />}
+          iconStart={<Copy className="h-4 w-4" />}
           loading={pending}
           disabled={pending}
           onClick={duplicate}
@@ -94,7 +95,7 @@ export function AutomationActions({
           <Button
             type="button"
             variant="outline"
-            leftIcon={<Copy className="h-4 w-4" />}
+            iconStart={<Copy className="h-4 w-4" />}
             disabled={pending}
             onClick={duplicate}
           >
@@ -119,14 +120,18 @@ export function AutomationActions({
               Activate
             </Button>
           )}
-          <Button asChild color="module" leftIcon={<Pencil className="h-4 w-4" />}>
-            <Link href={`/automations/${automation.id}/edit`}>Edit</Link>
+          <Button
+            color="module"
+            iconStart={<Pencil className="h-4 w-4" />}
+            render={<Link href={`/automations/${automation.id}/edit`} />}
+          >
+            Edit
           </Button>
           <Button
             type="button"
             variant="ghost"
             color="danger"
-            leftIcon={<Trash2 className="h-4 w-4" />}
+            iconStart={<Trash2 className="h-4 w-4" />}
             disabled={pending}
             onClick={remove}
           >

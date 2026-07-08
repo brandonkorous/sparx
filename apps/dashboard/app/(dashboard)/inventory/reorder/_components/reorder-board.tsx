@@ -4,19 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Package } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardActions, CardBody, Checkbox, Input } from 'silicaui-react';
 
 import { draftReorderAction } from '../../_lib/reorder-actions';
 import {
@@ -96,33 +84,29 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {created && created.length > 0 ? (
         <Card className="border-[var(--color-success)]">
-          <CardContent>
-            <Stack direction="row" align="center" gap={2} className="py-1">
+          <CardBody>
+            <div className="flex flex-row items-center gap-2 py-1">
               <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
-              <Text size="sm">
+              <p className="text-sm">
                 Drafted {created.length} purchase order{created.length === 1 ? '' : 's'}:{' '}
                 <span className="font-mono">{created.join(', ')}</span> — review and submit them on
                 Purchase orders.
-              </Text>
-            </Stack>
-          </CardContent>
+              </p>
+            </div>
+          </CardBody>
         </Card>
       ) : null}
 
-      {error ? (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      ) : null}
+      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
 
       {groups.length > 1 ? (
-        <Stack direction="row" align="center" gap={3} wrap>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <p className="text-base-content/70 text-sm">
             {groups.length} suppliers · draft a separate purchase order for each.
-          </Text>
+          </p>
           <Button
             color="module"
             size="sm"
@@ -132,7 +116,7 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
           >
             {pending ? 'Drafting…' : 'Draft all suggested POs'}
           </Button>
-        </Stack>
+        </div>
       ) : null}
 
       {groups.map((g) => (
@@ -145,7 +129,7 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
           onDraft={() => draft([g])}
         />
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -173,25 +157,23 @@ function GroupCard({
 
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="start" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={3} wrap>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Package className="h-5 w-5" />
-            <Stack gap={0}>
-              <Heading level={3}>{g.supplierName}</Heading>
-              <Text size="xs" variant="muted">
+            <div className="flex flex-col gap-0">
+              <h3 className="text-xl font-semibold">{g.supplierName}</h3>
+              <p className="text-base-content/70 text-xs">
                 {g.warehouseName} · {g.lines.length} item{g.lines.length === 1 ? '' : 's'}
                 {g.expectedArrivalAt ? ` · ETA ${formatDate(g.expectedArrivalAt)}` : ''}
-              </Text>
-            </Stack>
-          </Stack>
-          <Text size="sm" variant="muted">
+              </p>
+            </div>
+          </div>
+          <p className="text-base-content/70 text-sm">
             {selectedTotal > 0 ? formatMoney(selectedTotal, g.currency) : '—'} selected
-          </Text>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
           {g.lines.map((l) => (
             <LineRow
               key={l.variantId}
@@ -202,13 +184,13 @@ function GroupCard({
               onPatch={onPatch}
             />
           ))}
-        </Stack>
-      </CardContent>
-      <CardFooter>
-        <Button color="module" className="ml-auto" disabled={pending} onClick={onDraft}>
-          {pending ? 'Drafting…' : 'Draft purchase order'}
-        </Button>
-      </CardFooter>
+        </div>
+        <CardActions>
+          <Button color="module" className="ml-auto" disabled={pending} onClick={onDraft}>
+            {pending ? 'Drafting…' : 'Draft purchase order'}
+          </Button>
+        </CardActions>
+      </CardBody>
     </Card>
   );
 }
@@ -232,47 +214,39 @@ function LineRow({
     l.unitCostCents !== null && Number(qty) > 0 ? l.unitCostCents * Number(qty) : null;
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
       <Checkbox
         color="module"
         checked={selected}
-        onCheckedChange={(v) => onPatch(lineId, 'selected', v === true)}
+        onChange={(e) => onPatch(lineId, 'selected', e.target.checked)}
         aria-label="Include in draft"
       />
-      <Stack gap={0} className="min-w-[12rem] flex-1">
-        <Text size="sm" className="font-medium">
-          {l.title ?? l.sku ?? l.variantId.slice(0, 8)}
-        </Text>
-        <Text size="xs" variant="muted" className="font-mono">
+      <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+        <p className="text-sm font-medium">{l.title ?? l.sku ?? l.variantId.slice(0, 8)}</p>
+        <p className="text-base-content/70 font-mono text-xs">
           {l.sku ?? l.variantId} · {l.available}/{l.reorderPoint} reorder pt
-        </Text>
-      </Stack>
+        </p>
+      </div>
       {l.onOrder > 0 ? (
         <Badge color="info" variant="soft">
           {l.onOrder} on order
         </Badge>
       ) : null}
-      <Stack gap={0} className="w-[5.5rem]">
+      <div className="flex w-[5.5rem] flex-col gap-0">
         <Input
           type="number"
           value={qty}
           aria-label="Order quantity"
           onChange={(e) => onPatch(lineId, 'qty', e.target.value)}
         />
-      </Stack>
-      <Text size="sm" variant="muted" className="w-[6rem] text-right">
+      </div>
+      <p className="text-base-content/70 w-[6rem] text-right text-sm">
         {l.unitCostCents !== null ? formatMoney(l.unitCostCents, currency) : '—'}
-      </Text>
-      <Text size="sm" className="w-[6rem] text-right font-medium">
+      </p>
+      <p className="w-[6rem] text-right text-sm font-medium">
         {lineCost !== null ? formatMoney(lineCost, currency) : '—'}
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 }
 

@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Avatar,
-  Button,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
+import { Avatar, Button } from 'silicaui-react';
 import { Pencil } from 'lucide-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -54,10 +47,13 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
   );
 
   const editButton = (a: AuthorListItem) => (
-    <Button asChild variant="ghost" size="xs" leftIcon={<Pencil className="h-3 w-3" />}>
-      <EntityRowLink href={`/cms/authors/${a.id}`} entityType="author" entityId={a.id}>
-        Edit
-      </EntityRowLink>
+    <Button
+      variant="ghost"
+      size="xs"
+      iconStart={<Pencil className="h-3 w-3" />}
+      render={<EntityRowLink href={`/cms/authors/${a.id}`} entityType="author" entityId={a.id} />}
+    >
+      Edit
     </Button>
   );
 
@@ -65,35 +61,25 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
     {
       header: 'Author',
       cell: (a) => (
-        <Stack direction="row" align="center" gap={3}>
+        <div className="flex flex-row items-center gap-3">
           <Avatar size="sm" alt={a.display_name} />
-          <Stack gap={0} className="min-w-0">
+          <div className="flex min-w-0 flex-col gap-0">
             {nameLink(
               a,
               'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
             )}
-            <Text size="xs" variant="muted" className="truncate">
-              /{a.slug}
-            </Text>
-          </Stack>
-        </Stack>
+            <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
+          </div>
+        </div>
       ),
     },
     {
       header: 'Bio',
-      cell: (a) => (
-        <Text size="sm" variant="muted" className="line-clamp-2">
-          {a.bio ?? '—'}
-        </Text>
-      ),
+      cell: (a) => <p className="text-base-content/70 line-clamp-2 text-sm">{a.bio ?? '—'}</p>,
     },
     {
       header: 'Added',
-      cell: (a) => (
-        <Text size="sm" variant="muted">
-          {formatAdded(a.created_at)}
-        </Text>
-      ),
+      cell: (a) => <p className="text-base-content/70 text-sm">{formatAdded(a.created_at)}</p>,
     },
     {
       header: '',
@@ -105,33 +91,25 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
 
   const card: SelectionCard<AuthorListItem> = {
     title: (a) => (
-      <Stack direction="row" align="center" gap={3}>
+      <div className="flex flex-row items-center gap-3">
         <Avatar size="md" alt={a.display_name} />
-        <Stack gap={0} className="min-w-0">
+        <div className="flex min-w-0 flex-col gap-0">
           {nameLink(
             a,
             'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
           )}
-          <Text size="xs" variant="muted" className="truncate">
-            /{a.slug}
-          </Text>
-        </Stack>
-      </Stack>
+          <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
+        </div>
+      </div>
     ),
     body: (a) => (
-      <Stack gap={2}>
-        {a.bio ? (
-          <Text size="sm" variant="muted" className="line-clamp-3">
-            {a.bio}
-          </Text>
-        ) : null}
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Added {formatAdded(a.created_at)}
-          </Text>
+      <div className="flex flex-col gap-2">
+        {a.bio ? <p className="text-base-content/70 line-clamp-3 text-sm">{a.bio}</p> : null}
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Added {formatAdded(a.created_at)}</p>
           {editButton(a)}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     ),
   };
 

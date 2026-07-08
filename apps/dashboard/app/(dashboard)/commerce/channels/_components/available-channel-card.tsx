@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Badge, Button, Stack, Text } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 import { connectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelShape } from '../_types';
 
@@ -41,9 +41,9 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
   }
 
   return (
-    <Stack gap={2} className="rounded-md border border-[var(--color-border-default)] p-4">
-      <Stack direction="row" align="center" gap={2} className="flex-wrap">
-        <Text weight="medium">{channel.name}</Text>
+    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] p-4">
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <p className="text-base font-medium">{channel.name}</p>
         <Badge variant="outline" className="text-xs">
           {SHAPE_LABEL[channel.shape]}
         </Badge>
@@ -57,22 +57,23 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
             Available
           </Badge>
         )}
-      </Stack>
-      <Text size="sm" variant="muted">
-        {channel.tagline}
-      </Text>
-      <Text size="xs" variant="muted">
-        Best for: {channel.bestFor}
-      </Text>
+      </div>
+      <p className="text-base-content/70 text-sm">{channel.tagline}</p>
+      <p className="text-base-content/70 text-xs">Best for: {channel.bestFor}</p>
       {error && (
-        <Text size="xs" variant="danger" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
       <div>
         {isFirstParty ? (
-          <Button asChild size="sm" variant="soft" color="primary">
-            <Link href="/commerce/market">Manage</Link>
+          <Button
+            size="sm"
+            variant="soft"
+            color="primary"
+            render={<Link href="/commerce/market" />}
+          >
+            Manage
           </Button>
         ) : (
           <Button
@@ -88,6 +89,6 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
           </Button>
         )}
       </div>
-    </Stack>
+    </div>
   );
 }

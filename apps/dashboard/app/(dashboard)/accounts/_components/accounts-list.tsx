@@ -2,19 +2,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { Avatar, Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { ArrowRight, Building2, Check, Mail } from 'lucide-react';
 import type { OrgMembership, PendingInvitation } from '@sparx/auth';
 import { switchOrganization, acceptInvitation } from '@/lib/org-actions';
@@ -28,8 +17,8 @@ export interface AccountsListProps {
 
 export function AccountsList({ memberships, invitations, activeOrgId }: AccountsListProps) {
   return (
-    <Stack gap={6}>
-      <Stack gap={3}>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3">
         {memberships.map((m) => (
           <AccountRow
             key={m.organizationId}
@@ -37,17 +26,17 @@ export function AccountsList({ memberships, invitations, activeOrgId }: Accounts
             isActive={m.organizationId === activeOrgId}
           />
         ))}
-      </Stack>
+      </div>
 
       {invitations.length > 0 ? (
-        <Stack gap={3}>
-          <Text weight="medium">Invitations</Text>
+        <div className="flex flex-col gap-3">
+          <p className="font-medium">Invitations</p>
           {invitations.map((inv) => (
             <InvitationRow key={inv.id} invitation={inv} />
           ))}
-        </Stack>
+        </div>
       ) : null}
-    </Stack>
+    </div>
   );
 }
 
@@ -72,34 +61,32 @@ function AccountRow({ membership, isActive }: { membership: OrgMembership; isAct
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-          <Stack direction="row" align="center" gap={3} className="min-w-0">
-            <Avatar size="lg" shape="square" aria-hidden>
+      <CardBody className="pt-6">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-row items-center gap-3">
+            <Avatar size="lg" shape="rounded" aria-hidden>
               <Building2 className="h-5 w-5" />
             </Avatar>
-            <Stack gap={1} className="min-w-0">
-              <Stack direction="row" align="center" gap={2} className="min-w-0">
-                <Text weight="medium" className="truncate">
-                  {membership.name}
-                </Text>
+            <div className="flex min-w-0 flex-col gap-1">
+              <div className="flex min-w-0 flex-row items-center gap-2">
+                <p className="truncate font-medium">{membership.name}</p>
                 {isActive ? (
                   <Badge color="success" variant="soft" size="sm">
                     <Check className="h-3 w-3" />
                     Current
                   </Badge>
                 ) : null}
-              </Stack>
-              <Stack direction="row" align="center" gap={2}>
+              </div>
+              <div className="flex flex-row items-center gap-2">
                 <Badge color="neutral" variant="soft" size="sm">
                   {roleLabel(membership.role)}
                 </Badge>
-                <Text size="sm" variant="muted">
+                <p className="text-base-content/70 text-sm">
                   {memberTypeLabel(membership.memberType)}
-                </Text>
-              </Stack>
-            </Stack>
-          </Stack>
+                </p>
+              </div>
+            </div>
+          </div>
           <Button
             variant={isActive ? 'outline' : 'solid'}
             onClick={onEnter}
@@ -109,8 +96,8 @@ function AccountRow({ membership, isActive }: { membership: OrgMembership; isAct
             {isActive ? 'Open' : 'Enter'}
             <ArrowRight className="h-4 w-4" />
           </Button>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -133,8 +120,8 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
 
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2}>
+      <CardBody>
+        <div className="flex flex-row items-center gap-2">
           <span aria-hidden className="text-[var(--color-text-secondary)]">
             <Mail className="h-4 w-4" />
           </span>
@@ -142,17 +129,15 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
           <Badge color="neutral" variant="soft" size="sm">
             {roleLabel(invitation.role)}
           </Badge>
-        </Stack>
-        <CardDescription>
+        </div>
+        <p className="opacity-70">
           {invitation.inviterName} invited you to join as a{' '}
           {roleLabel(invitation.role).toLowerCase()}.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
         <Button onClick={onAccept} loading={pending} disabled={pending}>
           Accept invitation
         </Button>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

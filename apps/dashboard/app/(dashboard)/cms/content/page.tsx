@@ -10,7 +10,8 @@
 // single type. A content type links to its items as /cms/content?type=<key>.
 
 import Link from 'next/link';
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Button, Card, EmptyState } from 'silicaui-react';
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -130,8 +131,8 @@ export default async function ContentListPage({ searchParams }: PageProps) {
     Boolean(type && type !== 'all') || Boolean(status && status !== 'all') || Boolean(q);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
@@ -161,7 +162,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
         />
 
         {entries.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<FileText className="h-5 w-5" />}
               title={isFiltered ? 'No content matches your filter' : 'No content yet'}
@@ -170,10 +171,10 @@ export default async function ContentListPage({ searchParams }: PageProps) {
                   ? 'Try clearing the filter or searching for a different term.'
                   : 'Create your first page or post to get started.'
               }
-              action={
+              actions={
                 isFiltered ? (
-                  <Button asChild variant="ghost">
-                    <Link href="/cms/content">Clear filters</Link>
+                  <Button variant="ghost" render={<Link href="/cms/content" />}>
+                    Clear filters
                   </Button>
                 ) : (
                   <ContentNewButton
@@ -194,7 +195,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

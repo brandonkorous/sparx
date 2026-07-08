@@ -1,25 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label, Select } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { UserPlus } from 'lucide-react';
 import { ASSIGNABLE_ORG_ROLES, type OrgRole } from '@sparx/auth/org-roles';
 import { inviteMember } from '../actions';
 import { ROLE_DESCRIPTIONS, ROLE_LABELS } from '../_lib/roles';
+
+const ROLE_ITEMS: Record<string, string> = Object.fromEntries(
+  ASSIGNABLE_ORG_ROLES.map((r) => [r, ROLE_LABELS[r]])
+);
 
 // The invite row for Settings → Team — email + role, submitted to the
 // `inviteMember` server action (which fires the invitation email via the org
@@ -47,16 +38,11 @@ export function InviteForm() {
 
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardBody>
         <form ref={formRef} onSubmit={onSubmit}>
-          <Stack gap={4}>
-            <Stack
-              direction="row"
-              gap={3}
-              align="end"
-              className="flex-col sm:flex-row sm:items-end"
-            >
-              <Stack gap={2} className="w-full sm:flex-1">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-end gap-3 sm:flex-row sm:items-end">
+              <div className="flex w-full flex-col gap-2 sm:flex-1">
                 <Label htmlFor="invite-email">Email address</Label>
                 <Input
                   id="invite-email"
@@ -66,38 +52,30 @@ export function InviteForm() {
                   placeholder="teammate@example.com"
                   required
                 />
-              </Stack>
-              <Stack gap={2} className="w-full sm:w-48">
+              </div>
+              <div className="flex w-full flex-col gap-2 sm:w-48">
                 <Label htmlFor="invite-role">Role</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as OrgRole)}>
-                  <SelectTrigger id="invite-role">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ASSIGNABLE_ORG_ROLES.map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {ROLE_LABELS[r]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Stack>
+                <Select
+                  id="invite-role"
+                  value={role}
+                  onValueChange={(v) => setRole(v as OrgRole)}
+                  items={ROLE_ITEMS}
+                />
+              </div>
               <Button
                 type="submit"
                 loading={pending}
                 disabled={pending}
                 className="w-full sm:w-auto"
+                iconStart={<UserPlus className="h-4 w-4" />}
               >
-                <UserPlus className="h-4 w-4" />
                 Send invite
               </Button>
-            </Stack>
-            <Text size="sm" variant="muted">
-              {ROLE_DESCRIPTIONS[role]}
-            </Text>
-          </Stack>
+            </div>
+            <p className="text-base-content/70 text-sm">{ROLE_DESCRIPTIONS[role]}</p>
+          </div>
         </form>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

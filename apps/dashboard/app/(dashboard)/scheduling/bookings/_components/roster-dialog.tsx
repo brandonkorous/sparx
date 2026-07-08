@@ -5,16 +5,8 @@
 // as waitlisted and auto-promote when one frees.
 
 import { useEffect, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  toast,
-} from '@sparx/ui';
+import { Badge, Button, Input, Dialog, DialogContent, DialogTitle } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { Check, UserPlus, X } from 'lucide-react';
 
 import type { ClassAttendee } from '../../_lib/types';
@@ -82,11 +74,11 @@ export function RosterDialog({
   const active = (roster ?? []).filter((a) => !['cancelled', 'no_show'].includes(a.status));
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="max-w-lg">
-        <ModalHeader>
-          <ModalTitle>Roster</ModalTitle>
-        </ModalHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <div>
+          <DialogTitle>Roster</DialogTitle>
+        </div>
         <div className="flex flex-col gap-3 px-1 py-2">
           <div className="flex items-center gap-2">
             <Input
@@ -165,7 +157,7 @@ export function RosterDialog({
             </ul>
           )}
         </div>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

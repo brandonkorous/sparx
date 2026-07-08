@@ -3,27 +3,8 @@
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
-import {
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
-  Text,
-  Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { Button, Card, CardBody, Checkbox, Input, Label, Select, Textarea } from 'silicaui-react';
 
 import { createSupplier, updateSupplier } from '../_lib/actions';
 import { VendorPicker } from './vendor-picker';
@@ -349,9 +330,9 @@ export function SupplierForm({
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
-          <Stack gap={5}>
+      <Card>
+        <CardBody className="py-6">
+          <div className="flex flex-col gap-5">
             <div>
               <Label htmlFor="sup-name">
                 Name <span className="text-[var(--color-danger)]">*</span>
@@ -365,19 +346,17 @@ export function SupplierForm({
             </div>
 
             {fields.length > 0 && (
-              <Stack gap={2}>
-                <Text size="sm" weight="medium">
-                  Connection credentials
-                </Text>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">Connection credentials</p>
 
                 {isEdit && hasStoredCreds && !credsOpen && (
                   <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2.5">
-                    <Stack direction="row" align="center" gap={2}>
+                    <div className="flex flex-row items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--color-success)]" />
-                      <Text size="sm" variant="muted">
+                      <p className="text-base-content/70 text-sm">
                         Saved — you don&apos;t need to re-enter it to make changes.
-                      </Text>
-                    </Stack>
+                      </p>
+                    </div>
                     <Button
                       type="button"
                       color="neutral"
@@ -391,11 +370,11 @@ export function SupplierForm({
                 )}
 
                 {credsOpen && (
-                  <Stack gap={4}>
+                  <div className="flex flex-col gap-4">
                     {isEdit && !hasStoredCreds && (
-                      <Text size="xs" variant="warning">
+                      <p className="text-warning text-xs">
                         No credentials on file — enter the token below to reconnect this supplier.
-                      </Text>
+                      </p>
                     )}
                     {fields.map((f) => (
                       <div key={f.key}>
@@ -415,16 +394,12 @@ export function SupplierForm({
                           onChange={(e) => setCreds((p) => ({ ...p, [f.key]: e.target.value }))}
                           autoComplete="off"
                         />
-                        {f.help && (
-                          <Text size="xs" variant="muted" className="mt-1">
-                            {f.help}
-                          </Text>
-                        )}
+                        {f.help && <p className="text-base-content/70 mt-1 text-xs">{f.help}</p>}
                       </div>
                     ))}
 
                     {activeVendor?.credentialsHelpUrl && (
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         Need help finding these?{' '}
                         <a
                           href={activeVendor.credentialsHelpUrl}
@@ -434,7 +409,7 @@ export function SupplierForm({
                         >
                           {activeVendor.label} credentials guide
                         </a>
-                      </Text>
+                      </p>
                     )}
 
                     {isEdit && hasStoredCreds && replacingCreds && (
@@ -453,79 +428,66 @@ export function SupplierForm({
                         Cancel — keep the saved credentials
                       </button>
                     )}
-                  </Stack>
+                  </div>
                 )}
-              </Stack>
+              </div>
             )}
 
             {multiSite && (
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 <label className="flex cursor-pointer items-center gap-2">
                   <Checkbox
                     color="module"
                     checked={limitSites}
-                    onCheckedChange={(v) => setLimitSites(v === true)}
+                    onChange={(e) => setLimitSites(e.target.checked)}
                   />
-                  <Text size="sm" weight="medium">
-                    Limit this connection to specific sites
-                  </Text>
+                  <p className="text-sm font-medium">Limit this connection to specific sites</p>
                 </label>
                 {!limitSites && (
-                  <Text size="xs" variant="muted">
-                    Available on all of your sites.
-                  </Text>
+                  <p className="text-base-content/70 text-xs">Available on all of your sites.</p>
                 )}
                 {limitSites && (
-                  <Stack gap={2} className="border-l-2 border-[var(--color-border-default)] pl-6">
+                  <div className="flex flex-col gap-2 border-l-2 border-[var(--color-border-default)] pl-6">
                     {sites.map((s) => (
                       <label key={s.id} className="flex cursor-pointer items-center gap-2">
                         <Checkbox
                           color="module"
                           checked={selectedSites.has(s.id)}
-                          onCheckedChange={() => toggleSite(s.id)}
+                          onChange={() => toggleSite(s.id)}
                         />
-                        <Text size="sm">
+                        <p className="text-sm">
                           {s.name}
                           {s.isPrimary && (
                             <span className="text-[var(--color-text-muted)]"> (primary)</span>
                           )}
-                        </Text>
+                        </p>
                       </label>
                     ))}
-                  </Stack>
+                  </div>
                 )}
-              </Stack>
+              </div>
             )}
 
-            <Stack gap={3}>
+            <div className="flex flex-col gap-3">
               <label className="flex cursor-pointer items-center gap-2">
                 <Checkbox
                   color="module"
                   checked={hasPricingRule}
-                  onCheckedChange={(v) => setHasPricingRule(v === true)}
+                  onChange={(e) => setHasPricingRule(e.target.checked)}
                 />
-                <Text size="sm" weight="medium">
-                  Apply pricing rule to imported products
-                </Text>
+                <p className="text-sm font-medium">Apply pricing rule to imported products</p>
               </label>
 
               {hasPricingRule && (
-                <Stack gap={3} className="border-l-2 border-[var(--color-border-default)] pl-6">
-                  <Stack gap={1}>
+                <div className="flex flex-col gap-3 border-l-2 border-[var(--color-border-default)] pl-6">
+                  <div className="flex flex-col gap-1">
                     <Label>Rule type</Label>
-                    <Select value={pricingType} onValueChange={setPricingType}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PRICING_TYPES.map((t) => (
-                          <SelectItem key={t.value} value={t.value}>
-                            {t.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Stack>
+                    <Select
+                      value={pricingType}
+                      onValueChange={(v) => setPricingType(v as string)}
+                      items={PRICING_TYPES}
+                    />
+                  </div>
 
                   <div>
                     <Label htmlFor="sup-pricing-value">
@@ -546,33 +508,26 @@ export function SupplierForm({
                     />
                   </div>
 
-                  <Stack gap={1}>
+                  <div className="flex flex-col gap-1">
                     <Label>Round retail price to</Label>
-                    <Select value={roundTo} onValueChange={setRoundTo}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ROUND_OPTIONS.map((o) => (
-                          <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Stack>
+                    <Select
+                      value={roundTo}
+                      onValueChange={(v) => setRoundTo(v as string)}
+                      items={ROUND_OPTIONS}
+                    />
+                  </div>
 
                   <label className="flex cursor-pointer items-center gap-2">
                     <Checkbox
                       color="module"
                       checked={capAtMsrp}
-                      onCheckedChange={(v) => setCapAtMsrp(v === true)}
+                      onChange={(e) => setCapAtMsrp(e.target.checked)}
                     />
-                    <Text size="sm">Cap retail price at supplier MSRP</Text>
+                    <p className="text-sm">Cap retail price at supplier MSRP</p>
                   </label>
-                </Stack>
+                </div>
               )}
-            </Stack>
+            </div>
 
             <div>
               <Label htmlFor="sup-notes">Internal notes</Label>
@@ -586,12 +541,12 @@ export function SupplierForm({
             </div>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

@@ -2,23 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
-  Text,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
 
 import { createServiceType, updateServiceType } from '../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -151,12 +136,10 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardHeader>
+      <Card>
+        <CardBody>
           <CardTitle>Service type</CardTitle>
-        </CardHeader>
-        <CardContent className="py-6">
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div>
               <Label htmlFor="st-name">
                 Name <span className="text-[var(--color-danger)]">*</span>
@@ -194,9 +177,9 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
               />
             </div>
 
-            <Stack gap={1}>
+            <div className="flex flex-col gap-1">
               <Label htmlFor="st-color">Calendar color</Label>
-              <Stack direction="row" gap={2} className="items-center">
+              <div className="flex flex-row items-center gap-2">
                 <input
                   type="color"
                   aria-label="Calendar color"
@@ -224,17 +207,17 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
                     Clear
                   </Button>
                 )}
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
             <label className="flex cursor-pointer items-center gap-3">
               <Checkbox
                 color="module"
                 checked={requiresVehicle}
-                onCheckedChange={(v) => setRequiresVehicle(v === true)}
+                onChange={(e) => setRequiresVehicle(e.target.checked)}
                 disabled={saving}
               />
-              <Text size="sm">Requires vehicle information</Text>
+              <p className="text-sm">Requires vehicle information</p>
             </label>
 
             <div>
@@ -247,8 +230,8 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
                 disabled={saving}
               />
             </div>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

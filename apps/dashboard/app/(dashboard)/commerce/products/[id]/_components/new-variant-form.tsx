@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Checkbox, Heading, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { createVariantAction } from '../../../variant-actions';
 
@@ -91,20 +91,20 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Stack gap={1}>
-          <Heading level={4}>New variant</Heading>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h4 className="text-lg font-semibold">New variant</h4>
+          <p className="text-base-content/70 text-sm">
             {options.length === 0
               ? 'This product has no options — fill the SKU + price to add the default purchasable row.'
               : 'Pick one value per option, then set SKU + price.'}
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
         {options.length > 0 && (
-          <Stack gap={3}>
+          <div className="flex flex-col gap-3">
             {options.map((o) => (
-              <Stack key={o.id} gap={2}>
+              <div key={o.id} className="flex flex-col gap-2">
                 <Label htmlFor={`pick-${o.id}`}>{o.name}</Label>
                 <NativeSelect
                   id={`pick-${o.id}`}
@@ -117,27 +117,19 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
                     </option>
                   ))}
                 </NativeSelect>
-              </Stack>
+              </div>
             ))}
-            {fieldErrors.options && (
-              <Text size="xs" variant="danger">
-                {fieldErrors.options}
-              </Text>
-            )}
-          </Stack>
+            {fieldErrors.options && <p className="text-danger text-xs">{fieldErrors.options}</p>}
+          </div>
         )}
 
-        <Stack direction="row" gap={3}>
-          <Stack gap={2} className="flex-1">
+        <div className="flex flex-row gap-3">
+          <div className="flex flex-1 flex-col gap-2">
             <Label htmlFor="sku">SKU</Label>
             <Input id="sku" name="sku" required placeholder="TS-RED-S" />
-            {fieldErrors.sku && (
-              <Text size="xs" variant="danger">
-                {fieldErrors.sku}
-              </Text>
-            )}
-          </Stack>
-          <Stack gap={2} className="w-40">
+            {fieldErrors.sku && <p className="text-danger text-xs">{fieldErrors.sku}</p>}
+          </div>
+          <div className="flex w-40 flex-col gap-2">
             <Label htmlFor="priceCents">Price (cents)</Label>
             <Input
               id="priceCents"
@@ -150,48 +142,46 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
               placeholder="1999"
             />
             {fieldErrors.priceCents && (
-              <Text size="xs" variant="danger">
-                {fieldErrors.priceCents}
-              </Text>
+              <p className="text-danger text-xs">{fieldErrors.priceCents}</p>
             )}
-          </Stack>
-        </Stack>
+          </div>
+        </div>
 
-        <Stack direction="row" gap={3}>
-          <Stack gap={2} className="flex-1">
+        <div className="flex flex-row gap-3">
+          <div className="flex flex-1 flex-col gap-2">
             <Label htmlFor="barcode">Barcode (optional)</Label>
             <Input id="barcode" name="barcode" placeholder="UPC / EAN / GTIN" />
-          </Stack>
-          <Stack gap={2} className="flex-1">
+          </div>
+          <div className="flex flex-1 flex-col gap-2">
             <Label htmlFor="inventoryPolicy">Inventory policy</Label>
             <NativeSelect id="inventoryPolicy" name="inventoryPolicy" defaultValue="deny">
               <option value="deny">Deny when out</option>
               <option value="continue">Continue selling</option>
               <option value="preorder">Preorder</option>
             </NativeSelect>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
 
-        <Stack direction="row" align="center" gap={2}>
+        <div className="flex flex-row items-center gap-2">
           <Checkbox color="module" id="isDefault" name="isDefault" />
           <Label htmlFor="isDefault">Make this the default variant</Label>
-        </Stack>
+        </div>
 
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
 
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
           <Button type="submit" color="module" disabled={pending} loading={pending}>
             Add variant
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

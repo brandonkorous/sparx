@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { PackageCheck } from 'lucide-react';
 
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -31,8 +31,8 @@ export default async function ReceivePage({ params }: { params: Promise<{ id: st
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<PackageCheck className="h-5 w-5" />}
           title={`Receive ${po.number}`}
@@ -45,7 +45,7 @@ export default async function ReceivePage({ params }: { params: Promise<{ id: st
           lines={po.lines}
           today={today}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

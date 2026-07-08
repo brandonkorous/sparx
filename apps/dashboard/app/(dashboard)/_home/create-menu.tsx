@@ -13,8 +13,8 @@ import {
   UserPlus,
   type LucideIcon,
 } from 'lucide-react';
+import { Button } from 'silicaui-react';
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -87,9 +87,12 @@ export function CreateMenu({ modules }: { modules: ReadonlySet<string> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button color="primary" leftIcon={<Plus className="h-4 w-4" />}>
+        <Button
+          color="primary"
+          iconStart={<Plus className="h-4 w-4" />}
+          iconEnd={<ChevronDown className="h-4 w-4" />}
+        >
           Create
-          <ChevronDown className="ml-1 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">

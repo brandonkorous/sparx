@@ -1,15 +1,5 @@
-import {
-  BarList,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Grid,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { BarList, ModuleProvider } from '@sparx/ui';
 import { ShoppingBag } from 'lucide-react';
 
 import { CardLink } from '../_components/overview-bits';
@@ -23,14 +13,12 @@ export function SalesByChannelCard({ channels }: { channels: ChannelRevenueRepor
   const rows = channels.byChannel.filter((c) => c.netAfterFeesCents > 0).slice(0, 6);
   return (
     <ModuleProvider module="commerce">
-      <Card variant="module">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={2}>
+      <Card className="bg-module bg-soft">
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-2">
             <CardTitle>Sales by channel</CardTitle>
             <CardLink href="/finance/channels">Details</CardLink>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {rows.length > 0 ? (
             <BarList
               color="module"
@@ -41,11 +29,11 @@ export function SalesByChannelCard({ channels }: { channels: ChannelRevenueRepor
               }))}
             />
           ) : (
-            <Text size="sm" variant="muted" className="py-2">
+            <p className="text-base-content/70 py-2 text-sm">
               No channel sales in this period yet.
-            </Text>
+            </p>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );
@@ -67,14 +55,12 @@ function RankedList<T>({
   amount: (r: T) => string;
 }) {
   return (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="sm" weight="medium">
-          {title}
-        </Text>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-sm font-medium">{title}</p>
         <CardLink href={href}>All</CardLink>
-      </Stack>
-      <Stack gap={0}>
+      </div>
+      <div className="flex flex-col gap-0">
         {rows.map((r, i) => (
           <div
             key={`${i}-${primary(r)}`}
@@ -89,8 +75,8 @@ function RankedList<T>({
             </span>
           </div>
         ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -105,12 +91,10 @@ export function TopListsCard({
   const hasCustomers = customers && customers.length > 0;
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>Top performers</CardTitle>
-      </CardHeader>
-      <CardContent>
         {hasProducts || hasCustomers ? (
-          <Grid cols={1} mdCols={2} gap={6}>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {hasProducts && (
               <RankedList
                 rows={products.slice(0, 5)}
@@ -131,7 +115,7 @@ export function TopListsCard({
                 amount={(r) => fmtMoneyCompact(r.totalSpentCents)}
               />
             )}
-          </Grid>
+          </div>
         ) : (
           <EmptyState
             icon={<ShoppingBag className="h-5 w-5" />}
@@ -139,7 +123,7 @@ export function TopListsCard({
             description="Top products and customers appear here once orders come in."
           />
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

@@ -2,19 +2,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  ModuleProvider,
-  Stack,
-  Switch,
-  Text,
-  toast,
-  type SparxModule,
-} from '@sparx/ui';
+import { ModuleProvider, toast, type SparxModule } from '@sparx/ui';
+import { Card, CardBody, Switch } from 'silicaui-react';
 
 import { updateModuleScope } from '../../actions';
 
@@ -59,45 +48,39 @@ export function SiteModulesTab({
   }
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Heading level={3}>Modules on this site</Heading>
-        <CardDescription>
+    <Card>
+      <CardBody>
+        <h3 className="text-xl font-semibold">Modules on this site</h3>
+        <p className="opacity-70">
           Turn a module off to hide it on this site only — it stays available on your other sites.
           You can&apos;t turn on a module that&apos;s off for the whole workspace.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-[var(--color-border-default)]">
-          {MODULES.map((m) => {
-            const enabled = !moduleScope.includes(m.slug);
-            return (
-              <ModuleProvider key={m.slug} module={m.slug}>
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <span
-                    aria-hidden
-                    className="size-2.5 shrink-0 rounded-full bg-[var(--module-active)]"
-                  />
-                  <Stack gap={0} className="min-w-0 flex-1">
-                    <Text weight="medium" size="sm">
-                      {m.label}
-                    </Text>
-                    <Text size="xs" variant="muted">
-                      {m.description}
-                    </Text>
-                  </Stack>
-                  <Switch
-                    checked={enabled}
-                    disabled={pending}
-                    onCheckedChange={(v) => toggle(m.slug, v)}
-                    aria-label={`${m.label} on this site`}
-                  />
+        </p>
+      </CardBody>
+      <div className="divide-y divide-[var(--color-border-default)]">
+        {MODULES.map((m) => {
+          const enabled = !moduleScope.includes(m.slug);
+          return (
+            <ModuleProvider key={m.slug} module={m.slug}>
+              <div className="flex items-center gap-3 px-4 py-3">
+                <span
+                  aria-hidden
+                  className="size-2.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                />
+                <div className="flex min-w-0 flex-1 flex-col gap-0">
+                  <p className="text-sm font-medium">{m.label}</p>
+                  <p className="text-base-content/70 text-xs">{m.description}</p>
                 </div>
-              </ModuleProvider>
-            );
-          })}
-        </div>
-      </CardContent>
+                <Switch
+                  checked={enabled}
+                  disabled={pending}
+                  onCheckedChange={(v) => toggle(m.slug, v)}
+                  aria-label={`${m.label} on this site`}
+                />
+              </div>
+            </ModuleProvider>
+          );
+        })}
+      </div>
     </Card>
   );
 }

@@ -4,19 +4,7 @@
 
 import Link from 'next/link';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  EmptyState,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -58,7 +46,7 @@ export async function PipelineList({ pipelineId }: PipelineListProps) {
 
   if (deals.length === 0) {
     return (
-      <Card padding="none">
+      <Card>
         <EmptyState
           title="No deals yet"
           description="Create a deal to start tracking opportunities through this pipeline."
@@ -68,33 +56,33 @@ export async function PipelineList({ pipelineId }: PipelineListProps) {
   }
 
   return (
-    <Card padding="none">
-      <CardContent className="p-0">
+    <Card>
+      <CardBody className="p-0">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Stage</TableHead>
-              <TableHead className="text-right">Value</TableHead>
-              <TableHead className="text-right">Probability</TableHead>
-              <TableHead>Expected close</TableHead>
-              <TableHead>Updated</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Stage</th>
+              <th className="text-right">Value</th>
+              <th className="text-right">Probability</th>
+              <th>Expected close</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
             {deals.map((d) => {
               const stage = stagesById.get(d.stageId);
               return (
-                <TableRow key={d.id}>
-                  <TableCell>
+                <tr key={d.id}>
+                  <td>
                     <Link
                       href={`/crm/deals/${d.id}`}
                       className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
                     >
                       {d.title}
                     </Link>
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     {stage && (
                       <Badge
                         variant="outline"
@@ -106,31 +94,29 @@ export async function PipelineList({ pipelineId }: PipelineListProps) {
                         {stage.name}
                       </Badge>
                     )}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {d.currency} {Number(d.value).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {Number(d.probability)}%
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
+                  </td>
+                  <td className="text-right tabular-nums">{Number(d.probability)}%</td>
+                  <td>
+                    <p className="text-base-content/70 text-sm">
                       {d.expectedCloseDate
                         ? new Date(d.expectedCloseDate).toLocaleDateString()
                         : '—'}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
+                    </p>
+                  </td>
+                  <td>
+                    <p className="text-base-content/70 text-sm">
                       {new Date(d.updatedAt).toLocaleDateString()}
-                    </Text>
-                  </TableCell>
-                </TableRow>
+                    </p>
+                  </td>
+                </tr>
               );
             })}
-          </TableBody>
+          </tbody>
         </Table>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

@@ -19,15 +19,14 @@ import * as React from 'react';
 import {
   Button,
   Card,
+  CardBody,
   Checkbox,
   Input,
   Label,
   NativeSelect,
-  Stack,
   Switch,
-  Text,
   Textarea,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { ContentBlockEditor } from '@sparx/cms-editor';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { Plus, Trash2 } from 'lucide-react';
@@ -85,18 +84,14 @@ function slugifyTitle(input: string): string {
 
 function FieldLabel({ htmlFor, field }: { htmlFor: string; field: FieldDef }) {
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <Label htmlFor={htmlFor}>
         {field.label}
         {field.required ? <span className="ml-1 text-[var(--color-danger-text)]">*</span> : null}
       </Label>
-      {field.helpText && (
-        <Text size="xs" variant="muted">
-          {field.helpText}
-        </Text>
-      )}
+      {field.helpText && <p className="text-base-content/70 text-xs">{field.helpText}</p>}
       {isLucideIconField(field.helpText) && <LucideIconLink />}
-    </Stack>
+    </div>
   );
 }
 
@@ -117,7 +112,7 @@ function TextFieldR({
 }) {
   const type = field.type === 'email' ? 'email' : field.type === 'url' ? 'url' : 'text';
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       <Input
         id={inputId}
@@ -129,7 +124,7 @@ function TextFieldR({
         disabled={disabled}
         required={field.required}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -147,7 +142,7 @@ function LongTextFieldR({
   disabled?: boolean;
 }) {
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       <Textarea
         id={inputId}
@@ -158,7 +153,7 @@ function LongTextFieldR({
         disabled={disabled}
         required={field.required}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -200,7 +195,7 @@ function RichTextFieldR({
   };
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       <ContentBlockEditor
         value={asTipTapDoc(value)}
@@ -219,7 +214,7 @@ function RichTextFieldR({
         onPick={handlePick}
         accept={['image/*']}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -238,7 +233,7 @@ function NumberFieldR({
 }) {
   const current = asNumber(value);
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       <Input
         id={inputId}
@@ -260,7 +255,7 @@ function NumberFieldR({
         disabled={disabled}
         required={field.required}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -278,22 +273,18 @@ function BooleanFieldR({
   disabled?: boolean;
 }) {
   return (
-    <Stack direction="row" align="center" gap={3}>
+    <div className="flex flex-row items-center gap-3">
       <Switch
         id={inputId}
         checked={asBoolean(value)}
         onCheckedChange={(checked) => onChange(checked)}
         disabled={disabled}
       />
-      <Stack gap={0}>
+      <div className="flex flex-col gap-0">
         <Label htmlFor={inputId}>{field.label}</Label>
-        {field.helpText && (
-          <Text size="xs" variant="muted">
-            {field.helpText}
-          </Text>
-        )}
-      </Stack>
-    </Stack>
+        {field.helpText && <p className="text-base-content/70 text-xs">{field.helpText}</p>}
+      </div>
+    </div>
   );
 }
 
@@ -311,7 +302,7 @@ function DateFieldR({
   disabled?: boolean;
 }) {
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       <Input
         id={inputId}
@@ -321,7 +312,7 @@ function DateFieldR({
         disabled={disabled}
         required={field.required}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -341,18 +332,19 @@ function EnumFieldR({
   if (field.multiple) {
     const selected = new Set(asArray(value).filter((v): v is string => typeof v === 'string'));
     return (
-      <Stack gap={1}>
+      <div className="flex flex-col gap-1">
         <FieldLabel htmlFor={inputId} field={field} />
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           {field.options.map((opt) => {
             const id = `${inputId}__${opt.value}`;
             const checked = selected.has(opt.value);
             return (
-              <Stack key={opt.value} direction="row" align="center" gap={2}>
+              <div key={opt.value} className="flex flex-row items-center gap-2">
                 <Checkbox
                   id={id}
                   checked={checked}
-                  onCheckedChange={(next) => {
+                  onChange={(e) => {
+                    const next = e.target.checked;
                     const nextSet = new Set(selected);
                     if (next) nextSet.add(opt.value);
                     else nextSet.delete(opt.value);
@@ -361,16 +353,16 @@ function EnumFieldR({
                   disabled={disabled}
                 />
                 <Label htmlFor={id}>{opt.label}</Label>
-              </Stack>
+              </div>
             );
           })}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
       {/* A simple text-option enum → native select (parity with the template /
           robots pickers). Radix Select's hidden form-mirror is an absolutely-
@@ -391,7 +383,7 @@ function EnumFieldR({
           </option>
         ))}
       </NativeSelect>
-    </Stack>
+    </div>
   );
 }
 
@@ -436,10 +428,10 @@ function ReferenceFieldR({
   };
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2} wrap>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-2">
           {pickedIds.map((id) => (
             <span
               key={id}
@@ -464,14 +456,14 @@ function ReferenceFieldR({
             size="sm"
             onClick={() => setOpen(true)}
             disabled={disabled}
-            leftIcon={<Plus className="h-3 w-3" />}
+            iconStart={<Plus className="h-3 w-3" />}
           >
             {isMultiple ? 'Add reference' : pickedIds.length ? 'Replace' : 'Pick reference'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
       <ReferencePicker open={open} onOpenChange={setOpen} onPick={handlePick} typeKey={field.to} />
-    </Stack>
+    </div>
   );
 }
 
@@ -547,9 +539,9 @@ function AssetFieldR({
   };
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <FieldLabel htmlFor={inputId} field={field} />
-      <Stack direction="row" align="center" gap={2} wrap>
+      <div className="flex flex-row flex-wrap items-center gap-2">
         {refs.map((r) => (
           <div
             key={r.assetId}
@@ -581,13 +573,13 @@ function AssetFieldR({
           size="sm"
           onClick={() => setOpen(true)}
           disabled={disabled}
-          leftIcon={<Plus className="h-3 w-3" />}
+          iconStart={<Plus className="h-3 w-3" />}
         >
           {isMultiple ? 'Add asset' : refs.length ? 'Replace' : 'Pick asset'}
         </Button>
-      </Stack>
+      </div>
       <MediaPicker open={open} onOpenChange={setOpen} onPick={handlePick} accept={field.accept} />
-    </Stack>
+    </div>
   );
 }
 
@@ -608,32 +600,34 @@ function ObjectFieldR({
 }) {
   const current = asObject(value);
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       <FieldLabel htmlFor={inputId} field={field} />
       {/* variant="default": generic sub-field renderer used across modules, not module-scoped */}
-      <Card variant="default" padding="md" className="border-[var(--color-border-default)]">
-        <Stack gap={4}>
-          {field.fields.map((subField) => (
-            <FieldRenderer
-              key={subField.key}
-              field={subField}
-              value={current[subField.key]}
-              pathPrefix={`${pathPrefix}.${subField.key}`}
-              disabled={disabled}
-              onChange={(nextSubValue) => {
-                const nextObj = { ...current };
-                if (nextSubValue === undefined) {
-                  delete nextObj[subField.key];
-                } else {
-                  nextObj[subField.key] = nextSubValue;
-                }
-                onChange(nextObj);
-              }}
-            />
-          ))}
-        </Stack>
+      <Card className="border-[var(--color-border-default)]">
+        <CardBody>
+          <div className="flex flex-col gap-4">
+            {field.fields.map((subField) => (
+              <FieldRenderer
+                key={subField.key}
+                field={subField}
+                value={current[subField.key]}
+                pathPrefix={`${pathPrefix}.${subField.key}`}
+                disabled={disabled}
+                onChange={(nextSubValue) => {
+                  const nextObj = { ...current };
+                  if (nextSubValue === undefined) {
+                    delete nextObj[subField.key];
+                  } else {
+                    nextObj[subField.key] = nextSubValue;
+                  }
+                  onChange(nextObj);
+                }}
+              />
+            ))}
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -668,57 +662,50 @@ function RepeaterFieldR({
   const canAdd = field.max === undefined || items.length < field.max;
 
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       <FieldLabel htmlFor={inputId} field={field} />
-      <Stack gap={3}>
-        {items.length === 0 && (
-          <Text variant="muted" size="sm">
-            No items yet.
-          </Text>
-        )}
+      <div className="flex flex-col gap-3">
+        {items.length === 0 && <p className="text-base-content/70 text-sm">No items yet.</p>}
         {items.map((item, index) => (
           // variant="default": generic repeater renderer used across modules, not module-scoped
-          <Card
-            variant="default"
-            key={index}
-            padding="md"
-            className="border-[var(--color-border-default)]"
-          >
-            <Stack gap={3}>
-              <Stack direction="row" align="center" justify="between">
-                <Text size="sm" variant="muted">
-                  {field.itemLabel ?? 'Item'} {index + 1}
-                </Text>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeItem(index)}
-                  disabled={disabled}
-                  leftIcon={<Trash2 className="h-3 w-3" />}
-                >
-                  Remove
-                </Button>
-              </Stack>
-              {field.fields.map((subField) => (
-                <FieldRenderer
-                  key={subField.key}
-                  field={subField}
-                  value={item[subField.key]}
-                  pathPrefix={`${pathPrefix}[${index}].${subField.key}`}
-                  disabled={disabled}
-                  onChange={(nextSubValue) => {
-                    const nextItem = { ...item };
-                    if (nextSubValue === undefined) {
-                      delete nextItem[subField.key];
-                    } else {
-                      nextItem[subField.key] = nextSubValue;
-                    }
-                    updateItem(index, nextItem);
-                  }}
-                />
-              ))}
-            </Stack>
+          <Card key={index} className="border-[var(--color-border-default)]">
+            <CardBody>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <p className="text-base-content/70 text-sm">
+                    {field.itemLabel ?? 'Item'} {index + 1}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeItem(index)}
+                    disabled={disabled}
+                    iconStart={<Trash2 className="h-3 w-3" />}
+                  >
+                    Remove
+                  </Button>
+                </div>
+                {field.fields.map((subField) => (
+                  <FieldRenderer
+                    key={subField.key}
+                    field={subField}
+                    value={item[subField.key]}
+                    pathPrefix={`${pathPrefix}[${index}].${subField.key}`}
+                    disabled={disabled}
+                    onChange={(nextSubValue) => {
+                      const nextItem = { ...item };
+                      if (nextSubValue === undefined) {
+                        delete nextItem[subField.key];
+                      } else {
+                        nextItem[subField.key] = nextSubValue;
+                      }
+                      updateItem(index, nextItem);
+                    }}
+                  />
+                ))}
+              </div>
+            </CardBody>
           </Card>
         ))}
         {canAdd && (
@@ -729,13 +716,13 @@ function RepeaterFieldR({
             size="sm"
             onClick={addItem}
             disabled={disabled}
-            leftIcon={<Plus className="h-3 w-3" />}
+            iconStart={<Plus className="h-3 w-3" />}
           >
             Add {field.itemLabel ?? 'item'}
           </Button>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -776,7 +763,7 @@ export function FieldRenderer({
         helpText: field.helpText ? `${field.helpText}${sourceHint}` : `Auto-derives${sourceHint}`,
       };
       return (
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           <TextFieldR
             field={fieldWithHint}
             value={value}
@@ -784,7 +771,7 @@ export function FieldRenderer({
             inputId={inputId}
             disabled={disabled}
           />
-        </Stack>
+        </div>
       );
     }
     case 'long_text':
@@ -895,9 +882,9 @@ export function FieldRenderer({
       // surface a compile error here. Cast to never on purpose.
       const _exhaustive: never = field;
       return (
-        <Text variant="danger" size="sm">
+        <p className="text-danger text-sm">
           Unsupported field type: {String((_exhaustive as { type?: unknown }).type)}
-        </Text>
+        </p>
       );
     }
   }

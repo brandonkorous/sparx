@@ -14,21 +14,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createPipelineAction } from '../../../pipeline-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -135,13 +122,11 @@ export function NewPipelineForm({ surface }: NewPipelineFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardHeader>
+          <Card>
+            <CardBody>
               <CardTitle>Pipeline details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={4}>
-                <Stack gap={2}>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="pipeline-name">Name</Label>
                   <Input
                     id="pipeline-name"
@@ -149,8 +134,8 @@ export function NewPipelineForm({ surface }: NewPipelineFormProps) {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Fleet contract renewals"
                   />
-                </Stack>
-                <Stack gap={2}>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="pipeline-slug">Slug</Label>
                   <Input
                     id="pipeline-slug"
@@ -161,27 +146,27 @@ export function NewPipelineForm({ surface }: NewPipelineFormProps) {
                     }}
                     placeholder="fleet-contract-renewals"
                   />
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Lowercase kebab-case. Used as the URL identifier.
-                  </Text>
-                </Stack>
-                <Stack direction="row" align="center" gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     color="module"
                     id="pipeline-default"
                     checked={isDefault}
-                    onCheckedChange={(v) => setIsDefault(v === true)}
+                    onChange={(e) => setIsDefault(e.target.checked)}
                   />
                   <Label htmlFor="pipeline-default">Make this the default pipeline</Label>
-                </Stack>
+                </div>
 
                 {error && (
-                  <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  <p className="text-danger text-sm" role="alert" aria-live="polite">
                     {error}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

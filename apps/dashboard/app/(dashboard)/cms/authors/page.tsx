@@ -4,7 +4,8 @@
 // over the existing authors. The card view is preserved as the `card` slot; the
 // table mirrors its key fields.
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 import { Plus, Users } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -35,8 +36,8 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="Authors"
           badge={
@@ -60,12 +61,12 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
         <ListToolbar searchable={false} enableViewToggle />
 
         {authors.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<Users className="h-5 w-5" />}
               title="No authors yet"
               description="Add your first author to start attributing blog posts and editorial entries."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="author"
                   newHref="/cms/authors/new"
@@ -80,16 +81,16 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
           </Card>
         ) : (
           <>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Click an author to edit name, slug, and bio.
-            </Text>
+            </p>
             <AuthorsList rows={authors} view={view} />
           </>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

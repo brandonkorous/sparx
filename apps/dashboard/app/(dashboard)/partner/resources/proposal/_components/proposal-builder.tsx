@@ -1,17 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
 
 import { MODULE_GUIDES } from '../../_lib/content';
 
@@ -52,12 +42,12 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
   const monthlyLabel = formatMonthly(monthly);
 
   return (
-    <Stack gap={8}>
+    <div className="flex flex-col gap-8">
       <Card className="print:hidden">
-        <CardContent className="pt-6">
-          <Stack gap={5}>
+        <CardBody>
+          <div className="flex flex-col gap-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="prop-client">Client name</Label>
                 <Input
                   id="prop-client"
@@ -66,8 +56,8 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                   placeholder="e.g. Riverside Bakery"
                   maxLength={160}
                 />
-              </Stack>
-              <Stack gap={2}>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="prop-by">Prepared by</Label>
                 <Input
                   id="prop-by"
@@ -76,10 +66,10 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                   placeholder="Your practice name"
                   maxLength={160}
                 />
-              </Stack>
+              </div>
             </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label>Modules you’ll set up</Label>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {MODULE_GUIDES.map((g) => (
@@ -90,23 +80,21 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                     <Checkbox
                       id={`prop-mod-${g.module}`}
                       checked={selected.has(g.module)}
-                      onCheckedChange={() => toggle(g.module)}
+                      onChange={() => toggle(g.module)}
                       className="mt-0.5"
                     />
-                    <Stack gap={0} className="min-w-0">
+                    <div className="flex min-w-0 flex-col gap-0">
                       <Label htmlFor={`prop-mod-${g.module}`} className="cursor-pointer">
                         {g.label}
                       </Label>
-                      <Text size="xs" variant="muted">
-                        {g.blurb}
-                      </Text>
-                    </Stack>
+                      <p className="text-base-content/70 text-xs">{g.blurb}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </Stack>
+            </div>
 
-            <Stack gap={2} className="sm:max-w-xs">
+            <div className="flex flex-col gap-2 sm:max-w-xs">
               <Label htmlFor="prop-monthly">Estimated monthly (USD)</Label>
               <Input
                 id="prop-monthly"
@@ -115,9 +103,9 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                 onChange={(e) => setMonthly(e.target.value)}
                 placeholder="149"
               />
-            </Stack>
+            </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="prop-scope">Scope &amp; notes (optional)</Label>
               <Textarea
                 id="prop-scope"
@@ -127,76 +115,77 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                 rows={4}
                 maxLength={2000}
               />
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card variant="default" padding="lg">
-        <Stack gap={6}>
-          <Stack gap={1}>
-            <Text size="sm" variant="muted" className="tracking-wider uppercase">
-              Proposal
-            </Text>
-            <Heading level={2}>{client.trim() || 'Client name'}</Heading>
-            <Text size="sm" variant="muted">
-              Prepared by {preparedBy.trim() || 'Your practice'} · on Sparx
-            </Text>
-          </Stack>
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1">
+              <p className="text-base-content/70 text-sm tracking-wider uppercase">Proposal</p>
+              <h2 className="text-2xl font-semibold tracking-tight">
+                {client.trim() || 'Client name'}
+              </h2>
+              <p className="text-base-content/70 text-sm">
+                Prepared by {preparedBy.trim() || 'Your practice'} · on Sparx
+              </p>
+            </div>
 
-          <Stack gap={2}>
-            <Text weight="medium">What we’ll build</Text>
-            {chosen.length > 0 ? (
-              <ul className="flex flex-col gap-2">
-                {chosen.map((g) => (
-                  <li key={g.module} className="flex items-start gap-3">
-                    <span
-                      aria-hidden
-                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
-                    />
-                    <Text size="sm">
-                      <span className="font-medium">{g.label}</span> — {g.blurb}
-                    </Text>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <Text size="sm" variant="muted">
-                Select the modules you’ll set up above.
-              </Text>
-            )}
-          </Stack>
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-medium">What we’ll build</p>
+              {chosen.length > 0 ? (
+                <ul className="flex flex-col gap-2">
+                  {chosen.map((g) => (
+                    <li key={g.module} className="flex items-start gap-3">
+                      <span
+                        aria-hidden
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                      />
+                      <p className="text-sm">
+                        <span className="font-medium">{g.label}</span> — {g.blurb}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-base-content/70 text-sm">
+                  Select the modules you’ll set up above.
+                </p>
+              )}
+            </div>
 
-          <Stack gap={1}>
-            <Text weight="medium">Investment</Text>
-            <Text size="sm">
-              {monthlyLabel
-                ? `${monthlyLabel} per month on Sparx, for the modules above.`
-                : 'A monthly Sparx subscription for the modules above.'}
-            </Text>
-            <Text size="sm" variant="muted">
-              Starts with a 14-day free trial — build it and see it work before anything is charged.
-            </Text>
-          </Stack>
+            <div className="flex flex-col gap-1">
+              <p className="text-base font-medium">Investment</p>
+              <p className="text-sm">
+                {monthlyLabel
+                  ? `${monthlyLabel} per month on Sparx, for the modules above.`
+                  : 'A monthly Sparx subscription for the modules above.'}
+              </p>
+              <p className="text-base-content/70 text-sm">
+                Starts with a 14-day free trial — build it and see it work before anything is
+                charged.
+              </p>
+            </div>
 
-          {scope.trim() ? (
-            <Stack gap={1}>
-              <Text weight="medium">Scope &amp; notes</Text>
-              <Text size="sm" className="whitespace-pre-wrap">
-                {scope.trim()}
-              </Text>
-            </Stack>
-          ) : null}
+            {scope.trim() ? (
+              <div className="flex flex-col gap-1">
+                <p className="text-base font-medium">Scope &amp; notes</p>
+                <p className="text-sm whitespace-pre-wrap">{scope.trim()}</p>
+              </div>
+            ) : null}
 
-          <Stack gap={1}>
-            <Text weight="medium">Next steps</Text>
-            <Text size="sm" variant="muted">
-              Approve this proposal and we’ll start the trial, build the site, and walk you through
-              it before you go live.
-            </Text>
-          </Stack>
-        </Stack>
+            <div className="flex flex-col gap-1">
+              <p className="text-base font-medium">Next steps</p>
+              <p className="text-base-content/70 text-sm">
+                Approve this proposal and we’ll start the trial, build the site, and walk you
+                through it before you go live.
+              </p>
+            </div>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

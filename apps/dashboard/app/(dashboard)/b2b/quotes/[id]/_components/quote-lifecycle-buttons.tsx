@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { quoteLifecycleAction } from '../../_lib/actions';
 
 interface Props {
@@ -35,13 +35,9 @@ export function QuoteLifecycleButtons({ quoteId, canAccept, canDecline }: Props)
   if (!canAccept && !canDecline) return null;
 
   return (
-    <Stack gap={2}>
-      {actionError && (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {actionError}
-        </Text>
-      )}
-      <Stack direction="row" gap={2}>
+    <div className="flex flex-col gap-2">
+      {actionError && <p className="text-sm text-[var(--color-danger)]">{actionError}</p>}
+      <div className="flex flex-row gap-2">
         {canDecline && (
           <Button
             color="danger"
@@ -63,7 +59,7 @@ export function QuoteLifecycleButtons({ quoteId, canAccept, canDecline }: Props)
             {acting === 'accept' ? 'Accepting…' : 'Accept'}
           </Button>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

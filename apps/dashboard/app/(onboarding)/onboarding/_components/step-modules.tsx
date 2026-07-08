@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Badge, Switch, Text, cn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { Switch, cn } from '@sparx/ui';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import {
   ONBOARDING_MODULES,
@@ -61,9 +62,7 @@ export function StepModules({
           <React.Fragment key={m.key}>
             {firstAddon && (
               <div className="px-1 pt-4 pb-1.5">
-                <Text size="xs" variant="muted" weight="medium">
-                  Add-ons
-                </Text>
+                <p className="text-base-content/70 text-xs font-medium">Add-ons</p>
               </div>
             )}
             <ModuleRow
@@ -114,7 +113,7 @@ function ModuleRow({
             className="flex flex-col gap-0.5 text-left"
           >
             <span className="flex items-center gap-2">
-              <Text weight="medium">{m.name}</Text>
+              <p className="font-medium">{m.name}</p>
               <ChevronDown
                 className={cn(
                   'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-200',
@@ -122,9 +121,7 @@ function ModuleRow({
                 )}
               />
             </span>
-            <Text size="xs" variant="muted">
-              {m.desc}
-            </Text>
+            <p className="text-base-content/70 text-xs">{m.desc}</p>
           </button>
           {caption && (
             <Badge
@@ -166,9 +163,7 @@ function ModuleRow({
 
       {open && (
         <div className="flex flex-col gap-3.5 pt-0.5 pr-1 pb-5 pl-[26px]">
-          <Text size="sm" variant="muted" className="max-w-[560px]">
-            {m.long}
-          </Text>
+          <p className="text-base-content/70 max-w-[560px] text-sm">{m.long}</p>
           <ul className="flex flex-wrap gap-x-7 gap-y-2.5">
             {m.feats.map((f) => (
               <li key={f} className="flex w-[248px] max-w-full items-center gap-2.5">
@@ -176,19 +171,17 @@ function ModuleRow({
                   className="h-[5px] w-[5px] shrink-0 rounded-full"
                   style={{ background: m.colorVar }}
                 />
-                <Text size="sm" variant="muted">
-                  {f}
-                </Text>
+                <p className="text-base-content/70 text-sm">{f}</p>
               </li>
             ))}
           </ul>
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Replaces {m.replaces} — about{' '}
             <span className="font-medium text-[var(--color-text-secondary)]">
               ${m.elsewhere}/mo
             </span>{' '}
             bought separately.
-          </Text>
+          </p>
         </div>
       )}
     </div>

@@ -1,18 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
 
 // Client wrapper for the pricing-tiers list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
@@ -57,16 +46,10 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     {
       header: 'Name',
       cell: (t) => (
-        <Stack gap={1}>
-          <Text size="sm" className="font-medium">
-            {t.name}
-          </Text>
-          {t.description ? (
-            <Text size="xs" variant="muted">
-              {t.description}
-            </Text>
-          ) : null}
-        </Stack>
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium">{t.name}</p>
+          {t.description ? <p className="text-base-content/70 text-xs">{t.description}</p> : null}
+        </div>
       ),
     },
     {
@@ -79,29 +62,21 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     },
     {
       header: 'Scope',
-      cell: (t) => (
-        <Text size="sm" variant="muted">
-          {scopeLabel(t.productScope)}
-        </Text>
-      ),
+      cell: (t) => <p className="text-base-content/70 text-sm">{scopeLabel(t.productScope)}</p>,
     },
     {
       header: 'Minimum order',
       align: 'right',
       cell: (t) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {t.minOrderCents > 0 ? minOrderLabel(t.minOrderCents) : '—'}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Accounts',
       align: 'right',
-      cell: (t) => (
-        <Text size="sm" variant="muted">
-          {t.accountCount ?? '—'}
-        </Text>
-      ),
+      cell: (t) => <p className="text-base-content/70 text-sm">{t.accountCount ?? '—'}</p>,
     },
   ];
 
@@ -109,41 +84,33 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     title: (t) => <CardTitle>{t.name}</CardTitle>,
     render: (tier) => (
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="start" justify="between" gap={2}>
+        <CardBody>
+          <div className="flex flex-row items-start justify-between gap-2">
             <CardTitle>{tier.name}</CardTitle>
             <Badge color="module" variant="soft" size="sm">
               {discountLabel(tier)}
             </Badge>
-          </Stack>
-          {tier.description && <CardDescription>{tier.description}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                Scope
-              </Text>
-              <Text size="sm">{scopeLabel(tier.productScope)}</Text>
-            </Stack>
+          </div>
+          {tier.description && <p className="opacity-70">{tier.description}</p>}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">Scope</p>
+              <p className="text-sm">{scopeLabel(tier.productScope)}</p>
+            </div>
             {tier.minOrderCents > 0 && (
-              <Stack direction="row" justify="between">
-                <Text size="sm" variant="muted">
-                  Minimum order
-                </Text>
-                <Text size="sm">{minOrderLabel(tier.minOrderCents)}</Text>
-              </Stack>
+              <div className="flex flex-row justify-between">
+                <p className="text-base-content/70 text-sm">Minimum order</p>
+                <p className="text-sm">{minOrderLabel(tier.minOrderCents)}</p>
+              </div>
             )}
             {tier.accountCount !== undefined && (
-              <Stack direction="row" justify="between">
-                <Text size="sm" variant="muted">
-                  Accounts
-                </Text>
-                <Text size="sm">{tier.accountCount}</Text>
-              </Stack>
+              <div className="flex flex-row justify-between">
+                <p className="text-base-content/70 text-sm">Accounts</p>
+                <p className="text-sm">{tier.accountCount}</p>
+              </div>
             )}
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     ),
   };

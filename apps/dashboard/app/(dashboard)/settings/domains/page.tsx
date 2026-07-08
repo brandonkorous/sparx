@@ -1,5 +1,6 @@
 import { Globe } from 'lucide-react';
-import { Badge, Container, EmptyState, Heading, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, EmptyState } from 'silicaui-react';
 import { listProperties, listDomains, type Domain, type Property } from '@/lib/sites';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -38,8 +39,8 @@ export default async function DomainsSettingsPage({ searchParams }: PageProps) {
   const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Globe className="h-5 w-5" />}
           title="Domains"
@@ -51,8 +52,8 @@ export default async function DomainsSettingsPage({ searchParams }: PageProps) {
           description="Purchase new domains, track renewals, and manage WHOIS privacy and DNS settings. Connected domains are also managed per-site under Sites."
         />
 
-        <Stack gap={3}>
-          <Heading level={2}>Your domains</Heading>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight">Your domains</h2>
           <ListToolbar enableViewToggle searchable={false} />
           {domains.length === 0 ? (
             <EmptyState
@@ -63,10 +64,10 @@ export default async function DomainsSettingsPage({ searchParams }: PageProps) {
           ) : (
             <DomainsInventory domains={domains} properties={properties} view={view} />
           )}
-        </Stack>
+        </div>
 
         <DomainSearch properties={properties} purchaseEnabled={purchaseEnabled} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

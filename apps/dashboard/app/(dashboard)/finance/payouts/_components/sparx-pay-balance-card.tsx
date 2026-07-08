@@ -4,18 +4,8 @@
 // the only interactive bit (the Stripe-hosted dashboard link) is its own client button.
 
 import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Stack,
-  Stat,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Stat, statusLabel } from '@sparx/ui';
 
 import { formatMoney } from '../_format';
 import type { SparxPayBalance } from '../../payments/actions';
@@ -28,20 +18,19 @@ export function SparxPayBalanceCard({ balance }: { balance: SparxPayBalance | nu
       : null;
 
   return (
-    <Card variant="module">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={2} wrap>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>sparx Pay balance</CardTitle>
           {cadence && (
             <Badge color="neutral" variant="soft" size="sm">
               {cadence}
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
+        </div>
+
         {balance ? (
-          <Stack gap={5}>
+          <div className="flex flex-col gap-5">
             <div className="grid grid-cols-2 gap-3 sm:max-w-md">
               <Stat
                 label="Available"
@@ -54,29 +43,29 @@ export function SparxPayBalanceCard({ balance }: { balance: SparxPayBalance | nu
                 hint="Clearing from recent sales"
               />
             </div>
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <OpenDashboardButton />
-              <Text size="xs" variant="muted" className="max-w-prose">
+              <p className="text-base-content/70 max-w-prose text-xs">
                 Manage your bank account, payout schedule, and full payout history in the secure
                 Stripe-hosted dashboard.
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
         ) : (
-          <Stack gap={3}>
-            <Text size="sm" variant="muted" className="max-w-prose">
+          <div className="flex flex-col gap-3">
+            <p className="text-base-content/70 max-w-prose text-sm">
               No sparx Pay balance yet. Once you finish setup and take your first payment, your
               available and settling balances show here — sparx handles settlement and pays out to
               your bank automatically.
-            </Text>
+            </p>
             <div>
-              <Button asChild color="module">
-                <Link href="/finance/payments">Set up sparx Pay</Link>
+              <Button color="module" render={<Link href="/finance/payments" />}>
+                Set up sparx Pay
               </Button>
             </div>
-          </Stack>
+          </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

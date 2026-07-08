@@ -3,19 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
 
 import { createAuthor } from './actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
@@ -142,13 +131,16 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="display_name" required>
-                      Display name
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Label htmlFor="display_name">
+                      Display name{' '}
+                      <span className="text-error" aria-hidden="true">
+                        *
+                      </span>
                     </Label>
                     <Input
                       id="display_name"
@@ -156,8 +148,8 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Jane Doe"
                     />
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="slug">Slug (optional)</Label>
                     <Input
                       id="slug"
@@ -168,19 +160,18 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
                       aria-describedby={slugError ? 'slug-error' : undefined}
                     />
                     {slugError && (
-                      <Text
+                      <p
                         id="slug-error"
-                        size="xs"
-                        variant="danger"
+                        className="text-danger text-xs"
                         role="alert"
                         aria-live="polite"
                       >
                         {slugError}
-                      </Text>
+                      </p>
                     )}
-                  </Stack>
-                </Stack>
-                <Stack gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="bio">Bio</Label>
                   <Textarea
                     id="bio"
@@ -189,14 +180,14 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
                     rows={3}
                     placeholder="Short author blurb…"
                   />
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {generalError && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {generalError}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

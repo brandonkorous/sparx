@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Badge,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -37,7 +31,7 @@ interface ContentTypesListProps {
 
 export function ContentTypesList({ types, counts, view }: ContentTypesListProps) {
   const typeLink = (t: ContentType) => (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <Link
         href={`/cms/content?type=${t.key}`}
         className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
@@ -45,15 +39,13 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
         {t.plural_name}
       </Link>
       {t.description && (
-        <Text size="xs" variant="muted" className="line-clamp-1">
-          {t.description}
-        </Text>
+        <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
       )}
-    </Stack>
+    </div>
   );
 
   const kindCell = (t: ContentType) => (
-    <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-row items-center gap-2">
       <Badge color={t.is_built_in ? 'neutral' : 'module'} variant="soft" size="sm">
         {t.is_built_in ? 'built-in' : 'custom'}
       </Badge>
@@ -62,18 +54,14 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
           singleton
         </Badge>
       )}
-    </Stack>
+    </div>
   );
 
   const urlCell = (t: ContentType) =>
     t.url_pattern ? (
-      <Text size="xs" variant="muted" className="font-mono">
-        {t.url_pattern}
-      </Text>
+      <p className="text-base-content/70 font-mono text-xs">{t.url_pattern}</p>
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
 
   const itemsLink = (t: ContentType) => (
@@ -120,28 +108,20 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
     ),
     subtitle: (t) =>
       t.description ? (
-        <Text size="xs" variant="muted" className="line-clamp-1">
-          {t.description}
-        </Text>
+        <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
       ) : null,
     badge: kindCell,
     body: (t) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            URL pattern
-          </Text>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">URL pattern</p>
           {urlCell(t)}
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Items
-          </Text>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Items</p>
           <span className="text-sm tabular-nums">{itemsLink(t)}</span>
-        </Stack>
-        <Stack direction="row" align="center" justify="end" gap={2}>
-          {schemaLink(t)}
-        </Stack>
+        </div>
+        <div className="flex flex-row items-center justify-end gap-2">{schemaLink(t)}</div>
       </>
     ),
   };

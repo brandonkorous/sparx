@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { SchemaEditor } from './schema-editor';
@@ -34,8 +35,8 @@ export default async function EditTypeSchemaPage({ params }: PageParams) {
 
   if (type.is_built_in) {
     return (
-      <Container size="lg">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             title={type.name}
             badge={
@@ -51,16 +52,16 @@ export default async function EditTypeSchemaPage({ params }: PageParams) {
               </>
             }
           />
-        </Stack>
-      </Container>
+        </div>
+      </div>
     );
   }
 
   const schemaText = JSON.stringify(type.schema_json ?? { fields: [] }, null, 2);
 
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title={
             <>
@@ -81,7 +82,7 @@ export default async function EditTypeSchemaPage({ params }: PageParams) {
             schemaText,
           }}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -2,20 +2,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-  Textarea,
-  useConfirm,
-} from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Button, Card, CardActions, CardBody, Input, Label, Textarea } from 'silicaui-react';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteAuthor, updateAuthor } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -112,16 +100,17 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
       onChange={recomputeDirty}
       noValidate
     >
-      <Stack gap={5}>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Details</Heading>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={1}>
-                <Label htmlFor="display_name" required>
-                  Display name
+      <div className="flex flex-col gap-5">
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Details</h3>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="display_name">
+                  Display name{' '}
+                  <span className="text-error" aria-hidden="true">
+                    *
+                  </span>
                 </Label>
                 <Input
                   id="display_name"
@@ -130,10 +119,13 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
                   required
                   aria-required
                 />
-              </Stack>
-              <Stack gap={1}>
-                <Label htmlFor="slug" required>
-                  Slug
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="slug">
+                  Slug{' '}
+                  <span className="text-error" aria-hidden="true">
+                    *
+                  </span>
                 </Label>
                 <Input
                   id="slug"
@@ -145,27 +137,32 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
                   aria-describedby={slugError ? 'slug-error' : undefined}
                 />
                 {slugError ? (
-                  <Text id="slug-error" size="xs" variant="danger" role="alert" aria-live="polite">
+                  <p
+                    id="slug-error"
+                    className="text-danger text-xs"
+                    role="alert"
+                    aria-live="polite"
+                  >
                     {slugError}
-                  </Text>
+                  </p>
                 ) : (
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Unique per tenant — used in author URLs.
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-              <Stack gap={1}>
+              </div>
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea id="bio" name="bio" defaultValue={author.bio} rows={4} />
-              </Stack>
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            <Stack direction="row" align="center" gap={3}>
+              </div>
+            </div>
+          </CardBody>
+          <CardActions>
+            <div className="flex flex-row items-center gap-3">
               <Button
                 type="submit"
                 color="module"
-                leftIcon={<Save className="h-4 w-4" />}
+                iconStart={<Save className="h-4 w-4" />}
                 disabled={pending}
                 loading={pending}
               >
@@ -174,26 +171,26 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
               <Button
                 type="button"
                 variant="ghost"
-                leftIcon={<Trash2 className="h-4 w-4" />}
+                iconStart={<Trash2 className="h-4 w-4" />}
                 onClick={handleDelete}
                 disabled={pending}
               >
                 Delete
               </Button>
               {generalError && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {generalError}
-                </Text>
+                </p>
               )}
               {message && (
-                <Text size="sm" variant="success" aria-live="polite">
+                <p className="text-success text-sm" aria-live="polite">
                   {message}
-                </Text>
+                </p>
               )}
-            </Stack>
-          </CardFooter>
+            </div>
+          </CardActions>
         </Card>
-      </Stack>
+      </div>
     </form>
   );
 }

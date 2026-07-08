@@ -12,7 +12,8 @@
 // can still grab the URL by selecting + copying manually.
 
 import * as React from 'react';
-import { Button, Stack, Text, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { Check, Eye } from 'lucide-react';
 import { mintPreviewUrl } from '../actions';
 
@@ -87,7 +88,7 @@ export function PreviewButton({
       color={recentlyCopied ? 'module' : 'neutral'}
       variant={recentlyCopied ? 'outline' : 'ghost'}
       size="sm"
-      leftIcon={
+      iconStart={
         recentlyCopied ? <Check className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />
       }
       onClick={onClick}
@@ -103,14 +104,14 @@ export function PreviewButton({
   if (iconOnly) return button;
 
   return (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       {button}
       {manualCopyUrl && (
-        <Text size="xs" variant="muted" aria-live="polite">
+        <p className="text-base-content/70 text-xs" aria-live="polite">
           <code className="break-all">{manualCopyUrl}</code>
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }
 

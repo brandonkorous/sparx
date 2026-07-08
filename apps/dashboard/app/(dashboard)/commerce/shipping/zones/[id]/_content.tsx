@@ -1,24 +1,9 @@
 import { notFound } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+
+import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -91,84 +76,76 @@ export async function ShippingZoneDetailContent({ id }: Props) {
   const profileById = new Map(profiles.map((p) => [p.id, p]));
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Heading level={1}>{zone.name}</Heading>
-          <Stack direction="row" gap={2} align="center">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold">{zone.name}</h1>
+          <div className="flex flex-row items-center gap-2">
             <Badge color="neutral" variant="soft" size="sm">
               priority {zone.priority}
             </Badge>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {zone.targeting.countries.length === 0
                 ? 'any country'
                 : `${zone.targeting.countries.length} countries`}
-            </Text>
-          </Stack>
-        </Stack>
+            </p>
+          </div>
+        </div>
         <ZoneDeleteButton zoneId={zone.id} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Targeting</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Targeting</h3>
+            <p className="opacity-70">
               The address matcher checks countries first, then regions, then postal-code ranges.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
             <Field label="Countries">
               {zone.targeting.countries.length > 0 ? (
-                <Stack direction="row" gap={1} wrap>
+                <div className="flex flex-row flex-wrap gap-1">
                   {zone.targeting.countries.map((c) => (
                     <Badge key={c} color="neutral" variant="soft" size="sm">
                       {c}
                     </Badge>
                   ))}
-                </Stack>
+                </div>
               ) : (
-                <Text size="sm" variant="muted">
-                  any
-                </Text>
+                <p className="text-base-content/70 text-sm">any</p>
               )}
             </Field>
             <Field label="Regions">
               {zone.targeting.regions.length > 0 ? (
-                <Stack direction="row" gap={1} wrap>
+                <div className="flex flex-row flex-wrap gap-1">
                   {zone.targeting.regions.map((r) => (
                     <Badge key={r} color="neutral" variant="soft" size="sm">
                       {r}
                     </Badge>
                   ))}
-                </Stack>
+                </div>
               ) : (
-                <Text size="sm" variant="muted">
-                  none
-                </Text>
+                <p className="text-base-content/70 text-sm">none</p>
               )}
             </Field>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack gap={1}>
-            <Stack direction="row" align="center" gap={2}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center gap-2">
               <Plus className="h-4 w-4" />
-              <Heading level={3}>Manual rates</Heading>
-            </Stack>
-            <CardDescription>
+              <h3 className="text-xl font-semibold">Manual rates</h3>
+            </div>
+            <p className="opacity-70">
               Storefront uses these when no carrier provider is installed, or as a fallback if
               provider rates time out.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
             {rates.length === 0 ? (
               <EmptyState
                 icon={<Plus className="h-5 w-5" />}
@@ -177,63 +154,61 @@ export async function ShippingZoneDetailContent({ id }: Props) {
               />
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Profile</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Carrier</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Profile</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Carrier</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
                   {rates.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell>{r.name}</TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
+                    <tr key={r.id}>
+                      <td>{r.name}</td>
+                      <td>
+                        <p className="text-base-content/70 text-xs">
                           {profileById.get(r.profileId)?.name ?? r.profileId.slice(0, 8)}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
+                        </p>
+                      </td>
+                      <td>
                         <Badge color="info" variant="soft" size="sm">
                           {statusLabel(r.type)}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         {r.amountCents != null
                           ? `${(r.amountCents / 100).toFixed(2)} ${r.currency}`
                           : r.bands && r.bands.length > 0
                             ? `${r.bands.length} bands`
                             : '—'}
-                      </TableCell>
-                      <TableCell>{r.carrier ?? '—'}</TableCell>
-                      <TableCell>
+                      </td>
+                      <td>{r.carrier ?? '—'}</td>
+                      <td>
                         <RateDeleteButton rateId={r.id} zoneId={zone.id} />
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
 
-            <Heading level={4}>Add a rate</Heading>
+            <h4 className="text-lg font-semibold">Add a rate</h4>
             <NewRateForm zoneId={zone.id} profiles={profiles} />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <Stack gap={1}>
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-xs">{label}</p>
       {children}
-    </Stack>
+    </div>
   );
 }

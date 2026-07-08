@@ -8,7 +8,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { RefreshCw } from 'lucide-react';
 
-import { Button, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { recomputeSegmentsAction } from '../../segment-actions';
 
@@ -46,7 +47,7 @@ export function RecomputeButton({ segmentId }: { segmentId?: string } = {}) {
       onClick={() => void run()}
       disabled={pending}
       loading={pending}
-      leftIcon={!pending ? <RefreshCw className="h-3.5 w-3.5" /> : undefined}
+      iconStart={!pending ? <RefreshCw className="h-3.5 w-3.5" /> : undefined}
     >
       Recompute
     </Button>

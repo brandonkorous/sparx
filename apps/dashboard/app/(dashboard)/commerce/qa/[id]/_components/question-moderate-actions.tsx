@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, X } from 'lucide-react';
 
-import { Button, Stack, Text, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { moderateQuestionAction } from '../../../review-actions';
 
@@ -44,8 +45,8 @@ export function QuestionModerateActions({
   }
 
   return (
-    <Stack gap={1} align="end">
-      <Stack direction="row" gap={2}>
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-row gap-2">
         {status !== 'published' && (
           <Button color="module" disabled={pending} onClick={() => decide('published')}>
             <Check className="h-4 w-4" />
@@ -58,12 +59,12 @@ export function QuestionModerateActions({
             Reject
           </Button>
         )}
-      </Stack>
+      </div>
       {error && (
-        <Text size="xs" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-xs" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

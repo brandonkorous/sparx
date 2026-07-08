@@ -2,14 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { formatDate, formatMoney, purchaseOrderStatus, type PurchaseOrderRow } from './types';
 
@@ -39,10 +33,10 @@ export function PurchaseOrdersList({ rows, view }: PurchaseOrdersListProps) {
   };
 
   const lines = (po: PurchaseOrderRow) => (
-    <Text size="xs" variant="muted">
+    <p className="text-base-content/70 text-xs">
       {po.lineCount} line{po.lineCount === 1 ? '' : 's'}
       {po.quantityOrdered > 0 ? ` · ${po.quantityReceived}/${po.quantityOrdered} recv` : ''}
-    </Text>
+    </p>
   );
 
   const columns: SelectionColumn<PurchaseOrderRow>[] = [
@@ -57,29 +51,25 @@ export function PurchaseOrdersList({ rows, view }: PurchaseOrdersListProps) {
 
   const card: SelectionCard<PurchaseOrderRow> = {
     title: (po) => (
-      <Text size="sm" className="truncate font-medium">
+      <p className="truncate text-sm font-medium">
         {po.supplierName ?? po.supplierCode ?? 'Supplier'}
-      </Text>
+      </p>
     ),
     subtitle: numberLink,
     badge: statusBadge,
     body: (po) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">
             {po.warehouseName ?? po.warehouseCode ?? '—'}
-          </Text>
-          <Text size="sm" className="font-medium">
-            {formatMoney(po.totalCents, po.currency)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+          </p>
+          <p className="text-sm font-medium">{formatMoney(po.totalCents, po.currency)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
           {lines(po)}
-          <Text size="xs" variant="muted">
-            exp {formatDate(po.expectedArrivalAt)}
-          </Text>
-        </Stack>
-      </Stack>
+          <p className="text-base-content/70 text-xs">exp {formatDate(po.expectedArrivalAt)}</p>
+        </div>
+      </div>
     ),
   };
 

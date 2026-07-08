@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Label, Stack, Switch, Text } from '@sparx/ui';
+import { Button, Input, Label, Switch } from 'silicaui-react';
 
 import { updateCommerceSiteSettingsAction } from '../../site-actions';
 
@@ -84,9 +84,9 @@ export function CommerceSiteSettingsForm({
   }
 
   return (
-    <Stack gap={5}>
-      <Stack direction="row" gap={4} wrap>
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-row flex-wrap gap-4">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="currency">Default currency</Label>
           <Input
             id="currency"
@@ -94,11 +94,9 @@ export function CommerceSiteSettingsForm({
             onChange={(e) => set('defaultCurrency', e.target.value.toUpperCase())}
             maxLength={3}
           />
-          <Text size="xs" variant="muted">
-            ISO 4217 (USD, EUR, GBP).
-          </Text>
-        </Stack>
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+          <p className="text-base-content/70 text-xs">ISO 4217 (USD, EUR, GBP).</p>
+        </div>
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="locale">Default locale</Label>
           <Input
             id="locale"
@@ -106,13 +104,11 @@ export function CommerceSiteSettingsForm({
             onChange={(e) => set('defaultLocale', e.target.value)}
             maxLength={10}
           />
-          <Text size="xs" variant="muted">
-            BCP-47 (en-US, en-GB, fr-FR).
-          </Text>
-        </Stack>
-      </Stack>
+          <p className="text-base-content/70 text-xs">BCP-47 (en-US, en-GB, fr-FR).</p>
+        </div>
+      </div>
 
-      <Stack gap={1}>
+      <div className="flex flex-col gap-1">
         <Label htmlFor="warehouse">Default warehouse</Label>
         <select
           id="warehouse"
@@ -127,14 +123,14 @@ export function CommerceSiteSettingsForm({
             </option>
           ))}
         </select>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           New carts default to this warehouse. Override per-order at checkout.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         <Label>Channels enabled</Label>
-        <Stack direction="row" gap={3} wrap>
+        <div className="flex flex-row flex-wrap gap-3">
           {CHANNELS.map((c) => {
             const on = form.channelsEnabled.includes(c.id);
             return (
@@ -152,15 +148,15 @@ export function CommerceSiteSettingsForm({
               </button>
             );
           })}
-        </Stack>
-        <Text size="xs" variant="muted">
+        </div>
+        <p className="text-base-content/70 text-xs">
           Disabled channels return 404 for their routes. The retail storefront and B2B portal each
           have their own app; toggling here gates feature visibility tenant-wide.
-        </Text>
-      </Stack>
+        </p>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
-        <Stack gap={1} className="min-w-[14rem] flex-1">
+      <div className="flex flex-row flex-wrap gap-4">
+        <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
           <Label htmlFor="abandonment">Cart abandonment threshold (minutes)</Label>
           <Input
             id="abandonment"
@@ -170,8 +166,8 @@ export function CommerceSiteSettingsForm({
             value={form.cartAbandonmentMinutes}
             onChange={(e) => set('cartAbandonmentMinutes', Number(e.target.value))}
           />
-        </Stack>
-        <Stack gap={1} className="min-w-[14rem] flex-1">
+        </div>
+        <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
           <Label htmlFor="showstock">Show stock when below</Label>
           <Input
             id="showstock"
@@ -180,58 +176,50 @@ export function CommerceSiteSettingsForm({
             value={form.showStockBelow}
             onChange={(e) => set('showStockBelow', Number(e.target.value))}
           />
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Storefront PDP renders &ldquo;Only N left&rdquo; when on-hand is below this number.
-          </Text>
-        </Stack>
-      </Stack>
+          </p>
+        </div>
+      </div>
 
-      <Stack gap={3}>
-        <Stack direction="row" gap={3} align="center" justify="between">
-          <Stack gap={0}>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row items-center justify-between gap-3">
+          <div className="flex flex-col gap-0">
             <Label htmlFor="hideprices">Hide prices when signed out</Label>
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Useful for trade pricing; storefront prompts sign-in to reveal prices.
-            </Text>
-          </Stack>
+            </p>
+          </div>
           <Switch
             id="hideprices"
             checked={form.hidePricesWhenSignedOut}
             onCheckedChange={(v) => set('hidePricesWhenSignedOut', v)}
           />
-        </Stack>
-        <Stack direction="row" gap={3} align="center" justify="between">
-          <Stack gap={0}>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-3">
+          <div className="flex flex-col gap-0">
             <Label htmlFor="requireauth">Require auth for checkout</Label>
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Guest carts work, but checkout forces sign-in / sign-up before placing the order.
-            </Text>
-          </Stack>
+            </p>
+          </div>
           <Switch
             id="requireauth"
             checked={form.requireAuthForCheckout}
             onCheckedChange={(v) => set('requireAuthForCheckout', v)}
           />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
-      <Stack direction="row" gap={2} justify="between" align="center">
-        <Stack gap={0}>
-          {error && (
-            <Text size="xs" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          )}
-          {saved && !error && (
-            <Text size="xs" className="text-[var(--color-success-text)]">
-              Saved
-            </Text>
-          )}
-        </Stack>
+      <div className="flex flex-row items-center justify-between gap-2">
+        <div className="flex flex-col gap-0">
+          {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+          {saved && !error && <p className="text-xs text-[var(--color-success-text)]">Saved</p>}
+        </div>
         <Button color="module" disabled={pending} onClick={onSave}>
           Save settings
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

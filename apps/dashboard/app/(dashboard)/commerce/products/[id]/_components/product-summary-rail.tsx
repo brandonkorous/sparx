@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { SurfaceSummary, SurfaceSummaryDivider, SurfaceSummaryRow, Text } from '@sparx/ui';
+import { SurfaceSummary, SurfaceSummaryDivider, SurfaceSummaryRow } from '@sparx/ui';
 
 // The product's persistent CONTEXT RAIL content — a non-editable summary of the
 // record shown beside the eight edit tabs (docs/86 §5 "the summary is a
@@ -84,18 +84,14 @@ export function ProductSummaryRail({
       {inventory && (
         <>
           <SurfaceSummaryDivider />
-          <Text size="sm" variant="muted" className="mb-1">
-            Inventory
-          </Text>
+          <p className="text-base-content/70 mb-1 text-sm">Inventory</p>
           <SurfaceSummaryRow label="On hand" value={inventory.onHand.toLocaleString()} />
           <SurfaceSummaryRow label="Available" value={inventory.available.toLocaleString()} />
           <SurfaceSummaryRow
             label="Below reorder"
             value={
               inventory.belowReorder > 0 ? (
-                <Text as="span" variant="warning" weight="medium">
-                  {inventory.belowReorder}
-                </Text>
+                <span className="text-warning font-medium">{inventory.belowReorder}</span>
               ) : (
                 0
               )

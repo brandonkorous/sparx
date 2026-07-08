@@ -28,27 +28,8 @@ import {
 } from 'lucide-react';
 
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import {
-  ActionQueue,
-  ActionTile,
-  AreaChart,
-  Badge,
-  Button,
-  Card,
-  Container,
-  DonutChart,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { Badge, Button, Card, EmptyState, Table } from 'silicaui-react';
+import { ActionQueue, ActionTile, AreaChart, DonutChart, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { AutomationDto } from './_lib/types';
@@ -160,27 +141,27 @@ export default async function AutomationsPage() {
   // empty rule list. This is the exact gate the old list page enforced. ──
   if (enabledModules.length === 0) {
     return (
-      <Container size="full">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Zap className="h-5 w-5" />}
             title="Automations"
             description="Cross-module “when X, if Y, do Z” rules that connect your sparx modules."
           />
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Zap className="h-5 w-5" />}
               title="Activate a module first"
               description="Automations connect your modules — activate at least one to start authoring rules."
-              action={
-                <Button asChild color="module">
-                  <Link href="/settings/modules">Add a module</Link>
+              actions={
+                <Button color="module" render={<Link href="/settings/modules" />}>
+                  Add a module
                 </Button>
               }
             />
           </Card>
-        </Stack>
-      </Container>
+        </div>
+      </div>
     );
   }
 
@@ -233,8 +214,8 @@ export default async function AutomationsPage() {
   const tableRows = [...rules].sort((a, b) => (b.runCount ?? 0) - (a.runCount ?? 0));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Zap className="h-5 w-5" />}
           title="Automations"
@@ -242,11 +223,19 @@ export default async function AutomationsPage() {
           actions={
             canWrite ? (
               <>
-                <Button asChild variant="outline" leftIcon={<ListChecks className="h-4 w-4" />}>
-                  <Link href="/automations/new">Browse templates</Link>
+                <Button
+                  variant="outline"
+                  iconStart={<ListChecks className="h-4 w-4" />}
+                  render={<Link href="/automations/new" />}
+                >
+                  Browse templates
                 </Button>
-                <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/automations/new">New automation</Link>
+                <Button
+                  color="module"
+                  iconStart={<Plus className="h-4 w-4" />}
+                  render={<Link href="/automations/new" />}
+                >
+                  New automation
                 </Button>
               </>
             ) : undefined
@@ -254,7 +243,7 @@ export default async function AutomationsPage() {
         />
 
         {/* Headline KPIs — live from the rule set */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<PlayCircle className="h-4 w-4" />}
             label="Active automations"
@@ -287,7 +276,7 @@ export default async function AutomationsPage() {
             value={overallRate == null ? '—' : fmtPercentRatio(overallRate, 1)}
             hint={totalRuns ? 'Completed ÷ total runs' : 'Awaiting first run'}
           />
-        </Grid>
+        </div>
 
         {/* Needs attention — failures to review (live) */}
         <OverviewCard
@@ -316,8 +305,13 @@ export default async function AutomationsPage() {
                       : `Paused · ${summarizeTrigger(a.triggerType, a.triggerConfig)}`
                   }
                   right={
-                    <Button asChild variant="link" color="module" size="sm">
-                      <Link href={`/automations/${a.id}`}>{failed ? 'Review' : 'Resume'}</Link>
+                    <Button
+                      variant="link"
+                      color="module"
+                      size="sm"
+                      render={<Link href={`/automations/${a.id}`} />}
+                    >
+                      {failed ? 'Review' : 'Resume'}
                     </Button>
                   }
                 />
@@ -401,57 +395,59 @@ export default async function AutomationsPage() {
               icon={<Zap className="h-5 w-5" />}
               title="No automations yet"
               description="Create your first rule to trigger actions when events happen across your modules."
-              action={
+              actions={
                 canWrite ? (
-                  <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                    <Link href="/automations/new">New automation</Link>
+                  <Button
+                    color="module"
+                    iconStart={<Plus className="h-4 w-4" />}
+                    render={<Link href="/automations/new" />}
+                  >
+                    New automation
                   </Button>
                 ) : undefined
               }
             />
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Automation</TableHead>
-                  <TableHead>Trigger</TableHead>
-                  <TableHead className="text-right">Runs</TableHead>
-                  <TableHead className="text-right">Success</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Automation</th>
+                  <th>Trigger</th>
+                  <th className="text-right">Runs</th>
+                  <th className="text-right">Success</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
                 {tableRows.map((a) => {
                   const rate = successRate(a.runCount ?? 0, a.errorCount ?? 0);
                   const status = ROW_STATUS[a.status] ?? ROW_STATUS.draft;
                   return (
-                    <TableRow key={a.id}>
-                      <TableCell>
+                    <tr key={a.id}>
+                      <td>
                         <Link
                           href={`/automations/${a.id}`}
                           className="font-medium hover:text-[var(--module-active)] hover:underline"
                         >
                           {a.name}
                         </Link>
-                      </TableCell>
-                      <TableCell className="text-[var(--color-text-secondary)]">
+                      </td>
+                      <td className="text-[var(--color-text-secondary)]">
                         {summarizeTrigger(a.triggerType, a.triggerConfig)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {fmtNumber(a.runCount)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      </td>
+                      <td className="text-right tabular-nums">{fmtNumber(a.runCount)}</td>
+                      <td className="text-right tabular-nums">
                         {rate == null ? '—' : fmtPercentRatio(rate, 0)}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         <Badge color={status.color} variant="soft">
                           {status.label}
                         </Badge>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
+              </tbody>
             </Table>
           )}
         </OverviewCard>
@@ -487,7 +483,7 @@ export default async function AutomationsPage() {
             </ActionTile>
           </ActionQueue>
         </div>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

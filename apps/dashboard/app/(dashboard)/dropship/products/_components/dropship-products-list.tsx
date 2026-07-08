@@ -4,16 +4,8 @@ import Link from 'next/link';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, RefreshCw } from 'lucide-react';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Button,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import { resyncSupplierProduct } from '../../suppliers/_lib/catalog-actions';
 
@@ -72,7 +64,7 @@ const PRODUCT_STATUS: Record<string, { color: 'success' | 'warning' | 'neutral';
 
 function productCell(p: DropshipProduct) {
   return (
-    <Stack direction="row" gap={3} className="items-center">
+    <div className="flex flex-row items-center gap-3">
       {p.images[0] ? (
         <img
           src={p.images[0]}
@@ -82,8 +74,8 @@ function productCell(p: DropshipProduct) {
       ) : (
         <div className="h-9 w-9 flex-shrink-0 rounded bg-[var(--color-muted)]" />
       )}
-      <Stack gap={0}>
-        <Text className="line-clamp-1 font-medium">{p.title}</Text>
+      <div className="flex flex-col gap-0">
+        <p className="line-clamp-1 text-base font-medium">{p.title}</p>
         {p.links[0] && (
           <Link
             href={`/commerce/products/${p.links[0].productId}`}
@@ -92,8 +84,8 @@ function productCell(p: DropshipProduct) {
             View in catalog →
           </Link>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -120,11 +112,7 @@ function msrpCell(p: DropshipProduct) {
 function marginCell(p: DropshipProduct) {
   const margin = calcMarginPct(p.costPriceCents, p.msrpCents);
   if (margin === null) {
-    return (
-      <Text size="sm" className="text-[var(--color-muted-foreground)]">
-        —
-      </Text>
-    );
+    return <p className="text-sm text-[var(--color-muted-foreground)]">—</p>;
   }
   return (
     <Badge
@@ -166,6 +154,7 @@ function ResyncButton({ supplierId, productId }: { supplierId: string; productId
       variant="ghost"
       size="sm"
       disabled={resyncing}
+      iconStart={<RefreshCw className={`h-4 w-4 ${resyncing ? 'animate-spin' : ''}`} />}
       onClick={() =>
         startResync(async () => {
           const { imagesAdded, error } = await resyncSupplierProduct(supplierId, productId);
@@ -183,7 +172,6 @@ function ResyncButton({ supplierId, productId }: { supplierId: string; productId
         })
       }
     >
-      <RefreshCw className={`mr-1 h-4 w-4 ${resyncing ? 'animate-spin' : ''}`} />
       {resyncing ? 'Re-syncing…' : 'Re-sync'}
     </Button>
   );
@@ -209,7 +197,7 @@ function makeColumns(supplierId: string): SelectionColumn<DropshipProduct>[] {
 
 function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
   return {
-    title: (p) => <Text className="truncate font-medium">{p.title}</Text>,
+    title: (p) => <p className="truncate text-base font-medium">{p.title}</p>,
     subtitle: (p) =>
       p.links[0] ? (
         <Link
@@ -226,23 +214,21 @@ function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
     badge: statusCell,
     body: (p) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            {costCell(p)} cost
-          </Text>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">{costCell(p)} cost</p>
           {marginCell(p)}
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" className="text-[var(--color-muted-foreground)]">
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-xs text-[var(--color-muted-foreground)]">
             MSRP {p.msrpCents ? formatCents(p.msrpCents) : '—'}
-          </Text>
+          </p>
           <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
             {p.supplierProductId}
           </span>
-        </Stack>
-        <Stack direction="row" justify="end">
+        </div>
+        <div className="flex flex-row justify-end">
           <ResyncButton supplierId={supplierId} productId={p.id} />
-        </Stack>
+        </div>
       </>
     ),
   };
@@ -250,11 +236,11 @@ function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
 
 export function DropshipProductsList({ groups, view }: DropshipProductsListProps) {
   return (
-    <Stack gap={8}>
+    <div className="flex flex-col gap-8">
       {groups.map(({ supplier, products }) => (
-        <Stack key={supplier.id} gap={3}>
-          <Stack direction="row" gap={2} className="items-center">
-            <Text className="font-semibold">{supplier.name}</Text>
+        <div key={supplier.id} className="flex flex-col gap-3">
+          <div className="flex flex-row items-center gap-2">
+            <p className="text-base font-semibold">{supplier.name}</p>
             <Badge color="neutral" variant="soft" size="sm">
               {products.length} products
             </Badge>
@@ -264,7 +250,7 @@ export function DropshipProductsList({ groups, view }: DropshipProductsListProps
             >
               Browse catalog <ExternalLink className="h-3 w-3" />
             </Link>
-          </Stack>
+          </div>
           <SelectionList
             items={products}
             view={view}
@@ -273,8 +259,8 @@ export function DropshipProductsList({ groups, view }: DropshipProductsListProps
             columns={makeColumns(supplier.id)}
             card={makeCard(supplier.id)}
           />
-        </Stack>
+        </div>
       ))}
-    </Stack>
+    </div>
   );
 }

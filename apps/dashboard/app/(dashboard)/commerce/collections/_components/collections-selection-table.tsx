@@ -2,14 +2,12 @@
 
 import { Sparkles, Star, Trash2 } from 'lucide-react';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { bulkDeleteCollectionsAction } from '../../collection-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -68,8 +66,8 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
     {
       header: 'Name',
       cell: (c) => (
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
             <EntityRowLink
               href={`/commerce/collections/${c.id}`}
               entityType="collection"
@@ -79,25 +77,21 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
               {c.name}
             </EntityRowLink>
             {c.featured && featuredBadge}
-          </Stack>
-          <Text size="xs" variant="muted">
-            /{c.handle}
-          </Text>
-        </Stack>
+          </div>
+          <p className="text-base-content/70 text-xs">/{c.handle}</p>
+        </div>
       ),
     },
     { header: 'Type', cell: typeBadge },
     {
       header: 'Products',
       align: 'right',
-      cell: (c) => <Text size="sm">{c.productCount}</Text>,
+      cell: (c) => <p className="text-sm">{c.productCount}</p>,
     },
     {
       header: 'Updated',
       cell: (c) => (
-        <Text size="sm" variant="muted">
-          {new Date(c.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(c.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -113,23 +107,19 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
         {c.name}
       </EntityRowLink>
     ),
-    subtitle: (c) => (
-      <Text size="xs" variant="muted">
-        /{c.handle}
-      </Text>
-    ),
+    subtitle: (c) => <p className="text-base-content/70 text-xs">/{c.handle}</p>,
     badge: typeBadge,
     body: (c) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
           {c.featured ? featuredBadge : <span />}
-          <Text size="sm" className="tabular-nums">
+          <p className="text-sm tabular-nums">
             {c.productCount} product{c.productCount === 1 ? '' : 's'}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           updated {new Date(c.updatedAt).toLocaleDateString()}
-        </Text>
+        </p>
       </>
     ),
   };

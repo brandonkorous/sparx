@@ -11,16 +11,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
-  Stack,
-  Text,
 } from '@sparx/ui';
+import { Badge, Button, Card, EmptyState } from 'silicaui-react';
 import { ArrowRight, Plus, Trash2, Waypoints } from 'lucide-react';
 import { deleteRedirect } from './actions';
 import { EntityCreateButton } from '../../_components/entity-create-button';
@@ -77,7 +72,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
       type="button"
       variant="ghost"
       size="xs"
-      leftIcon={<Trash2 className="h-3 w-3" />}
+      iconStart={<Trash2 className="h-3 w-3" />}
       onClick={() => confirmDelete(r)}
       disabled={pending}
     >
@@ -96,31 +91,21 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
     },
     {
       header: 'From',
-      cell: (r) => (
-        <Text size="sm" className="truncate font-mono">
-          {r.from_path}
-        </Text>
-      ),
+      cell: (r) => <p className="truncate font-mono text-sm">{r.from_path}</p>,
     },
     {
       header: 'To',
       cell: (r) => (
-        <Stack direction="row" align="center" gap={2} className="min-w-0">
+        <div className="flex min-w-0 flex-row items-center gap-2">
           <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="sm" className="truncate font-mono">
-            {r.to_path}
-          </Text>
-        </Stack>
+          <p className="truncate font-mono text-sm">{r.to_path}</p>
+        </div>
       ),
     },
     {
       header: 'Hits',
       align: 'right',
-      cell: (r) => (
-        <Text size="sm" variant="muted">
-          {r.hit_count}
-        </Text>
-      ),
+      cell: (r) => <p className="text-base-content/70 text-sm">{r.hit_count}</p>,
     },
     {
       header: '',
@@ -132,52 +117,46 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
 
   const card: SelectionCard<RedirectRow> = {
     title: (r) => (
-      <Stack direction="row" align="center" gap={2} className="min-w-0">
+      <div className="flex min-w-0 flex-row items-center gap-2">
         <Badge color="neutral" variant="soft" size="sm">
           {r.status_code}
         </Badge>
-        <Text size="sm" className="truncate font-mono">
-          {r.from_path}
-        </Text>
-      </Stack>
+        <p className="truncate font-mono text-sm">{r.from_path}</p>
+      </div>
     ),
     body: (r) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={2} className="min-w-0">
+      <div className="flex flex-col gap-2">
+        <div className="flex min-w-0 flex-row items-center gap-2">
           <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="sm" className="truncate font-mono">
-            {r.to_path}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            {r.hit_count} hits
-          </Text>
+          <p className="truncate font-mono text-sm">{r.to_path}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">{r.hit_count} hits</p>
           {removeButton(r)}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     ),
   };
 
   return (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
 
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         {rows.length} redirect{rows.length === 1 ? '' : 's'} active.
-      </Text>
+      </p>
 
       {rows.length === 0 ? (
-        <Card variant="module" padding="none">
+        <Card className="bg-module bg-soft">
           <EmptyState
             icon={<Waypoints className="h-5 w-5" />}
             title="No redirects yet"
             description="Add a redirect to forward an old URL to a new one. Redirects are returned with the chosen HTTP status code on every storefront hit."
-            action={
+            actions={
               <EntityCreateButton
                 entityType="redirect"
                 newHref="/cms/redirects/new"
@@ -225,6 +204,6 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Stack>
+    </div>
   );
 }

@@ -2,25 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Package, CreditCard, Truck } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  statusLabel,
-  statusTone,
-  Text,
-} from '@sparx/ui';
+import { Stat, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -107,10 +90,10 @@ export async function OrderDetailContent({ id }: Props) {
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={3} wrap>
-          <Heading level={1}>{order.orderNumber}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{order.orderNumber}</h1>
           <Badge color={statusTone(order.status)} variant="soft">
             {statusLabel(order.status)}
           </Badge>
@@ -126,208 +109,190 @@ export async function OrderDetailContent({ id }: Props) {
                 (customer.company ?? customer.email)}
             </Link>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <div className="grid gap-4 @[440px]:grid-cols-2 @[820px]:grid-cols-4">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat
               label="Total"
               value={`${order.currency} ${Number(order.total).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Paid"
               value={`${order.currency} ${Number(order.amountPaid).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Refunded"
               value={`${order.currency} ${Number(order.refundTotal).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Placed"
               value={order.placedAt ? new Date(order.placedAt).toLocaleDateString() : '—'}
             />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               <Package className="h-4 w-4" /> Line items
               <Badge color="neutral" variant="soft" size="sm">
                 {order.items.length}
               </Badge>
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>SKU</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Fulfilled</TableHead>
-                <TableHead className="text-right">Refunded</TableHead>
-                <TableHead className="text-right">Unit price</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th className="text-right">Qty</th>
+                <th className="text-right">Fulfilled</th>
+                <th className="text-right">Refunded</th>
+                <th className="text-right">Unit price</th>
+                <th className="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
               {order.items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
+                <tr key={item.id}>
+                  <td>
                     <code className="text-xs">{item.sku}</code>
-                  </TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell className="text-right tabular-nums">{item.quantity}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {item.quantityFulfilled}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{item.quantityRefunded}</TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td>{item.name}</td>
+                  <td className="text-right tabular-nums">{item.quantity}</td>
+                  <td className="text-right tabular-nums">{item.quantityFulfilled}</td>
+                  <td className="text-right tabular-nums">{item.quantityRefunded}</td>
+                  <td className="text-right tabular-nums">
                     {order.currency} {Number(item.unitPrice).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {order.currency} {Number(item.lineTotal).toLocaleString()}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       <div className="grid gap-6 @[680px]:grid-cols-2">
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <CreditCard className="h-4 w-4" /> Payments
                 <Badge color="neutral" variant="soft" size="sm">
                   {payments.length}
                 </Badge>
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             {payments.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No payments recorded.
-              </Text>
+              <p className="text-base-content/70 text-sm">No payments recorded.</p>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Processor</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead>Captured</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Processor</th>
+                    <th>Status</th>
+                    <th className="text-right">Amount</th>
+                    <th>Captured</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {payments.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell>
-                        <Text size="sm">{p.processor}</Text>
-                      </TableCell>
-                      <TableCell>
+                    <tr key={p.id}>
+                      <td>
+                        <p className="text-sm">{p.processor}</p>
+                      </td>
+                      <td>
                         <Badge color={statusTone(p.status)} variant="soft" size="sm">
                           {statusLabel(p.status)}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      </td>
+                      <td className="text-right tabular-nums">
                         {p.currency} {Number(p.amount).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
+                      </td>
+                      <td>
+                        <p className="text-base-content/70 text-xs">
                           {p.capturedAt ? new Date(p.capturedAt).toLocaleDateString() : '—'}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
+                        </p>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
             {refunds.length > 0 && (
-              <Stack gap={2} className="mt-4">
-                <Text size="sm" weight="medium">
-                  Refunds
-                </Text>
+              <div className="mt-4 flex flex-col gap-2">
+                <p className="text-sm font-medium">Refunds</p>
                 {refunds.map((r) => (
-                  <Stack key={r.id} direction="row" justify="between">
-                    <Text size="xs" variant="muted">
+                  <div key={r.id} className="flex flex-row justify-between">
+                    <p className="text-base-content/70 text-xs">
                       {r.refundedAt ? new Date(r.refundedAt).toLocaleDateString() : '—'} ·{' '}
                       {r.reason ?? 'no reason'}
-                    </Text>
-                    <Text size="xs" className="tabular-nums">
+                    </p>
+                    <p className="text-xs tabular-nums">
                       {r.currency} {Number(r.amount).toLocaleString()}
-                    </Text>
-                  </Stack>
+                    </p>
+                  </div>
                 ))}
-              </Stack>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <Truck className="h-4 w-4" /> Fulfillments
                 <Badge color="neutral" variant="soft" size="sm">
                   {fulfillments.length}
                 </Badge>
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             {fulfillments.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No fulfillments yet.
-              </Text>
+              <p className="text-base-content/70 text-sm">No fulfillments yet.</p>
             ) : (
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 {fulfillments.map((f) => (
-                  <Stack key={f.id} gap={1}>
-                    <Stack direction="row" justify="between">
-                      <Stack direction="row" align="center" gap={2}>
+                  <div key={f.id} className="flex flex-col gap-1">
+                    <div className="flex flex-row justify-between">
+                      <div className="flex flex-row items-center gap-2">
                         <Badge color={statusTone(f.status)} variant="soft" size="sm">
                           {statusLabel(f.status)}
                         </Badge>
-                        {f.carrier && (
-                          <Text size="sm" variant="muted">
-                            {f.carrier}
-                          </Text>
-                        )}
+                        {f.carrier && <p className="text-base-content/70 text-sm">{f.carrier}</p>}
                         {f.trackingNumber && <code className="text-xs">{f.trackingNumber}</code>}
-                      </Stack>
-                      <Text size="xs" variant="muted">
+                      </div>
+                      <p className="text-base-content/70 text-xs">
                         {f.shippedAt ? new Date(f.shippedAt).toLocaleDateString() : '—'}
-                      </Text>
-                    </Stack>
-                  </Stack>
+                      </p>
+                    </div>
+                  </div>
                 ))}
-              </Stack>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
-    </Stack>
+    </div>
   );
 }

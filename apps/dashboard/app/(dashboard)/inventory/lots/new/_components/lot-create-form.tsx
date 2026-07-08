@@ -8,21 +8,14 @@ import { Plus, Warehouse as WarehouseIcon } from 'lucide-react';
 import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   CardTitle,
   EmptyState,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createLotBatchAction } from '../../../_lib/lot-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
@@ -146,14 +139,18 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
     return (
       <ModuleProvider module="inventory" className="h-full">
         <div className="flex h-full items-center justify-center p-8">
-          <Card padding="none" className="w-full max-w-lg">
+          <Card className="w-full max-w-lg">
             <EmptyState
               icon={<WarehouseIcon className="h-5 w-5" />}
               title="Add a warehouse first"
               description="A lot is held at one warehouse. Create one, then come back to record a lot."
-              action={
-                <Button color="module" asChild leftIcon={<Plus className="h-4 w-4" />}>
-                  <Link href="/inventory/warehouses/new">New warehouse</Link>
+              actions={
+                <Button
+                  color="module"
+                  iconStart={<Plus className="h-4 w-4" />}
+                  render={<Link href="/inventory/warehouses/new" />}
+                >
+                  New warehouse
                 </Button>
               }
             />
@@ -193,24 +190,22 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
             className="contents"
           >
             <Card>
-              <CardHeader>
-                <Stack gap={1}>
+              <CardBody>
+                <div className="flex flex-col gap-1">
                   <CardTitle>Lot details</CardTitle>
-                  <CardDescription>
+                  <p className="opacity-70">
                     Resolve the item by SKU, choose its warehouse, and record the batch.
-                  </CardDescription>
-                </Stack>
-              </CardHeader>
-              <CardContent>
-                <Stack gap={4}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4">
                   <SkuResolver
                     variant={variant}
                     onResolve={setVariant}
                     onClear={() => setVariant(null)}
                   />
 
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={1} className="min-w-[14rem] flex-1">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
                       <Label htmlFor="warehouseId">Warehouse</Label>
                       <NativeSelect
                         id="warehouseId"
@@ -223,27 +218,27 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
                           </option>
                         ))}
                       </NativeSelect>
-                    </Stack>
-                    <Stack gap={1} className="min-w-[10rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
                       <Label htmlFor="lotNumber">Lot number</Label>
                       <Input id="lotNumber" name="lotNumber" placeholder="e.g. LOT-2026-001" />
-                    </Stack>
-                    <Stack gap={1} className="min-w-[7rem]">
+                    </div>
+                    <div className="flex min-w-[7rem] flex-col gap-1">
                       <Label htmlFor="quantity">Quantity</Label>
                       <Input id="quantity" name="quantity" type="number" min={0} defaultValue={0} />
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={1} className="min-w-[10rem]">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[10rem] flex-col gap-1">
                       <Label htmlFor="manufacturedAt">Manufactured</Label>
                       <Input id="manufacturedAt" name="manufacturedAt" type="date" />
-                    </Stack>
-                    <Stack gap={1} className="min-w-[10rem]">
+                    </div>
+                    <div className="flex min-w-[10rem] flex-col gap-1">
                       <Label htmlFor="expiresAt">Expires</Label>
                       <Input id="expiresAt" name="expiresAt" type="date" />
-                    </Stack>
-                    <Stack gap={1} className="min-w-[14rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
                       <Label htmlFor="hazmatClass">Hazmat class</Label>
                       <NativeSelect id="hazmatClass" name="hazmatClass" defaultValue="none">
                         {HAZMAT_OPTIONS.map((o) => (
@@ -252,21 +247,21 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
                           </option>
                         ))}
                       </NativeSelect>
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
-                  <Stack gap={1}>
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="supplierBatchRef">Supplier batch reference</Label>
                     <Input id="supplierBatchRef" name="supplierBatchRef" placeholder="Optional" />
-                  </Stack>
+                  </div>
 
                   {error && (
-                    <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                    <p className="text-danger text-sm" role="alert" aria-live="polite">
                       {error}
-                    </Text>
+                    </p>
                   )}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           </form>
         </SurfaceStep>
@@ -315,38 +310,22 @@ function SkuResolver({
 
   if (variant) {
     return (
-      <Stack
-        direction="row"
-        align="center"
-        gap={3}
-        wrap
-        className="rounded border border-[var(--color-border-default)] px-3 py-2"
-      >
-        <Stack gap={0} className="min-w-[12rem] flex-1">
-          <Text size="sm" className="font-medium">
-            {variant.title ?? variant.sku}
-          </Text>
-          <Text size="xs" variant="muted" className="font-mono">
-            {variant.sku}
-          </Text>
-        </Stack>
+      <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+          <p className="text-sm font-medium">{variant.title ?? variant.sku}</p>
+          <p className="text-base-content/70 font-mono text-xs">{variant.sku}</p>
+        </div>
         <Button variant="ghost" size="sm" type="button" onClick={onClear}>
           Change item
         </Button>
-      </Stack>
+      </div>
     );
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="lot-item-sku">Item SKU</Label>
           <Input
             id="lot-item-sku"
@@ -360,17 +339,13 @@ function SkuResolver({
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={resolve} disabled={busy}>
           {busy ? 'Finding…' : 'Find item'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="sm" variant="danger">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-danger text-sm">{error}</p>}
+    </div>
   );
 }
 

@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Heading, Stack } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { AuthorEditForm } from './author-edit-form';
 
@@ -37,8 +36,8 @@ export async function AuthorDetailContent({ id }: Props) {
   }
 
   return (
-    <Stack gap={6}>
-      <Heading level={1}>Edit author</Heading>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-3xl font-semibold">Edit author</h1>
       <AuthorEditForm
         author={{
           id: author.id,
@@ -47,6 +46,6 @@ export async function AuthorDetailContent({ id }: Props) {
           bio: author.bio ?? '',
         }}
       />
-    </Stack>
+    </div>
   );
 }

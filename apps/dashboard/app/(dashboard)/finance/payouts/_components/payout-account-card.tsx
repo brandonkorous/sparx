@@ -11,20 +11,17 @@ import { useRouter } from 'next/navigation';
 import { Landmark, Pencil, Plus } from 'lucide-react';
 import {
   Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Drawer,
-  DrawerBody,
   DrawerContent,
   DrawerDescription,
-  DrawerHeader,
   DrawerTitle,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-  toast,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { statusLabel, statusTone, toast } from '@sparx/ui';
 
 import type { MarketPayoutAccount } from '../_types';
 import { PayoutAccountForm } from './payout-account-form';
@@ -42,77 +39,79 @@ export function PayoutAccountCard({ account }: { account: MarketPayoutAccount | 
   return (
     <>
       {account ? (
-        <Stack
-          direction="row"
-          align="center"
-          gap={3}
-          className="rounded-md border border-[var(--color-border-default)] p-3"
-          wrap
-        >
-          <Landmark className="h-5 w-5 shrink-0 text-[var(--color-text-secondary)]" />
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              <Text weight="medium">
+        <div className="rounded-box border-base-300 flex flex-wrap items-center gap-3 border p-3">
+          <Landmark className="text-base-content/70 h-5 w-5 shrink-0" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-medium">
                 {account.bankName ? `${account.bankName} · ` : ''}
                 {account.accountType === 'savings' ? 'Savings' : 'Checking'} ••••
                 {account.accountLast4 ?? '????'}
-              </Text>
+              </p>
               <Badge color={statusTone(account.status)} variant="soft" size="sm">
                 {statusLabel(account.status)}
               </Badge>
-            </Stack>
-            <Text size="xs" variant="muted">
+            </div>
+            <p className="text-base-content/70 text-xs">
               {account.accountHolderName} · ACH, paid weekly
-            </Text>
-          </Stack>
-          <Button color="module" variant="outline" size="sm" onClick={() => setOpen(true)}>
-            <Pencil className="mr-1.5 h-4 w-4" />
+            </p>
+          </div>
+          <Button
+            color="module"
+            variant="outline"
+            size="sm"
+            onClick={() => setOpen(true)}
+            iconStart={<Pencil className="h-4 w-4" />}
+          >
             Edit
           </Button>
-        </Stack>
+        </div>
       ) : (
-        <Stack gap={4}>
-          <Alert color="warning" variant="soft" icon={<Landmark />} title="Add a bank account">
-            You need a bank account on file to receive payouts. Settlements are held until you add
-            one — your earnings keep accruing in the meantime.
+        <div className="flex flex-col gap-4">
+          <Alert color="warning" variant="soft">
+            <Landmark />
+            <AlertContent>
+              <AlertTitle>Add a bank account</AlertTitle>
+              <AlertDescription>
+                You need a bank account on file to receive payouts. Settlements are held until you
+                add one — your earnings keep accruing in the meantime.
+              </AlertDescription>
+            </AlertContent>
           </Alert>
           <div>
-            <Button color="module" onClick={() => setOpen(true)}>
-              <Plus className="mr-1.5 h-4 w-4" />
+            <Button
+              color="module"
+              onClick={() => setOpen(true)}
+              iconStart={<Plus className="h-4 w-4" />}
+            >
               Add bank account
             </Button>
           </div>
-        </Stack>
+        </div>
       )}
 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent side="right" className="w-full max-w-md">
-          <DrawerHeader>
-            <Stack direction="row" align="center" gap={3}>
-              <Landmark className="h-5 w-5 shrink-0 text-[var(--color-text-secondary)]" />
-              <Stack gap={1} className="min-w-0 flex-1">
-                <DrawerTitle>
-                  {account ? 'Replace payout account' : 'Add payout account'}
-                </DrawerTitle>
-                <DrawerDescription>ACH · sparx.market settles weekly</DrawerDescription>
-              </Stack>
-              {account ? (
-                <Badge color={statusTone(account.status)} variant="soft" size="sm">
-                  {statusLabel(account.status)}
-                </Badge>
-              ) : null}
-            </Stack>
-          </DrawerHeader>
-          <DrawerBody>
-            <Stack gap={5}>
-              <Text size="sm" variant="muted">
-                {account
-                  ? `Re-enter your bank details to replace the account ending ••••${account.accountLast4 ?? '????'}. Replacing resets verification to pending.`
-                  : 'Where sparx.market sends your weekly marketplace earnings by ACH. We store only the last 4 digits in the clear; the rest is encrypted.'}
-              </Text>
-              <PayoutAccountForm account={account} onSaved={onSaved} />
-            </Stack>
-          </DrawerBody>
+          <div className="flex items-center gap-3">
+            <Landmark className="text-base-content/70 h-5 w-5 shrink-0" />
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <DrawerTitle>{account ? 'Replace payout account' : 'Add payout account'}</DrawerTitle>
+              <DrawerDescription>ACH · sparx.market settles weekly</DrawerDescription>
+            </div>
+            {account ? (
+              <Badge color={statusTone(account.status)} variant="soft" size="sm">
+                {statusLabel(account.status)}
+              </Badge>
+            ) : null}
+          </div>
+          <div className="mt-5 flex flex-col gap-5">
+            <p className="text-base-content/70 text-sm">
+              {account
+                ? `Re-enter your bank details to replace the account ending ••••${account.accountLast4 ?? '????'}. Replacing resets verification to pending.`
+                : 'Where sparx.market sends your weekly marketplace earnings by ACH. We store only the last 4 digits in the clear; the rest is encrypted.'}
+            </p>
+            <PayoutAccountForm account={account} onSaved={onSaved} />
+          </div>
         </DrawerContent>
       </Drawer>
     </>

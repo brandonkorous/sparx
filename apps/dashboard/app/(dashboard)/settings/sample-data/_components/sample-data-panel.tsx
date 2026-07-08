@@ -9,7 +9,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Button, Card, ModuleProvider, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Card, ModuleProvider, toast, useConfirm } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 
 import {
   clearSampleDataAction,
@@ -118,31 +119,34 @@ export function SampleDataPanel({ status, canEdit }: Props) {
   if (!hasPack && !status.loaded) {
     return (
       <Card variant="subtle" padding="md">
-        <Stack gap={2}>
-          <Text weight="medium">No sample dataset yet</Text>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-col gap-2">
+          <p className="font-medium">No sample dataset yet</p>
+          <p className="text-base-content/70 text-sm">
             {status.industry
               ? `There's no sample dataset for "${status.industry}" yet, or none of its modules are enabled.`
               : 'Pick your industry first and we can load a matching dataset for it.'}
-          </Text>
+          </p>
           <div>
-            <Button asChild color="primary" variant="soft" size="sm">
-              <Link href="/settings/industry">Choose your industry</Link>
+            <Button
+              color="primary"
+              variant="soft"
+              size="sm"
+              render={<Link href="/settings/industry" />}
+            >
+              Choose your industry
             </Button>
           </div>
-        </Stack>
+        </div>
       </Card>
     );
   }
 
   return (
     <Card variant="subtle" padding="md">
-      <Stack gap={4}>
-        <Stack gap={2}>
-          <Stack direction="row" gap={2} align="center">
-            <Text weight="medium" className="flex-1">
-              {status.packLabel}
-            </Text>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row items-center gap-2">
+            <p className="flex-1 font-medium">{status.packLabel}</p>
             {status.loaded ? (
               <Badge color="success" variant="soft" size="sm">
                 Loaded
@@ -152,18 +156,14 @@ export function SampleDataPanel({ status, canEdit }: Props) {
                 Not loaded
               </Badge>
             )}
-          </Stack>
-          <Text size="sm" variant="muted">
-            {status.packSummary}
-          </Text>
-        </Stack>
+          </div>
+          <p className="text-base-content/70 text-sm">{status.packSummary}</p>
+        </div>
 
         {hasPack && (
-          <Stack gap={1}>
-            <Text size="xs" variant="muted">
-              Spans these enabled modules:
-            </Text>
-            <Stack direction="row" gap={1} className="flex-wrap">
+          <div className="flex flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Spans these enabled modules:</p>
+            <div className="flex flex-row flex-wrap gap-1">
               {status.modules.map((m) => (
                 <ModuleProvider key={m} module={m as SparxModuleName} className="inline-flex">
                   <Badge color="module" variant="soft" size="sm">
@@ -171,20 +171,18 @@ export function SampleDataPanel({ status, canEdit }: Props) {
                   </Badge>
                 </ModuleProvider>
               ))}
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         )}
 
         {status.loaded && loadedSummary.length > 0 && (
-          <Stack gap={1}>
-            <Text size="xs" variant="muted">
-              Currently loaded:
-            </Text>
-            <Text size="sm">{loadedSummary.join(' · ')}</Text>
-          </Stack>
+          <div className="flex flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Currently loaded:</p>
+            <p className="text-sm">{loadedSummary.join(' · ')}</p>
+          </div>
         )}
 
-        <Stack direction="row" gap={2} className="flex-wrap">
+        <div className="flex flex-row flex-wrap gap-2">
           <Button
             color="primary"
             variant="solid"
@@ -207,8 +205,8 @@ export function SampleDataPanel({ status, canEdit }: Props) {
               Clear sample data
             </Button>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </Card>
   );
 }

@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Upload } from 'lucide-react';
-import { ImportDialog, ExportButton, type ImportJobResult, Button } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { ImportDialog, ExportButton, type ImportJobResult } from '@sparx/ui';
 import { parseXlsxAction } from '@/lib/parse-xlsx-action';
 import { submitCustomerImportAction, getCustomerImportStatusAction } from '../../customer-actions';
 
@@ -54,7 +55,7 @@ export function CustomersImportExport({ selectedCount = 0 }: CustomersImportExpo
       <Button
         variant="outline"
         size="sm"
-        leftIcon={<Upload className="h-4 w-4" />}
+        iconStart={<Upload className="h-4 w-4" />}
         onClick={() => setImportOpen(true)}
       >
         Import

@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { archivePriceListAction, updatePriceListAction } from '../../../pricing-actions';
 
@@ -54,12 +55,8 @@ export function PriceListStatusBar({
   }
 
   return (
-    <Stack direction="row" gap={2} align="center">
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
+    <div className="flex flex-row items-center gap-2">
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
       {status === 'draft' && (
         <Button color="module" size="sm" disabled={pending} onClick={() => transition('active')}>
           Activate
@@ -75,6 +72,6 @@ export function PriceListStatusBar({
           Archive
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

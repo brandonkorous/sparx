@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Button, Stack, Text, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { deleteTemplateAction, updateTemplateAction } from '../../../configurator-actions';
 
@@ -48,11 +49,11 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
   }
 
   return (
-    <Stack direction="row" gap={2} align="center">
+    <div className="flex flex-row items-center gap-2">
       {error && (
-        <Text size="xs" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-xs" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
       {status !== 'active' && (
         <Button variant="outline" disabled={pending} onClick={() => updateStatus('active')}>
@@ -78,6 +79,6 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
       >
         <Trash2 className="h-4 w-4" />
       </Button>
-    </Stack>
+    </div>
   );
 }

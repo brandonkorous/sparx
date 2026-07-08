@@ -7,7 +7,8 @@
 
 import * as React from 'react';
 import { ArrowRight, CheckCircle2, ExternalLink } from 'lucide-react';
-import { Badge, Button, Card, CardContent, Stack, Text, toast } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import {
   type PaymentConfigState,
@@ -82,41 +83,44 @@ export function SparxPayHero({
   ) : null;
 
   return (
-    <Card className="border-[var(--color-border-strong)]">
-      <CardContent>
-        <Stack gap={5} className="py-1">
-          <Stack direction="row" align="start" gap={4}>
+    <Card className="border-base-content/30">
+      <CardBody>
+        <div className="flex flex-col gap-5">
+          <div className="flex items-start gap-4">
             <GatewayMark gatewayId="sparx_pay" size="lg" />
-            <Stack gap={1} className="min-w-0 flex-1">
-              <Stack direction="row" align="center" gap={2} wrap>
-                <Text size="lg" weight="medium">
-                  sparx Pay
-                </Text>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-lg font-medium">sparx Pay</p>
                 <Badge color="module" variant="soft">
                   Recommended
                 </Badge>
                 {statusBadge}
-              </Stack>
-              <Text size="sm" variant="muted">
+              </div>
+              <p className="text-base-content/70 text-sm">
                 Accept cards in minutes — sparx handles disputes, settlement, PCI, and payouts to
                 your bank. Flat 0.5% per transaction, no monthly fee.
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
 
           {chargesEnabled ? (
-            <Stack direction="row" gap={2} wrap>
+            <div className="flex flex-wrap gap-2">
               <StatusChip on={chargesEnabled} label="Charges" />
               <StatusChip on={payoutsEnabled} label="Payouts" />
               <StatusChip on={detailsSubmitted} label="Details verified" />
-            </Stack>
+            </div>
           ) : null}
 
-          <Stack direction="row" gap={3} wrap>
+          <div className="flex flex-wrap gap-3">
             {!accountId ? (
-              <Button type="button" color="module" onClick={onboard} loading={pending}>
+              <Button
+                type="button"
+                color="module"
+                onClick={onboard}
+                loading={pending}
+                iconEnd={<ArrowRight className="h-4 w-4" />}
+              >
                 Set up sparx Pay
-                <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             ) : !chargesEnabled ? (
               <>
@@ -146,9 +150,9 @@ export function SparxPayHero({
                   variant={active ? 'solid' : 'outline'}
                   onClick={dashboard}
                   loading={pending}
+                  iconEnd={<ExternalLink className="h-4 w-4" />}
                 >
                   Manage payouts
-                  <ExternalLink className="ml-1.5 h-4 w-4" />
                 </Button>
                 <Button
                   type="button"
@@ -161,26 +165,18 @@ export function SparxPayHero({
                 </Button>
               </>
             )}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function StatusChip({ on, label }: { on: boolean; label: string }): React.JSX.Element {
   return (
-    <Stack direction="row" align="center" gap={2}>
-      <CheckCircle2
-        className={
-          on
-            ? 'h-4 w-4 text-[var(--color-success-text)]'
-            : 'h-4 w-4 text-[var(--color-text-tertiary)]'
-        }
-      />
-      <Text size="sm" variant={on ? 'default' : 'muted'}>
-        {label}
-      </Text>
-    </Stack>
+    <div className="flex items-center gap-2">
+      <CheckCircle2 className={on ? 'text-success h-4 w-4' : 'text-base-content/50 h-4 w-4'} />
+      <p className={on ? 'text-sm' : 'text-base-content/70 text-sm'}>{label}</p>
+    </div>
   );
 }

@@ -1,19 +1,5 @@
-import {
-  Badge,
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Card, CardActions, CardBody, CardTitle, EmptyState } from 'silicaui-react';
 import { Image as ImageIcon } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { EntityRowLink } from '../../_components/entity-row-link';
@@ -43,8 +29,8 @@ export default async function MediaPage() {
   const assets = await api.get<MediaAsset[]>('/v1/media/assets?limit=100');
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<ImageIcon className="h-5 w-5" />}
           title="Media library"
@@ -58,31 +44,36 @@ export default async function MediaPage() {
         />
 
         {assets.length === 100 && (
-          <Text size="xs" variant="muted" role="note">
+          <p className="text-base-content/70 text-xs" role="note">
             Showing the 100 most recently updated assets. Search + sort + cursor pagination land in
             a follow-up — until then, upload-sort / filter via the API or the assets pane on the
             content entry that uses each one.
-          </Text>
+          </p>
         )}
 
         {assets.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<ImageIcon className="h-5 w-5" />}
               title="No media yet"
               description="Upload your first image to start using it in pages and posts."
-              action={<UploadButton />}
+              actions={<UploadButton />}
             />
           </Card>
         ) : (
-          <Grid minItemWidth="14rem" gap={4}>
+          <div
+            className="grid gap-4"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fill,minmax(min(14rem,100%),1fr))',
+            }}
+          >
             {assets.map((a) => (
               <MediaCard key={a.id} asset={a} />
             ))}
-          </Grid>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -97,7 +88,7 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
   const isImage = asset.mime_type.startsWith('image/');
 
   return (
-    <Card variant="default" padding="none">
+    <Card>
       <EntityRowLink
         href={`/cms/media/${asset.id}`}
         entityType="media"
@@ -130,24 +121,24 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
           )}
         </div>
       </EntityRowLink>
-      <CardHeader>
+      <CardBody>
         <CardTitle className="truncate text-sm">{asset.original_filename}</CardTitle>
-        <CardDescription>
+        <p className="opacity-70">
           {asset.width && asset.height
             ? `${asset.width}×${asset.height}`
             : asset.mime_type.split('/')[1]?.toUpperCase()}
-        </CardDescription>
-      </CardHeader>
-      <CardFooter>
-        <Stack direction="row" align="center" gap={2} className="w-full">
+        </p>
+      </CardBody>
+      <CardActions className="justify-start">
+        <div className="flex w-full flex-row items-center gap-2">
           <Badge color={asset.usage_count > 0 ? 'success' : 'neutral'} variant="soft" size="sm">
             {asset.usage_count > 0 ? `Used ${asset.usage_count}×` : 'Unused'}
           </Badge>
-          <Text size="xs" variant="muted" className="ml-auto">
+          <p className="text-base-content/70 ml-auto text-xs">
             {formatBytes(Number(asset.byte_size))}
-          </Text>
-        </Stack>
-      </CardFooter>
+          </p>
+        </div>
+      </CardActions>
     </Card>
   );
 }

@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Clock } from 'lucide-react';
-import { Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { AvailabilityException, AvailabilityWindow, SchedulingResource } from '../_lib/types';
@@ -34,8 +35,8 @@ export default async function SchedulingAvailabilityPage({ searchParams }: Props
     : [[], []];
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Clock className="h-5 w-5" />}
           title="Availability"
@@ -43,20 +44,22 @@ export default async function SchedulingAvailabilityPage({ searchParams }: Props
         />
 
         {resources.length === 0 || !selected ? (
-          <Card padding="none">
-            <EmptyState
-              title="No resources yet"
-              description="Add a resource first, then set when it's available."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No resources yet"
+                description="Add a resource first, then set when it's available."
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Stack gap={5}>
+          <div className="flex flex-col gap-5">
             <ResourcePicker resources={resources} selectedId={selected.id} />
             <WeeklyEditor resourceId={selected.id} initialWindows={windows} />
             <ExceptionsPanel resourceId={selected.id} exceptions={exceptions} />
-          </Stack>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

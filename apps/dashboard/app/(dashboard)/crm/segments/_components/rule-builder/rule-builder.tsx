@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import { Code2 } from 'lucide-react';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { RuleNode } from './rule-node';
 import { type Rule, emptyGroup } from './types';
@@ -24,28 +24,28 @@ export function RuleBuilder({ value, onChange }: Props) {
   const [showJson, setShowJson] = React.useState(false);
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <RuleNode rule={value} onChange={onChange} />
-      <Stack direction="row" justify="between" align="center">
-        <Text size="xs" variant="muted">
+      <div className="flex flex-row items-center justify-between">
+        <p className="text-base-content/70 text-xs">
           Tip: groups nest. Use NOT to exclude a sub-tree.
-        </Text>
+        </p>
         <Button
           type="button"
           variant="ghost"
           size="sm"
           onClick={() => setShowJson((s) => !s)}
-          leftIcon={<Code2 className="h-3.5 w-3.5" />}
+          iconStart={<Code2 className="h-3.5 w-3.5" />}
         >
           {showJson ? 'Hide JSON' : 'View JSON'}
         </Button>
-      </Stack>
+      </div>
       {showJson && (
         <pre className="overflow-auto rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3 font-mono text-xs">
           {JSON.stringify(value, null, 2)}
         </pre>
       )}
-    </Stack>
+    </div>
   );
 }
 

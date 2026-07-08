@@ -4,22 +4,7 @@
 
 import Link from 'next/link';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
 
 import { ExportCsvButton } from './export-buttons';
 import {
@@ -32,40 +17,29 @@ import {
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <Stack
-      gap={1}
-      className="min-w-[10rem] flex-1 rounded border border-[var(--color-border-default)] px-4 py-3"
-    >
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="lg">{value}</Text>
-      {hint ? (
-        <Text size="xs" variant="muted">
-          {hint}
-        </Text>
-      ) : null}
-    </Stack>
+    <div className="flex min-w-[10rem] flex-1 flex-col gap-1 rounded border border-[var(--color-border-default)] px-4 py-3">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-lg">{value}</p>
+      {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
+    </div>
   );
 }
 
 export function TurnoverPanel({ report }: { report: TurnoverReport }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={3}>Turnover & days of inventory</Heading>
-            <CardDescription>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Turnover & days of inventory</h3>
+            <p className="opacity-70">
               Cost of goods sold over the last {report.periodDays} days against average inventory
               value. Higher turnover (and lower DIO) means stock is converting to sales faster.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           <ExportCsvButton kind="turnover" />
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack direction="row" gap={3} wrap>
+        </div>
+        <div className="flex flex-row flex-wrap gap-3">
           <Tile label="Inventory turns (annualized)" value={`${report.turnoverAnnualized}×`} />
           <Tile
             label="Days inventory outstanding"
@@ -81,8 +55,8 @@ export function TurnoverPanel({ report }: { report: TurnoverReport }) {
             hint={`${report.unitsSold} units sold`}
           />
           <Tile label="Avg inventory value" value={formatMoney(report.avgInventoryValueCents)} />
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -90,21 +64,19 @@ export function TurnoverPanel({ report }: { report: TurnoverReport }) {
 export function AgingPanel({ report }: { report: AgingReport }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={3}>Aging & dead stock</Heading>
-            <CardDescription>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Aging & dead stock</h3>
+            <p className="opacity-70">
               On-hand value by time since last sale. Items not sold in {report.deadStockDays}+ days
               (or never) tie up cash — the dead-stock list is the highest-value of them.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           <ExportCsvButton kind="aging" label="Export dead stock" />
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
-          <Stack direction="row" gap={3} wrap>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row flex-wrap gap-3">
             {report.buckets.map((b) => (
               <Tile
                 key={b.bucket}
@@ -113,40 +85,40 @@ export function AgingPanel({ report }: { report: AgingReport }) {
                 hint={`${b.units} units · ${b.levels} items`}
               />
             ))}
-          </Stack>
+          </div>
           {report.deadStock.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No dead stock — every item with stock has sold within {report.deadStockDays} days.
-            </Text>
+            </p>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>Warehouse</TableHead>
-                  <TableHead className="text-right">On hand</TableHead>
-                  <TableHead className="text-right">Value</TableHead>
-                  <TableHead className="text-right">Last sold</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Warehouse</th>
+                  <th className="text-right">On hand</th>
+                  <th className="text-right">Value</th>
+                  <th className="text-right">Last sold</th>
+                </tr>
+              </thead>
+              <tbody>
                 {report.deadStock.map((d) => (
-                  <TableRow key={`${d.variantId}-${d.warehouseId}`}>
-                    <TableCell>
+                  <tr key={`${d.variantId}-${d.warehouseId}`}>
+                    <td>
                       <Link
                         href={`/inventory/movements?variant_id=${d.variantId}`}
                         className="hover:underline"
                       >
                         {d.title ?? d.sku ?? d.variantId.slice(0, 8)}
                       </Link>
-                      <Text size="xs" variant="muted" className="font-mono">
+                      <p className="text-base-content/70 font-mono text-xs">
                         {d.sku ?? d.variantId}
-                      </Text>
-                    </TableCell>
-                    <TableCell>{d.warehouseCode}</TableCell>
-                    <TableCell className="text-right">{d.onHand}</TableCell>
-                    <TableCell className="text-right">{formatMoney(d.costCents)}</TableCell>
-                    <TableCell className="text-right">
+                      </p>
+                    </td>
+                    <td>{d.warehouseCode}</td>
+                    <td className="text-right">{d.onHand}</td>
+                    <td className="text-right">{formatMoney(d.costCents)}</td>
+                    <td className="text-right">
                       {d.lastSaleAt === null ? (
                         <Badge color="danger" variant="soft">
                           Never
@@ -154,14 +126,14 @@ export function AgingPanel({ report }: { report: AgingReport }) {
                       ) : (
                         `${d.daysSinceLastSale}d ago`
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -169,68 +141,64 @@ export function AgingPanel({ report }: { report: AgingReport }) {
 export function ReorderAnalysisPanel({ report }: { report: ReorderAnalysisReport }) {
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={2}>
-          <Stack gap={1}>
-            <Heading level={3}>Reorder analysis</Heading>
-            <CardDescription>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Reorder analysis</h3>
+            <p className="opacity-70">
               Items at or below their reorder point, with {report.velocityDays}-day sales velocity,
               days of cover, and projected stockout — so you order what runs out first.
-            </CardDescription>
-          </Stack>
+            </p>
+          </div>
           <ExportCsvButton kind="reorder-analysis" />
-        </Stack>
-      </CardHeader>
-      <CardContent>
+        </div>
         {report.rows.length === 0 ? (
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Nothing below its reorder point. Set reorder points on the stock grid to surface items
             here.
-          </Text>
+          </p>
         ) : (
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Item</TableHead>
-                <TableHead>Warehouse</TableHead>
-                <TableHead className="text-right">Available</TableHead>
-                <TableHead className="text-right">Velocity/day</TableHead>
-                <TableHead className="text-right">Cover</TableHead>
-                <TableHead className="text-right">Suggest</TableHead>
-                <TableHead>Supplier</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Warehouse</th>
+                <th className="text-right">Available</th>
+                <th className="text-right">Velocity/day</th>
+                <th className="text-right">Cover</th>
+                <th className="text-right">Suggest</th>
+                <th>Supplier</th>
+              </tr>
+            </thead>
+            <tbody>
               {report.rows.map((r) => (
-                <TableRow key={`${r.variantId}-${r.warehouseId}`}>
-                  <TableCell>
+                <tr key={`${r.variantId}-${r.warehouseId}`}>
+                  <td>
                     {r.title ?? r.sku ?? r.variantId.slice(0, 8)}
-                    <Text size="xs" variant="muted" className="font-mono">
-                      {r.sku ?? r.variantId}
-                    </Text>
-                  </TableCell>
-                  <TableCell>{r.warehouseCode}</TableCell>
-                  <TableCell className="text-right">
+                    <p className="text-base-content/70 font-mono text-xs">{r.sku ?? r.variantId}</p>
+                  </td>
+                  <td>{r.warehouseCode}</td>
+                  <td className="text-right">
                     {r.available} / {r.reorderPoint}
-                  </TableCell>
-                  <TableCell className="text-right">{r.velocityPerDay}</TableCell>
-                  <TableCell className="text-right">
+                  </td>
+                  <td className="text-right">{r.velocityPerDay}</td>
+                  <td className="text-right">
                     {r.daysOfCover === null ? '∞' : `${r.daysOfCover}d`}
-                  </TableCell>
-                  <TableCell className="text-right">{r.suggestedQuantity}</TableCell>
-                  <TableCell>
+                  </td>
+                  <td className="text-right">{r.suggestedQuantity}</td>
+                  <td>
                     {r.supplierName ?? (
                       <Badge color="warning" variant="soft">
                         No supplier
                       </Badge>
                     )}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

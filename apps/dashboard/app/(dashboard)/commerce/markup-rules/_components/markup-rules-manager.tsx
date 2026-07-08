@@ -5,27 +5,18 @@ import { useRouter } from 'next/navigation';
 import { Pencil, Play, Plus, Trash2 } from 'lucide-react';
 
 import { applyMarkupRule, type MarkupRuleSpec } from '@sparx/commerce-schemas';
+import { useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   Checkbox,
-  Heading,
   Input,
   NativeSelect,
-  Stack,
   Switch,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import {
   applyMarkupRuleAction,
@@ -164,13 +155,11 @@ function MatrixBandsEditor({
   }
 
   return (
-    <Stack gap={2}>
-      <Text size="xs" variant="muted" weight="medium">
-        Cost bands
-      </Text>
-      <Stack gap={2}>
+    <div className="flex flex-col gap-2">
+      <p className="text-base-content/70 text-xs font-medium">Cost bands</p>
+      <div className="flex flex-col gap-2">
         {rows.map((r, i) => (
-          <Stack key={i} direction="row" gap={2} align="end" wrap>
+          <div key={i} className="flex flex-row flex-wrap items-end gap-2">
             <Field label="Cost ≥ ($)" className="w-28">
               <Input
                 type="number"
@@ -216,32 +205,32 @@ function MatrixBandsEditor({
               variant="ghost"
               color="danger"
               className="mb-1"
-              leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+              iconStart={<Trash2 className="h-3.5 w-3.5" />}
               onClick={() => remove(i)}
               disabled={rows.length === 1}
               aria-label={`Remove band ${i + 1}`}
             >
               Remove
             </Button>
-          </Stack>
+          </div>
         ))}
-      </Stack>
+      </div>
       <div>
         <Button
           type="button"
           size="xs"
           variant="outline"
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
           onClick={add}
         >
           Add band
         </Button>
       </div>
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         Bands are matched low → high by cost. Leave the top band’s upper bound blank for open-ended.
         A cost outside every band clamps to the nearest.
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 }
 
@@ -356,16 +345,16 @@ export function MarkupRulesManager({
   }
 
   return (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {notice && (
-        <Text size="sm" variant="success" role="status">
+        <p className="text-success text-sm" role="status">
           {notice}
-        </Text>
+        </p>
       )}
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
 
       {editing && (
@@ -382,82 +371,78 @@ export function MarkupRulesManager({
       )}
 
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" wrap gap={3}>
-            <Heading level={3}>Rules</Heading>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <h3 className="text-xl font-semibold">Rules</h3>
             {!editing && (
               <Button
                 color="module"
                 size="sm"
-                leftIcon={<Plus className="h-4 w-4" />}
+                iconStart={<Plus className="h-4 w-4" />}
                 onClick={() => setEditing('new')}
               >
                 New rule
               </Button>
             )}
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {initialRules.length === 0 ? (
-            <Text variant="muted" className="py-6 text-center">
+            <p className="text-base-content/70 py-6 text-center text-base">
               No markup rules yet. Create one to price products from their cost.
-            </Text>
+            </p>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Cost basis</TableHead>
-                  <TableHead>Scope</TableHead>
-                  <TableHead className="text-right">Bound</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Method</th>
+                  <th>Cost basis</th>
+                  <th>Scope</th>
+                  <th className="text-right">Bound</th>
+                  <th>Status</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {initialRules.map((r) => (
-                  <TableRow key={r.id}>
-                    <TableCell>
-                      <Stack gap={1}>
-                        <Text weight="medium">{r.name}</Text>
+                  <tr key={r.id}>
+                    <td>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-base font-medium">{r.name}</p>
                         {r.appliesTo !== 'document' && r.recomputeMode !== 'auto' && (
-                          <Text size="xs" variant="muted">
+                          <p className="text-base-content/70 text-xs">
                             {r.recomputeMode === 'off'
                               ? 'Cost changes ignored'
                               : 'Cost changes queued for review'}
-                          </Text>
+                          </p>
                         )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
+                      </div>
+                    </td>
+                    <td>
                       <Badge color="info" variant="soft" size="sm">
                         {methodSummary(r)}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
+                    </td>
+                    <td>
+                      <p className="text-base-content/70 text-sm">
                         {r.costBasis === 'supplier_cost' ? 'Supplier cost' : 'Variant cost'}
-                      </Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {scopeSummary(r.scope)}
-                      </Text>
-                    </TableCell>
-                    <TableCell className="text-right">{r.boundVariantCount}</TableCell>
-                    <TableCell>
+                      </p>
+                    </td>
+                    <td>
+                      <p className="text-base-content/70 text-sm">{scopeSummary(r.scope)}</p>
+                    </td>
+                    <td className="text-right">{r.boundVariantCount}</td>
+                    <td>
                       <Badge color={r.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                         {r.isActive ? 'Active' : 'Paused'}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Stack direction="row" gap={1} justify="end">
+                    </td>
+                    <td className="text-right">
+                      <div className="flex flex-row justify-end gap-1">
                         <Button
                           size="xs"
                           variant="ghost"
                           color="module"
-                          leftIcon={<Play className="h-3.5 w-3.5" />}
+                          iconStart={<Play className="h-3.5 w-3.5" />}
                           disabled={busyId === r.id || r.appliesTo === 'document'}
                           onClick={() => onApply(r)}
                           title={
@@ -471,7 +456,7 @@ export function MarkupRulesManager({
                         <Button
                           size="xs"
                           variant="ghost"
-                          leftIcon={<Pencil className="h-3.5 w-3.5" />}
+                          iconStart={<Pencil className="h-3.5 w-3.5" />}
                           disabled={busyId === r.id}
                           onClick={() => setEditing(r)}
                         >
@@ -481,22 +466,22 @@ export function MarkupRulesManager({
                           size="xs"
                           variant="ghost"
                           color="danger"
-                          leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+                          iconStart={<Trash2 className="h-3.5 w-3.5" />}
                           disabled={busyId === r.id}
                           onClick={() => onDelete(r)}
                         >
                           Delete
                         </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
+                      </div>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -692,12 +677,12 @@ function RuleForm({
 
   return (
     <Card>
-      <CardHeader>
-        <Heading level={3}>{rule ? `Edit "${rule.name}"` : 'New markup rule'}</Heading>
-      </CardHeader>
-      <CardContent>
+      <CardBody>
+        <h3 className="text-xl font-semibold">
+          {rule ? `Edit "${rule.name}"` : 'New markup rule'}
+        </h3>
         <form onSubmit={onSubmit}>
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <Field label="Name">
               <Input
                 value={name}
@@ -707,7 +692,7 @@ function RuleForm({
               />
             </Field>
 
-            <Stack direction="row" gap={3} wrap>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Method" className="min-w-[12rem] flex-1">
                 <NativeSelect value={method} onChange={(e) => setMethod(e.target.value as never)}>
                   <option value="percentage">Percentage over cost</option>
@@ -738,23 +723,15 @@ function RuleForm({
                   <option value="supplier_cost">Supplier (dropship) cost</option>
                 </NativeSelect>
               </Field>
-            </Stack>
+            </div>
 
             {isMatrix && <MatrixBandsEditor rows={bands} onChange={setBands} />}
 
             {/* Live readout — works for every method incl. matrix */}
             {
-              <Stack
-                direction="row"
-                align="center"
-                gap={3}
-                wrap
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-              >
-                <Stack direction="row" align="center" gap={2}>
-                  <Text size="sm" variant="muted">
-                    If cost is
-                  </Text>
+              <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+                <div className="flex flex-row items-center gap-2">
+                  <p className="text-base-content/70 text-sm">If cost is</p>
                   <Input
                     type="number"
                     inputMode="decimal"
@@ -764,22 +741,22 @@ function RuleForm({
                     className="h-8 w-24"
                     aria-label="Sample cost in dollars"
                   />
-                </Stack>
+                </div>
                 {preview ? (
-                  <Text size="sm">
+                  <p className="text-sm">
                     → price <strong>{fmt(preview.priceCents)}</strong> · markup {preview.markupPct}%
                     · margin {preview.marginPct}% · profit {fmt(preview.profitCents)}
-                  </Text>
+                  </p>
                 ) : (
-                  <Text size="sm" variant="muted">
+                  <p className="text-base-content/70 text-sm">
                     Enter a value to preview the price.
-                  </Text>
+                  </p>
                 )}
-              </Stack>
+              </div>
             }
 
             {/* Guards */}
-            <Stack direction="row" gap={3} wrap>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Rounding" className="min-w-[9rem] flex-1">
                 <NativeSelect
                   value={roundStrategy}
@@ -836,9 +813,9 @@ function RuleForm({
                   placeholder="optional"
                 />
               </Field>
-            </Stack>
+            </div>
 
-            <Stack direction="row" gap={3} wrap>
+            <div className="flex flex-row flex-wrap gap-3">
               <Field label="Ceiling" className="min-w-[9rem] flex-1">
                 <NativeSelect
                   value={ceilingSrc}
@@ -870,18 +847,15 @@ function RuleForm({
                   <option value="both">Both</option>
                 </NativeSelect>
               </Field>
-            </Stack>
+            </div>
 
             {/* Cost-driven recompute (docs/48 §8) — only meaningful for catalog rules. */}
             {appliesTo !== 'document' && (
-              <Stack
-                gap={2}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-              >
-                <Text size="xs" variant="muted" weight="medium">
+              <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+                <p className="text-base-content/70 text-xs font-medium">
                   When a bound variant’s cost changes
-                </Text>
-                <Stack direction="row" gap={3} wrap align="end">
+                </p>
+                <div className="flex flex-row flex-wrap items-end gap-3">
                   <Field label="Recompute" className="min-w-[14rem] flex-1">
                     <NativeSelect
                       value={recomputeMode}
@@ -904,18 +878,18 @@ function RuleForm({
                       />
                     </Field>
                   )}
-                </Stack>
-                <Text size="xs" variant="muted">
+                </div>
+                <p className="text-base-content/70 text-xs">
                   {recomputeMode === 'off'
                     ? 'Prices stay frozen when costs move — re-apply the rule manually to refresh.'
                     : recomputeMode === 'review'
                       ? 'Every cost-driven price change waits in the Price changes queue for approval.'
                       : 'Small price moves apply automatically; anything beyond the tolerance is queued for review so a cost spike never silently reprices.'}
-                </Text>
-              </Stack>
+                </p>
+              </div>
             )}
 
-            <Stack direction="row" gap={3} wrap align="end">
+            <div className="flex flex-row flex-wrap items-end gap-3">
               <Field label="Scope" className="min-w-[10rem] flex-1">
                 <NativeSelect
                   value={scopeType}
@@ -939,11 +913,11 @@ function RuleForm({
                   />
                 </Field>
               )}
-              <Stack direction="row" align="center" gap={2} className="pb-2">
+              <div className="flex flex-row items-center gap-2 pb-2">
                 <Switch checked={isActive} onCheckedChange={setIsActive} aria-label="Active" />
-                <Text size="sm">Active</Text>
-              </Stack>
-            </Stack>
+                <p className="text-sm">Active</p>
+              </div>
+            </div>
 
             {scopeType === 'collection' && (
               <CollectionPicker
@@ -953,31 +927,31 @@ function RuleForm({
               />
             )}
 
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Need to target a one-off set of SKUs? Use the{' '}
               <a className="underline" href="/commerce/products/pricing">
                 bulk pricing tool
               </a>{' '}
               to preview and apply this rule across an ad-hoc product selection.
-            </Text>
+            </p>
 
             {error && (
-              <Text size="sm" variant="danger" role="alert">
+              <p className="text-danger text-sm" role="alert">
                 {error}
-              </Text>
+              </p>
             )}
 
-            <Stack direction="row" gap={2} justify="end">
+            <div className="flex flex-row justify-end gap-2">
               <Button type="button" variant="ghost" onClick={onClose} disabled={pending}>
                 Cancel
               </Button>
               <Button type="submit" color="module" loading={pending}>
                 {rule ? 'Save changes' : 'Create rule'}
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         </form>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -993,31 +967,28 @@ function CollectionPicker({
 }) {
   if (collections.length === 0) {
     return (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         No collections yet — create one under Collections first, or scope by product type / vendor.
-      </Text>
+      </p>
     );
   }
   function toggle(id: string) {
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   }
   return (
-    <Stack
-      gap={1}
-      className="max-h-48 overflow-auto rounded border border-[var(--color-border-default)] p-3"
-    >
+    <div className="flex max-h-48 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-3">
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
             color="module"
             checked={selected.includes(c.id)}
-            onCheckedChange={() => toggle(c.id)}
+            onChange={() => toggle(c.id)}
             aria-label={c.name}
           />
-          <Text size="sm">{c.name}</Text>
+          <p className="text-sm">{c.name}</p>
         </label>
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -1031,11 +1002,9 @@ function Field({
   className?: string;
 }) {
   return (
-    <Stack gap={1} className={className}>
-      <Text size="xs" variant="muted" weight="medium">
-        {label}
-      </Text>
+    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
+      <p className="text-base-content/70 text-xs font-medium">{label}</p>
       {children}
-    </Stack>
+    </div>
   );
 }

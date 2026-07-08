@@ -1,6 +1,7 @@
 import { Receipt } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -64,8 +65,8 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
     .reduce((sum, i) => sum + i.balanceCents, 0);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Receipt className="h-5 w-5" />}
           title="Invoices"
@@ -81,9 +82,7 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
                 {overdueCount} overdue — {formatCents(totalOwed)} outstanding
               </Badge>
             ) : (
-              <Text size="sm" variant="muted">
-                {formatCents(totalOwed)} outstanding
-              </Text>
+              <p className="text-base-content/70 text-sm">{formatCents(totalOwed)} outstanding</p>
             )
           }
         />
@@ -97,19 +96,21 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
         />
 
         {invoices.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<Receipt className="h-5 w-5" />}
-              title="No invoices yet"
-              description="Net-terms orders automatically generate invoices. Manual invoices can also be created from an account's detail page."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<Receipt className="h-5 w-5" />}
+                title="No invoices yet"
+                description="Net-terms orders automatically generate invoices. Manual invoices can also be created from an account's detail page."
+              />
+            </CardBody>
           </Card>
         ) : (
           <InvoicesList invoices={invoices} view={view} />
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

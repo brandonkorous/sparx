@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { RefreshCw, Pencil, Trash2 } from 'lucide-react';
 
-import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { syncSource, deleteSource } from '../../_lib/actions';
 import { SourceForm } from '../../_components/source-form';
@@ -62,18 +63,14 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
 
   return (
     <>
-      <Stack direction="row" gap={2} align="center" wrap>
-        {error ? (
-          <Text size="xs" variant="danger">
-            {error}
-          </Text>
-        ) : null}
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        {error ? <p className="text-danger text-xs">{error}</p> : null}
         {source.type !== 'agent' ? (
           <Button
             color="module"
             onClick={triggerSync}
             disabled={syncing}
-            leftIcon={<RefreshCw className="size-4" />}
+            iconStart={<RefreshCw className="size-4" />}
           >
             {syncing ? 'Syncing…' : 'Sync now'}
           </Button>
@@ -82,7 +79,7 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
           color="neutral"
           variant="soft"
           onClick={() => setEditOpen(true)}
-          leftIcon={<Pencil className="size-4" />}
+          iconStart={<Pencil className="size-4" />}
         >
           Edit
         </Button>
@@ -90,11 +87,11 @@ export function SourceDetailActions({ source }: { source: SourceSummary }) {
           color="danger"
           variant="ghost"
           onClick={onRemove}
-          leftIcon={<Trash2 className="size-4" />}
+          iconStart={<Trash2 className="size-4" />}
         >
           Remove
         </Button>
-      </Stack>
+      </div>
 
       {editOpen ? (
         <SourceForm

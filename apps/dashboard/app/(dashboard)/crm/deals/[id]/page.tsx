@@ -1,5 +1,3 @@
-import { Container, Stack } from '@sparx/ui';
-
 import { DealDetailContent } from './_content';
 
 export const dynamic = 'force-dynamic';
@@ -11,10 +9,10 @@ interface PageProps {
 export default async function DealDetailPage({ params }: PageProps) {
   const { id } = await params;
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <DealDetailContent id={id} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

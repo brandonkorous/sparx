@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardContent, Input, Stack, toast } from '@sparx/ui';
+import { Button, Card, CardBody, Input } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
 
 import type { AvailabilityWindow } from '../../_lib/types';
@@ -88,15 +89,15 @@ export function WeeklyEditor({
 
   return (
     <Card>
-      <CardContent className="py-4">
-        <Stack gap={3}>
+      <CardBody className="py-4">
+        <div className="flex flex-col gap-3">
           {DAY_LABELS.map((label, d) => (
             <div
               key={d}
               className="grid grid-cols-[7rem_1fr] items-start gap-3 border-b border-[var(--color-border)] pb-3 last:border-0"
             >
               <div className="pt-2 text-sm font-medium">{label}</div>
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 {days[d]!.length === 0 ? (
                   <span className="pt-2 text-sm text-[var(--color-muted-foreground)]">Closed</span>
                 ) : (
@@ -139,7 +140,7 @@ export function WeeklyEditor({
                     </Button>
                   ) : null}
                 </div>
-              </Stack>
+              </div>
             </div>
           ))}
           <div className="flex justify-end">
@@ -147,8 +148,8 @@ export function WeeklyEditor({
               Save availability
             </Button>
           </div>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

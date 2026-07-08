@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Card,
-  SelectionList,
-  Stack,
-  Text,
-  type SelectionCard,
-  type SelectionColumn,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { revokeApiKeyAction } from '../actions';
 import { RevokeButton } from './revoke-button';
@@ -41,13 +34,13 @@ function keyStatus(k: ApiKey): { label: string; color: Tone } {
 
 function scopeBadges(scopes: string[]) {
   return (
-    <Stack direction="row" gap={1} className="flex-wrap">
+    <div className="flex flex-row flex-wrap gap-1">
       {scopes.map((s) => (
         <Badge key={s} color="neutral" variant="soft" size="sm">
           <code>{s}</code>
         </Badge>
       ))}
-    </Stack>
+    </div>
   );
 }
 
@@ -69,21 +62,19 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
     {
       header: 'Name',
       cell: (k) => (
-        <Stack gap={1} className="min-w-0">
-          <Text size="sm" weight="medium" className="truncate">
-            {k.name}
-          </Text>
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="truncate text-sm font-medium">{k.name}</p>
           <code className="text-xs text-[var(--color-text-muted)]">{k.keyPrefix}…</code>
-        </Stack>
+        </div>
       ),
     },
     { header: 'Scopes', cell: (k) => scopeBadges(k.scopes) },
     {
       header: 'Last used',
       cell: (k) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {k.lastUsedAt ? k.lastUsedAt.toLocaleDateString() : 'Never'}
-        </Text>
+        </p>
       ),
     },
     {
@@ -101,35 +92,31 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
   ];
 
   const card: SelectionCard<ApiKey> = {
-    title: (k) => (
-      <Text weight="medium" className="truncate">
-        {k.name}
-      </Text>
-    ),
+    title: (k) => <p className="truncate font-medium">{k.name}</p>,
     render: (k) => {
       const s = keyStatus(k);
       return (
-        <Card variant="default" padding="md">
-          <Stack gap={2}>
-            <Stack direction="row" align="start" justify="between" gap={2}>
-              <Stack gap={1} className="min-w-0">
-                <Text weight="medium" className="truncate">
-                  {k.name}
-                </Text>
-                <code className="text-xs text-[var(--color-text-muted)]">{k.keyPrefix}…</code>
-              </Stack>
-              <Badge color={s.color} variant="soft">
-                {s.label}
-              </Badge>
-            </Stack>
-            {scopeBadges(k.scopes)}
-            <Stack direction="row" align="center" justify="between" gap={2}>
-              <Text size="xs" variant="muted">
-                {k.lastUsedAt ? `Last used ${k.lastUsedAt.toLocaleDateString()}` : 'Never used'}
-              </Text>
-              {revokeButton(k)}
-            </Stack>
-          </Stack>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row items-start justify-between gap-2">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="truncate font-medium">{k.name}</p>
+                  <code className="text-xs text-[var(--color-text-muted)]">{k.keyPrefix}…</code>
+                </div>
+                <Badge color={s.color} variant="soft">
+                  {s.label}
+                </Badge>
+              </div>
+              {scopeBadges(k.scopes)}
+              <div className="flex flex-row items-center justify-between gap-2">
+                <p className="text-base-content/70 text-xs">
+                  {k.lastUsedAt ? `Last used ${k.lastUsedAt.toLocaleDateString()}` : 'Never used'}
+                </p>
+                {revokeButton(k)}
+              </div>
+            </div>
+          </CardBody>
         </Card>
       );
     },

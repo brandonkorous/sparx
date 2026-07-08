@@ -10,7 +10,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Label, Textarea } from 'silicaui-react';
 
 import { recordActivityAction } from '../../actions';
 
@@ -60,8 +60,8 @@ export function RecordActivityForm({ customerId, dealId }: Props) {
 
   return (
     <form action={onSubmit}>
-      <Stack gap={3}>
-        <Stack direction="row" gap={1}>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row gap-1">
           {(Object.keys(KIND_LABELS) as ActivityKind[]).map((k) => (
             <Button
               key={k}
@@ -74,9 +74,9 @@ export function RecordActivityForm({ customerId, dealId }: Props) {
               {KIND_LABELS[k]}
             </Button>
           ))}
-        </Stack>
+        </div>
 
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
@@ -93,18 +93,14 @@ export function RecordActivityForm({ customerId, dealId }: Props) {
             rows={3}
             required
           />
-        </Stack>
+        </div>
 
-        {error && (
-          <Text size="xs" variant="danger">
-            {error}
-          </Text>
-        )}
+        {error && <p className="text-danger text-xs">{error}</p>}
 
         <Button type="submit" color="module" disabled={pending}>
           {pending ? 'Saving…' : 'Add activity'}
         </Button>
-      </Stack>
+      </div>
     </form>
   );
 }

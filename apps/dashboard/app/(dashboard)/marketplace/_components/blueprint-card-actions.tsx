@@ -13,7 +13,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import type { MarketplaceInstallState } from '../_types';
 
@@ -40,9 +41,9 @@ export function BlueprintCardActions({
 
   if (!canInstall) {
     return (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         Only an owner or admin can install a blueprint.
-      </Text>
+      </p>
     );
   }
 
@@ -131,14 +132,14 @@ export function BlueprintCardActions({
   // a clean delete-and-retry rather than a blocked re-install.
   if (install.status === 'failed' || install.status === 'running') {
     return (
-      <Stack direction="row" gap={2} align="center">
+      <div className="flex flex-row items-center gap-2">
         <Badge color="danger" variant="soft">
           {install.status === 'failed' ? 'Install failed' : 'Interrupted'}
         </Badge>
         <Button color="primary" onClick={onDeleteAndRetry} loading={pending} disabled={pending}>
           Delete &amp; retry
         </Button>
-      </Stack>
+      </div>
     );
   }
 
@@ -157,27 +158,31 @@ export function BlueprintCardActions({
     // completable (update to a newer version, or delete) without a destructive
     // control on the marketplace card.
     return (
-      <Stack direction="row" gap={2} align="center" className="flex-wrap">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge color="success" variant="soft">
           Live
         </Badge>
         {driftBadge}
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/marketplace/installs/${install.id}`}>View</Link>
+        <Button
+          variant="outline"
+          size="sm"
+          render={<Link href={`/marketplace/installs/${install.id}`} />}
+        >
+          View
         </Button>
-      </Stack>
+      </div>
     );
   }
 
   // installed (draft) — lead to the Review & go-live surface (it owns the checklist
   // + go-live + update + delete), plus the drift hint.
   return (
-    <Stack direction="row" gap={2} align="center" className="flex-wrap">
+    <div className="flex flex-row flex-wrap items-center gap-2">
       <Badge variant="soft">Installed · draft</Badge>
       {driftBadge}
-      <Button color="primary" asChild>
-        <Link href={`/marketplace/installs/${install.id}`}>Review &amp; go live</Link>
+      <Button color="primary" render={<Link href={`/marketplace/installs/${install.id}`} />}>
+        Review &amp; go live
       </Button>
-    </Stack>
+    </div>
   );
 }

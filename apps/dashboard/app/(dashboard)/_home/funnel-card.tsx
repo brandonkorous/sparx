@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, Stack, Text } from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { SampleBadge } from '../_components/overview-bits';
 import { fmtNumber } from './format';
@@ -19,28 +19,20 @@ export function ConversionFunnel({
   const max = Math.max(1, ...stages.map((s) => s.value));
   return (
     <Card>
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+      <CardBody>
+        <div className="flex flex-row items-center justify-between gap-2">
           <CardTitle>Conversion funnel</CardTitle>
           {isSample && <SampleBadge reason="no-data" />}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
+        </div>
+        <div className="flex flex-col gap-3">
           {stages.map((s, i) => {
             const pct = Math.max(2, (s.value / max) * 100);
             return (
               <div key={s.label}>
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <Text size="sm" weight="medium">
-                    {s.label}
-                  </Text>
+                  <p className="text-sm font-medium">{s.label}</p>
                   <div className="flex items-center gap-2">
-                    {s.rate && i > 0 && (
-                      <Text size="xs" variant="muted">
-                        {s.rate}
-                      </Text>
-                    )}
+                    {s.rate && i > 0 && <p className="text-base-content/70 text-xs">{s.rate}</p>}
                     <span className="text-sm font-medium text-[var(--color-text-primary)] tabular-nums">
                       {fmtNumber(s.value)}
                     </span>
@@ -55,8 +47,8 @@ export function ConversionFunnel({
               </div>
             );
           })}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

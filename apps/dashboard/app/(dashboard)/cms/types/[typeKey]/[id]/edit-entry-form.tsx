@@ -17,28 +17,20 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
+  CardActions,
+  CardBody,
   DatePicker,
-  Heading,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Label,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { Trash2 } from 'lucide-react';
 import { type FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
@@ -303,7 +295,7 @@ export function EditEntryForm({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={6}>
+      <div className="flex flex-col gap-6">
         {/* Live-preview surface: status + actions live in the toolbar (portaled into
             the workspace's slot). Otherwise the standalone Status card. */}
         {embedded ? (
@@ -321,14 +313,12 @@ export function EditEntryForm({
           <EntryStatusBar layout="card" {...statusBarProps} />
         )}
 
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Content</Heading>
-            <CardDescription>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Content</h3>
+            <p className="opacity-70">
               The fields for this {lowerType}. Edits are saved when you click Save changes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
             <ContentEntryForm
               schema={schema}
               body={body}
@@ -337,18 +327,16 @@ export function EditEntryForm({
                 onBody?.(next);
               }}
             />
-          </CardContent>
+          </CardBody>
         </Card>
 
         {multiSite && (
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Sites</Heading>
-              <CardDescription>Which of your sites show this {lowerType}.</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Sites</h3>
+              <p className="opacity-70">Which of your sites show this {lowerType}.</p>
               <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
@@ -373,68 +361,71 @@ export function EditEntryForm({
           />
         )}
 
-        <Card variant="default">
-          <CardContent>
-            <Stack gap={2}>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-2">
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
               {message && (
-                <Text size="sm" variant="success" aria-live="polite">
+                <p className="text-success text-sm" aria-live="polite">
                   {message}
-                </Text>
+                </p>
               )}
-            </Stack>
-          </CardContent>
-          <CardFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              leftIcon={<Trash2 className="h-4 w-4" />}
-              onClick={handleDelete}
-              disabled={pending}
-            >
-              Delete
-            </Button>
-            <Button type="submit" color="module" disabled={pending} loading={pending}>
-              Save changes
-            </Button>
-          </CardFooter>
+            </div>
+            <CardActions>
+              <Button
+                type="button"
+                variant="ghost"
+                iconStart={<Trash2 className="h-4 w-4" />}
+                onClick={handleDelete}
+                disabled={pending}
+              >
+                Delete
+              </Button>
+              <Button type="submit" color="module" disabled={pending} loading={pending}>
+                Save changes
+              </Button>
+            </CardActions>
+          </CardBody>
         </Card>
-      </Stack>
+      </div>
 
-      <Modal open={scheduleOpen} onOpenChange={setScheduleOpen}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Schedule publish</ModalTitle>
-            <ModalDescription>
+      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
+        <DialogContent>
+          <div>
+            <DialogTitle>Schedule publish</DialogTitle>
+            <DialogDescription>
               Pick when this {lowerType} should flip to <strong>published</strong>. Times are
               interpreted in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone}
               ) and stored as UTC on the server.
-            </ModalDescription>
-          </ModalHeader>
+            </DialogDescription>
+          </div>
           <div className="px-6 py-4">
-            <Stack gap={3}>
-              <Label htmlFor="schedule-at" required>
-                When
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="schedule-at">
+                When{' '}
+                <span className="text-error" aria-hidden="true">
+                  *
+                </span>
               </Label>
-              <DatePicker value={scheduleAt} onChange={setScheduleAt} />
+              <DatePicker value={scheduleAt} onValueChange={(d) => setScheduleAt(d ?? undefined)} />
               {scheduleAt && (
-                <Text size="xs" variant="muted" aria-live="polite">
+                <p className="text-base-content/70 text-xs" aria-live="polite">
                   Will publish at <strong>{scheduleAt.toLocaleString()}</strong>
                   {' · '}UTC <code>{scheduleAt.toISOString()}</code>
-                </Text>
+                </p>
               )}
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
-            </Stack>
+            </div>
           </div>
-          <ModalFooter>
+          <div>
             <Button type="button" variant="ghost" onClick={() => setScheduleOpen(false)}>
               Cancel
             </Button>
@@ -447,9 +438,9 @@ export function EditEntryForm({
             >
               Schedule publish
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

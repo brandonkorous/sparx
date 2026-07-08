@@ -7,16 +7,7 @@
 
 import * as React from 'react';
 import { Boxes, Library, Plus } from 'lucide-react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Stack,
-} from '@sparx/ui';
+import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import type { ModulePresetView } from '../../../_components/preset-actions';
 import { PresetPicker } from '../../../_components/preset-picker';
@@ -37,46 +28,44 @@ export function FitmentManager({ domains, presets }: Props) {
   return (
     <>
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="start" justify="between" gap={3} className="flex-wrap">
-            <Stack gap={1}>
-              <Heading level={3}>Dictionaries</Heading>
-              <CardDescription>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-start justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Dictionaries</h3>
+              <p className="opacity-70">
                 The compatibility dictionaries your products fit. Install a ready-made one or build
                 your own — each is yours to edit. A product&apos;s fitment rule can target any
                 depth: just the category (fits any Ford), category + item (an F-250), or all three
                 (an F-250 with a 6.7L Power Stroke).
-              </CardDescription>
-            </Stack>
-            <Stack direction="row" gap={2} className="shrink-0">
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-row gap-2">
               <Button
                 color="module"
                 variant="soft"
-                leftIcon={<Library className="h-4 w-4" />}
+                iconStart={<Library className="h-4 w-4" />}
                 onClick={() => setPickerOpen(true)}
               >
                 Browse dictionaries
               </Button>
               <Button
                 color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
+                iconStart={<Plus className="h-4 w-4" />}
                 onClick={() => setNewOpen(true)}
               >
                 New domain
               </Button>
-            </Stack>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </div>
+          </div>
           {domains.length === 0 ? (
             <EmptyState
               icon={<Boxes className="h-5 w-5" />}
               title="No fitment dictionaries yet"
               description="Install a ready-made dictionary — vehicles, apparel sizes, devices, pets, and more — or build your own from scratch."
-              action={
+              actions={
                 <Button
                   color="module"
-                  leftIcon={<Library className="h-4 w-4" />}
+                  iconStart={<Library className="h-4 w-4" />}
                   onClick={() => setPickerOpen(true)}
                 >
                   Browse dictionaries
@@ -86,7 +75,7 @@ export function FitmentManager({ domains, presets }: Props) {
           ) : (
             <FitmentReferenceEditor domains={domains} />
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
       <PresetPicker

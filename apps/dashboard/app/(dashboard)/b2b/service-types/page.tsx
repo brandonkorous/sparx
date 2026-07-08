@@ -1,6 +1,7 @@
 import { Calendar } from 'lucide-react';
 
-import { Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -53,8 +54,8 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Calendar className="h-5 w-5" />}
           title="Service Types"
@@ -65,20 +66,22 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
         <ListToolbar enableViewToggle searchable={false} />
 
         {types.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<Calendar className="h-5 w-5" />}
-              title="No service types yet"
-              description="Add your first service type so B2B accounts can book appointments."
-              action={<NewServiceTypeButton />}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<Calendar className="h-5 w-5" />}
+                title="No service types yet"
+                description="Add your first service type so B2B accounts can book appointments."
+                actions={<NewServiceTypeButton />}
+              />
+            </CardBody>
           </Card>
         ) : (
           <ServiceTypesList types={types} view={view} />
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

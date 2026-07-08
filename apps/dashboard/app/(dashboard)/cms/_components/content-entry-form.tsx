@@ -15,7 +15,7 @@
 // around it. ContentEntryForm only ever owns the `body` JSONB.
 
 import * as React from 'react';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { FieldRenderer } from './field-renderer';
 import { Save } from 'lucide-react';
@@ -120,7 +120,7 @@ export function ContentEntryForm({
   );
 
   const fields = (
-    <Stack gap={5}>
+    <div className="flex flex-col gap-5">
       {schema.fields.map((field) => (
         // `data-cms-field` anchors the live-preview click-to-edit bridge (docs/51
         // §6): clicking a bound node in the preview focuses this field, and focusing
@@ -135,7 +135,7 @@ export function ContentEntryForm({
           />
         </div>
       ))}
-    </Stack>
+    </div>
   );
 
   // Controlled (editor) mode: render only the fields — the parent owns
@@ -169,31 +169,23 @@ export function ContentEntryForm({
 
   return (
     <form onSubmit={(e) => void handleSubmit(e)} noValidate>
-      <Stack gap={5}>
+      <div className="flex flex-col gap-5">
         {fields}
 
-        {error && (
-          <Text variant="danger" size="sm">
-            {error}
-          </Text>
-        )}
-        {success && (
-          <Text variant="success" size="sm">
-            {success}
-          </Text>
-        )}
+        {error && <p className="text-danger text-sm">{error}</p>}
+        {success && <p className="text-success text-sm">{success}</p>}
 
-        <Stack direction="row" align="center" justify="end" gap={2}>
+        <div className="flex flex-row items-center justify-end gap-2">
           <Button
             type="submit"
             color="module"
             disabled={Boolean(disabled) || submitting}
-            leftIcon={<Save className="h-4 w-4" />}
+            iconStart={<Save className="h-4 w-4" />}
           >
             {submitting ? 'Saving…' : submitLabel}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Receipt } from 'lucide-react';
-import { Badge, Card, Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 import Link from 'next/link';
 
 import { api } from '@/lib/api-rest-client';
@@ -28,12 +29,12 @@ interface InvoiceDetail {
   paidBy: { id: string; name: string | null; email: string } | null;
 }
 
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger'> = {
-  unpaid: 'outline',
+const STATUS_VARIANT: Record<string, 'neutral' | 'warning' | 'success' | 'danger'> = {
+  unpaid: 'neutral',
   partial: 'warning',
   overdue: 'danger',
   paid: 'success',
-  void: 'outline',
+  void: 'neutral',
 };
 
 function formatCents(cents: number): string {
@@ -49,8 +50,8 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
     invoice.status === 'unpaid' || invoice.status === 'overdue' || invoice.status === 'partial';
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Receipt className="h-5 w-5" />}
           title={invoice.invoiceNumber}
@@ -70,98 +71,81 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
         />
 
         <Card>
-          <Stack gap={4}>
-            <Text size="sm" variant="muted" className="font-semibold tracking-wide uppercase">
-              Invoice details
-            </Text>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <div>
-                <Text size="xs" variant="muted">
-                  Amount
-                </Text>
-                <Text size="lg" className="font-semibold tabular-nums">
-                  {formatCents(invoice.amountCents)}
-                </Text>
-              </div>
-              <div>
-                <Text size="xs" variant="muted">
-                  Due date
-                </Text>
-                <Text
-                  size="sm"
-                  className={
-                    invoice.status === 'overdue' ? 'font-medium text-[var(--color-danger)]' : ''
-                  }
-                >
-                  {new Date(invoice.dueAt).toLocaleDateString()}
-                  {invoice.overdueDays > 0 && ` (${invoice.overdueDays}d overdue)`}
-                </Text>
-              </div>
-              {invoice.account?.paymentTerms && (
+          <CardBody>
+            <div className="flex flex-col gap-4">
+              <p className="text-base-content/70 text-sm font-semibold tracking-wide uppercase">
+                Invoice details
+              </p>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <div>
-                  <Text size="xs" variant="muted">
-                    Payment terms
-                  </Text>
-                  <Text size="sm">{invoice.account.paymentTerms.toUpperCase()}</Text>
+                  <p className="text-base-content/70 text-xs">Amount</p>
+                  <p className="text-lg font-semibold tabular-nums">
+                    {formatCents(invoice.amountCents)}
+                  </p>
                 </div>
-              )}
-              {invoice.orderId && (
                 <div>
-                  <Text size="xs" variant="muted">
-                    Order
-                  </Text>
-                  <Link
-                    href={`/commerce/orders/${invoice.orderId}`}
-                    className="text-sm hover:text-[var(--module-active)] hover:underline"
+                  <p className="text-base-content/70 text-xs">Due date</p>
+                  <p
+                    className={`text-sm ${
+                      invoice.status === 'overdue' ? 'font-medium text-[var(--color-danger)]' : ''
+                    }`}
                   >
-                    View order →
-                  </Link>
+                    {new Date(invoice.dueAt).toLocaleDateString()}
+                    {invoice.overdueDays > 0 && ` (${invoice.overdueDays}d overdue)`}
+                  </p>
+                </div>
+                {invoice.account?.paymentTerms && (
+                  <div>
+                    <p className="text-base-content/70 text-xs">Payment terms</p>
+                    <p className="text-sm">{invoice.account.paymentTerms.toUpperCase()}</p>
+                  </div>
+                )}
+                {invoice.orderId && (
+                  <div>
+                    <p className="text-base-content/70 text-xs">Order</p>
+                    <Link
+                      href={`/commerce/orders/${invoice.orderId}`}
+                      className="text-sm hover:text-[var(--module-active)] hover:underline"
+                    >
+                      View order →
+                    </Link>
+                  </div>
+                )}
+                {invoice.paidAt && (
+                  <>
+                    <div>
+                      <p className="text-base-content/70 text-xs">Paid on</p>
+                      <p className="text-sm">{new Date(invoice.paidAt).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-base-content/70 text-xs">Payment method</p>
+                      <p className="text-sm">{invoice.paidMethod ?? '—'}</p>
+                    </div>
+                    {invoice.paidBy && (
+                      <div>
+                        <p className="text-base-content/70 text-xs">Recorded by</p>
+                        <p className="text-sm">{invoice.paidBy.name ?? invoice.paidBy.email}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+                <div>
+                  <p className="text-base-content/70 text-xs">Created</p>
+                  <p className="text-base-content/70 text-sm">
+                    {new Date(invoice.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              {invoice.notes && (
+                <div>
+                  <p className="text-base-content/70 text-xs">Notes</p>
+                  <p className="text-sm">{invoice.notes}</p>
                 </div>
               )}
-              {invoice.paidAt && (
-                <>
-                  <div>
-                    <Text size="xs" variant="muted">
-                      Paid on
-                    </Text>
-                    <Text size="sm">{new Date(invoice.paidAt).toLocaleDateString()}</Text>
-                  </div>
-                  <div>
-                    <Text size="xs" variant="muted">
-                      Payment method
-                    </Text>
-                    <Text size="sm">{invoice.paidMethod ?? '—'}</Text>
-                  </div>
-                  {invoice.paidBy && (
-                    <div>
-                      <Text size="xs" variant="muted">
-                        Recorded by
-                      </Text>
-                      <Text size="sm">{invoice.paidBy.name ?? invoice.paidBy.email}</Text>
-                    </div>
-                  )}
-                </>
-              )}
-              <div>
-                <Text size="xs" variant="muted">
-                  Created
-                </Text>
-                <Text size="sm" variant="muted">
-                  {new Date(invoice.createdAt).toLocaleDateString()}
-                </Text>
-              </div>
             </div>
-            {invoice.notes && (
-              <div>
-                <Text size="xs" variant="muted">
-                  Notes
-                </Text>
-                <Text size="sm">{invoice.notes}</Text>
-              </div>
-            )}
-          </Stack>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -2,16 +2,8 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Code,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Code, SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { DnsRecordsTable } from './dns-records-table';
 import { DomainActions } from './domain-actions';
@@ -38,14 +30,12 @@ interface DomainsListProps {
 function DomainCell({ domain }: { domain: SendingDomainRow }) {
   const [open, setOpen] = useState(false);
   return (
-    <Stack gap={2} className="min-w-0">
-      <Stack direction="row" align="center" gap={2}>
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex flex-row items-center gap-2">
         <Code>{domain.domain}</Code>
         {domain.isDefault ? <Badge color="module">Default</Badge> : null}
-      </Stack>
-      <Text size="xs" variant="muted">
-        {STATE_HINT[domain.state]}
-      </Text>
+      </div>
+      <p className="text-base-content/70 text-xs">{STATE_HINT[domain.state]}</p>
       <Button
         type="button"
         variant="ghost"
@@ -57,7 +47,7 @@ function DomainCell({ domain }: { domain: SendingDomainRow }) {
         DNS records
       </Button>
       {open ? <DnsRecordsTable records={domain.dnsRecords} /> : null}
-    </Stack>
+    </div>
   );
 }
 
@@ -87,9 +77,9 @@ export function DomainsList({ rows, view }: DomainsListProps) {
       id: 'actions',
       align: 'right',
       cell: (d) => (
-        <Stack direction="row" justify="end">
+        <div className="flex flex-row justify-end">
           <DomainActions domain={d} />
-        </Stack>
+        </div>
       ),
     },
   ];

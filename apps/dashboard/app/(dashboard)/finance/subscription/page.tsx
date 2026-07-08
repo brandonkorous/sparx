@@ -7,18 +7,8 @@
 
 import { CreditCard } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { getBillingState } from './actions';
 import { ManageBillingButton } from './_components/manage-billing-button';
@@ -40,13 +30,15 @@ const MODULE_LABELS: Record<string, string> = {
   chat: 'Live Chat',
 };
 
-const STATUS_BADGE: Record<string, 'success' | 'warning' | 'danger' | 'outline'> = {
+// silica's `outline` is a variant, not a color — a paused/unknown plan reads as a
+// neutral soft badge (the whole set renders `variant="soft"`).
+const STATUS_BADGE: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
   active: 'success',
   trialing: 'success',
   past_due: 'warning',
   unpaid: 'danger',
   canceled: 'danger',
-  paused: 'outline',
+  paused: 'neutral',
 };
 
 function money(cents: number): string {
@@ -73,8 +65,8 @@ export default async function BillingSettingsPage() {
 
   return (
     <ModuleProvider module="finance">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<CreditCard className="h-5 w-5" />}
             title="sparx subscription"
@@ -89,105 +81,96 @@ export default async function BillingSettingsPage() {
             <>
               {!state.configured || !state.billingActive ? (
                 <Card>
-                  <CardContent>
-                    <Stack gap={1} className="py-1">
-                      <Text weight="medium">
-                        {state.configured
-                          ? 'No active subscription yet'
-                          : 'Billing isn’t switched on for this workspace yet'}
-                      </Text>
-                      <Text size="sm" variant="muted">
-                        Modules activate freely for now — you won’t be charged until billing goes
-                        live. The plan below is what you’ll pay then, based on the modules you have
-                        on today.
-                      </Text>
-                    </Stack>
-                  </CardContent>
+                  <CardBody>
+                    <p className="font-medium">
+                      {state.configured
+                        ? 'No active subscription yet'
+                        : 'Billing isn’t switched on for this workspace yet'}
+                    </p>
+                    <p className="text-base-content/70 text-sm">
+                      Modules activate freely for now — you won’t be charged until billing goes
+                      live. The plan below is what you’ll pay then, based on the modules you have on
+                      today.
+                    </p>
+                  </CardBody>
                 </Card>
               ) : null}
 
               <Card>
-                <CardHeader>
-                  <Stack direction="row" align="center" gap={3} className="justify-between">
+                <CardBody>
+                  <div className="flex items-center justify-between gap-3">
                     <CardTitle>Your plan</CardTitle>
                     {status ? (
-                      <Badge color={STATUS_BADGE[status] ?? 'outline'} variant="soft">
+                      <Badge color={STATUS_BADGE[status] ?? 'neutral'} variant="soft">
                         {status.replace('_', ' ')}
                         {state.cancelAtPeriodEnd ? ' · cancels at period end' : ''}
                       </Badge>
                     ) : null}
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={5}>
-                    <Stack direction="row" align="center" gap={2} className="items-baseline">
-                      <Text className="text-5xl font-medium tracking-tight">
+                  </div>
+
+                  <div className="flex flex-col gap-5">
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-5xl font-medium tracking-tight">
                         {money(state.planTotalCents)}
-                      </Text>
-                      <Text size="lg" variant="muted">
-                        {intervalLabel}
-                      </Text>
-                    </Stack>
+                      </p>
+                      <p className="text-base-content/70 text-lg">{intervalLabel}</p>
+                    </div>
 
                     {trialEnds && status === 'trialing' ? (
-                      <Text size="sm" variant="muted">
-                        Free trial ends {trialEnds}.
-                      </Text>
+                      <p className="text-base-content/70 text-sm">Free trial ends {trialEnds}.</p>
                     ) : nextBilling ? (
-                      <Text size="sm" variant="muted">
+                      <p className="text-base-content/70 text-sm">
                         Next billing date {nextBilling}.
-                      </Text>
+                      </p>
                     ) : null}
 
-                    <Stack gap={2}>
+                    <div className="flex flex-col gap-2">
                       {state.planModules.length === 0 ? (
-                        <Text size="sm" variant="muted">
+                        <p className="text-base-content/70 text-sm">
                           No billable modules active. Turn one on from Settings → Modules.
-                        </Text>
+                        </p>
                       ) : (
                         state.planModules.map((m) => (
-                          <Stack
+                          <div
                             key={m.moduleKey}
-                            direction="row"
-                            align="center"
-                            className="justify-between border-b border-[var(--color-border-subtle)] pb-2 last:border-0"
+                            className="border-base-200 flex items-center justify-between border-b pb-2 last:border-0"
                           >
-                            <Text size="sm">{MODULE_LABELS[m.moduleKey] ?? m.moduleKey}</Text>
-                            <Text size="sm" weight="medium" className="tabular-nums">
+                            <p className="text-sm">{MODULE_LABELS[m.moduleKey] ?? m.moduleKey}</p>
+                            <p className="text-sm font-medium tabular-nums">
                               {money(m.monthlyCents)}
                               {intervalLabel}
-                            </Text>
-                          </Stack>
+                            </p>
+                          </div>
                         ))
                       )}
-                    </Stack>
+                    </div>
 
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       Invoicing is included free with Commerce or B2B, so it never appears as a line
                       item. One invoice covers everything.
-                    </Text>
+                    </p>
 
                     {canManage ? (
                       <div>
                         <ManageBillingButton disabled={!state.configured || !state.billingActive} />
                         {!state.billingActive ? (
-                          <Text size="xs" variant="muted" className="mt-2">
+                          <p className="text-base-content/70 mt-2 text-xs">
                             The portal opens once a subscription exists.
-                          </Text>
+                          </p>
                         ) : null}
                       </div>
                     ) : (
-                      <Text size="sm" variant="muted">
+                      <p className="text-base-content/70 text-sm">
                         Only owners and admins can manage billing.
-                      </Text>
+                      </p>
                     )}
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
             </>
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

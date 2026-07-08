@@ -1,19 +1,8 @@
 import { notFound } from 'next/navigation';
+import type { ComponentProps } from 'react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  Grid,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-  type BadgeProps,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { BroadcastActions } from './broadcast-actions';
@@ -21,12 +10,12 @@ import type { BroadcastRow, BroadcastStats } from '../../_lib/types';
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_BADGE: Record<BroadcastRow['status'], BadgeProps['color']> = {
-  draft: 'outline',
+const STATUS_BADGE: Record<BroadcastRow['status'], ComponentProps<typeof Badge>['color']> = {
+  draft: 'neutral',
   scheduled: 'warning',
-  sending: 'soft',
+  sending: 'info',
   sent: 'success',
-  cancelled: 'default',
+  cancelled: 'neutral',
   failed: 'danger',
 };
 
@@ -57,45 +46,43 @@ export default async function BroadcastDetailPage({ params }: { params: Promise<
       : null;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title={broadcast.name}
-          badge={<Badge color={STATUS_BADGE[broadcast.status]}>{broadcast.status}</Badge>}
+          badge={
+            <Badge color={STATUS_BADGE[broadcast.status]} variant="soft">
+              {broadcast.status}
+            </Badge>
+          }
           description={broadcast.subject}
         />
 
         {broadcast.status === 'draft' || broadcast.status === 'scheduled' ? (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Send</CardTitle>
-            </CardHeader>
-            <CardContent>
               <BroadcastActions broadcast={broadcast} />
-            </CardContent>
+            </CardBody>
           </Card>
         ) : null}
 
         {stats ? (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Grid cols={2} mdCols={4} gap={4}>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 {STAT_LABELS.map(({ key, label }) => (
-                  <Stack key={key} gap={1}>
-                    <Heading level={2}>{stats[key]}</Heading>
-                    <Text size="sm" variant="muted">
-                      {label}
-                    </Text>
-                  </Stack>
+                  <div key={key} className="flex flex-col gap-1">
+                    <h2 className="text-2xl font-semibold tracking-tight">{stats[key]}</h2>
+                    <p className="text-base-content/70 text-sm">{label}</p>
+                  </div>
                 ))}
-              </Grid>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         ) : null}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

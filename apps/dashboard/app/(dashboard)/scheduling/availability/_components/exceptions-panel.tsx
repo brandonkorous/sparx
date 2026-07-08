@@ -6,16 +6,13 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
   Input,
   Label,
   NativeSelect,
-  Stack,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { CalendarOff, Trash2 } from 'lucide-react';
 
 import type { AvailabilityException } from '../../_lib/types';
@@ -97,11 +94,9 @@ export function ExceptionsPanel({
 
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>Time off & exceptions</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        <div className="flex flex-col gap-4">
           <div className="grid grid-cols-1 items-end gap-2 sm:grid-cols-[8rem_1fr_1fr_auto]">
             <div>
               <Label htmlFor="ex-kind">Kind</Label>
@@ -151,7 +146,7 @@ export function ExceptionsPanel({
               No exceptions — this resource follows its weekly hours.
             </p>
           ) : (
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {exceptions.map((ex) => (
                 <div
                   key={ex.id}
@@ -182,10 +177,10 @@ export function ExceptionsPanel({
                   </Button>
                 </div>
               ))}
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }

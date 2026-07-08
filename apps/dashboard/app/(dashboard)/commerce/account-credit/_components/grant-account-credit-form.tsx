@@ -3,19 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { grantAccountCreditAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -146,11 +135,11 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap align="end">
-                  <Stack gap={2} className="min-w-[18rem] flex-1">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap items-end gap-3">
+                  <div className="flex min-w-[18rem] flex-1 flex-col gap-2">
                     <Label htmlFor="customerId">Customer</Label>
                     <NativeSelect
                       id="customerId"
@@ -165,12 +154,12 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
                         </option>
                       ))}
                     </NativeSelect>
-                  </Stack>
-                  <Stack gap={2} className="w-[8rem]">
+                  </div>
+                  <div className="flex w-[8rem] flex-col gap-2">
                     <Label htmlFor="amount">Amount ($)</Label>
                     <Input id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
-                  </Stack>
-                  <Stack gap={2} className="w-[6rem]">
+                  </div>
+                  <div className="flex w-[6rem] flex-col gap-2">
                     <Label htmlFor="currency">Currency</Label>
                     <Input
                       id="currency"
@@ -178,9 +167,9 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
                       onChange={(e) => setCurrency(e.target.value)}
                       maxLength={3}
                     />
-                  </Stack>
-                </Stack>
-                <Stack gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="note">Note (shows in the customer&apos;s ledger)</Label>
                   <Input
                     id="note"
@@ -188,24 +177,19 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Goodwill credit after shipping delay"
                   />
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text
-              size="sm"
-              role="alert"
-              aria-live="polite"
-              className="mt-4 text-[var(--color-danger)]"
-            >
+            <p className="mt-4 text-sm text-[var(--color-danger)]" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {done && (
-            <Text size="sm" aria-live="polite" className="mt-4 text-[var(--color-success)]">
+            <p className="mt-4 text-sm text-[var(--color-success)]" aria-live="polite">
               Granted — {done}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

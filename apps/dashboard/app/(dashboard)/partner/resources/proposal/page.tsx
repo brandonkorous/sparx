@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
-import { Container, ModuleProvider, PageHeader, Stack } from '@sparx/ui';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -19,8 +19,8 @@ export default async function PartnerProposalPage() {
 
   return (
     <ModuleProvider module="partner">
-      <Container size="lg">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
             className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
@@ -34,8 +34,8 @@ export default async function PartnerProposalPage() {
             actions={<PrintButton label="Print proposal" />}
           />
           <ProposalBuilder defaultPreparedBy={profile?.displayName ?? ''} />
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

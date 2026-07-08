@@ -5,7 +5,8 @@
 // they manage payment / modules. Disabled-with-reason until billing is live.
 
 import * as React from 'react';
-import { Button, toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { openBillingPortal } from '../actions';
 

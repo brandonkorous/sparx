@@ -4,23 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  EmptyState,
-  Input,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, EmptyState, Input, Label, Table } from 'silicaui-react';
+import { RadioGroup, RadioGroupItem } from '@sparx/ui';
 
 import { deletePriceListEntryAction, setPriceListEntryAction } from '../../../pricing-actions';
 
@@ -121,19 +106,11 @@ export function PriceListEntriesEditor({
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <form onSubmit={onAddEntry}>
-        <Stack
-          direction="row"
-          gap={3}
-          align="end"
-          wrap
-          className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-        >
-          <Stack gap={1} className="min-w-[16rem] flex-1">
-            <Text size="xs" variant="muted">
-              Variant
-            </Text>
+        <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+          <div className="flex min-w-[16rem] flex-1 flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Variant</p>
             <select
               name="variantId"
               defaultValue=""
@@ -147,11 +124,9 @@ export function PriceListEntriesEditor({
                 </option>
               ))}
             </select>
-          </Stack>
-          <Stack gap={1}>
-            <Text size="xs" variant="muted">
-              Mode
-            </Text>
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Mode</p>
             <RadioGroup
               value={mode}
               onValueChange={(v) => setMode(v as 'fixed' | 'percent')}
@@ -159,77 +134,65 @@ export function PriceListEntriesEditor({
             >
               <Label htmlFor="mode-fixed" className="flex items-center gap-1">
                 <RadioGroupItem color="module" value="fixed" id="mode-fixed" />
-                <Text size="sm">Fixed</Text>
+                <p className="text-sm">Fixed</p>
               </Label>
               <Label htmlFor="mode-percent" className="flex items-center gap-1">
                 <RadioGroupItem color="module" value="percent" id="mode-percent" />
-                <Text size="sm">Percent off</Text>
+                <p className="text-sm">Percent off</p>
               </Label>
             </RadioGroup>
-          </Stack>
+          </div>
           {mode === 'fixed' ? (
-            <Stack gap={1} className="w-[8rem]">
-              <Text size="xs" variant="muted">
-                Fixed ($)
-              </Text>
+            <div className="flex w-[8rem] flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Fixed ($)</p>
               <Input name="fixedPrice" defaultValue="" placeholder="0.00" />
-            </Stack>
+            </div>
           ) : (
-            <Stack gap={1} className="w-[8rem]">
-              <Text size="xs" variant="muted">
-                Percent off
-              </Text>
+            <div className="flex w-[8rem] flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Percent off</p>
               <Input name="percentOff" defaultValue="" placeholder="10" />
-            </Stack>
+            </div>
           )}
-          <Stack gap={1} className="w-[6rem]">
-            <Text size="xs" variant="muted">
-              Min qty
-            </Text>
+          <div className="flex w-[6rem] flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Min qty</p>
             <Input name="minQuantity" defaultValue="1" />
-          </Stack>
-          <Stack gap={1} className="w-[6rem]">
-            <Text size="xs" variant="muted">
-              Max qty
-            </Text>
+          </div>
+          <div className="flex w-[6rem] flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Max qty</p>
             <Input name="maxQuantity" defaultValue="" placeholder="any" />
-          </Stack>
+          </div>
           <Button color="module" type="submit" size="sm" disabled={pending}>
             {pending ? 'Saving…' : 'Add'}
           </Button>
-        </Stack>
-        {error && (
-          <Text size="xs" className="mt-2 text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
+        </div>
+        {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
       </form>
 
       {entries.length === 0 ? (
         <EmptyState
-          icon={<Text className="text-2xl">$</Text>}
+          icon={<span className="text-2xl">$</span>}
           title="No entries yet"
           description="Add a per-variant override above. Variants without an entry fall back to the locked resolution chain."
         />
       ) : (
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Override</TableHead>
-              <TableHead>Quantity range</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>Override</th>
+              <th>Quantity range</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
             {entries.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>
+              <tr key={entry.id}>
+                <td>
                   <span className="font-mono text-xs">{entry.variantSku}</span>
-                </TableCell>
-                <TableCell>{entry.productTitle}</TableCell>
-                <TableCell>
+                </td>
+                <td>{entry.productTitle}</td>
+                <td>
                   {entry.fixedPriceCents !== null ? (
                     <Badge color="info" variant="soft" size="sm">
                       {moneyFmt.format(entry.fixedPriceCents / 100)} fixed
@@ -239,12 +202,12 @@ export function PriceListEntriesEditor({
                       {entry.percentOffList}% off
                     </Badge>
                   )}
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   {entry.minQuantity}
                   {entry.maxQuantity !== null ? `–${entry.maxQuantity}` : '+'}
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -253,13 +216,13 @@ export function PriceListEntriesEditor({
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
+          </tbody>
         </Table>
       )}
-    </Stack>
+    </div>
   );
 }
 

@@ -7,7 +7,8 @@
 import * as React from 'react';
 import { Plus } from 'lucide-react';
 
-import { Button, Checkbox, Input, Label, Stack, Text, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button, Checkbox, Input, Label } from 'silicaui-react';
 
 import { createWorkflowStageAction } from '../../../../workflow-actions';
 
@@ -81,9 +82,9 @@ export function AddStageForm({
   }
 
   return (
-    <Stack gap={3}>
-      <Stack direction="row" gap={2} align="end" wrap>
-        <Stack gap={1} className="flex-1">
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-row flex-wrap items-end gap-2">
+        <div className="flex flex-1 flex-col gap-1">
           <Label htmlFor="new-stage-name">New stage name</Label>
           <Input
             id="new-stage-name"
@@ -91,8 +92,8 @@ export function AddStageForm({
             onChange={(e) => setName(e.target.value)}
             placeholder="Estimate"
           />
-        </Stack>
-        <Stack gap={1} className="flex-1">
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
           <Label htmlFor="new-stage-label">Customer label</Label>
           <Input
             id="new-stage-label"
@@ -100,8 +101,8 @@ export function AddStageForm({
             onChange={(e) => setCustomerLabel(e.target.value)}
             placeholder="Defaults to the name"
           />
-        </Stack>
-        <Stack gap={1}>
+        </div>
+        <div className="flex flex-col gap-1">
           <Label htmlFor="new-stage-type">Type</Label>
           <select
             id="new-stage-type"
@@ -115,24 +116,24 @@ export function AddStageForm({
               </option>
             ))}
           </select>
-        </Stack>
+        </div>
         <Button
           color="module"
           size="sm"
           disabled={pending || !name.trim()}
           onClick={add}
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           Add
         </Button>
-      </Stack>
+      </div>
 
-      <Stack direction="row" align="center" gap={4} wrap className="px-1">
+      <div className="flex flex-row flex-wrap items-center gap-4 px-1">
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
           <Checkbox
             color="module"
             checked={numberOnEnter}
-            onCheckedChange={(v) => setNumberOnEnter(v === true)}
+            onChange={(e) => setNumberOnEnter(e.target.checked)}
           />
           Mint a number
         </label>
@@ -150,7 +151,7 @@ export function AddStageForm({
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
-            onCheckedChange={(v) => setSnapshotOnEnter(v === true)}
+            onChange={(e) => setSnapshotOnEnter(e.target.checked)}
           />
           Freeze a snapshot
         </label>
@@ -158,14 +159,12 @@ export function AddStageForm({
           <Checkbox
             color="module"
             checked={locksEditing}
-            onCheckedChange={(v) => setLocksEditing(v === true)}
+            onChange={(e) => setLocksEditing(e.target.checked)}
           />
           Lock editing
         </label>
-        <Text size="xs" variant="muted">
-          Tune the color on the stage after adding.
-        </Text>
-      </Stack>
-    </Stack>
+        <p className="text-base-content/70 text-xs">Tune the color on the stage after adding.</p>
+      </div>
+    </div>
   );
 }

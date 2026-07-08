@@ -1,4 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { BroadcastComposer, type BuilderEmailOption } from '../_components/broadcast-composer';
@@ -29,22 +30,20 @@ export default async function NewBroadcastPage() {
     .map((e) => ({ id: e.id, name: e.name }));
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader title="New broadcast" />
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Compose</CardTitle>
-          </CardHeader>
-          <CardContent>
             <BroadcastComposer
               segments={segments.map((s) => ({ id: s.id, name: s.name }))}
               designedEmails={designedEmails}
             />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

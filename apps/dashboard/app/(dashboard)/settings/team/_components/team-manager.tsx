@@ -1,19 +1,6 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Stack,
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
 import { Mail } from 'lucide-react';
 import type { OrgInvitation, OrgMember } from '@sparx/auth';
 import { InviteForm } from './invite-form';
@@ -32,27 +19,25 @@ export interface TeamManagerProps {
 // (member-row / invitation-row); this component is just the layout + gating.
 export function TeamManager({ members, invitations, canManage, currentUserId }: TeamManagerProps) {
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       {canManage ? <InviteForm /> : null}
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Members</CardTitle>
-          <CardDescription>
+          <p className="opacity-70">
             {members.length} {members.length === 1 ? 'person' : 'people'} in this workspace.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Role</TableHead>
-                {canManage ? <TableHead className="w-10 text-right">Actions</TableHead> : null}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Role</th>
+                {canManage ? <th className="w-10 text-right">Actions</th> : null}
+              </tr>
+            </thead>
+            <tbody>
               {members.map((m) => (
                 <MemberRow
                   key={m.id}
@@ -61,19 +46,15 @@ export function TeamManager({ members, invitations, canManage, currentUserId }: 
                   isSelf={m.userId === currentUserId}
                 />
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Pending invitations</CardTitle>
-          <CardDescription>
-            People who&apos;ve been invited but haven&apos;t joined yet.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          <p className="opacity-70">People who&apos;ve been invited but haven&apos;t joined yet.</p>
           {invitations.length === 0 ? (
             <EmptyState
               icon={<Mail className="h-6 w-6" />}
@@ -86,24 +67,24 @@ export function TeamManager({ members, invitations, canManage, currentUserId }: 
             />
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Invited by</TableHead>
-                  <TableHead>Expires</TableHead>
-                  {canManage ? <TableHead className="w-10 text-right">Actions</TableHead> : null}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Invited by</th>
+                  <th>Expires</th>
+                  {canManage ? <th className="w-10 text-right">Actions</th> : null}
+                </tr>
+              </thead>
+              <tbody>
                 {invitations.map((inv) => (
                   <InvitationRow key={inv.id} invitation={inv} canManage={canManage} />
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

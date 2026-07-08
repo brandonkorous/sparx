@@ -8,7 +8,7 @@
 
 import { Trash2 } from 'lucide-react';
 import type { SegmentField, SegmentOperator } from '@sparx/crm-schemas';
-import { Button, Input, Stack } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
 
 import {
   type FieldKind,
@@ -45,7 +45,7 @@ export function PredicateRow({ field, op, value, onChange, onRemove }: Props) {
   }
 
   return (
-    <Stack direction="row" gap={2} align="center" className="flex-wrap">
+    <div className="flex flex-row flex-wrap items-center gap-2">
       <select
         className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-sm"
         value={field}
@@ -95,7 +95,7 @@ export function PredicateRow({ field, op, value, onChange, onRemove }: Props) {
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }
 

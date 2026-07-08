@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { CircleAlert, Plus, X } from 'lucide-react';
 
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -65,8 +66,8 @@ export default async function LotsPage({ searchParams }: PageProps) {
   const hasFilters = Boolean(f.variantId || f.warehouseId || f.recallStatus || f.expiring || f.q);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<CircleAlert className="h-5 w-5" />}
           title="Lots & serials"
@@ -94,23 +95,26 @@ export default async function LotsPage({ searchParams }: PageProps) {
         />
 
         {f.variantId ? (
-          <Stack direction="row" gap={2} align="center" wrap>
-            <Text size="sm" variant="muted">
-              Filtered to item:
-            </Text>
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <p className="text-base-content/70 text-sm">Filtered to item:</p>
             <Badge color="module" variant="soft">
               {f.sku || f.variantId.slice(0, 8)}
             </Badge>
-            <Button asChild variant="ghost" size="sm" leftIcon={<X className="h-3.5 w-3.5" />}>
-              <Link href={clearVariantHref(f, view)}>Clear item</Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              iconStart={<X className="h-3.5 w-3.5" />}
+              render={<Link href={clearVariantHref(f, view)} />}
+            >
+              Clear item
             </Button>
-          </Stack>
+          </div>
         ) : null}
 
         <ListToolbar enableViewToggle searchable={false} />
 
         {lots.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<CircleAlert className="h-5 w-5" />}
               title={hasFilters ? 'No lots match these filters' : 'No lots yet'}
@@ -119,7 +123,7 @@ export default async function LotsPage({ searchParams }: PageProps) {
                   ? 'Adjust or clear the filters to see more.'
                   : 'Create a lot to track a batch by expiry, hazmat class, supplier reference, and per-unit serials — and to drive recalls.'
               }
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="lot"
                   newHref="/inventory/lots/new"
@@ -136,8 +140,8 @@ export default async function LotsPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

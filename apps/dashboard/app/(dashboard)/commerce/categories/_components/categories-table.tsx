@@ -3,16 +3,8 @@
 import * as React from 'react';
 import { ChevronDown, ChevronRight, FolderTree, Star } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  EmptyState,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -126,10 +118,8 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
       cell: ({ node, hasChildren, parentName }) => {
         const isOpen = expanded.has(node.id);
         return (
-          <Stack
-            direction="row"
-            align="center"
-            gap={2}
+          <div
+            className="flex flex-row items-center gap-2"
             style={filtering ? undefined : { paddingLeft: `${node.depth * 1.25}rem` }}
           >
             {!filtering &&
@@ -150,8 +140,8 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
               ) : (
                 <span className="inline-block h-4 w-4 shrink-0" aria-hidden />
               ))}
-            <Stack gap={1} className="min-w-0">
-              <Stack direction="row" align="center" gap={2}>
+            <div className="flex min-w-0 flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <EntityRowLink
                   href={`/commerce/categories/${node.id}`}
                   entityType="category"
@@ -161,32 +151,32 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
                   {node.name}
                 </EntityRowLink>
                 {node.featured && featuredBadge}
-              </Stack>
-              <Text size="xs" variant="muted">
+              </div>
+              <p className="text-base-content/70 text-xs">
                 /{node.handle}
                 {filtering && parentName ? ` · under ${parentName}` : ''}
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
         );
       },
     },
     {
       header: 'Priority',
       align: 'right',
-      cell: ({ node }) => <Text size="sm">{node.position}</Text>,
+      cell: ({ node }) => <p className="text-sm">{node.position}</p>,
     },
     {
       header: 'Products',
       align: 'right',
-      cell: ({ node }) => <Text size="sm">{node.productCount}</Text>,
+      cell: ({ node }) => <p className="text-sm">{node.productCount}</p>,
     },
     {
       header: 'Updated',
       cell: ({ node }) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {new Date(node.updatedAt).toLocaleDateString()}
-        </Text>
+        </p>
       ),
     },
   ];
@@ -203,27 +193,25 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
       </EntityRowLink>
     ),
     subtitle: ({ node, parentName }) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         /{node.handle}
         {parentName ? ` · under ${parentName}` : ' · top level'}
-      </Text>
+      </p>
     ),
     badge: ({ node }) => (node.featured ? featuredBadge : null),
     body: ({ node }) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="xs" variant="muted">
-          priority {node.position}
-        </Text>
-        <Text size="sm" className="tabular-nums">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-xs">priority {node.position}</p>
+        <p className="text-sm tabular-nums">
           {node.productCount} product{node.productCount === 1 ? '' : 's'}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 
   if (rows.length === 0) {
     return (
-      <Card padding="none">
+      <Card>
         <EmptyState
           icon={<FolderTree className="h-5 w-5" />}
           title="No categories match"

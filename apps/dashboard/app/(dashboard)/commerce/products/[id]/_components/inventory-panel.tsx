@@ -9,23 +9,13 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+  CardBody,
   EmptyState,
-  Heading,
   Input,
-  ModuleProvider,
   NativeSelect,
-  Stack,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 
 import {
   adjustInventoryAction,
@@ -76,77 +66,71 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
   return (
     <ModuleProvider module="inventory">
       {warehouses.length === 0 ? (
-        <Card variant="default">
-          <CardContent>
+        <Card>
+          <CardBody>
             <EmptyState
               icon={<Boxes className="h-5 w-5" />}
               title="No warehouses yet"
               description="Add a warehouse before tracking inventory."
-              action={
-                <Button color="module" asChild>
-                  <Link href="/inventory/warehouses/new">Add warehouse</Link>
+              actions={
+                <Button color="module" render={<Link href="/inventory/warehouses/new" />}>
+                  Add warehouse
                 </Button>
               }
             />
-          </CardContent>
+          </CardBody>
         </Card>
       ) : variantsWithLevels.length === 0 ? (
-        <Card variant="default">
-          <CardContent>
+        <Card>
+          <CardBody>
             <EmptyState
               icon={<Boxes className="h-5 w-5" />}
               title="No variants yet"
               description="Add at least one variant on the Variants tab before stocking inventory."
             />
-          </CardContent>
+          </CardBody>
         </Card>
       ) : (
-        <Card variant="default">
-          <CardHeader>
-            <Stack direction="row" align="start" justify="between" wrap gap={3}>
-              <Stack gap={1}>
-                <Heading level={3}>Inventory</Heading>
-                <CardDescription>
+        <Card>
+          <CardBody>
+            <div className="flex flex-row flex-wrap items-start justify-between gap-3">
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Inventory</h3>
+                <p className="opacity-70">
                   On hand, allocated, and available per warehouse. Adjustments and reorder edits
                   record an audit-logged movement.
-                </CardDescription>
-              </Stack>
+                </p>
+              </div>
               {lowStockCount > 0 && (
                 <Badge color="warning" variant="soft">
                   {lowStockCount} below reorder
                 </Badge>
               )}
-            </Stack>
-          </CardHeader>
-          <CardContent>
+            </div>
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Warehouse</TableHead>
-                  <TableHead className="text-right">On hand</TableHead>
-                  <TableHead className="text-right">Allocated</TableHead>
-                  <TableHead className="text-right">Available</TableHead>
-                  <TableHead>Reorder</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Warehouse</th>
+                  <th className="text-right">On hand</th>
+                  <th className="text-right">Allocated</th>
+                  <th className="text-right">Available</th>
+                  <th>Reorder</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {variantsWithLevels.map((v) => (
                   <React.Fragment key={v.variantId}>
-                    <TableRow className="bg-[var(--color-bg-subtle)] hover:bg-[var(--color-bg-subtle)]">
-                      <TableCell colSpan={COL_COUNT}>
-                        <Stack direction="row" align="center" gap={2} wrap>
-                          <Text size="sm" weight="medium" className="font-mono">
-                            {v.sku}
-                          </Text>
+                    <tr className="bg-[var(--color-bg-subtle)] hover:bg-[var(--color-bg-subtle)]">
+                      <td colSpan={COL_COUNT}>
+                        <div className="flex flex-row flex-wrap items-center gap-2">
+                          <span className="font-mono text-sm font-medium">{v.sku}</span>
                           {v.variantTitle && (
-                            <Text size="sm" variant="muted">
-                              {v.variantTitle}
-                            </Text>
+                            <span className="text-base-content/70 text-sm">{v.variantTitle}</span>
                           )}
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
+                        </div>
+                      </td>
+                    </tr>
                     {warehouses.map((w) => (
                       <VariantInventoryRow
                         key={w.id}
@@ -157,9 +141,9 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
                     ))}
                   </React.Fragment>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
-          </CardContent>
+          </CardBody>
         </Card>
       )}
     </ModuleProvider>
@@ -246,50 +230,36 @@ function VariantInventoryRow({
 
   return (
     <>
-      <TableRow>
-        <TableCell>
-          <Stack gap={0}>
-            <Text size="sm" weight="medium" className="font-mono">
-              {warehouse.code}
-            </Text>
-            <Text size="xs" variant="muted">
-              {warehouse.name}
-            </Text>
-          </Stack>
-        </TableCell>
-        <TableCell className="text-right tabular-nums">{onHand}</TableCell>
-        <TableCell className="text-right tabular-nums">{allocated}</TableCell>
-        <TableCell className="text-right tabular-nums">
-          {belowReorder ? (
-            <Text as="span" variant="warning" weight="medium">
-              {available}
-            </Text>
-          ) : (
-            available
-          )}
-        </TableCell>
-        <TableCell>
+      <tr>
+        <td>
+          <div className="flex flex-col gap-0">
+            <span className="font-mono text-sm font-medium">{warehouse.code}</span>
+            <span className="text-base-content/70 text-xs">{warehouse.name}</span>
+          </div>
+        </td>
+        <td className="text-right tabular-nums">{onHand}</td>
+        <td className="text-right tabular-nums">{allocated}</td>
+        <td className="text-right tabular-nums">
+          {belowReorder ? <span className="text-warning font-medium">{available}</span> : available}
+        </td>
+        <td>
           {reorderPoint === null ? (
-            <Text size="xs" variant="muted">
-              none
-            </Text>
+            <span className="text-base-content/70 text-xs">none</span>
           ) : belowReorder ? (
             <Badge color="warning" variant="soft" size="sm">
               ≤ {reorderPoint}
             </Badge>
           ) : (
-            <Text size="sm" variant="muted" className="tabular-nums">
-              ≤ {reorderPoint}
-            </Text>
+            <span className="text-base-content/70 text-sm tabular-nums">≤ {reorderPoint}</span>
           )}
-        </TableCell>
-        <TableCell className="text-right">
-          <Stack direction="row" gap={1} justify="end">
+        </td>
+        <td className="text-right">
+          <div className="flex flex-row justify-end gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setMode(mode === 'adjust' ? 'view' : 'adjust')}
-              leftIcon={<SlidersHorizontal className="h-3.5 w-3.5" />}
+              iconStart={<SlidersHorizontal className="h-3.5 w-3.5" />}
             >
               Adjust
             </Button>
@@ -297,28 +267,24 @@ function VariantInventoryRow({
               variant="ghost"
               size="sm"
               onClick={() => setMode(mode === 'reorder' ? 'view' : 'reorder')}
-              leftIcon={<Bell className="h-3.5 w-3.5" />}
+              iconStart={<Bell className="h-3.5 w-3.5" />}
             >
               Reorder
             </Button>
-          </Stack>
-        </TableCell>
-      </TableRow>
+          </div>
+        </td>
+      </tr>
       {mode === 'adjust' && (
-        <TableRow>
-          <TableCell colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
+        <tr>
+          <td colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
             <form onSubmit={onAdjust}>
-              <Stack direction="row" gap={3} align="end" wrap>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Delta (±)
-                  </Text>
+              <div className="flex flex-row flex-wrap items-end gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className="text-base-content/70 text-xs">Delta (±)</span>
                   <Input name="delta" defaultValue="0" className="w-[6rem]" />
-                </Stack>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reason
-                  </Text>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-base-content/70 text-xs">Reason</span>
                   <NativeSelect name="reason" defaultValue="manual" size="sm" className="w-[10rem]">
                     {REASONS.map((r) => (
                       <option key={r} value={r}>
@@ -326,14 +292,12 @@ function VariantInventoryRow({
                       </option>
                     ))}
                   </NativeSelect>
-                </Stack>
-                <Stack gap={1} className="min-w-[14rem] flex-1">
-                  <Text size="xs" variant="muted">
-                    Note
-                  </Text>
+                </div>
+                <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
+                  <span className="text-base-content/70 text-xs">Note</span>
                   <Input name="note" placeholder="optional" />
-                </Stack>
-                <Stack direction="row" gap={2}>
+                </div>
+                <div className="flex flex-row gap-2">
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
                   </Button>
@@ -346,43 +310,35 @@ function VariantInventoryRow({
                   >
                     Apply
                   </Button>
-                </Stack>
-              </Stack>
-              {error && (
-                <Text size="xs" variant="danger" className="mt-2">
-                  {error}
-                </Text>
-              )}
+                </div>
+              </div>
+              {error && <p className="text-danger mt-2 text-xs">{error}</p>}
             </form>
-          </TableCell>
-        </TableRow>
+          </td>
+        </tr>
       )}
       {mode === 'reorder' && (
-        <TableRow>
-          <TableCell colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
+        <tr>
+          <td colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
             <form onSubmit={onSetReorder}>
-              <Stack direction="row" gap={3} align="end" wrap>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reorder point
-                  </Text>
+              <div className="flex flex-row flex-wrap items-end gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className="text-base-content/70 text-xs">Reorder point</span>
                   <Input
                     name="reorderPoint"
                     defaultValue={reorderPoint?.toString() ?? '0'}
                     className="w-[6rem]"
                   />
-                </Stack>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reorder qty
-                  </Text>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-base-content/70 text-xs">Reorder qty</span>
                   <Input
                     name="reorderQuantity"
                     defaultValue={level?.reorderQuantity?.toString() ?? ''}
                     className="w-[6rem]"
                   />
-                </Stack>
-                <Stack direction="row" gap={2}>
+                </div>
+                <div className="flex flex-row gap-2">
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
                   </Button>
@@ -395,16 +351,12 @@ function VariantInventoryRow({
                   >
                     Save policy
                   </Button>
-                </Stack>
-              </Stack>
-              {error && (
-                <Text size="xs" variant="danger" className="mt-2">
-                  {error}
-                </Text>
-              )}
+                </div>
+              </div>
+              {error && <p className="text-danger mt-2 text-xs">{error}</p>}
             </form>
-          </TableCell>
-        </TableRow>
+          </td>
+        </tr>
       )}
     </>
   );

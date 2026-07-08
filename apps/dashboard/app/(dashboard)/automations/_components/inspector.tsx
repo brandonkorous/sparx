@@ -11,7 +11,7 @@
 // ConditionEditor) are reused verbatim, just hosted inside a card here.
 
 import { Filter, Settings2, Shield, Workflow } from 'lucide-react';
-import { Input, Textarea } from '@sparx/ui';
+import { Input, Textarea } from 'silicaui-react';
 import type { Action, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 
 import { actionDef, moduleForActionType, moduleLabel } from '../_lib/catalog';

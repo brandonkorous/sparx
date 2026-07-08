@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Input, Spinner, Text, cn } from '@sparx/ui';
+import { Badge, Button, Input, Loading } from 'silicaui-react';
+import { cn } from '@sparx/ui';
 import { Check, Clock, Globe, Search, X } from 'lucide-react';
 import type { Property } from '@/lib/sites';
 import {
@@ -92,12 +93,10 @@ export function StepDomain({
           <div className="flex min-w-0 items-center gap-2.5">
             <Globe className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
             <div className="min-w-0">
-              <Text weight="medium" className="truncate">
-                {selectedHost}
-              </Text>
-              <Text size="xs" variant="muted">
+              <p className="truncate font-medium">{selectedHost}</p>
+              <p className="text-base-content/70 text-xs">
                 Added — you&apos;ll be charged when you publish.
-              </Text>
+              </p>
             </div>
           </div>
           <Button
@@ -105,7 +104,7 @@ export function StepDomain({
             variant="ghost"
             size="sm"
             onClick={onClearSelection}
-            leftIcon={<X className="h-3.5 w-3.5" />}
+            iconStart={<X className="h-3.5 w-3.5" />}
           >
             Use free address
           </Button>
@@ -128,10 +127,8 @@ export function StepDomain({
 
       {searching && (
         <div className="mt-4 flex items-center gap-2">
-          <Spinner size="sm" />
-          <Text size="xs" variant="muted">
-            Searching…
-          </Text>
+          <Loading size="sm" />
+          <p className="text-base-content/70 text-xs">Searching…</p>
         </div>
       )}
 
@@ -163,52 +160,50 @@ export function StepDomain({
       )}
 
       {!searching && error && (
-        <Text size="sm" variant="danger" className="mt-4 block" role="alert" aria-live="polite">
+        <p className="text-danger mt-4 block text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
 
       {!searching && !error && query.trim() && suggestions.length === 0 && (
-        <Text size="sm" variant="muted" className="mt-4 block">
+        <p className="text-base-content/70 mt-4 block text-sm">
           No domains found for &ldquo;{query}&rdquo;. Try a different name.
-        </Text>
+        </p>
       )}
 
       {/* Paid-add-on disclosure — distinct copy for "checkout open" vs "soon". */}
       {purchaseEnabled ? (
         <div className="mt-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             A custom domain is a paid registration — you&apos;ll be charged when you publish at the
             Launch step, not now. It&apos;s the one optional add-on with a cost; signing up and your
             free address are always free.
-          </Text>
+          </p>
         </div>
       ) : (
         <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
           <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Custom domains are a paid registration and{' '}
             <span className="font-medium text-[var(--color-text-secondary)]">
               checkout opens soon
             </span>
             . For now, launch on your free address — or connect a domain you already own from
             Settings. You&apos;re never charged to sign up.
-          </Text>
+          </p>
         </div>
       )}
 
       {/* Free-address note — "Continue" (in the setup card) keeps this address. */}
       <div className="mt-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
-        <Text size="sm" weight="medium">
-          Happy on the free address?
-        </Text>
-        <Text size="xs" variant="muted">
+        <p className="text-sm font-medium">Happy on the free address?</p>
+        <p className="text-base-content/70 text-xs">
           Your site is live at{' '}
           <span className="font-medium text-[var(--color-text-secondary)]">
             {slug}.{SITE_ZONE}
           </span>{' '}
           — just hit Continue. You can add a domain anytime from Settings.
-        </Text>
+        </p>
       </div>
 
       {purchaseEnabled && primaryProperty && (
@@ -251,15 +246,13 @@ function DomainRow({
       )}
     >
       <div className="min-w-0">
-        <Text weight="medium" className="truncate">
-          {suggestion.domain}
-        </Text>
+        <p className="truncate font-medium">{suggestion.domain}</p>
         {suggestion.available ? (
           <span className="mt-0.5 flex items-center gap-1.5">
             <Check className="h-3 w-3 text-[var(--color-success-text)]" />
-            <Text size="xs" className="text-[var(--color-success-text)]">
+            <p className="text-xs text-[var(--color-success-text)]">
               {featured ? 'Available · best match' : 'Available'}
-            </Text>
+            </p>
           </span>
         ) : (
           <Badge color="neutral" variant="soft" size="sm" className="mt-1">
@@ -270,16 +263,16 @@ function DomainRow({
       {suggestion.available && (
         <div className="flex shrink-0 items-center gap-3">
           <div className="text-right">
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               <span className="font-medium text-[var(--color-text-primary)]">
                 ${(suggestion.displayPrice / 100).toFixed(2)}
               </span>
               /yr
-            </Text>
+            </p>
             {suggestion.renewalDisplayPrice > suggestion.displayPrice && (
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 then ${(suggestion.renewalDisplayPrice / 100).toFixed(2)}/yr
-              </Text>
+              </p>
             )}
           </div>
           {comingSoon ? (
@@ -309,12 +302,10 @@ function ExactTakenRow({ domain }: { domain: string }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
       <div className="min-w-0">
-        <Text weight="medium" className="truncate">
-          {domain}
-        </Text>
-        <Text size="xs" variant="muted" className="mt-0.5">
+        <p className="truncate font-medium">{domain}</p>
+        <p className="text-base-content/70 mt-0.5 text-xs">
           Already registered — here are close ones you can grab.
-        </Text>
+        </p>
       </div>
       <Badge color="neutral" variant="soft" size="sm">
         Taken

@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Input, Text, cn } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
+import { Badge, cn } from '@sparx/ui';
 import { Check, Lock, PencilRuler, Search } from 'lucide-react';
 import { MODULE_BY_KEY, TEMPLATE_CAP_KEYS } from '../_lib/modules';
 import type { BlueprintVertical, WizardBlueprint } from '../_lib/types';
@@ -120,10 +121,10 @@ export function StepBlueprint({
         )}
       </div>
 
-      <Text size="sm" variant="muted" className="mt-4 mb-3.5 block">
+      <p className="text-base-content/70 mt-4 mb-3.5 block text-sm">
         Showing <span className="font-medium text-[var(--color-text-primary)]">{shown.length}</span>{' '}
         of {blueprints.length} blueprints that fit your modules
-      </Text>
+      </p>
 
       {/* ── Gallery ───────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2">
@@ -170,13 +171,9 @@ export function StepBlueprint({
               </div>
 
               <div className="flex flex-1 flex-col gap-2 p-4">
-                <Text weight="medium">{bp.name}</Text>
-                <Text size="sm" variant="muted" className="line-clamp-2">
-                  {bp.summary}
-                </Text>
-                <Text size="xs" variant="muted" className="mt-1">
-                  {contentsLine(bp)}
-                </Text>
+                <p className="font-medium">{bp.name}</p>
+                <p className="text-base-content/70 line-clamp-2 text-sm">{bp.summary}</p>
+                <p className="text-base-content/70 mt-1 text-xs">{contentsLine(bp)}</p>
                 {caps.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {caps.map((m) => (
@@ -200,7 +197,7 @@ export function StepBlueprint({
       {hidden.length > 0 && lockedMods.size > 0 && (
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-[18px] py-4">
           <Lock className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             <span className="font-medium text-[var(--color-text-primary)]">
               {hidden.length} more
             </span>{' '}
@@ -211,7 +208,7 @@ export function StepBlueprint({
             — turn {lockedMods.size === 1 ? 'it' : 'one'} on{' '}
             {selectedCaps.some((k) => lockedMods.has(k)) ? 'in the filter or ' : ''}back on the
             Modules step.
-          </Text>
+          </p>
         </div>
       )}
 
@@ -226,9 +223,9 @@ export function StepBlueprint({
       >
         <div className="flex items-center gap-3">
           <PencilRuler className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Prefer a blank canvas? Use sparx headless or design it yourself.
-          </Text>
+          </p>
         </div>
         <Button
           variant={selectedKey === 'scratch' ? 'solid' : 'outline'}

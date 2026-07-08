@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { GitCompareArrows } from 'lucide-react';
-import { Button, ButtonGroup, cn } from '@sparx/ui';
+import { Button, Join } from 'silicaui-react';
+import { cn } from '@sparx/ui';
 
 import { RANGE_OPTIONS, type RangeKey } from './range';
 import type { PerfMetric } from './metrics';
@@ -48,7 +49,7 @@ export function RangeControl({ active }: { active: RangeKey }) {
         pending && 'opacity-60'
       )}
     >
-      <ButtonGroup>
+      <Join>
         {RANGE_OPTIONS.map((opt) => {
           const isActive = opt.key === active;
           return (
@@ -65,14 +66,14 @@ export function RangeControl({ active }: { active: RangeKey }) {
             </Button>
           );
         })}
-      </ButtonGroup>
+      </Join>
 
       <Button
         size="sm"
         color={compare ? 'module' : 'neutral'}
         variant={compare ? 'soft' : 'outline'}
         aria-pressed={compare}
-        leftIcon={<GitCompareArrows className="h-3.5 w-3.5" />}
+        iconStart={<GitCompareArrows className="h-3.5 w-3.5" />}
         title={compare ? 'Comparing to previous period' : 'Compare to previous period'}
         onClick={() => patch({ compare: compare ? '0' : null })}
       >
@@ -89,7 +90,7 @@ export function MetricSwitcher({ active, metrics }: { active: string; metrics: P
   if (metrics.length < 2) return null;
   return (
     <div className={cn('transition-opacity', pending && 'opacity-60')}>
-      <ButtonGroup>
+      <Join>
         {metrics.map((m) => {
           const isActive = m.key === active;
           return (
@@ -105,7 +106,7 @@ export function MetricSwitcher({ active, metrics }: { active: string; metrics: P
             </Button>
           );
         })}
-      </ButtonGroup>
+      </Join>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { Button, Heading, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import type { StoryState } from '../_lib/story-state';
 import type { StoryExample } from '../_lib/story-examples';
 import { StoryCanvas, type StoryDispatch } from './story-canvas';
@@ -39,10 +39,10 @@ export function StoryComposeStage({
     return (
       <div className="min-w-0">
         <div className="flex flex-col gap-2">
-          <Heading level={2}>Make it yours</Heading>
-          <Text variant="muted" className="max-w-[58ch]">
+          <h2 className="text-2xl font-semibold tracking-tight">Make it yours</h2>
+          <p className="text-base-content/70 max-w-[58ch]">
             Tap any phrase to change it. Add as much as you want; there’s always room for more.
-          </Text>
+          </p>
         </div>
         <div className="mt-8">
           <StoryCanvas story={story} dispatch={dispatch} />
@@ -55,12 +55,12 @@ export function StoryComposeStage({
   return (
     <div className="min-w-0">
       <div className="flex flex-col gap-2.5">
-        <Heading level={2}>What are you building?</Heading>
-        <Text variant="muted" className="max-w-[58ch]">
+        <h2 className="text-2xl font-semibold tracking-tight">What are you building?</h2>
+        <p className="text-base-content/70 max-w-[58ch]">
           Say it the way you’d tell a friend: what you make, who it’s for, how they buy. Each phrase
           you add switches on a module and builds your setup in real time. Here’s how a few others
           told theirs:
-        </Text>
+        </p>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">

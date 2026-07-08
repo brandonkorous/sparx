@@ -2,14 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { daysUntil, formatDate, hazmatLabel, recallBadge, type LotRow } from './types';
 
@@ -35,40 +29,35 @@ export function LotsList({ rows, view }: LotsListProps) {
   );
 
   const item = (l: LotRow) => (
-    <Stack gap={0} className="min-w-0">
-      <Text size="sm" className="truncate font-medium">
+    <div className="flex min-w-0 flex-col gap-0">
+      <p className="truncate text-sm font-medium">
         {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
-      </Text>
+      </p>
       {l.variantSku ? (
-        <Text size="xs" variant="muted" className="font-mono">
-          {l.variantSku}
-        </Text>
+        <p className="text-base-content/70 font-mono text-xs">{l.variantSku}</p>
       ) : null}
-    </Stack>
+    </div>
   );
 
   const expires = (l: LotRow) => {
     const days = daysUntil(l.expiresAt, nowMs);
     return (
-      <Stack gap={0}>
-        <Text size="sm">{formatDate(l.expiresAt)}</Text>
+      <div className="flex flex-col gap-0">
+        <p className="text-sm">{formatDate(l.expiresAt)}</p>
         {days !== null ? (
-          <Text
-            size="xs"
-            className={days < 0 ? 'text-[var(--color-danger)]' : 'text-[var(--color-text-muted)]'}
+          <p
+            className={`text-xs ${days < 0 ? 'text-[var(--color-danger)]' : 'text-[var(--color-text-muted)]'}`}
           >
             {days < 0 ? `expired ${-days}d ago` : `${days}d left`}
-          </Text>
+          </p>
         ) : null}
-      </Stack>
+      </div>
     );
   };
 
   const hazmat = (l: LotRow) =>
     l.hazmatClass === 'none' ? (
-      <Text size="xs" variant="muted">
-        none
-      </Text>
+      <p className="text-base-content/70 text-xs">none</p>
     ) : (
       <Badge color="warning" variant="soft">
         {hazmatLabel(l.hazmatClass)}
@@ -80,9 +69,7 @@ export function LotsList({ rows, view }: LotsListProps) {
     return b ? (
       <Badge color={b.color}>{b.label}</Badge>
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
   };
 
@@ -105,20 +92,20 @@ export function LotsList({ rows, view }: LotsListProps) {
       return b ? <Badge color={b.color}>{b.label}</Badge> : null;
     },
     body: (l) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {l.warehouseName ?? l.warehouseCode ?? '—'}
-          </Text>
-          <Text size="sm">
+          </p>
+          <p className="text-sm">
             {l.quantity} qty · {l.serialCount} serial{l.serialCount === 1 ? '' : 's'}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+          </p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
           {expires(l)}
           {hazmat(l)}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     ),
   };
 

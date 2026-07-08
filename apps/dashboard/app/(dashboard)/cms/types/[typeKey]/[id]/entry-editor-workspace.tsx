@@ -15,7 +15,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, cn, useMediaQuery } from '@sparx/ui';
+import { cn, useMediaQuery } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import {
   Columns2,
   Eye,
@@ -257,12 +258,12 @@ export function EntryEditorWorkspace({ form, preview, statusInHeader }: EntryEdi
                 entry's collection template in the builder. Content is edited here;
                 structure is edited there. */}
             <Button
-              asChild
               variant="outline"
               size="sm"
-              leftIcon={<LayoutTemplate className="h-3.5 w-3.5" />}
+              iconStart={<LayoutTemplate className="h-3.5 w-3.5" />}
+              render={<Link href={`/builder/studio?page=${preview.templateId}`} />}
             >
-              <Link href={`/builder/studio?page=${preview.templateId}`}>Edit layout</Link>
+              Edit layout
             </Button>
           </div>
           {/* Portal target for the entry's status + publish actions (EditEntryForm). */}

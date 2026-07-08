@@ -9,14 +9,12 @@
 import Link from 'next/link';
 import { CircleCheck, CircleSlash, Trash2 } from 'lucide-react';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
-  Stack,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import type { B2bAccountRow } from '../page';
 import {
@@ -24,11 +22,11 @@ import {
   bulkSetB2bAccountStatusAction,
 } from './b2b-accounts-bulk-actions';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'outline'> = {
+const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
   active: 'success',
   credit_hold: 'warning',
   suspended: 'danger',
-  inactive: 'outline',
+  inactive: 'neutral',
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -94,9 +92,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
         {a.pricingTierName}
       </Badge>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const columns: SelectionColumn<B2bAccountRow>[] = [
@@ -108,16 +104,18 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     { header: 'Pricing tier', cell: tierCell },
     {
       header: 'Credit limit',
-      cell: (a) => <Text size="sm">{formatDollars(a.creditLimitCents)}</Text>,
+      cell: (a) => <p className="text-sm">{formatDollars(a.creditLimitCents)}</p>,
     },
     {
       header: 'Remaining',
-      cell: (a) => <Text size="sm">{formatDollars(a.creditRemainingCents)}</Text>,
+      cell: (a) => <p className="text-sm">{formatDollars(a.creditRemainingCents)}</p>,
     },
-    { header: 'Terms', cell: (a) => <Text size="sm">{a.paymentTerms ?? '—'}</Text> },
+    { header: 'Terms', cell: (a) => <p className="text-sm">{a.paymentTerms ?? '—'}</p> },
     {
       header: 'Discount',
-      cell: (a) => <Text size="sm">{a.discountPercent > 0 ? `${a.discountPercent}%` : '—'}</Text>,
+      cell: (a) => (
+        <p className="text-sm">{a.discountPercent > 0 ? `${a.discountPercent}%` : '—'}</p>
+      ),
     },
   ];
 
@@ -133,26 +131,18 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     badge: statusBadge,
     body: (a) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Credit limit
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatDollars(a.creditLimitCents)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Remaining
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatDollars(a.creditRemainingCents)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Credit limit</p>
+          <p className="text-sm tabular-nums">{formatDollars(a.creditLimitCents)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Remaining</p>
+          <p className="text-sm tabular-nums">{formatDollars(a.creditRemainingCents)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           Terms: {a.paymentTerms ?? '—'}
           {a.discountPercent > 0 ? ` · ${a.discountPercent}% discount` : ''}
-        </Text>
+        </p>
       </>
     ),
   };

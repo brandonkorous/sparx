@@ -3,19 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Input,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Input, Table } from 'silicaui-react';
 
 import {
   checkAvailabilityAction,
@@ -113,107 +101,94 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {/* Create form */}
-      <Stack
-        gap={3}
-        className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-      >
-        <Stack direction="row" gap={2} align="end" wrap>
-          <Stack gap={1} className="min-w-[12rem] flex-1">
-            <Text size="xs" variant="muted">
-              SKU
-            </Text>
+      <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+        <div className="flex flex-row flex-wrap items-end gap-2">
+          <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
+            <p className="text-base-content/70 text-xs">SKU</p>
             <Input
               value={sku}
               onChange={(e) => setSku(e.target.value)}
               placeholder="e.g. INJ-67C"
             />
-          </Stack>
+          </div>
           <Button variant="outline" size="sm" onClick={check} disabled={pending || !sku.trim()}>
             Check availability
           </Button>
-        </Stack>
+        </div>
 
         {avail ? (
-          <Stack direction="row" gap={3} wrap align="end">
-            <Text size="sm">
+          <div className="flex flex-row flex-wrap items-end gap-3">
+            <p className="text-sm">
               <span className="font-medium">{avail.title ?? avail.sku}</span> — {avail.available}{' '}
               available
               {avail.heldForAccount > 0 ? `, ${avail.heldForAccount} already held` : ''}
               {avail.minOrderQty !== null || avail.maxOrderQty !== null
                 ? ` (limits ${avail.minOrderQty ?? 1}–${avail.maxOrderQty ?? '∞'})`
                 : ''}
-            </Text>
-            <Stack gap={1} className="w-24">
-              <Text size="xs" variant="muted">
-                Qty
-              </Text>
+            </p>
+            <div className="flex w-24 flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Qty</p>
               <Input
                 type="number"
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
-            </Stack>
-            <Stack gap={1} className="min-w-[10rem] flex-1">
-              <Text size="xs" variant="muted">
-                Work order
-              </Text>
+            </div>
+            <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
+              <p className="text-base-content/70 text-xs">Work order</p>
               <Input
                 value={workOrderRef}
                 onChange={(e) => setWorkOrderRef(e.target.value)}
                 placeholder="e.g. WO-1042"
               />
-            </Stack>
+            </div>
             <Button color="module" size="sm" onClick={place} disabled={pending}>
               {pending ? 'Placing…' : 'Place hold'}
             </Button>
-          </Stack>
+          </div>
         ) : null}
 
-        {error ? (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        ) : null}
-      </Stack>
+        {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+      </div>
 
       {/* Holds list */}
       {holds.length === 0 ? (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           No fleet holds yet. Check a SKU above to reserve stock for a work order.
-        </Text>
+        </p>
       ) : (
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Item</TableHead>
-              <TableHead>Work order</TableHead>
-              <TableHead className="text-right">Qty</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Work order</th>
+              <th className="text-right">Qty</th>
+              <th>Status</th>
+              <th className="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {holds.map((h) => (
-              <TableRow key={h.id}>
-                <TableCell>
+              <tr key={h.id}>
+                <td>
                   {h.title ?? h.sku ?? '—'}
-                  <Text size="xs" variant="muted" className="font-mono">
+                  <p className="text-base-content/70 font-mono text-xs">
                     {h.sku} · {h.warehouseCode}
-                  </Text>
-                </TableCell>
-                <TableCell>{h.workOrderRef}</TableCell>
-                <TableCell className="text-right">{h.quantity}</TableCell>
-                <TableCell>
+                  </p>
+                </td>
+                <td>{h.workOrderRef}</td>
+                <td className="text-right">{h.quantity}</td>
+                <td>
                   <Badge color={STATUS_COLOR[h.status] ?? 'neutral'} variant="soft">
                     {h.status}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-right">
+                </td>
+                <td className="text-right">
                   {h.status === 'active' ? (
-                    <Stack direction="row" gap={2} justify="end">
+                    <div className="flex flex-row justify-end gap-2">
                       <Button
                         size="sm"
                         variant="ghost"
@@ -231,18 +206,16 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
                       >
                         Consume
                       </Button>
-                    </Stack>
+                    </div>
                   ) : (
-                    <Text size="xs" variant="muted">
-                      —
-                    </Text>
+                    <p className="text-base-content/70 text-xs">—</p>
                   )}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
+          </tbody>
         </Table>
       )}
-    </Stack>
+    </div>
   );
 }

@@ -3,14 +3,8 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { formatDate, transferStatus, warehouseLabel, type InventoryTransferRow } from './types';
 
@@ -39,22 +33,18 @@ export function TransfersList({ rows, view }: TransfersListProps) {
   };
 
   const route = (t: InventoryTransferRow) => (
-    <Stack direction="row" align="center" gap={1} className="min-w-0">
-      <Text size="sm" className="truncate">
-        {warehouseLabel(t.fromWarehouseName, t.fromWarehouseCode)}
-      </Text>
+    <div className="flex min-w-0 flex-row items-center gap-1">
+      <p className="truncate text-sm">{warehouseLabel(t.fromWarehouseName, t.fromWarehouseCode)}</p>
       <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]" />
-      <Text size="sm" className="truncate">
-        {warehouseLabel(t.toWarehouseName, t.toWarehouseCode)}
-      </Text>
-    </Stack>
+      <p className="truncate text-sm">{warehouseLabel(t.toWarehouseName, t.toWarehouseCode)}</p>
+    </div>
   );
 
   const units = (t: InventoryTransferRow) => (
-    <Text size="sm">
+    <p className="text-sm">
       {t.totalQuantity} unit{t.totalQuantity === 1 ? '' : 's'} · {t.lineCount} line
       {t.lineCount === 1 ? '' : 's'}
-    </Text>
+    </p>
   );
 
   const columns: SelectionColumn<InventoryTransferRow>[] = [
@@ -70,12 +60,10 @@ export function TransfersList({ rows, view }: TransfersListProps) {
     subtitle: numberLink,
     badge: statusBadge,
     body: (t) => (
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         {units(t)}
-        <Text size="xs" variant="muted">
-          created {formatDate(t.createdAt)}
-        </Text>
-      </Stack>
+        <p className="text-base-content/70 text-xs">created {formatDate(t.createdAt)}</p>
+      </div>
     ),
   };
 

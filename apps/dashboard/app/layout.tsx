@@ -12,6 +12,10 @@ import { QueryProvider } from '@sparx/query/provider';
 import { PostHogProvider } from '../components/posthog-provider';
 import { TopProgressBar } from '../components/top-progress-bar';
 import { UpdateNotifier } from '../components/update-notifier';
+// MUST load before globals.css: declares the cascade-layer order so silicaui's
+// base-layer output (tokens + `.btn`/`.card`/… classes) ranks correctly against
+// the coexisting @sparx/ui styles + Tailwind preflight. See @sparx/brand/layers.css.
+import '@sparx/brand/layers.css';
 import './globals.css';
 
 // Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed

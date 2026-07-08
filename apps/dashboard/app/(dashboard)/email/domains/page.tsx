@@ -1,5 +1,5 @@
 import { Globe, Plus } from 'lucide-react';
-import { EmptyState } from '@sparx/ui';
+import { EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -56,7 +56,7 @@ export default async function DomainsPage({ searchParams }: PageProps) {
           icon={<Globe className="h-5 w-5" />}
           title="No sending domains yet"
           description="Add your first domain with the New button to start sending from your own brand."
-          action={
+          actions={
             <EntityCreateButton
               entityType="sending-domain"
               newHref="/email/domains/new"

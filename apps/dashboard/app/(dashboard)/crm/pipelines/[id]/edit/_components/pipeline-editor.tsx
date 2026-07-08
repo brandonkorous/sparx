@@ -9,16 +9,8 @@ import { useRouter } from 'next/navigation';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Stack,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import {
   archivePipelineAction,
@@ -100,7 +92,7 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
   }
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       <PipelineHeaderCard
         pipeline={pipeline}
         onSave={patchHeader}
@@ -109,24 +101,22 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
       />
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               Stages{' '}
               <Badge color="neutral" variant="soft" size="sm">
                 {stages.length}
               </Badge>
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           <DndContext id={dndId} sensors={sensors} onDragEnd={handleDragEnd}>
             <SortableContext items={stages.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 {stages.map((s) => (
                   <SortableStageRow key={s.id} stage={s} pipelineId={pipeline.id} />
                 ))}
-              </Stack>
+              </div>
             </SortableContext>
           </DndContext>
 
@@ -137,8 +127,8 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
               onAdded={() => router.refresh()}
             />
           </div>
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Repeat } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { BookingSeriesSummary } from '../_lib/types';
@@ -15,8 +16,8 @@ export default async function SchedulingSeriesPage() {
   const active = series.filter((s) => s.status === 'active').length;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Repeat className="h-5 w-5" />}
           title="Recurring"
@@ -29,18 +30,22 @@ export default async function SchedulingSeriesPage() {
         />
 
         {series.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title="No recurring series yet"
-              description="Book something on the Bookings tab and toggle “Repeat this booking” to set up a weekly, daily, or monthly series."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No recurring series yet"
+                description="Book something on the Bookings tab and toggle “Repeat this booking” to set up a weekly, daily, or monthly series."
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Card padding="none">
-            <SeriesList series={series} />
+          <Card>
+            <CardBody className="p-0">
+              <SeriesList series={series} />
+            </CardBody>
           </Card>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

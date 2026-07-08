@@ -27,7 +27,8 @@ interface EntityRowLinkProps extends Omit<React.ComponentProps<typeof Link>, 'hr
   entityType: string;
   /** Entity instance id used in `?drawer=type:id`. */
   entityId: string;
-  children: React.ReactNode;
+  /** Optional: omitted when used as a silica `render` target, which injects children at clone-time. */
+  children?: React.ReactNode;
 }
 
 export function EntityRowLink({

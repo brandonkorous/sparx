@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Archive, RotateCcw, Send, Undo } from 'lucide-react';
 
-import { Badge, Button, Stack, statusLabel, statusTone, toast } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
+import { statusLabel, statusTone, toast } from '@sparx/ui';
 
 import {
   archiveProductAction,
@@ -45,7 +46,7 @@ export function ProductStatusBar({ productId, status, hasVariants }: Props) {
   }
 
   return (
-    <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-row items-center gap-2">
       <Badge color={statusTone(status)} variant="soft">
         {statusLabel(status)}
       </Badge>
@@ -56,7 +57,7 @@ export function ProductStatusBar({ productId, status, hasVariants }: Props) {
           size="sm"
           disabled={pending}
           loading={pending}
-          leftIcon={<Send className="h-4 w-4" />}
+          iconStart={<Send className="h-4 w-4" />}
           onClick={() => run(publishProductAction)}
           title={
             hasVariants
@@ -74,7 +75,7 @@ export function ProductStatusBar({ productId, status, hasVariants }: Props) {
           size="sm"
           disabled={pending}
           loading={pending}
-          leftIcon={<Undo className="h-4 w-4" />}
+          iconStart={<Undo className="h-4 w-4" />}
           onClick={() => run(unpublishProductAction)}
         >
           Unpublish
@@ -87,7 +88,7 @@ export function ProductStatusBar({ productId, status, hasVariants }: Props) {
           size="sm"
           disabled={pending}
           loading={pending}
-          leftIcon={<RotateCcw className="h-4 w-4" />}
+          iconStart={<RotateCcw className="h-4 w-4" />}
           onClick={() => run(restoreProductAction)}
         >
           Restore
@@ -99,12 +100,12 @@ export function ProductStatusBar({ productId, status, hasVariants }: Props) {
           size="sm"
           disabled={pending}
           loading={pending}
-          leftIcon={<Archive className="h-4 w-4" />}
+          iconStart={<Archive className="h-4 w-4" />}
           onClick={() => run(archiveProductAction)}
         >
           Archive
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }

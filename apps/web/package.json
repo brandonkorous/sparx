@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@sparx/attribution": "workspace:*",
+    "@sparx/brand": "workspace:*",
     "@sparx/chat-widget": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/site-themes": "workspace:*",
@@ -26,7 +27,9 @@
     "posthog-js": "^1.376.4",
     "qrcode": "^1.5.4",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "silicaui": "catalog:",
+    "silicaui-react": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",

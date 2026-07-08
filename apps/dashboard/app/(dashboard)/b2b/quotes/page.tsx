@@ -1,6 +1,7 @@
 import { FileText } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -51,8 +52,8 @@ export default async function B2bQuotesPage({ searchParams }: PageProps) {
   const pendingResponse = quotes.filter((q) => ['submitted', 'under_review'].includes(q.status));
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title="Quotes / RFQ"
@@ -78,19 +79,21 @@ export default async function B2bQuotesPage({ searchParams }: PageProps) {
         />
 
         {quotes.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<FileText className="h-5 w-5" />}
-              title="No quotes yet"
-              description="B2B accounts can request quotes. They'll appear here for you to price and respond."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<FileText className="h-5 w-5" />}
+                title="No quotes yet"
+                description="B2B accounts can request quotes. They'll appear here for you to price and respond."
+              />
+            </CardBody>
           </Card>
         ) : (
           <QuotesList quotes={quotes} view={view} />
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

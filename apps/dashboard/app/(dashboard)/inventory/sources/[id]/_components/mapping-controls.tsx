@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Input, Label, Stack } from '@sparx/ui';
+import { Input, Label } from 'silicaui-react';
 
 import type { MappingControls } from './types';
 
@@ -44,8 +44,8 @@ export function MappingControlsFields({
   onChange: (next: ControlsState) => void;
 }) {
   return (
-    <Stack direction="row" gap={3} wrap align="end">
-      <Stack gap={1} className="min-w-[6rem]">
+    <div className="flex flex-row flex-wrap items-end gap-3">
+      <div className="flex min-w-[6rem] flex-col gap-1">
         <Label htmlFor={`${idPrefix}-units`}>Units / pack</Label>
         <Input
           id={`${idPrefix}-units`}
@@ -55,8 +55,8 @@ export function MappingControlsFields({
           value={state.unitsPerExternal}
           onChange={(e) => onChange({ ...state, unitsPerExternal: e.target.value })}
         />
-      </Stack>
-      <Stack gap={1} className="min-w-[7rem]">
+      </div>
+      <div className="flex min-w-[7rem] flex-col gap-1">
         <Label htmlFor={`${idPrefix}-uom`}>Pack label</Label>
         <Input
           id={`${idPrefix}-uom`}
@@ -64,8 +64,8 @@ export function MappingControlsFields({
           value={state.externalUom}
           onChange={(e) => onChange({ ...state, externalUom: e.target.value })}
         />
-      </Stack>
-      <Stack gap={1} className="min-w-[7rem]">
+      </div>
+      <div className="flex min-w-[7rem] flex-col gap-1">
         <Label htmlFor={`${idPrefix}-buffer`}>Safety buffer</Label>
         <Input
           id={`${idPrefix}-buffer`}
@@ -75,7 +75,7 @@ export function MappingControlsFields({
           value={state.safetyBuffer}
           onChange={(e) => onChange({ ...state, safetyBuffer: e.target.value })}
         />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

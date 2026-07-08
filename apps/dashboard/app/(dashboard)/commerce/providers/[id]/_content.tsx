@@ -5,17 +5,8 @@ import type {
   ProviderKind,
   ProviderMetadata,
 } from '@sparx/commerce-schemas';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { statusLabel } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { ensureProvidersRegistered } from '../../../../../lib/providers-bootstrap';
@@ -62,11 +53,13 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
   );
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
-            <Heading level={1}>{metadata?.displayName ?? installation.providerSlug}</Heading>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <h1 className="text-3xl font-semibold">
+              {metadata?.displayName ?? installation.providerSlug}
+            </h1>
             <Badge color="info" variant="soft" size="sm">
               {statusLabel(installation.kind)}
             </Badge>
@@ -80,28 +73,24 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
             <Badge color={installation.enabled ? 'success' : 'neutral'} variant="soft" size="sm">
               {installation.enabled ? 'enabled' : 'disabled'}
             </Badge>
-          </Stack>
+          </div>
           {installation.label && (
-            <Text size="sm" variant="muted">
-              {installation.label}
-            </Text>
+            <p className="text-base-content/70 text-sm">{installation.label}</p>
           )}
-        </Stack>
+        </div>
         <ProviderActionsBar installationId={installation.id} enabled={installation.enabled} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Status</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Status</h3>
+            <p className="opacity-70">
               The platform records every successful + failed call here; persistent errors surface to
               the dashboard alerts strip.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
             <Row label="Status" value={installation.status} />
             <Row
               label="Last health check"
@@ -116,40 +105,36 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
             <Row label="Error count" value={String(installation.errorCount)} />
             <Row label="Provider account id" value={installation.providerAccountId ?? '—'} />
             <Row label="Installed" value={new Date(installation.installedAt).toLocaleString()} />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       {metadata && (
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Webhook</Heading>
-              <CardDescription>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Webhook</h3>
+              <p className="opacity-70">
                 Paste this URL into the provider&apos;s webhook configuration so callbacks land at
                 the right tenant. The path&apos;s <code>:installationId</code> token is auto-filled
                 on dispatch.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <Text className="font-mono text-xs">
+              </p>
+            </div>
+            <p className="font-mono text-xs">
               {metadata.webhookPathTemplate.replace(':installationId', installation.id)}
-            </Text>
-          </CardContent>
+            </p>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <Stack direction="row" gap={4}>
-      <Text size="sm" className="w-40" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm">{value}</Text>
-    </Stack>
+    <div className="flex flex-row gap-4">
+      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-sm">{value}</p>
+    </div>
   );
 }

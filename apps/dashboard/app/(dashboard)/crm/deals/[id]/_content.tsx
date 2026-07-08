@@ -2,25 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FileText, Receipt, Calendar, User, Briefcase } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
+import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -134,10 +117,10 @@ export async function DealDetailContent({ id }: Props) {
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={3} wrap>
-          <Heading level={1}>{deal.title}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{deal.title}</h1>
           {stage && (
             <Badge
               variant="outline"
@@ -162,24 +145,24 @@ export async function DealDetailContent({ id }: Props) {
               Closed {new Date(deal.closedAt).toLocaleDateString()}
             </Badge>
           )}
-        </Stack>
-        <Stack direction="row" gap={4} wrap>
-          <Stack direction="row" align="center" gap={1}>
+        </div>
+        <div className="flex flex-row flex-wrap gap-4">
+          <div className="flex flex-row items-center gap-1">
             <Briefcase className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {deal.currency} {Number(deal.value).toLocaleString()}
-            </Text>
-          </Stack>
-          <Stack direction="row" align="center" gap={1}>
+            </p>
+          </div>
+          <div className="flex flex-row items-center gap-1">
             <Calendar className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {deal.expectedCloseDate
                 ? `Expected ${new Date(deal.expectedCloseDate).toLocaleDateString()}`
                 : 'No expected close'}
-            </Text>
-          </Stack>
+            </p>
+          </div>
           {customer && (
-            <Stack direction="row" align="center" gap={1}>
+            <div className="flex flex-row items-center gap-1">
               <User className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
               <Link
                 href={`/crm/customers/${customer.id}`}
@@ -188,23 +171,23 @@ export async function DealDetailContent({ id }: Props) {
                 {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
                   (customer.company ?? customer.email)}
               </Link>
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <div className="grid gap-6 @[820px]:grid-cols-[2fr_1fr]">
-        <Stack gap={6}>
+        <div className="flex flex-col gap-6">
           <Card>
-            <CardHeader>
-              <Stack direction="row" align="center" justify="between">
+            <CardBody>
+              <div className="flex flex-row items-center justify-between gap-4">
                 <CardTitle>
-                  <Stack direction="row" align="center" gap={2}>
+                  <div className="flex flex-row items-center gap-2">
                     <Receipt className="h-4 w-4" /> Attached orders
                     <Badge color="neutral" variant="soft" size="sm">
                       {attachedOrders.length}
                     </Badge>
-                  </Stack>
+                  </div>
                 </CardTitle>
                 <AttachOrderPopover
                   dealId={deal.id}
@@ -217,9 +200,7 @@ export async function DealDetailContent({ id }: Props) {
                     currency: o.currency,
                   }))}
                 />
-              </Stack>
-            </CardHeader>
-            <CardContent>
+              </div>
               {attachedOrders.length === 0 ? (
                 <EmptyState
                   title="No attached orders"
@@ -227,60 +208,60 @@ export async function DealDetailContent({ id }: Props) {
                 />
               ) : (
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Order</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead>Placed</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Status</th>
+                      <th className="text-right">Total</th>
+                      <th>Placed</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {attachedOrders.map((o) => (
-                      <TableRow key={o.id}>
-                        <TableCell>
+                      <tr key={o.id}>
+                        <td>
                           <Link
                             href={`/crm/orders/${o.id}`}
                             className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
                           >
                             {o.orderNumber}
                           </Link>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                           <Badge color={statusTone(o.status)} variant="soft" size="sm">
                             {statusLabel(o.status)}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
+                        </td>
+                        <td className="text-right tabular-nums">
                           {o.currency} {Number(o.total).toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
+                        </td>
+                        <td>
+                          <p className="text-base-content/70 text-sm">
                             {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
-                          </Text>
-                        </TableCell>
-                        <TableCell className="text-right">
+                          </p>
+                        </td>
+                        <td className="text-right">
                           <DetachOrderButton dealId={deal.id} orderId={o.id} />
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
+                  </tbody>
                 </Table>
               )}
-            </CardContent>
+            </CardBody>
           </Card>
 
           <Card>
-            <CardHeader>
-              <Stack direction="row" align="center" justify="between">
+            <CardBody>
+              <div className="flex flex-row items-center justify-between gap-4">
                 <CardTitle>
-                  <Stack direction="row" align="center" gap={2}>
+                  <div className="flex flex-row items-center gap-2">
                     <FileText className="h-4 w-4" /> Attached quotes
                     <Badge color="neutral" variant="soft" size="sm">
                       {attachedQuotes.length}
                     </Badge>
-                  </Stack>
+                  </div>
                 </CardTitle>
                 <AttachQuotePopover
                   dealId={deal.id}
@@ -293,9 +274,7 @@ export async function DealDetailContent({ id }: Props) {
                     currency: q.currency,
                   }))}
                 />
-              </Stack>
-            </CardHeader>
-            <CardContent>
+              </div>
               {attachedQuotes.length === 0 ? (
                 <EmptyState
                   title="No attached quotes"
@@ -303,80 +282,76 @@ export async function DealDetailContent({ id }: Props) {
                 />
               ) : (
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Quote</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead>Valid until</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  <thead>
+                    <tr>
+                      <th>Quote</th>
+                      <th>Status</th>
+                      <th className="text-right">Total</th>
+                      <th>Valid until</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {attachedQuotes.map((q) => (
-                      <TableRow key={q.id}>
-                        <TableCell>
+                      <tr key={q.id}>
+                        <td>
                           <Link
                             href={`/crm/quotes/${q.id}`}
                             className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
                           >
                             {q.quoteNumber}
                           </Link>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                           <Badge color={statusTone(q.status)} variant="soft" size="sm">
                             {statusLabel(q.status)}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
+                        </td>
+                        <td className="text-right tabular-nums">
                           {q.currency} {Number(q.total).toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
+                        </td>
+                        <td>
+                          <p className="text-base-content/70 text-sm">
                             {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
-                          </Text>
-                        </TableCell>
-                        <TableCell className="text-right">
+                          </p>
+                        </td>
+                        <td className="text-right">
                           <DetachQuoteButton dealId={deal.id} quoteId={q.id} />
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
+                  </tbody>
                 </Table>
               )}
-            </CardContent>
+            </CardBody>
           </Card>
-        </Stack>
+        </div>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
             {activities.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No activity yet on this deal.
-              </Text>
+              <p className="text-base-content/70 text-sm">No activity yet on this deal.</p>
             ) : (
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 {activities.map((a) => (
-                  <Stack key={a.id} gap={1}>
-                    <Stack direction="row" align="center" justify="between">
+                  <div key={a.id} className="flex flex-col gap-1">
+                    <div className="flex flex-row items-center justify-between gap-4">
                       <Badge color="neutral" variant="soft" size="sm">
                         {statusLabel(a.type)}
                       </Badge>
-                      <Text size="xs" variant="muted">
+                      <p className="text-base-content/70 text-xs">
                         {new Date(a.occurredAt).toLocaleDateString()}
-                      </Text>
-                    </Stack>
-                    {a.description && <Text size="sm">{a.description}</Text>}
-                  </Stack>
+                      </p>
+                    </div>
+                    {a.description && <p className="text-sm">{a.description}</p>}
+                  </div>
                 ))}
-              </Stack>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
-    </Stack>
+    </div>
   );
 }

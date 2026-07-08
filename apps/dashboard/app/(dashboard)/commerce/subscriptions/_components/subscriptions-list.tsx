@@ -1,15 +1,13 @@
 'use client';
 
 import {
-  Badge,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -75,11 +73,9 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
       header: 'Customer',
       cell: (s) =>
         s.customerName ? (
-          <Text size="sm">{s.customerName}</Text>
+          <p className="text-sm">{s.customerName}</p>
         ) : (
-          <Text size="xs" variant="muted" className="font-mono">
-            {s.customerId.slice(0, 8)}
-          </Text>
+          <p className="text-base-content/70 font-mono text-xs">{s.customerId.slice(0, 8)}</p>
         ),
     },
     { header: 'Items', cell: (s) => s.itemCount },
@@ -88,35 +84,29 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
     { header: 'MRR', cell: (s) => mrr(s) },
     {
       header: 'Provider',
-      cell: (s) => (
-        <Text size="xs" className="font-mono">
-          {s.providerSlug}
-        </Text>
-      ),
+      cell: (s) => <p className="font-mono text-xs">{s.providerSlug}</p>,
     },
   ];
 
   const card: SelectionCard<SubscriptionSummary> = {
     title: (s) => idLink(s, 'truncate font-mono text-sm hover:text-[var(--module-active)]'),
     subtitle: (s) => (
-      <Text size="xs" variant="muted" className={s.customerName ? undefined : 'font-mono'}>
+      <p className={`text-xs text-base-content/70${s.customerName ? '' : 'font-mono'}`}>
         {s.customerName ?? s.customerId.slice(0, 8)}
-      </Text>
+      </p>
     ),
     badge: (s) => <StatusBadge status={s.status} />,
     body: (s) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {s.itemCount} item{s.itemCount === 1 ? '' : 's'}
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {mrr(s)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+          <p className="text-sm tabular-nums">{mrr(s)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           Next charge {nextCharge(s)} · {s.providerSlug}
-        </Text>
+        </p>
       </>
     ),
   };

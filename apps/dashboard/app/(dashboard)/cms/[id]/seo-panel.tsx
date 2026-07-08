@@ -14,20 +14,7 @@
 // signal to spot truncation before publishing.
 
 import * as React from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 import { ImageOff, Pencil } from 'lucide-react';
 import { SeoScoreChip } from '@/components/seo/seo-score';
 import { MediaPicker, type PickedAsset } from '../_components/media-picker';
@@ -90,21 +77,19 @@ export function SeoPanel({
     'Provide a meta description so Google can show this snippet under your search result.';
 
   return (
-    <Card variant="module">
-      <CardHeader>
+    <Card className="bg-module bg-soft">
+      <CardBody>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <Heading level={3}>SEO</Heading>
-            <CardDescription>
+            <h3 className="text-xl font-semibold">SEO</h3>
+            <p className="opacity-70">
               Controls how this page appears in Google and on social shares.
-            </CardDescription>
+            </p>
           </div>
           {/* Live SEO health for the saved entry; hover for the full report. */}
           {entryId ? <SeoScoreChip type="cms_page" id={entryId} /> : null}
         </div>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={5}>
+        <div className="flex flex-col gap-5">
           <GooglePreview
             origin={previewOrigin}
             slug={slug}
@@ -112,11 +97,11 @@ export function SeoPanel({
             description={previewDescription}
           />
 
-          <Stack gap={2}>
-            <Stack direction="row" justify="between" align="end">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-end justify-between gap-4">
               <Label htmlFor="seoTitle">Search title</Label>
               <CharCount value={value.title} max={TITLE_MAX} />
-            </Stack>
+            </div>
             <Input
               id="seoTitle"
               name="seoTitle"
@@ -125,13 +110,13 @@ export function SeoPanel({
               maxLength={TITLE_MAX + 20}
               placeholder={fallbackTitle || 'Falls back to the page title.'}
             />
-          </Stack>
+          </div>
 
-          <Stack gap={2}>
-            <Stack direction="row" justify="between" align="end">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-end justify-between gap-4">
               <Label htmlFor="metaDescription">Meta description</Label>
               <CharCount value={value.description} max={DESCRIPTION_MAX} />
-            </Stack>
+            </div>
             <Textarea
               id="metaDescription"
               name="metaDescription"
@@ -141,9 +126,9 @@ export function SeoPanel({
               maxLength={DESCRIPTION_MAX + 40}
               placeholder="One-sentence summary Google can show as the snippet."
             />
-          </Stack>
+          </div>
 
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="ogImage">Social share image</Label>
             <OgImageField
               assetId={value.ogImage}
@@ -154,10 +139,10 @@ export function SeoPanel({
                 update('ogImage', '');
               }}
             />
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Used as the Open Graph image when this page is shared on Facebook, LinkedIn, Slack,
               etc. Falls back to your default OG image when blank.
-            </Text>
+            </p>
             <MediaPicker
               open={pickerOpen}
               onOpenChange={setPickerOpen}
@@ -168,9 +153,9 @@ export function SeoPanel({
                 setPickerOpen(false);
               }}
             />
-          </Stack>
+          </div>
 
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="canonical">Canonical URL</Label>
             <Input
               id="canonical"
@@ -179,13 +164,13 @@ export function SeoPanel({
               onChange={(e) => update('canonical', e.target.value)}
               placeholder={`${previewOrigin}/${slug || ''}`}
             />
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Set this if the same content lives at multiple URLs. Leave blank to use the
               page&apos;s own URL.
-            </Text>
-          </Stack>
+            </p>
+          </div>
 
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="robots">Robots directive</Label>
             {/* A plain native select — like the Page template picker below. A simple
                 text-option enum needs no Radix Select (whose hidden form-mirror is an
@@ -202,12 +187,12 @@ export function SeoPanel({
                 </option>
               ))}
             </NativeSelect>
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Controls whether search engines index this page and follow its links.
-            </Text>
-          </Stack>
-        </Stack>
-      </CardContent>
+            </p>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -231,18 +216,18 @@ function OgImageField({
   const hasAsset = assetId.length > 0;
   if (!hasAsset) {
     return (
-      <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-row items-center gap-2">
         <Button type="button" variant="outline" size="sm" onClick={onPick}>
           Pick image
         </Button>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           No image selected — Slack and OG cards will use the site default.
-        </Text>
-      </Stack>
+        </p>
+      </div>
     );
   }
   return (
-    <Stack direction="row" align="center" gap={3}>
+    <div className="flex flex-row items-center gap-3">
       {preview?.src ? (
         <img
           src={preview.src}
@@ -250,26 +235,20 @@ function OgImageField({
           className="h-14 w-14 rounded-md object-cover"
         />
       ) : (
-        <Stack
-          align="center"
-          justify="center"
-          className="h-14 w-14 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]"
-        >
+        <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
           <ImageOff aria-hidden className="h-5 w-5 text-[var(--color-text-tertiary)]" />
-        </Stack>
+        </div>
       )}
-      <Stack gap={1}>
-        <Text size="sm">{preview?.alt ?? preview?.caption ?? 'Image selected'}</Text>
-        <Text size="xs" variant="muted">
-          Asset {assetId.slice(0, 8)}…
-        </Text>
-      </Stack>
-      <Stack direction="row" gap={1} className="ml-auto">
+      <div className="flex flex-col gap-1">
+        <p className="text-sm">{preview?.alt ?? preview?.caption ?? 'Image selected'}</p>
+        <p className="text-base-content/70 text-xs">Asset {assetId.slice(0, 8)}…</p>
+      </div>
+      <div className="ml-auto flex flex-row gap-1">
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          leftIcon={<Pencil className="h-3.5 w-3.5" />}
+          iconStart={<Pencil className="h-3.5 w-3.5" />}
           onClick={onPick}
         >
           Change
@@ -277,8 +256,8 @@ function OgImageField({
         <Button type="button" variant="ghost" size="sm" onClick={onClear}>
           Clear
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -288,9 +267,9 @@ function CharCount({ value, max }: { value: string; max: number }) {
   // back to danger when we're past the warning threshold too.
   const variant: 'danger' | 'muted' = len > max * 0.9 ? 'danger' : 'muted';
   return (
-    <Text size="xs" variant={variant}>
+    <p className={`text-xs ${variant === 'danger' ? 'text-danger' : 'text-base-content/70'}`}>
       {len} / {max}
-    </Text>
+    </p>
   );
 }
 
@@ -316,23 +295,12 @@ function GooglePreview({
   // sparx tokens. The surrounding chrome (border / background) does use
   // tokens.
   return (
-    <Stack
-      gap={1}
-      className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4"
-    >
-      <Text size="xs" variant="muted">
-        Google preview
-      </Text>
-      <Text size="xs" className="text-[#202124]">
-        {displayUrl}
-      </Text>
-      <Text className="font-medium text-[#1a0dab]" size="lg">
-        {truncate(title, 60)}
-      </Text>
-      <Text size="sm" className="text-[#4d5156]">
-        {truncate(description, 160)}
-      </Text>
-    </Stack>
+    <div className="flex flex-col gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+      <p className="text-base-content/70 text-xs">Google preview</p>
+      <p className="text-xs text-[#202124]">{displayUrl}</p>
+      <p className="text-lg font-medium text-[#1a0dab]">{truncate(title, 60)}</p>
+      <p className="text-sm text-[#4d5156]">{truncate(description, 160)}</p>
+    </div>
   );
 }
 

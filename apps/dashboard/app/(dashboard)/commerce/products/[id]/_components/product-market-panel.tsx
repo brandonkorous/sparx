@@ -13,22 +13,16 @@ import { Check } from 'lucide-react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import {
   Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
+  CardBody,
   Label,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
   Switch,
-  Text,
-} from '@sparx/ui';
+} from 'silicaui-react';
 
 import { setProductMarketStateAction } from '../../../product-actions';
 
@@ -82,89 +76,74 @@ export function ProductMarketPanel({
   }
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Heading level={3} as="h2">
-          sparx.market
-        </Heading>
-        <CardDescription>
+    <Card>
+      <CardBody>
+        <h2 className="text-xl font-semibold">sparx.market</h2>
+        <p className="opacity-70">
           List this product on the first-party marketplace so shoppers across the sparx network can
           discover and buy it.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        </p>
+        <div className="flex flex-col gap-4">
           {!marketEnabled && (
-            <Alert color="info" variant="soft" title="Join sparx.market first">
-              Your store isn’t selling on sparx.market yet. Enable it in{' '}
-              <Link
-                href="/commerce/market"
-                className="font-medium text-[var(--module-active)] hover:underline"
-              >
-                Commerce → sparx.market
-              </Link>{' '}
-              to list products.
+            <Alert color="info" variant="soft">
+              <AlertContent>
+                <AlertTitle>Join sparx.market first</AlertTitle>
+                <AlertDescription>
+                  Your store isn’t selling on sparx.market yet. Enable it in{' '}
+                  <Link
+                    href="/commerce/market"
+                    className="font-medium text-[var(--module-active)] hover:underline"
+                  >
+                    Commerce → sparx.market
+                  </Link>{' '}
+                  to list products.
+                </AlertDescription>
+              </AlertContent>
             </Alert>
           )}
 
-          <Stack direction="row" align="center" gap={3} wrap>
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Switch
               checked={listed}
               disabled={pending || !marketEnabled}
               onCheckedChange={(v) => field(setListed)(v)}
               aria-label="List on sparx.market"
             />
-            <Stack gap={0}>
+            <div className="flex flex-col gap-0">
               <Label>List on sparx.market</Label>
-              <Text size="xs" variant="muted">
+              <p className="text-base-content/70 text-xs">
                 {listed ? 'Visible on the marketplace.' : 'Not listed on the marketplace.'}
-              </Text>
-            </Stack>
-          </Stack>
+              </p>
+            </div>
+          </div>
 
           {listed && (
-            <Stack gap={2} className="max-w-xs">
+            <div className="flex max-w-xs flex-col gap-2">
               <Label htmlFor="market-product-category">Category</Label>
               <Select
+                id="market-product-category"
                 value={category}
-                onValueChange={(v) => field(setCategory)(v)}
+                onValueChange={(v) => field(setCategory)(v as string)}
                 disabled={pending}
-              >
-                <SelectTrigger id="market-product-category">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MARKET_CATEGORIES.map((c) => (
-                    <SelectItem key={c.slug} value={c.slug}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Text size="xs" variant="muted">
+                items={Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name]))}
+              />
+              <p className="text-base-content/70 text-xs">
                 Which marketplace aisle this product appears in.
-              </Text>
-            </Stack>
+              </p>
+            </div>
           )}
 
-          <Stack direction="row" align="center" justify="end" gap={3} wrap>
+          <div className="flex flex-row flex-wrap items-center justify-end gap-3">
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mr-auto">
+              <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
             {savedAt !== null && !dirty && (
-              <Stack
-                direction="row"
-                align="center"
-                gap={1}
-                className="text-[var(--color-success-text)]"
-              >
+              <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
                 <Check className="h-4 w-4" />
-                <Text size="sm" variant="success">
-                  Saved
-                </Text>
-              </Stack>
+                <p className="text-success text-sm">Saved</p>
+              </div>
             )}
             <Button
               type="button"
@@ -175,9 +154,9 @@ export function ProductMarketPanel({
             >
               Save
             </Button>
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

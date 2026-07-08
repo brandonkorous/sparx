@@ -2,23 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, ExternalLink } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { QuoteRespondEditor, type MarkupRuleSummary } from './_components/quote-respond-editor';
@@ -69,14 +53,14 @@ interface QuoteDetail {
   customer: { id: string; firstName: string; lastName: string; email: string } | null;
 }
 
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger' | 'module'> = {
-  draft: 'outline',
+const STATUS_VARIANT: Record<string, 'neutral' | 'warning' | 'success' | 'danger' | 'module'> = {
+  draft: 'neutral',
   submitted: 'warning',
   under_review: 'warning',
   quoted: 'module',
   accepted: 'success',
   declined: 'danger',
-  expired: 'outline',
+  expired: 'neutral',
 };
 
 interface Props {
@@ -110,17 +94,17 @@ export async function B2bQuoteDetailContent({ id }: Props) {
   const canDecline = ['quoted', 'submitted', 'under_review'].includes(quote.status);
 
   return (
-    <Stack gap={6}>
+    <div className="flex flex-col gap-6">
       {/* Header */}
-      <Stack direction="row" align="center" justify="between" wrap gap={3}>
-        <Stack direction="row" align="center" gap={3} wrap>
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-row flex-wrap items-center gap-3">
           <FileText className="h-5 w-5" />
-          <Heading level={1}>Quote {quote.quoteNumber}</Heading>
+          <h1 className="text-3xl font-semibold">Quote {quote.quoteNumber}</h1>
           <Badge color={STATUS_VARIANT[quote.status] ?? 'neutral'} variant="soft" size="sm">
             {quote.status.replace('_', ' ')}
           </Badge>
-        </Stack>
-        <Stack direction="row" align="center" gap={2}>
+        </div>
+        <div className="flex flex-row items-center gap-2">
           <a
             href={`/api/b2b/quotes/${id}/pdf`}
             target="_blank"
@@ -130,166 +114,140 @@ export async function B2bQuoteDetailContent({ id }: Props) {
             <ExternalLink className="h-3.5 w-3.5" /> View PDF
           </a>
           <QuoteLifecycleButtons quoteId={id} canAccept={canAccept} canDecline={canDecline} />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       {/* Account + customer info */}
       <div className="grid gap-4 sm:grid-cols-2">
         {quote.b2bAccount && (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Account</CardTitle>
-            </CardHeader>
-            <CardContent>
               <Link
                 href={`/b2b/accounts/${quote.b2bAccount.id}`}
                 className="font-medium hover:text-[var(--module-active)] hover:underline"
               >
                 {quote.b2bAccount.companyName}
               </Link>
-            </CardContent>
+            </CardBody>
           </Card>
         )}
         {quote.customer && (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Contact</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={1}>
-                <Text size="sm">
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">
                   {quote.customer.firstName} {quote.customer.lastName}
-                </Text>
-                <Text size="sm" variant="muted">
-                  {quote.customer.email}
-                </Text>
-              </Stack>
-            </CardContent>
+                </p>
+                <p className="text-base-content/70 text-sm">{quote.customer.email}</p>
+              </div>
+            </CardBody>
           </Card>
         )}
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Dates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={1}>
-              <Stack direction="row" justify="between">
-                <Text size="sm" variant="muted">
-                  Created
-                </Text>
-                <Text size="sm">{new Date(quote.createdAt).toLocaleDateString()}</Text>
-              </Stack>
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row justify-between">
+                <p className="text-base-content/70 text-sm">Created</p>
+                <p className="text-sm">{new Date(quote.createdAt).toLocaleDateString()}</p>
+              </div>
               {quote.validUntil && (
-                <Stack direction="row" justify="between">
-                  <Text size="sm" variant="muted">
-                    Expires
-                  </Text>
-                  <Text size="sm">{new Date(quote.validUntil).toLocaleDateString()}</Text>
-                </Stack>
+                <div className="flex flex-row justify-between">
+                  <p className="text-base-content/70 text-sm">Expires</p>
+                  <p className="text-sm">{new Date(quote.validUntil).toLocaleDateString()}</p>
+                </div>
               )}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
       </div>
 
       {/* Line items */}
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>Line items</CardTitle>
           {canRespond && (
-            <CardDescription>
+            <p className="opacity-70">
               Set the quoted price for each line below, then send the quote to the customer.
-            </CardDescription>
+            </p>
           )}
-        </CardHeader>
-        <CardContent className="p-0">
-          {canRespond ? (
-            <QuoteRespondEditor quoteId={id} items={quote.items} rules={markupRules} />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead className="text-right">Unit price</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quote.items.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <Stack gap={1}>
-                        <Text size="sm">{item.name}</Text>
-                        {item.appliedMarkup && (
-                          <Stack direction="row" align="center" gap={2} wrap>
-                            <Badge color="module" variant="soft">
-                              By markup
-                            </Badge>
-                            <Text size="xs" variant="muted">
-                              {item.appliedMarkup.ruleName ?? 'Ad-hoc'} ·{' '}
-                              {item.appliedMarkup.marginPct}% margin · cost{' '}
-                              {fmt(item.appliedMarkup.costBasisValueCents / 100)}
-                            </Text>
-                          </Stack>
-                        )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {item.sku}
-                      </Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">{item.quantity}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text size="sm">{fmt(item.unitPrice)}</Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Text size="sm">{fmt(item.lineTotal)}</Text>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
+        </CardBody>
+        {canRespond ? (
+          <QuoteRespondEditor quoteId={id} items={quote.items} rules={markupRules} />
+        ) : (
+          <Table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>SKU</th>
+                <th>Qty</th>
+                <th className="text-right">Unit price</th>
+                <th className="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quote.items.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm">{item.name}</p>
+                      {item.appliedMarkup && (
+                        <div className="flex flex-row flex-wrap items-center gap-2">
+                          <Badge color="module" variant="soft">
+                            By markup
+                          </Badge>
+                          <p className="text-base-content/70 text-xs">
+                            {item.appliedMarkup.ruleName ?? 'Ad-hoc'} ·{' '}
+                            {item.appliedMarkup.marginPct}% margin · cost{' '}
+                            {fmt(item.appliedMarkup.costBasisValueCents / 100)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <p className="text-base-content/70 text-sm">{item.sku}</p>
+                  </td>
+                  <td>
+                    <p className="text-sm">{item.quantity}</p>
+                  </td>
+                  <td className="text-right">
+                    <p className="text-sm">{fmt(item.unitPrice)}</p>
+                  </td>
+                  <td className="text-right">
+                    <p className="text-sm">{fmt(item.lineTotal)}</p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Card>
 
       {/* Totals */}
       <Card>
-        <CardContent className="py-4">
-          <Stack gap={2} className="ml-auto max-w-xs">
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                Subtotal
-              </Text>
-              <Text size="sm">{fmt(quote.subtotal)}</Text>
-            </Stack>
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                Tax
-              </Text>
-              <Text size="sm">{fmt(quote.taxTotal)}</Text>
-            </Stack>
-            <Stack direction="row" justify="between">
-              <Text size="sm" variant="muted">
-                Shipping
-              </Text>
-              <Text size="sm">{fmt(quote.shippingTotal)}</Text>
-            </Stack>
-            <Stack
-              direction="row"
-              justify="between"
-              className="border-t border-[var(--color-border-default)] pt-2"
-            >
-              <Text className="font-semibold">Total</Text>
-              <Text className="font-semibold">{fmt(quote.total)}</Text>
-            </Stack>
-          </Stack>
-        </CardContent>
+        <CardBody className="py-4">
+          <div className="ml-auto flex max-w-xs flex-col gap-2">
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">Subtotal</p>
+              <p className="text-sm">{fmt(quote.subtotal)}</p>
+            </div>
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">Tax</p>
+              <p className="text-sm">{fmt(quote.taxTotal)}</p>
+            </div>
+            <div className="flex flex-row justify-between">
+              <p className="text-base-content/70 text-sm">Shipping</p>
+              <p className="text-sm">{fmt(quote.shippingTotal)}</p>
+            </div>
+            <div className="flex flex-row justify-between border-t border-[var(--color-border-default)] pt-2">
+              <p className="font-semibold">Total</p>
+              <p className="font-semibold">{fmt(quote.total)}</p>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
       {/* Notes */}
@@ -297,30 +255,22 @@ export async function B2bQuoteDetailContent({ id }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           {quote.customerNote && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Customer note</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text size="sm" className="whitespace-pre-wrap">
-                  {quote.customerNote}
-                </Text>
-              </CardContent>
+                <p className="text-sm whitespace-pre-wrap">{quote.customerNote}</p>
+              </CardBody>
             </Card>
           )}
           {quote.internalNote && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Internal note</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text size="sm" className="whitespace-pre-wrap">
-                  {quote.internalNote}
-                </Text>
-              </CardContent>
+                <p className="text-sm whitespace-pre-wrap">{quote.internalNote}</p>
+              </CardBody>
             </Card>
           )}
         </div>
       )}
-    </Stack>
+    </div>
   );
 }

@@ -3,18 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2 } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Table } from 'silicaui-react';
 import { deleteAccountOverride } from '../../_lib/actions';
 
 interface Override {
@@ -60,54 +49,54 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
 
   if (overrides.length === 0) {
     return (
-      <Stack gap={3} className="p-6 text-center">
-        <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-3 p-6 text-center">
+        <p className="text-base-content/70 text-sm">
           No product overrides. Overrides let you set a specific price or additional discount for
           this account on individual variants or collections.
-        </Text>
+        </p>
         <div>
           <Button
             color="module"
             variant="outline"
             size="sm"
-            leftIcon={<Plus className="h-3.5 w-3.5" />}
+            iconStart={<Plus className="h-3.5 w-3.5" />}
             disabled
           >
             Add override
           </Button>
         </div>
-      </Stack>
+      </div>
     );
   }
 
   return (
-    <Stack gap={0}>
+    <div className="flex flex-col">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Scope</TableHead>
-            <TableHead>SKU / Collection</TableHead>
-            <TableHead>Override</TableHead>
-            <TableHead>Notes</TableHead>
-            <TableHead className="w-12" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+        <thead>
+          <tr>
+            <th>Scope</th>
+            <th>SKU / Collection</th>
+            <th>Override</th>
+            <th>Notes</th>
+            <th className="w-12" />
+          </tr>
+        </thead>
+        <tbody>
           {overrides.map((o) => (
-            <TableRow key={o.id}>
-              <TableCell>
+            <tr key={o.id}>
+              <td>
                 <Badge color={o.variantId ? 'module' : 'neutral'} variant="soft" size="sm">
                   {o.variantId ? 'Variant' : 'Collection'}
                 </Badge>
-              </TableCell>
-              <TableCell>
-                <Text size="sm">
+              </td>
+              <td>
+                <p className="text-sm">
                   {o.variant
                     ? `${o.variant.sku} — ${o.variant.title}`
                     : (o.collection?.title ?? '—')}
-                </Text>
-              </TableCell>
-              <TableCell>
+                </p>
+              </td>
+              <td>
                 {o.priceCents !== null ? (
                   <Badge color="success" variant="soft">
                     ${(o.priceCents / 100).toFixed(2)} fixed
@@ -117,17 +106,15 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
                     {Number(o.discountPercentage)}% off
                   </Badge>
                 ) : (
-                  <Text size="sm" variant="muted">
-                    —
-                  </Text>
+                  <p className="text-base-content/70 text-sm">—</p>
                 )}
-              </TableCell>
-              <TableCell>
-                <Text size="sm" variant="muted" className="max-w-[200px] truncate">
+              </td>
+              <td>
+                <p className="text-base-content/70 max-w-[200px] truncate text-sm">
                   {o.notes ?? '—'}
-                </Text>
-              </TableCell>
-              <TableCell>
+                </p>
+              </td>
+              <td>
                 <div className="flex flex-col items-end gap-1">
                   <Button
                     variant="ghost"
@@ -140,15 +127,15 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                   {rowErrors.get(o.id) && (
-                    <Text size="xs" className="text-right text-[var(--color-danger)]">
+                    <p className="text-right text-xs text-[var(--color-danger)]">
                       {rowErrors.get(o.id)}
-                    </Text>
+                    </p>
                   )}
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
 
       <div className="border-t border-[var(--color-border-default)] p-4">
@@ -156,12 +143,12 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
           color="module"
           variant="outline"
           size="sm"
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
           disabled
         >
           Add override
         </Button>
       </div>
-    </Stack>
+    </div>
   );
 }

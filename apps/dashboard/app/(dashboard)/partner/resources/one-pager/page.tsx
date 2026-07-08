@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BookOpen, Check } from 'lucide-react';
-import { Card, Container, Heading, ModuleProvider, PageHeader, Stack, Text } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { ONE_PAGER } from '../_lib/content';
 import { PrintButton } from '../_components/print-button';
@@ -11,8 +12,8 @@ import { PrintButton } from '../_components/print-button';
 export default function PartnerOnePagerPage() {
   return (
     <ModuleProvider module="partner">
-      <Container size="md">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
             className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
@@ -26,52 +27,50 @@ export default function PartnerOnePagerPage() {
             actions={<PrintButton />}
           />
 
-          <Card variant="default" padding="lg">
-            <Stack gap={6}>
-              <Stack gap={2}>
-                <Heading level={2}>{ONE_PAGER.tagline}</Heading>
-                <Text>{ONE_PAGER.what}</Text>
-              </Stack>
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-2xl font-semibold tracking-tight">{ONE_PAGER.tagline}</h2>
+                  <p className="text-base">{ONE_PAGER.what}</p>
+                </div>
 
-              <Stack gap={2}>
-                <Text weight="medium">What’s inside</Text>
-                <ul className="flex flex-col gap-1.5">
-                  {ONE_PAGER.modules.map((m) => (
-                    <li key={m} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
-                      <Text size="sm">{m}</Text>
-                    </li>
-                  ))}
-                </ul>
-              </Stack>
+                <div className="flex flex-col gap-2">
+                  <p className="text-base font-medium">What’s inside</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {ONE_PAGER.modules.map((m) => (
+                      <li key={m} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                        <p className="text-sm">{m}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <Stack gap={1}>
-                <Text weight="medium">Pricing</Text>
-                <Text size="sm" variant="muted">
-                  {ONE_PAGER.pricing}
-                </Text>
-              </Stack>
+                <div className="flex flex-col gap-1">
+                  <p className="text-base font-medium">Pricing</p>
+                  <p className="text-base-content/70 text-sm">{ONE_PAGER.pricing}</p>
+                </div>
 
-              <Stack gap={2}>
-                <Text weight="medium">Best for</Text>
-                <ul className="flex flex-col gap-1.5">
-                  {ONE_PAGER.bestFor.map((b) => (
-                    <li key={b} className="flex items-start gap-2">
-                      <span
-                        aria-hidden
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
-                      />
-                      <Text size="sm" variant="muted">
-                        {b}
-                      </Text>
-                    </li>
-                  ))}
-                </ul>
-              </Stack>
-            </Stack>
+                <div className="flex flex-col gap-2">
+                  <p className="text-base font-medium">Best for</p>
+                  <ul className="flex flex-col gap-1.5">
+                    {ONE_PAGER.bestFor.map((b) => (
+                      <li key={b} className="flex items-start gap-2">
+                        <span
+                          aria-hidden
+                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                        />
+                        <p className="text-base-content/70 text-sm">{b}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </CardBody>
           </Card>
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

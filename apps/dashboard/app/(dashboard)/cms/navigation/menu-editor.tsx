@@ -15,26 +15,18 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
+  CardActions,
+  CardBody,
   Checkbox,
-  Heading,
   Input,
   Label,
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { ChevronDown, ChevronUp, Plus, Save, Trash2 } from 'lucide-react';
 import { saveMenu } from './menu-actions';
 
@@ -227,19 +219,13 @@ export function MenuEditor({
   }
 
   return (
-    <Stack gap={5}>
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Menu name</Heading>
-          <CardDescription>
-            Internal label so editors recognise the menu in the listing.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
-            <Label htmlFor="menu-name" required>
-              Name
-            </Label>
+    <div className="flex flex-col gap-5">
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">Menu name</h3>
+          <p className="opacity-70">Internal label so editors recognise the menu in the listing.</p>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="menu-name">Name</Label>
             <Input
               id="menu-name"
               value={name}
@@ -247,36 +233,34 @@ export function MenuEditor({
               required
               aria-required
             />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between">
-            <Stack gap={1}>
-              <Heading level={3}>Items</Heading>
-              <CardDescription>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Items</h3>
+              <p className="opacity-70">
                 {items.length} top-level item{items.length === 1 ? '' : 's'}
-              </CardDescription>
-            </Stack>
+              </p>
+            </div>
             <Button
               type="button"
               color="module"
               variant="outline"
               size="sm"
-              leftIcon={<Plus className="h-3.5 w-3.5" />}
+              iconStart={<Plus className="h-3.5 w-3.5" />}
               onClick={addRoot}
             >
               Add item
             </Button>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {items.length === 0 ? (
-            <Text variant="muted">
+            <p className="text-base-content/70">
               No items yet. Click &ldquo;Add item&rdquo; to start the tree.
-            </Text>
+            </p>
           ) : (
             <ItemList
               items={items}
@@ -288,13 +272,13 @@ export function MenuEditor({
               onMove={moveAt}
             />
           )}
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" align="center" gap={3}>
+        </CardBody>
+        <CardActions className="justify-start">
+          <div className="flex flex-row items-center gap-3">
             <Button
               type="button"
               color="module"
-              leftIcon={<Save className="h-4 w-4" />}
+              iconStart={<Save className="h-4 w-4" />}
               onClick={onSave}
               disabled={pending}
               loading={pending}
@@ -302,19 +286,19 @@ export function MenuEditor({
               Save menu
             </Button>
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
             {message && (
-              <Text size="sm" variant="success" aria-live="polite">
+              <p className="text-success text-sm" aria-live="polite">
                 {message}
-              </Text>
+              </p>
             )}
-          </Stack>
-        </CardFooter>
+          </div>
+        </CardActions>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -336,17 +320,16 @@ function ItemList({
   onMove: (path: PathStep[], delta: -1 | 1) => void;
 }) {
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       {items.map((item, index) => {
         const itemPath: PathStep[] = [...path, { index }];
         return (
-          <Stack
+          <div
             key={item.uid}
-            gap={3}
-            className="rounded-lg border border-[var(--color-border-default)] p-3"
+            className="flex flex-col gap-3 rounded-lg border border-[var(--color-border-default)] p-3"
           >
-            <Stack direction="row" align="end" gap={2}>
-              <Stack gap={1} className="flex-1">
+            <div className="flex flex-row items-end gap-2">
+              <div className="flex flex-1 flex-col gap-1">
                 <Label htmlFor={`label-${item.uid}`}>Label</Label>
                 <Input
                   id={`label-${item.uid}`}
@@ -354,13 +337,13 @@ function ItemList({
                   onChange={(e) => onPatch(itemPath, { label: e.target.value })}
                   placeholder="Display label"
                 />
-              </Stack>
-              <Stack direction="row" gap={1}>
+              </div>
+              <div className="flex flex-row gap-1">
                 <Button
                   type="button"
                   variant="ghost"
                   size="xs"
-                  leftIcon={<ChevronUp className="h-3 w-3" />}
+                  iconStart={<ChevronUp className="h-3 w-3" />}
                   onClick={() => onMove(itemPath, -1)}
                   disabled={index === 0}
                   aria-label="Move up"
@@ -371,7 +354,7 @@ function ItemList({
                   type="button"
                   variant="ghost"
                   size="xs"
-                  leftIcon={<ChevronDown className="h-3 w-3" />}
+                  iconStart={<ChevronDown className="h-3 w-3" />}
                   onClick={() => onMove(itemPath, 1)}
                   disabled={index === items.length - 1}
                   aria-label="Move down"
@@ -382,19 +365,21 @@ function ItemList({
                   type="button"
                   variant="ghost"
                   size="xs"
-                  leftIcon={<Trash2 className="h-3 w-3" />}
+                  iconStart={<Trash2 className="h-3 w-3" />}
                   onClick={() => onRemove(itemPath)}
                   aria-label="Remove"
                 >
                   Remove
                 </Button>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
-            <Stack direction="row" gap={3}>
-              <Stack gap={1}>
+            <div className="flex flex-row gap-3">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor={`kind-${item.uid}`}>Link kind</Label>
                 <Select
+                  id={`kind-${item.uid}`}
+                  aria-label="Link kind"
                   value={item.kind}
                   onValueChange={(v) =>
                     onPatch(itemPath, {
@@ -403,17 +388,10 @@ function ItemList({
                       ...(v === 'entry' ? { externalUrl: '' } : { entryId: null }),
                     })
                   }
-                >
-                  <SelectTrigger id={`kind-${item.uid}`} aria-label="Link kind">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="external">External URL</SelectItem>
-                    <SelectItem value="entry">CMS entry</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Stack>
-              <Stack gap={1} className="flex-1">
+                  items={{ external: 'External URL', entry: 'CMS entry' }}
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
                 {item.kind === 'entry' ? (
                   <EntryField
                     id={`target-${item.uid}`}
@@ -433,34 +411,32 @@ function ItemList({
                     />
                   </>
                 )}
-              </Stack>
-              <Stack gap={1}>
+              </div>
+              <div className="flex flex-col gap-1">
                 <Label htmlFor={`new-tab-${item.uid}`}>New tab</Label>
                 <Checkbox
                   id={`new-tab-${item.uid}`}
                   checked={item.openInNewTab}
-                  onCheckedChange={(next) => onPatch(itemPath, { openInNewTab: next === true })}
+                  onChange={(e) => onPatch(itemPath, { openInNewTab: e.target.checked })}
                 />
-              </Stack>
-            </Stack>
+              </div>
+            </div>
 
-            <Stack gap={2}>
-              <Stack direction="row" align="center" justify="between">
-                <Text size="xs" variant="muted">
-                  Children · {item.children.length}
-                </Text>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row items-center justify-between">
+                <p className="text-base-content/70 text-xs">Children · {item.children.length}</p>
                 <Button
                   type="button"
                   variant="ghost"
                   size="xs"
-                  leftIcon={<Plus className="h-3 w-3" />}
+                  iconStart={<Plus className="h-3 w-3" />}
                   onClick={() => onAddChild(itemPath)}
                 >
                   Add child
                 </Button>
-              </Stack>
+              </div>
               {item.children.length > 0 && (
-                <Stack className="pl-6">
+                <div className="flex flex-col pl-6">
                   <ItemList
                     items={item.children}
                     path={itemPath}
@@ -470,13 +446,13 @@ function ItemList({
                     onRemove={onRemove}
                     onMove={onMove}
                   />
-                </Stack>
+                </div>
               )}
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }
 
@@ -501,7 +477,7 @@ function EntryField({
   if (mode === 'manual') {
     return (
       <>
-        <Stack direction="row" justify="between" align="end">
+        <div className="flex flex-row items-end justify-between">
           <Label htmlFor={id}>Entry ID</Label>
           <Button
             type="button"
@@ -513,7 +489,7 @@ function EntryField({
           >
             Pick from list
           </Button>
-        </Stack>
+        </div>
         <Input
           id={id}
           value={value ?? ''}
@@ -526,7 +502,7 @@ function EntryField({
 
   return (
     <>
-      <Stack direction="row" justify="between" align="end">
+      <div className="flex flex-row items-end justify-between">
         <Label htmlFor={id}>Published entry</Label>
         <Button
           type="button"
@@ -538,25 +514,26 @@ function EntryField({
         >
           Paste UUID
         </Button>
-      </Stack>
-      <Select value={value ?? ''} onValueChange={(v) => onChange(v || null)}>
-        <SelectTrigger id={id} aria-label="Published entry">
-          <SelectValue placeholder="Choose a published entry…" />
-        </SelectTrigger>
-        <SelectContent>
-          {choices.length === 0 ? (
-            <SelectItem value="__empty__" disabled>
-              No published entries to pick from
+      </div>
+      <Select
+        id={id}
+        aria-label="Published entry"
+        placeholder="Choose a published entry…"
+        value={value ?? ''}
+        onValueChange={(v) => onChange((v as string) || null)}
+      >
+        {choices.length === 0 ? (
+          <SelectItem value="__empty__" disabled>
+            No published entries to pick from
+          </SelectItem>
+        ) : (
+          choices.map((c) => (
+            <SelectItem key={c.id} value={c.id}>
+              {c.title}
+              {c.slug ? ` · /${c.slug}` : ''}
             </SelectItem>
-          ) : (
-            choices.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.title}
-                {c.slug ? ` · /${c.slug}` : ''}
-              </SelectItem>
-            ))
-          )}
-        </SelectContent>
+          ))
+        )}
       </Select>
     </>
   );

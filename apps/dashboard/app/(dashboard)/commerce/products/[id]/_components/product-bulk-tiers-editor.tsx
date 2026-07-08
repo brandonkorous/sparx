@@ -4,23 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Layers, Trash2 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  EmptyState,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, EmptyState, Input, Label, NativeSelect, Table } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { createBulkTierAction, deleteBulkTierAction } from '../../../pricing-actions';
 
@@ -158,17 +143,11 @@ export function ProductBulkTiersEditor({
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       <form onSubmit={onAdd}>
-        <Stack
-          direction="row"
-          gap={3}
-          align="end"
-          wrap
-          className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-        >
+        <div className="flex flex-row flex-wrap items-end gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
           {!single && (
-            <Stack gap={1} className="min-w-[14rem] flex-1">
+            <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
               <Label htmlFor="bt-variant">Variant</Label>
               <NativeSelect
                 id="bt-variant"
@@ -181,9 +160,9 @@ export function ProductBulkTiersEditor({
                   </option>
                 ))}
               </NativeSelect>
-            </Stack>
+            </div>
           )}
-          <Stack gap={1} className="w-28">
+          <div className="flex w-28 flex-col gap-1">
             <Label htmlFor="bt-min">Min qty</Label>
             <Input
               id="bt-min"
@@ -192,8 +171,8 @@ export function ProductBulkTiersEditor({
               placeholder="10"
               inputMode="numeric"
             />
-          </Stack>
-          <Stack gap={1} className="w-36">
+          </div>
+          <div className="flex w-36 flex-col gap-1">
             <Label htmlFor="bt-price">Unit price ({currency})</Label>
             <Input
               id="bt-price"
@@ -202,20 +181,20 @@ export function ProductBulkTiersEditor({
               placeholder="0.00"
               inputMode="decimal"
             />
-          </Stack>
+          </div>
           <Button color="module" type="submit" disabled={pending} loading={pending}>
             Add tier
           </Button>
-        </Stack>
+        </div>
         {error && (
-          <Text size="xs" variant="danger" role="alert" aria-live="polite" className="mt-2">
+          <p className="text-danger mt-2 text-xs" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
       </form>
 
       <BulkTierTable rows={rows} pending={pending} onDelete={onDelete} />
-    </Stack>
+    </div>
   );
 }
 
@@ -240,33 +219,31 @@ function BulkTierTable({
   }
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Variant</TableHead>
-          <TableHead className="text-right">Min qty</TableHead>
-          <TableHead className="text-right">Unit price</TableHead>
-          <TableHead className="text-right">vs. base</TableHead>
-          <TableHead className="w-10" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+      <thead>
+        <tr>
+          <th>Variant</th>
+          <th className="text-right">Min qty</th>
+          <th className="text-right">Unit price</th>
+          <th className="text-right">vs. base</th>
+          <th className="w-10" />
+        </tr>
+      </thead>
+      <tbody>
         {rows.map(({ tier, name, sku, priceLabel, offPct }) => (
-          <TableRow key={tier.id}>
-            <TableCell>
-              <Stack gap={0}>
-                <Text className="font-medium">{name}</Text>
+          <tr key={tier.id}>
+            <td>
+              <div className="flex flex-col gap-0">
+                <span className="font-medium">{name}</span>
                 {sku && (
                   <span className="font-mono text-xs text-[var(--color-text-muted)]">{sku}</span>
                 )}
-              </Stack>
-            </TableCell>
-            <TableCell className="text-right tabular-nums">{tier.minQuantity}+</TableCell>
-            <TableCell className="text-right tabular-nums">{priceLabel}</TableCell>
-            <TableCell className="text-right">
+              </div>
+            </td>
+            <td className="text-right tabular-nums">{tier.minQuantity}+</td>
+            <td className="text-right tabular-nums">{priceLabel}</td>
+            <td className="text-right">
               {offPct === null ? (
-                <Text size="sm" variant="muted">
-                  —
-                </Text>
+                <span className="text-base-content/70 text-sm">—</span>
               ) : offPct > 0 ? (
                 <Badge color="success" variant="soft" size="sm">
                   {offPct.toFixed(0)}% off
@@ -276,8 +253,8 @@ function BulkTierTable({
                   at/above base
                 </Badge>
               )}
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
               <Button
                 variant="ghost"
                 color="danger"
@@ -288,10 +265,10 @@ function BulkTierTable({
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ))}
-      </TableBody>
+      </tbody>
     </Table>
   );
 }

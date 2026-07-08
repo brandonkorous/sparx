@@ -2,15 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-  statusLabel,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 // Client wrapper for the suppliers list. SelectionList takes render functions
 // (columns/card) which can't cross the server→client boundary, so the server
@@ -65,18 +58,14 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
         {statusLabel(s.paymentTerms)}
       </Badge>
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
 
   const lead = (s: SupplierRow) =>
     s.leadTimeDays !== null ? (
       `${s.leadTimeDays}d`
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
 
   const statusBadge = (s: SupplierRow) =>
@@ -101,25 +90,17 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
   ];
 
   const card: SelectionCard<SupplierRow> = {
-    title: (s) => (
-      <Text size="sm" className="truncate font-medium">
-        {s.name}
-      </Text>
-    ),
+    title: (s) => <p className="truncate text-sm font-medium">{s.name}</p>,
     subtitle: codeLink,
     badge: statusBadge,
     body: (s) => (
-      <Stack gap={2}>
-        <Text size="xs" variant="muted">
-          {location(s)}
-        </Text>
-        <Stack direction="row" align="center" gap={2}>
+      <div className="flex flex-col gap-2">
+        <p className="text-base-content/70 text-xs">{location(s)}</p>
+        <div className="flex flex-row items-center gap-2">
           {terms(s)}
-          <Text size="xs" variant="muted">
-            {s.contactName ?? s.email ?? 'no contact'}
-          </Text>
-        </Stack>
-      </Stack>
+          <p className="text-base-content/70 text-xs">{s.contactName ?? s.email ?? 'no contact'}</p>
+        </div>
+      </div>
     ),
   };
 

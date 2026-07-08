@@ -9,9 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { Ban, Check, CheckCheck, LogIn, MoreHorizontal, Users, UserX } from 'lucide-react';
 
 import type { ActionResult } from '../../_lib/actions';
@@ -86,7 +85,7 @@ export function BookingActions({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger>
           <Button
             variant="ghost"
             shape="square"
@@ -99,7 +98,7 @@ export function BookingActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           {isClass ? (
-            <DropdownMenuItem onSelect={() => setRosterOpen(true)}>
+            <DropdownMenuItem onClick={() => setRosterOpen(true)}>
               <Users className="mr-2 h-4 w-4" />
               Roster
             </DropdownMenuItem>
@@ -119,32 +118,32 @@ export function BookingActions({
       <>
         {status === 'requested' ? (
           <DropdownMenuItem
-            onSelect={() => void run(() => confirmBookingAction(id), 'Booking confirmed')}
+            onClick={() => void run(() => confirmBookingAction(id), 'Booking confirmed')}
           >
             <Check className="mr-2 h-4 w-4" />
             Confirm
           </DropdownMenuItem>
         ) : null}
         {status === 'confirmed' || status === 'requested' ? (
-          <DropdownMenuItem onSelect={() => void run(() => checkInBookingAction(id), 'Checked in')}>
+          <DropdownMenuItem onClick={() => void run(() => checkInBookingAction(id), 'Checked in')}>
             <LogIn className="mr-2 h-4 w-4" />
             Check in
           </DropdownMenuItem>
         ) : null}
         {status === 'in_progress' || status === 'confirmed' ? (
           <DropdownMenuItem
-            onSelect={() => void run(() => completeBookingAction(id), 'Booking completed')}
+            onClick={() => void run(() => completeBookingAction(id), 'Booking completed')}
           >
             <CheckCheck className="mr-2 h-4 w-4" />
             Complete
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => void noShow()}>
+        <DropdownMenuItem onClick={() => void noShow()}>
           <UserX className="mr-2 h-4 w-4" />
           No-show
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => void cancel()} className="text-[var(--color-danger)]">
+        <DropdownMenuItem onClick={() => void cancel()} className="text-[var(--color-danger)]">
           <Ban className="mr-2 h-4 w-4" />
           Cancel
         </DropdownMenuItem>

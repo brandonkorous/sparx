@@ -3,23 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Input, Label, Select } from 'silicaui-react';
 
 import { createRedirect } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -132,10 +117,10 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack direction="row" gap={3} align="end" wrap>
-                <Stack gap={1} className="flex-1">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-row flex-wrap items-end gap-3">
+                <div className="flex flex-1 flex-col gap-1">
                   <Label htmlFor="from_path">From</Label>
                   <Input
                     id="from_path"
@@ -144,8 +129,8 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
                     onChange={(e) => setFromPath(e.target.value)}
                     placeholder="/old-path"
                   />
-                </Stack>
-                <Stack gap={1} className="flex-1">
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
                   <Label htmlFor="to_path">To</Label>
                   <Input
                     id="to_path"
@@ -154,33 +139,34 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
                     onChange={(e) => setToPath(e.target.value)}
                     placeholder="/new-path"
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="status_code">Status</Label>
-                  <Select value={statusCode} onValueChange={setStatusCode}>
-                    <SelectTrigger id="status_code" aria-label="HTTP status code">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="301">301 Permanent</SelectItem>
-                      <SelectItem value="302">302 Found</SelectItem>
-                      <SelectItem value="307">307 Temporary</SelectItem>
-                      <SelectItem value="308">308 Permanent (keep method)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  <Select
+                    id="status_code"
+                    aria-label="HTTP status code"
+                    value={statusCode}
+                    onValueChange={(v) => setStatusCode(v as string)}
+                    items={{
+                      '301': '301 Permanent',
+                      '302': '302 Found',
+                      '307': '307 Temporary',
+                      '308': '308 Permanent (keep method)',
+                    }}
+                  />
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {message && (
-            <Text size="sm" variant="success" aria-live="polite" className="mt-4">
+            <p className="text-success mt-4 text-sm" aria-live="polite">
               {message}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

@@ -6,7 +6,7 @@
 // No client state, so this stays a plain component.
 
 import Link from 'next/link';
-import { Button, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 export function IntegrationCardActions({
   providerSlug,
@@ -17,14 +17,17 @@ export function IntegrationCardActions({
 }) {
   if (!canInstall) {
     return (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         Only an owner or admin can connect an integration.
-      </Text>
+      </p>
     );
   }
   return (
-    <Button color="primary" asChild>
-      <Link href={`/commerce/providers?provider=${encodeURIComponent(providerSlug)}`}>Connect</Link>
+    <Button
+      color="primary"
+      render={<Link href={`/commerce/providers?provider=${encodeURIComponent(providerSlug)}`} />}
+    >
+      Connect
     </Button>
   );
 }

@@ -1,17 +1,7 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardActions, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 import type { ModuleSlug } from '@sparx/auth';
 
 import { moduleCatalog } from '@/components/module-catalog';
@@ -62,39 +52,36 @@ export function FinanceUpsellCard({
   const { Icon, title } = moduleCatalog[module];
   return (
     <ModuleProvider module={module} className="h-full">
-      <Card variant="module" className="flex h-full flex-col">
-        <CardHeader>
-          <Stack direction="row" align="center" gap={2} className="justify-between">
-            <Stack direction="row" align="center" gap={2}>
-              <span aria-hidden className="text-[var(--module-active)]">
+      <Card className="bg-module bg-soft flex h-full flex-col">
+        <CardBody className="flex h-full flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span aria-hidden className="text-module">
                 <Icon className="h-4 w-4" />
               </span>
               <CardTitle>{title}</CardTitle>
-            </Stack>
+            </div>
             <Badge color="module" variant="soft">
               Available
             </Badge>
-          </Stack>
-        </CardHeader>
-        <CardContent className="flex-1">
-          <Text size="sm" variant="muted">
-            {pitch}
-          </Text>
-        </CardContent>
-        <CardFooter>
-          {canActivate ? (
-            <Button color="module" variant="solid" size="sm" asChild>
-              <Link href="/settings/modules">
-                <Plus className="mr-1 h-3.5 w-3.5" />
+          </div>
+          <p className="text-base-content/70 flex-1 text-sm">{pitch}</p>
+          <CardActions className="justify-start">
+            {canActivate ? (
+              <Button
+                color="module"
+                variant="solid"
+                size="sm"
+                iconStart={<Plus className="h-3.5 w-3.5" />}
+                render={<Link href="/settings/modules" />}
+              >
                 Turn on {title}
-              </Link>
-            </Button>
-          ) : (
-            <Text size="sm" variant="muted">
-              Ask an owner to turn on {title}.
-            </Text>
-          )}
-        </CardFooter>
+              </Button>
+            ) : (
+              <p className="text-base-content/70 text-sm">Ask an owner to turn on {title}.</p>
+            )}
+          </CardActions>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );

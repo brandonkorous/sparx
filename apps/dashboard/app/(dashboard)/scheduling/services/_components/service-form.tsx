@@ -5,23 +5,15 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Grid,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
   Switch,
-  Text,
   Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import type {
   AssignmentStrategy,
@@ -228,13 +220,11 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
         nextDisabled: saving,
       }}
     >
-      <Stack gap={6}>
-        <Card variant="default">
-          <CardHeader>
+      <div className="flex flex-col gap-6">
+        <Card>
+          <CardBody className="py-6">
             <CardTitle>Basics</CardTitle>
-          </CardHeader>
-          <CardContent className="py-6">
-            <Stack gap={4}>
+            <div className="flex flex-col gap-4">
               <div>
                 <Label htmlFor="svc-name">Name</Label>
                 <Input
@@ -246,7 +236,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                 />
               </div>
 
-              <Grid cols={2} gap={3}>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label htmlFor="svc-type">Booking type</Label>
                   <NativeSelect
@@ -275,7 +265,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                     ))}
                   </NativeSelect>
                 </div>
-              </Grid>
+              </div>
 
               <div>
                 <Label htmlFor="svc-desc">Description</Label>
@@ -287,7 +277,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                 />
               </div>
 
-              <Grid cols={3} gap={3}>
+              <div className="grid grid-cols-3 gap-3">
                 <NumberField
                   label="Duration (min)"
                   value={durationMinutes}
@@ -306,9 +296,9 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                   min={0}
                   onChange={setBufferAfter}
                 />
-              </Grid>
+              </div>
 
-              <Grid cols={3} gap={3}>
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <Label htmlFor="svc-price">Price ($)</Label>
                   <Input
@@ -332,9 +322,9 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                   min={1}
                   onChange={setSlotInterval}
                 />
-              </Grid>
+              </div>
 
-              <Grid cols={2} gap={3}>
+              <div className="grid grid-cols-2 gap-3">
                 <NumberField
                   label="Min lead time (min)"
                   value={minLeadMinutes}
@@ -347,7 +337,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                   min={0}
                   onChange={setMaxAdvance}
                 />
-              </Grid>
+              </div>
 
               <div>
                 <Label htmlFor="svc-policy">Booking policy</Label>
@@ -364,19 +354,17 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                   ))}
                 </NativeSelect>
               </div>
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
-        <Card variant="default">
-          <CardHeader>
+        <Card>
+          <CardBody className="py-6">
             <CardTitle>Staffing &amp; availability</CardTitle>
-          </CardHeader>
-          <CardContent className="py-6">
-            <Stack gap={4}>
+            <div className="flex flex-col gap-4">
               <RequirementEditor value={requirements} onChange={setRequirements} />
 
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 <ToggleRow
                   label="Bookable online"
                   checked={bookableOnline}
@@ -389,11 +377,11 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                   onChange={setRequiresApproval}
                 />
                 <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
-              </Stack>
-            </Stack>
-          </CardContent>
+              </div>
+            </div>
+          </CardBody>
         </Card>
-      </Stack>
+      </div>
     </SurfaceStep>
   );
 
@@ -475,14 +463,8 @@ function ToggleRow({
   return (
     <label className="flex items-center justify-between gap-4">
       <span>
-        <Text size="sm" weight="medium">
-          {label}
-        </Text>
-        {hint ? (
-          <Text size="xs" variant="muted">
-            {hint}
-          </Text>
-        ) : null}
+        <p className="text-sm font-medium">{label}</p>
+        {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
       </span>
       <Switch color="module" checked={checked} onCheckedChange={onChange} />
     </label>

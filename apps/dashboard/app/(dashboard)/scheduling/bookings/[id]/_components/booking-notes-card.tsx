@@ -8,17 +8,8 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Label,
-  Stack,
-  Textarea,
-  toast,
-} from '@sparx/ui';
+import { Button, Card, CardBody, CardTitle, Label, Textarea } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { updateBookingAction } from '../../../_lib/actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -59,11 +50,9 @@ export function BookingNotesCard({
 
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>Notes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        <div className="flex flex-col gap-4">
           <div>
             <Label htmlFor="bk-note">Customer note</Label>
             <Textarea
@@ -84,7 +73,7 @@ export function BookingNotesCard({
               placeholder="Internal only — never shown to the customer."
             />
           </div>
-          <Stack direction="row" justify="end">
+          <div className="flex flex-row justify-end">
             <Button
               type="button"
               color="module"
@@ -94,9 +83,9 @@ export function BookingNotesCard({
             >
               Save notes
             </Button>
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

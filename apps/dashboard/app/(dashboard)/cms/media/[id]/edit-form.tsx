@@ -7,7 +7,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input, Label, Stack, Text, Textarea, useConfirm } from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Button, Input, Label, Textarea } from 'silicaui-react';
 import { Trash2 } from 'lucide-react';
 import { deleteAsset, patchAsset } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -99,7 +100,7 @@ export function AssetEditForm({
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {isImage && previewUrl ? (
         <div
           ref={containerRef}
@@ -133,14 +134,14 @@ export function AssetEditForm({
           />
         </div>
       ) : (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {previewUrl ? 'Preview not available for this file type.' : 'No preview available.'}
-        </Text>
+        </p>
       )}
 
       <form onSubmit={onSubmit} noValidate>
-        <Stack gap={4}>
-          <Stack gap={2}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <Label htmlFor="alt-text">Alt text</Label>
             <Input
               id="alt-text"
@@ -149,9 +150,9 @@ export function AssetEditForm({
               maxLength={500}
               placeholder="Describe the image for screen readers and SEO."
             />
-          </Stack>
+          </div>
 
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="caption">Caption (optional)</Label>
             <Textarea
               id="caption"
@@ -160,42 +161,42 @@ export function AssetEditForm({
               rows={2}
               maxLength={2000}
             />
-          </Stack>
+          </div>
 
           {isImage && (
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Focal point: ({focal.x.toFixed(2)}, {focal.y.toFixed(2)})
-            </Text>
+            </p>
           )}
 
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
+            <p className="text-danger text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {message && (
-            <Text size="sm" variant="success" aria-live="polite">
+            <p className="text-success text-sm" aria-live="polite">
               {message}
-            </Text>
+            </p>
           )}
 
-          <Stack direction="row" gap={2}>
+          <div className="flex flex-row gap-2">
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Save changes
             </Button>
             <Button
               type="button"
               variant="ghost"
-              leftIcon={<Trash2 className="h-4 w-4" />}
+              iconStart={<Trash2 className="h-4 w-4" />}
               onClick={() => void onDelete()}
               disabled={pending}
             >
               Delete
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       </form>
-    </Stack>
+    </div>
   );
 }
 

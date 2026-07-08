@@ -6,7 +6,8 @@
 // IssueKeyForm + revoke actions live in ./_components.
 
 import { KeyRound } from 'lucide-react';
-import { Badge, Container, EmptyState, Heading, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, EmptyState } from 'silicaui-react';
 
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -40,8 +41,8 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
   const activeCount = keys.filter((k) => !k.revokedAt).length;
 
   return (
-    <Container size="xl">
-      <Stack gap={8} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-8 py-10">
         <PageHeader
           icon={<KeyRound className="h-5 w-5" />}
           title="AI Integrations"
@@ -54,8 +55,8 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
           actions={<IssueKeyForm />}
         />
 
-        <Stack gap={3}>
-          <Heading level={2}>Connected assistants</Heading>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight">Connected assistants</h2>
           {connections.length === 0 ? (
             <EmptyState
               icon={<KeyRound className="h-5 w-5" />}
@@ -65,23 +66,23 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
           ) : (
             <ConnectionsList connections={connections} />
           )}
-        </Stack>
+        </div>
 
-        <Stack gap={3}>
-          <Heading level={2}>API keys</Heading>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight">API keys</h2>
           <ListToolbar enableViewToggle searchable={false} />
           {keys.length === 0 ? (
             <EmptyState
               icon={<KeyRound className="h-5 w-5" />}
               title="No API keys yet"
               description="Issue a scoped key to connect an assistant or integration that can’t use OAuth."
-              action={<IssueKeyForm />}
+              actions={<IssueKeyForm />}
             />
           ) : (
             <KeysList keys={sortedKeys} view={view} />
           )}
-        </Stack>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

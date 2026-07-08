@@ -1,4 +1,4 @@
-import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@sparx/ui';
+import { Badge, Table } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import type { Booking } from '../../_lib/types';
@@ -40,21 +40,21 @@ function DepositCell({ status }: { status: string | null }) {
 export function BookingsList({ bookings }: { bookings: Booking[] }) {
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>When</TableHead>
-          <TableHead>Service</TableHead>
-          <TableHead>Customer</TableHead>
-          <TableHead>Resource</TableHead>
-          <TableHead>Deposit</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="w-10" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Service</th>
+          <th>Customer</th>
+          <th>Resource</th>
+          <th>Deposit</th>
+          <th>Status</th>
+          <th className="w-10" />
+        </tr>
+      </thead>
+      <tbody>
         {bookings.map((b) => (
-          <TableRow key={b.id}>
-            <TableCell className="font-medium">
+          <tr key={b.id}>
+            <td className="font-medium">
               <EntityRowLink
                 href={`/scheduling/bookings/${b.id}`}
                 entityType="booking"
@@ -63,8 +63,8 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
               >
                 {formatDateTime(b.startAt, b.timezone)}
               </EntityRowLink>
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
               <span className="flex flex-col">
                 <span>{b.service.name}</span>
                 <span className="text-xs text-[var(--color-muted-foreground)]">
@@ -72,23 +72,23 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
                   {b.partySize ? ` · party of ${b.partySize}` : ''}
                 </span>
               </span>
-            </TableCell>
-            <TableCell>{customerLabel(b)}</TableCell>
-            <TableCell className="text-[var(--color-muted-foreground)]">
+            </td>
+            <td>{customerLabel(b)}</td>
+            <td className="text-[var(--color-muted-foreground)]">
               {b.resources.map((r) => r.resource.name).join(', ') || '—'}
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
               <DepositCell status={b.depositStatus} />
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
               <StatusBadge status={b.status} />
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
               <BookingActions id={b.id} status={b.status} bookingType={b.bookingType} />
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ))}
-      </TableBody>
+      </tbody>
     </Table>
   );
 }

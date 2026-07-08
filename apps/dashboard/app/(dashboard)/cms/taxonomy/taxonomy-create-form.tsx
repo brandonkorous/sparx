@@ -3,19 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label } from 'silicaui-react';
 
 import { createTaxonomy } from './actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
@@ -146,13 +135,16 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="tax-key" required>
-                      Key
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Label htmlFor="tax-key">
+                      Key{' '}
+                      <span className="text-error" aria-hidden="true">
+                        *
+                      </span>
                     </Label>
                     <Input
                       id="tax-key"
@@ -160,10 +152,13 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
                       onChange={(e) => setKey(e.target.value)}
                       placeholder="blog_category"
                     />
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="tax-name" required>
-                      Name
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Label htmlFor="tax-name">
+                      Name{' '}
+                      <span className="text-error" aria-hidden="true">
+                        *
+                      </span>
                     </Label>
                     <Input
                       id="tax-name"
@@ -171,10 +166,13 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Category"
                     />
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
-                    <Label htmlFor="tax-plural" required>
-                      Plural
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Label htmlFor="tax-plural">
+                      Plural{' '}
+                      <span className="text-error" aria-hidden="true">
+                        *
+                      </span>
                     </Label>
                     <Input
                       id="tax-plural"
@@ -182,23 +180,23 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
                       onChange={(e) => setPluralName(e.target.value)}
                       placeholder="Categories"
                     />
-                  </Stack>
-                </Stack>
-                <Stack direction="row" align="center" gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     id="tax-hierarchical"
                     checked={hierarchical}
-                    onCheckedChange={(next) => setHierarchical(next === true)}
+                    onChange={(e) => setHierarchical(e.target.checked)}
                   />
                   <Label htmlFor="tax-hierarchical">Allow parent / child term nesting</Label>
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

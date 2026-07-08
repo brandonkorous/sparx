@@ -14,18 +14,8 @@
 
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Input,
-  Label,
-  NativeSelect,
-  Spinner,
-  Text,
-  SurfaceStep,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label, Loading, NativeSelect } from 'silicaui-react';
+import { SurfaceStep } from '@sparx/ui';
 
 import {
   listFitmentDomainsAction,
@@ -181,11 +171,11 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardContent className="py-6">
+      <Card>
+        <CardBody className="py-6">
           {loading ? (
             <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
-              <Spinner className="h-4 w-4" /> Loading fitment…
+              <Loading className="h-4 w-4" /> Loading fitment…
             </div>
           ) : (
             <div className="flex flex-col gap-5">
@@ -218,9 +208,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
               )}
 
               <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
-                <Text size="sm" weight="medium">
-                  Add a fit
-                </Text>
+                <p className="text-sm font-medium">Add a fit</p>
 
                 {domains.length > 1 && (
                   <div>
@@ -298,7 +286,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                     onClick={() => void addRow()}
                     disabled={saving}
                     loading={saving}
-                    leftIcon={<Plus className="h-3.5 w-3.5" />}
+                    iconStart={<Plus className="h-3.5 w-3.5" />}
                   >
                     Add fit
                   </Button>
@@ -306,13 +294,13 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
               </div>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert">
+                <p className="text-danger text-sm" role="alert">
                   {error}
-                </Text>
+                </p>
               )}
             </div>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );

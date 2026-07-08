@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
-import { Heading, Text, SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
+import { SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
 import {
   checkSlugAction,
   completeDomainStepAction,
@@ -479,10 +479,8 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
           <div className="min-w-0">
             {head && (
               <div className="flex flex-col gap-2">
-                <Heading level={2}>{head.title}</Heading>
-                <Text variant="muted" className="max-w-[58ch]">
-                  {head.supporting}
-                </Text>
+                <h2 className="text-2xl font-semibold tracking-tight">{head.title}</h2>
+                <p className="text-base-content/70 max-w-[58ch]">{head.supporting}</p>
               </div>
             )}
             <div

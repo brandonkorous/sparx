@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, Copy } from 'lucide-react';
-import { Button, Card, CardContent, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Card, CardBody, Input, Label } from 'silicaui-react';
 
 // The referral link card (docs/114 §B.7). A read-only field with the partner's
 // shareable link + a copy button. The link is the canonical `?ref=CODE` capture
@@ -25,17 +25,17 @@ export function ReferralLinkCard({ referralCode }: { referralCode: string }) {
   }, [link]);
 
   return (
-    <Card variant="default">
-      <CardContent className="py-6">
-        <Stack gap={3}>
-          <Stack gap={1}>
+    <Card>
+      <CardBody>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
             <Label htmlFor="referral-link">Your referral link</Label>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Share this anywhere. When someone signs up through it, they’re credited to you and you
               earn on their first payment.
-            </Text>
-          </Stack>
-          <Stack direction="row" gap={2} align="center" wrap>
+            </p>
+          </div>
+          <div className="flex flex-row flex-wrap items-center gap-2">
             <Input
               id="referral-link"
               readOnly
@@ -48,16 +48,16 @@ export function ReferralLinkCard({ referralCode }: { referralCode: string }) {
               color="module"
               variant="soft"
               onClick={copy}
-              leftIcon={copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              iconStart={copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             >
               {copied ? 'Copied' : 'Copy link'}
             </Button>
-          </Stack>
-          <Text size="xs" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-xs">
             Referral code: <span className="font-mono">{referralCode}</span>
-          </Text>
-        </Stack>
-      </CardContent>
+          </p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

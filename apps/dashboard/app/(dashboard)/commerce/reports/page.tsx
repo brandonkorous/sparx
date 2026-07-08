@@ -1,24 +1,8 @@
 import Link from 'next/link';
 import { BarChart3 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -113,8 +97,8 @@ export default async function ReportsPage({
     ]);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<BarChart3 className="h-5 w-5" />}
           title="Reports"
@@ -122,33 +106,31 @@ export default async function ReportsPage({
           description="Live queries — no nightly rollup yet. Use the range selector to scope the period; the inventory valuation is always as-of-now since stock on hand is a point-in-time value."
         />
 
-        <Stack direction="row" gap={2} wrap>
+        <div className="flex flex-row flex-wrap gap-2">
           {RANGES.map((r) => (
             <FilterLink key={r.value} current={rangeParam} value={r.value} label={r.label} />
           ))}
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={3} wrap>
+        <div className="flex flex-row flex-wrap gap-3">
           <Kpi label="Orders" value={revenue.ordersCount.toLocaleString()} />
           <Kpi label="Gross revenue" value={fmt(revenue.grossRevenueCents, revenue.currency)} />
           <Kpi label="Net revenue" value={fmt(revenue.netRevenueCents, revenue.currency)} />
           <Kpi label="AOV" value={fmt(revenue.averageOrderValueCents, revenue.currency)} />
           <Kpi label="Refunded" value={fmt(revenue.refundedCents, revenue.currency)} />
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={4} wrap>
+        <div className="flex flex-row flex-wrap gap-4">
           <Card className="min-w-[20rem] flex-1">
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>Conversion funnel</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Conversion funnel</h3>
+                <p className="opacity-70">
                   Sessions land once analytics tooling is wired; the rest is from carts +
                   checkout-sessions + orders.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={2}>
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Row label="Carts created" value={funnel.cartsCreated.toLocaleString()} />
                 <Row
                   label="Checkouts started"
@@ -159,22 +141,20 @@ export default async function ReportsPage({
                   value={`${funnel.ordersPlaced.toLocaleString()} (${pct(funnel.checkoutToOrderRate)})`}
                 />
                 <Row label="Cart → order" value={pct(funnel.overallConversion)} bold />
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
 
           <Card className="min-w-[20rem] flex-1">
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>Abandoned carts</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Abandoned carts</h3>
+                <p className="opacity-70">
                   Recovery worker flips <code>recoveredAt</code> when a cart converts. Recovery rate
                   is recovered/(abandoned+recovered) inside the range.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={2}>
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Row label="Abandoned" value={abandonment.abandonedCount.toLocaleString()} />
                 <Row label="Recovered" value={abandonment.recoveredCount.toLocaleString()} />
                 <Row label="Recovery rate" value={pct(abandonment.recoveryRate)} bold />
@@ -182,45 +162,41 @@ export default async function ReportsPage({
                   label="Recovered revenue"
                   value={fmt(abandonment.recoveredRevenueCents, revenue.currency)}
                 />
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={4} wrap>
+        <div className="flex flex-row flex-wrap gap-4">
           <Card className="min-w-[20rem] flex-1">
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>Subscriptions</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Subscriptions</h3>
+                <p className="opacity-70">
                   MRR estimate normalizes weekly/yearly cadences to a monthly factor. Churn counts
                   cancellations inside the period; new counts subscriptions whose row was created in
                   the period.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={2}>
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Row label="Active" value={subs.activeCount.toLocaleString()} />
                 <Row label="MRR" value={fmt(subs.mrrCents, subs.currency)} bold />
                 <Row label="New" value={subs.newThisPeriod.toLocaleString()} />
                 <Row label="Churned" value={subs.churnedThisPeriod.toLocaleString()} />
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
 
           <Card className="min-w-[20rem] flex-1">
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>Inventory valuation</Heading>
-                <CardDescription>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Inventory valuation</h3>
+                <p className="opacity-70">
                   Sum of on-hand × cost (cost basis) and on-hand × price (retail basis). As of{' '}
                   {new Date(inventory.asOf).toLocaleString()}.
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={2}>
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
                 <Row label="Units on hand" value={inventory.totalUnits.toLocaleString()} />
                 <Row label="At cost" value={fmt(inventory.totalCostCents, inventory.currency)} />
                 <Row
@@ -228,86 +204,74 @@ export default async function ReportsPage({
                   value={fmt(inventory.totalRetailCents, inventory.currency)}
                   bold
                 />
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
-        </Stack>
+        </div>
 
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Top products</Heading>
-              <CardDescription>By revenue in the selected range.</CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Top products</h3>
+              <p className="opacity-70">By revenue in the selected range.</p>
+            </div>
             {topProducts.length === 0 ? (
-              <Text variant="muted" size="sm">
-                No orders in this range.
-              </Text>
+              <p className="text-base-content/70 text-sm">No orders in this range.</p>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead className="text-right">Units</TableHead>
-                    <TableHead className="text-right">Revenue</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th className="text-right">Units</th>
+                    <th className="text-right">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {topProducts.map((p) => (
-                    <TableRow key={p.productId}>
-                      <TableCell>{p.productTitle}</TableCell>
-                      <TableCell className="text-right">{p.unitsSold.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">
-                        {fmt(p.revenueCents, revenue.currency)}
-                      </TableCell>
-                    </TableRow>
+                    <tr key={p.productId}>
+                      <td>{p.productTitle}</td>
+                      <td className="text-right">{p.unitsSold.toLocaleString()}</td>
+                      <td className="text-right">{fmt(p.revenueCents, revenue.currency)}</td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Top customers</Heading>
-              <CardDescription>By spend in the selected range.</CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Top customers</h3>
+              <p className="opacity-70">By spend in the selected range.</p>
+            </div>
             {topCustomers.length === 0 ? (
-              <Text variant="muted" size="sm">
-                No orders in this range.
-              </Text>
+              <p className="text-base-content/70 text-sm">No orders in this range.</p>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead className="text-right">Orders</TableHead>
-                    <TableHead className="text-right">Spend</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th className="text-right">Orders</th>
+                    <th className="text-right">Spend</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {topCustomers.map((c) => (
-                    <TableRow key={c.customerId}>
-                      <TableCell>{c.customerName}</TableCell>
-                      <TableCell className="text-right">{c.ordersCount.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">
-                        {fmt(c.totalSpentCents, revenue.currency)}
-                      </TableCell>
-                    </TableRow>
+                    <tr key={c.customerId}>
+                      <td>{c.customerName}</td>
+                      <td className="text-right">{c.ordersCount.toLocaleString()}</td>
+                      <td className="text-right">{fmt(c.totalSpentCents, revenue.currency)}</td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -349,28 +313,22 @@ function FilterLink({
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[10rem] flex-1">
-      <CardContent className="py-4">
-        <Stack gap={1}>
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text className="text-2xl font-semibold">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody className="py-4">
+        <div className="flex flex-col gap-1">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-2xl font-semibold">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
-    <Stack direction="row" gap={4} justify="between">
-      <Text size="sm" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm" className={bold ? 'font-semibold' : ''}>
-        {value}
-      </Text>
-    </Stack>
+    <div className="flex flex-row justify-between gap-4">
+      <p className="text-base-content/70 text-sm">{label}</p>
+      <p className={`text-sm ${bold ? 'font-semibold' : ''}`}>{value}</p>
+    </div>
   );
 }
 

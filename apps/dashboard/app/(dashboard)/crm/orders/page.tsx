@@ -1,6 +1,7 @@
 import { ShoppingCart, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
@@ -138,8 +139,8 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     : [];
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<ShoppingCart className="h-5 w-5" />}
           title="Orders"
@@ -173,7 +174,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
         />
 
         {orders.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<ShoppingCart className="h-5 w-5" />}
               title="No orders match"
@@ -185,8 +186,8 @@ export default async function OrdersPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

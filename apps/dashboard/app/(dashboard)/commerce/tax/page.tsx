@@ -1,18 +1,8 @@
 import { FileBadge, Globe2, Plus, Receipt } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -47,8 +37,8 @@ export default async function TaxPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Receipt className="h-5 w-5" />}
           title="Tax"
@@ -70,25 +60,25 @@ export default async function TaxPage({ searchParams }: PageProps) {
           }
         />
 
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
             <Globe2 className="h-4 w-4" />
-            <Heading level={3}>Nexus zones</Heading>
-          </Stack>
-          <Text size="sm" variant="muted">
+            <h3 className="text-xl font-semibold">Nexus zones</h3>
+          </div>
+          <p className="text-base-content/70 text-sm">
             Country-wide or region-narrowed (US-CA, US-OR…). Click a zone to add rates.
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
         <ListToolbar enableViewToggle searchable={false} />
 
         {zones.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Globe2 className="h-5 w-5" />}
               title="No tax zones yet"
               description="Add a zone for every jurisdiction with nexus."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="tax-zone"
                   newHref="/commerce/tax/zones/new"
@@ -106,27 +96,25 @@ export default async function TaxPage({ searchParams }: PageProps) {
         <ListPager total={total} />
 
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <FileBadge className="h-4 w-4" />
-                <Heading level={3}>Exemption certificates</Heading>
-              </Stack>
-              <CardDescription>
+                <h3 className="text-xl font-semibold">Exemption certificates</h3>
+              </div>
+              <p className="opacity-70">
                 Customer- or B2B-account-scoped exemptions are attached from the CRM customer detail
                 page; the checkout pipeline reads them automatically.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <Text size="sm" variant="muted">
+              </p>
+            </div>
+            <p className="text-base-content/70 text-sm">
               Open a customer (CRM → Customers) or a B2B account (CRM → B2B accounts) and use the
               Tax exemptions panel to upload certificates.
-            </Text>
-          </CardContent>
+            </p>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

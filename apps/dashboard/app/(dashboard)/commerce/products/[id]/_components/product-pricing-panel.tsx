@@ -6,21 +6,7 @@
 //
 // Still Phase 3 (noted at the foot): price lists and B2B contract pricing.
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
 
 import { ProductBulkTiersEditor, type BulkTierRow } from './product-bulk-tiers-editor';
 
@@ -80,15 +66,13 @@ export function ProductPricingPanel({
 
   if (live.length === 0) {
     return (
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Pricing</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text variant="muted">
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">Pricing</h3>
+          <p className="text-base-content/70">
             No variants yet. Add a variant on the Variants tab to set a price.
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
     );
   }
@@ -105,18 +89,18 @@ export function ProductPricingPanel({
     margins.length > 0 ? margins.reduce((sum, m) => sum + m, 0) / margins.length : null;
 
   return (
-    <Stack gap={6}>
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between" gap={3} wrap>
-            <Stack gap={1}>
-              <Heading level={3}>Pricing</Heading>
-              <Text variant="muted" size="sm">
+    <div className="flex flex-col gap-6">
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Pricing</h3>
+              <p className="text-base-content/70 text-sm">
                 Current retail price, cost, and margin for each variant. Edit individual prices on
                 the Variants tab.
-              </Text>
-            </Stack>
-            <Stack direction="row" align="center" gap={2} wrap>
+              </p>
+            </div>
+            <div className="flex flex-row flex-wrap items-center gap-2">
               <Badge color="neutral" variant="soft" size="sm">
                 {minPrice === maxPrice
                   ? money(minPrice, currency)
@@ -127,61 +111,55 @@ export function ProductPricingPanel({
                   {avgMargin.toFixed(1)}% avg margin
                 </Badge>
               )}
-            </Stack>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Variant</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead className="text-right">Compare at</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead className="text-right">Margin</TableHead>
-                  <TableHead>Priced by</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Variant</th>
+                  <th className="text-right">Price</th>
+                  <th className="text-right">Compare at</th>
+                  <th className="text-right">Cost</th>
+                  <th className="text-right">Margin</th>
+                  <th>Priced by</th>
+                </tr>
+              </thead>
+              <tbody>
                 {live.map((v) => {
                   const pct = marginPct(v.priceCents, v.costCents);
                   const rule = v.markupRuleId ? ruleName.get(v.markupRuleId) : null;
                   return (
-                    <TableRow key={v.id}>
-                      <TableCell>
-                        <Stack direction="row" align="center" gap={2}>
-                          <Text className="font-medium">{v.title ?? v.sku}</Text>
+                    <tr key={v.id}>
+                      <td>
+                        <div className="flex flex-row items-center gap-2">
+                          <span className="font-medium">{v.title ?? v.sku}</span>
                           {v.isDefault && (
                             <Badge color="neutral" variant="soft" size="sm">
                               Default
                             </Badge>
                           )}
-                        </Stack>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {money(v.priceCents, v.currency)}
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-muted)] tabular-nums">
+                        </div>
+                      </td>
+                      <td className="text-right tabular-nums">{money(v.priceCents, v.currency)}</td>
+                      <td className="text-right text-[var(--color-text-muted)] tabular-nums">
                         {v.compareAtPriceCents !== null
                           ? money(v.compareAtPriceCents, v.currency)
                           : '—'}
-                      </TableCell>
-                      <TableCell className="text-right text-[var(--color-text-muted)] tabular-nums">
+                      </td>
+                      <td className="text-right text-[var(--color-text-muted)] tabular-nums">
                         {v.costCents !== null ? money(v.costCents, v.currency) : '—'}
-                      </TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td className="text-right">
                         {pct !== null ? (
                           <Badge color={marginColor(pct)} variant="soft" size="sm">
                             {pct.toFixed(1)}%
                           </Badge>
                         ) : (
-                          <Text size="sm" variant="muted">
-                            —
-                          </Text>
+                          <span className="text-base-content/70 text-sm">—</span>
                         )}
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td>
                         {rule ? (
                           <Badge color="module" variant="soft" size="sm">
                             {rule}
@@ -191,36 +169,32 @@ export function ProductPricingPanel({
                             {supplierName ?? 'Vendor'}
                           </Badge>
                         ) : (
-                          <Text size="sm" variant="muted">
-                            Manual
-                          </Text>
+                          <span className="text-base-content/70 text-sm">Manual</span>
                         )}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   );
                 })}
-              </TableBody>
+              </tbody>
             </Table>
 
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Price lists and B2B contract pricing are coming in a later release.
-            </Text>
-          </Stack>
-        </CardContent>
+            </p>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Bulk price tiers</Heading>
-            <Text variant="muted" size="sm">
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Bulk price tiers</h3>
+            <p className="text-base-content/70 text-sm">
               Quantity ramps for this product&apos;s variants — e.g. 10+ at a lower unit price. A
               tier applies only when its price beats the otherwise-resolved price; variant tiers
               override price-list tiers.
-            </Text>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <ProductBulkTiersEditor
             variants={live.map((v) => ({
               id: v.id,
@@ -231,8 +205,8 @@ export function ProductPricingPanel({
             }))}
             tiers={tiers}
           />
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

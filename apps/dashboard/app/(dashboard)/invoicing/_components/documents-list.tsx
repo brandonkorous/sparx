@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { EntityRowLink } from '../../_components/entity-row-link';
 import { AR_STATUS_VARIANT, formatMoney } from './format';
@@ -63,11 +57,7 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
     },
     {
       header: 'Kind',
-      cell: (d) => (
-        <Text size="sm" variant="muted">
-          {stageLabels[d.stageId] ?? '—'}
-        </Text>
-      ),
+      cell: (d) => <p className="text-base-content/70 text-sm">{stageLabels[d.stageId] ?? '—'}</p>,
     },
     { header: 'Status', cell: statusBadge },
     {
@@ -83,9 +73,7 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
     {
       header: 'Updated',
       cell: (d) => (
-        <Text size="sm" variant="muted">
-          {new Date(d.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -97,32 +85,22 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
         'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
       ),
     subtitle: (d) => (
-      <Text size="xs" variant="muted">
-        {stageLabels[d.stageId] ?? '—'}
-      </Text>
+      <p className="text-base-content/70 text-xs">{stageLabels[d.stageId] ?? '—'}</p>
     ),
     badge: statusBadge,
     body: (d) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Total
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatMoney(d.total, d.currency)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
-            Balance
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatMoney(d.balance, d.currency)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Total</p>
+          <p className="text-sm tabular-nums">{formatMoney(d.total, d.currency)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">Balance</p>
+          <p className="text-sm tabular-nums">{formatMoney(d.balance, d.currency)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           Updated {new Date(d.updatedAt).toLocaleDateString()}
-        </Text>
+        </p>
       </>
     ),
   };

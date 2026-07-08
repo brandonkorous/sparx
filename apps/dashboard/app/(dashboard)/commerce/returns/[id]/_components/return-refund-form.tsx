@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, Stack, Text } from '@sparx/ui';
+import { Button, Checkbox, Input } from 'silicaui-react';
 
 import { formBool, formNumber } from '../../../../../../lib/forms';
 import { issueReturnRefundAction } from '../../../return-actions';
@@ -49,40 +49,38 @@ export function ReturnRefundForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap={3}>
-        <Stack direction="row" gap={3} wrap>
-          <Stack gap={1} className="w-40">
-            <Text size="xs" variant="muted">
-              Refund amount (dollars) *
-            </Text>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row flex-wrap gap-3">
+          <div className="flex w-40 flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Refund amount (dollars) *</p>
             <Input name="amount" type="number" step="0.01" min="0" required />
-          </Stack>
-          <Stack gap={1} className="w-40">
-            <Text size="xs" variant="muted">
-              Restocking fee (dollars)
-            </Text>
+          </div>
+          <div className="flex w-40 flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Restocking fee (dollars)</p>
             <Input name="restockingFee" type="number" step="0.01" min="0" />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         <label className="flex items-center gap-2">
           <Checkbox
             color="module"
             name="asAccountCredit"
             defaultChecked={preferredOutcome === 'account_credit'}
           />
-          <Text size="sm">Issue as account credit instead of refunding to original payment</Text>
+          <span className="text-sm">
+            Issue as account credit instead of refunding to original payment
+          </span>
         </label>
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>
             {pending ? 'Issuing…' : 'Issue refund'}
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

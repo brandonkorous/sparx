@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Presentation } from 'lucide-react';
-import { Container, Heading, ModuleProvider, PageHeader, Stack, Text } from '@sparx/ui';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { PITCH_SECTIONS } from '../_lib/content';
 import { PrintButton } from '../_components/print-button';
@@ -12,8 +12,8 @@ import { PrintButton } from '../_components/print-button';
 export default function PartnerPitchPage() {
   return (
     <ModuleProvider module="partner">
-      <Container size="lg">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
             className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
@@ -26,11 +26,11 @@ export default function PartnerPitchPage() {
             description="A ready story to walk a client through — on screen or printed. Specific, honest, no jargon."
             actions={<PrintButton />}
           />
-          <Stack gap={6}>
+          <div className="flex flex-col gap-6">
             {PITCH_SECTIONS.map((section) => (
-              <Stack key={section.heading} gap={3}>
-                <Heading level={2}>{section.heading}</Heading>
-                <Text className="max-w-2xl">{section.body}</Text>
+              <div key={section.heading} className="flex flex-col gap-3">
+                <h2 className="text-2xl font-semibold tracking-tight">{section.heading}</h2>
+                <p className="max-w-2xl text-base">{section.body}</p>
                 {section.points ? (
                   <ul className="flex max-w-2xl flex-col gap-1.5">
                     {section.points.map((p) => (
@@ -39,18 +39,16 @@ export default function PartnerPitchPage() {
                           aria-hidden
                           className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
                         />
-                        <Text size="sm" variant="muted">
-                          {p}
-                        </Text>
+                        <p className="text-base-content/70 text-sm">{p}</p>
                       </li>
                     ))}
                   </ul>
                 ) : null}
-              </Stack>
+              </div>
             ))}
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

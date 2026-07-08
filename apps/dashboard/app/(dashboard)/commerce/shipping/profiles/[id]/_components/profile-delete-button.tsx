@@ -4,7 +4,9 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Button, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+
+import { useConfirm } from '@sparx/ui';
 
 import { deleteShippingProfileAction } from '../../../../shipping-actions';
 
@@ -35,8 +37,12 @@ export function ProfileDeleteButton({ profileId }: { profileId: string }) {
   }
 
   return (
-    <Button variant="ghost" onClick={onDelete} disabled={pending}>
-      <Trash2 className="h-4 w-4" />
+    <Button
+      variant="ghost"
+      onClick={onDelete}
+      disabled={pending}
+      iconStart={<Trash2 className="h-4 w-4" />}
+    >
       Delete profile
     </Button>
   );

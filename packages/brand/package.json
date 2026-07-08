@@ -1,0 +1,32 @@
+{
+  "name": "@sparx/brand",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The sparx brand expressed as a silicaui theme — the single source of truth for the `[data-theme=\"sparx\"]` / `sparx-dark` token palette and the cascade-layer order every app imports. silicaui is the component layer; this package is the brand it reads.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./theme.css": "./src/theme.css",
+    "./layers.css": "./src/layers.css"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

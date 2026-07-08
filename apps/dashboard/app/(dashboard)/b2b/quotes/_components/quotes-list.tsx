@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 // Client wrapper for the B2B quotes / RFQ list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
@@ -27,14 +21,14 @@ export interface QuoteRow {
   _count: { items: number };
 }
 
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger' | 'module'> = {
-  draft: 'outline',
+const STATUS_VARIANT: Record<string, 'neutral' | 'warning' | 'success' | 'danger' | 'module'> = {
+  draft: 'neutral',
   submitted: 'warning',
   under_review: 'warning',
   quoted: 'module',
   accepted: 'success',
   declined: 'danger',
-  expired: 'outline',
+  expired: 'neutral',
 };
 
 function formatTotal(total: string | number): string {
@@ -62,9 +56,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
         {q.b2bAccount.companyName}
       </Link>
     ) : (
-      <Text size="sm" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-sm">—</p>
     );
 
   const statusBadge = (q: QuoteRow) => (
@@ -80,22 +72,20 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     },
     { header: 'Account', cell: accountCell },
     { header: 'Status', cell: statusBadge },
-    { header: 'Items', cell: (q) => <Text size="sm">{q._count.items}</Text> },
-    { header: 'Total', cell: (q) => <Text size="sm">{formatTotal(q.total)}</Text> },
+    { header: 'Items', cell: (q) => <p className="text-sm">{q._count.items}</p> },
+    { header: 'Total', cell: (q) => <p className="text-sm">{formatTotal(q.total)}</p> },
     {
       header: 'Expires',
       cell: (q) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Created',
       cell: (q) => (
-        <Text size="sm" variant="muted">
-          {new Date(q.createdAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-sm">{new Date(q.createdAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -115,18 +105,16 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     badge: statusBadge,
     body: (q) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {q._count.items} item{q._count.items === 1 ? '' : 's'}
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {formatTotal(q.total)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+          <p className="text-sm tabular-nums">{formatTotal(q.total)}</p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {q.validUntil ? `Expires ${new Date(q.validUntil).toLocaleDateString()} · ` : ''}created{' '}
           {new Date(q.createdAt).toLocaleDateString()}
-        </Text>
+        </p>
       </>
     ),
   };

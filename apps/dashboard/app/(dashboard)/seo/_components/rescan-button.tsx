@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { RefreshCw } from 'lucide-react';
 
 import { reindexSeoAudits } from '@/components/seo/actions';

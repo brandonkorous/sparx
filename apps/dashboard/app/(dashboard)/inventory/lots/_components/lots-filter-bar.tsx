@@ -3,17 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 import { RECALL_FILTER_OPTIONS } from './types';
@@ -92,9 +82,9 @@ export function LotsFilterBar({
 
   return (
     <Card>
-      <CardContent>
-        <Stack gap={3}>
-          <Stack direction="row" gap={3} align="end" wrap>
+      <CardBody>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-row flex-wrap items-end gap-3">
             <Field label="Item SKU" className="min-w-[11rem] flex-1">
               <Input
                 value={sku}
@@ -130,32 +120,28 @@ export function LotsFilterBar({
                 ))}
               </NativeSelect>
             </Field>
-          </Stack>
-          <Stack direction="row" gap={3} align="center" wrap>
+          </div>
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-sm">
               <Checkbox
                 color="module"
                 checked={expiring}
-                onCheckedChange={(v) => setExpiring(v === true)}
+                onChange={(e) => setExpiring(e.target.checked)}
               />
               Expiring within a year
             </label>
-            <Stack direction="row" gap={2} align="center" className="ml-auto">
-              {error && (
-                <Text size="sm" className="text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
+            <div className="ml-auto flex flex-row items-center gap-2">
+              {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
               <Button variant="ghost" size="sm" onClick={clear} disabled={busy}>
                 Clear
               </Button>
               <Button color="module" size="sm" onClick={() => void apply()} disabled={busy}>
                 {busy ? 'Applying…' : 'Apply filters'}
               </Button>
-            </Stack>
-          </Stack>
-        </Stack>
-      </CardContent>
+            </div>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -179,9 +165,9 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <Stack gap={1} className={className}>
+    <div className={`flex flex-col gap-1${className ? ` ${className}` : ''}`}>
       <Label>{label}</Label>
       {children}
-    </Stack>
+    </div>
   );
 }

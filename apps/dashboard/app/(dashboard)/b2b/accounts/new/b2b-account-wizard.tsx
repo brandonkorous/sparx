@@ -18,18 +18,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
   ModuleProvider,
   SchemaFieldRenderer,
-  Stack,
-  Text,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -37,6 +27,7 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { createB2bAccountAction } from '../../../crm/b2b-actions';
@@ -162,51 +153,46 @@ function FleetProfilesCard({
   const remove = (id: string) => setProfiles((prev) => prev.filter((p) => p.id !== id));
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between">
+    <Card>
+      <CardBody>
+        <div className="flex flex-row items-center justify-between">
           <div className="flex flex-col gap-1">
-            <Heading level={3}>Fleet engine profiles</Heading>
-            <Text size="sm" variant="muted">
+            <h3 className="text-xl font-semibold">Fleet engine profiles</h3>
+            <p className="text-base-content/70 text-sm">
               Optional — the engine variants this fleet runs, used by fitment-aware catalog
               filtering.
-            </Text>
+            </p>
           </div>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            leftIcon={<Plus className="h-3.5 w-3.5" />}
+            iconStart={<Plus className="h-3.5 w-3.5" />}
             onClick={() => setProfiles((prev) => [...prev, emptyProfile()])}
             disabled={disabled}
           >
             Add engine
           </Button>
-        </Stack>
-      </CardHeader>
-      <CardContent>
+        </div>
         {profiles.length === 0 ? (
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             No engine profiles. Click “Add engine” to record the make, model, and count for each
             engine variant the fleet runs.
-          </Text>
+          </p>
         ) : (
-          <Stack gap={2}>
-            <Stack direction="row" gap={2} className="px-1">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2 px-1">
               {['Year', 'Make', 'Model', 'Engine code', 'Count'].map((h) => (
                 <Label key={h} className="flex-1 text-xs first:w-20 last:w-20">
                   {h}
                 </Label>
               ))}
               <div className="w-8" />
-            </Stack>
+            </div>
             {profiles.map((profile) => (
-              <Stack
+              <div
                 key={profile.id}
-                direction="row"
-                gap={2}
-                align="center"
-                className="rounded-md border border-[var(--color-border-default)] p-2"
+                className="flex flex-row items-center gap-2 rounded-md border border-[var(--color-border-default)] p-2"
               >
                 <Input
                   type="number"
@@ -258,11 +244,11 @@ function FleetProfilesCard({
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
-              </Stack>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -478,15 +464,13 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       >
         <div className="flex flex-col gap-5">
           {/* Company — the only required group */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Company</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Company</h3>
+              <p className="text-base-content/70 text-sm">
                 The account’s company details. Only the company name is required to create the
                 account.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <SchemaFieldRenderer
                 fields={COMPANY_FIELDS}
                 values={company}
@@ -494,25 +478,23 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
                 errors={companyErrors}
                 disabled={submitting}
               />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Pricing & credit — all optional */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Pricing &amp; credit</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Pricing &amp; credit</h3>
+              <p className="text-base-content/70 text-sm">
                 Pricing tier, credit limit, and payment terms — all optional, and editable anytime.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <SchemaFieldRenderer
                 fields={PRICING_FIELDS}
                 values={pricing}
                 onChange={(key, value) => setPricing((prev) => ({ ...prev, [key]: value }))}
                 disabled={submitting}
               />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Fleet engine profiles — optional repeating rows */}
@@ -523,9 +505,9 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
           />
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </div>
       </SurfaceStep>

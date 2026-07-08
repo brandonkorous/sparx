@@ -8,18 +8,8 @@
 import Link from 'next/link';
 import { ArrowRight, Building2, FileText, ReceiptText } from 'lucide-react';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
 
@@ -42,18 +32,16 @@ function CollectLink({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-lg border border-[var(--color-border-default)] p-4 transition-colors hover:border-[var(--module-active)]"
+      className="group rounded-box border-base-300 hover:border-module flex items-center gap-3 border p-4 transition-colors"
     >
-      <span aria-hidden className="text-[var(--module-active)]">
+      <span aria-hidden className="text-module">
         <Icon className="h-5 w-5" />
       </span>
-      <Stack gap={0} className="flex-1">
-        <Text weight="medium">{label}</Text>
-        <Text size="xs" variant="muted">
-          {description}
-        </Text>
-      </Stack>
-      <ArrowRight className="h-4 w-4 text-[var(--color-text-tertiary)] transition-transform group-hover:translate-x-0.5" />
+      <div className="flex flex-1 flex-col">
+        <p className="font-medium">{label}</p>
+        <p className="text-base-content/70 text-xs">{description}</p>
+      </div>
+      <ArrowRight className="text-base-content/50 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
     </Link>
   );
 }
@@ -71,8 +59,8 @@ export default async function ReceivablesPage(): Promise<React.JSX.Element> {
 
   return (
     <ModuleProvider module="finance">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<ReceiptText className="h-5 w-5" />}
             title="Receivables"
@@ -80,30 +68,26 @@ export default async function ReceivablesPage(): Promise<React.JSX.Element> {
           />
 
           {allCurrent ? (
-            <Card variant="module">
-              <CardHeader>
-                <Stack direction="row" align="center" gap={2}>
+            <Card className="bg-module bg-soft">
+              <CardBody>
+                <div className="flex items-center gap-2">
                   <CardTitle>Accounts receivable</CardTitle>
                   <Badge color="success" variant="soft">
                     All current
                   </Badge>
-                </Stack>
-              </CardHeader>
-              <CardContent>
-                <Text size="sm" variant="muted" className="max-w-prose">
+                </div>
+                <p className="text-base-content/70 max-w-prose text-sm">
                   Nothing outstanding — every invoice is paid. New unpaid invoices and their aging
                   will appear here as you bill customers and accounts.
-                </Text>
-              </CardContent>
+                </p>
+              </CardBody>
             </Card>
           ) : (
             <ArAgingPanel aging={aging} />
           )}
 
-          <Stack gap={2}>
-            <Text size="sm" weight="medium">
-              Create &amp; collect
-            </Text>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium">Create &amp; collect</p>
             <div className="grid gap-3 sm:grid-cols-2">
               <CollectLink
                 href="/invoicing/documents"
@@ -120,9 +104,9 @@ export default async function ReceivablesPage(): Promise<React.JSX.Element> {
                 />
               )}
             </div>
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

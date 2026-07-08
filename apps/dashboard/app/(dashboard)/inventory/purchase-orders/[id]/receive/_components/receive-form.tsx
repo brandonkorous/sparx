@@ -4,19 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
 
 import { createGoodsReceiptAction } from '../../../../_lib/goods-receipt-actions';
 import { formatMoney, type PurchaseOrderLineRow } from '../../../_components/types';
@@ -117,53 +105,43 @@ export function ReceiveForm({
   return (
     <form onSubmit={onSubmit}>
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Receipt details</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Receipt details</h3>
+            <p className="opacity-70">
               What arrived for {purchaseOrderNumber}. A packing-slip reference + date are optional.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack direction="row" gap={3} wrap>
+            </p>
+          </div>
+          <div className="flex flex-row flex-wrap gap-3">
             <Field label="Received date" name="receivedAt" type="date" defaultValue={today} />
             <Field label="Reference" name="reference" placeholder="packing slip / carrier" />
             <Field label="Note" name="note" placeholder="optional" />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       <Card className="mt-6">
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Lines</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Lines</h3>
+            <p className="opacity-70">
               Quantity defaults to what&apos;s outstanding. Set a quantity to 0 to skip a line;
               enter a lot number to track the batch.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={2}>
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
             {rows.map((r) => (
-              <Stack
+              <div
                 key={r.lineId}
-                direction="row"
-                align="center"
-                gap={3}
-                wrap
-                className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
               >
-                <Stack gap={0} className="min-w-[12rem] flex-1">
-                  <Text size="sm" className="font-medium">
-                    {r.label}
-                  </Text>
-                  <Text size="xs" variant="muted" className="font-mono">
+                <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+                  <p className="text-sm font-medium">{r.label}</p>
+                  <p className="text-base-content/70 font-mono text-xs">
                     {r.sku ?? r.lineId.slice(0, 8)} · {r.alreadyReceived}/{r.ordered} received ·{' '}
                     {r.outstanding} outstanding
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
                 <MiniField
                   label="Qty"
                   value={r.qty}
@@ -183,32 +161,32 @@ export function ReceiveForm({
                   className="w-[8rem]"
                   text
                 />
-                <Text size="sm" variant="muted" className="w-[6rem] text-right">
+                <p className="text-base-content/70 w-[6rem] text-right text-sm">
                   {r.qty && Number(r.qty) > 0 && r.cost
                     ? formatMoney(Math.round(Number(r.cost) * 100) * Number(r.qty), currency)
                     : '—'}
-                </Text>
-              </Stack>
+                </p>
+              </div>
             ))}
-          </Stack>
-        </CardContent>
-        <CardFooter>
-          <Stack direction="row" gap={3} align="center" className="w-full">
-            {error && (
-              <Text size="sm" className="text-[var(--color-danger)]">
-                {error}
-              </Text>
-            )}
-            <Stack direction="row" gap={2} className="ml-auto">
-              <Button type="button" variant="ghost" asChild>
-                <Link href={`/inventory/purchase-orders/${purchaseOrderId}`}>Cancel</Link>
+          </div>
+        </CardBody>
+        <CardActions>
+          <div className="flex w-full flex-row items-center gap-3">
+            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            <div className="ml-auto flex flex-row gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                render={<Link href={`/inventory/purchase-orders/${purchaseOrderId}`} />}
+              >
+                Cancel
               </Button>
               <Button color="module" type="submit" disabled={pending}>
                 {pending ? 'Receiving…' : 'Receive stock'}
               </Button>
-            </Stack>
-          </Stack>
-        </CardFooter>
+            </div>
+          </div>
+        </CardActions>
       </Card>
     </form>
   );
@@ -228,7 +206,7 @@ function MiniField({
   text?: boolean;
 }) {
   return (
-    <Stack gap={1} className={className}>
+    <div className={`flex flex-col gap-1 ${className}`}>
       <Label htmlFor={`f-${label}`}>{label}</Label>
       <Input
         id={`f-${label}`}
@@ -236,7 +214,7 @@ function MiniField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-    </Stack>
+    </div>
   );
 }
 
@@ -254,7 +232,7 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <Stack gap={1} className="min-w-[10rem] flex-1">
+    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
       <Label htmlFor={name}>{label}</Label>
       <Input
         id={name}
@@ -263,7 +241,7 @@ function Field({
         defaultValue={defaultValue}
         placeholder={placeholder}
       />
-    </Stack>
+    </div>
   );
 }
 

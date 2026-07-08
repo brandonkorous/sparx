@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, Star } from 'lucide-react';
-import { Button, Tooltip, TooltipContent, TooltipTrigger, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button, Tooltip } from 'silicaui-react';
 
 import { makeSitePrimary, setActiveSite, type ActionResult } from '../../actions';
 
@@ -43,32 +44,29 @@ export function SiteLifecycleActions({
   return (
     <>
       {host && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild variant="ghost" size="sm" aria-label="View live site">
-              <a href={`https://${host}`} target="_blank" rel="noreferrer">
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>View live site</TooltipContent>
+        <Tooltip content="View live site">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="View live site"
+            render={<a href={`https://${host}`} target="_blank" rel="noreferrer" />}
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Button>
         </Tooltip>
       )}
 
       {!isPrimary && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label="Make primary site"
-              disabled={pending}
-              onClick={() => run(() => makeSitePrimary(propertyId), `“${name}” is now primary.`)}
-            >
-              <Star className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Make primary site</TooltipContent>
+        <Tooltip content="Make primary site">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Make primary site"
+            disabled={pending}
+            onClick={() => run(() => makeSitePrimary(propertyId), `“${name}” is now primary.`)}
+          >
+            <Star className="h-4 w-4" />
+          </Button>
         </Tooltip>
       )}
 

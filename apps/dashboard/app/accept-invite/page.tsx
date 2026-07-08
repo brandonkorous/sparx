@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 import { getInvitationDetail, getSession, type InvitationDetail } from '@sparx/auth';
 import { AuthScreen } from '../(auth)/_components/auth-screen';
 import { roleLabel } from '../(dashboard)/settings/team/_lib/roles';
@@ -42,8 +42,8 @@ export default async function AcceptInvitePage({
             : 'It may have expired or been revoked. Ask whoever invited you to send a fresh invitation.'
         }
         footer={
-          <Button variant="outline" asChild>
-            <Link href="/sign-in">Go to sign in</Link>
+          <Button variant="outline" render={<Link href="/sign-in" />}>
+            Go to sign in
           </Button>
         }
       />
@@ -57,21 +57,24 @@ export default async function AcceptInvitePage({
   if (!session) {
     return (
       <InviteFrame invite={invite}>
-        <Stack gap={3}>
-          <Button asChild className="w-full">
-            <Link href={`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`}>
-              Sign in to accept
-            </Link>
+        <div className="flex flex-col gap-3">
+          <Button
+            className="w-full"
+            render={<Link href={`/sign-in?callbackURL=${encodeURIComponent(callbackURL)}`} />}
+          >
+            Sign in to accept
           </Button>
-          <Button variant="outline" asChild className="w-full">
-            <Link href={`/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`}>
-              Create an account
-            </Link>
+          <Button
+            variant="outline"
+            className="w-full"
+            render={<Link href={`/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`} />}
+          >
+            Create an account
           </Button>
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             Use {invite.email} so the invitation matches your account.
-          </Text>
-        </Stack>
+          </p>
+        </div>
       </InviteFrame>
     );
   }
@@ -80,13 +83,13 @@ export default async function AcceptInvitePage({
   if (session.user.email.toLowerCase() !== invite.email.toLowerCase()) {
     return (
       <InviteFrame invite={invite}>
-        <Stack gap={3}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-col gap-3">
+          <p className="text-base-content/70 text-sm">
             You&apos;re signed in as <strong>{session.user.email}</strong>, but this invitation was
             sent to <strong>{invite.email}</strong>. Sign in with that address to accept it.
-          </Text>
+          </p>
           <SwitchAccountButton callbackURL={callbackURL} />
-        </Stack>
+        </div>
       </InviteFrame>
     );
   }
@@ -96,15 +99,15 @@ export default async function AcceptInvitePage({
   if (!session.user.emailVerified) {
     return (
       <InviteFrame invite={invite}>
-        <Stack gap={3}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-col gap-3">
+          <p className="text-base-content/70 text-sm">
             Verify your email address ({invite.email}) before accepting. Check your inbox for the
             verification link, then come back to this page.
-          </Text>
-          <Button variant="outline" asChild className="w-full">
-            <Link href="/verify-email">Resend verification email</Link>
+          </p>
+          <Button variant="outline" className="w-full" render={<Link href="/verify-email" />}>
+            Resend verification email
           </Button>
-        </Stack>
+        </div>
       </InviteFrame>
     );
   }
@@ -131,23 +134,21 @@ function InviteFrame({
         blurb: 'Accept your invitation to collaborate on sparx.',
       }}
     >
-      <Stack gap={6}>
-        <Stack gap={2}>
-          <Heading level={2}>You&apos;re invited</Heading>
-          <Text variant="muted">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-semibold tracking-tight">You&apos;re invited</h2>
+          <p className="text-base-content/70">
             {invite.inviterName} invited you to join <strong>{invite.orgName}</strong>.
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" gap={2}>
-          <Text size="sm" variant="muted">
-            Role
-          </Text>
+          </p>
+        </div>
+        <div className="flex flex-row items-center gap-2">
+          <p className="text-base-content/70 text-sm">Role</p>
           <Badge color="neutral" variant="soft" size="sm">
             {roleLabel(invite.role)}
           </Badge>
-        </Stack>
+        </div>
         {children}
-      </Stack>
+      </div>
     </AuthScreen>
   );
 }
@@ -164,17 +165,17 @@ function InviteMessage({
 }) {
   return (
     <AuthScreen lede={{ title: 'Invitation', blurb: 'Join a workspace on sparx.' }}>
-      <Stack gap={6}>
-        <Stack gap={2}>
-          <Heading level={2}>{title}</Heading>
-          <Text variant="muted">{body}</Text>
-        </Stack>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+          <p className="text-base-content/70">{body}</p>
+        </div>
         {footer ?? (
-          <Button variant="outline" asChild>
-            <Link href="/sign-in">Go to sign in</Link>
+          <Button variant="outline" render={<Link href="/sign-in" />}>
+            Go to sign in
           </Button>
         )}
-      </Stack>
+      </div>
     </AuthScreen>
   );
 }

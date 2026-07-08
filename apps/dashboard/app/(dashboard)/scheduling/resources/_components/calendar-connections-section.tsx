@@ -7,7 +7,8 @@
 // source of truth (the DB no-overlap constraint, §8.4).
 
 import { useEffect, useState } from 'react';
-import { Badge, Button, Input, toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Input } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import { RefreshCw, Trash2 } from 'lucide-react';
 
 import type { CalendarConnection } from '../../_lib/types';

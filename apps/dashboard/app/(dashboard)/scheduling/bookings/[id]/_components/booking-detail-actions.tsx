@@ -17,9 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   Ban,
   CalendarClock,
@@ -114,7 +113,7 @@ export function BookingDetailActions({
             size="sm"
             color="module"
             disabled={busy}
-            leftIcon={<Check className="h-4 w-4" />}
+            iconStart={<Check className="h-4 w-4" />}
             onClick={() => void run(() => confirmBookingAction(id), 'Booking confirmed')}
           >
             Confirm
@@ -125,7 +124,7 @@ export function BookingDetailActions({
             size="sm"
             variant="outline"
             disabled={busy}
-            leftIcon={<LogIn className="h-4 w-4" />}
+            iconStart={<LogIn className="h-4 w-4" />}
             onClick={() => void run(() => checkInBookingAction(id), 'Checked in')}
           >
             Check in
@@ -136,7 +135,7 @@ export function BookingDetailActions({
             size="sm"
             variant="outline"
             disabled={busy}
-            leftIcon={<CheckCheck className="h-4 w-4" />}
+            iconStart={<CheckCheck className="h-4 w-4" />}
             onClick={() => void run(() => completeBookingAction(id), 'Booking completed')}
           >
             Complete
@@ -147,7 +146,7 @@ export function BookingDetailActions({
             size="sm"
             variant="outline"
             disabled={busy}
-            leftIcon={<CalendarClock className="h-4 w-4" />}
+            iconStart={<CalendarClock className="h-4 w-4" />}
             onClick={() => setRescheduleOpen(true)}
           >
             Reschedule
@@ -156,7 +155,7 @@ export function BookingDetailActions({
 
         {(!terminal || isClass) && (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button
                 variant="ghost"
                 shape="square"
@@ -169,7 +168,7 @@ export function BookingDetailActions({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {isClass ? (
-                <DropdownMenuItem onSelect={() => setRosterOpen(true)}>
+                <DropdownMenuItem onClick={() => setRosterOpen(true)}>
                   <Users className="mr-2 h-4 w-4" />
                   Roster
                 </DropdownMenuItem>
@@ -177,12 +176,12 @@ export function BookingDetailActions({
               {isClass && !terminal ? <DropdownMenuSeparator /> : null}
               {!terminal ? (
                 <>
-                  <DropdownMenuItem onSelect={() => void noShow()}>
+                  <DropdownMenuItem onClick={() => void noShow()}>
                     <UserX className="mr-2 h-4 w-4" />
                     No-show
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onSelect={() => void cancel()}
+                    onClick={() => void cancel()}
                     className="text-[var(--color-danger)]"
                   >
                     <Ban className="mr-2 h-4 w-4" />

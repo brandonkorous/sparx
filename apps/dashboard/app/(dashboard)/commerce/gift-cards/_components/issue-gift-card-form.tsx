@@ -3,18 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Stack,
-  Text,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Input, Label } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { issueGiftCardAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -150,19 +140,19 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="w-[8rem]">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex w-[8rem] flex-col gap-2">
                     <Label htmlFor="gc-amount">Amount ($)</Label>
                     <Input
                       id="gc-amount"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                     />
-                  </Stack>
-                  <Stack gap={2} className="w-[6rem]">
+                  </div>
+                  <div className="flex w-[6rem] flex-col gap-2">
                     <Label htmlFor="gc-currency">Currency</Label>
                     <Input
                       id="gc-currency"
@@ -170,8 +160,8 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
                       onChange={(e) => setCurrency(e.target.value)}
                       maxLength={3}
                     />
-                  </Stack>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                  </div>
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                     <Label htmlFor="gc-recipient-email">Recipient email</Label>
                     <Input
                       id="gc-recipient-email"
@@ -179,17 +169,17 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
                       value={recipientEmail}
                       onChange={(e) => setRecipientEmail(e.target.value)}
                     />
-                  </Stack>
-                  <Stack gap={2} className="min-w-[12rem] flex-1">
+                  </div>
+                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                     <Label htmlFor="gc-recipient-name">Recipient name</Label>
                     <Input
                       id="gc-recipient-name"
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
                     />
-                  </Stack>
-                </Stack>
-                <Stack gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="gc-message">Message (optional)</Label>
                   <Input
                     id="gc-message"
@@ -197,8 +187,8 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Happy birthday!"
                   />
-                </Stack>
-                <Stack gap={2} className="w-[16rem]">
+                </div>
+                <div className="flex w-[16rem] flex-col gap-2">
                   <Label htmlFor="gc-custom-code">Custom code (optional)</Label>
                   <Input
                     id="gc-custom-code"
@@ -207,19 +197,19 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
                     placeholder="auto-generated when empty"
                     pattern="[A-Za-z0-9-]+"
                   />
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {issuedCode && (
-            <Text size="sm" className="mt-4 text-[var(--color-success)]" aria-live="polite">
+            <p className="mt-4 text-sm text-[var(--color-success)]" aria-live="polite">
               Issued <span className="font-mono">{issuedCode}</span>
-            </Text>
+            </p>
           )}
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

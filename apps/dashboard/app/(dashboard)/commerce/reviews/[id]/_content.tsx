@@ -2,18 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
+import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -73,14 +63,14 @@ export async function ReviewDetailContent({ id }: Props) {
   const tenant = await api.get<{ slug: string }>('/v1/tenant');
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
             <Stars value={review.rating} />
-            <Heading level={1}>{headingFor(review)}</Heading>
-          </Stack>
-          <Stack direction="row" gap={2} align="center">
+            <h1 className="text-3xl font-semibold">{headingFor(review)}</h1>
+          </div>
+          <div className="flex flex-row items-center gap-2">
             <Badge color={statusTone(review.status)} variant="soft" size="sm">
               {statusLabel(review.status)}
             </Badge>
@@ -89,30 +79,28 @@ export async function ReviewDetailContent({ id }: Props) {
                 Verified purchase
               </Badge>
             )}
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {review.displayName ?? (review.customerId ? 'Customer' : 'Anonymous')} ·{' '}
               {new Date(review.createdAt).toLocaleString()}
-            </Text>
-          </Stack>
-        </Stack>
+            </p>
+          </div>
+        </div>
         <ModerateActions reviewId={review.id} status={review.status} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Review body</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Review body</h3>
+            <p className="opacity-70">
               On the storefront this renders alongside the product gallery + variant picker. The
               merchant response (below) is shown immediately under the review when present.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={3}>
-            <Text className="whitespace-pre-wrap">{review.body}</Text>
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <p className="whitespace-pre-wrap">{review.body}</p>
             {review.mediaAssetIds.length > 0 && (
-              <Stack direction="row" gap={2} wrap>
+              <div className="flex flex-row flex-wrap gap-2">
                 {review.mediaAssetIds.map((mid) => (
                   <img
                     key={mid}
@@ -122,16 +110,12 @@ export async function ReviewDetailContent({ id }: Props) {
                     className="h-20 w-20 rounded-md border border-[var(--color-border-default)] object-cover"
                   />
                 ))}
-              </Stack>
+              </div>
             )}
-            <Stack direction="row" gap={4}>
-              <Text size="xs" variant="muted">
-                Helpful: {review.helpfulCount}
-              </Text>
-              <Text size="xs" variant="muted">
-                Unhelpful: {review.unhelpfulCount}
-              </Text>
-              <Text size="xs" variant="muted">
+            <div className="flex flex-row gap-4">
+              <p className="text-base-content/70 text-xs">Helpful: {review.helpfulCount}</p>
+              <p className="text-base-content/70 text-xs">Unhelpful: {review.unhelpfulCount}</p>
+              <p className="text-base-content/70 text-xs">
                 Product:{' '}
                 {review.productTitle ? (
                   <Link
@@ -143,30 +127,28 @@ export async function ReviewDetailContent({ id }: Props) {
                 ) : (
                   'Deleted product'
                 )}
-              </Text>
-            </Stack>
-          </Stack>
-        </CardContent>
+              </p>
+            </div>
+          </div>
+        </CardBody>
       </Card>
 
-      <Card variant="default">
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Merchant response</Heading>
-            <CardDescription>
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Merchant response</h3>
+            <p className="opacity-70">
               Public reply attributed to your team. Saving overwrites any previous response.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <RespondForm
             reviewId={review.id}
             initial={review.response}
             respondedAt={review.respondedAt}
           />
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -182,7 +164,7 @@ function headingFor(review: ReviewDetail): string {
 
 function Stars({ value }: { value: number }) {
   return (
-    <Stack direction="row" gap={0} align="center">
+    <div className="flex flex-row items-center gap-0">
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
@@ -193,6 +175,6 @@ function Stars({ value }: { value: number }) {
           }
         />
       ))}
-    </Stack>
+    </div>
   );
 }

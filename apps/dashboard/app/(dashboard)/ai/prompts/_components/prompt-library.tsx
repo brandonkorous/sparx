@@ -3,17 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  EmptyState,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { deletePromptAction, installDefaultPromptsAction } from '../actions';
 import {
@@ -119,11 +110,11 @@ export function PromptLibrary({ prompts }: PromptLibraryProps) {
           icon={<Sparkles className="h-5 w-5" />}
           title="No prompts yet"
           description="Install the platform starter library to get a tuned prompt for support, email, product, SEO, and a chat persona — or write your own from scratch."
-          action={
+          actions={
             <>
               <Button
                 color="module"
-                leftIcon={<Sparkles className="h-4 w-4" />}
+                iconStart={<Sparkles className="h-4 w-4" />}
                 onClick={installDefaults}
                 loading={installing}
                 disabled={installing}
@@ -143,31 +134,29 @@ export function PromptLibrary({ prompts }: PromptLibraryProps) {
 
   return (
     <>
-      <Stack gap={3} direction="row" justify="between" align="center" wrap>
-        <Text size="sm" variant="muted">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <p className="text-base-content/70 text-sm">
           {prompts.length} prompt{prompts.length === 1 ? '' : 's'} across {grouped.length} categor
           {grouped.length === 1 ? 'y' : 'ies'}.
-        </Text>
-        <Button color="module" leftIcon={<Plus className="h-4 w-4" />} onClick={openCreate}>
+        </p>
+        <Button color="module" iconStart={<Plus className="h-4 w-4" />} onClick={openCreate}>
           New prompt
         </Button>
-      </Stack>
+      </div>
 
-      <Stack gap={6} className="mt-6">
+      <div className="mt-6 flex flex-col gap-6">
         {grouped.map(({ category, items }) => (
           <section key={category}>
-            <Stack gap={1} className="mb-3">
-              <Stack direction="row" align="center" gap={2}>
-                <Text weight="medium">{categoryLabel(category)}</Text>
+            <div className="mb-3 flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
+                <p className="font-medium">{categoryLabel(category)}</p>
                 <Badge variant="soft" size="sm">
                   {items.length}
                 </Badge>
-              </Stack>
-              <Text size="xs" variant="muted">
-                {categoryBlurb(category)}
-              </Text>
-            </Stack>
-            <Stack gap={3}>
+              </div>
+              <p className="text-base-content/70 text-xs">{categoryBlurb(category)}</p>
+            </div>
+            <div className="flex flex-col gap-3">
               {items.map((prompt) => (
                 <PromptRow
                   key={prompt.id}
@@ -177,10 +166,10 @@ export function PromptLibrary({ prompts }: PromptLibraryProps) {
                   onDelete={() => onDelete(prompt)}
                 />
               ))}
-            </Stack>
+            </div>
           </section>
         ))}
-      </Stack>
+      </div>
 
       {form}
     </>
@@ -196,14 +185,12 @@ interface PromptRowProps {
 
 function PromptRow({ prompt, deleting, onEdit, onDelete }: PromptRowProps) {
   return (
-    <Card variant="default" padding="md">
-      <CardContent className="p-0">
-        <Stack direction="row" gap={4} align="start" wrap>
-          <Stack gap={2} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              <Text weight="medium" className="truncate">
-                {prompt.name}
-              </Text>
+    <Card>
+      <CardBody className="p-4">
+        <div className="flex flex-row flex-wrap items-start gap-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <p className="truncate font-medium">{prompt.name}</p>
               <Badge color="module" variant="soft" size="sm">
                 {categoryLabel(prompt.category)}
               </Badge>
@@ -222,30 +209,28 @@ function PromptRow({ prompt, deleting, onEdit, onDelete }: PromptRowProps) {
                   {prompt.model}
                 </Badge>
               )}
-            </Stack>
+            </div>
 
             {prompt.description && (
-              <Text size="sm" variant="muted">
-                {prompt.description}
-              </Text>
+              <p className="text-base-content/70 text-sm">{prompt.description}</p>
             )}
 
-            <p className="line-clamp-2 rounded-md bg-[var(--color-bg-subtle)] px-3 py-2 font-mono text-xs leading-relaxed text-[var(--color-text-secondary)]">
+            <p className="bg-base-200 text-base-content/70 line-clamp-2 rounded-md px-3 py-2 font-mono text-xs leading-relaxed">
               {prompt.body}
             </p>
 
             {prompt.variables.length > 0 && (
-              <Stack direction="row" gap={1} wrap>
+              <div className="flex flex-row flex-wrap gap-1">
                 {prompt.variables.map((variable) => (
                   <Badge key={variable.key} variant="outline" color="module" size="sm">
                     {`{{${variable.key}}}`}
                   </Badge>
                 ))}
-              </Stack>
+              </div>
             )}
-          </Stack>
+          </div>
 
-          <Stack direction="row" gap={1} className="shrink-0">
+          <div className="flex shrink-0 flex-row gap-1">
             <Button
               variant="ghost"
               color="module"
@@ -270,9 +255,9 @@ function PromptRow({ prompt, deleting, onEdit, onDelete }: PromptRowProps) {
             >
               {!deleting && <Trash2 className="h-4 w-4" />}
             </Button>
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }

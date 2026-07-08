@@ -12,16 +12,8 @@
 
 import Link from 'next/link';
 import { Star, Archive } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -71,42 +63,38 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
     {
       header: 'Name',
       cell: (s) => (
-        <Stack gap={1} className="min-w-0">
-          <Stack direction="row" align="center" gap={2} wrap>
+        <div className="flex min-w-0 flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             {nameLink(s, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
             {badges(s)}
-          </Stack>
-          <Text size="xs" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-xs">
             slug <code>{s.slug}</code>
-          </Text>
-        </Stack>
+          </p>
+        </div>
       ),
     },
     {
       header: 'Description',
       cell: (s) =>
         s.description ? (
-          <Text size="sm" variant="muted" className="line-clamp-2">
-            {s.description}
-          </Text>
+          <p className="text-base-content/70 line-clamp-2 text-sm">{s.description}</p>
         ) : (
-          <Text size="sm" variant="muted">
-            —
-          </Text>
+          <p className="text-base-content/70 text-sm">—</p>
         ),
     },
     {
       header: 'Members',
       align: 'right',
-      cell: (s) => <Text size="sm">{s.memberCount.toLocaleString()}</Text>,
+      cell: (s) => <p className="text-sm">{s.memberCount.toLocaleString()}</p>,
     },
     {
       header: '',
       id: 'actions',
       align: 'right',
       cell: (s) => (
-        <Button asChild variant="ghost" size="sm">
-          <Link href={`/crm/segments/${s.id}`}>Open</Link>
+        <Button render={<Link href={`/crm/segments/${s.id}`} />} variant="ghost" size="sm">
+          Open
         </Button>
       ),
     },
@@ -116,39 +104,35 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
     title: (s) =>
       nameLink(s, 'text-base font-medium hover:text-[var(--module-active)] hover:underline'),
     render: (s) => (
-      <Card variant="default" padding="md">
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack gap={1} className="min-w-0 flex-1">
-            <Stack direction="row" align="center" gap={2} wrap>
-              {nameLink(
-                s,
-                'text-base font-medium hover:text-[var(--module-active)] hover:underline'
+      <Card>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <div className="flex flex-row flex-wrap items-center gap-2">
+                {nameLink(
+                  s,
+                  'text-base font-medium hover:text-[var(--module-active)] hover:underline'
+                )}
+                {badges(s)}
+              </div>
+              {s.description && (
+                <p className="text-base-content/70 truncate text-sm">{s.description}</p>
               )}
-              {badges(s)}
-            </Stack>
-            {s.description && (
-              <Text size="sm" variant="muted" className="truncate">
-                {s.description}
-              </Text>
-            )}
-            <Text size="xs" variant="muted">
-              slug <code>{s.slug}</code>
-            </Text>
-          </Stack>
-          <Stack direction="row" align="center" gap={3}>
-            <Stack gap={0}>
-              <Text size="xs" variant="muted">
-                Members
-              </Text>
-              <Text size="lg" weight="medium" className="tabular-nums">
-                {s.memberCount.toLocaleString()}
-              </Text>
-            </Stack>
-            <Button asChild variant="ghost" size="sm">
-              <Link href={`/crm/segments/${s.id}`}>Open</Link>
-            </Button>
-          </Stack>
-        </Stack>
+              <p className="text-base-content/70 text-xs">
+                slug <code>{s.slug}</code>
+              </p>
+            </div>
+            <div className="flex flex-row items-center gap-3">
+              <div className="flex flex-col gap-0">
+                <p className="text-base-content/70 text-xs">Members</p>
+                <p className="text-lg font-medium tabular-nums">{s.memberCount.toLocaleString()}</p>
+              </div>
+              <Button render={<Link href={`/crm/segments/${s.id}`} />} variant="ghost" size="sm">
+                Open
+              </Button>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     ),
   };

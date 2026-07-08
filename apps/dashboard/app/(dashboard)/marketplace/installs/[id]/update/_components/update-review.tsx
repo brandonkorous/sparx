@@ -8,18 +8,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Stack,
-  Text,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { applyUpdateAction } from '../../../../actions';
 import type { UpdateArtifactDiff, UpdateFieldChange, UpdatePlan } from '../_types';
@@ -68,11 +58,11 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
   if (!plan.updatable) {
     return (
       <Card>
-        <CardContent>
-          <Text variant="muted">
+        <CardBody>
+          <p className="text-base-content/70">
             This install is already on the latest version — nothing to update.
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
     );
   }
@@ -110,8 +100,8 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
   }
 
   return (
-    <Stack gap={5}>
-      <Stack direction="row" gap={2} align="center" className="flex-wrap">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge variant="soft">{plan.summary.auto} automatic</Badge>
         {plan.summary.conflicts > 0 ? (
           <Badge color="warning" variant="soft">
@@ -126,13 +116,15 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
         {removed.length > 0 ? (
           <Badge variant="outline">{removed.length} removed upstream</Badge>
         ) : null}
-      </Stack>
+      </div>
 
       {nothing ? (
         <Card>
-          <CardContent>
-            <Text variant="muted">The new version makes no changes to anything on your site.</Text>
-          </CardContent>
+          <CardBody>
+            <p className="text-base-content/70">
+              The new version makes no changes to anything on your site.
+            </p>
+          </CardBody>
         </Card>
       ) : null}
 
@@ -162,20 +154,19 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
       ) : null}
 
       {canManage ? (
-        <Stack direction="row" gap={3} align="center" className="flex-wrap">
+        <div className="flex flex-row flex-wrap items-center gap-3">
           <Button color="primary" onClick={onApply} loading={pending} disabled={pending || nothing}>
             Update to v{plan.toVersion}
           </Button>
-          <Button variant="ghost" asChild>
-            <Link href={`/marketplace/installs/${installId}`}>Cancel</Link>
-          </Button>
-        </Stack>
+          <Button
+            variant="ghost"
+            render={<Link href={`/marketplace/installs/${installId}`}>Cancel</Link>}
+          />
+        </div>
       ) : (
-        <Text size="sm" variant="muted">
-          Only an owner or admin can apply an update.
-        </Text>
+        <p className="text-base-content/70 text-sm">Only an owner or admin can apply an update.</p>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -194,9 +185,9 @@ function ArtifactCard({
   const autos = artifact.changes.filter((c) => c.type === 'auto');
   const isConflict = artifact.status === 'conflict';
   return (
-    <Card variant={isConflict ? 'module' : undefined}>
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2} className="justify-between">
+    <Card className={isConflict ? 'bg-module bg-soft' : undefined}>
+      <CardBody>
+        <div className="flex flex-row items-center justify-between gap-2">
           <CardTitle>
             {KIND_LABEL[artifact.kind] ?? artifact.kind} · {artifact.naturalKey}
           </CardTitle>
@@ -209,10 +200,8 @@ function ArtifactCard({
               {autos.length} update{autos.length === 1 ? '' : 's'}
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
+        </div>
+        <div className="flex flex-col gap-3">
           {conflicts.map((c) => (
             <ConflictRow
               key={c.id}
@@ -223,14 +212,14 @@ function ArtifactCard({
             />
           ))}
           {autos.length > 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {autos.length} other change{autos.length === 1 ? '' : 's'} the blueprint made
               {conflicts.length > 0 ? ' also' : ''} appl{autos.length === 1 ? 'ies' : 'y'}{' '}
               automatically.
-            </Text>
+            </p>
           ) : null}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -247,18 +236,18 @@ function ConflictRow({
   toVersion: string;
 }) {
   return (
-    <Stack gap={2} className="rounded-md border border-[var(--color-border)] p-3">
-      <Text size="sm">{change.path}</Text>
-      <Stack gap={1}>
-        <Text size="xs" variant="muted">
+    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border)] p-3">
+      <p className="text-sm">{change.path}</p>
+      <div className="flex flex-col gap-1">
+        <p className="text-base-content/70 text-xs">
           Yours: <span className="text-[var(--color-text-primary)]">{fmt(change.mine)}</span>
-        </Text>
-        <Text size="xs" variant="muted">
+        </p>
+        <p className="text-base-content/70 text-xs">
           Blueprint v{toVersion}:{' '}
           <span className="text-[var(--color-text-primary)]">{fmt(change.theirs)}</span>
-        </Text>
-      </Stack>
-      <Stack direction="row" gap={2}>
+        </p>
+      </div>
+      <div className="flex flex-row gap-2">
         <Button
           size="sm"
           variant={takingTheirs ? 'outline' : 'soft'}
@@ -275,29 +264,25 @@ function ConflictRow({
         >
           Take theirs
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
 function InfoCard({ title, items, note }: { title: string; items: string[]; note: string }) {
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           {items.map((it) => (
-            <Text key={it} size="sm">
+            <p key={it} className="text-sm">
               {it}
-            </Text>
+            </p>
           ))}
-          <Text size="xs" variant="muted" className="pt-1">
-            {note}
-          </Text>
-        </Stack>
-      </CardContent>
+          <p className="text-base-content/70 pt-1 text-xs">{note}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

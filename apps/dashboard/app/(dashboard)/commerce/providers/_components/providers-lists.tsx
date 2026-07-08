@@ -17,21 +17,8 @@ import type {
   ProviderKind,
   ProviderMetadata,
 } from '@sparx/commerce-schemas';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -113,23 +100,21 @@ function KindSection({ group, view }: { group: KindGroup; view: 'table' | 'card'
 
   return (
     <Card>
-      <CardHeader>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
+      <CardBody>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
             <Icon className="h-4 w-4" />
-            <Heading level={3}>{KIND_LABEL[kind]}</Heading>
+            <h3 className="text-xl font-semibold">{KIND_LABEL[kind]}</h3>
             <Badge color="neutral" variant="soft" size="sm">
               {installed.length} installed
             </Badge>
-          </Stack>
-          <CardDescription>{KIND_DESCRIPTION[kind]}</CardDescription>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={5}>
+          </div>
+          <p className="opacity-70">{KIND_DESCRIPTION[kind]}</p>
+        </div>
+        <div className="flex flex-col gap-5">
           {installed.length > 0 && (
-            <Stack gap={2}>
-              <Heading level={4}>Installed</Heading>
+            <div className="flex flex-col gap-2">
+              <h4 className="text-lg font-semibold">Installed</h4>
               <SelectionList
                 items={installed}
                 view={view}
@@ -140,11 +125,11 @@ function KindSection({ group, view }: { group: KindGroup; view: 'table' | 'card'
                 columns={installedColumns}
                 card={installedCard}
               />
-            </Stack>
+            </div>
           )}
 
-          <Stack gap={2}>
-            <Heading level={4}>Available to install</Heading>
+          <div className="flex flex-col gap-2">
+            <h4 className="text-lg font-semibold">Available to install</h4>
             {available.length === 0 ? (
               <EmptyState
                 icon={<Icon className="h-5 w-5" />}
@@ -152,31 +137,25 @@ function KindSection({ group, view }: { group: KindGroup; view: 'table' | 'card'
                 description="Provider bundles register at server boot."
               />
             ) : (
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 {available.map((p) => (
                   <ProviderCard key={p.slug} provider={p} kind={kind} />
                 ))}
-              </Stack>
+              </div>
             )}
-          </Stack>
-        </Stack>
-      </CardContent>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: ProviderKind }) {
   return (
-    <Stack
-      direction="row"
-      align="start"
-      justify="between"
-      gap={4}
-      className="rounded border border-[var(--color-border-default)] p-4"
-    >
-      <Stack gap={1} className="min-w-0 flex-1">
-        <Stack direction="row" align="center" gap={2}>
-          <Text className="font-medium">{provider.displayName}</Text>
+    <div className="flex flex-row items-start justify-between gap-4 rounded border border-[var(--color-border-default)] p-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex flex-row items-center gap-2">
+          <p className="text-base font-medium">{provider.displayName}</p>
           {provider.whitelabelOf && (
             <Badge color="neutral" variant="soft" size="sm">
               powered by {provider.whitelabelOf}
@@ -187,11 +166,9 @@ function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: Pr
               sandbox
             </Badge>
           )}
-        </Stack>
-        <Text size="sm" variant="muted">
-          {provider.description}
-        </Text>
-        <Stack direction="row" gap={1} wrap className="pt-1">
+        </div>
+        <p className="text-base-content/70 text-sm">{provider.description}</p>
+        <div className="flex flex-row flex-wrap gap-1 pt-1">
           {provider.supportedCountries.slice(0, 8).map((c) => (
             <Badge key={c} color="neutral" variant="soft" size="sm">
               {c}
@@ -202,30 +179,31 @@ function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: Pr
               +{provider.supportedCountries.length - 8}
             </Badge>
           )}
-        </Stack>
-      </Stack>
-      <Stack gap={1}>
-        <Button color="module" asChild>
-          <Link href={`/commerce/providers/install?slug=${provider.slug}&kind=${kind}`}>
-            Install
-          </Link>
+        </div>
+      </div>
+      <div className="flex flex-col gap-1">
+        <Button
+          color="module"
+          render={<Link href={`/commerce/providers/install?slug=${provider.slug}&kind=${kind}`} />}
+        >
+          Install
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
 function StatusBadge({ status }: { status: ProviderInstallStatus }) {
   const map: Record<
     ProviderInstallStatus,
-    { icon: typeof CircleCheck; variant: 'success' | 'warning' | 'outline' }
+    { icon: typeof CircleCheck; variant: 'success' | 'warning' | 'neutral' }
   > = {
     active: { icon: CircleCheck, variant: 'success' },
-    pending_configuration: { icon: CircleDashed, variant: 'outline' },
-    pending_oauth: { icon: CircleDashed, variant: 'outline' },
-    pending_verification: { icon: CircleDashed, variant: 'outline' },
+    pending_configuration: { icon: CircleDashed, variant: 'neutral' },
+    pending_oauth: { icon: CircleDashed, variant: 'neutral' },
+    pending_verification: { icon: CircleDashed, variant: 'neutral' },
     errored: { icon: CircleAlert, variant: 'warning' },
-    disabled: { icon: CircleAlert, variant: 'outline' },
+    disabled: { icon: CircleAlert, variant: 'neutral' },
   };
   const entry = map[status];
   const Icon = entry.icon;
@@ -249,11 +227,7 @@ const installedProvider = (inst: InstallationRow) => (
 );
 
 const installedLabel = (inst: InstallationRow) =>
-  inst.label ?? (
-    <Text size="xs" variant="muted">
-      —
-    </Text>
-  );
+  inst.label ?? <p className="text-base-content/70 text-xs">—</p>;
 
 const installedEnvironment = (inst: InstallationRow) => (
   <Badge color={inst.environment === 'production' ? 'success' : 'warning'}>
@@ -284,25 +258,15 @@ const installedCard: SelectionCard<InstallationRow> = {
   title: installedProvider,
   badge: (inst) => <StatusBadge status={inst.status} />,
   body: (inst) => (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" gap={2} wrap>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         {installedEnvironment(inst)}
-        {inst.label ? (
-          <Text size="xs" variant="muted">
-            {inst.label}
-          </Text>
-        ) : null}
-      </Stack>
-      <Stack
-        direction="row"
-        align="center"
-        gap={1}
-        wrap
-        className="text-xs text-[var(--color-text-secondary)]"
-      >
+        {inst.label ? <p className="text-base-content/70 text-xs">{inst.label}</p> : null}
+      </div>
+      <div className="flex flex-row flex-wrap items-center gap-1 text-xs text-[var(--color-text-secondary)]">
         <span>Health:</span>
         {installedHealth(inst)}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   ),
 };

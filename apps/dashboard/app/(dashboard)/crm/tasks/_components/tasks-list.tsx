@@ -17,22 +17,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Check, Calendar } from 'lucide-react';
 
-import {
-  Badge,
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { completeTaskAction } from '../../activity-task-actions';
 import { TaskRow, type TaskCard } from './task-row';
 
-const PRIORITY_VARIANT: Record<string, 'outline' | 'warning' | 'danger' | 'success'> = {
-  low: 'outline',
-  medium: 'outline',
+const PRIORITY_VARIANT: Record<string, 'neutral' | 'warning' | 'danger' | 'success'> = {
+  low: 'neutral',
+  medium: 'neutral',
   high: 'warning',
   urgent: 'danger',
 };
@@ -88,7 +81,7 @@ interface TasksListProps {
 
 export function TasksList({ tasks, view, overdue }: TasksListProps) {
   const relatedLinks = (t: TaskCard) => (
-    <Stack direction="row" align="center" gap={2} wrap>
+    <div className="flex flex-row flex-wrap items-center gap-2">
       {t.customerId && (
         <Link
           href={`/crm/customers/${t.customerId}`}
@@ -105,26 +98,20 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
           Deal
         </Link>
       )}
-      {!t.customerId && !t.dealId && (
-        <Text size="xs" variant="muted">
-          —
-        </Text>
-      )}
-    </Stack>
+      {!t.customerId && !t.dealId && <p className="text-base-content/70 text-xs">—</p>}
+    </div>
   );
 
   const dueCell = (t: TaskCard) =>
     t.dueAt ? (
-      <Stack direction="row" align="center" gap={1}>
+      <div className="flex flex-row items-center gap-1">
         <Calendar className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           {new Date(t.dueAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
 
   const columns: SelectionColumn<TaskCard>[] = [
@@ -137,13 +124,13 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
     {
       header: 'Title',
       cell: (t) => (
-        <Text
-          size="sm"
-          weight="medium"
-          className={t.status === 'open' ? '' : 'text-[var(--color-text-tertiary)] line-through'}
+        <p
+          className={`text-sm font-medium ${
+            t.status === 'open' ? '' : 'text-[var(--color-text-tertiary)] line-through'
+          }`}
         >
           {t.title}
-        </Text>
+        </p>
       ),
     },
     {
@@ -159,11 +146,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
   ];
 
   const card: SelectionCard<TaskCard> = {
-    title: (t) => (
-      <Text size="sm" weight="medium">
-        {t.title}
-      </Text>
-    ),
+    title: (t) => <p className="text-sm font-medium">{t.title}</p>,
     render: (t) => <TaskRow task={t} overdue={overdue} />,
   };
 

@@ -10,24 +10,18 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { formatBps, MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Input, Label, Select, Textarea } from 'silicaui-react';
 
 import { updateMarketProfileAction } from '../actions';
 import type { MarketProfile } from '../_types';
 
 const NO_DEFAULT = '__none__';
+
+// Value→label map that powers the default-category Select's trigger + options.
+const CATEGORY_ITEMS: Record<string, string> = {
+  [NO_DEFAULT]: 'No default',
+  ...Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name])),
+};
 
 interface FormState {
   headline: string;
@@ -90,8 +84,8 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Stack gap={2}>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="market-headline">Headline</Label>
           <Input
             id="market-headline"
@@ -100,13 +94,13 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
             placeholder="One line that sums up your store"
             onChange={(e) => set('headline', e.target.value)}
           />
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             Shown under your store name on your marketplace profile.
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
-        <Stack direction="row" gap={4} wrap>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+        <div className="flex flex-row flex-wrap gap-4">
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="market-location">Location</Label>
             <Input
               id="market-location"
@@ -115,29 +109,21 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
               placeholder="City, State"
               onChange={(e) => set('location', e.target.value)}
             />
-          </Stack>
-          <Stack gap={2} className="min-w-[14rem] flex-1">
+          </div>
+          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
             <Label htmlFor="market-category">Default category</Label>
-            <Select value={form.defaultCategory} onValueChange={(v) => set('defaultCategory', v)}>
-              <SelectTrigger id="market-category">
-                <SelectValue placeholder="No default" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NO_DEFAULT}>No default</SelectItem>
-                {MARKET_CATEGORIES.map((c) => (
-                  <SelectItem key={c.slug} value={c.slug}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Text size="xs" variant="muted">
-              New listings default to this aisle.
-            </Text>
-          </Stack>
-        </Stack>
+            <Select
+              id="market-category"
+              value={form.defaultCategory}
+              onValueChange={(v) => set('defaultCategory', v as string)}
+              placeholder="No default"
+              items={CATEGORY_ITEMS}
+            />
+            <p className="text-base-content/70 text-xs">New listings default to this aisle.</p>
+          </div>
+        </div>
 
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           <Label htmlFor="market-bio">About your store</Label>
           <Textarea
             id="market-bio"
@@ -147,54 +133,36 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
             placeholder="Tell shoppers who you are and what you sell."
             onChange={(e) => set('bio', e.target.value)}
           />
-        </Stack>
+        </div>
 
-        <Stack
-          direction="row"
-          align="center"
-          justify="between"
-          gap={3}
-          className="rounded-md bg-[var(--color-bg-subtle)] px-4 py-3"
-          wrap
-        >
-          <Stack gap={1}>
-            <Text size="sm" weight="medium">
-              Commission rate
-            </Text>
-            <Text size="xs" variant="muted">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3 rounded-md bg-[var(--color-bg-subtle)] px-4 py-3">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium">Commission rate</p>
+            <p className="text-base-content/70 text-xs">
               Deducted from each sale at settlement.
               {profile.hasCommissionOverride ? ' Custom rate negotiated for your store.' : ''}
-            </Text>
-          </Stack>
-          <Text size="lg" weight="medium" className="tabular-nums">
-            {formatBps(profile.commissionBps)}
-          </Text>
-        </Stack>
+            </p>
+          </div>
+          <p className="text-lg font-medium tabular-nums">{formatBps(profile.commissionBps)}</p>
+        </div>
 
-        <Stack direction="row" align="center" justify="end" gap={3} wrap>
+        <div className="flex flex-row flex-wrap items-center justify-end gap-3">
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mr-auto">
+            <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {savedAt !== null && !dirty && (
-            <Stack
-              direction="row"
-              align="center"
-              gap={1}
-              className="text-[var(--color-success-text)]"
-            >
+            <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
               <Check className="h-4 w-4" />
-              <Text size="sm" variant="success">
-                Saved
-              </Text>
-            </Stack>
+              <p className="text-success text-sm">Saved</p>
+            </div>
           )}
           <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>
             Save profile
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

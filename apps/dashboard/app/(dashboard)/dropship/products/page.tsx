@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { Package } from 'lucide-react';
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -52,8 +53,8 @@ export default async function DropshipProductsPage({ searchParams }: PageProps) 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Package className="h-5 w-5" />}
           title="Dropship products"
@@ -68,24 +69,26 @@ export default async function DropshipProductsPage({ searchParams }: PageProps) 
         <ListToolbar searchPlaceholder="Search products…" enableViewToggle />
 
         {totalImported === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title="No products imported yet"
-              description="Browse a supplier's catalog and import products to see them here."
-              action={
-                <Link href="/dropship/suppliers">
-                  <Button color="module" variant="soft">
-                    Browse suppliers
-                  </Button>
-                </Link>
-              }
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No products imported yet"
+                description="Browse a supplier's catalog and import products to see them here."
+                actions={
+                  <Link href="/dropship/suppliers">
+                    <Button color="module" variant="soft">
+                      Browse suppliers
+                    </Button>
+                  </Link>
+                }
+              />
+            </CardBody>
           </Card>
         ) : (
           <DropshipProductsList groups={productsBySupplier} view={view} />
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

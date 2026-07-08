@@ -3,22 +3,14 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  Stack,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
   SurfaceSummaryDivider,
   SurfaceSummaryRow,
-  Text,
-  Textarea,
   type SurfaceStepDef,
 } from '@sparx/ui';
 
@@ -247,9 +239,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
             destructive: <CategoryDeleteButton categoryId={category.id} name={category.name} />,
             extra:
               savedAt && !error ? (
-                <Text size="xs" variant="success">
-                  Saved {savedAt}
-                </Text>
+                <p className="text-success text-xs">Saved {savedAt}</p>
               ) : undefined,
           }}
         >
@@ -261,43 +251,43 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
               submit();
             }}
           >
-            <Card variant="default">
-              <CardContent className="py-6">
-                <Stack gap={4}>
-                  <Stack direction="row" gap={3} wrap>
-                    <Stack gap={2} className="min-w-[12rem] flex-1">
+            <Card>
+              <CardBody className="py-6">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                       <Label htmlFor="cat-name">Name</Label>
                       <Input
                         id="cat-name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        variant={fieldErrors.name ? 'error' : 'default'}
+                        color={fieldErrors.name ? 'error' : undefined}
                         aria-invalid={fieldErrors.name ? true : undefined}
                         aria-describedby={fieldErrors.name ? 'cat-name-error' : undefined}
                       />
                       {fieldErrors.name && (
-                        <Text id="cat-name-error" size="xs" variant="danger">
+                        <p id="cat-name-error" className="text-danger text-xs">
                           {fieldErrors.name}
-                        </Text>
+                        </p>
                       )}
-                    </Stack>
-                    <Stack gap={2} className="min-w-[12rem] flex-1">
+                    </div>
+                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
                       <Label htmlFor="cat-handle">Handle</Label>
                       <Input
                         id="cat-handle"
                         value={handle}
                         onChange={(e) => setHandle(e.target.value)}
-                        variant={fieldErrors.handle ? 'error' : 'default'}
+                        color={fieldErrors.handle ? 'error' : undefined}
                         aria-invalid={fieldErrors.handle ? true : undefined}
                         aria-describedby={fieldErrors.handle ? 'cat-handle-error' : undefined}
                       />
                       {fieldErrors.handle && (
-                        <Text id="cat-handle-error" size="xs" variant="danger">
+                        <p id="cat-handle-error" className="text-danger text-xs">
                           {fieldErrors.handle}
-                        </Text>
+                        </p>
                       )}
-                    </Stack>
-                    <Stack gap={2} className="w-24">
+                    </div>
+                    <div className="flex w-24 flex-col gap-2">
                       <Label htmlFor="cat-priority">Priority</Label>
                       <Input
                         id="cat-priority"
@@ -306,31 +296,31 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                         step={1}
                         value={position}
                         onChange={(e) => setPosition(e.target.value)}
-                        variant={fieldErrors.position ? 'error' : 'default'}
+                        color={fieldErrors.position ? 'error' : undefined}
                         aria-invalid={fieldErrors.position ? true : undefined}
                         aria-describedby={fieldErrors.position ? 'cat-priority-error' : undefined}
                       />
                       {fieldErrors.position && (
-                        <Text id="cat-priority-error" size="xs" variant="danger">
+                        <p id="cat-priority-error" className="text-danger text-xs">
                           {fieldErrors.position}
-                        </Text>
+                        </p>
                       )}
-                    </Stack>
-                  </Stack>
+                    </div>
+                  </div>
 
                   {/* The handle is the category's URL-safe slug. Categories have no
                     standalone storefront route today — they're surfaced through the
                     builder, bound by id — so a reslug breaks nothing live; just note
                     the change. */}
                   {handleChanged && (
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       Changing the handle reslugs this category from <code>{category.handle}</code>{' '}
                       to <code>{handle.trim()}</code>. Categories don’t have a standalone storefront
                       page yet, so this won’t break any links today.
-                    </Text>
+                    </p>
                   )}
 
-                  <Stack gap={2}>
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="cat-parent">Parent</Label>
                     <NativeSelect
                       id="cat-parent"
@@ -345,13 +335,13 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                         </option>
                       ))}
                     </NativeSelect>
-                    <Text size="xs" variant="muted">
+                    <p className="text-base-content/70 text-xs">
                       Leave top-level for a root category, or nest it under an existing one.
                       Priority orders this category among its siblings — lower numbers sort first
                       (priority 1 is first).
-                    </Text>
-                  </Stack>
-                  <Stack gap={2}>
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="cat-description">Description</Label>
                     <Textarea
                       id="cat-description"
@@ -359,29 +349,29 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                       onChange={(e) => setDescription(e.target.value)}
                       rows={3}
                     />
-                  </Stack>
-                  <Stack gap={1}>
-                    <Stack direction="row" align="center" gap={2}>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row items-center gap-2">
                       <Checkbox
                         id="cat-featured"
                         color="module"
                         checked={featured}
-                        onCheckedChange={(v) => setFeatured(v === true)}
+                        onChange={(e) => setFeatured(e.target.checked)}
                       />
                       <Label htmlFor="cat-featured">Featured</Label>
-                    </Stack>
-                    <Text size="xs" variant="muted">
+                    </div>
+                    <p className="text-base-content/70 text-xs">
                       Highlights this category in storefront navigation and featured collections.
-                    </Text>
-                  </Stack>
-                </Stack>
-              </CardContent>
+                    </p>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
           </form>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -431,9 +421,7 @@ function CategorySummary({
       {siblings.length > 0 && (
         <>
           <SurfaceSummaryDivider />
-          <Text size="sm" variant="muted" className="mb-1">
-            Siblings by priority
-          </Text>
+          <p className="text-base-content/70 mb-1 text-sm">Siblings by priority</p>
           {siblings
             .slice()
             .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity))

@@ -1,15 +1,13 @@
 'use client';
 
 import {
-  Badge,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { DiscountStatusToggle } from './discount-status-toggle';
 
@@ -50,7 +48,7 @@ const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: '
 
 function codeName(d: DiscountRow) {
   return (
-    <Stack gap={0}>
+    <div className="flex flex-col gap-0">
       {d.code ? (
         <span className="font-mono text-xs">{d.code}</span>
       ) : (
@@ -58,10 +56,8 @@ function codeName(d: DiscountRow) {
           automatic
         </Badge>
       )}
-      <Text size="xs" variant="muted">
-        {d.name}
-      </Text>
-    </Stack>
+      <p className="text-base-content/70 text-xs">{d.name}</p>
+    </div>
   );
 }
 
@@ -119,28 +115,20 @@ export function DiscountsList({ discounts, view }: DiscountsListProps) {
           automatic
         </Badge>
       ),
-    subtitle: (d) => (
-      <Text size="xs" variant="muted">
-        {d.name}
-      </Text>
-    ),
+    subtitle: (d) => <p className="text-base-content/70 text-xs">{d.name}</p>,
     badge: statusBadge,
     body: (d) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
           <Badge color="info" variant="soft" size="sm">
             {statusLabel(d.type)}
           </Badge>
-          <Text size="sm" className="tabular-nums">
-            {valueLabel(d)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Used {usageLabel(d)}
-          </Text>
+          <p className="text-sm tabular-nums">{valueLabel(d)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Used {usageLabel(d)}</p>
           <DiscountStatusToggle discountId={d.id} status={d.status} />
-        </Stack>
+        </div>
       </>
     ),
   };

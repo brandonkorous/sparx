@@ -22,25 +22,14 @@ import { requireSession } from '@sparx/auth';
 import {
   ActionQueue,
   ActionTile,
-  Badge,
-  Button,
-  Container,
-  EmptyState,
-  Grid,
   PageHeader,
-  Stack,
   Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Timeline,
   TimelineItem,
   TimelineTitle,
   TimelineTime,
 } from '@sparx/ui';
+import { Badge, Button, EmptyState, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -253,19 +242,27 @@ export default async function EmailPage() {
   }));
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<Send className="h-5 w-5" />}
           title="Email"
           description="Campaigns & deliverability — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<FileText className="h-4 w-4" />}>
-                <Link href="/builder/email">Templates</Link>
+              <Button
+                render={<Link href="/builder/email" />}
+                variant="outline"
+                iconStart={<FileText className="h-4 w-4" />}
+              >
+                Templates
               </Button>
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/email/broadcasts/new">New broadcast</Link>
+              <Button
+                render={<Link href="/email/broadcasts/new" />}
+                color="module"
+                iconStart={<Plus className="h-4 w-4" />}
+              >
+                New broadcast
               </Button>
             </>
           }
@@ -273,7 +270,7 @@ export default async function EmailPage() {
 
         {/* Headline KPIs — subscribers, open & click rate live; revenue from
             email has no attribution endpoint yet, so it shows "—". */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<Users className="h-4 w-4" />}
             label="Subscribers"
@@ -302,7 +299,7 @@ export default async function EmailPage() {
             value="—"
             hint="Attributed to email campaigns"
           />
-        </Grid>
+        </div>
 
         {/* Daily action queue — wired to broadcast statuses; only rendered when
             something actually needs attention. */}
@@ -371,9 +368,9 @@ export default async function EmailPage() {
                 icon={<ShieldCheck className="h-5 w-5" />}
                 title="No sending domain yet"
                 description="Verify a domain to authenticate your email and protect deliverability."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/email/domains">Add domain</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/email/domains" />}>
+                    Add domain
                   </Button>
                 }
               />
@@ -424,43 +421,43 @@ export default async function EmailPage() {
         >
           {broadcastRows.length ? (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Subject</TableHead>
-                  <TableHead className="text-right">Sent</TableHead>
-                  <TableHead className="text-right">Recipients</TableHead>
-                  <TableHead className="text-right">Open</TableHead>
-                  <TableHead className="text-right">Click</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th className="text-right">Sent</th>
+                  <th className="text-right">Recipients</th>
+                  <th className="text-right">Open</th>
+                  <th className="text-right">Click</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
                 {broadcastRows.map((b, i) => (
-                  <TableRow key={`${b.subject}-${i}`}>
-                    <TableCell className="font-medium">{b.subject}</TableCell>
-                    <TableCell className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                  <tr key={`${b.subject}-${i}`}>
+                    <td className="font-medium">{b.subject}</td>
+                    <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
                       {b.sentLabel}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">{b.recipients}</TableCell>
-                    <TableCell className="text-right tabular-nums">{b.openRate}</TableCell>
-                    <TableCell className="text-right tabular-nums">{b.clickRate}</TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="text-right tabular-nums">{b.recipients}</td>
+                    <td className="text-right tabular-nums">{b.openRate}</td>
+                    <td className="text-right tabular-nums">{b.clickRate}</td>
+                    <td>
                       <Badge color={b.tone} variant="soft">
                         {b.statusLabel}
                       </Badge>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           ) : (
             <EmptyState
               icon={<Send className="h-5 w-5" />}
               title="No broadcasts yet"
               description="Send your first campaign and per-send open & click rates land here."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/email/broadcasts/new">New broadcast</Link>
+              actions={
+                <Button variant="outline" size="sm" render={<Link href="/email/broadcasts/new" />}>
+                  New broadcast
                 </Button>
               }
             />
@@ -479,9 +476,13 @@ export default async function EmailPage() {
               icon={<Repeat className="h-5 w-5" />}
               title="No automations yet"
               description="Welcome series, abandoned cart, and win-back flows show their health here."
-              action={
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/automations?focus=email">Create automation</Link>
+              actions={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  render={<Link href="/automations?focus=email" />}
+                >
+                  Create automation
                 </Button>
               }
             />
@@ -529,7 +530,7 @@ export default async function EmailPage() {
         </div>
 
         {/* Top links + suppressions + recent activity */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <OverviewCard
             title="Top performing links"
             icon={<Link2 className="h-4 w-4" />}
@@ -595,8 +596,8 @@ export default async function EmailPage() {
               />
             )}
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

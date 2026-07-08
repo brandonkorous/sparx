@@ -10,17 +10,8 @@ import {
   UserRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import {
-  Button,
-  Card,
-  Container,
-  Grid,
-  Heading,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { MODULE_GUIDES } from './_lib/content';
 
@@ -83,8 +74,8 @@ const TOOLKIT: Resource[] = [
 export default function PartnerResourcesPage() {
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <PageHeader
             icon={<BookOpen className="h-5 w-5" />}
             title="Resources"
@@ -92,83 +83,91 @@ export default function PartnerResourcesPage() {
           />
 
           <Section title="Pitch & win clients">
-            <Grid cols={1} mdCols={3} gap={4}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {PITCH.map((r) => (
                 <ResourceCard key={r.title} resource={r} />
               ))}
-            </Grid>
+            </div>
           </Section>
 
           <Section title="Onboard clients, module by module">
-            <Card variant="default" padding="lg">
-              <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-                <Stack direction="row" align="start" gap={3} className="min-w-0">
-                  <span className="text-[var(--module-active)]">
-                    <GraduationCap className="h-5 w-5" />
-                  </span>
-                  <Stack gap={1} className="min-w-0">
-                    <Text weight="medium">Onboarding guides</Text>
-                    <Text size="sm" variant="muted">
-                      Step-by-step playbooks to get each module live —{' '}
-                      {MODULE_GUIDES.map((g) => g.label).join(', ')}.
-                    </Text>
-                  </Stack>
-                </Stack>
-                <Button asChild color="module" variant="soft" size="sm" className="self-start">
-                  <Link href="/partner/resources/guides">
+            <Card>
+              <CardBody>
+                <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-row items-start gap-3">
+                    <span className="text-[var(--module-active)]">
+                      <GraduationCap className="h-5 w-5" />
+                    </span>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <p className="text-base font-medium">Onboarding guides</p>
+                      <p className="text-base-content/70 text-sm">
+                        Step-by-step playbooks to get each module live —{' '}
+                        {MODULE_GUIDES.map((g) => g.label).join(', ')}.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    render={<Link href="/partner/resources/guides" />}
+                    color="module"
+                    variant="soft"
+                    size="sm"
+                    className="self-start"
+                    iconEnd={<ArrowRight className="h-3.5 w-3.5" />}
+                  >
                     Open guides
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-              </Stack>
+                  </Button>
+                </div>
+              </CardBody>
             </Card>
           </Section>
 
           <Section title="Your referral toolkit">
-            <Grid cols={1} mdCols={2} gap={4}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {TOOLKIT.map((r) => (
                 <ResourceCard key={r.title} resource={r} />
               ))}
-            </Grid>
+            </div>
           </Section>
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Stack gap={4}>
-      <Heading level={2}>{title}</Heading>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
       {children}
-    </Stack>
+    </div>
   );
 }
 
 function ResourceCard({ resource }: { resource: Resource }) {
   const Icon = resource.icon;
   return (
-    <Card variant="default" padding="md">
-      <Stack gap={3}>
-        <span className="text-[var(--module-active)]">
-          <Icon className="h-5 w-5" />
-        </span>
-        <Stack gap={1}>
-          <Text size="sm" weight="medium">
-            {resource.title}
-          </Text>
-          <Text size="sm" variant="muted">
-            {resource.description}
-          </Text>
-        </Stack>
-        <Button asChild color="module" variant="link" size="sm" className="self-start">
-          <Link href={resource.href}>
+    <Card>
+      <CardBody>
+        <div className="flex flex-col gap-3">
+          <span className="text-[var(--module-active)]">
+            <Icon className="h-5 w-5" />
+          </span>
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium">{resource.title}</p>
+            <p className="text-base-content/70 text-sm">{resource.description}</p>
+          </div>
+          <Button
+            render={<Link href={resource.href} />}
+            color="module"
+            variant="link"
+            size="sm"
+            className="self-start"
+            iconEnd={<ArrowRight className="ml-0.5 h-3.5 w-3.5" />}
+          >
             {resource.cta}
-            <ArrowRight className="ml-0.5 h-3.5 w-3.5" />
-          </Link>
-        </Button>
-      </Stack>
+          </Button>
+        </div>
+      </CardBody>
     </Card>
   );
 }

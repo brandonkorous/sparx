@@ -9,16 +9,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Workflow } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import type { AutomationDto, RunDto } from '../_lib/types';
@@ -64,8 +56,8 @@ export default async function AutomationDetailPage({ params }: PageProps) {
   const actions = parseActions(automation.actions);
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Workflow className="h-5 w-5" />}
           title={automation.name}
@@ -76,7 +68,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
             </span>
           }
           description={
-            <Stack gap={1}>
+            <div className="flex flex-col gap-1">
               {automation.description ? <span>{automation.description}</span> : null}
               <ModuleTags
                 trigger={{
@@ -85,76 +77,72 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                 }}
                 actions={actions}
               />
-            </Stack>
+            </div>
           }
           actions={<AutomationActions automation={automation} canWrite={canWrite} />}
         />
 
         {automation.locked && (
-          <Card variant="module">
-            <CardContent>
-              <Text size="sm">
+          <Card className="bg-module bg-soft">
+            <CardBody>
+              <p className="text-sm">
                 This is a platform-managed automation. It can’t be edited or paused —{' '}
                 <strong>Duplicate to edit</strong> forks an editable copy you own.
-              </Text>
-            </CardContent>
+              </p>
+            </CardBody>
           </Card>
         )}
 
         {automation.draft && !automation.locked && (
-          <Card variant="default">
-            <CardContent className="flex flex-wrap items-center justify-between gap-3">
-              <Text size="sm">
+          <Card>
+            <CardBody className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm">
                 This automation has <strong>unpublished changes</strong>. The live version (v
                 {automation.version}) keeps running until you publish.
-              </Text>
+              </p>
               <Link
                 href={`/automations/${automation.id}/edit`}
                 className="text-sm font-semibold text-[var(--module-active)] hover:underline"
               >
                 Review &amp; publish →
               </Link>
-            </CardContent>
+            </CardBody>
           </Card>
         )}
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Trigger</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <Text>{summarizeTrigger(automation.triggerType, automation.triggerConfig)}</Text>
-            {trigger?.kind === 'schedule' && trigger.predicate.where.conditions.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <Text size="sm" variant="muted">
-                  Scans rows where:
-                </Text>
-                <ConditionGroupView group={trigger.predicate.where} />
-              </div>
-            )}
-          </CardContent>
+            <div className="flex flex-col gap-3">
+              <p className="text-base">
+                {summarizeTrigger(automation.triggerType, automation.triggerConfig)}
+              </p>
+              {trigger?.kind === 'schedule' && trigger.predicate.where.conditions.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-base-content/70 text-sm">Scans rows where:</p>
+                  <ConditionGroupView group={trigger.predicate.where} />
+                </div>
+              )}
+            </div>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Conditions</CardTitle>
-          </CardHeader>
-          <CardContent>
             <ConditionGroupView group={conditions} />
-          </CardContent>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
             <ActionListView actions={actions} />
-          </CardContent>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
               <span className="flex items-center justify-between gap-3">
                 Recent runs
@@ -166,14 +154,10 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                 </Link>
               </span>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             {runs.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No runs yet.
-              </Text>
+              <p className="text-base-content/70 text-sm">No runs yet.</p>
             ) : (
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 {runs.map((run) => (
                   <Link
                     key={run.id}
@@ -182,21 +166,21 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                   >
                     <span className="flex items-center gap-3">
                       <RunStatusBadge status={run.status} />
-                      <Text size="sm" variant="muted">
+                      <span className="text-base-content/70 text-sm">
                         {formatTimestamp(run.startedAt)}
-                      </Text>
+                      </span>
                     </span>
-                    <Text size="sm" variant="muted">
+                    <span className="text-base-content/70 text-sm">
                       {run.automationVersion != null ? `v${run.automationVersion} · ` : ''}
                       {run.actionsTotal} step{run.actionsTotal === 1 ? '' : 's'}
-                    </Text>
+                    </span>
                   </Link>
                 ))}
-              </Stack>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -8,7 +8,8 @@
 import Link from 'next/link';
 import { ArrowRight, Store } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Button, Container, Grid, Heading, PageHeader, Stack } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { MARKETPLACE_CATEGORIES } from './_registry';
@@ -29,18 +30,21 @@ export default async function MarketplacePage() {
   const blueprintCount = featured?.total ?? 0;
 
   return (
-    <Container size="xl">
-      <Stack gap={8} className="py-10">
-        <Stack gap={4}>
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-8 py-10">
+        <div className="flex flex-col gap-4">
           <PageHeader
             icon={<Store className="h-5 w-5" />}
             title="Marketplace"
             description="Add ready-made building blocks to your tenant — blueprints, themes, integrations, and more."
           />
           <MarketplaceSearch />
-        </Stack>
+        </div>
 
-        <Grid minItemWidth="15rem" gap={4}>
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(min(15rem,100%),1fr))' }}
+        >
           {MARKETPLACE_CATEGORIES.map((c) => (
             <CategoryTile
               key={c.id}
@@ -48,27 +52,28 @@ export default async function MarketplacePage() {
               count={c.id === 'blueprints' ? blueprintCount : undefined}
             />
           ))}
-        </Grid>
+        </div>
 
         {featured && featured.items.length > 0 ? (
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <div className="flex items-baseline justify-between">
-              <Heading level={2}>Featured blueprints</Heading>
-              <Button variant="link" size="sm" asChild>
-                <Link href="/marketplace/blueprints">
-                  See all {blueprintCount.toLocaleString()}
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+              <h2 className="text-2xl font-semibold tracking-tight">Featured blueprints</h2>
+              <Button variant="link" size="sm" render={<Link href="/marketplace/blueprints" />}>
+                See all {blueprintCount.toLocaleString()}
+                <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </div>
-            <Grid minItemWidth="16rem" gap={4}>
+            <div
+              className="grid gap-4"
+              style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(min(16rem,100%),1fr))' }}
+            >
               {featured.items.map((item) => (
                 <ListingCard key={item.slug} item={item} canInstall={canInstall} />
               ))}
-            </Grid>
-          </Stack>
+            </div>
+          </div>
         ) : null}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

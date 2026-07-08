@@ -1,5 +1,6 @@
 import { Building2 } from 'lucide-react';
-import { Card, Container, EmptyState, ModuleProvider, PageHeader, Stack } from '@sparx/ui';
+import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 import { listMyMemberships, requireSession, type OrgMembership } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';
@@ -92,8 +93,8 @@ export default async function PartnerClientsPage() {
 
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<Building2 className="h-5 w-5" />}
             title="Clients"
@@ -101,18 +102,20 @@ export default async function PartnerClientsPage() {
           />
 
           {clients.length === 0 ? (
-            <Card padding="none">
-              <EmptyState
-                icon={<Building2 className="h-5 w-5" />}
-                title="No clients yet"
-                description="Refer accounts with your link, or ask a client to add you as a consultant in their workspace — accounts you refer or manage will appear here."
-              />
+            <Card>
+              <CardBody className="p-0">
+                <EmptyState
+                  icon={<Building2 className="h-5 w-5" />}
+                  title="No clients yet"
+                  description="Refer accounts with your link, or ask a client to add you as a consultant in their workspace — accounts you refer or manage will appear here."
+                />
+              </CardBody>
             </Card>
           ) : (
             <PartnerClientsList clients={clients} />
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

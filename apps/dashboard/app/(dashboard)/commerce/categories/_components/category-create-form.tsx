@@ -3,21 +3,8 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  Input,
-  Label,
-  ModuleProvider,
-  NativeSelect,
-  Stack,
-  Text,
-  Textarea,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 
 import { createCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -164,15 +151,15 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
             nextDisabled: pending,
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack gap={4}>
-                <Text size="xs" variant="muted">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-col gap-4">
+                <p className="text-base-content/70 text-xs">
                   The handle is the category&apos;s URL-safe slug — unique across your catalog and
                   auto-derived from the name if you leave it blank. You can change it later.
-                </Text>
-                <Stack direction="row" gap={3} wrap>
-                  <Stack gap={2} className="flex-1">
+                </p>
+                <div className="flex flex-row flex-wrap gap-3">
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="cat-name">Name</Label>
                     <Input
                       id="cat-name"
@@ -180,13 +167,9 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Engine parts"
                     />
-                    {fieldErrors.name && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.name}
-                      </Text>
-                    )}
-                  </Stack>
-                  <Stack gap={2} className="flex-1">
+                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2">
                     <Label htmlFor="cat-handle">Handle (optional)</Label>
                     <Input
                       id="cat-handle"
@@ -195,13 +178,11 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                       placeholder="auto-derived from name"
                     />
                     {fieldErrors.handle && (
-                      <Text size="xs" variant="danger">
-                        {fieldErrors.handle}
-                      </Text>
+                      <p className="text-danger text-xs">{fieldErrors.handle}</p>
                     )}
-                  </Stack>
-                </Stack>
-                <Stack gap={2}>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="cat-parent">Parent</Label>
                   <NativeSelect
                     id="cat-parent"
@@ -216,11 +197,11 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                       </option>
                     ))}
                   </NativeSelect>
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Leave top-level for a root category, or nest it under an existing one.
-                  </Text>
-                </Stack>
-                <Stack gap={2}>
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="cat-description">Description</Label>
                   <Textarea
                     id="cat-description"
@@ -228,23 +209,23 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
                   />
-                </Stack>
-                <Stack direction="row" align="center" gap={2}>
+                </div>
+                <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     id="cat-featured"
                     color="module"
                     checked={featured}
-                    onCheckedChange={(v) => setFeatured(v === true)}
+                    onChange={(e) => setFeatured(e.target.checked)}
                   />
                   <Label htmlFor="cat-featured">Featured</Label>
-                </Stack>
-              </Stack>
-            </CardContent>
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

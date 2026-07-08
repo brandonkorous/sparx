@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  statusLabel,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+
+import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -84,11 +78,9 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
 
   const customerCell = (r: ReturnSummary) =>
     r.customerName ? (
-      <Text size="sm">{r.customerName}</Text>
+      <p className="text-sm">{r.customerName}</p>
     ) : r.customerId ? (
-      <Text size="xs" variant="muted" className="font-mono">
-        {r.customerId.slice(0, 8)}
-      </Text>
+      <p className="text-base-content/70 font-mono text-xs">{r.customerId.slice(0, 8)}</p>
     ) : (
       <>—</>
     );
@@ -97,11 +89,7 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
     { header: 'ID', cell: idLink },
     {
       header: 'Order',
-      cell: (r) => (
-        <Text size="sm" className="font-mono">
-          {r.orderNumber ?? r.orderId.slice(0, 8)}
-        </Text>
-      ),
+      cell: (r) => <p className="font-mono text-sm">{r.orderNumber ?? r.orderId.slice(0, 8)}</p>,
     },
     { header: 'Customer', cell: customerCell },
     { header: 'Items', cell: (r) => <>{r.itemCount}</> },
@@ -120,25 +108,25 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
   const card: SelectionCard<ReturnSummary> = {
     title: (r) => idLink(r),
     subtitle: (r) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         order <span className="font-mono">{r.orderNumber ?? r.orderId.slice(0, 8)}</span>
-      </Text>
+      </p>
     ),
     badge: (r) => <StatusBadge status={r.status} />,
     body: (r) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
+        <div className="flex flex-row items-center justify-between gap-2">
           <Badge color="info" variant="soft" size="sm">
             {statusLabel(r.preferredOutcome)}
           </Badge>
-          <Text size="sm">
+          <p className="text-sm">
             {r.itemCount} item{r.itemCount === 1 ? '' : 's'}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
+          </p>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {r.customerName ? `${r.customerName} · ` : ''}requested{' '}
           {new Date(r.requestedAt).toLocaleDateString()}
-        </Text>
+        </p>
       </>
     ),
   };

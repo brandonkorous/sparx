@@ -1,6 +1,6 @@
 'use client';
 
-import { SelectionList, type SelectionCard, type SelectionColumn, Stack, Text } from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 // Client wrapper for the account-credit balances list. SelectionList takes
 // render functions (columns/card) that can't cross the server→client boundary,
@@ -40,12 +40,12 @@ function customerName(c: AccountCreditCustomer | null): string | null {
 
 export function AccountCreditList({ balances, view }: AccountCreditListProps) {
   const customerCell = (b: AccountCreditRow) => (
-    <Stack gap={0}>
-      <Text size="sm">{customerName(b.customer) ?? '—'}</Text>
-      <Text size="xs" variant="muted">
+    <div className="flex flex-col gap-0">
+      <p className="text-sm">{customerName(b.customer) ?? '—'}</p>
+      <p className="text-base-content/70 text-xs">
         {b.customer?.email ?? b.customerId.slice(0, 8) + '…'}
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 
   const columns: SelectionColumn<AccountCreditRow>[] = [
@@ -58,30 +58,26 @@ export function AccountCreditList({ balances, view }: AccountCreditListProps) {
     {
       header: 'Updated',
       cell: (b) => (
-        <Text size="xs" variant="muted">
-          {new Date(b.updatedAt).toLocaleDateString()}
-        </Text>
+        <p className="text-base-content/70 text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
 
   const card: SelectionCard<AccountCreditRow> = {
-    title: (b) => <Text size="sm">{customerName(b.customer) ?? '—'}</Text>,
+    title: (b) => <p className="text-sm">{customerName(b.customer) ?? '—'}</p>,
     subtitle: (b) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {b.customer?.email ?? b.customerId.slice(0, 8) + '…'}
-      </Text>
+      </p>
     ),
     badge: (b) => <span className="font-mono text-xs">{b.currency}</span>,
     body: (b) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="sm" className="tabular-nums">
-          {moneyFmt.format(b.balanceCents / 100)}
-        </Text>
-        <Text size="xs" variant="muted">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-sm tabular-nums">{moneyFmt.format(b.balanceCents / 100)}</p>
+        <p className="text-base-content/70 text-xs">
           updated {new Date(b.updatedAt).toLocaleDateString()}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 

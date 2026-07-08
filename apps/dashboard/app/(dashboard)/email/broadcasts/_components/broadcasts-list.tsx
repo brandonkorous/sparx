@@ -6,13 +6,11 @@ import {
   Badge,
   type BadgeProps,
   type BulkAction,
-  Button,
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
-  Stack,
-  Text,
 } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { bulkCancelBroadcastsAction } from '../actions';
 import type { BroadcastRow } from '../../_lib/types';
@@ -69,34 +67,26 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
     {
       header: 'Name',
       cell: (b) => (
-        <Stack gap={1}>
+        <div className="flex flex-col gap-1">
           {nameLink(b, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
-          <Text size="xs" variant="muted" className="truncate">
-            {b.subject}
-          </Text>
-        </Stack>
+          <p className="text-base-content/70 truncate text-xs">{b.subject}</p>
+        </div>
       ),
     },
     { header: 'Status', cell: statusBadge },
     {
       header: 'Recipients',
       align: 'right',
-      cell: (b) => (
-        <Text size="sm" variant="muted">
-          {recipientsLabel(b)}
-        </Text>
-      ),
+      cell: (b) => <p className="text-base-content/70 text-sm">{recipientsLabel(b)}</p>,
     },
     {
       header: '',
       id: 'open',
       align: 'right',
       cell: (b) => (
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/email/broadcasts/${b.id}`}>
-            <Send className="mr-1.5 h-3.5 w-3.5" />
-            Open
-          </Link>
+        <Button variant="outline" size="sm" render={<Link href={`/email/broadcasts/${b.id}`} />}>
+          <Send className="mr-1.5 h-3.5 w-3.5" />
+          Open
         </Button>
       ),
     },
@@ -105,26 +95,18 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
   const card: SelectionCard<BroadcastRow> = {
     title: (b) =>
       nameLink(b, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
-    subtitle: (b) => (
-      <Text size="xs" variant="muted" className="truncate">
-        {b.subject}
-      </Text>
-    ),
+    subtitle: (b) => <p className="text-base-content/70 truncate text-xs">{b.subject}</p>,
     badge: statusBadge,
     body: (b) => (
-      <Stack gap={2}>
+      <div className="flex flex-col gap-2">
         {b.status === 'sent' || b.status === 'scheduled' ? (
-          <Text size="sm" variant="muted">
-            {recipientsLabel(b)}
-          </Text>
+          <p className="text-base-content/70 text-sm">{recipientsLabel(b)}</p>
         ) : null}
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`/email/broadcasts/${b.id}`}>
-            <Send className="mr-1.5 h-3.5 w-3.5" />
-            Open
-          </Link>
+        <Button variant="outline" size="sm" render={<Link href={`/email/broadcasts/${b.id}`} />}>
+          <Send className="mr-1.5 h-3.5 w-3.5" />
+          Open
         </Button>
-      </Stack>
+      </div>
     ),
   };
 

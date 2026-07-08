@@ -1,10 +1,8 @@
 'use client';
 
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   SelectionList,
-  Stack,
-  Text,
   statusLabel,
   statusTone,
   type SelectionCard,
@@ -55,9 +53,7 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
         r.firstPaymentAt ? (
           fmtDate(r.firstPaymentAt)
         ) : (
-          <Text size="sm" variant="muted">
-            Not yet
-          </Text>
+          <p className="text-base-content/70 text-sm">Not yet</p>
         ),
     },
     { header: 'Rate', cell: rate, align: 'right' },
@@ -65,26 +61,20 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
   ];
 
   const card: SelectionCard<PartnerReferral> = {
-    title: (r) => (
-      <Text size="sm" className="font-medium">
-        {accountLabel(r)}
-      </Text>
-    ),
+    title: (r) => <p className="text-sm font-medium">{accountLabel(r)}</p>,
     subtitle: (r) => (
-      <Text size="xs" variant="muted">
-        Signed up {fmtDate(r.signupAt) ?? '—'}
-      </Text>
+      <p className="text-base-content/70 text-xs">Signed up {fmtDate(r.signupAt) ?? '—'}</p>
     ),
     badge: statusBadge,
     body: (r) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="xs" variant="muted">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-xs">
           {r.firstPaymentAt
             ? `First payment ${fmtDate(r.firstPaymentAt)}`
             : 'Awaiting first payment'}
-        </Text>
+        </p>
         {rate(r)}
-      </Stack>
+      </div>
     ),
   };
 

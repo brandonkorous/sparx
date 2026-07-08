@@ -1,16 +1,7 @@
 import Link from 'next/link';
 import { GraduationCap, Plus } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -48,15 +39,19 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
   const canHost = profile.status === 'active';
 
   const newButton = canHost ? (
-    <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-      <Link href="/partner/bootcamps/new">New bootcamp</Link>
+    <Button
+      render={<Link href="/partner/bootcamps/new" />}
+      color="module"
+      iconStart={<Plus className="h-4 w-4" />}
+    >
+      New bootcamp
     </Button>
   ) : undefined;
 
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
           <PageHeader
             icon={<GraduationCap className="h-5 w-5" />}
             title="Bootcamps"
@@ -71,26 +66,30 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
 
           {!canHost && (
             <Card>
-              <Stack gap={1}>
-                <Text size="sm" weight="medium">
-                  Hosting unlocks when your partner account is active
-                </Text>
-                <Text size="sm" variant="muted">
-                  Your application is in review. Once you’re an active partner you’ll be able to
-                  create and run bootcamps here.
-                </Text>
-              </Stack>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium">
+                    Hosting unlocks when your partner account is active
+                  </p>
+                  <p className="text-base-content/70 text-sm">
+                    Your application is in review. Once you’re an active partner you’ll be able to
+                    create and run bootcamps here.
+                  </p>
+                </div>
+              </CardBody>
             </Card>
           )}
 
           {bootcamps.length === 0 ? (
-            <Card padding="none">
-              <EmptyState
-                icon={<GraduationCap className="h-5 w-5" />}
-                title="No bootcamps yet"
-                description="Create your first cohort. Save it as a draft, then publish when you’re ready to take registrations."
-                action={newButton}
-              />
+            <Card>
+              <CardBody className="p-0">
+                <EmptyState
+                  icon={<GraduationCap className="h-5 w-5" />}
+                  title="No bootcamps yet"
+                  description="Create your first cohort. Save it as a draft, then publish when you’re ready to take registrations."
+                  actions={newButton}
+                />
+              </CardBody>
             </Card>
           ) : (
             <>
@@ -98,8 +97,8 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
               <BootcampsList rows={bootcamps} view={view} />
             </>
           )}
-        </Stack>
-      </Container>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

@@ -3,17 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle } from 'lucide-react';
-import {
-  Button,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
 import { approveOrder, rejectOrder } from '../_lib/actions';
 
 interface Props {
@@ -58,15 +48,15 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
 
   return (
     <>
-      <Stack direction="row" gap={2}>
+      <div className="flex flex-row gap-2">
         <Button
           size="sm"
           color="success"
           variant="soft"
           disabled={isPending}
+          iconStart={<CheckCircle className="h-3.5 w-3.5" />}
           onClick={() => setAction('approve')}
         >
-          <CheckCircle className="mr-1.5 h-3.5 w-3.5" />
           Approve
         </Button>
         <Button
@@ -74,36 +64,34 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
           color="danger"
           variant="soft"
           disabled={isPending}
+          iconStart={<XCircle className="h-3.5 w-3.5" />}
           onClick={() => setAction('reject')}
         >
-          <XCircle className="mr-1.5 h-3.5 w-3.5" />
           Reject
         </Button>
-      </Stack>
+      </div>
 
-      <Modal
+      <Dialog
         open={action !== null}
         onOpenChange={(open) => {
           if (!open) close();
         }}
       >
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>
+        <DialogContent>
+          <div>
+            <DialogTitle>
               {action === 'approve' ? 'Approve' : 'Reject'} Order #{orderNumber}
-            </ModalTitle>
-          </ModalHeader>
+            </DialogTitle>
+          </div>
 
-          <Stack gap={4} className="px-6 py-2">
-            <Text size="sm" variant="muted">
+          <div className="flex flex-col gap-4 px-6 py-2">
+            <p className="text-base-content/70 text-sm">
               {action === 'approve'
                 ? 'The order will be placed and the buyer notified.'
                 : 'The order will be cancelled and the buyer notified.'}
-            </Text>
-            <Stack gap={2}>
-              <Text size="sm" className="font-medium">
-                Reason (optional)
-              </Text>
+            </p>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">Reason (optional)</p>
               <Textarea
                 placeholder="Add a note for the buyer…"
                 rows={3}
@@ -111,15 +99,11 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
                 onChange={(e) => setReason(e.target.value)}
                 disabled={submitting}
               />
-            </Stack>
-            {error && (
-              <Text size="sm" variant="danger">
-                {error}
-              </Text>
-            )}
-          </Stack>
+            </div>
+            {error && <p className="text-danger text-sm">{error}</p>}
+          </div>
 
-          <ModalFooter>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" disabled={submitting} onClick={close}>
               Cancel
             </Button>
@@ -134,9 +118,9 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
                   ? 'Approve Order'
                   : 'Reject Order'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Text } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 import { CheckCircle, CreditCard, Info } from 'lucide-react';
 import { startStripeConnectAction } from '../_lib/actions';
 import type { WizardResult } from '../_lib/types';
@@ -47,18 +47,18 @@ export function StepPayments({
             </span>
             <div>
               <span className="flex items-center gap-2">
-                <Text weight="medium">Stripe</Text>
+                <p className="font-medium">Stripe</p>
                 {stripeConnected && (
                   <Badge color="success" variant="soft" size="sm">
                     Connected
                   </Badge>
                 )}
               </span>
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 {stripeConnected
                   ? 'Your Stripe account is connected. Checkout is enabled.'
                   : 'Cards, wallets, and bank debits — paid out to your bank.'}
-              </Text>
+              </p>
             </div>
           </div>
           {!stripeConnected && (
@@ -76,20 +76,20 @@ export function StepPayments({
 
         <div className="mt-4 flex items-start gap-2.5 border-t border-[var(--color-border-default)] pt-4">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             This is the account that{' '}
             <span className="font-medium text-[var(--color-text-secondary)]">
               receives money from your customers
             </span>{' '}
             — separate from your own sparx subscription, which stays free for 14 days.
-          </Text>
+          </p>
         </div>
       </div>
 
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4 block">
+        <p className="text-danger mt-4 block text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
     </div>
   );

@@ -1,14 +1,6 @@
 import { FileText } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 
 import { Icon } from './icons';
 import { timeAgo } from './format';
@@ -21,10 +13,8 @@ import type { ActivityItem } from './types';
 export function ActivityFeed({ items }: { items: ActivityItem[] }) {
   return (
     <Card className="h-full">
-      <CardHeader>
+      <CardBody>
         <CardTitle>Recent activity</CardTitle>
-      </CardHeader>
-      <CardContent>
         {items.length === 0 ? (
           <EmptyState
             icon={<FileText className="h-5 w-5" />}
@@ -32,7 +22,7 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
             description="Publishes, stock changes, and customer events show up here."
           />
         ) : (
-          <Stack gap={0}>
+          <div className="flex flex-col gap-0">
             {items.map((it) => (
               <ModuleProvider key={it.key} module={it.module}>
                 <div className="flex items-center gap-3 border-b border-[var(--color-border-default)] py-3 last:border-b-0">
@@ -47,15 +37,13 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
                       {it.meta}
                     </div>
                   </div>
-                  <Text size="xs" variant="muted" className="shrink-0">
-                    {timeAgo(it.at)}
-                  </Text>
+                  <p className="text-base-content/70 shrink-0 text-xs">{timeAgo(it.at)}</p>
                 </div>
               </ModuleProvider>
             ))}
-          </Stack>
+          </div>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useTransition } from 'react';
 import { RefreshCw, Star, Trash2 } from 'lucide-react';
-import { Button, Stack, toast, useConfirm } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { removeDomainAction, setDefaultDomainAction, verifyDomainAction } from '../actions';
 import type { SendingDomainRow } from '../../_lib/types';
@@ -54,7 +55,7 @@ export function DomainActions({ domain }: { domain: SendingDomainRow }) {
   }
 
   return (
-    <Stack direction="row" align="center" gap={2}>
+    <div className="flex flex-row items-center gap-2">
       {domain.state !== 'verified' ? (
         <Button color="module" size="sm" onClick={verify} loading={pending} disabled={pending}>
           <RefreshCw className="h-3.5 w-3.5" />
@@ -76,6 +77,6 @@ export function DomainActions({ domain }: { domain: SendingDomainRow }) {
       >
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
-    </Stack>
+    </div>
   );
 }

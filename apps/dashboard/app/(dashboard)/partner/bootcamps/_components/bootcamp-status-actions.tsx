@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, ExternalLink, XCircle } from 'lucide-react';
-import { Button, Text, useConfirm } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 import type { BootcampStatus } from '@sparx/partner-schemas';
 
 import { setBootcampStatusAction } from '../actions';
@@ -55,17 +56,18 @@ export function BootcampStatusActions({
 
   return (
     <div className="flex items-center gap-2">
-      {error && (
-        <Text size="xs" variant="danger">
-          {error}
-        </Text>
-      )}
+      {error && <p className="text-danger text-xs">{error}</p>}
       {status === 'published' && (
-        <Button asChild size="sm" variant="ghost" color="neutral">
-          <a href={`https://sparx.works/bootcamp/${slug}`} target="_blank" rel="noreferrer">
-            <ExternalLink className="h-4 w-4" />
-            Preview
-          </a>
+        <Button
+          render={
+            <a href={`https://sparx.works/bootcamp/${slug}`} target="_blank" rel="noreferrer" />
+          }
+          size="sm"
+          variant="ghost"
+          color="neutral"
+          iconStart={<ExternalLink className="h-4 w-4" />}
+        >
+          Preview
         </Button>
       )}
       {status === 'published' && (
@@ -76,7 +78,7 @@ export function BootcampStatusActions({
           color="danger"
           onClick={() => void cancel()}
           disabled={pending}
-          leftIcon={<XCircle className="h-4 w-4" />}
+          iconStart={<XCircle className="h-4 w-4" />}
         >
           Cancel
         </Button>
@@ -89,7 +91,7 @@ export function BootcampStatusActions({
           onClick={() => run('published')}
           loading={pending}
           disabled={pending}
-          leftIcon={<CheckCircle2 className="h-4 w-4" />}
+          iconStart={<CheckCircle2 className="h-4 w-4" />}
         >
           Publish
         </Button>

@@ -2,16 +2,14 @@
 
 import { Archive, Trash2, Zap } from 'lucide-react';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import {
   bulkPublishEntriesAction,
@@ -102,7 +100,7 @@ export function ContentSelectionTable({
   );
 
   const titleCell = (e: ApiEntry, className: string) => (
-    <Stack gap={1}>
+    <div className="flex flex-col gap-1">
       <EntityRowLink
         href={entryHref(e)}
         entityType={rowEntityType(e)}
@@ -111,12 +109,8 @@ export function ContentSelectionTable({
       >
         {entryTitle(e)}
       </EntityRowLink>
-      {e.slug && (
-        <Text size="xs" variant="muted">
-          /{e.slug}
-        </Text>
-      )}
-    </Stack>
+      {e.slug && <p className="text-base-content/70 text-xs">/{e.slug}</p>}
+    </div>
   );
 
   const columns: SelectionColumn<ApiEntry>[] = [
@@ -130,9 +124,9 @@ export function ContentSelectionTable({
     {
       header: 'Updated',
       cell: (e) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {new Date(e.updated_at).toLocaleDateString()}
-        </Text>
+        </p>
       ),
     },
   ];
@@ -145,14 +139,14 @@ export function ContentSelectionTable({
       ),
     badge: statusBadge,
     body: (e) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
+      <div className="flex flex-row items-center justify-between gap-2">
         {showType ? typeBadge(e) : <span />}
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           {e.status === 'published' && e.published_at
             ? `Published ${new Date(e.published_at).toLocaleDateString()}`
             : `Updated ${new Date(e.updated_at).toLocaleDateString()}`}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 

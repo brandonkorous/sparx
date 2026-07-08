@@ -4,7 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Check, GripVertical, Plus, X } from 'lucide-react';
 
-import { Badge, Button, Input, Stack, Text, statusLabel, statusTone } from '@sparx/ui';
+import { statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Button, Input } from 'silicaui-react';
 
 import { setCollectionProductsAction } from '../../../collection-actions';
 
@@ -98,65 +99,48 @@ export function CollectionMembershipEditor({
 
   if (type === 'rules') {
     return (
-      <Stack gap={3}>
+      <div className="flex flex-col gap-3">
         {selectedRows.length === 0 ? (
-          <Stack
-            gap={2}
-            align="center"
-            className="rounded border border-dashed border-[var(--color-border-default)] p-6 text-center"
-          >
-            <Text size="sm" variant="muted">
+          <div className="flex flex-col items-center gap-2 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+            <p className="text-base-content/70 text-sm">
               The rule hasn&apos;t projected any products yet. The indexer worker re-evaluates on
               its next tick (Phase 1.5).
-            </Text>
-          </Stack>
+            </p>
+          </div>
         ) : (
-          <Stack gap={1}>
+          <div className="flex flex-col gap-1">
             {selectedRows.map((p) => (
               <ProductRow key={p.id} product={p} />
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
+      </div>
     );
   }
 
   return (
-    <Stack gap={4}>
-      <Stack gap={2}>
-        <Text size="sm" weight="medium">
-          In this collection ({selectedRows.length})
-        </Text>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium">In this collection ({selectedRows.length})</p>
         {selectedRows.length === 0 ? (
-          <Stack
-            gap={1}
-            align="center"
-            className="rounded border border-dashed border-[var(--color-border-default)] p-6 text-center"
-          >
-            <Text size="sm" variant="muted">
-              Add products from the picker below.
-            </Text>
-          </Stack>
+          <div className="flex flex-col items-center gap-1 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+            <p className="text-base-content/70 text-sm">Add products from the picker below.</p>
+          </div>
         ) : (
-          <Stack gap={1}>
+          <div className="flex flex-col gap-1">
             {selectedRows.map((p, idx) => (
-              <Stack
+              <div
                 key={p.id}
-                direction="row"
-                align="center"
-                gap={2}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2"
+                className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2"
               >
                 <GripVertical className="h-4 w-4 text-[var(--color-text-muted)]" aria-hidden />
-                <Stack gap={0} className="flex-1">
-                  <Text size="sm" weight="medium">
-                    {p.title}
-                  </Text>
-                  <Text size="xs" variant="muted">
+                <div className="flex flex-1 flex-col gap-0">
+                  <p className="text-sm font-medium">{p.title}</p>
+                  <p className="text-base-content/70 text-xs">
                     /{p.handle}
                     {p.vendor ? ` · ${p.vendor}` : ''}
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
                 <Badge color={statusTone(p.status)} variant="soft" size="sm">
                   {statusLabel(p.status)}
                 </Badge>
@@ -186,49 +170,44 @@ export function CollectionMembershipEditor({
                   size="sm"
                   onClick={() => remove(p.id)}
                   disabled={pending}
-                  leftIcon={<X className="h-3.5 w-3.5" />}
+                  iconStart={<X className="h-3.5 w-3.5" />}
                   aria-label={`Remove ${p.title}`}
                 >
                   Remove
                 </Button>
-              </Stack>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
+      </div>
 
-      <Stack gap={2}>
-        <Text size="sm" weight="medium">
-          Add products
-        </Text>
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-medium">Add products</p>
         <Input
           placeholder="Filter by title, handle, or vendor"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
         {remaining.length === 0 ? (
-          <Text size="sm" variant="muted">
+          <p className="text-base-content/70 text-sm">
             {allProducts.length === selectedRows.length
               ? 'Every product is already in this collection.'
               : 'No matches.'}
-          </Text>
+          </p>
         ) : (
-          <Stack gap={1}>
+          <div className="flex flex-col gap-1">
             {remaining.map((p) => (
-              <Stack
+              <div
                 key={p.id}
-                direction="row"
-                align="center"
-                gap={2}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2"
+                className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2"
               >
-                <Stack gap={0} className="flex-1">
-                  <Text size="sm">{p.title}</Text>
-                  <Text size="xs" variant="muted">
+                <div className="flex flex-1 flex-col gap-0">
+                  <p className="text-sm">{p.title}</p>
+                  <p className="text-base-content/70 text-xs">
                     /{p.handle}
                     {p.vendor ? ` · ${p.vendor}` : ''}
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
                 <Badge color={statusTone(p.status)} variant="soft" size="sm">
                   {statusLabel(p.status)}
                 </Badge>
@@ -238,64 +217,50 @@ export function CollectionMembershipEditor({
                   size="sm"
                   onClick={() => add(p.id)}
                   disabled={pending}
-                  leftIcon={<Plus className="h-3.5 w-3.5" />}
+                  iconStart={<Plus className="h-3.5 w-3.5" />}
                 >
                   Add
                 </Button>
-              </Stack>
+              </div>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
+      </div>
 
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
 
-      <Stack direction="row" justify="end" align="center" gap={2}>
+      <div className="flex flex-row items-center justify-end gap-2">
         {savedAt !== null && (
-          <Stack
-            direction="row"
-            align="center"
-            gap={1}
-            className="text-[var(--color-success-text)]"
-          >
+          <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
             <Check className="h-4 w-4" />
-            <Text size="sm" variant="success">
-              Saved
-            </Text>
-          </Stack>
+            <p className="text-success text-sm">Saved</p>
+          </div>
         )}
         <Button type="button" color="module" onClick={save} disabled={pending} loading={pending}>
           Save membership
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
 function ProductRow({ product }: { product: ProductBrief }) {
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={2}
-      className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2"
-    >
-      <Stack gap={0} className="flex-1">
-        <Text size="sm" weight="medium">
-          {product.title}
-        </Text>
-        <Text size="xs" variant="muted">
+    <div className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
+      <div className="flex flex-1 flex-col gap-0">
+        <p className="text-sm font-medium">{product.title}</p>
+        <p className="text-base-content/70 text-xs">
           /{product.handle}
           {product.vendor ? ` · ${product.vendor}` : ''}
-        </Text>
-      </Stack>
+        </p>
+      </div>
       <Badge color={statusTone(product.status)} variant="soft" size="sm">
         {statusLabel(product.status)}
       </Badge>
-    </Stack>
+    </div>
   );
 }

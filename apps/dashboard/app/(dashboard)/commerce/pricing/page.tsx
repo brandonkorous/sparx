@@ -1,6 +1,7 @@
 import { DollarSign, Plus } from 'lucide-react';
 
-import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -86,8 +87,8 @@ export default async function PricingPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Pricing"
@@ -120,8 +121,8 @@ export default async function PricingPage({ searchParams }: PageProps) {
           view={view}
           priceListTotal={priceListTotal}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

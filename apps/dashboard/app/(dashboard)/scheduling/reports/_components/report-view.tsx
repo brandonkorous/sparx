@@ -5,7 +5,8 @@
 // window; range presets refetch via the report action.
 
 import { useState } from 'react';
-import { Button, Card, toast } from '@sparx/ui';
+import { Button, Card } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import type { SchedulingReport } from '../../_lib/types';
 import { money } from '../../_lib/format';

@@ -18,16 +18,7 @@
 // the flow canvas).
 
 import * as React from 'react';
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Input, Select, Textarea } from 'silicaui-react';
 import { Code2, SlidersHorizontal, Trash2 } from 'lucide-react';
 import type { Action } from '@sparx/automation-schemas';
 
@@ -169,18 +160,9 @@ function FieldInput({
         <Select
           value={typeof raw === 'string' ? raw : ''}
           onValueChange={(v) => onConfig(setKey(config, field.key, v))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Choose…" />
-          </SelectTrigger>
-          <SelectContent>
-            {(field.options ?? []).map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          items={(field.options ?? []).map((o) => ({ value: o.value, label: o.label }))}
+          placeholder="Choose…"
+        />
       );
     case 'json':
       return (
@@ -258,18 +240,14 @@ export function ActionConfigEditor({
         caption={def?.description}
       >
         <Field label="Type">
-          <Select value={action.type} onValueChange={changeType}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((o) => (
-                <SelectItem key={o.type} value={o.type}>
-                  {moduleLabel(o.module)} · {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Select
+            value={action.type}
+            onValueChange={(v) => changeType(v as string)}
+            items={options.map((o) => ({
+              value: o.type,
+              label: `${moduleLabel(o.module)} · ${o.label}`,
+            }))}
+          />
         </Field>
 
         {!forcedJson && (
@@ -331,7 +309,7 @@ export function ActionConfigEditor({
           type="button"
           variant="outline"
           color="danger"
-          leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+          iconStart={<Trash2 className="h-3.5 w-3.5" />}
           onClick={onRemove}
           className="w-full justify-center"
         >

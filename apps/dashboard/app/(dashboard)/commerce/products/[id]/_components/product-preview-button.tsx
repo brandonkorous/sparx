@@ -10,7 +10,8 @@
 import * as React from 'react';
 import { Check, Eye } from 'lucide-react';
 
-import { Button, toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { mintProductPreviewUrl } from '../../../product-actions';
 
@@ -58,7 +59,7 @@ export function ProductPreviewButton({
       color={recentlyCopied ? 'module' : 'neutral'}
       variant={recentlyCopied ? 'outline' : 'ghost'}
       size="sm"
-      leftIcon={
+      iconStart={
         recentlyCopied ? <Check className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />
       }
       onClick={onClick}

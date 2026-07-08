@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Truck } from 'lucide-react';
 
-import { Badge, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -32,12 +32,12 @@ export async function SupplierDetailContent({ id }: { id: string }) {
   const preferredCount = variants.filter((v) => v.isPreferred).length;
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Truck className="h-5 w-5" />
-            <Heading level={1}>{supplier.name}</Heading>
+            <h1 className="text-3xl font-semibold">{supplier.name}</h1>
             <Badge color="neutral" variant="soft" size="sm" className="font-mono">
               {supplier.code}
             </Badge>
@@ -50,16 +50,16 @@ export async function SupplierDetailContent({ id }: { id: string }) {
                 inactive
               </Badge>
             )}
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {[supplier.contactName, supplier.email, supplier.phone].filter(Boolean).join(' · ') ||
               'No contact on file'}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <SupplierArchiveButton supplierId={supplier.id} isActive={supplier.isActive} />
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Linked variants" value={variants.length.toString()} />
         <Stat label="Preferred source for" value={preferredCount.toString()} />
         <Stat
@@ -67,34 +67,32 @@ export async function SupplierDetailContent({ id }: { id: string }) {
           value={supplier.leadTimeDays !== null ? `${supplier.leadTimeDays}d` : '—'}
         />
         <Stat label="Terms" value={supplier.paymentTerms ?? '—'} />
-      </Stack>
+      </div>
 
       <SupplierEditForm supplier={supplier} />
 
       <SupplierVariantsPanel supplierId={supplier.id} links={variants} />
 
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         Purchase orders for this supplier land in{' '}
         <Link href="/inventory/suppliers" className="underline hover:text-[var(--module-active)]">
           a later step
         </Link>{' '}
         (docs/100 P3b).
-      </Text>
-    </Stack>
+      </p>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[9rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

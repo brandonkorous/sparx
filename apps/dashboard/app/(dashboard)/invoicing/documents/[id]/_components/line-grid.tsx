@@ -18,20 +18,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Plus, Trash2 } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  Input,
-  Label,
-  Stack,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
 import { type BandMethod } from '@sparx/commerce-schemas';
 
 import { addLineAction, removeLineAction, updateLineAction } from '../../../document-actions';
@@ -102,9 +90,9 @@ export function LineGrid({
 }: LineGridProps) {
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>
-          <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-row items-center gap-2">
             Line items
             <Badge color="neutral" variant="soft" size="sm">
               {lines.length}
@@ -114,11 +102,9 @@ export function LineGrid({
                 <Lock className="mr-1 h-3 w-3" /> Locked
               </Badge>
             )}
-          </Stack>
+          </div>
         </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
+        <div className="flex flex-col gap-3">
           <div className="hidden grid-cols-12 gap-2 px-1 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase md:grid">
             <div className="col-span-2">Type</div>
             <div className="col-span-4">Description</div>
@@ -129,9 +115,9 @@ export function LineGrid({
           </div>
 
           {lines.length === 0 && (
-            <Text size="sm" variant="muted" className="px-1 py-2">
+            <p className="text-base-content/70 px-1 py-2 text-sm">
               No line items yet. Add the first charge below.
-            </Text>
+            </p>
           )}
 
           {lines.map((line) => (
@@ -154,8 +140,8 @@ export function LineGrid({
               currency={currency}
             />
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -338,7 +324,7 @@ function EditableLineRow({
       </div>
 
       {markupMode && (
-        <Stack direction="row" gap={3} align="end" wrap className="mt-2 px-1">
+        <div className="mt-2 flex flex-row flex-wrap items-end gap-3 px-1">
           <MarkupFields
             state={markupState}
             rules={markupRules}
@@ -358,16 +344,16 @@ function EditableLineRow({
           >
             Apply markup
           </Button>
-        </Stack>
+        </div>
       )}
 
-      <Stack direction="row" align="center" gap={3} className="mt-2 px-1" wrap>
+      <div className="mt-2 flex flex-row flex-wrap items-center gap-3 px-1">
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
           <Checkbox
             color="module"
             defaultChecked={line.taxable}
             disabled={pending}
-            onCheckedChange={(v) => commit({ taxable: v === true })}
+            onChange={(e) => commit({ taxable: e.target.checked })}
           />
           Taxable
         </label>
@@ -378,11 +364,11 @@ function EditableLineRow({
           </Badge>
         )}
         {error && (
-          <Text size="xs" variant="danger" role="alert">
+          <p className="text-danger text-xs" role="alert">
             {error}
-          </Text>
+          </p>
         )}
-      </Stack>
+      </div>
     </div>
   );
 }
@@ -602,9 +588,9 @@ function AddLineRow({
         </div>
       </div>
       {error && (
-        <Text size="xs" variant="danger" className="mt-2" role="alert">
+        <p className="text-danger mt-2 text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
     </div>
   );

@@ -9,7 +9,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import { Badge, Card, CardContent, Text, useConfirm } from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { advanceStageAction } from '../../../document-actions';
 
@@ -65,7 +66,7 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
 
   return (
     <Card>
-      <CardContent className="py-4">
+      <CardBody className="py-4">
         <div className="flex flex-wrap items-center gap-2">
           {stages.map((stage, idx) => {
             const isCurrent = stage.id === currentStageId;
@@ -97,11 +98,11 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
           })}
         </div>
         {error && (
-          <Text size="sm" variant="danger" className="mt-3" role="alert">
+          <p className="text-danger mt-3 text-sm" role="alert">
             {error}
-          </Text>
+          </p>
         )}
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

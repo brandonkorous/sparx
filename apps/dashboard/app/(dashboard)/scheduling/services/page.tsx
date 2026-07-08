@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Briefcase } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { SchedulingService } from '../_lib/types';
@@ -14,8 +15,8 @@ export default async function SchedulingServicesPage() {
     .catch(() => [] as SchedulingService[]);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Briefcase className="h-5 w-5" />}
           title="Services"
@@ -29,19 +30,23 @@ export default async function SchedulingServicesPage() {
         />
 
         {services.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title="No services yet"
-              description="Create your first bookable service to start taking bookings."
-              action={<NewServiceButton />}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No services yet"
+                description="Create your first bookable service to start taking bookings."
+                actions={<NewServiceButton />}
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Card padding="none">
-            <ServicesList services={services} />
+          <Card>
+            <CardBody className="p-0">
+              <ServicesList services={services} />
+            </CardBody>
           </Card>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

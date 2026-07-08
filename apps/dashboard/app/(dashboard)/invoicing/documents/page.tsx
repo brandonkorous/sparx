@@ -1,6 +1,7 @@
 import { FileText, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -75,8 +76,8 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title="Documents"
@@ -108,20 +109,22 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
         />
 
         {items.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<FileText className="h-5 w-5" />}
-              title="No documents match"
-              description="Create an estimate, invoice or work order to get started."
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<FileText className="h-5 w-5" />}
+                title="No documents match"
+                description="Create an estimate, invoice or work order to get started."
+              />
+            </CardBody>
           </Card>
         ) : (
           <DocumentsList items={items} view={view} stageLabels={stageLabels} />
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

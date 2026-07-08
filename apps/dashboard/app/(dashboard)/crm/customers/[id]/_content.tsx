@@ -6,20 +6,14 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Heading,
-  ModuleProvider,
-  Stack,
-  statusLabel,
-  statusTone,
   Tabs,
-  TabsContent,
   TabsList,
-  TabsTrigger,
-  Text,
-} from '@sparx/ui';
+  TabsTab,
+  TabsPanel,
+} from 'silicaui-react';
+import { ModuleProvider, statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { resolveSiteScope } from '@/lib/sites';
@@ -134,10 +128,10 @@ export async function CustomerDetailContent({ id }: Props) {
     // @container so the two-column body responds to its OWN width — the same
     // content mounts full-page (wide → 3-col) and in the detail drawer (narrow →
     // stacked), so the rail never gets crushed into a horizontal scroll.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" gap={3} wrap>
-          <Heading level={1}>{displayName}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{displayName}</h1>
           <Badge color="module" variant="soft" size="sm">
             {statusLabel(customer.type)}
           </Badge>
@@ -151,23 +145,21 @@ export async function CustomerDetailContent({ id }: Props) {
               Merged into another record
             </Badge>
           )}
-        </Stack>
+        </div>
         {customer.company && (
-          <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-row items-center gap-2">
             <Building2 className="h-4 w-4 text-[var(--color-text-tertiary)]" />
-            <Text variant="muted">{customer.company}</Text>
+            <p className="text-base-content/70">{customer.company}</p>
             {customer.jobTitle && (
-              <Text variant="muted" size="sm">
-                · {customer.jobTitle}
-              </Text>
+              <p className="text-base-content/70 text-sm">· {customer.jobTitle}</p>
             )}
-          </Stack>
+          </div>
         )}
-      </Stack>
+      </div>
 
       <Card>
-        <CardContent>
-          <Stack direction="row" gap={8} wrap>
+        <CardBody>
+          <div className="flex flex-row flex-wrap gap-8">
             <StatItem label="Total spent" value={`$${totalSpent.toLocaleString()}`} />
             <StatItem label="Orders" value={customer.orderCount.toString()} />
             <StatItem
@@ -190,168 +182,158 @@ export async function CustomerDetailContent({ id }: Props) {
                 customer.lastOrderAt ? new Date(customer.lastOrderAt).toLocaleDateString() : '—'
               }
             />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       <div className="grid grid-cols-1 gap-6 @[820px]:grid-cols-3">
         <div className="@[820px]:col-span-2">
           <Tabs defaultValue="activity">
             <TabsList>
-              <TabsTrigger value="activity">
+              <TabsTab value="activity">
                 Activity{' '}
                 {activities.length > 0 && (
                   <Badge color="neutral" variant="soft" size="sm">
                     {activities.length}
                   </Badge>
                 )}
-              </TabsTrigger>
-              <TabsTrigger value="tasks">
+              </TabsTab>
+              <TabsTab value="tasks">
                 Tasks {openTasks.length > 0 && <Badge color="warning">{openTasks.length}</Badge>}
-              </TabsTrigger>
-              <TabsTrigger value="deals">Deals</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
+              </TabsTab>
+              <TabsTab value="deals">Deals</TabsTab>
+              <TabsTab value="notes">Notes</TabsTab>
             </TabsList>
 
-            <TabsContent value="activity">
+            <TabsPanel value="activity">
               <Card>
-                <CardHeader>
+                <CardBody>
                   <CardTitle>Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
                   {activities.length === 0 ? (
-                    <Text variant="muted" size="sm">
+                    <p className="text-base-content/70 text-sm">
                       No activity recorded yet. Orders, emails, and notes will appear here as they
                       happen.
-                    </Text>
+                    </p>
                   ) : (
                     <ActivityTimeline activities={activities} />
                   )}
-                </CardContent>
+                </CardBody>
               </Card>
-            </TabsContent>
+            </TabsPanel>
 
-            <TabsContent value="tasks">
+            <TabsPanel value="tasks">
               <Card>
-                <CardHeader>
-                  <Stack direction="row" align="center" justify="between">
+                <CardBody>
+                  <div className="flex flex-row items-center justify-between gap-4">
                     <CardTitle>Open tasks</CardTitle>
-                    <Button asChild size="sm" color="module" variant="outline">
-                      <Link href={`/crm/tasks/new?customerId=${customer.id}`}>New task</Link>
+                    <Button
+                      size="sm"
+                      color="module"
+                      variant="outline"
+                      render={<Link href={`/crm/tasks/new?customerId=${customer.id}`} />}
+                    >
+                      New task
                     </Button>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
+                  </div>
                   {openTasks.length === 0 ? (
-                    <Text variant="muted" size="sm">
-                      No open tasks for this customer.
-                    </Text>
+                    <p className="text-base-content/70 text-sm">No open tasks for this customer.</p>
                   ) : (
-                    <Stack gap={3}>
+                    <div className="flex flex-col gap-3">
                       {openTasks.map((task) => (
-                        <Stack
+                        <div
                           key={task.id}
-                          direction="row"
-                          align="center"
-                          justify="between"
-                          className="rounded-md border border-[var(--color-border-default)] p-3"
+                          className="flex flex-row items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] p-3"
                         >
-                          <Stack gap={1}>
-                            <Stack direction="row" align="center" gap={2}>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-row items-center gap-2">
                               <CheckSquare className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
-                              <Text size="sm">{task.title}</Text>
+                              <p className="text-sm">{task.title}</p>
                               <Badge color={taskPriorityVariant(task.priority)}>
                                 {task.priority}
                               </Badge>
-                            </Stack>
+                            </div>
                             {task.dueAt && (
-                              <Text size="xs" variant="muted">
+                              <p className="text-base-content/70 text-xs">
                                 Due {new Date(task.dueAt).toLocaleDateString()}
-                              </Text>
+                              </p>
                             )}
-                          </Stack>
-                        </Stack>
+                          </div>
+                        </div>
                       ))}
-                    </Stack>
+                    </div>
                   )}
-                </CardContent>
+                </CardBody>
               </Card>
-            </TabsContent>
+            </TabsPanel>
 
-            <TabsContent value="deals">
+            <TabsPanel value="deals">
               <Card>
-                <CardContent>
-                  <Text variant="muted" size="sm">
+                <CardBody>
+                  <p className="text-base-content/70 text-sm">
                     Deal list lands in Phase 3 (sales pipeline). Until then, deals attached to this
                     customer can be opened from the Pipeline view.
-                  </Text>
-                </CardContent>
+                  </p>
+                </CardBody>
               </Card>
-            </TabsContent>
+            </TabsPanel>
 
-            <TabsContent value="notes">
+            <TabsPanel value="notes">
               <Card>
-                <CardContent>
-                  <Stack gap={4}>
-                    <Text variant="muted" size="sm">
+                <CardBody>
+                  <div className="flex flex-col gap-4">
+                    <p className="text-base-content/70 text-sm">
                       Notes are recorded as activities of type{' '}
                       <Badge color="neutral" variant="soft" size="sm">
                         note
                       </Badge>
                       . Use the right rail to add one.
-                    </Text>
+                    </p>
                     <ActivityTimeline activities={activities.filter((a) => a.type === 'note')} />
-                  </Stack>
-                </CardContent>
+                  </div>
+                </CardBody>
               </Card>
-            </TabsContent>
+            </TabsPanel>
           </Tabs>
         </div>
 
-        <Stack gap={6}>
-          <Card variant="module">
-            <CardHeader>
+        <div className="flex flex-col gap-6">
+          <Card className="bg-module bg-soft">
+            <CardBody>
               <CardTitle>Contact</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 {customer.email ? (
-                  <Stack direction="row" align="center" gap={2}>
+                  <div className="flex flex-row items-center gap-2">
                     <Mail className="h-4 w-4 text-[var(--color-text-tertiary)]" />
-                    <Text size="sm">{customer.email}</Text>
-                  </Stack>
+                    <p className="text-sm">{customer.email}</p>
+                  </div>
                 ) : (
-                  <Text variant="muted" size="sm">
-                    No email on file.
-                  </Text>
+                  <p className="text-base-content/70 text-sm">No email on file.</p>
                 )}
                 {customer.phone && (
-                  <Stack direction="row" align="center" gap={2}>
+                  <div className="flex flex-row items-center gap-2">
                     <Phone className="h-4 w-4 text-[var(--color-text-tertiary)]" />
-                    <Text size="sm">{customer.phone}</Text>
-                  </Stack>
+                    <p className="text-sm">{customer.phone}</p>
+                  </div>
                 )}
                 {customer.preferredContactMethod && (
-                  <Text size="xs" variant="muted">
+                  <p className="text-base-content/70 text-xs">
                     Preferred: {customer.preferredContactMethod}
-                  </Text>
+                  </p>
                 )}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
 
           {siteScope.multiSite && (
-            <Card variant="default">
-              <CardHeader>
+            <Card>
+              <CardBody>
                 <CardTitle>Site</CardTitle>
-              </CardHeader>
-              <CardContent>
                 <CustomerSiteSelect
                   customerId={customer.id}
                   value={customer.propertyId}
                   sites={siteScope.sites.map((s) => ({ id: s.id, name: s.name }))}
                 />
-              </CardContent>
+              </CardBody>
             </Card>
           )}
 
@@ -362,44 +344,38 @@ export async function CustomerDetailContent({ id }: Props) {
           )}
 
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>Record activity</CardTitle>
-            </CardHeader>
-            <CardContent>
               <RecordActivityForm customerId={customer.id} />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {customer.tags.length > 0 && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Stack direction="row" gap={2} wrap>
+                <div className="flex flex-row flex-wrap gap-2">
                   {customer.tags.map((t) => (
                     <Badge key={t} color="neutral" variant="soft" size="sm">
                       {t}
                     </Badge>
                   ))}
-                </Stack>
-              </CardContent>
+                </div>
+              </CardBody>
             </Card>
           )}
-        </Stack>
+        </div>
       </div>
-    </Stack>
+    </div>
   );
 }
 
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
-    <Stack gap={1}>
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Heading level={3}>{value}</Heading>
-    </Stack>
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <h3 className="text-xl font-semibold">{value}</h3>
+    </div>
   );
 }
 
@@ -410,29 +386,27 @@ function BookingReliabilityCard({ stats }: { stats: CustomerBookingStats }) {
   const unreliable = stats.noShow >= 2 && stats.noShowRatePct >= 25;
   return (
     <ModuleProvider module="scheduling">
-      <Card variant="default">
-        <CardHeader>
-          <Stack direction="row" align="center" justify="between">
-            <Stack direction="row" align="center" gap={2}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row items-center justify-between gap-4">
+            <div className="flex flex-row items-center gap-2">
               <CalendarClock className="h-4 w-4" />
               <CardTitle>Bookings</CardTitle>
-            </Stack>
+            </div>
             {unreliable && (
               <Badge color="warning" variant="soft" size="sm">
                 High no-show rate
               </Badge>
             )}
-          </Stack>
-        </CardHeader>
-        <CardContent>
-          <Stack direction="row" gap={6} wrap>
+          </div>
+          <div className="flex flex-row flex-wrap gap-6">
             <StatItem label="Total" value={String(stats.total)} />
             <StatItem label="Completed" value={String(stats.completed)} />
             <StatItem label="No-shows" value={String(stats.noShow)} />
             <StatItem label="Cancelled" value={String(stats.cancelled)} />
             <StatItem label="Upcoming" value={String(stats.upcoming)} />
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
     </ModuleProvider>
   );
@@ -456,18 +430,16 @@ function B2BAccountCard({
   const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2}>
+    <Card>
+      <CardBody>
+        <div className="flex flex-row items-center gap-2">
           <Building2 className="h-4 w-4" />
           <CardTitle>B2B account</CardTitle>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
-          <Stack gap={1}>
-            <Text size="sm">{account.companyName}</Text>
-            <Stack direction="row" gap={2}>
+        </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm">{account.companyName}</p>
+            <div className="flex flex-row gap-2">
               {account.pricingTier && (
                 <Badge color="neutral" variant="soft" size="sm">
                   {account.pricingTier}
@@ -476,40 +448,43 @@ function B2BAccountCard({
               <Badge color={statusTone(account.status)} variant="soft" size="sm">
                 {statusLabel(account.status)}
               </Badge>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
           {limit > 0 && (
-            <Stack gap={1}>
-              <Stack direction="row" justify="between">
-                <Text size="xs" variant="muted">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row justify-between gap-4">
+                <p className="text-base-content/70 text-xs">
                   <CreditCard className="mr-1 inline h-3 w-3" />
                   Credit
-                </Text>
-                <Text size="xs">
+                </p>
+                <p className="text-xs">
                   ${used.toLocaleString()} / ${limit.toLocaleString()}
-                </Text>
-              </Stack>
+                </p>
+              </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-subtle)]">
                 <div className="h-full bg-[var(--module-active)]" style={{ width: `${pct}%` }} />
               </div>
-            </Stack>
+            </div>
           )}
           {account.paymentTerms && (
-            <Text size="xs" variant="muted">
-              Terms: {account.paymentTerms}
-            </Text>
+            <p className="text-base-content/70 text-xs">Terms: {account.paymentTerms}</p>
           )}
-          <Button asChild size="sm" color="module" variant="outline">
-            <Link href={`/crm/b2b/${account.id}`}>Open account</Link>
+          <Button
+            size="sm"
+            color="module"
+            variant="outline"
+            render={<Link href={`/crm/b2b/${account.id}`} />}
+          >
+            Open account
           </Button>
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
-function taskPriorityVariant(priority: string): 'outline' | 'warning' | 'danger' {
+function taskPriorityVariant(priority: string): 'neutral' | 'warning' | 'danger' {
   if (priority === 'urgent') return 'danger';
   if (priority === 'high') return 'warning';
-  return 'outline';
+  return 'neutral';
 }

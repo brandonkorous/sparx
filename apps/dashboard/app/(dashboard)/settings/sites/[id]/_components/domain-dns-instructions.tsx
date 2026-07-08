@@ -2,18 +2,8 @@
 
 import * as React from 'react';
 import { Check, Copy } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-  Badge,
-  Button,
-  Input,
-  Stack,
-  Text,
-  toast,
-} from '@sparx/ui';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, toast } from '@sparx/ui';
+import { Badge, Button, Input } from 'silicaui-react';
 
 import type { Domain } from '@/lib/sites';
 
@@ -46,12 +36,12 @@ function CopyField({ label, hint, value }: { label: string; hint?: string; value
   }, [copied]);
 
   return (
-    <Stack gap={1}>
-      <Text size="xs" variant="muted">
+    <div className="flex flex-col gap-1">
+      <p className="text-base-content/70 text-xs">
         {label}
         {hint ? <span className="text-[var(--color-text-tertiary)]"> — {hint}</span> : null}
-      </Text>
-      <Stack direction="row" align="center" gap={2}>
+      </p>
+      <div className="flex flex-row items-center gap-2">
         <Input
           readOnly
           value={value}
@@ -65,12 +55,12 @@ function CopyField({ label, hint, value }: { label: string; hint?: string; value
           variant="soft"
           onClick={onCopy}
           className="shrink-0"
-          leftIcon={copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+          iconStart={copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         >
           {copied ? 'Copied' : 'Copy'}
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -89,18 +79,16 @@ function RecordCard({
 }) {
   return (
     <div className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
-      <Stack gap={3}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" weight="medium">
-            {purpose}
-          </Text>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-sm font-medium">{purpose}</p>
           <Badge variant="outline" size="sm" className="shrink-0 font-mono">
             {type}
           </Badge>
-        </Stack>
+        </div>
         <CopyField label="Name" hint="some providers call this Host" value={name} />
         <CopyField label="Value" hint="some call this Target or Points to" value={value} />
-      </Stack>
+      </div>
     </div>
   );
 }
@@ -144,16 +132,16 @@ export function DomainDnsInstructions({
       <AccordionItem value="dns">
         <AccordionTrigger className="text-sm font-medium">{triggerLabel}</AccordionTrigger>
         <AccordionContent>
-          <Stack gap={4} className="pt-1">
+          <div className="flex flex-col gap-4 pt-1">
             {setupMode ? (
-              <Stack gap={2}>
-                <Text size="sm" variant="muted">
+              <div className="flex flex-col gap-2">
+                <p className="text-base-content/70 text-sm">
                   Add the {recordCount > 1 ? 'records' : 'record'} below wherever{' '}
                   <strong className="font-medium text-[var(--color-text-primary)]">
                     {domain.host}
                   </strong>{' '}
                   is managed, then press <strong className="font-medium">Verify</strong>:
-                </Text>
+                </p>
                 <ol className="list-decimal space-y-1.5 pl-5 text-sm text-[var(--color-text-secondary)]">
                   <li>
                     Sign in to your <strong className="font-medium">domain provider</strong> — the
@@ -172,19 +160,19 @@ export function DomainDnsInstructions({
                     Save, then come back and press <strong className="font-medium">Verify</strong>.
                   </li>
                 </ol>
-              </Stack>
+              </div>
             ) : (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 <strong className="font-medium text-[var(--color-text-primary)]">
                   {domain.host}
                 </strong>{' '}
                 is connected using the record below. Leave it in place at your domain provider — if
                 this site ever stops loading on this address, sign in and make sure the record still
                 matches (you can re-enter it from here).
-              </Text>
+              </p>
             )}
 
-            <Stack gap={3}>
+            <div className="flex flex-col gap-3">
               <RecordCard
                 purpose="Points your domain to this site"
                 type="CNAME"
@@ -199,13 +187,13 @@ export function DomainDnsInstructions({
                   value={dns.txt.value}
                 />
               )}
-            </Stack>
+            </div>
 
             {canReissue && (
-              <Stack gap={1}>
-                <Text size="xs" variant="muted">
+              <div className="flex flex-col gap-1">
+                <p className="text-base-content/70 text-xs">
                   Lost the verification record, or need to prove ownership again?
-                </Text>
+                </p>
                 <Button
                   type="button"
                   size="sm"
@@ -217,14 +205,14 @@ export function DomainDnsInstructions({
                 >
                   Request a new verification record
                 </Button>
-              </Stack>
+              </div>
             )}
 
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               DNS changes usually take a few minutes to take effect — occasionally up to a few
               hours.
-            </Text>
-          </Stack>
+            </p>
+          </div>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

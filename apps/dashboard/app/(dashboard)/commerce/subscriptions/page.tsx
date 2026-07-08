@@ -1,6 +1,7 @@
 import { Repeat2 } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -46,8 +47,8 @@ export default async function SubscriptionsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Repeat2 className="h-5 w-5" />}
           title="Subscriptions"
@@ -73,7 +74,7 @@ export default async function SubscriptionsPage({
         />
 
         {items.length === 0 ? (
-          <Card variant="module" padding="none">
+          <Card className="bg-module bg-soft">
             <EmptyState
               icon={<Repeat2 className="h-5 w-5" />}
               title="No subscriptions"
@@ -82,17 +83,17 @@ export default async function SubscriptionsPage({
           </Card>
         ) : (
           <>
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {status ? labelForStatus(status) : 'All subscriptions'} — MRR is normalized to a
               monthly cadence; annual / weekly / daily subs are converted.
-            </Text>
+            </p>
             <SubscriptionsList items={items} view={view} />
           </>
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

@@ -9,7 +9,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 
-import { Button, Input, Stack, toast } from '@sparx/ui';
+import { Button, Input } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { updatePipelineStageAction } from '../../../../pipeline-actions';
 
@@ -55,13 +56,10 @@ export function SortableStageRow({ stage, pipelineId }: { stage: StageRow; pipel
   }
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
+    <div
       ref={setNodeRef}
       style={style}
-      className="rounded-md border border-[var(--color-border-default)] p-3"
+      className="flex flex-row items-center gap-3 rounded-md border border-[var(--color-border-default)] p-3"
     >
       <button
         type="button"
@@ -98,6 +96,6 @@ export function SortableStageRow({ stage, pipelineId }: { stage: StageRow; pipel
       <Button color="module" size="sm" disabled={!dirty || pending} onClick={save}>
         Save
       </Button>
-    </Stack>
+    </div>
   );
 }

@@ -8,7 +8,7 @@
 
 import { Compass } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -24,8 +24,8 @@ export default async function IndustrySettingsPage() {
   const active = starters.find((s) => s.active) ?? null;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Compass className="h-5 w-5" />}
           title="Industry"
@@ -41,7 +41,7 @@ export default async function IndustrySettingsPage() {
         />
 
         <IndustryPicker starters={starters} activeSlug={active?.slug ?? null} canEdit={canEdit} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

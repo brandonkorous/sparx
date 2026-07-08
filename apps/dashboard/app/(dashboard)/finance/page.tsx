@@ -11,20 +11,8 @@ import {
   Wallet,
 } from 'lucide-react';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import {
-  AreaChart,
-  Badge,
-  Container,
-  Grid,
-  Heading,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Stat,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { AreaChart, ModuleProvider, PageHeader, Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import {
   CardLink,
@@ -109,8 +97,8 @@ export default async function FinanceOverviewPage() {
 
   return (
     <ModuleProvider module="finance">
-      <Container size="xl">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <PageHeader
             icon={<Landmark className="h-5 w-5" />}
             title="Finance"
@@ -119,7 +107,7 @@ export default async function FinanceOverviewPage() {
 
           <FinanceKpis o={o} currency={currency} />
 
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <FlowHeader
               title="You get paid"
               description="Money coming to you — from customers, marketplaces, and accounts."
@@ -128,29 +116,27 @@ export default async function FinanceOverviewPage() {
             {upsells.length > 0 ? (
               <GrowGetPaid upsells={upsells} canActivate={canActivate} lead={!hasMoneyIn} />
             ) : null}
-          </Stack>
+          </div>
 
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             <FlowHeader
               title="You pay sparx"
               description="One bill for every module you activate — separate from the money coming in."
             />
             <PaySparxCards o={o} />
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }
 
 function FlowHeader({ title, description }: { title: string; description: string }) {
   return (
-    <Stack gap={1}>
-      <Heading level={2}>{title}</Heading>
-      <Text size="sm" variant="muted">
-        {description}
-      </Text>
-    </Stack>
+    <div className="flex flex-col gap-1">
+      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+      <p className="text-base-content/70 text-sm">{description}</p>
+    </div>
   );
 }
 
@@ -184,7 +170,7 @@ function FinanceKpis({ o, currency }: { o: FinanceOverview; currency: string }) 
   const nextBilling = fmtDate(sub?.currentPeriodEnd ?? null);
 
   return (
-    <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Stat
         icon={<TrendingUp className="h-4 w-4" />}
         label="Revenue · 30d"
@@ -215,7 +201,7 @@ function FinanceKpis({ o, currency }: { o: FinanceOverview; currency: string }) 
             : 'Activate a module to see your plan'
         }
       />
-    </Grid>
+    </div>
   );
 }
 
@@ -279,10 +265,10 @@ function MoneyInCard({ o, currency }: { o: FinanceOverview; currency: string }) 
         ariaLabel="Money in, last 30 days"
       />
       {footer ? (
-        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+        <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
           {footer.map((f) => (
             <div key={f.label}>
-              <div className="text-xs text-[var(--color-text-tertiary)]">{f.label}</div>
+              <div className="text-base-content/50 text-xs">{f.label}</div>
               <div className="font-medium tabular-nums">{neg(f.cents, currency, f.negative)}</div>
             </div>
           ))}
@@ -310,7 +296,7 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           <p className="text-[1.65rem] leading-none font-medium tabular-nums">
             {fmtMoneyCents(b.availableCents, currency)}
           </p>
-          <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
+          <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
             Available to pay out{cadence ? ` · ${cadence}` : ''}
           </p>
           <OverviewRow
@@ -336,9 +322,7 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           <p className="text-[1.65rem] leading-none font-medium tabular-nums">
             {fmtMoneyCents(o.settlement.pendingCents, currency)}
           </p>
-          <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
-            Pending marketplace settlement
-          </p>
+          <p className="text-base-content/50 mt-1.5 mb-3 text-sm">Pending marketplace settlement</p>
           <OverviewRow
             icon={<DollarSign className="h-4 w-4" />}
             tone="success"
@@ -348,9 +332,9 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           />
         </>
       ) : (
-        <Text size="sm" variant="muted" className="py-1">
+        <p className="text-base-content/70 py-1 text-sm">
           No payouts yet — finish sparx Pay setup to start receiving money.
-        </Text>
+        </p>
       )}
     </OverviewCard>
   );
@@ -366,9 +350,9 @@ function ReceivablesCard({ o, currency }: { o: FinanceOverview; currency: string
         right={<CardLink href="/finance/receivables">All</CardLink>}
         plain
       >
-        <Text size="sm" variant="muted" className="py-1">
+        <p className="text-base-content/70 py-1 text-sm">
           Nothing outstanding — every invoice is paid.
-        </Text>
+        </p>
       </OverviewCard>
     );
   }
@@ -402,7 +386,7 @@ function ReceivablesCard({ o, currency }: { o: FinanceOverview; currency: string
           />
         ))}
       {top ? (
-        <p className="mt-3 text-xs text-[var(--color-text-tertiary)]">
+        <p className="text-base-content/50 mt-3 text-xs">
           {top.customerName} owes the most · {fmtMoneyCents(top.outstandingCents, currency)}
           {o.collections?.avgDaysToPay != null
             ? ` · ${o.collections.avgDaysToPay}d avg to pay`
@@ -435,9 +419,9 @@ function ChannelMixCard({ o, currency }: { o: FinanceOverview; currency: string 
           />
         ))
       ) : (
-        <Text size="sm" variant="muted" className="py-1">
+        <p className="text-base-content/70 py-1 text-sm">
           No channel sales in the last 30 days yet.
-        </Text>
+        </p>
       )}
     </OverviewCard>
   );
@@ -452,16 +436,16 @@ function PaymentsStatusCard({ o }: { o: FinanceOverview }) {
       right={<CardLink href="/finance/payments">Manage</CardLink>}
       plain
     >
-      <Stack direction="row" align="center" gap={2} className="mb-1">
+      <div className="mb-1 flex items-center gap-2">
         <Badge color={live ? 'success' : 'warning'} variant="soft">
           {live ? 'Accepting payments' : 'Setup needed'}
         </Badge>
-      </Stack>
-      <Text size="sm" variant="muted">
+      </div>
+      <p className="text-base-content/70 text-sm">
         {live
           ? 'Checkout is live — cards are being accepted.'
           : 'Finish payment setup so customers can check out.'}
-      </Text>
+      </p>
     </OverviewCard>
   );
 }
@@ -481,13 +465,11 @@ function GrowGetPaid({
   lead: boolean;
 }) {
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       {!lead ? (
-        <Text size="sm" weight="medium" className="text-[var(--color-text-secondary)]">
-          Grow how you get paid
-        </Text>
+        <p className="text-base-content/70 text-sm font-medium">Grow how you get paid</p>
       ) : null}
-      <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {upsells.map((u) => (
           <FinanceUpsellCard
             key={u.module}
@@ -496,8 +478,8 @@ function GrowGetPaid({
             canActivate={canActivate}
           />
         ))}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -531,14 +513,14 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
       right={<CardLink href="/finance/subscription">Manage billing</CardLink>}
       plain
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[var(--color-border-default)] pb-4">
+      <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b pb-4">
         <div className="flex items-center gap-3">
           {enterprise ? (
             <p className="text-[1.65rem] leading-none font-medium">Managed</p>
           ) : (
             <p className="text-[1.65rem] leading-none font-medium tabular-nums">
               {sub ? fmtMoneyCents(sub.planTotalCents) : '—'}
-              <span className="text-base font-normal text-[var(--color-text-tertiary)]">
+              <span className="text-base-content/50 text-base font-normal">
                 {sub ? interval : ''}
               </span>
             </p>
@@ -554,20 +536,16 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
             </Badge>
           ) : null}
         </div>
-        <Text size="sm" variant="muted">
-          {note}
-        </Text>
+        <p className="text-base-content/70 text-sm">{note}</p>
       </div>
 
       {itemized ? (
         <>
-          <Text size="xs" variant="muted" className="mt-4 mb-1">
-            What you pay for
-          </Text>
+          <p className="text-base-content/70 mt-4 mb-1 text-xs">What you pay for</p>
           <div className="grid gap-x-10 sm:grid-cols-2">
             {sub.planModules.map((m) => (
               <div key={m.moduleKey} className="flex items-center justify-between py-1.5 text-sm">
-                <span className="text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70">
                   {PLAN_LABELS[m.moduleKey] ?? m.moduleKey}
                 </span>
                 <span className="font-medium tabular-nums">
@@ -577,7 +555,7 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
               </div>
             ))}
           </div>
-          <div className="mt-2 flex items-center justify-between border-t border-[var(--color-border-default)] pt-3 text-sm font-medium">
+          <div className="border-base-300 mt-2 flex items-center justify-between border-t pt-3 text-sm font-medium">
             <span>Total</span>
             <span className="tabular-nums">
               {fmtMoneyCents(sub.planTotalCents)}
@@ -586,9 +564,9 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
           </div>
         </>
       ) : !enterprise ? (
-        <Text size="sm" variant="muted" className="pt-4">
+        <p className="text-base-content/70 pt-4 text-sm">
           No billable modules active yet. Turn one on from Settings → Modules.
-        </Text>
+        </p>
       ) : null}
     </OverviewCard>
   );

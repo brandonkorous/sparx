@@ -8,20 +8,8 @@
 
 import { notFound } from 'next/navigation';
 import { renderDocToHtml } from '@sparx/cms-editor';
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Grid,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { RestoreButton } from '../restore-button';
@@ -86,9 +74,9 @@ export default async function RevisionDiffPage({ params }: PageParams) {
   const curHtml = renderDocToHtml(curDoc);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
-        <Stack gap={2}>
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
+        <div className="flex flex-col gap-2">
           <PageHeader
             className="mb-0"
             title={`Revision #${revision.revision_number}`}
@@ -117,19 +105,19 @@ export default async function RevisionDiffPage({ params }: PageParams) {
               </>
             }
           />
-          <Stack direction="row" align="center" gap={2}>
+          <div className="flex flex-row items-center gap-2">
             <RestoreButton entryId={id} revisionNumber={revision.revision_number} />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
 
         <FieldDiff label="Title" revision={revTitle} current={curTitle} />
 
         <SeoDiff revision={revision.seo} current={current.seo} />
 
-        <Card variant="default">
-          <CardHeader>
-            <Stack direction="row" align="center" gap={2}>
-              <Heading level={3}>Body</Heading>
+        <Card>
+          <CardBody>
+            <div className="flex flex-row items-center gap-2">
+              <h3 className="text-xl font-semibold">Body</h3>
               {revHtml === curHtml ? (
                 <Badge color="neutral" variant="soft" size="sm">
                   unchanged
@@ -139,23 +127,21 @@ export default async function RevisionDiffPage({ params }: PageParams) {
                   changed
                 </Badge>
               )}
-            </Stack>
-          </CardHeader>
-          <CardContent>
+            </div>
             {revHtml === curHtml ? (
-              <Text variant="muted">
+              <p className="text-base-content/70 text-base">
                 The body is identical between this revision and the current entry.
-              </Text>
+              </p>
             ) : (
-              <Grid cols={1} mdCols={2} gap={6}>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <BodyPanel title={`Revision #${revision.revision_number}`} html={revHtml} />
                 <BodyPanel title="Current" html={curHtml} />
-              </Grid>
+              </div>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 
@@ -170,10 +156,10 @@ function FieldDiff({
 }) {
   const changed = revision !== current;
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={4}>{label}</Heading>
+    <Card>
+      <CardBody>
+        <div className="flex flex-row items-center gap-2">
+          <h4 className="text-lg font-semibold">{label}</h4>
           {changed ? (
             <Badge color="module" variant="soft" size="sm">
               changed
@@ -183,24 +169,18 @@ function FieldDiff({
               unchanged
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Grid cols={1} mdCols={2} gap={6}>
-          <Stack gap={1}>
-            <Text size="xs" variant="muted">
-              Revision
-            </Text>
-            <Text size="sm">{revision || <em>empty</em>}</Text>
-          </Stack>
-          <Stack gap={1}>
-            <Text size="xs" variant="muted">
-              Current
-            </Text>
-            <Text size="sm">{current || <em>empty</em>}</Text>
-          </Stack>
-        </Grid>
-      </CardContent>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Revision</p>
+            <p className="text-sm">{revision || <em>empty</em>}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="text-base-content/70 text-xs">Current</p>
+            <p className="text-sm">{current || <em>empty</em>}</p>
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -224,10 +204,10 @@ function SeoDiff({
   const unchangedRows = rows.filter((r) => r.rev === r.cur);
 
   return (
-    <Card variant="default">
-      <CardHeader>
-        <Stack direction="row" align="center" gap={2}>
-          <Heading level={4}>SEO</Heading>
+    <Card>
+      <CardBody>
+        <div className="flex flex-row items-center gap-2">
+          <h4 className="text-lg font-semibold">SEO</h4>
           {anyChanged ? (
             <Badge color="module" variant="soft" size="sm">
               {changedRows.length} changed
@@ -237,10 +217,8 @@ function SeoDiff({
               unchanged
             </Badge>
           )}
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={3}>
+        </div>
+        <div className="flex flex-col gap-3">
           {changedRows.map(({ key, rev, cur }) => (
             <SeoDiffRow key={key} fieldKey={key} rev={rev} cur={cur} />
           ))}
@@ -250,48 +228,37 @@ function SeoDiff({
                 Show {unchangedRows.length} unchanged{' '}
                 {unchangedRows.length === 1 ? 'field' : 'fields'}
               </summary>
-              <Stack gap={3} className="pt-3">
+              <div className="flex flex-col gap-3 pt-3">
                 {unchangedRows.map(({ key, rev, cur }) => (
                   <SeoDiffRow key={key} fieldKey={key} rev={rev} cur={cur} />
                 ))}
-              </Stack>
+              </div>
             </details>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function SeoDiffRow({ fieldKey, rev, cur }: { fieldKey: string; rev: string; cur: string }) {
   return (
-    <Grid
-      cols={1}
-      mdCols={3}
-      gap={4}
-      className="border-b border-[var(--color-border-default)] pb-2"
-    >
-      <Text size="sm">{fieldKey}</Text>
-      <Text size="sm" className="font-mono break-all">
-        {rev || <em>empty</em>}
-      </Text>
-      <Text size="sm" className="font-mono break-all">
-        {cur || <em>empty</em>}
-      </Text>
-    </Grid>
+    <div className="grid grid-cols-1 gap-4 border-b border-[var(--color-border-default)] pb-2 md:grid-cols-3">
+      <p className="text-sm">{fieldKey}</p>
+      <p className="font-mono text-sm break-all">{rev || <em>empty</em>}</p>
+      <p className="font-mono text-sm break-all">{cur || <em>empty</em>}</p>
+    </div>
   );
 }
 
 function BodyPanel({ title, html }: { title: string; html: string }) {
   return (
-    <Stack gap={2}>
-      <Text size="xs" variant="muted">
-        {title}
-      </Text>
+    <div className="flex flex-col gap-2">
+      <p className="text-base-content/70 text-xs">{title}</p>
       <div
         className="sparx-content max-h-[600px] min-h-[200px] overflow-auto rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-    </Stack>
+    </div>
   );
 }

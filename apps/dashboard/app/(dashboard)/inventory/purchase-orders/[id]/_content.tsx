@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ClipboardList } from 'lucide-react';
 
-import { Badge, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -48,30 +48,30 @@ export async function PurchaseOrderDetailContent({ id }: { id: string }) {
   const status = purchaseOrderStatus(po.status);
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="start" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <ClipboardList className="h-5 w-5" />
-            <Heading level={1}>{po.number}</Heading>
+            <h1 className="text-3xl font-semibold">{po.number}</h1>
             <Badge color={status.color}>{status.label}</Badge>
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             {po.supplierName ?? po.supplierCode ?? 'Supplier'} →{' '}
             {po.warehouseName ?? po.warehouseCode ?? 'Warehouse'}
             {po.reference ? ` · ref ${po.reference}` : ''}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <PurchaseOrderActionsBar id={po.id} status={po.status} />
-      </Stack>
+      </div>
 
-      <Stack direction="row" gap={4} wrap>
+      <div className="flex flex-row flex-wrap gap-4">
         <Stat label="Total" value={formatMoney(po.totalCents, po.currency)} />
         <Stat label="Received" value={`${po.quantityReceived}/${po.quantityOrdered} units`} />
         <Stat label="Ordered" value={formatDate(po.orderedAt)} />
         <Stat label="Expected" value={formatDate(po.expectedArrivalAt)} />
         <Stat label="Terms" value={po.paymentTerms ?? '—'} />
-      </Stack>
+      </div>
 
       {draft ? (
         <PurchaseOrderEditForm po={po} warehouses={warehouses} />
@@ -92,31 +92,27 @@ export async function PurchaseOrderDetailContent({ id }: { id: string }) {
       />
 
       {!draft && <ReceiptsPanel receipts={receipts} />}
-    </Stack>
+    </div>
   );
 }
 
 function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
   return (
     <Card>
-      <CardContent>
-        <Stack gap={3} className="py-2">
-          <Heading level={3}>Receipts</Heading>
+      <CardBody>
+        <div className="flex flex-col gap-3 py-2">
+          <h3 className="text-xl font-semibold">Receipts</h3>
           {receipts.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No goods received yet. Use <span className="font-medium">Receive</span> to book stock
               against this order.
-            </Text>
+            </p>
           ) : (
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {receipts.map((r) => (
-                <Stack
+                <div
                   key={r.id}
-                  direction="row"
-                  align="center"
-                  gap={3}
-                  wrap
-                  className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
                 >
                   <Link
                     href={`/inventory/receiving/${r.id}`}
@@ -124,20 +120,20 @@ function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
                   >
                     {r.number}
                   </Link>
-                  <Text size="sm" variant="muted" className="flex-1">
+                  <p className="text-base-content/70 flex-1 text-sm">
                     {formatDate(r.receivedAt)}
                     {r.reference ? ` · ${r.reference}` : ''}
-                  </Text>
-                  <Text size="sm">
+                  </p>
+                  <p className="text-sm">
                     {r.quantityReceived} unit{r.quantityReceived === 1 ? '' : 's'} · {r.lineCount}{' '}
                     line{r.lineCount === 1 ? '' : 's'}
-                  </Text>
-                </Stack>
+                  </p>
+                </div>
               ))}
-            </Stack>
+            </div>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -145,9 +141,9 @@ function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
 function ReadOnlySummary({ po }: { po: PurchaseOrderDetail }) {
   return (
     <Card>
-      <CardContent>
-        <Stack gap={3} className="py-2">
-          <Stack direction="row" gap={6} wrap>
+      <CardBody>
+        <div className="flex flex-col gap-3 py-2">
+          <div className="flex flex-row flex-wrap gap-6">
             <Field label="Supplier">
               <Link
                 href={`/inventory/suppliers/${po.supplierId}`}
@@ -159,36 +155,32 @@ function ReadOnlySummary({ po }: { po: PurchaseOrderDetail }) {
             <Field label="Warehouse">{po.warehouseName ?? po.warehouseCode ?? '—'}</Field>
             <Field label="Currency">{po.currency}</Field>
             <Field label="Payment terms">{po.paymentTerms ?? '—'}</Field>
-          </Stack>
+          </div>
           {po.notes && <Field label="Notes">{po.notes}</Field>}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <Stack gap={0}>
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm">{children}</Text>
-    </Stack>
+    <div className="flex flex-col gap-0">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-sm">{children}</p>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="min-w-[9rem] flex-1">
-      <CardContent>
-        <Stack gap={1} className="py-2">
-          <Text size="xs" variant="muted">
-            {label}
-          </Text>
-          <Text size="lg">{value}</Text>
-        </Stack>
-      </CardContent>
+      <CardBody>
+        <div className="flex flex-col gap-1 py-2">
+          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-lg">{value}</p>
+        </div>
+      </CardBody>
     </Card>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import {
   cancelTransferAction,
@@ -46,8 +46,8 @@ export function TransferActionsBar({ id, status }: { id: string; status: string 
   const canDelete = status === 'draft';
 
   return (
-    <Stack gap={2}>
-      <Stack direction="row" gap={2} align="center" wrap>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         {canShip && (
           <Button
             color="module"
@@ -88,13 +88,9 @@ export function TransferActionsBar({ id, status }: { id: string; status: string 
               Delete draft
             </Button>
           ))}
-      </Stack>
-      {error && (
-        <Text size="xs" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }
 
@@ -112,13 +108,13 @@ function Confirm({
   onCancel: () => void;
 }) {
   return (
-    <Stack direction="row" gap={1} align="center">
+    <div className="flex flex-row items-center gap-1">
       <Button variant="ghost" size="sm" onClick={onCancel} disabled={busy}>
         Keep
       </Button>
       <Button color={color} size="sm" onClick={onConfirm} disabled={busy}>
         {busy ? 'Working…' : label}
       </Button>
-    </Stack>
+    </div>
   );
 }

@@ -12,7 +12,7 @@
 
 import * as React from 'react';
 
-import { Badge, Input, Label, Stack, Text } from '@sparx/ui';
+import { Badge, Input, Label } from 'silicaui-react';
 import {
   applyMarkupRule,
   type BandMethod,
@@ -179,9 +179,9 @@ export function MarkupFields({
   currency: string;
 }) {
   return (
-    <Stack gap={2} className="min-w-[16rem]">
-      <Stack direction="row" gap={2} align="end" wrap>
-        <Stack gap={1}>
+    <div className="flex min-w-[16rem] flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-2">
+        <div className="flex flex-col gap-1">
           <Label className="text-xs">Cost</Label>
           <Input
             type="number"
@@ -194,8 +194,8 @@ export function MarkupFields({
             onChange={(e) => onChange({ cost: e.target.value })}
             placeholder="0.00"
           />
-        </Stack>
-        <Stack gap={1}>
+        </div>
+        <div className="flex flex-col gap-1">
           <Label className="text-xs">Markup</Label>
           <select
             aria-label="Markup source"
@@ -214,12 +214,12 @@ export function MarkupFields({
             ))}
             <option value={ADHOC}>Ad-hoc markup…</option>
           </select>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       {state.source === ADHOC && (
-        <Stack direction="row" gap={2} align="end" wrap>
-          <Stack gap={1}>
+        <div className="flex flex-row flex-wrap items-end gap-2">
+          <div className="flex flex-col gap-1">
             <Label className="text-xs">Method</Label>
             <select
               aria-label="Markup method"
@@ -233,8 +233,8 @@ export function MarkupFields({
               <option value="multiplier">Multiplier ×</option>
               <option value="flat">Add fixed $</option>
             </select>
-          </Stack>
-          <Stack gap={1}>
+          </div>
+          <div className="flex flex-col gap-1">
             <Label className="text-xs">{METHOD_META[state.method].label}</Label>
             <Input
               type="number"
@@ -245,24 +245,24 @@ export function MarkupFields({
               disabled={disabled}
               onChange={(e) => onChange({ value: e.target.value })}
             />
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       )}
 
       {resolved.preview ? (
-        <Stack direction="row" gap={2} align="center" wrap>
+        <div className="flex flex-row flex-wrap items-center gap-2">
           <Badge color="module" variant="soft">
             {formatMoney(resolved.preview.priceCents / 100, currency)} / unit
           </Badge>
-          <Text size="xs" variant="muted">
+          <p className="text-base-content/70 text-xs">
             {resolved.preview.marginPct}% margin · {resolved.preview.markupPct}% markup
-          </Text>
-        </Stack>
+          </p>
+        </div>
       ) : (
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           {resolved.error ?? 'Enter a cost to preview the price.'}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

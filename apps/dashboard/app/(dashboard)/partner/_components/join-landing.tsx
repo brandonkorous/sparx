@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Check, Handshake } from 'lucide-react';
-import { Card, Container, Grid, Heading, ModuleProvider, PageHeader, Stack, Text } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
 import { EarningsCalculator } from './earnings-calculator';
@@ -45,8 +46,8 @@ const STEPS = [
 export function PartnerJoinLanding({ canApply }: { canApply: boolean }) {
   return (
     <ModuleProvider module="partner">
-      <Container size="xl">
-        <Stack gap={10} className="py-10">
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-10 py-10">
           <PageHeader
             icon={<Handshake className="h-5 w-5" />}
             title="Become a Sparx Partner"
@@ -58,21 +59,24 @@ export function PartnerJoinLanding({ canApply }: { canApply: boolean }) {
           <HowItWorks />
           <TierLadder />
 
-          <Stack gap={4}>
-            <Heading level={2}>Apply to the program</Heading>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Apply to the program</h2>
             {canApply ? (
               <JoinForm />
             ) : (
-              <Card variant="default" padding="lg">
-                <Text size="sm" variant="muted">
-                  Applying to the Partner Program is an owner or admin action. Ask an owner or admin
-                  of this workspace to apply — every application is reviewed before approval.
-                </Text>
+              <Card>
+                <CardBody>
+                  <p className="text-base-content/70 text-sm">
+                    Applying to the Partner Program is an owner or admin action. Ask an owner or
+                    admin of this workspace to apply — every application is reviewed before
+                    approval.
+                  </p>
+                </CardBody>
               </Card>
             )}
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }
@@ -81,80 +85,76 @@ export function PartnerJoinLanding({ canApply }: { canApply: boolean }) {
 // economics, so the payoff leads.
 function Hero() {
   return (
-    <Card variant="module" padding="lg">
-      <Stack gap={5}>
-        <Grid cols={1} mdCols={3} gap={4}>
-          {HERO_STATS.map((s) => (
-            <Stack key={s.label} gap={1}>
-              <span className="text-[2rem] leading-none font-medium text-[var(--module-active-text)]">
-                {s.value}
-              </span>
-              <Text size="sm" variant="muted">
-                {s.label}
-              </Text>
-            </Stack>
-          ))}
-        </Grid>
-      </Stack>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {HERO_STATS.map((s) => (
+              <div key={s.label} className="flex flex-col gap-1">
+                <span className="text-[2rem] leading-none font-medium text-[var(--module-active-text)]">
+                  {s.value}
+                </span>
+                <p className="text-base-content/70 text-sm">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardBody>
     </Card>
   );
 }
 
 function HowItWorks() {
   return (
-    <Stack gap={4}>
-      <Heading level={2}>How it works</Heading>
-      <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {STEPS.map((s) => (
-          <Card key={s.n} variant="default" padding="md">
-            <Stack gap={2}>
-              <span className="font-mono text-sm text-[var(--module-active)]">{s.n}</span>
-              <Text weight="medium">{s.t}</Text>
-              <Text size="sm" variant="muted">
-                {s.d}
-              </Text>
-            </Stack>
+          <Card key={s.n}>
+            <CardBody>
+              <div className="flex flex-col gap-2">
+                <span className="font-mono text-sm text-[var(--module-active)]">{s.n}</span>
+                <p className="text-base font-medium">{s.t}</p>
+                <p className="text-base-content/70 text-sm">{s.d}</p>
+              </div>
+            </CardBody>
           </Card>
         ))}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 }
 
 function TierLadder() {
   return (
-    <Stack gap={4}>
-      <Heading level={2}>Choose where to start</Heading>
-      <Grid cols={1} mdCols={3} gap={4}>
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-semibold tracking-tight">Choose where to start</h2>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {TIER_ORDER.map((t) => {
           const meta = TIERS[t];
           return (
-            <Card key={t} variant="default" padding="lg">
-              <Stack gap={3}>
-                <Stack gap={1}>
-                  <Text size="lg" weight="medium">
-                    {meta.label}
-                  </Text>
-                  <Text size="sm" className="text-[var(--module-active-text)]">
-                    {meta.commission}
-                  </Text>
-                  <Text size="sm" variant="muted">
-                    {meta.tagline}
-                  </Text>
-                </Stack>
-                <ul className="flex flex-col gap-2">
-                  {meta.unlocks.map((u) => (
-                    <li key={u} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
-                      <Text size="sm">{u}</Text>
-                    </li>
-                  ))}
-                </ul>
-              </Stack>
+            <Card key={t}>
+              <CardBody>
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-lg font-medium">{meta.label}</p>
+                    <p className="text-sm text-[var(--module-active-text)]">{meta.commission}</p>
+                    <p className="text-base-content/70 text-sm">{meta.tagline}</p>
+                  </div>
+                  <ul className="flex flex-col gap-2">
+                    {meta.unlocks.map((u) => (
+                      <li key={u} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                        <p className="text-sm">{u}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardBody>
             </Card>
           );
         })}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 }

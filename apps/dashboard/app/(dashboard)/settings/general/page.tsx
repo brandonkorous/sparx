@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { GeneralForm } from './general-form';
 import { BecomePartnerCard } from './_components/become-partner-card';
@@ -25,8 +25,8 @@ export default async function GeneralSettingsPage() {
   }
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="General settings"
           description="Update how your account presents itself."
@@ -40,7 +40,7 @@ export default async function GeneralSettingsPage() {
           }}
         />
         <BecomePartnerCard />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

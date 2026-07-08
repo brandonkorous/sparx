@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { FileUp } from 'lucide-react';
 
 import { bulkImportRedirects } from '../actions';
@@ -55,7 +56,7 @@ export function ImportRedirectsButton() {
       <Button
         type="button"
         variant="outline"
-        leftIcon={<FileUp className="h-4 w-4" />}
+        iconStart={<FileUp className="h-4 w-4" />}
         onClick={() => fileRef.current?.click()}
         disabled={pending}
         loading={pending}

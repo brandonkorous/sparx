@@ -2,18 +2,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  Text,
-  toast,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Avatar, Badge, Button, Card, CardBody } from 'silicaui-react';
+import { toast, statusLabel, statusTone } from '@sparx/ui';
 import { ArrowRight, Building2 } from 'lucide-react';
 import { switchOrganization } from '@/lib/org-actions';
 
@@ -27,28 +17,26 @@ import type { PartnerClient } from '../../_lib/types';
 
 export function PartnerClientsList({ clients }: { clients: PartnerClient[] }) {
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       {clients.map((c) => (
         <ClientRow key={c.orgId} client={c} />
       ))}
-    </Stack>
+    </div>
   );
 }
 
 function ClientRow({ client }: { client: PartnerClient }) {
   return (
     <Card>
-      <CardContent className="pt-6">
-        <Stack direction="row" align="center" justify="between" gap={4} className="flex-wrap">
-          <Stack direction="row" align="center" gap={3} className="min-w-0">
-            <Avatar size="lg" shape="square" aria-hidden>
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 flex-row items-center gap-3">
+            <Avatar size="lg" shape="rounded" aria-hidden>
               <Building2 className="h-5 w-5" />
             </Avatar>
-            <Stack gap={1} className="min-w-0">
-              <Text weight="medium" className="truncate">
-                {client.name}
-              </Text>
-              <Stack direction="row" align="center" gap={2} className="flex-wrap">
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="truncate text-base font-medium">{client.name}</p>
+              <div className="flex flex-row flex-wrap items-center gap-2">
                 {client.referred ? (
                   <Badge color="module" variant="soft" size="sm">
                     Referred
@@ -65,22 +53,18 @@ function ClientRow({ client }: { client: PartnerClient }) {
                   </Badge>
                 ) : null}
                 {client.commissionType === 'ongoing' ? (
-                  <Text size="xs" variant="muted">
-                    5% ongoing
-                  </Text>
+                  <p className="text-base-content/70 text-xs">5% ongoing</p>
                 ) : null}
-              </Stack>
-            </Stack>
-          </Stack>
+              </div>
+            </div>
+          </div>
           {client.managed ? (
             <EnterButton orgId={client.orgId} name={client.name} />
           ) : (
-            <Text size="sm" variant="muted">
-              Referred — no direct access
-            </Text>
+            <p className="text-base-content/70 text-sm">Referred — no direct access</p>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -101,9 +85,14 @@ function EnterButton({ orgId, name }: { orgId: string; name: string }) {
   }
 
   return (
-    <Button variant="outline" onClick={onEnter} loading={pending} disabled={pending}>
+    <Button
+      variant="outline"
+      onClick={onEnter}
+      loading={pending}
+      disabled={pending}
+      iconEnd={<ArrowRight className="h-4 w-4" />}
+    >
       Enter
-      <ArrowRight className="h-4 w-4" />
     </Button>
   );
 }

@@ -17,7 +17,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { Upload } from 'lucide-react';
 import { initUpload, completeUpload } from './actions';
 
@@ -88,7 +88,7 @@ export function UploadButton() {
   }
 
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       {/* tabIndex={-1} + aria-hidden so AT users land on the visible Upload
           button, not on the visually-hidden file input. The Button below
           forwards its click to this input (audit UX-21). */}
@@ -103,7 +103,7 @@ export function UploadButton() {
       />
       <Button
         color="module"
-        leftIcon={<Upload className="h-4 w-4" />}
+        iconStart={<Upload className="h-4 w-4" />}
         onClick={() => fileRef.current?.click()}
         disabled={progress?.status === 'uploading' || progress?.status === 'reserving'}
         loading={progress?.status === 'uploading' || progress?.status === 'reserving'}
@@ -111,17 +111,21 @@ export function UploadButton() {
         Upload media
       </Button>
       {progress && progress.status !== 'done' && (
-        <Stack gap={1}>
-          <Text size="xs" variant={progress.status === 'error' ? 'danger' : 'muted'}>
+        <div className="flex flex-col gap-1">
+          <p
+            className={
+              progress.status === 'error' ? 'text-danger text-xs' : 'text-base-content/70 text-xs'
+            }
+          >
             {progress.filename}
             {progress.status === 'reserving' && ' — preparing…'}
             {progress.status === 'uploading' && ` — ${progress.percent}%`}
             {progress.status === 'completing' && ' — finalising…'}
             {progress.status === 'error' && ` — ${progress.error ?? 'failed'}`}
-          </Text>
-        </Stack>
+          </p>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }
 

@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../../../_components/list-toolbar';
 import { ImportButton } from './_components/import-button';
@@ -70,8 +71,8 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
   const qParam = q ? `&q=${encodeURIComponent(q)}` : '';
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <Link
           href="/dropship/suppliers"
           className="flex w-fit items-center gap-1 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
@@ -93,15 +94,17 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
         <ListToolbar searchPlaceholder="Search products…" />
 
         {products.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title={q ? `No products match "${q}"` : 'No catalog entries yet'}
-              description={
-                q
-                  ? 'Try a different search term or clear the filter.'
-                  : 'Trigger a catalog sync to pull products from this supplier.'
-              }
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title={q ? `No products match "${q}"` : 'No catalog entries yet'}
+                description={
+                  q
+                    ? 'Try a different search term or clear the filter.'
+                    : 'Trigger a catalog sync to pull products from this supplier.'
+                }
+              />
+            </CardBody>
           </Card>
         ) : (
           <>
@@ -123,7 +126,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                   {products.map((p) => (
                     <tr key={p.id} className="hover:bg-[var(--color-muted)]">
                       <td className="px-4 py-3">
-                        <Stack direction="row" gap={3} className="items-center">
+                        <div className="flex flex-row items-center gap-3">
                           {p.images[0] ? (
                             <img
                               src={p.images[0]}
@@ -133,8 +136,8 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                           ) : (
                             <div className="h-10 w-10 flex-shrink-0 rounded bg-[var(--color-muted)]" />
                           )}
-                          <Text className="line-clamp-1 font-medium">{p.title}</Text>
-                        </Stack>
+                          <p className="line-clamp-1 text-base font-medium">{p.title}</p>
+                        </div>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-[var(--color-muted-foreground)]">
                         {p.supplierProductId}
@@ -169,10 +172,10 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
             </div>
 
             {total > take && (
-              <Stack direction="row" gap={2} className="items-center justify-end">
-                <Text size="sm" className="text-[var(--color-muted-foreground)]">
+              <div className="flex flex-row items-center justify-end gap-2">
+                <p className="text-sm text-[var(--color-muted-foreground)]">
                   {skip + 1}–{Math.min(skip + take, total)} of {total}
-                </Text>
+                </p>
                 {skip > 0 && (
                   <Link href={`/dropship/suppliers/${id}/catalog?skip=${prevSkip}${qParam}`}>
                     <Button color="neutral" variant="outline" size="sm">
@@ -187,11 +190,11 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                     </Button>
                   </Link>
                 )}
-              </Stack>
+              </div>
             )}
           </>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

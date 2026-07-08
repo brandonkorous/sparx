@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Text, cn } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
+import { cn } from '@sparx/ui';
 import { ArrowLeft, Check, ChevronDown } from 'lucide-react';
 
 // The persistent "Your setup" card — the constant right column of the onboarding
@@ -74,7 +75,7 @@ export function SummaryCard({
       {/* ── Plan total ────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
-          <Text weight="medium">Your setup</Text>
+          <p className="font-medium">Your setup</p>
           <Badge color="module" variant="soft" size="sm">
             {plan.items.length} {plan.items.length === 1 ? 'module' : 'modules'}
           </Badge>
@@ -85,9 +86,9 @@ export function SummaryCard({
           </span>
           <span className="text-lg text-[var(--color-text-tertiary)]">/mo</span>
         </div>
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           After your 14-day trial · one invoice for everything
-        </Text>
+        </p>
       </div>
 
       {/* ── Per-module breakdown (what you're paying for) ─────────────────── */}
@@ -99,9 +100,9 @@ export function SummaryCard({
             aria-expanded={expanded}
             className="flex items-center justify-between"
           >
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               {expanded ? 'Hide modules' : `${plan.items.length} modules`}
-            </Text>
+            </p>
             <ChevronDown
               className={cn(
                 'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-200',
@@ -111,9 +112,7 @@ export function SummaryCard({
           </button>
         )}
         {plan.items.length === 0 ? (
-          <Text size="sm" variant="muted">
-            Flip on a module to start.
-          </Text>
+          <p className="text-base-content/70 text-sm">Flip on a module to start.</p>
         ) : (
           showList &&
           plan.items.map((m) => (
@@ -124,23 +123,20 @@ export function SummaryCard({
                   style={{ background: m.colorVar }}
                 />
                 <span className="min-w-0">
-                  <Text size="sm" variant="muted">
-                    {m.name}
-                  </Text>
+                  <p className="text-base-content/70 text-sm">{m.name}</p>
                   {m.caption && (
-                    <Text size="xs" variant="muted" className="block opacity-80">
-                      {m.caption}
-                    </Text>
+                    <p className="text-base-content/70 block text-xs opacity-80">{m.caption}</p>
                   )}
                 </span>
               </span>
-              <Text
-                size="sm"
-                weight="medium"
-                className={m.included ? 'text-[var(--color-success-text)]' : undefined}
+              <p
+                className={cn(
+                  'text-sm font-medium',
+                  m.included && 'text-[var(--color-success-text)]'
+                )}
               >
                 {m.included ? 'Included' : `$${m.price}`}
-              </Text>
+              </p>
             </div>
           ))
         )}
@@ -150,9 +146,7 @@ export function SummaryCard({
       {plan.items.length > 0 && (
         <div className="flex flex-col gap-2.5 border-t border-[var(--color-border-default)] px-6 py-4">
           <div className="flex items-center justify-between">
-            <Text size="xs" variant="muted">
-              Same stack, stitched together
-            </Text>
+            <p className="text-base-content/70 text-xs">Same stack, stitched together</p>
             <span className="text-sm text-[var(--color-text-tertiary)] line-through">
               ${plan.elsewhere}/mo
             </span>
@@ -198,9 +192,7 @@ export function SummaryCard({
                 {e.status === 'done' && <Check className="h-2.5 w-2.5" />}
               </span>
               <div className="min-w-0 flex-1">
-                <Text size="xs" variant="muted">
-                  {e.label}
-                </Text>
+                <p className="text-base-content/70 text-xs">{e.label}</p>
                 <div
                   className={cn(
                     'truncate text-sm',
@@ -220,22 +212,22 @@ export function SummaryCard({
       {/* ── CTA (fixed home for the primary action, every step) ───────────── */}
       <div className="flex flex-col gap-2.5 border-t border-[var(--color-border-default)] px-6 py-5">
         {error && (
-          <Text size="xs" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-xs" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
         <Button
           color="module"
-          shape="block"
+          block
           onClick={cta.onClick}
           disabled={(cta.disabled ?? false) || (cta.loading ?? false)}
           loading={cta.loading}
         >
           {cta.label}
         </Button>
-        <Text size="xs" variant="muted" className="text-center">
+        <p className="text-base-content/70 text-center text-xs">
           Free for 14 days · no card today · cancel anytime
-        </Text>
+        </p>
         {onBack && (
           <button
             type="button"

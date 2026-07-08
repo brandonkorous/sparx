@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Button,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
+import { Badge, Button } from 'silicaui-react';
 import { Pencil } from 'lucide-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -53,10 +46,15 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
   );
 
   const manageButton = (t: TaxonomyListItem) => (
-    <Button asChild variant="ghost" size="xs" leftIcon={<Pencil className="h-3 w-3" />}>
-      <EntityRowLink href={`/cms/taxonomy/${t.key}`} entityType="taxonomy" entityId={t.key}>
-        Manage terms
-      </EntityRowLink>
+    <Button
+      variant="ghost"
+      size="xs"
+      iconStart={<Pencil className="h-3 w-3" />}
+      render={
+        <EntityRowLink href={`/cms/taxonomy/${t.key}`} entityType="taxonomy" entityId={t.key} />
+      }
+    >
+      Manage terms
     </Button>
   );
 
@@ -64,22 +62,22 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
     {
       header: 'Name',
       cell: (t) => (
-        <Stack gap={1} className="min-w-0">
+        <div className="flex min-w-0 flex-col gap-1">
           {nameLink(
             t,
             'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
           )}
-          <Text size="xs" variant="muted" className="truncate">
+          <p className="text-base-content/70 truncate text-xs">
             <code>{t.key}</code>
-          </Text>
-        </Stack>
+          </p>
+        </div>
       ),
     },
     { header: 'Kind', cell: kindBadge },
     {
       header: 'Terms',
       align: 'right',
-      cell: (t) => <Text size="sm">{t.term_count}</Text>,
+      cell: (t) => <p className="text-sm">{t.term_count}</p>,
     },
     {
       header: '',
@@ -93,18 +91,18 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
     title: (t) =>
       nameLink(t, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
     subtitle: (t) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         <code>{t.key}</code>
-      </Text>
+      </p>
     ),
     badge: kindBadge,
     body: (t) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="sm" variant="muted">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-sm">
           {t.term_count} term{t.term_count === 1 ? '' : 's'}
-        </Text>
+        </p>
         {manageButton(t)}
-      </Stack>
+      </div>
     ),
   };
 

@@ -1,18 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Layers, Sparkles, Star } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@sparx/ui';
+import { TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
+import { Badge, Card, CardBody } from 'silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -113,18 +103,16 @@ export async function CollectionDetailContent({ id }: Props) {
         </TabsList>
 
         <TabsContent value="products">
-          <Card variant="default">
-            <CardHeader>
-              <Stack gap={1}>
-                <Heading level={3}>Membership</Heading>
-                <CardDescription>
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Membership</h3>
+                <p className="opacity-70">
                   {collection.type === 'manual'
                     ? 'Pick which products belong to this collection. Order maps to storefront sort.'
                     : 'Rules-driven membership is read-only here. Edit the ruleSet on the Rules tab; the indexer worker re-projects on the next flush.'}
-                </CardDescription>
-              </Stack>
-            </CardHeader>
-            <CardContent>
+                </p>
+              </div>
               <CollectionMembershipEditor
                 collectionId={collection.id}
                 type={collection.type}
@@ -137,7 +125,7 @@ export async function CollectionDetailContent({ id }: Props) {
                   vendor: p.vendor,
                 }))}
               />
-            </CardContent>
+            </CardBody>
           </Card>
         </TabsContent>
 
@@ -155,21 +143,21 @@ export async function CollectionDetailContent({ id }: Props) {
 
         {collection.type === 'rules' && (
           <TabsContent value="rules">
-            <Card variant="default">
-              <CardHeader>
-                <Heading level={3}>Rule editor — Phase 1.5</Heading>
-                <CardDescription>
-                  The full rule editor (title / vendor / product_type / tag / price / inventory /
-                  fitment predicates with AND/OR matching) lands alongside the commerce-indexer
-                  worker. Today this collection&apos;s seeded ruleSet is persisted as-is; merchants
-                  can still edit metadata and watch the projection.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-xl font-semibold">Rule editor — Phase 1.5</h3>
+                  <p className="opacity-70">
+                    The full rule editor (title / vendor / product_type / tag / price / inventory /
+                    fitment predicates with AND/OR matching) lands alongside the commerce-indexer
+                    worker. Today this collection&apos;s seeded ruleSet is persisted as-is;
+                    merchants can still edit metadata and watch the projection.
+                  </p>
+                </div>
                 <pre className="overflow-auto rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 text-xs">
                   {JSON.stringify(collection.ruleSet ?? {}, null, 2)}
                 </pre>
-              </CardContent>
+              </CardBody>
             </Card>
           </TabsContent>
         )}

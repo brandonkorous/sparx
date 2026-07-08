@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { GraduationCap } from 'lucide-react';
-import { Card, Container, ModuleProvider, PageHeader, Stack, Text } from '@sparx/ui';
+import { Card, CardBody } from 'silicaui-react';
+import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { MODULE_GUIDES } from '../_lib/content';
 
@@ -12,8 +13,8 @@ import { MODULE_GUIDES } from '../_lib/content';
 export default function PartnerGuidesPage() {
   return (
     <ModuleProvider module="partner">
-      <Container size="lg">
-        <Stack gap={8} className="py-10">
+      <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
             className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
@@ -26,36 +27,36 @@ export default function PartnerGuidesPage() {
             description="Step-by-step playbooks for getting each module live for a client. Use them yourself or hand them over."
           />
 
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             {MODULE_GUIDES.map((guide) => (
               <ModuleProvider key={guide.module} module={guide.module}>
-                <Card variant="module" padding="lg">
-                  <Stack gap={3}>
-                    <Stack gap={1}>
-                      <Text weight="medium" className="text-[var(--module-active-text)]">
-                        {guide.label}
-                      </Text>
-                      <Text size="sm" variant="muted">
-                        {guide.blurb}
-                      </Text>
-                    </Stack>
-                    <ol className="flex flex-col gap-2">
-                      {guide.steps.map((step, i) => (
-                        <li key={step} className="flex items-start gap-3">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--module-active)] font-mono text-xs text-[var(--module-active-text)]">
-                            {i + 1}
-                          </span>
-                          <Text size="sm">{step}</Text>
-                        </li>
-                      ))}
-                    </ol>
-                  </Stack>
+                <Card className="bg-module bg-soft">
+                  <CardBody>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-base font-medium text-[var(--module-active-text)]">
+                          {guide.label}
+                        </p>
+                        <p className="text-base-content/70 text-sm">{guide.blurb}</p>
+                      </div>
+                      <ol className="flex flex-col gap-2">
+                        {guide.steps.map((step, i) => (
+                          <li key={step} className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--module-active)] font-mono text-xs text-[var(--module-active-text)]">
+                              {i + 1}
+                            </span>
+                            <p className="text-sm">{step}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  </CardBody>
                 </Card>
               </ModuleProvider>
             ))}
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     </ModuleProvider>
   );
 }

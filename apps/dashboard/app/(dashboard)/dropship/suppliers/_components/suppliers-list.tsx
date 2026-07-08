@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { SupplierActions } from './supplier-actions';
 import type { SiteOption, Vendor, VendorCredentialField } from './supplier-form';
@@ -95,9 +89,7 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
     {
       header: 'Type',
       cell: (s) => (
-        <Text size="sm" className="text-[var(--color-muted-foreground)]">
-          {vendorLabel(s.type)}
-        </Text>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{vendorLabel(s.type)}</p>
       ),
     },
     { header: 'Status', cell: statusBadge },
@@ -107,9 +99,9 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
             header: 'Sites',
             id: 'sites',
             cell: (s: Supplier) => (
-              <Text size="sm" className="text-[var(--color-muted-foreground)]">
+              <p className="text-sm text-[var(--color-muted-foreground)]">
                 {formatSiteScope(s.siteScope)}
-              </Text>
+              </p>
             ),
           } satisfies SelectionColumn<Supplier>,
         ]
@@ -117,17 +109,17 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
     {
       header: 'Pricing rule',
       cell: (s) => (
-        <Text size="sm" className="text-[var(--color-muted-foreground)]">
+        <p className="text-sm text-[var(--color-muted-foreground)]">
           {formatPricingRule(s.pricingRule)}
-        </Text>
+        </p>
       ),
     },
     {
       header: 'Last synced',
       cell: (s) => (
-        <Text size="sm" className="text-[var(--color-muted-foreground)]">
+        <p className="text-sm text-[var(--color-muted-foreground)]">
           {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
-        </Text>
+        </p>
       ),
     },
     { header: 'Actions', id: 'actions', cell: rowActions },
@@ -136,34 +128,28 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
   const card: SelectionCard<Supplier> = {
     title: (s) => nameLink(s, 'truncate text-sm font-medium hover:underline'),
     subtitle: (s) => (
-      <Text size="xs" className="text-[var(--color-muted-foreground)]">
-        {vendorLabel(s.type)}
-      </Text>
+      <p className="text-xs text-[var(--color-muted-foreground)]">{vendorLabel(s.type)}</p>
     ),
     badge: statusBadge,
     body: (s) => (
       <>
         {showSites ? (
-          <Stack direction="row" align="center" justify="between" gap={2}>
-            <Text size="sm" className="text-[var(--color-muted-foreground)]">
-              Sites
-            </Text>
-            <Text size="sm" className="text-[var(--color-muted-foreground)]">
+          <div className="flex flex-row items-center justify-between gap-2">
+            <p className="text-sm text-[var(--color-muted-foreground)]">Sites</p>
+            <p className="text-sm text-[var(--color-muted-foreground)]">
               {formatSiteScope(s.siteScope)}
-            </Text>
-          </Stack>
+            </p>
+          </div>
         ) : null}
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" className="text-[var(--color-muted-foreground)]">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-sm text-[var(--color-muted-foreground)]">
             {formatPricingRule(s.pricingRule)}
-          </Text>
-          <Text size="xs" className="text-[var(--color-muted-foreground)]">
+          </p>
+          <p className="text-xs text-[var(--color-muted-foreground)]">
             {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
-          </Text>
-        </Stack>
-        <Stack direction="row" justify="end">
-          {rowActions(s)}
-        </Stack>
+          </p>
+        </div>
+        <div className="flex flex-row justify-end">{rowActions(s)}</div>
       </>
     ),
   };

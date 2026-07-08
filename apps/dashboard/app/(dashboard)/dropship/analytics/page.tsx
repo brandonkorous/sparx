@@ -4,21 +4,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarChart3 } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Badge,
-  Text,
-  Card,
-  CardContent,
-  Container,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
 
 export const metadata: Metadata = { title: 'Profitability — Dropship' };
 
@@ -97,15 +84,13 @@ function SummaryCard({
 }) {
   return (
     <Card>
-      <CardContent className="p-5">
-        <Text size="xs" className="mb-1 font-medium text-[var(--color-muted-foreground)]">
-          {label}
-        </Text>
+      <CardBody className="p-5">
+        <p className="mb-1 text-xs font-medium text-[var(--color-muted-foreground)]">{label}</p>
         <p className={`text-2xl font-semibold tracking-tight ${valueClass ?? ''}`}>
           {prefix}
           {value}
         </p>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }
@@ -122,8 +107,8 @@ export default async function DropshipAnalyticsPage() {
   const isLoss = summary.profitCents < 0;
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<BarChart3 className="h-5 w-5" />}
           title="Profitability"
@@ -153,43 +138,41 @@ export default async function DropshipAnalyticsPage() {
           />
         </div>
 
-        <Stack gap={8}>
+        <div className="flex flex-col gap-8">
           {/* Per-supplier breakdown */}
           <div>
-            <Text size="lg" className="mb-4 font-semibold">
-              By supplier
-            </Text>
+            <p className="mb-4 text-lg font-semibold">By supplier</p>
             {summary.bySupplier.length === 0 ? (
-              <Text className="text-[var(--color-muted-foreground)]">
+              <p className="text-[var(--color-muted-foreground)]">
                 No fulfilled dropship orders yet.
-              </Text>
+              </p>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Supplier</TableHead>
-                    <TableHead className="text-right">Orders</TableHead>
-                    <TableHead className="text-right">Revenue</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                    <TableHead className="text-right">Profit</TableHead>
-                    <TableHead className="text-right">Margin</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Supplier</th>
+                    <th className="text-right">Orders</th>
+                    <th className="text-right">Revenue</th>
+                    <th className="text-right">Cost</th>
+                    <th className="text-right">Profit</th>
+                    <th className="text-right">Margin</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {summary.bySupplier.map((row) => (
-                    <TableRow key={row.supplierId}>
-                      <TableCell className="font-medium">
+                    <tr key={row.supplierId}>
+                      <td className="font-medium">
                         <Link
                           href={`/dropship/suppliers/${row.supplierId}/catalog`}
                           className="hover:underline"
                         >
                           {row.supplierName}
                         </Link>
-                      </TableCell>
-                      <TableCell className="text-right">{row.orders}</TableCell>
-                      <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
-                      <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td className="text-right">{row.orders}</td>
+                      <td className="text-right">{formatCents(row.revenueCents)}</td>
+                      <td className="text-right">{formatCents(row.costCents)}</td>
+                      <td className="text-right">
                         <span
                           className={
                             row.profitCents >= 0
@@ -200,61 +183,57 @@ export default async function DropshipAnalyticsPage() {
                           {row.profitCents < 0 ? '−' : '+'}
                           {formatCents(Math.abs(row.profitCents))}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td className="text-right">
                         <Badge color={marginColor(row.marginPct)} variant="soft" size="sm">
                           {row.marginPct}%
                         </Badge>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
           </div>
 
           {/* Per-order detail */}
           <div>
-            <Text size="lg" className="mb-4 font-semibold">
-              Recent orders
-            </Text>
+            <p className="mb-4 text-lg font-semibold">Recent orders</p>
             {orders.length === 0 ? (
-              <Text className="text-[var(--color-muted-foreground)]">No orders yet.</Text>
+              <p className="text-[var(--color-muted-foreground)]">No orders yet.</p>
             ) : (
               <>
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Order</TableHead>
-                      <TableHead>Supplier</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Revenue</TableHead>
-                      <TableHead className="text-right">Cost</TableHead>
-                      <TableHead className="text-right">Profit</TableHead>
-                      <TableHead className="text-right">Margin</TableHead>
-                      <TableHead>Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Supplier</th>
+                      <th>Status</th>
+                      <th className="text-right">Revenue</th>
+                      <th className="text-right">Cost</th>
+                      <th className="text-right">Profit</th>
+                      <th className="text-right">Margin</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {orders.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
+                      <tr key={row.id}>
+                        <td>
                           <Link
                             href={`/commerce/orders/${row.orderId}`}
                             className="font-mono text-sm hover:underline"
                           >
                             #{row.orderNumber}
                           </Link>
-                        </TableCell>
-                        <TableCell>{row.supplierName}</TableCell>
-                        <TableCell>
+                        </td>
+                        <td>{row.supplierName}</td>
+                        <td>
                           <StatusBadge status={row.status} />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCents(row.revenueCents)}
-                        </TableCell>
-                        <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
-                        <TableCell className="text-right">
+                        </td>
+                        <td className="text-right">{formatCents(row.revenueCents)}</td>
+                        <td className="text-right">{formatCents(row.costCents)}</td>
+                        <td className="text-right">
                           <span
                             className={
                               row.profitCents >= 0
@@ -265,31 +244,31 @@ export default async function DropshipAnalyticsPage() {
                             {row.profitCents < 0 ? '−' : '+'}
                             {formatCents(Math.abs(row.profitCents))}
                           </span>
-                        </TableCell>
-                        <TableCell className="text-right">
+                        </td>
+                        <td className="text-right">
                           <Badge color={marginColor(row.marginPct)} variant="soft" size="sm">
                             {row.marginPct}%
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                        </td>
+                        <td>
+                          <p className="text-sm text-[var(--color-muted-foreground)]">
                             {new Date(row.createdAt).toLocaleDateString()}
-                          </Text>
-                        </TableCell>
-                      </TableRow>
+                          </p>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
+                  </tbody>
                 </Table>
                 {totalOrderCount > 50 && (
-                  <Text size="sm" className="mt-3 text-[var(--color-muted-foreground)]">
+                  <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
                     Showing 50 of {totalOrderCount} orders.
-                  </Text>
+                  </p>
                 )}
               </>
             )}
           </div>
-        </Stack>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

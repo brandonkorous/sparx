@@ -1,24 +1,8 @@
 import { notFound } from 'next/navigation';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-  statusTone,
-  type StatusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
+
+import { statusLabel, statusTone, type StatusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -131,201 +115,167 @@ export async function ReturnDetailContent({ id }: Props) {
   }
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={2}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={2}>
-            <Heading level={1} className="font-mono text-2xl">
-              {ret.id.slice(0, 8)}
-            </Heading>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <h1 className="font-mono text-2xl font-semibold">{ret.id.slice(0, 8)}</h1>
             <Badge color={returnTone(ret.status)} variant="soft" size="sm">
               {statusLabel(ret.status)}
             </Badge>
             <Badge color="info" variant="soft" size="sm">
               {statusLabel(ret.preferredOutcome)}
             </Badge>
-          </Stack>
-          <Text variant="muted">
+          </div>
+          <p className="text-base-content/70">
             Order{' '}
-            <Text as="span" className="font-mono" size="sm">
-              {ret.orderNumber ?? ret.orderId.slice(0, 8)}
-            </Text>
+            <span className="font-mono text-sm">{ret.orderNumber ?? ret.orderId.slice(0, 8)}</span>
             {(ret.customerName ?? ret.customerId) && (
               <>
                 {' · '}
                 {ret.customerName ?? (
-                  <Text as="span" className="font-mono" size="sm">
-                    {ret.customerId!.slice(0, 8)}
-                  </Text>
+                  <span className="font-mono text-sm">{ret.customerId!.slice(0, 8)}</span>
                 )}
               </>
             )}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <ReturnStatusBar returnId={ret.id} status={ret.status} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Requested items</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Requested items</h3>
+            <p className="opacity-70">
               Customer asked to return these. Use Approve below to set per-line approved quantity.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order item</TableHead>
-                <TableHead>Requested qty</TableHead>
-                <TableHead>Approved qty</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead>Note</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Order item</th>
+                <th>Requested qty</th>
+                <th>Approved qty</th>
+                <th>Reason</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
               {ret.items.map((it) => (
-                <TableRow key={it.id}>
-                  <TableCell>
+                <tr key={it.id}>
+                  <td>
                     {it.orderItemName ?? (
-                      <Text size="xs" variant="muted" className="font-mono">
+                      <p className="text-base-content/70 font-mono text-xs">
                         {it.orderItemId.slice(0, 8)}
-                      </Text>
+                      </p>
                     )}
-                  </TableCell>
-                  <TableCell>{it.quantity}</TableCell>
-                  <TableCell>{it.approvedQuantity}</TableCell>
-                  <TableCell>
+                  </td>
+                  <td>{it.quantity}</td>
+                  <td>{it.approvedQuantity}</td>
+                  <td>
                     <Badge color="neutral" variant="soft" size="sm">
                       {statusLabel(it.reasonCode)}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {it.customerNote ?? (
-                      <Text size="xs" variant="muted">
-                        —
-                      </Text>
-                    )}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td>{it.customerNote ?? <p className="text-base-content/70 text-xs">—</p>}</td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       {ret.status === 'requested' && (
-        <Card variant="default">
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Approve</Heading>
-              <CardDescription>
-                Per-line approved quantity may be less than requested.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Approve</h3>
+              <p className="opacity-70">Per-line approved quantity may be less than requested.</p>
+            </div>
             <ReturnApprovalForm returnId={ret.id} items={ret.items} />
-          </CardContent>
+          </CardBody>
         </Card>
       )}
 
       {(ret.status === 'received' || ret.status === 'inspecting') && (
-        <Card variant="default">
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Record inspection</Heading>
-              <CardDescription>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Record inspection</h3>
+              <p className="opacity-70">
                 Mark each line&apos;s condition and whether it can be restocked.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+              </p>
+            </div>
             <ReturnInspectionForm returnId={ret.id} items={ret.items} />
-          </CardContent>
+          </CardBody>
         </Card>
       )}
 
       {(ret.status === 'inspected' || ret.status === 'received') && (
-        <Card variant="default">
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Issue refund</Heading>
-              <CardDescription>
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Issue refund</h3>
+              <p className="opacity-70">
                 Refund to original payment or as account credit. Provider-side settlement runs
                 alongside.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+              </p>
+            </div>
             <ReturnRefundForm returnId={ret.id} preferredOutcome={ret.preferredOutcome} />
-          </CardContent>
+          </CardBody>
         </Card>
       )}
 
       {ret.inspections.length > 0 && (
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Inspection history</Heading>
-            </Stack>
-          </CardHeader>
-          <CardContent>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Inspection history</h3>
+            </div>
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Line</TableHead>
-                  <TableHead>Condition</TableHead>
-                  <TableHead>Restockable</TableHead>
-                  <TableHead>Warehouse</TableHead>
-                  <TableHead>Note</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Line</th>
+                  <th>Condition</th>
+                  <th>Restockable</th>
+                  <th>Warehouse</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
                 {ret.inspections.map((ins) => (
-                  <TableRow key={ins.id}>
-                    <TableCell>
+                  <tr key={ins.id}>
+                    <td>
                       {ins.lineItemName ?? (
-                        <Text size="xs" variant="muted" className="font-mono">
+                        <p className="text-base-content/70 font-mono text-xs">
                           {ins.returnLineItemId.slice(0, 8)}
-                        </Text>
+                        </p>
                       )}
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td>
                       <Badge color={conditionTone(ins.condition)} variant="soft" size="sm">
                         {statusLabel(ins.condition)}
                       </Badge>
-                    </TableCell>
-                    <TableCell>{ins.restockable ? 'yes' : 'no'}</TableCell>
-                    <TableCell>
-                      {ins.warehouseName ?? ins.warehouseId?.slice(0, 8) ?? '—'}
-                    </TableCell>
-                    <TableCell>
-                      {ins.note ?? (
-                        <Text size="xs" variant="muted">
-                          —
-                        </Text>
-                      )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                    <td>{ins.restockable ? 'yes' : 'no'}</td>
+                    <td>{ins.warehouseName ?? ins.warehouseId?.slice(0, 8) ?? '—'}</td>
+                    <td>{ins.note ?? <p className="text-base-content/70 text-xs">—</p>}</td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
-          </CardContent>
+          </CardBody>
         </Card>
       )}
 
       {ret.status === 'refunded' && (
         <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>Settlement</Heading>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Settlement</h3>
+            </div>
+            <div className="flex flex-col gap-2">
               <Row
                 label="Refunded amount"
                 value={
@@ -350,21 +300,19 @@ export async function ReturnDetailContent({ id }: Props) {
                 label="Refunded at"
                 value={ret.refundedAt ? new Date(ret.refundedAt).toLocaleString() : '—'}
               />
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <Stack direction="row" gap={4}>
-      <Text size="sm" className="w-40" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm">{value}</Text>
-    </Stack>
+    <div className="flex flex-row gap-4">
+      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-sm">{value}</p>
+    </div>
   );
 }

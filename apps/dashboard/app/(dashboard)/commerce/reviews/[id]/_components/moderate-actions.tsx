@@ -4,18 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Flag, Trash2, X } from 'lucide-react';
 
-import {
-  Button,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
-  Textarea,
-  useConfirm,
-} from '@sparx/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { deleteReviewAction, moderateReviewAction } from '../../../review-actions';
 
@@ -100,8 +90,8 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
   }
 
   return (
-    <Stack gap={1} align="end">
-      <Stack direction="row" gap={2}>
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-row gap-2">
         {status !== 'approved' && (
           <Button color="module" disabled={pending} onClick={() => moderate('approved')}>
             <Check className="h-4 w-4" />
@@ -124,40 +114,38 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
           <Trash2 className="h-4 w-4" />
           Delete
         </Button>
-      </Stack>
+      </div>
       {error && (
-        <Text size="xs" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-xs" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
 
-      <Modal
+      <Dialog
         open={rejectOpen}
         onOpenChange={(open) => {
           if (!open) onRejectCancel();
         }}
       >
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Reject review?</ModalTitle>
-          </ModalHeader>
-          <Stack gap={3} className="px-6 pb-2">
-            <Text size="sm" variant="muted">
+        <DialogContent>
+          <div>
+            <DialogTitle>Reject review?</DialogTitle>
+          </div>
+          <div className="flex flex-col gap-3 px-6 pb-2">
+            <p className="text-base-content/70 text-sm">
               Rejected reviews are hidden from the storefront and the customer.
-            </Text>
-            <Stack gap={1}>
-              <Text size="sm" as="label">
-                Moderation note (internal)
-              </Text>
+            </p>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm">Moderation note (internal)</label>
               <Textarea
                 value={rejectNote}
                 onChange={(e) => setRejectNote(e.target.value)}
                 placeholder="Reason for rejecting this review…"
                 rows={3}
               />
-            </Stack>
-          </Stack>
-          <ModalFooter>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
             <Button variant="ghost" disabled={pending} onClick={onRejectCancel}>
               Cancel
             </Button>
@@ -168,9 +156,9 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
             >
               {pending ? 'Rejecting…' : 'Reject review'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Stack>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }

@@ -5,23 +5,15 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
-  CardContent,
-  CardHeader,
+  CardBody,
   CardTitle,
-  Grid,
   Input,
   Label,
-  ModuleProvider,
   NativeSelect,
-  Stack,
-  SurfaceFrame,
-  SurfaceStep,
   Switch,
-  Text,
   Textarea,
-  toast,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import type { ResourceKind, SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
@@ -171,13 +163,11 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
         nextDisabled: saving,
       }}
     >
-      <Card variant="default">
-        <CardHeader>
+      <Card>
+        <CardBody className="py-6">
           <CardTitle>Resource details</CardTitle>
-        </CardHeader>
-        <CardContent className="py-6">
-          <Stack gap={4}>
-            <Grid cols={2} gap={3}>
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="res-name">Name</Label>
                 <Input
@@ -202,9 +192,9 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
                   ))}
                 </NativeSelect>
               </div>
-            </Grid>
+            </div>
 
-            <Grid cols={2} gap={3}>
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="res-tz">Time zone</Label>
                 <Input
@@ -223,9 +213,9 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
                   placeholder="#6366F1"
                 />
               </div>
-            </Grid>
+            </div>
 
-            <Grid cols={isTable ? 3 : 1} gap={3}>
+            <div className={`grid gap-3 ${isTable ? 'grid-cols-3' : 'grid-cols-1'}`}>
               <div>
                 <Label htmlFor="res-cap">{exclusive ? 'Seats / capacity' : 'Pooled units'}</Label>
                 <Input
@@ -260,7 +250,7 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
                   </div>
                 </>
               ) : null}
-            </Grid>
+            </div>
 
             <div>
               <Label htmlFor="res-skills">Skills / tags</Label>
@@ -282,7 +272,7 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
               />
             </div>
 
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               <ToggleRow
                 label="Exclusive"
                 hint="On: one booking at a time (double-booking blocked). Off: pooled / overbookable."
@@ -295,9 +285,9 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
                 onChange={setBookableOnline}
               />
               <ToggleRow label="Active" checked={isActive} onChange={setIsActive} />
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     </SurfaceStep>
   );
@@ -356,14 +346,8 @@ function ToggleRow({
   return (
     <label className="flex items-center justify-between gap-4">
       <span>
-        <Text size="sm" weight="medium">
-          {label}
-        </Text>
-        {hint ? (
-          <Text size="xs" variant="muted">
-            {hint}
-          </Text>
-        ) : null}
+        <p className="text-sm font-medium">{label}</p>
+        {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
       </span>
       <Switch color="module" checked={checked} onCheckedChange={onChange} />
     </label>

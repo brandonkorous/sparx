@@ -4,16 +4,12 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
-  Modal,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  Stack,
-  Text,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
   Textarea,
-} from '@sparx/ui';
+} from 'silicaui-react';
 import { performAppointmentAction } from '../_lib/actions';
 
 interface AppointmentRow {
@@ -69,7 +65,7 @@ export function AppointmentActions({ appointment }: Props) {
 
   return (
     <>
-      <Stack direction="row" gap={2}>
+      <div className="flex flex-row gap-2">
         {canConfirm && (
           <Button
             size="sm"
@@ -103,36 +99,34 @@ export function AppointmentActions({ appointment }: Props) {
             Cancel
           </Button>
         )}
-      </Stack>
+      </div>
 
-      <Modal
+      <Dialog
         open={action !== null}
         onOpenChange={(open) => {
           if (!open) close();
         }}
       >
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>
+        <DialogContent>
+          <div>
+            <DialogTitle>
               {action === 'confirm' && 'Confirm appointment'}
               {action === 'complete' && 'Mark as completed'}
               {action === 'cancel' && 'Cancel appointment'}
-            </ModalTitle>
-            <ModalDescription>
+            </DialogTitle>
+            <DialogDescription>
               {action === 'confirm' &&
                 `Confirm the ${appointment.serviceTypeName ?? 'service'} appointment. A confirmation email will be sent to the customer.`}
               {action === 'complete' &&
                 `Mark the ${appointment.serviceTypeName ?? 'service'} appointment as completed.`}
               {action === 'cancel' &&
                 'Cancel this appointment. A cancellation email will be sent to the customer.'}
-            </ModalDescription>
-          </ModalHeader>
+            </DialogDescription>
+          </div>
 
           {action === 'cancel' && (
-            <Stack gap={2} className="px-6 pb-2">
-              <Text size="sm" className="font-medium">
-                Reason (optional)
-              </Text>
+            <div className="flex flex-col gap-2 px-6 pb-2">
+              <p className="text-sm font-medium">Reason (optional)</p>
               <Textarea
                 placeholder="Add a reason for the customer…"
                 rows={3}
@@ -140,18 +134,16 @@ export function AppointmentActions({ appointment }: Props) {
                 onChange={(e) => setReason(e.target.value)}
                 disabled={submitting}
               />
-            </Stack>
+            </div>
           )}
 
           {error && (
-            <Stack className="px-6 pb-2">
-              <Text size="sm" variant="danger">
-                {error}
-              </Text>
-            </Stack>
+            <div className="flex flex-col gap-4 px-6 pb-2">
+              <p className="text-danger text-sm">{error}</p>
+            </div>
           )}
 
-          <ModalFooter>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" disabled={submitting} onClick={close}>
               Back
             </Button>
@@ -168,9 +160,9 @@ export function AppointmentActions({ appointment }: Props) {
                     ? 'Mark completed'
                     : 'Cancel appointment'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 import { authClient } from '@sparx/auth/client';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
@@ -48,7 +48,7 @@ export function SocialAuthSection() {
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <Button
         variant="outline"
         color="neutral"
@@ -62,7 +62,7 @@ export function SocialAuthSection() {
         </span>
       </Button>
 
-      <Text size="xs" variant="muted" className="text-center">
+      <p className="text-base-content/70 text-center text-xs">
         By continuing with Google, you agree to our{' '}
         <a
           href={`${LEGAL_BASE}/terms`}
@@ -91,13 +91,13 @@ export function SocialAuthSection() {
           Acceptable Use Policy
         </a>
         .
-      </Text>
+      </p>
 
       <div className="flex items-center gap-3 py-1" aria-hidden>
         <span className="h-px flex-1 bg-[var(--color-border-default)]" />
         <span className="text-xs text-[var(--color-text-tertiary)]">or</span>
         <span className="h-px flex-1 bg-[var(--color-border-default)]" />
       </div>
-    </Stack>
+    </div>
   );
 }

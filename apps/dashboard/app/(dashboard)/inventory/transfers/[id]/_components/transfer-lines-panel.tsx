@@ -3,19 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
 
 import {
   addTransferLineAction,
@@ -72,15 +60,13 @@ function DraftLines({ id, lines }: { id: string; lines: InventoryTransferLineRow
 
   return (
     <Card>
-      <CardHeader>
-        <Heading level={3}>Lines</Heading>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+      <CardBody>
+        <h3 className="text-xl font-semibold">Lines</h3>
+        <div className="flex flex-col gap-2">
           {lines.length === 0 ? (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               No lines on this transfer yet — add a SKU below.
-            </Text>
+            </p>
           ) : (
             lines.map((l) => (
               <DraftLineRow
@@ -93,15 +79,13 @@ function DraftLines({ id, lines }: { id: string; lines: InventoryTransferLineRow
             ))
           )}
           <AddLineRow id={id} disabled={pending} />
-        </Stack>
-      </CardContent>
-      {error && (
-        <CardFooter>
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        </CardFooter>
-      )}
+        </div>
+        {error && (
+          <CardActions className="justify-start">
+            <p className="text-sm text-[var(--color-danger)]">{error}</p>
+          </CardActions>
+        )}
+      </CardBody>
     </Card>
   );
 }
@@ -127,15 +111,9 @@ function DraftLineRow({
   }
 
   return (
-    <Stack
-      direction="row"
-      align="center"
-      gap={3}
-      wrap
-      className="rounded border border-[var(--color-border-default)] px-3 py-2"
-    >
+    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
       <LineIdentity line={l} />
-      <Stack gap={0} className="w-[5.5rem]">
+      <div className="flex w-[5.5rem] flex-col gap-0">
         <Label htmlFor={`qty-${l.id}`} className="sr-only">
           Quantity
         </Label>
@@ -149,22 +127,22 @@ function DraftLineRow({
           onChange={(e) => setValue(e.target.value)}
           onBlur={commit}
         />
-      </Stack>
+      </div>
       {armed ? (
-        <Stack direction="row" gap={1} align="center">
+        <div className="flex flex-row items-center gap-1">
           <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setArmed(false)}>
             Keep
           </Button>
           <Button color="danger" size="sm" disabled={disabled} onClick={onRemove}>
             Remove
           </Button>
-        </Stack>
+        </div>
       ) : (
         <Button variant="ghost" size="sm" disabled={disabled} onClick={() => setArmed(true)}>
           Remove
         </Button>
       )}
-    </Stack>
+    </div>
   );
 }
 
@@ -198,29 +176,23 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
 
   return (
     <Card>
-      <CardHeader>
-        <Stack gap={1}>
-          <Heading level={3}>Receive</Heading>
-          <Text size="sm" variant="muted">
+      <CardBody>
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">Receive</h3>
+          <p className="text-base-content/70 text-sm">
             Confirm what arrived at the destination. A quantity short of what shipped is written off
             in transit.
-          </Text>
-        </Stack>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
           {lines.map((l) => (
-            <Stack
+            <div
               key={l.id}
-              direction="row"
-              align="center"
-              gap={3}
-              wrap
-              className="rounded border border-[var(--color-border-default)] px-3 py-2"
+              className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
             >
               <LineIdentity line={l} />
               <Stat label="Shipped" value={String(l.quantity)} />
-              <Stack gap={0} className="w-[6rem]">
+              <div className="flex w-[6rem] flex-col gap-0">
                 <Label htmlFor={`rcv-${l.id}`} className="sr-only">
                   Received
                 </Label>
@@ -233,29 +205,27 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
                   aria-label="Received quantity"
                   onChange={(e) => setReceived((prev) => ({ ...prev, [l.id]: e.target.value }))}
                 />
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           ))}
-        </Stack>
-      </CardContent>
-      <CardFooter>
-        <Stack direction="row" gap={3} align="center" justify="between" className="w-full">
-          {error ? (
-            <Text size="sm" className="text-[var(--color-danger)]">
-              {error}
-            </Text>
-          ) : short ? (
-            <Text size="sm" variant="muted">
-              Some lines are short — the difference is written off in transit.
-            </Text>
-          ) : (
-            <span />
-          )}
-          <Button color="module" disabled={pending} onClick={receive}>
-            {pending ? 'Receiving…' : 'Receive transfer'}
-          </Button>
-        </Stack>
-      </CardFooter>
+        </div>
+        <CardActions>
+          <div className="flex w-full flex-row items-center justify-between gap-3">
+            {error ? (
+              <p className="text-sm text-[var(--color-danger)]">{error}</p>
+            ) : short ? (
+              <p className="text-base-content/70 text-sm">
+                Some lines are short — the difference is written off in transit.
+              </p>
+            ) : (
+              <span />
+            )}
+            <Button color="module" disabled={pending} onClick={receive}>
+              {pending ? 'Receiving…' : 'Receive transfer'}
+            </Button>
+          </div>
+        </CardActions>
+      </CardBody>
     </Card>
   );
 }
@@ -265,24 +235,18 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
 function ReadonlyLines({ lines }: { lines: InventoryTransferLineRow[] }) {
   return (
     <Card>
-      <CardHeader>
-        <Heading level={3}>Lines</Heading>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={2}>
+      <CardBody>
+        <h3 className="text-xl font-semibold">Lines</h3>
+        <div className="flex flex-col gap-2">
           {lines.map((l) => {
             const short =
               l.receivedQuantity !== null && l.receivedQuantity < l.quantity
                 ? l.quantity - l.receivedQuantity
                 : 0;
             return (
-              <Stack
+              <div
                 key={l.id}
-                direction="row"
-                align="center"
-                gap={3}
-                wrap
-                className="rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
               >
                 <LineIdentity line={l} />
                 <Stat label="Shipped" value={String(l.quantity)} />
@@ -295,11 +259,11 @@ function ReadonlyLines({ lines }: { lines: InventoryTransferLineRow[] }) {
                     {short} short
                   </Badge>
                 ) : null}
-              </Stack>
+              </div>
             );
           })}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
     </Card>
   );
 }
@@ -308,27 +272,21 @@ function ReadonlyLines({ lines }: { lines: InventoryTransferLineRow[] }) {
 
 function LineIdentity({ line: l }: { line: InventoryTransferLineRow }) {
   return (
-    <Stack gap={0} className="min-w-[12rem] flex-1">
-      <Text size="sm" className="font-medium">
+    <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+      <p className="text-sm font-medium">
         {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
-      </Text>
-      <Text size="xs" variant="muted" className="font-mono">
-        {l.variantSku ?? l.variantId}
-      </Text>
-    </Stack>
+      </p>
+      <p className="text-base-content/70 font-mono text-xs">{l.variantSku ?? l.variantId}</p>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <Stack gap={0} className="w-[5rem] text-right">
-      <Text size="xs" variant="muted">
-        {label}
-      </Text>
-      <Text size="sm" className="font-medium">
-        {value}
-      </Text>
-    </Stack>
+    <div className="flex w-[5rem] flex-col gap-0 text-right">
+      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-sm font-medium">{value}</p>
+    </div>
   );
 }
 
@@ -378,15 +336,9 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
   }
 
   return (
-    <Stack gap={2}>
-      <Stack
-        direction="row"
-        gap={3}
-        align="end"
-        wrap
-        className="rounded border border-dashed border-[var(--color-border-default)] p-3"
-      >
-        <Stack gap={1} className="min-w-[12rem] flex-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="transfer-line-sku">Add item by SKU</Label>
           <Input
             id="transfer-line-sku"
@@ -400,8 +352,8 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </Stack>
-        <Stack gap={1} className="w-[5.5rem]">
+        </div>
+        <div className="flex w-[5.5rem] flex-col gap-1">
           <Label htmlFor="transfer-line-qty">Qty</Label>
           <Input
             id="transfer-line-qty"
@@ -410,16 +362,12 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
             value={qty}
             onChange={(e) => setQty(e.target.value)}
           />
-        </Stack>
+        </div>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
-      </Stack>
-      {error && (
-        <Text size="sm" className="text-[var(--color-danger)]">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      </div>
+      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+    </div>
   );
 }

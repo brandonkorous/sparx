@@ -4,22 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, X } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+import { useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Checkbox, Table } from 'silicaui-react';
 
 import {
   approvePriceReviewAction,
@@ -61,19 +47,15 @@ function deltaPct(oldCents: number, newCents: number): number | null {
 function Movement({ from, to }: { from: number; to: number }) {
   const up = to > from;
   return (
-    <Stack direction="row" align="center" gap={1} wrap>
-      <Text size="sm" variant="muted" className="tabular-nums line-through">
-        {fmt(from)}
-      </Text>
+    <div className="flex flex-row flex-wrap items-center gap-1">
+      <p className="text-base-content/70 text-sm tabular-nums line-through">{fmt(from)}</p>
       <ArrowRight className="h-3 w-3 text-[var(--color-fg-muted)]" />
-      <Text size="sm" weight="medium" className="tabular-nums">
-        {fmt(to)}
-      </Text>
+      <p className="text-sm font-medium tabular-nums">{fmt(to)}</p>
       <Badge color={up ? 'success' : 'danger'} variant="soft">
         {up ? '+' : ''}
         {deltaPct(from, to) ?? '—'}%
       </Badge>
-    </Stack>
+    </div>
   );
 }
 
@@ -174,45 +156,38 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
   if (initialReviews.length === 0) {
     return (
       <Card>
-        <CardContent>
-          <Text variant="muted" className="py-10 text-center">
+        <CardBody>
+          <p className="text-base-content/70 py-10 text-center text-base">
             No price changes waiting for review. Cost-driven changes within a rule’s tolerance apply
             automatically; anything beyond it shows up here.
-          </Text>
-        </CardContent>
+          </p>
+        </CardBody>
       </Card>
     );
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {notice && (
-        <Text size="sm" variant="success" role="status">
+        <p className="text-success text-sm" role="status">
           {notice}
-        </Text>
+        </p>
       )}
       {error && (
-        <Text size="sm" variant="danger" role="alert">
+        <p className="text-danger text-sm" role="alert">
           {error}
-        </Text>
+        </p>
       )}
 
       {selected.size > 0 && (
-        <Stack
-          direction="row"
-          align="center"
-          justify="between"
-          wrap
-          gap={3}
-          className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3"
-        >
-          <Text size="sm">{selected.size} selected</Text>
-          <Stack direction="row" gap={2}>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3">
+          <p className="text-sm">{selected.size} selected</p>
+          <div className="flex flex-row gap-2">
             <Button
               size="sm"
               color="module"
               loading={bulkBusy}
-              leftIcon={<Check className="h-4 w-4" />}
+              iconStart={<Check className="h-4 w-4" />}
               onClick={() => void onBulk('approve')}
             >
               Approve selected
@@ -222,81 +197,73 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
               variant="outline"
               color="danger"
               disabled={bulkBusy}
-              leftIcon={<X className="h-4 w-4" />}
+              iconStart={<X className="h-4 w-4" />}
               onClick={() => void onBulk('reject')}
             >
               Reject selected
             </Button>
-          </Stack>
-        </Stack>
+          </div>
+        </div>
       )}
 
       <Card>
-        <CardContent>
+        <CardBody>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10">
-                  <Checkbox
-                    checked={allSelected}
-                    onCheckedChange={toggleAll}
-                    aria-label="Select all"
-                  />
-                </TableHead>
-                <TableHead>Variant</TableHead>
-                <TableHead>Rule</TableHead>
-                <TableHead>Cost</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead className="text-right">New margin</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th className="w-10">
+                  <Checkbox checked={allSelected} onChange={toggleAll} aria-label="Select all" />
+                </th>
+                <th>Variant</th>
+                <th>Rule</th>
+                <th>Cost</th>
+                <th>Price</th>
+                <th className="text-right">New margin</th>
+                <th>Reason</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {initialReviews.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell>
+                <tr key={r.id}>
+                  <td>
                     <Checkbox
                       checked={selected.has(r.id)}
-                      onCheckedChange={() => toggle(r.id)}
+                      onChange={() => toggle(r.id)}
                       aria-label={`Select ${r.variantSku}`}
                     />
-                  </TableCell>
-                  <TableCell>
-                    <Stack gap={1}>
-                      <Text size="sm" weight="medium">
-                        {r.variantTitle ?? r.variantSku}
-                      </Text>
+                  </td>
+                  <td>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-medium">{r.variantTitle ?? r.variantSku}</p>
                       <code className="text-xs text-[var(--color-fg-muted)]">{r.variantSku}</code>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {r.ruleName ?? '—'}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
+                    </div>
+                  </td>
+                  <td>
+                    <p className="text-base-content/70 text-sm">{r.ruleName ?? '—'}</p>
+                  </td>
+                  <td>
                     <Movement from={r.oldCostCents ?? r.newCostCents} to={r.newCostCents} />
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     <Movement from={r.oldPriceCents} to={r.newPriceCents} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {r.marginPct == null ? '—' : `${r.marginPct}%`}
-                  </TableCell>
-                  <TableCell>
+                  </td>
+                  <td>
                     <Badge color="neutral" variant="soft" size="sm">
                       {reasonLabel(r.reason)}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Stack direction="row" gap={1} justify="end">
+                  </td>
+                  <td className="text-right">
+                    <div className="flex flex-row justify-end gap-1">
                       <Button
                         size="xs"
                         color="module"
                         variant="soft"
                         disabled={busyId === r.id || bulkBusy}
-                        leftIcon={<Check className="h-3.5 w-3.5" />}
+                        iconStart={<Check className="h-3.5 w-3.5" />}
                         onClick={() => void onApprove(r)}
                       >
                         Approve
@@ -306,19 +273,19 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
                         variant="ghost"
                         color="danger"
                         disabled={busyId === r.id || bulkBusy}
-                        leftIcon={<X className="h-3.5 w-3.5" />}
+                        iconStart={<X className="h-3.5 w-3.5" />}
                         onClick={() => void onReject(r)}
                       >
                         Reject
                       </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

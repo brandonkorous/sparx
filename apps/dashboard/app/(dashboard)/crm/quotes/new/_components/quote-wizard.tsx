@@ -20,18 +20,9 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
 import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
   ModuleProvider,
-  NativeSelect,
-  Text,
-  Textarea,
   SurfaceFrame,
   SurfaceStep,
   SurfaceSummary,
@@ -289,15 +280,13 @@ function QuoteWizardInner({
       >
         <div className="flex flex-col gap-5">
           {/* Bill to */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Customer</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Customer</h3>
+              <p className="text-base-content/70 text-sm">
                 Anchor the quote to a retail customer, a B2B account, or both — at least one is
                 required. A B2B account can also carry a contact customer.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex flex-col gap-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
@@ -342,31 +331,27 @@ function QuoteWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Line items */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Line items</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Line items</h3>
+              <p className="text-base-content/70 text-sm">
                 SKU, name, quantity, unit price, and any per-line tax or discount.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <LineItemsEditor onChange={setItems} initialItems={items} />
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Terms */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Terms</Heading>
-              <Text size="sm" variant="muted">
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Terms</h3>
+              <p className="text-base-content/70 text-sm">
                 Shipping, payment terms, and an expiry — all optional.
-              </Text>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <Label htmlFor="qw-shipping">Shipping</Label>
@@ -405,15 +390,13 @@ function QuoteWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {/* Notes */}
-          <Card variant="default">
-            <CardHeader>
-              <Heading level={3}>Notes</Heading>
-            </CardHeader>
-            <CardContent>
+          <Card>
+            <CardBody>
+              <h3 className="text-xl font-semibold">Notes</h3>
               <div className="flex flex-col gap-3">
                 <div>
                   <Label htmlFor="qw-cust-note">Customer-facing note</Label>
@@ -436,13 +419,13 @@ function QuoteWizardInner({
                   />
                 </div>
               </div>
-            </CardContent>
+            </CardBody>
           </Card>
 
           {error && (
-            <Text size="sm" variant="danger" role="alert">
+            <p className="text-danger text-sm" role="alert">
               {error}
-            </Text>
+            </p>
           )}
         </div>
       </SurfaceStep>

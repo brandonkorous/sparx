@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label } from 'silicaui-react';
 
 export interface LineItem {
   sku: string;
@@ -67,12 +67,12 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
   const discountSum = items.reduce((s, it) => s + (it.discountAmount || 0), 0);
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       {items.map((item, idx) => (
         <div key={idx} className="rounded-md border border-[var(--color-border-default)] p-3">
-          <Stack gap={3}>
-            <Stack direction="row" gap={3}>
-              <Stack gap={1} className="w-32">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-row gap-3">
+              <div className="flex w-32 flex-col gap-1">
                 <Label htmlFor={`sku-${idx}`}>SKU</Label>
                 <Input
                   id={`sku-${idx}`}
@@ -80,8 +80,8 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                   onChange={(e) => updateItem(idx, { sku: e.target.value })}
                   required
                 />
-              </Stack>
-              <Stack gap={1} className="flex-1">
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
                 <Label htmlFor={`name-${idx}`}>Name</Label>
                 <Input
                   id={`name-${idx}`}
@@ -89,7 +89,7 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                   onChange={(e) => updateItem(idx, { name: e.target.value })}
                   required
                 />
-              </Stack>
+              </div>
               <Button
                 type="button"
                 variant="ghost"
@@ -100,9 +100,9 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
-            </Stack>
-            <Stack direction="row" gap={3}>
-              <Stack gap={1} className="w-24">
+            </div>
+            <div className="flex flex-row gap-3">
+              <div className="flex w-24 flex-col gap-1">
                 <Label htmlFor={`qty-${idx}`}>Qty</Label>
                 <Input
                   id={`qty-${idx}`}
@@ -114,8 +114,8 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { quantity: Math.max(1, Number(e.target.value) || 1) })
                   }
                 />
-              </Stack>
-              <Stack gap={1} className="flex-1">
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
                 <Label htmlFor={`price-${idx}`}>Unit price</Label>
                 <Input
                   id={`price-${idx}`}
@@ -127,8 +127,8 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { unitPrice: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </Stack>
-              <Stack gap={1} className="flex-1">
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
                 <Label htmlFor={`tax-${idx}`}>Tax</Label>
                 <Input
                   id={`tax-${idx}`}
@@ -140,8 +140,8 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { taxAmount: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </Stack>
-              <Stack gap={1} className="flex-1">
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
                 <Label htmlFor={`disc-${idx}`}>Discount</Label>
                 <Input
                   id={`disc-${idx}`}
@@ -153,8 +153,8 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { discountAmount: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </Stack>
-              <Stack gap={1} className="w-28">
+              </div>
+              <div className="flex w-28 flex-col gap-1">
                 <Label>Line total</Label>
                 <div className="flex h-9 items-center justify-end rounded-md border border-transparent bg-[var(--color-surface-subtle)] px-3 text-sm tabular-nums">
                   $
@@ -162,34 +162,34 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     2
                   )}
                 </div>
-              </Stack>
-            </Stack>
-          </Stack>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
 
-      <Stack direction="row" justify="between" align="center">
+      <div className="flex flex-row items-center justify-between">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={addItem}
-          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          iconStart={<Plus className="h-3.5 w-3.5" />}
         >
           Add line item
         </Button>
-        <Stack direction="row" gap={4}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row gap-4">
+          <p className="text-base-content/70 text-sm">
             Subtotal: <span className="tabular-nums">${subtotal.toFixed(2)}</span>
-          </Text>
-          <Text size="sm" variant="muted">
+          </p>
+          <p className="text-base-content/70 text-sm">
             Tax: <span className="tabular-nums">${taxSum.toFixed(2)}</span>
-          </Text>
-          <Text size="sm" variant="muted">
+          </p>
+          <p className="text-base-content/70 text-sm">
             Discount: <span className="tabular-nums">${discountSum.toFixed(2)}</span>
-          </Text>
-        </Stack>
-      </Stack>
-    </Stack>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

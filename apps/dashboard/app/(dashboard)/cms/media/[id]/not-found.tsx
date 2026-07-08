@@ -4,28 +4,28 @@
 // with one click.
 
 import Link from 'next/link';
-import { Button, Card, CardContent, Container, EmptyState, Stack } from '@sparx/ui';
+import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
 import { ImageOff } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <Card variant="module">
-          <CardContent>
+    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
+        <Card className="bg-module bg-soft">
+          <CardBody>
             <EmptyState
               icon={<ImageOff className="h-5 w-5" />}
               title="Asset not found"
               description="This media asset doesn't exist, was deleted, or belongs to a different tenant. Head back to the library to find what you need."
-              action={
-                <Button asChild color="module">
-                  <Link href="/cms/media">Back to media library</Link>
+              actions={
+                <Button color="module" render={<Link href="/cms/media" />}>
+                  Back to media library
                 </Button>
               }
             />
-          </CardContent>
+          </CardBody>
         </Card>
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

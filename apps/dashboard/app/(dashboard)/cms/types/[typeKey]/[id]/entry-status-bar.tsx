@@ -15,18 +15,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Heading,
-  Stack,
-  statusLabel,
-  statusTone,
-  Text,
-} from '@sparx/ui';
+import { statusLabel, statusTone } from '@sparx/ui';
+import { Badge, Button, Card, CardBody } from 'silicaui-react';
 import { CalendarClock, History } from 'lucide-react';
 import { PreviewButton } from '../../../[id]/preview-button';
 
@@ -90,14 +80,12 @@ export function EntryStatusBar({
         type="button"
         variant="ghost"
         size="sm"
-        asChild
         aria-label="Revisions"
         title={compact ? 'Revisions' : undefined}
-        leftIcon={compact ? undefined : <History className="h-3.5 w-3.5" />}
+        iconStart={compact ? undefined : <History className="h-3.5 w-3.5" />}
+        render={<Link href={`/cms/${entryId}/revisions`} />}
       >
-        <Link href={`/cms/${entryId}/revisions`}>
-          {compact ? <History className="h-3.5 w-3.5" /> : 'Revisions'}
-        </Link>
+        {compact ? <History className="h-3.5 w-3.5" /> : 'Revisions'}
       </Button>
       {!published && (
         <Button
@@ -106,7 +94,7 @@ export function EntryStatusBar({
           size="sm"
           aria-label="Schedule publish"
           title={compact ? 'Schedule publish' : undefined}
-          leftIcon={compact ? undefined : <CalendarClock className="h-3.5 w-3.5" />}
+          iconStart={compact ? undefined : <CalendarClock className="h-3.5 w-3.5" />}
           onClick={onSchedule}
           disabled={pending}
         >
@@ -139,34 +127,30 @@ export function EntryStatusBar({
   }
 
   return (
-    <Card variant="module">
-      <CardHeader>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={2} wrap>
-            <Heading level={3}>Status</Heading>
+    <Card className="bg-module bg-soft">
+      <CardBody>
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <h3 className="text-xl font-semibold">Status</h3>
             {statusBadge}
-          </Stack>
-          <Stack direction="row" align="center" gap={2} wrap>
-            {actions}
-          </Stack>
-        </Stack>
-      </CardHeader>
-      {(publishedAt ?? scheduledAt) && (
-        <CardContent>
-          <Stack gap={1}>
+          </div>
+          <div className="flex flex-row flex-wrap items-center gap-2">{actions}</div>
+        </div>
+        {(publishedAt ?? scheduledAt) && (
+          <div className="flex flex-col gap-1">
             {scheduledAt && (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 Scheduled for {scheduledAt.toLocaleString()}
-              </Text>
+              </p>
             )}
             {publishedAt && (
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 Last published {publishedAt.toLocaleString()}
-              </Text>
+              </p>
             )}
-          </Stack>
-        </CardContent>
-      )}
+          </div>
+        )}
+      </CardBody>
     </Card>
   );
 }

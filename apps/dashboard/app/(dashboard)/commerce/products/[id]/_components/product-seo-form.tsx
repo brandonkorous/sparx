@@ -4,17 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  ModuleProvider,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Card, CardBody } from 'silicaui-react';
+import { ModuleProvider } from '@sparx/ui';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
@@ -98,29 +89,16 @@ export function ProductSeoForm({
     // provider, so the page-primary action keeps the active commerce accent.
     <ModuleProvider module="seo">
       <form id="product-seo-form" onSubmit={onSubmit} noValidate>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3} as="h2">
-              Search engine listing
-            </Heading>
-            <CardDescription>
-              What this product looks like in Google / Bing results.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack
-                gap={1}
-                className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
-              >
-                <Text size="sm" className="text-[var(--color-info)]">
-                  {previewTitle}
-                </Text>
-                <Text size="xs" variant="muted">
-                  storefront.example/products/{handle}
-                </Text>
-                <Text size="xs">{previewDescription || '(set a description to preview)'}</Text>
-              </Stack>
+        <Card>
+          <CardBody>
+            <h2 className="text-xl font-semibold">Search engine listing</h2>
+            <p className="opacity-70">What this product looks like in Google / Bing results.</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+                <p className="text-sm text-[var(--color-info)]">{previewTitle}</p>
+                <p className="text-base-content/70 text-xs">storefront.example/products/{handle}</p>
+                <p className="text-xs">{previewDescription || '(set a description to preview)'}</p>
+              </div>
 
               <SeoMetaFields
                 type="product"
@@ -133,29 +111,22 @@ export function ProductSeoForm({
                 onSeoDescriptionChange={setSeoDescription}
                 className="border-t border-[var(--color-border-default)] pt-4"
               />
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
         <DetailFooterSlot>
           <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mr-auto">
+              <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
             {savedAt !== null && !dirty && (
-              <Stack
-                direction="row"
-                align="center"
-                gap={1}
-                className="text-[var(--color-success-text)]"
-              >
+              <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
                 <Check className="h-4 w-4" />
-                <Text size="sm" variant="success">
-                  Saved
-                </Text>
-              </Stack>
+                <p className="text-success text-sm">Saved</p>
+              </div>
             )}
             <Button
               type="submit"

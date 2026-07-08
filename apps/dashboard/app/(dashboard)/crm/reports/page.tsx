@@ -1,24 +1,8 @@
 import Link from 'next/link';
 import { BarChart3, TrendingUp, Users, AlertCircle } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  PageHeader,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { PageHeader, Stat } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -96,8 +80,8 @@ export default async function ReportsPage() {
   const maxAcquisition = acquisition.reduce((m, p) => Math.max(m, p.newCustomers), 0);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<BarChart3 className="h-5 w-5" />}
           title="Reports"
@@ -105,53 +89,51 @@ export default async function ReportsPage() {
         />
 
         <div className="grid gap-4 md:grid-cols-4">
-          <Card variant="module">
-            <CardContent className="py-4">
+          <Card className="bg-module bg-soft">
+            <CardBody className="py-4">
               <Stat label="Customers" value={snapshot.customers.toLocaleString()} />
-            </CardContent>
+            </CardBody>
           </Card>
           <Card>
-            <CardContent className="py-4">
+            <CardBody className="py-4">
               <Stat label="B2B accounts" value={snapshot.b2bAccounts.toLocaleString()} />
-            </CardContent>
+            </CardBody>
           </Card>
           <Card>
-            <CardContent className="py-4">
+            <CardBody className="py-4">
               <Stat
                 label="Open deals"
                 value={snapshot.openDeals.toLocaleString()}
                 hint={`$${snapshot.pipelineValue.toLocaleString()} pipeline`}
               />
-            </CardContent>
+            </CardBody>
           </Card>
           <Card>
-            <CardContent className="py-4">
+            <CardBody className="py-4">
               <Stat
                 label="Open tasks"
                 value={snapshot.openTasks.toLocaleString()}
                 hint={snapshot.overdueTasks > 0 ? `${snapshot.overdueTasks} overdue` : 'on track'}
               />
-            </CardContent>
+            </CardBody>
           </Card>
         </div>
 
         {defaultPipeline && funnel.length > 0 && (
           <Card>
-            <CardHeader>
+            <CardBody>
               <CardTitle>
-                <Stack direction="row" align="center" gap={2}>
+                <div className="flex flex-row items-center gap-2">
                   <TrendingUp className="h-4 w-4" /> Pipeline funnel — {defaultPipeline.name}
-                </Stack>
+                </div>
               </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Stack gap={3}>
+              <div className="flex flex-col gap-3">
                 {funnel.map((b) => {
                   const max = Math.max(...funnel.map((x) => x.count), 1);
                   return (
-                    <Stack key={b.stageId} gap={1}>
-                      <Stack direction="row" justify="between">
-                        <Stack direction="row" align="center" gap={2}>
+                    <div key={b.stageId} className="flex flex-col gap-1">
+                      <div className="flex flex-row justify-between">
+                        <div className="flex flex-row items-center gap-2">
                           <span
                             className="h-2 w-2 rounded-full"
                             style={{
@@ -161,101 +143,87 @@ export default async function ReportsPage() {
                               }),
                             }}
                           />
-                          <Text size="sm" weight="medium">
-                            {b.stageName}
-                          </Text>
+                          <p className="text-sm font-medium">{b.stageName}</p>
                           <Badge color="neutral" variant="soft" size="sm">
                             {b.count}
                           </Badge>
-                        </Stack>
-                        <Text size="sm" variant="muted" className="tabular-nums">
+                        </div>
+                        <p className="text-base-content/70 text-sm tabular-nums">
                           ${b.totalValue.toLocaleString()}
-                        </Text>
-                      </Stack>
+                        </p>
+                      </div>
                       <div className="h-2 rounded-full bg-[var(--color-surface-subtle)]">
                         <div
                           className="h-full rounded-full bg-[var(--module-active)]"
                           style={{ width: `${(b.count / max) * 100}%` }}
                         />
                       </div>
-                    </Stack>
+                    </div>
                   );
                 })}
-              </Stack>
-            </CardContent>
+              </div>
+            </CardBody>
           </Card>
         )}
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>
-              <Stack direction="row" align="center" gap={2}>
+              <div className="flex flex-row items-center gap-2">
                 <Users className="h-4 w-4" /> Win/loss by rep
-              </Stack>
+              </div>
             </CardTitle>
-          </CardHeader>
-          <CardContent>
             {winLoss.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No assigned-rep data yet.
-              </Text>
+              <p className="text-base-content/70 text-sm">No assigned-rep data yet.</p>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Rep</TableHead>
-                    <TableHead className="text-right">Won</TableHead>
-                    <TableHead className="text-right">Lost</TableHead>
-                    <TableHead className="text-right">Open</TableHead>
-                    <TableHead className="text-right">Win rate</TableHead>
-                    <TableHead className="text-right">Won value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                <thead>
+                  <tr>
+                    <th>Rep</th>
+                    <th className="text-right">Won</th>
+                    <th className="text-right">Lost</th>
+                    <th className="text-right">Open</th>
+                    <th className="text-right">Win rate</th>
+                    <th className="text-right">Won value</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {winLoss.map((r, idx) => (
-                    <TableRow key={r.repId ?? `unassigned-${idx}`}>
-                      <TableCell>
+                    <tr key={r.repId ?? `unassigned-${idx}`}>
+                      <td>
                         {!r.repId ? (
-                          <Text size="sm" variant="muted">
-                            Unassigned
-                          </Text>
+                          <p className="text-base-content/70 text-sm">Unassigned</p>
                         ) : repNameById.get(r.repId) ? (
-                          <Text size="sm">{repNameById.get(r.repId)}</Text>
+                          <p className="text-sm">{repNameById.get(r.repId)}</p>
                         ) : (
                           <code className="text-xs">{r.repId.slice(0, 8)}</code>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{r.won}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.lost}</TableCell>
-                      <TableCell className="text-right tabular-nums">{r.open}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {(r.winRate * 100).toFixed(0)}%
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      </td>
+                      <td className="text-right tabular-nums">{r.won}</td>
+                      <td className="text-right tabular-nums">{r.lost}</td>
+                      <td className="text-right tabular-nums">{r.open}</td>
+                      <td className="text-right tabular-nums">{(r.winRate * 100).toFixed(0)}%</td>
+                      <td className="text-right tabular-nums">
                         ${r.totalWonValue.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
+                </tbody>
               </Table>
             )}
-          </CardContent>
+          </CardBody>
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardBody>
             <CardTitle>Customer acquisition (last 12 months)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={2}>
+            <div className="flex flex-col gap-2">
               {acquisition.map((p) => (
-                <Stack key={p.month} gap={1}>
-                  <Stack direction="row" justify="between">
-                    <Text size="sm">{p.month}</Text>
-                    <Text size="sm" className="tabular-nums">
-                      {p.newCustomers}
-                    </Text>
-                  </Stack>
+                <div key={p.month} className="flex flex-col gap-1">
+                  <div className="flex flex-row justify-between">
+                    <p className="text-sm">{p.month}</p>
+                    <p className="text-sm tabular-nums">{p.newCustomers}</p>
+                  </div>
                   <div className="h-1.5 rounded-full bg-[var(--color-surface-subtle)]">
                     <div
                       className="h-full rounded-full bg-[var(--module-active)]"
@@ -266,30 +234,32 @@ export default async function ReportsPage() {
                       }}
                     />
                   </div>
-                </Stack>
+                </div>
               ))}
-            </Stack>
-          </CardContent>
+            </div>
+          </CardBody>
         </Card>
 
         {snapshot.overdueTasks > 0 && (
-          <Card variant="default">
-            <CardContent>
-              <Stack direction="row" align="center" gap={3}>
+          <Card>
+            <CardBody>
+              <div className="flex flex-row items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-[var(--color-warning-500)]" />
-                <Stack gap={1} className="flex-1">
-                  <Text weight="medium">{snapshot.overdueTasks} overdue tasks across the team</Text>
-                  <Text size="sm" variant="muted">
+                <div className="flex flex-1 flex-col gap-1">
+                  <p className="text-base font-medium">
+                    {snapshot.overdueTasks} overdue tasks across the team
+                  </p>
+                  <p className="text-base-content/70 text-sm">
                     <Link href="/crm/tasks?scope=all" className="hover:underline">
                       Review and reassign →
                     </Link>
-                  </Text>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  </p>
+                </div>
+              </div>
+            </CardBody>
           </Card>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

@@ -2,14 +2,8 @@
 
 import Link from 'next/link';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import {
   actorLabel,
@@ -32,7 +26,7 @@ interface MovementsListProps {
 
 export function MovementsList({ rows, view }: MovementsListProps) {
   const item = (m: MovementRow) => (
-    <Stack gap={0} className="min-w-0">
+    <div className="flex min-w-0 flex-col gap-0">
       <Link
         href={`/inventory/movements?variant_id=${m.variantId}${m.variantSku ? `&sku=${encodeURIComponent(m.variantSku)}` : ''}`}
         className="truncate text-sm font-medium hover:text-[var(--module-active)]"
@@ -40,11 +34,9 @@ export function MovementsList({ rows, view }: MovementsListProps) {
         {m.productTitle ?? m.variantSku ?? m.variantId.slice(0, 8)}
       </Link>
       {m.variantSku ? (
-        <Text size="xs" variant="muted" className="font-mono">
-          {m.variantSku}
-        </Text>
+        <p className="text-base-content/70 font-mono text-xs">{m.variantSku}</p>
       ) : null}
-    </Stack>
+    </div>
   );
 
   const reason = (m: MovementRow) => (
@@ -52,40 +44,31 @@ export function MovementsList({ rows, view }: MovementsListProps) {
   );
 
   const change = (m: MovementRow) => (
-    <Text
-      size="sm"
+    <p
       className={
         m.delta > 0
-          ? 'font-medium text-[var(--color-success)]'
+          ? 'text-sm font-medium text-[var(--color-success)]'
           : m.delta < 0
-            ? 'font-medium text-[var(--color-danger)]'
-            : 'font-medium'
+            ? 'text-sm font-medium text-[var(--color-danger)]'
+            : 'text-sm font-medium'
       }
     >
       {formatDelta(m.delta)}
-    </Text>
+    </p>
   );
 
   const actor = (m: MovementRow) => (
-    <Stack gap={0} className="min-w-0">
-      <Text size="sm">{actorLabel(m.actorType)}</Text>
-      {m.source ? (
-        <Text size="xs" variant="muted" className="truncate">
-          {m.source}
-        </Text>
-      ) : null}
-    </Stack>
+    <div className="flex min-w-0 flex-col gap-0">
+      <p className="text-sm">{actorLabel(m.actorType)}</p>
+      {m.source ? <p className="text-base-content/70 truncate text-xs">{m.source}</p> : null}
+    </div>
   );
 
   const reference = (m: MovementRow) =>
     m.referenceType ? (
-      <Text size="xs" variant="muted">
-        {m.referenceType}
-      </Text>
+      <p className="text-base-content/70 text-xs">{m.referenceType}</p>
     ) : (
-      <Text size="xs" variant="muted">
-        —
-      </Text>
+      <p className="text-base-content/70 text-xs">—</p>
     );
 
   const columns: SelectionColumn<MovementRow>[] = [
@@ -102,29 +85,23 @@ export function MovementsList({ rows, view }: MovementsListProps) {
   const card: SelectionCard<MovementRow> = {
     title: item,
     badge: reason,
-    subtitle: (m) => (
-      <Text size="xs" variant="muted">
-        {formatDateTime(m.createdAt)}
-      </Text>
-    ),
+    subtitle: (m) => <p className="text-base-content/70 text-xs">{formatDateTime(m.createdAt)}</p>,
     body: (m) => (
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {m.warehouseName ?? m.warehouseCode ?? '—'}
-          </Text>
-          <Stack direction="row" align="center" gap={2}>
+          </p>
+          <div className="flex flex-row items-center gap-2">
             {change(m)}
-            <Text size="xs" variant="muted">
-              bal {m.balanceAfter ?? '—'}
-            </Text>
-          </Stack>
-        </Stack>
-        <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">bal {m.balanceAfter ?? '—'}</p>
+          </div>
+        </div>
+        <p className="text-base-content/70 text-xs">
           {actorLabel(m.actorType)}
           {m.referenceType ? ` · ${m.referenceType}` : ''}
-        </Text>
-      </Stack>
+        </p>
+      </div>
     ),
   };
 

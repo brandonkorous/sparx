@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -40,8 +40,8 @@ export default async function EditPipelinePage({ params }: PageProps) {
   }
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-md px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title={`Edit ${pipeline.name}`}
           description="Drag to reorder stages, edit names + probabilities, or add a new stage. Probability here feeds the weighted forecast on the pipeline detail page."
@@ -64,7 +64,7 @@ export default async function EditPipelinePage({ params }: PageProps) {
             })),
           }}
         />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

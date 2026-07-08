@@ -1,20 +1,9 @@
 'use client';
 
 import { Globe2, Layers, Plus } from 'lucide-react';
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  EmptyState,
-  Heading,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { EntityCreateButton } from '../../../_components/entity-create-button';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -84,18 +73,18 @@ export function ShippingLists({
   return (
     <>
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="end" justify="between" wrap gap={2}>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <Globe2 className="h-4 w-4" />
-                <Heading level={3}>Zones</Heading>
-              </Stack>
-              <CardDescription>
+                <h3 className="text-xl font-semibold">Zones</h3>
+              </div>
+              <p className="opacity-70">
                 At least one zone covering your sell-to countries is required before checkout can
                 quote shipping.
-              </CardDescription>
-            </Stack>
+              </p>
+            </div>
             <EntityCreateButton
               entityType="shipping-zone"
               newHref="/commerce/shipping/zones/new"
@@ -104,15 +93,13 @@ export function ShippingLists({
             >
               New zone
             </EntityCreateButton>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {zones.length === 0 ? (
             <EmptyState
               icon={<Globe2 className="h-5 w-5" />}
               title="No shipping zones yet"
               description="Add at least one zone covering the countries you sell to."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="shipping-zone"
                   newHref="/commerce/shipping/zones/new"
@@ -139,22 +126,22 @@ export function ShippingLists({
             pageKey={zonePagerKeys.pageKey}
             perPageKey={zonePagerKeys.perPageKey}
           />
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack direction="row" align="end" justify="between" wrap gap={2}>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+        <CardBody>
+          <div className="flex flex-row flex-wrap items-end justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <Layers className="h-4 w-4" />
-                <Heading level={3}>Profiles</Heading>
-              </Stack>
-              <CardDescription>
+                <h3 className="text-xl font-semibold">Profiles</h3>
+              </div>
+              <p className="opacity-70">
                 Group products that share carrier eligibility. Hazmat-flagged items + freight needs
                 land in their own profile.
-              </CardDescription>
-            </Stack>
+              </p>
+            </div>
             <EntityCreateButton
               entityType="shipping-profile"
               newHref="/commerce/shipping/profiles/new"
@@ -163,15 +150,13 @@ export function ShippingLists({
             >
               New profile
             </EntityCreateButton>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+          </div>
           {profiles.length === 0 ? (
             <EmptyState
               icon={<Layers className="h-5 w-5" />}
               title="No shipping profiles yet"
               description="Create one profile per shipping pattern (standard, hazmat, freight)."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="shipping-profile"
                   newHref="/commerce/shipping/profiles/new"
@@ -198,7 +183,7 @@ export function ShippingLists({
             pageKey={profilePagerKeys.pageKey}
             perPageKey={profilePagerKeys.perPageKey}
           />
-        </CardContent>
+        </CardBody>
       </Card>
     </>
   );
@@ -217,7 +202,7 @@ const zoneName = (z: ShippingZoneRow) => (
 
 const zoneCountries = (z: ShippingZoneRow) =>
   z.targeting.countries.length > 0 ? (
-    <Stack direction="row" gap={1} wrap>
+    <div className="flex flex-row flex-wrap gap-1">
       {z.targeting.countries.slice(0, 6).map((c) => (
         <Badge key={c} color="neutral" variant="soft" size="sm">
           {c}
@@ -228,11 +213,9 @@ const zoneCountries = (z: ShippingZoneRow) =>
           +{z.targeting.countries.length - 6}
         </Badge>
       )}
-    </Stack>
+    </div>
   ) : (
-    <Text size="xs" variant="muted">
-      any
-    </Text>
+    <p className="text-base-content/70 text-xs">any</p>
   );
 
 const zoneColumns: SelectionColumn<ShippingZoneRow>[] = [
@@ -245,17 +228,13 @@ const zoneColumns: SelectionColumn<ShippingZoneRow>[] = [
 const zoneCard: SelectionCard<ShippingZoneRow> = {
   title: zoneName,
   body: (z) => (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       {zoneCountries(z)}
-      <Stack direction="row" gap={4} wrap>
-        <Text size="xs" variant="muted">
-          Priority: {z.priority}
-        </Text>
-        <Text size="xs" variant="muted">
-          Rates: {z.rateCount}
-        </Text>
-      </Stack>
-    </Stack>
+      <div className="flex flex-row flex-wrap gap-4">
+        <p className="text-base-content/70 text-xs">Priority: {z.priority}</p>
+        <p className="text-base-content/70 text-xs">Rates: {z.rateCount}</p>
+      </div>
+    </div>
   ),
 };
 
@@ -271,13 +250,13 @@ const profileName = (p: ShippingProfileRow) => (
 );
 
 const profileHazmat = (p: ShippingProfileRow) => (
-  <Stack direction="row" gap={1} wrap>
+  <div className="flex flex-row flex-wrap gap-1">
     {p.hazmatClassesAllowed.slice(0, 3).map((h) => (
       <Badge key={h} color="neutral" variant="soft" size="sm">
         {h}
       </Badge>
     ))}
-  </Stack>
+  </div>
 );
 
 const profileFreight = (p: ShippingProfileRow) =>
@@ -309,21 +288,15 @@ const profileColumns: SelectionColumn<ShippingProfileRow>[] = [
 const profileCard: SelectionCard<ShippingProfileRow> = {
   title: profileName,
   body: (p) => (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       {p.hazmatClassesAllowed.length > 0 ? profileHazmat(p) : null}
-      <Stack direction="row" align="center" gap={2} wrap>
-        <Text size="xs" variant="muted">
-          Freight:
-        </Text>
+      <div className="flex flex-row flex-wrap items-center gap-2">
+        <p className="text-base-content/70 text-xs">Freight:</p>
         {profileFreight(p)}
-        <Text size="xs" variant="muted">
-          Signature:
-        </Text>
+        <p className="text-base-content/70 text-xs">Signature:</p>
         {profileSignature(p)}
-      </Stack>
-      <Text size="xs" variant="muted">
-        Products: {p.productCount}
-      </Text>
-    </Stack>
+      </div>
+      <p className="text-base-content/70 text-xs">Products: {p.productCount}</p>
+    </div>
   ),
 };

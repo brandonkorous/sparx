@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  SelectionList,
-  type SelectionCard,
-  type SelectionColumn,
-  Badge,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { TemplateRowActions } from './template-row-actions';
 
@@ -33,16 +27,14 @@ interface TemplatesListProps {
 
 export function TemplatesList({ rows, view }: TemplatesListProps) {
   const name = (t: TemplateRow) => (
-    <Stack direction="row" align="center" gap={2} className="min-w-0">
-      <Text size="sm" className="truncate font-medium">
-        {t.name}
-      </Text>
+    <div className="flex min-w-0 flex-row items-center gap-2">
+      <p className="truncate text-sm font-medium">{t.name}</p>
       {t.isDefault && (
         <Badge color="module" variant="soft" className="text-xs">
           Default
         </Badge>
       )}
-    </Stack>
+    </div>
   );
 
   const statusBadge = (t: TemplateRow) =>
@@ -57,9 +49,7 @@ export function TemplatesList({ rows, view }: TemplatesListProps) {
     );
 
   const updated = (t: TemplateRow) => (
-    <Text size="sm" variant="muted">
-      {new Date(t.updatedAt).toLocaleDateString()}
-    </Text>
+    <p className="text-base-content/70 text-sm">{new Date(t.updatedAt).toLocaleDateString()}</p>
   );
 
   const actions = (t: TemplateRow) => (
@@ -77,12 +67,12 @@ export function TemplatesList({ rows, view }: TemplatesListProps) {
     title: name,
     badge: statusBadge,
     body: (t) => (
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="xs" variant="muted">
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-xs">
           Updated {new Date(t.updatedAt).toLocaleDateString()}
-        </Text>
+        </p>
         {actions(t)}
-      </Stack>
+      </div>
     ),
   };
 

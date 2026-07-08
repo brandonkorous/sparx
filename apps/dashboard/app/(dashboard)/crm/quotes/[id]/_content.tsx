@@ -2,25 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Package } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Heading,
-  Stack,
-  Stat,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  statusLabel,
-  statusTone,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -93,11 +76,11 @@ export async function QuoteDetailContent({ id }: Props) {
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
-    <Stack gap={6} className="@container">
-      <Stack gap={2}>
-        <Stack direction="row" align="center" justify="between" wrap gap={3}>
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{quote.quoteNumber}</Heading>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-row flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-semibold">{quote.quoteNumber}</h1>
             <Badge color={statusTone(quote.status)} variant="soft">
               {statusLabel(quote.status)}
             </Badge>
@@ -118,137 +101,131 @@ export async function QuoteDetailContent({ id }: Props) {
                 → Converted order
               </Link>
             )}
-          </Stack>
+          </div>
           <QuoteLifecycleActions quoteId={quote.id} status={quote.status} />
-        </Stack>
-      </Stack>
+        </div>
+      </div>
 
       <div className="grid gap-4 @[440px]:grid-cols-2 @[820px]:grid-cols-4">
-        <Card variant="module">
-          <CardContent className="py-4">
+        <Card className="bg-module bg-soft">
+          <CardBody className="py-4">
             <Stat
               label="Total"
               value={`${quote.currency} ${Number(quote.total).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Subtotal"
               value={`${quote.currency} ${Number(quote.subtotal).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Tax"
               value={`${quote.currency} ${Number(quote.taxTotal).toLocaleString()}`}
             />
-          </CardContent>
+          </CardBody>
         </Card>
         <Card>
-          <CardContent className="py-4">
+          <CardBody className="py-4">
             <Stat
               label="Valid until"
               value={quote.validUntil ? new Date(quote.validUntil).toLocaleDateString() : '—'}
             />
-          </CardContent>
+          </CardBody>
         </Card>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardBody>
           <CardTitle>
-            <Stack direction="row" align="center" gap={2}>
+            <div className="flex flex-row items-center gap-2">
               <Package className="h-4 w-4" /> Line items
               <Badge color="neutral" variant="soft" size="sm">
                 {quote.items.length}
               </Badge>
-            </Stack>
+            </div>
           </CardTitle>
-        </CardHeader>
-        <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>SKU</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-right">Qty</TableHead>
-                <TableHead className="text-right">Unit price</TableHead>
-                <TableHead className="text-right">Discount</TableHead>
-                <TableHead className="text-right">Tax</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th className="text-right">Qty</th>
+                <th className="text-right">Unit price</th>
+                <th className="text-right">Discount</th>
+                <th className="text-right">Tax</th>
+                <th className="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
               {quote.items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
+                <tr key={item.id}>
+                  <td>
                     <code className="text-xs">{item.sku}</code>
-                  </TableCell>
-                  <TableCell>
-                    <Stack gap={1}>
-                      <Text size="sm">{item.name}</Text>
+                  </td>
+                  <td>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm">{item.name}</p>
                       {item.appliedMarkup && (
-                        <Stack direction="row" align="center" gap={2} wrap>
+                        <div className="flex flex-row flex-wrap items-center gap-2">
                           <Badge color="module" variant="soft">
                             By markup
                           </Badge>
-                          <Text size="xs" variant="muted">
+                          <p className="text-base-content/70 text-xs">
                             {item.appliedMarkup.ruleName ?? 'Ad-hoc'} ·{' '}
                             {item.appliedMarkup.marginPct}% margin · cost {quote.currency}{' '}
                             {(item.appliedMarkup.costBasisValueCents / 100).toLocaleString()}
-                          </Text>
-                        </Stack>
+                          </p>
+                        </div>
                       )}
-                    </Stack>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{item.quantity}</TableCell>
-                  <TableCell className="text-right tabular-nums">
+                    </div>
+                  </td>
+                  <td className="text-right tabular-nums">{item.quantity}</td>
+                  <td className="text-right tabular-nums">
                     {quote.currency} {Number(item.unitPrice).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {quote.currency} {Number(item.discountAmount).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {quote.currency} {Number(item.taxAmount).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  </td>
+                  <td className="text-right tabular-nums">
                     {quote.currency} {Number(item.lineTotal).toLocaleString()}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       {(quote.customerNote ?? quote.internalNote) && (
         <div className="grid gap-4 @[680px]:grid-cols-2">
           {quote.customerNote && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Customer note</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text size="sm">{quote.customerNote}</Text>
-              </CardContent>
+                <p className="text-sm">{quote.customerNote}</p>
+              </CardBody>
             </Card>
           )}
           {quote.internalNote && (
             <Card>
-              <CardHeader>
+              <CardBody>
                 <CardTitle>Internal note</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text size="sm">{quote.internalNote}</Text>
-              </CardContent>
+                <p className="text-sm">{quote.internalNote}</p>
+              </CardBody>
             </Card>
           )}
         </div>
       )}
-    </Stack>
+    </div>
   );
 }

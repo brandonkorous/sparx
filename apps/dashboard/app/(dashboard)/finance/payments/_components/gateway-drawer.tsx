@@ -6,16 +6,7 @@
 // parent activates the gateway and closes (docs/86 frame pattern: status in the header).
 
 import * as React from 'react';
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from 'silicaui-react';
 
 import type { GatewayDescriptor, MaskedGatewayCredential } from '../actions';
 import { GatewayCredentialForm } from './gateway-credential-form';
@@ -39,31 +30,23 @@ export function GatewayDrawer({
     <Drawer open={gateway !== null} onOpenChange={(open) => !open && onClose()}>
       {gateway ? (
         <DrawerContent side="right" className="w-full max-w-md">
-          <DrawerHeader>
-            <Stack direction="row" align="center" gap={3}>
-              <GatewayMark gatewayId={gateway.id} size="md" />
-              <Stack gap={1} className="min-w-0 flex-1">
-                <DrawerTitle>{gateway.name}</DrawerTitle>
-                <DrawerDescription>{checkoutTag(gateway)}</DrawerDescription>
-              </Stack>
-              <GatewayStatusBadge status={status} />
-            </Stack>
-          </DrawerHeader>
-          <DrawerBody>
-            <Stack gap={5}>
-              <Text size="sm" variant="muted">
-                {gateway.feeNote}
-                {gateway.checkout === 'redirect'
-                  ? ' Shoppers pay on the gateway’s hosted page, so card data never touches sparx.'
-                  : ''}
-              </Text>
-              <GatewayCredentialForm
-                descriptor={gateway}
-                credential={credential}
-                onSaved={onSaved}
-              />
-            </Stack>
-          </DrawerBody>
+          <div className="flex items-center gap-3">
+            <GatewayMark gatewayId={gateway.id} size="md" />
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <DrawerTitle>{gateway.name}</DrawerTitle>
+              <DrawerDescription>{checkoutTag(gateway)}</DrawerDescription>
+            </div>
+            <GatewayStatusBadge status={status} />
+          </div>
+          <div className="mt-5 flex flex-col gap-5">
+            <p className="text-base-content/70 text-sm">
+              {gateway.feeNote}
+              {gateway.checkout === 'redirect'
+                ? ' Shoppers pay on the gateway’s hosted page, so card data never touches sparx.'
+                : ''}
+            </p>
+            <GatewayCredentialForm descriptor={gateway} credential={credential} onSaved={onSaved} />
+          </div>
         </DrawerContent>
       ) : null}
     </Drawer>

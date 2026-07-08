@@ -1,14 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  Badge,
-  type SelectionCard,
-  type SelectionColumn,
-  SelectionList,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge } from 'silicaui-react';
+import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
 
 import { InventoryRowControls, type InventoryRow } from './inventory-row-editor';
 
@@ -31,19 +25,15 @@ function isBelowReorder(r: InventoryRow): boolean {
 
 function productCell(r: InventoryRow) {
   return (
-    <Stack gap={0}>
+    <div className="flex flex-col gap-0">
       <Link
         href={`/commerce/products/${r.productId}`}
         className="text-sm hover:text-[var(--module-active)]"
       >
         {r.productTitle}
       </Link>
-      {r.variantTitle && (
-        <Text size="xs" variant="muted">
-          {r.variantTitle}
-        </Text>
-      )}
-    </Stack>
+      {r.variantTitle && <p className="text-base-content/70 text-xs">{r.variantTitle}</p>}
+    </div>
   );
 }
 
@@ -53,17 +43,15 @@ function reorderBadge(r: InventoryRow) {
       ≤ {r.reorderPoint}
     </Badge>
   ) : (
-    <Text size="xs" variant="muted">
-      none
-    </Text>
+    <p className="text-base-content/70 text-xs">none</p>
   );
 }
 
 function availableCell(r: InventoryRow) {
   return (
-    <Text className={isBelowReorder(r) ? 'text-[var(--color-warning)]' : undefined}>
+    <p className={isBelowReorder(r) ? 'text-base text-[var(--color-warning)]' : 'text-base'}>
       {r.available}
-    </Text>
+    </p>
   );
 }
 
@@ -87,29 +75,23 @@ export function InventoryList({ rows, warehouseId, view }: InventoryListProps) {
     subtitle: productCell,
     badge: reorderBadge,
     body: (r) => (
-      <Stack gap={2}>
-        <Stack direction="row" gap={4}>
-          <Stack gap={0}>
-            <Text size="xs" variant="muted">
-              On hand
-            </Text>
-            <Text className="tabular-nums">{r.onHand}</Text>
-          </Stack>
-          <Stack gap={0}>
-            <Text size="xs" variant="muted">
-              Allocated
-            </Text>
-            <Text className="tabular-nums">{r.allocated}</Text>
-          </Stack>
-          <Stack gap={0}>
-            <Text size="xs" variant="muted">
-              Available
-            </Text>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row gap-4">
+          <div className="flex flex-col gap-0">
+            <p className="text-base-content/70 text-xs">On hand</p>
+            <p className="text-base tabular-nums">{r.onHand}</p>
+          </div>
+          <div className="flex flex-col gap-0">
+            <p className="text-base-content/70 text-xs">Allocated</p>
+            <p className="text-base tabular-nums">{r.allocated}</p>
+          </div>
+          <div className="flex flex-col gap-0">
+            <p className="text-base-content/70 text-xs">Available</p>
             {availableCell(r)}
-          </Stack>
-        </Stack>
+          </div>
+        </div>
         <InventoryRowControls row={r} warehouseId={warehouseId} />
-      </Stack>
+      </div>
     ),
   };
 

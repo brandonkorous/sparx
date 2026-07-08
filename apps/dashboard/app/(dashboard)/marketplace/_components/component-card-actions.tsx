@@ -12,7 +12,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button, toast } from '@sparx/ui';
+import { Button } from 'silicaui-react';
+import { toast } from '@sparx/ui';
 
 import { addComponentAction } from '../actions';
 import type { ComponentFacets } from '../_types';
@@ -38,8 +39,11 @@ export function ComponentCardActions({ slug, name, component, detail = false }: 
   // for a palette pointer.
   if (!detail) {
     return (
-      <Button color="primary" asChild>
-        <Link href={`/marketplace/components/${encodeURIComponent(slug)}`}>View component</Link>
+      <Button
+        color="primary"
+        render={<Link href={`/marketplace/components/${encodeURIComponent(slug)}`} />}
+      >
+        View component
       </Button>
     );
   }
@@ -73,8 +77,11 @@ export function ComponentCardActions({ slug, name, component, detail = false }: 
   // Detail view, no tree → a system-palette pointer: hand off to the builder
   // catalog's copy flow.
   return (
-    <Button color="primary" asChild>
-      <Link href={`/builder/components/${encodeURIComponent(slug)}`}>Add to my components</Link>
+    <Button
+      color="primary"
+      render={<Link href={`/builder/components/${encodeURIComponent(slug)}`} />}
+    >
+      Add to my components
     </Button>
   );
 }

@@ -14,18 +14,8 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import {
-  AreaChart,
-  Badge,
-  Button,
-  Container,
-  EmptyState,
-  Grid,
-  ModuleProvider,
-  PageHeader,
-  Stack,
-  Stat,
-} from '@sparx/ui';
+import { AreaChart, ModuleProvider, PageHeader, Stat } from '@sparx/ui';
+import { Badge, Button, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -260,19 +250,27 @@ export default async function CommercePage() {
   const hasInventory = valuation != null && valuation.totalUnits > 0;
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-8">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-8">
         <PageHeader
           icon={<ShoppingCart className="h-5 w-5" />}
           title="Commerce"
           description="How your store is doing — last 30 days."
           actions={
             <>
-              <Button asChild variant="outline" leftIcon={<Download className="h-4 w-4" />}>
-                <Link href="/commerce/reports">Export</Link>
+              <Button
+                variant="outline"
+                iconStart={<Download className="h-4 w-4" />}
+                render={<Link href="/commerce/reports" />}
+              >
+                Export
               </Button>
-              <Button asChild variant="outline" leftIcon={<Tag className="h-4 w-4" />}>
-                <Link href="/commerce/discounts/new">New discount</Link>
+              <Button
+                variant="outline"
+                iconStart={<Tag className="h-4 w-4" />}
+                render={<Link href="/commerce/discounts/new" />}
+              >
+                New discount
               </Button>
               <EntityCreateButton
                 entityType="product"
@@ -287,7 +285,7 @@ export default async function CommercePage() {
         />
 
         {/* Headline KPIs — live */}
-        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Stat
             icon={<DollarSign className="h-4 w-4" />}
             label="Revenue · 30d"
@@ -320,7 +318,7 @@ export default async function CommercePage() {
                 : 'Sessions not yet tracked'
             }
           />
-        </Grid>
+        </div>
 
         {/* Revenue + payouts */}
         <div className={TWO_COL}>
@@ -366,9 +364,9 @@ export default async function CommercePage() {
                 icon={<CreditCard className="h-5 w-5" />}
                 title="No payouts yet"
                 description="Your balance and next payout show here once you start taking payments."
-                action={
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/finance/payments">Set up payments</Link>
+                actions={
+                  <Button variant="outline" size="sm" render={<Link href="/finance/payments" />}>
+                    Set up payments
                   </Button>
                 }
               />
@@ -437,7 +435,7 @@ export default async function CommercePage() {
         </div>
 
         {/* Customers + inventory + recover & grow */}
-        <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {/* CRM is this page's secondary module — Top customers is its primary
               card, so it wears the CRM (cyan) tint via a nested provider. */}
           <ModuleProvider module="crm" className="contents">
@@ -491,9 +489,9 @@ export default async function CommercePage() {
                   icon={<Box className="h-5 w-5" />}
                   title="No stock tracked yet"
                   description="Add products with inventory to see your stock valuation."
-                  action={
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/inventory/stock">Manage stock</Link>
+                  actions={
+                    <Button variant="outline" size="sm" render={<Link href="/inventory/stock" />}>
+                      Manage stock
                     </Button>
                   }
                 />
@@ -546,8 +544,13 @@ export default async function CommercePage() {
                 title="No discounts yet"
                 hint="Create a discount to drive repeat purchases"
                 right={
-                  <Button variant="link" color="module" size="sm" asChild>
-                    <Link href="/commerce/discounts/new">New</Link>
+                  <Button
+                    variant="link"
+                    color="module"
+                    size="sm"
+                    render={<Link href="/commerce/discounts/new" />}
+                  >
+                    New
                   </Button>
                 }
               />
@@ -579,8 +582,8 @@ export default async function CommercePage() {
               />
             )}
           </OverviewCard>
-        </Grid>
-      </Stack>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

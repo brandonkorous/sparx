@@ -6,7 +6,7 @@
 
 import { FlaskConical } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -21,8 +21,8 @@ export default async function SampleDataSettingsPage() {
   const canEdit = session.user.role === 'owner' || session.user.role === 'admin';
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<FlaskConical className="h-5 w-5" />}
           title="Sample data"
@@ -38,7 +38,7 @@ export default async function SampleDataSettingsPage() {
         />
 
         <SampleDataPanel status={status} canEdit={canEdit} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

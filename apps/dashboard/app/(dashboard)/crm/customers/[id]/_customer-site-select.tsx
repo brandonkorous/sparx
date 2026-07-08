@@ -8,7 +8,7 @@
 // omits it when there's a single site, where the concept is moot).
 
 import * as React from 'react';
-import { Label, NativeSelect, Text } from '@sparx/ui';
+import { Label, NativeSelect } from 'silicaui-react';
 
 import { updateCustomerAction } from '../../customer-actions';
 
@@ -61,15 +61,15 @@ export function CustomerSiteSelect({ customerId, value, sites }: CustomerSiteSel
           </option>
         ))}
       </NativeSelect>
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {current
           ? 'Belongs to this site (also shown under “All sites”).'
           : 'Global — visible from every site.'}
-      </Text>
+      </p>
       {error && (
-        <Text size="xs" variant="danger" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
     </div>
   );

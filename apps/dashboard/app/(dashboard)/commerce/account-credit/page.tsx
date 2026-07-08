@@ -1,6 +1,7 @@
 import { CircleDollarSign, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, Heading, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -35,8 +36,8 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<CircleDollarSign className="h-5 w-5" />}
           title="Account credit"
@@ -58,17 +59,17 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
           }
         />
 
-        <Heading level={3}>Outstanding balances</Heading>
+        <h3 className="text-xl font-semibold">Outstanding balances</h3>
 
         <ListToolbar enableViewToggle searchable={false} />
 
         {balances.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<CircleDollarSign className="h-5 w-5" />}
               title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
               description="Grant credit with the New button, or have it auto-issued from a refund."
-              action={
+              actions={
                 total === 0 ? (
                   <EntityCreateButton
                     entityType="account-credit"
@@ -88,8 +89,8 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

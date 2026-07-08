@@ -8,7 +8,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Stack, Switch, Text, useConfirm } from '@sparx/ui';
+import { Badge, Switch } from 'silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import { updateMarketProfileAction } from '../actions';
 import type { MarketProfile } from '../_types';
@@ -55,28 +56,28 @@ export function ParticipationToggle({ profile }: { profile: MarketProfile }) {
   }
 
   return (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-3">
         <Switch
           checked={profile.enabled}
           disabled={pending}
           onCheckedChange={(v) => void onToggle(v)}
           aria-label="Participate in sparx.market"
         />
-        <Stack direction="row" align="center" gap={2}>
-          <Text weight="medium">
+        <div className="flex flex-row items-center gap-2">
+          <p className="text-base font-medium">
             {profile.enabled ? 'Selling on sparx.market' : 'Not enrolled'}
-          </Text>
+          </p>
           <Badge color={profile.enabled ? 'success' : 'neutral'} variant="soft" size="sm">
             {profile.enabled ? 'Live' : 'Off'}
           </Badge>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
       {error && (
-        <Text size="xs" variant="danger" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

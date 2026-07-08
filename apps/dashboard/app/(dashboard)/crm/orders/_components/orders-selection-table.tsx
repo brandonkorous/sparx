@@ -3,16 +3,14 @@
 import { XCircle } from 'lucide-react';
 import { channelDisplayName } from '@sparx/crm-schemas';
 import {
-  Badge,
   type BulkAction,
   SelectionList,
   type SelectionColumn,
   type SelectionCard,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 
 import { bulkCancelOrdersAction } from '../../order-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -91,11 +89,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
   const channelBadge = (o: OrderRow) => {
     const label = channelLabel(o);
     if (!label) {
-      return (
-        <Text size="sm" variant="muted">
-          —
-        </Text>
-      );
+      return <p className="text-base-content/70 text-sm">—</p>;
     }
     return (
       <Badge color={o.channel === 'marketplace' ? 'info' : 'neutral'} variant="soft" size="sm">
@@ -123,9 +117,9 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     {
       header: 'Placed',
       cell: (o) => (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
-        </Text>
+        </p>
       ),
     },
     {
@@ -144,20 +138,16 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     badge: statusBadge,
     body: (o) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" variant="muted">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-sm">
             {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
-          </Text>
-          <Text size="sm" className="tabular-nums">
-            {totalText(o)}
-          </Text>
-        </Stack>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="xs" variant="muted">
-            Paid {paidText(o)}
-          </Text>
+          </p>
+          <p className="text-sm tabular-nums">{totalText(o)}</p>
+        </div>
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-base-content/70 text-xs">Paid {paidText(o)}</p>
           {channelLabel(o) ? channelBadge(o) : null}
-        </Stack>
+        </div>
       </>
     ),
   };

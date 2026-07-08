@@ -4,21 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalFooter,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Textarea,
-  Stack,
-  toast,
-} from '@sparx/ui';
+} from 'silicaui-react';
+import { toast } from '@sparx/ui';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 interface InvoiceActionsProps {
@@ -85,44 +78,39 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
   return (
     <div className="flex gap-2">
       {/* Mark Paid */}
-      <Modal open={markPaidOpen} onOpenChange={setMarkPaidOpen}>
+      <Dialog open={markPaidOpen} onOpenChange={setMarkPaidOpen}>
         <Button
           color="success"
           variant="soft"
           size="sm"
+          iconStart={<CheckCircle className="h-4 w-4" />}
           onClick={() => {
             setPaidMethod('');
             setNotes('');
             setMarkPaidOpen(true);
           }}
         >
-          <CheckCircle className="mr-1 h-4 w-4" />
           Mark paid
         </Button>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Record payment</ModalTitle>
-            <ModalDescription>
+        <DialogContent>
+          <div>
+            <DialogTitle>Record payment</DialogTitle>
+            <DialogDescription>
               This marks the invoice as paid and releases any associated credit hold.
-            </ModalDescription>
-          </ModalHeader>
-          <Stack gap={4} className="py-2">
+            </DialogDescription>
+          </div>
+          <div className="flex flex-col gap-4 py-2">
             <div>
               <label htmlFor="invoice-paid-method" className="mb-1 block text-sm font-medium">
                 Payment method
               </label>
-              <Select value={paidMethod} onValueChange={setPaidMethod}>
-                <SelectTrigger id="invoice-paid-method">
-                  <SelectValue placeholder="Select method…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PAYMENT_METHODS.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>
-                      {m.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Select
+                id="invoice-paid-method"
+                value={paidMethod}
+                onValueChange={(v) => setPaidMethod(v as string)}
+                items={PAYMENT_METHODS}
+                placeholder="Select method…"
+              />
             </div>
             <div>
               <label htmlFor="invoice-paid-notes" className="mb-1 block text-sm font-medium">
@@ -136,41 +124,41 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
                 rows={2}
               />
             </div>
-          </Stack>
-          <ModalFooter>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setMarkPaidOpen(false)} disabled={loading}>
               Cancel
             </Button>
             <Button color="success" onClick={handleMarkPaid} disabled={!paidMethod || loading}>
               {loading ? 'Saving…' : 'Confirm payment'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Write Off */}
-      <Modal open={writeOffOpen} onOpenChange={setWriteOffOpen}>
+      <Dialog open={writeOffOpen} onOpenChange={setWriteOffOpen}>
         <Button
           color="danger"
           variant="ghost"
           size="sm"
+          iconStart={<XCircle className="h-4 w-4" />}
           onClick={() => {
             setNotes('');
             setWriteOffOpen(true);
           }}
         >
-          <XCircle className="mr-1 h-4 w-4" />
           Write off
         </Button>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Write off invoice</ModalTitle>
-            <ModalDescription>
+        <DialogContent>
+          <div>
+            <DialogTitle>Write off invoice</DialogTitle>
+            <DialogDescription>
               This cancels the invoice and releases the credit hold. This action requires admin
               permission and cannot be undone.
-            </ModalDescription>
-          </ModalHeader>
-          <Stack gap={4} className="py-2">
+            </DialogDescription>
+          </div>
+          <div className="flex flex-col gap-4 py-2">
             <div>
               <label htmlFor="invoice-writeoff-reason" className="mb-1 block text-sm font-medium">
                 Reason (optional)
@@ -183,17 +171,17 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
                 rows={3}
               />
             </div>
-          </Stack>
-          <ModalFooter>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setWriteOffOpen(false)} disabled={loading}>
               Cancel
             </Button>
             <Button color="danger" onClick={handleWriteOff} disabled={loading}>
               {loading ? 'Saving…' : 'Write off invoice'}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

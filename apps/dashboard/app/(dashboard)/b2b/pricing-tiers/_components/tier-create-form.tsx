@@ -3,29 +3,17 @@
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Form,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
   SurfaceFrame,
   SurfaceStep,
-  Text,
-  Textarea,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { Card, CardBody, CardTitle, Input, Select, Textarea } from 'silicaui-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -123,11 +111,9 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
             nextDisabled: form.formState.isSubmitting,
           }}
         >
-          <Card variant="default">
-            <CardHeader>
+          <Card>
+            <CardBody>
               <CardTitle>Tier details</CardTitle>
-            </CardHeader>
-            <CardContent className="py-6">
               <Form {...form}>
                 <form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
@@ -158,22 +144,21 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
                     )}
                   />
 
-                  <Stack direction="row" gap={3}>
+                  <div className="flex flex-row gap-3">
                     <FormField
                       control={form.control}
                       name="discountType"
                       render={({ field }) => (
                         <FormItem className="flex-1">
                           <FormLabel>Discount type</FormLabel>
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="percentage">% off list price</SelectItem>
-                              <SelectItem value="fixed">$ fixed amount off</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            items={{
+                              percentage: '% off list price',
+                              fixed: '$ fixed amount off',
+                            }}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -197,7 +182,7 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
                         </FormItem>
                       )}
                     />
-                  </Stack>
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -205,16 +190,15 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Product scope</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All products</SelectItem>
-                            <SelectItem value="collections">Selected collections</SelectItem>
-                            <SelectItem value="products">Selected products</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          items={{
+                            all: 'All products',
+                            collections: 'Selected collections',
+                            products: 'Selected products',
+                          }}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -240,13 +224,13 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
                   />
 
                   {form.formState.errors.root && (
-                    <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                    <p className="text-danger text-sm" role="alert" aria-live="polite">
                       {form.formState.errors.root.message}
-                    </Text>
+                    </p>
                   )}
                 </form>
               </Form>
-            </CardContent>
+            </CardBody>
           </Card>
         </SurfaceStep>
       </SurfaceFrame>

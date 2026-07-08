@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/brand": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^5.10.0",
@@ -20,8 +21,8 @@
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "silicaui": "^0.1.0",
-    "silicaui-react": "^0.2.0"
+    "silicaui": "catalog:",
+    "silicaui-react": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",

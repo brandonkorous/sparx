@@ -4,20 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-  Textarea,
-} from '@sparx/ui';
+import { Button, Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
@@ -119,18 +106,18 @@ export function CollectionMetaForm(props: Props) {
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>Metadata</Heading>
-          <CardDescription>
-            Name, slug, description, and SEO. Type changes aren&apos;t supported — delete and
-            recreate if you need to switch between manual and rules-driven.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Stack gap={4}>
-            <Stack direction="row" gap={4}>
-              <Stack gap={2} className="flex-1">
+      <Card>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Metadata</h3>
+            <p className="opacity-70">
+              Name, slug, description, and SEO. Type changes aren&apos;t supported — delete and
+              recreate if you need to switch between manual and rules-driven.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+              <div className="flex flex-1 flex-col gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
@@ -138,17 +125,17 @@ export function CollectionMetaForm(props: Props) {
                   onChange={(e) => set('name', e.target.value)}
                   required
                 />
-              </Stack>
-              <Stack gap={2} className="flex-1">
+              </div>
+              <div className="flex flex-1 flex-col gap-2">
                 <Label htmlFor="handle">Handle</Label>
                 <Input
                   id="handle"
                   value={form.handle}
                   onChange={(e) => set('handle', e.target.value)}
                 />
-              </Stack>
-            </Stack>
-            <Stack gap={2}>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
@@ -156,21 +143,21 @@ export function CollectionMetaForm(props: Props) {
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}
               />
-            </Stack>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <Checkbox
                   id="featured"
                   color="module"
                   checked={form.featured}
-                  onCheckedChange={(v) => set('featured', v === true)}
+                  onChange={(e) => set('featured', e.target.checked)}
                 />
                 <Label htmlFor="featured">Featured</Label>
-              </Stack>
-              <Text size="xs" variant="muted">
+              </div>
+              <p className="text-base-content/70 text-xs">
                 Featured collections surface in curated storefront slots (hero rails, nav promos).
-              </Text>
-            </Stack>
+              </p>
+            </div>
 
             <SeoMetaFields
               type="collection"
@@ -185,31 +172,24 @@ export function CollectionMetaForm(props: Props) {
             />
 
             {error && (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <p className="text-danger text-sm" role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </p>
             )}
 
-            <Stack direction="row" justify="end" align="center" gap={2}>
+            <div className="flex flex-row items-center justify-end gap-2">
               {savedAt !== null && !dirty && (
-                <Stack
-                  direction="row"
-                  align="center"
-                  gap={1}
-                  className="text-[var(--color-success-text)]"
-                >
+                <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
                   <Check className="h-4 w-4" />
-                  <Text size="sm" variant="success">
-                    Saved
-                  </Text>
-                </Stack>
+                  <p className="text-success text-sm">Saved</p>
+                </div>
               )}
               <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>
                 Save changes
               </Button>
-            </Stack>
-          </Stack>
-        </CardContent>
+            </div>
+          </div>
+        </CardBody>
       </Card>
     </form>
   );

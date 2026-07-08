@@ -5,7 +5,7 @@
 // list API's existing `resourceId` / `serviceId` params; "All …" clears the filter.
 
 import { useRouter } from 'next/navigation';
-import { NativeSelect } from '@sparx/ui';
+import { NativeSelect } from 'silicaui-react';
 
 export interface BookingsFilterResource {
   id: string;

@@ -2,24 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  Input,
-  Label,
-  ModuleProvider,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-  toast,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
+import { ModuleProvider, toast, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { Card, CardBody, Input, Label, Select } from 'silicaui-react';
 
 import { createDomainAction } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -117,10 +101,10 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
             nextDisabled: pending || !domain.trim(),
           }}
         >
-          <Card variant="default">
-            <CardContent className="py-6">
-              <Stack direction="row" align="end" gap={3} wrap>
-                <Stack gap={2} className="min-w-64 flex-1">
+          <Card>
+            <CardBody className="py-6">
+              <div className="flex flex-row flex-wrap items-end gap-3">
+                <div className="flex min-w-64 flex-1 flex-col gap-2">
                   <Label htmlFor="domain">Domain</Label>
                   <Input
                     id="domain"
@@ -130,26 +114,25 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
                     disabled={pending}
                     autoComplete="off"
                   />
-                </Stack>
-                <Stack gap={2}>
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="region">Region</Label>
-                  <Select value={region} onValueChange={setRegion} disabled={pending}>
-                    <SelectTrigger id="region" className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="us">US</SelectItem>
-                      <SelectItem value="eu">EU</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </Stack>
-              </Stack>
-            </CardContent>
+                  <Select
+                    id="region"
+                    className="w-32"
+                    value={region}
+                    onValueChange={(v) => setRegion(v as string)}
+                    disabled={pending}
+                    items={{ us: 'US', eu: 'EU' }}
+                  />
+                </div>
+              </div>
+            </CardBody>
           </Card>
           {error && (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4">
+            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
         </SurfaceStep>
       </SurfaceFrame>

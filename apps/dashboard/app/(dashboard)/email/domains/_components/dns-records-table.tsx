@@ -1,17 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Code,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Code } from '@sparx/ui';
+import { Badge, Table } from 'silicaui-react';
 
 import { CopyButton } from './copy-button';
 import type { DnsRecord } from '../../_lib/types';
@@ -42,46 +32,46 @@ function validBadge(valid: string) {
 export function DnsRecordsTable({ records }: { records: DnsRecord[] }) {
   if (records.length === 0) {
     return (
-      <Text size="sm" variant="muted">
+      <p className="text-base-content/70 text-sm">
         No DNS records yet — they appear once the domain is provisioned.
-      </Text>
+      </p>
     );
   }
 
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Type</TableHead>
-          <TableHead>Host / Name</TableHead>
-          <TableHead>Value</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Host / Name</th>
+          <th>Value</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
         {records.map((r, i) => (
-          <TableRow key={`${r.recordType}-${r.name}-${i}`}>
-            <TableCell>
+          <tr key={`${r.recordType}-${r.name}-${i}`}>
+            <td>
               <Badge color="neutral" variant="soft" size="sm">
                 {r.recordType}
               </Badge>
-            </TableCell>
-            <TableCell>
-              <Stack direction="row" align="center" gap={1}>
+            </td>
+            <td>
+              <div className="flex flex-row items-center gap-1">
                 <Code>{r.name}</Code>
                 <CopyButton value={r.name} label="host" />
-              </Stack>
-            </TableCell>
-            <TableCell>
-              <Stack direction="row" align="center" gap={1}>
+              </div>
+            </td>
+            <td>
+              <div className="flex flex-row items-center gap-1">
                 <Code className="break-all">{r.value}</Code>
                 <CopyButton value={r.value} label="value" />
-              </Stack>
-            </TableCell>
-            <TableCell>{validBadge(r.valid)}</TableCell>
-          </TableRow>
+              </div>
+            </td>
+            <td>{validBadge(r.valid)}</td>
+          </tr>
         ))}
-      </TableBody>
+      </tbody>
     </Table>
   );
 }

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
 
-import { Button, Heading, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect } from 'silicaui-react';
 
 import { setProductOptionsAction } from '../../../variant-actions';
 
@@ -143,36 +143,31 @@ export function OptionsEditor({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack gap={4}>
-        <Stack gap={1}>
-          <Heading level={4}>Edit option lattice — {productTitle}</Heading>
-          <Text size="sm" variant="muted">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h4 className="text-lg font-semibold">Edit option lattice — {productTitle}</h4>
+          <p className="text-base-content/70 text-sm">
             Replace the option set. Existing variants stay but lose their option bindings — rebind
             them from the variants table afterwards.
-          </Text>
-        </Stack>
+          </p>
+        </div>
 
         {drafts.length === 0 && (
-          <Stack
-            gap={2}
-            align="center"
-            className="rounded border border-dashed border-[var(--color-border-default)] p-6 text-center"
-          >
-            <Text size="sm" variant="muted">
+          <div className="flex flex-col items-center gap-2 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+            <p className="text-base-content/70 text-sm">
               No options yet — single-SKU products work too.
-            </Text>
-          </Stack>
+            </p>
+          </div>
         )}
 
-        <Stack gap={3}>
+        <div className="flex flex-col gap-3">
           {drafts.map((opt, oi) => (
-            <Stack
+            <div
               key={opt.localKey}
-              gap={3}
-              className="rounded border border-[var(--color-border-default)] p-3"
+              className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] p-3"
             >
-              <Stack direction="row" gap={3} align="end">
-                <Stack gap={1} className="flex-1">
+              <div className="flex flex-row items-end gap-3">
+                <div className="flex flex-1 flex-col gap-1">
                   <Label htmlFor={`opt-${opt.localKey}-name`}>Name</Label>
                   <Input
                     id={`opt-${opt.localKey}-name`}
@@ -180,8 +175,8 @@ export function OptionsEditor({
                     onChange={(e) => patchOption(oi, { name: e.target.value })}
                     placeholder="Color"
                   />
-                </Stack>
-                <Stack gap={1}>
+                </div>
+                <div className="flex flex-col gap-1">
                   <Label htmlFor={`opt-${opt.localKey}-display`}>Display</Label>
                   <NativeSelect
                     id={`opt-${opt.localKey}-display`}
@@ -197,25 +192,23 @@ export function OptionsEditor({
                     <option value="radio">Radio</option>
                     <option value="segmented">Segmented</option>
                   </NativeSelect>
-                </Stack>
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => removeOption(oi)}
-                  leftIcon={<Trash className="h-3.5 w-3.5" />}
+                  iconStart={<Trash className="h-3.5 w-3.5" />}
                   aria-label={`Remove ${opt.name || 'option'}`}
                 >
                   Remove
                 </Button>
-              </Stack>
+              </div>
 
-              <Stack gap={2} className="pl-4">
-                <Text size="xs" variant="muted">
-                  Values
-                </Text>
+              <div className="flex flex-col gap-2 pl-4">
+                <p className="text-base-content/70 text-xs">Values</p>
                 {opt.values.map((val, vi) => (
-                  <Stack key={val.localKey} direction="row" gap={2} align="center">
+                  <div key={val.localKey} className="flex flex-row items-center gap-2">
                     <Input
                       value={val.value}
                       onChange={(e) => patchValue(oi, vi, { value: e.target.value })}
@@ -241,48 +234,48 @@ export function OptionsEditor({
                     >
                       <Trash className="h-3.5 w-3.5" />
                     </Button>
-                  </Stack>
+                  </div>
                 ))}
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => addValue(oi)}
-                  leftIcon={<Plus className="h-3.5 w-3.5" />}
+                  iconStart={<Plus className="h-3.5 w-3.5" />}
                 >
                   Add value
                 </Button>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           ))}
-        </Stack>
+        </div>
 
-        <Stack direction="row" gap={2}>
+        <div className="flex flex-row gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={addOption}
-            leftIcon={<Plus className="h-4 w-4" />}
+            iconStart={<Plus className="h-4 w-4" />}
           >
             Add option
           </Button>
-        </Stack>
+        </div>
 
         {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         )}
 
-        <Stack direction="row" gap={2} justify="end">
+        <div className="flex flex-row justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
           <Button type="submit" color="module" disabled={pending} loading={pending}>
             Save options
           </Button>
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </form>
   );
 }

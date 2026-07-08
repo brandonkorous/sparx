@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Badge, Container, Heading, Stack, Text } from '@sparx/ui';
+import { Badge } from 'silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
@@ -159,19 +159,19 @@ export async function ContentEntryDetailContent({
   };
 
   const heading = (
-    <Stack gap={2}>
-      <Stack direction="row" align="center" gap={2}>
-        <Heading level={1}>{title || `Untitled ${lowerType}`}</Heading>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center gap-2">
+        <h1 className="text-3xl font-semibold">{title || `Untitled ${lowerType}`}</h1>
         <Badge color="module">{lowerType}</Badge>
         {/* Live status lives in the editor toolbar's status bar (EntryStatusBar), so
             the heading carries just the type — no stale duplicate of the status. */}
-      </Stack>
+      </div>
       {entry.slug && (
-        <Text size="sm" variant="muted">
+        <p className="text-base-content/70 text-sm">
           <code>/{entry.slug}</code>
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 
   // Full-page WITH a live preview: the editor IS a builder, so it fills the content
@@ -196,14 +196,14 @@ export async function ContentEntryDetailContent({
   // editor chrome, not a redundant restatement of a nearby field.
   if (previewEnabled) {
     return (
-      <Container size="xl">
-        <Stack className="py-10">
-          <Stack gap={6}>
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 py-10">
+          <div className="flex flex-col gap-6">
             {heading}
             <EntryEditorWorkspace form={formProps} preview={null} />
-          </Stack>
-        </Stack>
-      </Container>
+          </div>
+        </div>
+      </div>
     );
   }
 

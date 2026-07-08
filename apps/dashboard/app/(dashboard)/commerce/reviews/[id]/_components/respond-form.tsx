@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Stack, Text, Textarea } from '@sparx/ui';
+import { Button, Textarea } from 'silicaui-react';
 
 import { respondToReviewAction } from '../../../review-actions';
 
@@ -41,35 +41,35 @@ export function RespondForm({
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <Textarea
         value={response}
         onChange={(e) => setResponse(e.target.value)}
         rows={5}
         placeholder="Thanks for the feedback — we'll send out a replacement set right away."
       />
-      <Stack direction="row" gap={2} justify="between" align="center">
-        <Stack gap={0}>
+      <div className="flex flex-row items-center justify-between gap-2">
+        <div className="flex flex-col gap-0">
           {respondedAt && (
-            <Text size="xs" variant="muted">
+            <p className="text-base-content/70 text-xs">
               Last response: {new Date(respondedAt).toLocaleString()}
-            </Text>
+            </p>
           )}
           {error && (
-            <Text size="xs" variant="danger" role="alert" aria-live="polite">
+            <p className="text-danger text-xs" role="alert" aria-live="polite">
               {error}
-            </Text>
+            </p>
           )}
           {saved && !error && (
-            <Text size="xs" variant="success" role="status" aria-live="polite">
+            <p className="text-success text-xs" role="status" aria-live="polite">
               Saved
-            </Text>
+            </p>
           )}
-        </Stack>
+        </div>
         <Button color="module" disabled={pending} onClick={onSave}>
           {initial ? 'Update response' : 'Post response'}
         </Button>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

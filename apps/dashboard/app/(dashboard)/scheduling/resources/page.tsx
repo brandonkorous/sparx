@@ -1,7 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { Users } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { SchedulingResource } from '../_lib/types';
@@ -14,8 +15,8 @@ export default async function SchedulingResourcesPage() {
     .catch(() => [] as SchedulingResource[]);
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Users className="h-5 w-5" />}
           title="Resources"
@@ -29,19 +30,23 @@ export default async function SchedulingResourcesPage() {
         />
 
         {resources.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              title="No resources yet"
-              description="Add staff, tables, or equipment so services have something to book against."
-              action={<NewResourceButton />}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                title="No resources yet"
+                description="Add staff, tables, or equipment so services have something to book against."
+                actions={<NewResourceButton />}
+              />
+            </CardBody>
           </Card>
         ) : (
-          <Card padding="none">
-            <ResourcesList resources={resources} />
+          <Card>
+            <CardBody className="p-0">
+              <ResourcesList resources={resources} />
+            </CardBody>
           </Card>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

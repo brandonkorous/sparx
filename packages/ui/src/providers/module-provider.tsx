@@ -99,6 +99,15 @@ export function ModuleProvider({ module, children, className, style }: ModulePro
       ({
         '--module-active': colors.color,
         '--module-active-content': colors.content,
+        // silicaui module-color bridge. silica generates `.btn-module` /
+        // `.badge-module` / `.bg-module`/… from the registered `module` color
+        // (see the dashboard globals.css @plugin colors list), reading this pair.
+        // Pointing them at the active module's hue lets every migrated
+        // `color="module"` component resolve to the wrapping module through
+        // silica's standard color machinery — the same value the legacy
+        // `--module-active` above carries for un-migrated @sparx/ui components.
+        '--color-module': colors.color,
+        '--color-module-content': colors.content,
         // Theme-aware tint + ink. We emit the hand-picked LIGHT values plus a
         // DARK derivation (module color mixed into the surface / lifted toward
         // the text color); tokens.css selects between them by theme on

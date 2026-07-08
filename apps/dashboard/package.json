@@ -25,6 +25,7 @@
     "@sparx/attribution": "workspace:*",
     "@sparx/auth": "workspace:*",
     "@sparx/automation-schemas": "workspace:*",
+    "@sparx/brand": "workspace:*",
     "@sparx/builder-render": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
@@ -62,6 +63,13 @@
     "socket.io-client": "^4.8.1",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.76.1",
+    "silicaui": "catalog:",
+    "silicaui-charts": "catalog:",
+    "silicaui-dnd": "catalog:",
+    "silicaui-editor": "catalog:",
+    "silicaui-panels": "catalog:",
+    "silicaui-react": "catalog:",
+    "silicaui-table": "catalog:",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -2,8 +2,8 @@
 //
 // sparx.market is a SINGLE public host — sparx's own first-party shopping
 // destination — so there's no per-tenant theme resolution (cf. apps/site). It
-// wears the sparx brand directly via the `sparx` silicaui theme (see
-// sparx-theme.css): Geist for body/mono, Inter for the wordmark (--font-wordmark,
+// wears the sparx brand directly via the `sparx` silicaui theme (the shared
+// @sparx/brand package): Geist for body/mono, Inter for the wordmark (--font-wordmark,
 // which the local <Wordmark> consumes). Every page is framed in the marketplace
 // header + footer chrome. silicaui is the component layer; sparx is a consumer.
 
@@ -18,8 +18,8 @@ import { SiteFooter } from '@/components/site-footer';
 
 // MUST be first: declares the cascade-layer order so the marketplace `mx-*`
 // component classes rank correctly against silicaui's base-layer component
-// styles and Tailwind preflight. See layers.css.
-import './layers.css';
+// styles and Tailwind preflight. See @sparx/brand/layers.css.
+import '@sparx/brand/layers.css';
 import './globals.css';
 
 // Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed as

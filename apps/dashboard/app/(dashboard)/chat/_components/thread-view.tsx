@@ -8,7 +8,7 @@
 // "/" in the composer opens the quick-reply picker.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Badge, Textarea } from '@sparx/ui';
+import { Button, Badge, Textarea } from 'silicaui-react';
 import { Check, UserCheck } from 'lucide-react';
 
 import { useChatSocket } from './chat-socket-provider';
@@ -145,7 +145,7 @@ export function ThreadView({
               color="module"
               variant="soft"
               size="sm"
-              leftIcon={<UserCheck className="h-4 w-4" />}
+              iconStart={<UserCheck className="h-4 w-4" />}
               onClick={() => void assignToMe()}
             >
               Assign to me
@@ -155,7 +155,7 @@ export function ThreadView({
             color={status === 'resolved' ? 'neutral' : 'success'}
             variant="soft"
             size="sm"
-            leftIcon={<Check className="h-4 w-4" />}
+            iconStart={<Check className="h-4 w-4" />}
             onClick={() => void resolveToggle()}
           >
             {status === 'resolved' ? 'Reopen' : 'Resolve'}

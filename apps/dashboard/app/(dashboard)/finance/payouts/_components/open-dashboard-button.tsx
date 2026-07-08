@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { Button, Stack, Text } from '@sparx/ui';
+import { Button } from 'silicaui-react';
 
 import { openSparxPayDashboard } from '../../payments/actions';
 
@@ -29,7 +29,7 @@ export function OpenDashboardButton() {
   }
 
   return (
-    <Stack gap={2}>
+    <div className="flex flex-col gap-2">
       <div>
         <Button
           variant="outline"
@@ -37,16 +37,16 @@ export function OpenDashboardButton() {
           onClick={open}
           disabled={pending}
           loading={pending}
+          iconStart={<ExternalLink className="h-4 w-4" />}
         >
-          <ExternalLink className="mr-1.5 h-4 w-4" />
           Manage on Stripe
         </Button>
       </div>
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <p className="text-danger text-sm" role="alert" aria-live="polite">
           {error}
-        </Text>
+        </p>
       )}
-    </Stack>
+    </div>
   );
 }

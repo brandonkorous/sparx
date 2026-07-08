@@ -1,16 +1,7 @@
 import { Users } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -41,8 +32,8 @@ export default async function DuplicatesPage() {
   const groups = await api.get<DuplicateGroup[]>('/v1/crm/customers/duplicates');
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           title="Find duplicates"
           badge={
@@ -54,7 +45,7 @@ export default async function DuplicatesPage() {
         />
 
         {groups.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Users className="h-5 w-5" />}
               title="No duplicates found"
@@ -62,27 +53,25 @@ export default async function DuplicatesPage() {
             />
           </Card>
         ) : (
-          <Stack gap={4}>
+          <div className="flex flex-col gap-4">
             {groups.map((group, idx) => (
               <Card key={`${group.reason}-${idx}`}>
-                <CardHeader>
-                  <Stack direction="row" align="center" gap={2}>
+                <CardBody>
+                  <div className="flex flex-row items-center gap-2">
                     <CardTitle>
                       {group.reason === 'email' ? 'Shared email' : 'Same last name + company'}
                     </CardTitle>
                     <Badge color="neutral" variant="soft" size="sm">
                       {group.customers.length} records
                     </Badge>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
+                  </div>
                   <MergeCandidatesGroup customers={group.customers} />
-                </CardContent>
+                </CardBody>
               </Card>
             ))}
-          </Stack>
+          </div>
         )}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

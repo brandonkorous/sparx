@@ -1,6 +1,7 @@
 import { DollarSign } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { PageHeader } from '@sparx/ui';
+import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -35,8 +36,8 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="xl">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Pricing tiers"
@@ -52,21 +53,23 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
         <ListToolbar searchable={false} enableViewToggle />
 
         {tiers.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<DollarSign className="h-5 w-5" />}
-              title="No pricing tiers yet"
-              description="Create a pricing tier to apply automatic discounts to wholesale or fleet accounts."
-              action={<TierCreateButton />}
-            />
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<DollarSign className="h-5 w-5" />}
+                title="No pricing tiers yet"
+                description="Create a pricing tier to apply automatic discounts to wholesale or fleet accounts."
+                actions={<TierCreateButton />}
+              />
+            </CardBody>
           </Card>
         ) : (
           <PricingTiersList rows={tiers} view={view} />
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

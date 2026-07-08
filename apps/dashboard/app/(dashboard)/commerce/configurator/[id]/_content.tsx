@@ -2,24 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Settings2 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Heading,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-  statusLabel,
-  statusTone,
-} from '@sparx/ui';
+import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -117,17 +101,17 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
   }
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" align="end" justify="between" wrap gap={4}>
-        <Stack gap={1}>
-          <Stack direction="row" align="center" gap={3} wrap>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row flex-wrap items-center gap-3">
             <Settings2 className="h-5 w-5" />
-            <Heading level={1}>{template.name}</Heading>
+            <h1 className="text-3xl font-semibold">{template.name}</h1>
             <Badge color={statusTone(template.status)} variant="soft" size="sm">
               {statusLabel(template.status)}
             </Badge>
-          </Stack>
-          <Text size="sm" variant="muted">
+          </div>
+          <p className="text-base-content/70 text-sm">
             Product:{' '}
             <Link
               href={`/commerce/products/${template.productId}`}
@@ -136,161 +120,147 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
               {template.productTitle}
             </Link>
             {template.description ? ` · ${template.description}` : ''}
-          </Text>
-        </Stack>
+          </p>
+        </div>
         <TemplateStatusBar templateId={template.id} status={template.status} />
-      </Stack>
+      </div>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Options</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Options</h3>
+            <p className="opacity-70">
               {template.options.length} option{template.options.length === 1 ? '' : 's'} that the
               customer picks from.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Key</TableHead>
-                <TableHead>Label</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Required</TableHead>
-                <TableHead>Choices</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Choices</th>
+              </tr>
+            </thead>
+            <tbody>
               {template.options.map((o) => (
-                <TableRow key={o.key}>
-                  <TableCell>
+                <tr key={o.key}>
+                  <td>
                     <span className="font-mono text-xs">{o.key}</span>
-                  </TableCell>
-                  <TableCell>{o.label}</TableCell>
-                  <TableCell>
+                  </td>
+                  <td>{o.label}</td>
+                  <td>
                     <Badge color="neutral" variant="soft" size="sm">
                       {statusLabel(o.type)}
                     </Badge>
-                  </TableCell>
-                  <TableCell>{o.required ? 'yes' : 'no'}</TableCell>
-                  <TableCell>{o.choices.length}</TableCell>
-                </TableRow>
+                  </td>
+                  <td>{o.required ? 'yes' : 'no'}</td>
+                  <td>{o.choices.length}</td>
+                </tr>
               ))}
-            </TableBody>
+            </tbody>
           </Table>
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Rules</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Rules</h3>
+            <p className="opacity-70">
               {template.rules.length} rule{template.rules.length === 1 ? '' : 's'} that hide/require
               options or adjust price as selections change.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           {template.rules.length === 0 ? (
-            <Text size="sm" variant="muted">
-              No rules — every option is independent.
-            </Text>
+            <p className="text-base-content/70 text-sm">No rules — every option is independent.</p>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Match</TableHead>
-                  <TableHead>Conditions</TableHead>
-                  <TableHead>Actions</TableHead>
-                  <TableHead>Priority</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Match</th>
+                  <th>Conditions</th>
+                  <th>Actions</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
                 {template.rules.map((r, i) => (
-                  <TableRow key={i}>
-                    <TableCell>{r.name}</TableCell>
-                    <TableCell>
+                  <tr key={i}>
+                    <td>{r.name}</td>
+                    <td>
                       <Badge color="neutral" variant="soft" size="sm">
                         {statusLabel(r.match)}
                       </Badge>
-                    </TableCell>
-                    <TableCell>{r.conditions.length}</TableCell>
-                    <TableCell>{r.actions.length}</TableCell>
-                    <TableCell>{r.priority}</TableCell>
-                  </TableRow>
+                    </td>
+                    <td>{r.conditions.length}</td>
+                    <td>{r.actions.length}</td>
+                    <td>{r.priority}</td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Add-ons</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Add-ons</h3>
+            <p className="opacity-70">
               Optional variants that ride along with the resolved selection — e.g. installation
               kits, gift wrap.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           {template.addOns.length === 0 ? (
-            <Text size="sm" variant="muted">
-              No add-ons.
-            </Text>
+            <p className="text-base-content/70 text-sm">No add-ons.</p>
           ) : (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Add-on</TableHead>
-                  <TableHead>Default included</TableHead>
-                  <TableHead>Price override</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th>Add-on</th>
+                  <th>Default included</th>
+                  <th>Price override</th>
+                </tr>
+              </thead>
+              <tbody>
                 {template.addOns.map((a) => (
-                  <TableRow key={a.variantId}>
-                    <TableCell>
-                      <Stack gap={0}>
-                        <Text size="sm">{a.productTitle ?? a.variantId.slice(0, 8)}</Text>
+                  <tr key={a.variantId}>
+                    <td>
+                      <div className="flex flex-col gap-0">
+                        <p className="text-sm">{a.productTitle ?? a.variantId.slice(0, 8)}</p>
                         {a.variantSku && (
-                          <Text size="xs" variant="muted" className="font-mono">
-                            {a.variantSku}
-                          </Text>
+                          <p className="text-base-content/70 font-mono text-xs">{a.variantSku}</p>
                         )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{a.defaultIncluded ? 'yes' : 'no'}</TableCell>
-                    <TableCell>
+                      </div>
+                    </td>
+                    <td>{a.defaultIncluded ? 'yes' : 'no'}</td>
+                    <td>
                       {a.priceOverrideCents != null
                         ? `$${(a.priceOverrideCents / 100).toFixed(2)}`
                         : '—'}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
           )}
-        </CardContent>
+        </CardBody>
       </Card>
 
       <Card>
-        <CardHeader>
-          <Stack gap={1}>
-            <Heading level={3}>Edit definition</Heading>
-            <CardDescription>
+        <CardBody>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-xl font-semibold">Edit definition</h3>
+            <p className="opacity-70">
               JSON editor — paste in an updated template payload. The visual rule editor is on the
               roadmap; until then, this is the source of truth.
-            </CardDescription>
-          </Stack>
-        </CardHeader>
-        <CardContent>
+            </p>
+          </div>
           <TemplateJsonEditor
             templateId={template.id}
             initial={{
@@ -302,8 +272,8 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
               addOns: template.addOns,
             }}
           />
-        </CardContent>
+        </CardBody>
       </Card>
-    </Stack>
+    </div>
   );
 }

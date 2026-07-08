@@ -1,14 +1,12 @@
 'use client';
 
+import { Badge } from 'silicaui-react';
 import {
-  Badge,
   type SelectionCard,
   type SelectionColumn,
   SelectionList,
-  Stack,
   statusLabel,
   statusTone,
-  Text,
 } from '@sparx/ui';
 
 // Client wrapper for the issued gift-cards list. SelectionList takes render
@@ -39,16 +37,12 @@ const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: '
 
 function recipientCell(card: GiftCardSummary) {
   return card.recipientEmail ? (
-    <Stack gap={0}>
-      <Text size="sm">{card.recipientName ?? '—'}</Text>
-      <Text size="xs" variant="muted">
-        {card.recipientEmail}
-      </Text>
-    </Stack>
+    <div className="flex flex-col gap-0">
+      <p className="text-sm">{card.recipientName ?? '—'}</p>
+      <p className="text-base-content/70 text-xs">{card.recipientEmail}</p>
+    </div>
   ) : (
-    <Text size="xs" variant="muted">
-      none
-    </Text>
+    <p className="text-base-content/70 text-xs">none</p>
   );
 }
 
@@ -71,44 +65,36 @@ export function GiftCardsList({ cards, view }: GiftCardsListProps) {
     {
       header: 'Initial',
       cell: (c) => (
-        <Text size="xs" variant="muted">
+        <p className="text-base-content/70 text-xs">
           {moneyFmt.format(c.initialBalanceCents / 100)}
-        </Text>
+        </p>
       ),
     },
     { header: 'Recipient', cell: recipientCell },
     { header: 'Status', cell: statusBadge },
     {
       header: 'Expires',
-      cell: (c) => (
-        <Text size="xs" variant="muted">
-          {expiresLabel(c)}
-        </Text>
-      ),
+      cell: (c) => <p className="text-base-content/70 text-xs">{expiresLabel(c)}</p>,
     },
   ];
 
   const card: SelectionCard<GiftCardSummary> = {
     title: (c) => <span className="truncate font-mono text-sm">{c.code}</span>,
     subtitle: (c) => (
-      <Text size="xs" variant="muted">
+      <p className="text-base-content/70 text-xs">
         {c.recipientEmail ? (c.recipientName ?? c.recipientEmail) : 'No recipient'}
-      </Text>
+      </p>
     ),
     badge: statusBadge,
     body: (c) => (
       <>
-        <Stack direction="row" align="center" justify="between" gap={2}>
-          <Text size="sm" className="tabular-nums">
-            {moneyFmt.format(c.balanceCents / 100)}
-          </Text>
-          <Text size="xs" variant="muted" className="tabular-nums">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <p className="text-sm tabular-nums">{moneyFmt.format(c.balanceCents / 100)}</p>
+          <p className="text-base-content/70 text-xs tabular-nums">
             of {moneyFmt.format(c.initialBalanceCents / 100)}
-          </Text>
-        </Stack>
-        <Text size="xs" variant="muted">
-          Expires {expiresLabel(c)}
-        </Text>
+          </p>
+        </div>
+        <p className="text-base-content/70 text-xs">Expires {expiresLabel(c)}</p>
       </>
     ),
   };

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Input, Label, NativeSelect, Stack } from '@sparx/ui';
+import { Button, Input, Label, NativeSelect } from 'silicaui-react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import type { ResourceKind, ResourceRequirement } from '../_lib/types';
@@ -28,14 +28,14 @@ export function RequirementEditor({ value, onChange }: Props) {
   }
 
   return (
-    <Stack gap={3}>
+    <div className="flex flex-col gap-3">
       <Label>Resource requirements</Label>
       {value.length === 0 ? (
         <p className="text-sm text-[var(--color-muted-foreground)]">
           No explicit roles — a single staff member is assigned automatically.
         </p>
       ) : (
-        <Stack gap={2}>
+        <div className="flex flex-col gap-2">
           {value.map((req, i) => (
             <div key={i} className="grid grid-cols-[1fr_1fr_5rem_auto] items-end gap-2">
               <div>
@@ -80,7 +80,7 @@ export function RequirementEditor({ value, onChange }: Props) {
               </Button>
             </div>
           ))}
-        </Stack>
+        </div>
       )}
       <div>
         <Button type="button" variant="outline" size="sm" onClick={add}>
@@ -88,6 +88,6 @@ export function RequirementEditor({ value, onChange }: Props) {
           Add requirement
         </Button>
       </div>
-    </Stack>
+    </div>
   );
 }

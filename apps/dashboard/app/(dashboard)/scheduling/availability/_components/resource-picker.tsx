@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Label, NativeSelect } from '@sparx/ui';
+import { Label, NativeSelect } from 'silicaui-react';
 
 import type { SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';

@@ -9,18 +9,7 @@
 
 import * as React from 'react';
 import { ExternalLink } from 'lucide-react';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Input, Label, Select } from 'silicaui-react';
 
 import {
   saveGatewayCredentials,
@@ -80,34 +69,26 @@ export function GatewayCredentialForm({
 
   return (
     <form id={`gateway-form-${descriptor.id}`} onSubmit={onSubmit} noValidate>
-      <Stack gap={5}>
+      <div className="flex flex-col gap-5">
         {descriptor.environments ? (
-          <Stack gap={2}>
+          <div className="flex flex-col gap-2">
             <Label htmlFor={`${descriptor.id}-env`}>Environment</Label>
             <Select
+              id={`${descriptor.id}-env`}
               value={environment}
               onValueChange={(v) => setEnvironment(v as 'sandbox' | 'production')}
-            >
-              <SelectTrigger id={`${descriptor.id}-env`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="production">Production</SelectItem>
-                <SelectItem value="sandbox">Sandbox (testing)</SelectItem>
-              </SelectContent>
-            </Select>
-          </Stack>
+              items={{ production: 'Production', sandbox: 'Sandbox (testing)' }}
+            />
+          </div>
         ) : null}
 
         {descriptor.credentialFields.map((f) => {
           const onFile = f.secret && credential?.hasSecrets === true;
           return (
-            <Stack key={f.key} gap={2}>
+            <div key={f.key} className="flex flex-col gap-2">
               <Label htmlFor={`${descriptor.id}-${f.key}`}>
                 {f.label}
-                {f.optional ? (
-                  <span className="text-[var(--color-text-tertiary)]"> (optional)</span>
-                ) : null}
+                {f.optional ? <span className="text-base-content/50"> (optional)</span> : null}
               </Label>
               <Input
                 id={`${descriptor.id}-${f.key}`}
@@ -117,12 +98,8 @@ export function GatewayCredentialForm({
                 placeholder={onFile ? '•••• on file — re-enter to replace' : (f.placeholder ?? '')}
                 onChange={(e) => set(f.key, e.target.value)}
               />
-              {f.help ? (
-                <Text size="xs" variant="muted">
-                  {f.help}
-                </Text>
-              ) : null}
-            </Stack>
+              {f.help ? <p className="text-base-content/70 text-xs">{f.help}</p> : null}
+            </div>
           );
         })}
 
@@ -131,16 +108,16 @@ export function GatewayCredentialForm({
             href={descriptor.docsUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:underline"
+            className="text-base-content/70 inline-flex items-center gap-1 text-sm hover:underline"
           >
             Where do I find these? <ExternalLink className="h-3.5 w-3.5" />
           </a>
         ) : null}
 
         {error ? (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
+          <p className="text-danger text-sm" role="alert" aria-live="polite">
             {error}
-          </Text>
+          </p>
         ) : null}
 
         <Button
@@ -152,7 +129,7 @@ export function GatewayCredentialForm({
         >
           {credential ? 'Save changes' : 'Connect & use'}
         </Button>
-      </Stack>
+      </div>
     </form>
   );
 }

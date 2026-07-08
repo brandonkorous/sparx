@@ -4,21 +4,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Palette, Trash2 } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Code,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-  useConfirm,
-} from '@sparx/ui';
+import { Code, useConfirm } from '@sparx/ui';
+import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
 
 import { deleteSite, renameSite } from '../../actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -108,20 +95,18 @@ export function SiteGeneralTab({
   }
 
   return (
-    <Stack gap={4}>
+    <div className="flex flex-col gap-4">
       {/* Identity — the site's customer-facing name (Property.name). Editable field
           only; no read-only heading restating it (docs/86 identity-once). */}
       <form onSubmit={onSubmit} noValidate>
-        <Card variant="default">
-          <CardHeader>
-            <Heading level={3}>Site name &amp; address</Heading>
-            <CardDescription>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Site name &amp; address</h3>
+            <p className="opacity-70">
               The name shows to customers in this site&apos;s title bar, header, and emails.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={4}>
-              <Stack gap={2}>
+            </p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="site-name">Site name</Label>
                 <Input
                   id="site-name"
@@ -133,85 +118,74 @@ export function SiteGeneralTab({
                   required
                   maxLength={255}
                 />
-              </Stack>
+              </div>
 
-              <Stack gap={2}>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="site-handle">URL handle</Label>
                 <Input id="site-handle" value={slug} readOnly disabled />
-                <Text size="xs" variant="muted">
+                <p className="text-base-content/70 text-xs">
                   Anchors this site&apos;s built-in address{' '}
                   <Code>
                     {slug}.{zoneSuffix}
                   </Code>
                   . Connect your own domain from the Domains tab.
-                </Text>
-              </Stack>
+                </p>
+              </div>
 
               {error && (
-                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                <p className="text-danger text-sm" role="alert" aria-live="polite">
                   {error}
-                </Text>
+                </p>
               )}
 
-              <Stack direction="row" justify="end" align="center" gap={2}>
+              <div className="flex flex-row items-center justify-end gap-2">
                 {savedAt !== null && !dirty && (
-                  <Stack
-                    direction="row"
-                    align="center"
-                    gap={1}
-                    className="text-[var(--color-success-text)]"
-                  >
+                  <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
                     <Check className="h-4 w-4" />
-                    <Text size="sm" variant="success">
-                      Saved
-                    </Text>
-                  </Stack>
+                    <p className="text-success text-sm">Saved</p>
+                  </div>
                 )}
                 <Button type="submit" color="module" disabled={pending || !dirty} loading={pending}>
                   Save changes
                 </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
+              </div>
+            </div>
+          </CardBody>
         </Card>
       </form>
 
       {/* Where the LOOK is set — a read-only pointer, not design controls. */}
-      <Card variant="default">
-        <CardContent>
-          <Stack direction="row" align="center" gap={3}>
+      <Card>
+        <CardBody>
+          <div className="flex flex-row items-center gap-3">
             <span
               aria-hidden
               className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--module-active-tint)] text-[var(--module-active)]"
             >
               <Palette className="h-4 w-4" />
             </span>
-            <Stack gap={0} className="min-w-0 flex-1">
-              <Text weight="medium" size="sm">
-                Look &amp; branding
-              </Text>
-              <Text size="sm" variant="muted">
+            <div className="flex min-w-0 flex-1 flex-col gap-0">
+              <p className="text-sm font-medium">Look &amp; branding</p>
+              <p className="text-base-content/70 text-sm">
                 Colours, fonts, and theme for this site are set on the Brand page.
-              </Text>
-            </Stack>
+              </p>
+            </div>
             <Button
-              asChild
               variant="outline"
               size="sm"
-              rightIcon={<ArrowRight className="h-4 w-4" />}
+              iconEnd={<ArrowRight className="h-4 w-4" />}
+              render={<Link href="/builder/brand" />}
             >
-              <Link href="/builder/brand">Open Brand</Link>
+              Open Brand
             </Button>
-          </Stack>
-        </CardContent>
+          </div>
+        </CardBody>
       </Card>
 
       {/* At a glance */}
-      <Card variant="default">
-        <CardHeader>
-          <Heading level={3}>At a glance</Heading>
-        </CardHeader>
-        <CardContent>
+      <Card>
+        <CardBody>
+          <h3 className="text-xl font-semibold">At a glance</h3>
           <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-3 text-sm">
             <dt className="text-[var(--color-text-muted)]">Status</dt>
             <dd>
@@ -228,32 +202,30 @@ export function SiteGeneralTab({
             <dt className="text-[var(--color-text-muted)]">Created</dt>
             <dd>{formatDate(createdAt)}</dd>
           </dl>
-        </CardContent>
+        </CardBody>
       </Card>
 
       {/* Danger zone — the primary site can't be deleted (api-rest refuses it). */}
       {!isPrimary && (
-        <Card variant="default" className="border-[var(--color-danger-border)]">
-          <CardHeader>
-            <Heading level={3}>Delete this site</Heading>
-            <CardDescription>
+        <Card className="border-[var(--color-danger-border)]">
+          <CardBody>
+            <h3 className="text-xl font-semibold">Delete this site</h3>
+            <p className="opacity-70">
               Permanently removes this site — its pages, layout, and domains. Your products,
               content, and orders are untouched.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
             <Button
               variant="ghost"
               color="danger"
               disabled={pending}
               onClick={() => void onDelete()}
-              leftIcon={<Trash2 className="h-4 w-4" />}
+              iconStart={<Trash2 className="h-4 w-4" />}
             >
               Delete “{baseline}”
             </Button>
-          </CardContent>
+          </CardBody>
         </Card>
       )}
-    </Stack>
+    </div>
   );
 }

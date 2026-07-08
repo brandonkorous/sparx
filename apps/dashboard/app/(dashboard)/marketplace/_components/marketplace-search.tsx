@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { Input } from '@sparx/ui';
+import { Input } from 'silicaui-react';
 
 export function MarketplaceSearch() {
   const router = useRouter();

@@ -1,6 +1,7 @@
 import { Truck, Plus } from 'lucide-react';
 
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, EmptyState } from 'silicaui-react';
+import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -39,8 +40,8 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Suppliers"
@@ -66,12 +67,12 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
         <ListToolbar enableViewToggle searchable={false} />
 
         {suppliers.length === 0 ? (
-          <Card padding="none">
+          <Card>
             <EmptyState
               icon={<Truck className="h-5 w-5" />}
               title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
               description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
-              action={
+              actions={
                 <EntityCreateButton
                   entityType="supplier"
                   newHref="/inventory/suppliers/new"
@@ -88,8 +89,8 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
         )}
 
         <ListPager total={total} />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }
 

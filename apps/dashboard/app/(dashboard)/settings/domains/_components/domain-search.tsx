@@ -4,19 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Clock, Plus, Search } from 'lucide-react';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Skeleton,
-  Spinner,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, CardBody, CardTitle, Input, Loading, Skeleton } from 'silicaui-react';
 
 import type { Property } from '@/lib/sites';
 import { searchDomains, type DomainSuggestion } from '../actions';
@@ -40,9 +28,7 @@ function SearchResults({
 }) {
   if (suggestions.length === 0) {
     return (
-      <Text size="sm" variant="muted" className="py-2">
-        No suggestions found for that query.
-      </Text>
+      <p className="text-base-content/70 py-2 text-sm">No suggestions found for that query.</p>
     );
   }
   return (
@@ -52,14 +38,10 @@ function SearchResults({
           key={s.domain}
           className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] px-4 py-3"
         >
-          <Stack gap={1}>
-            <Text weight="medium" size="sm">
-              {s.domain}
-            </Text>
-            <Text size="sm" variant="muted">
-              {formatPrice(s.displayPrice)}/yr
-            </Text>
-          </Stack>
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium">{s.domain}</p>
+            <p className="text-base-content/70 text-sm">{formatPrice(s.displayPrice)}/yr</p>
+          </div>
           {!s.available ? (
             <Badge color="neutral" variant="soft">
               Taken
@@ -69,7 +51,7 @@ function SearchResults({
               size="sm"
               color="primary"
               onClick={() => onSelect(s)}
-              leftIcon={<Plus className="size-3.5" />}
+              iconStart={<Plus className="size-3.5" />}
             >
               Buy
             </Button>
@@ -129,15 +111,13 @@ export function DomainSearch({
 
   return (
     <Card>
-      <CardHeader>
+      <CardBody>
         <CardTitle>Find a new domain</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Stack gap={4}>
+        <div className="flex flex-col gap-4">
           {!purchaseEnabled && (
             <div className="flex items-start gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
               <Clock className="mt-0.5 size-4 shrink-0 text-[var(--color-text-secondary)]" />
-              <Text size="sm" variant="muted">
+              <p className="text-base-content/70 text-sm">
                 <strong className="font-medium text-[var(--color-text)]">
                   Checkout opens soon.
                 </strong>{' '}
@@ -147,7 +127,7 @@ export function DomainSearch({
                   Sites
                 </Link>
                 .
-              </Text>
+              </p>
             </div>
           )}
 
@@ -161,14 +141,10 @@ export function DomainSearch({
                 className="pl-9"
               />
             </div>
-            {searching && <Spinner className="mt-2 size-5 shrink-0" />}
+            {searching && <Loading className="mt-2 size-5 shrink-0" />}
           </div>
 
-          {searchError && (
-            <Text size="sm" variant="danger">
-              {searchError}
-            </Text>
-          )}
+          {searchError && <p className="text-danger text-sm">{searchError}</p>}
 
           {searching && (
             <div className="grid gap-2 sm:grid-cols-2">
@@ -187,16 +163,16 @@ export function DomainSearch({
           )}
 
           {!query && (
-            <Text size="sm" variant="muted">
+            <p className="text-base-content/70 text-sm">
               Already have a domain? Connect it from{' '}
               <Link href="/settings/sites" className="underline">
                 Settings → Sites
               </Link>
               .
-            </Text>
+            </p>
           )}
-        </Stack>
-      </CardContent>
+        </div>
+      </CardBody>
 
       <PurchaseDialog
         open={selected !== null}
