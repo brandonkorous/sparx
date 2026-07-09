@@ -50,8 +50,8 @@ interface PickedVariant {
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
 // Non-negative integer quantity (traceability metadata, not the stock ledger).
-const quantityRule = (value: unknown): string | null => {
-  const s = String(value ?? '').trim();
+const quantityRule = (value: string): string | null => {
+  const s = value.trim();
   if (s === '') return null;
   const n = Number(s);
   if (!Number.isFinite(n)) return 'Enter a quantity.';

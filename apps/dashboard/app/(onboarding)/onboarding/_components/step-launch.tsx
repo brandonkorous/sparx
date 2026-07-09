@@ -237,6 +237,7 @@ export function StepLaunch({
               target="_blank"
               rel="noreferrer"
               aria-disabled={!previewHref}
+              aria-label="Preview in a new tab"
             />
           }
         >
@@ -366,7 +367,14 @@ function LaunchSuccess({
           <Button
             color="primary"
             variant="link"
-            render={<a href={liveUrl} target="_blank" rel="noreferrer" />}
+            render={
+              <a
+                href={liveUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${slug}.${SITE_ZONE}`}
+              />
+            }
           >
             {slug}.{SITE_ZONE}
             <ExternalLink className="ml-1.5 h-3.5 w-3.5" />

@@ -97,11 +97,21 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
             CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <Button color={tool.module} variant="solid" size="md" render={<a href="/platform" />}>
+            <Button
+              color={tool.module}
+              variant="solid"
+              size="md"
+              render={<a href="/platform" aria-label="Explore the platform" />}
+            >
               Explore the platform
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button color="neutral" variant="outline" size="md" render={<a href="/pricing" />}>
+            <Button
+              color="neutral"
+              variant="outline"
+              size="md"
+              render={<a href="/pricing" aria-label="See pricing" />}
+            >
               See pricing
             </Button>
           </div>

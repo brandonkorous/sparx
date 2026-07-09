@@ -72,7 +72,14 @@ export function TemplateRowActions({ id, name, isDefault, published }: Props) {
         size="sm"
         iconStart={<Eye className="h-3.5 w-3.5" />}
         disabled={pending}
-        render={<a href={`/invoicing/templates/${id}/preview`} target="_blank" rel="noreferrer" />}
+        render={
+          <a
+            href={`/invoicing/templates/${id}/preview`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Preview"
+          />
+        }
       >
         Preview
       </Button>

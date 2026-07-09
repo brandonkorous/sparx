@@ -186,8 +186,8 @@ function centsToDisplay(cents: number | undefined): string {
 
 // Field rules for the numeric inputs (@sparx/forms has no number builder yet).
 // Required money: reject empty, NaN, and negative.
-function requiredMoneyRule(val: unknown): string | null {
-  const s = String(val ?? '').trim();
+function requiredMoneyRule(val: string): string | null {
+  const s = val.trim();
   if (s === '') return 'Enter a price.';
   const n = Number(s);
   if (!Number.isFinite(n)) return 'Enter a valid number.';
@@ -195,8 +195,8 @@ function requiredMoneyRule(val: unknown): string | null {
   return null;
 }
 // Optional numeric: empty is allowed; otherwise reject NaN and negative.
-function optionalNonNegativeRule(val: unknown): string | null {
-  const s = String(val ?? '').trim();
+function optionalNonNegativeRule(val: string): string | null {
+  const s = val.trim();
   if (s === '') return null;
   const n = Number(s);
   if (!Number.isFinite(n)) return 'Enter a valid number.';

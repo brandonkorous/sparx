@@ -56,14 +56,18 @@ export function FinalCta() {
               alignItems: 'flex-start',
             }}
           >
-            <Button size="xl" variant="solid" render={<a href={signupHref('final')} />}>
+            <Button
+              size="xl"
+              variant="solid"
+              render={<a href={signupHref('final')} aria-label="Start your site" />}
+            >
               Start your site →
             </Button>
             <Button
               size="xl"
               variant="outline"
               style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-              render={<a href={SALES_HREF} />}
+              render={<a href={SALES_HREF} aria-label="Book a 20-min call" />}
             >
               Book a 20-min call
             </Button>

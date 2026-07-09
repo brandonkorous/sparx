@@ -172,7 +172,12 @@ export async function DocumentEditorContent({ id }: Props) {
             color="module"
             iconStart={<Printer className="h-4 w-4" />}
             render={
-              <a href={`/invoicing/documents/${doc.id}/print`} target="_blank" rel="noreferrer" />
+              <a
+                href={`/invoicing/documents/${doc.id}/print`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Print"
+              />
             }
           >
             Print
@@ -352,6 +357,7 @@ export async function DocumentEditorContent({ id }: Props) {
                         href={`/invoicing/documents/${doc.id}/print?snapshotId=${s.id}`}
                         target="_blank"
                         rel="noreferrer"
+                        aria-label="Print"
                       />
                     }
                   >

@@ -148,8 +148,8 @@ function toIsoDate(value: string): string | undefined {
 }
 
 // A money/charge field is optional but, when present, must be a non-negative number.
-function optionalNonNegative(value: unknown): string | null {
-  const s = String(value ?? '').trim();
+function optionalNonNegative(value: string): string | null {
+  const s = value.trim();
   if (s === '') return null;
   const n = Number(s);
   if (!Number.isFinite(n)) return 'Enter a valid amount.';

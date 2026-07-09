@@ -91,8 +91,11 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
               change.
             </p>
             <div className="flex flex-col gap-1">
-              <label className="text-sm">Reason for denial (shown to customer)</label>
+              <label className="text-sm" htmlFor="deny-return-reason">
+                Reason for denial (shown to customer)
+              </label>
               <Textarea
+                id="deny-return-reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Explain why the return is being denied…"

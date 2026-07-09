@@ -52,6 +52,7 @@ export default function WebhooksPage() {
                       href="https://docs.sparx.works/api/webhooks"
                       target="_blank"
                       rel="noreferrer"
+                      aria-label="Read the webhook API docs"
                     />
                   }
                 >

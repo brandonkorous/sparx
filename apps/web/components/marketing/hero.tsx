@@ -111,7 +111,7 @@ export function Hero() {
                 <Button
                   size="lg"
                   style={{ backgroundColor: ON, color: ON_CTA_TEXT }}
-                  render={<a href={signupHref('hero')} />}
+                  render={<a href={signupHref('hero')} aria-label="Launch your site" />}
                 >
                   Launch your site
                 </Button>
@@ -119,7 +119,7 @@ export function Hero() {
                   size="lg"
                   variant="outline"
                   style={{ backgroundColor: 'transparent', color: ON, borderColor: ON_RING }}
-                  render={<a href={PLATFORM_HREF} />}
+                  render={<a href={PLATFORM_HREF} aria-label="See the platform" />}
                 >
                   See the platform
                 </Button>

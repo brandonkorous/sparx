@@ -38,7 +38,12 @@ export function EnterprisePlanCard({
           <Button
             color="module"
             variant="solid"
-            render={<a href={`mailto:${ENTERPRISE_SUPPORT_EMAIL}`} />}
+            render={
+              <a
+                href={`mailto:${ENTERPRISE_SUPPORT_EMAIL}`}
+                aria-label="Contact your account team"
+              />
+            }
           >
             Contact your account team
           </Button>

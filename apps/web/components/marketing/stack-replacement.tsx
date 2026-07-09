@@ -219,10 +219,19 @@ function LedgerActions() {
       style={{ display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'flex-start' }}
     >
       <div className="mkt-cluster" style={{ gap: '12px' }}>
-        <Button size="lg" color="primary" variant="solid" render={<a href={SIGNUP} />}>
+        <Button
+          size="lg"
+          color="primary"
+          variant="solid"
+          render={<a href={SIGNUP} aria-label="Start my site free" />}
+        >
           Start my site free →
         </Button>
-        <Button size="lg" variant="outline" render={<a href="/pricing" />}>
+        <Button
+          size="lg"
+          variant="outline"
+          render={<a href="/pricing" aria-label="See the full price list" />}
+        >
           See the full price list
         </Button>
       </div>

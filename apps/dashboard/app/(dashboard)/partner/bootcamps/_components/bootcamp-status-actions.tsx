@@ -60,7 +60,12 @@ export function BootcampStatusActions({
       {status === 'published' && (
         <Button
           render={
-            <a href={`https://sparx.works/bootcamp/${slug}`} target="_blank" rel="noreferrer" />
+            <a
+              href={`https://sparx.works/bootcamp/${slug}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Preview"
+            />
           }
           size="sm"
           variant="ghost"

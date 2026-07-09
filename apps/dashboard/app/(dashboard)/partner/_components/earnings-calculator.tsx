@@ -103,7 +103,7 @@ export function EarningsCalculator() {
                     id={`calc-tier-${t}`}
                     value={t}
                     checked={tier === t}
-                    onChange={() => setTier(t as PartnerTier)}
+                    onChange={() => setTier(t)}
                     color="module"
                   />
                   <Label htmlFor={`calc-tier-${t}`}>{TIERS[t].label}</Label>

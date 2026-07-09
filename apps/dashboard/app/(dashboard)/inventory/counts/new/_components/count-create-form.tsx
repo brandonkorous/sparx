@@ -50,8 +50,8 @@ interface PickedVariant {
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
 // Optional non-negative approval threshold in dollars.
-const thresholdRule = (value: unknown): string | null => {
-  const s = String(value ?? '').trim();
+const thresholdRule = (value: string): string | null => {
+  const s = value.trim();
   if (s === '') return null;
   const n = Number(s);
   if (!Number.isFinite(n)) return 'Enter an amount.';

@@ -136,8 +136,11 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
               Rejected reviews are hidden from the storefront and the customer.
             </p>
             <div className="flex flex-col gap-1">
-              <label className="text-sm">Moderation note (internal)</label>
+              <label className="text-sm" htmlFor="reject-review-note">
+                Moderation note (internal)
+              </label>
               <Textarea
+                id="reject-review-note"
                 value={rejectNote}
                 onChange={(e) => setRejectNote(e.target.value)}
                 placeholder="Reason for rejecting this review…"

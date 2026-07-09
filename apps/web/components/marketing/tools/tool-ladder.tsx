@@ -61,7 +61,7 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
           variant="solid"
           size="lg"
           style={{ flexShrink: 0 }}
-          render={<a href={href} />}
+          render={<a href={href} aria-label={tool.ladder.cta} />}
         >
           {tool.ladder.cta}
           <ArrowRight className="h-4 w-4" />

@@ -47,7 +47,11 @@ export function WhoeverYouAre() {
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" variant="solid" render={<a href={signupHref('whoever')} />}>
+              <Button
+                size="lg"
+                variant="solid"
+                render={<a href={signupHref('whoever')} aria-label="Start free" />}
+              >
                 Start free →
               </Button>
               <Button
@@ -58,7 +62,7 @@ export function WhoeverYouAre() {
                   color: '#ffffff',
                   borderColor: 'rgba(255, 255, 255, 0.4)',
                 }}
-                render={<a href="#modules" />}
+                render={<a href="#modules" aria-label="Explore the modules" />}
               >
                 Explore the modules
               </Button>

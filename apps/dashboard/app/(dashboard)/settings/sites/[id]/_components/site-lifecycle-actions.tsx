@@ -49,7 +49,14 @@ export function SiteLifecycleActions({
             variant="ghost"
             size="sm"
             aria-label="View live site"
-            render={<a href={`https://${host}`} target="_blank" rel="noreferrer" />}
+            render={
+              <a
+                href={`https://${host}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="View live site"
+              />
+            }
           >
             <ExternalLink className="h-4 w-4" />
           </Button>

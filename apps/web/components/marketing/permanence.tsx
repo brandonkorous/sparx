@@ -75,14 +75,18 @@ export function Permanence() {
                 alignItems: 'flex-start',
               }}
             >
-              <Button size="xl" variant="solid" render={<a href={signupHref('permanence')} />}>
+              <Button
+                size="xl"
+                variant="solid"
+                render={<a href={signupHref('permanence')} aria-label="Launch your site" />}
+              >
                 Launch your site →
               </Button>
               <Button
                 size="xl"
                 variant="outline"
                 style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-                render={<a href={PLATFORM_HREF} />}
+                render={<a href={PLATFORM_HREF} aria-label="See how it lasts" />}
               >
                 See how it lasts
               </Button>

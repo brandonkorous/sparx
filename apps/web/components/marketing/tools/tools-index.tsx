@@ -87,7 +87,7 @@ export function ToolsIndex() {
               variant="solid"
               size="lg"
               style={{ flexShrink: 0 }}
-              render={<a href="/platform" />}
+              render={<a href="/platform" aria-label="Explore the platform" />}
             >
               Explore the platform
               <ArrowRight className="h-4 w-4" />

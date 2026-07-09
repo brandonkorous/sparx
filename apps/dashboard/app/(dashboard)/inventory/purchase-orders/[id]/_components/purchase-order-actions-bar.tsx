@@ -59,6 +59,7 @@ export function PurchaseOrderActionsBar({ id, status }: { id: string; status: st
               href={`/inventory/purchase-orders/${id}/document`}
               target="_blank"
               rel="noreferrer"
+              aria-label="Print / PDF"
             />
           }
         >

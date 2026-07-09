@@ -145,6 +145,7 @@ function ReferredByCard({ partner }: { partner: ReferredByPartner }) {
                     href={`${MARKETING_ORIGIN}/partners/${partner.partnerId}`}
                     target="_blank"
                     rel="noreferrer"
+                    aria-label="View profile"
                   />
                 }
                 iconEnd={<ArrowUpRight className="h-3.5 w-3.5" />}
