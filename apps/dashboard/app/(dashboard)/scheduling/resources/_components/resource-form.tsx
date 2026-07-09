@@ -21,6 +21,8 @@ import type { ResourceKind, SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
 import { createResourceAction, updateResourceAction } from '../../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Resource create/edit on the standard form surface (docs/86 F layout). ONE
 // component drives page / overlay / modal — see service-form.tsx for the shape.
@@ -315,6 +317,12 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Resources"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="resource" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

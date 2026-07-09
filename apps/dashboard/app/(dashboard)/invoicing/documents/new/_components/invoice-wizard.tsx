@@ -60,6 +60,8 @@ import {
 } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 import {
   freshMarkupState,
   isMarkupMode,
@@ -447,6 +449,12 @@ function InvoiceWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New document"
+      backLabel="Documents"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="billing-document" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

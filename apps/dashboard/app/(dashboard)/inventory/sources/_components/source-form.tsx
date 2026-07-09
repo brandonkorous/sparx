@@ -27,6 +27,8 @@ import {
   type ApiConfigState,
 } from './source-api-fields';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
 // Inventory-source connect/edit on the standard form surface (docs/86 F layout).
 // ONE component drives page / overlay / modal — see scheduling/service-form.tsx
@@ -319,6 +321,12 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Sources"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="inventory-source" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

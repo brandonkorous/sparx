@@ -35,6 +35,14 @@ model BuilderPage {
   // Last published snapshot; null until first publish. No storefront consumer
   // yet (docs/41 §1) — publishing just snapshots draft → published.
   publishedTree Json?     @map("published_tree")
+  // The silica-native page body (`@wizeworks/silicaui-html` `Node`) — the
+  // engine-adoption store (docs/118). Runs in PARALLEL with the sparx
+  // `draft_tree`/`published_tree` during the cutover: the silica `<Builder>`
+  // reads/writes these, the legacy storefront keeps reading the sparx columns,
+  // and once `apps/site` renders silica the sparx columns are dropped. Nullable
+  // until a page is materialized silica-native (lazy re-seed on first load).
+  silicaDraftTree     Json?     @map("silica_draft_tree")
+  silicaPublishedTree Json?     @map("silica_published_tree")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
   // Catalog ordering.
   position      Int       @default(0)
@@ -137,6 +145,14 @@ model BuilderLayout {
   // Last published snapshot; null until first publish. The storefront renders
   // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
   publishedTree Json?     @map("published_tree")
+  // The silica-native FRAME root (`@wizeworks/silicaui-html` `Node` with the one
+  // `Outlet`) — the engine-adoption store (docs/118), parallel-run with the
+  // sparx columns. `silicaSymbols` holds the site-global saved-component masters
+  // (silica `Site.symbols`, a `Record<id, SymbolDef>`) — they live with the
+  // frame record because they're shared across every page + the frame.
+  silicaDraftTree     Json?     @map("silica_draft_tree")
+  silicaPublishedTree Json?     @map("silica_published_tree")
+  silicaSymbols       Json?     @map("silica_symbols")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
   // The live layout — exactly one per PROPERTY. "At most one active" is enforced
   // in the DB by a partial unique index on (tenant_id, property_id) WHERE is_active

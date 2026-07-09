@@ -41,6 +41,8 @@ import { Plus, Trash2 } from 'lucide-react';
 
 import { createB2bAccountAction } from '../../../crm/b2b-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Single-page form = one step, so SurfaceFrame's MiniProgress auto-hides (its
 // `steps.length > 1` gate) and the toolbar is Cancel + Create (no Back/Continue).
@@ -456,6 +458,12 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New B2B account"
+      backLabel="Accounts"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="b2b-account" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

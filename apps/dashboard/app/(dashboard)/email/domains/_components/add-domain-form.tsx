@@ -16,6 +16,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createDomainAction } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
 // New sending-domain form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -99,6 +101,12 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="Add a sending domain"
+        backLabel="Sending domains"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="sending-domain" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

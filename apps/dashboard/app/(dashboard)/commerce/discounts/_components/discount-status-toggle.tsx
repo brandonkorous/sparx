@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@wizeworks/silicaui-react';
+import { useConfirm } from '@sparx/ui';
 
 import {
   activateDiscountAction,
@@ -19,6 +20,7 @@ export function DiscountStatusToggle({
   status: string;
 }) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
@@ -48,15 +50,25 @@ export function DiscountStatusToggle({
   }
 
   function archive() {
-    setError(null);
-    startTransition(async () => {
-      const result = await archiveDiscountAction(discountId);
-      if (!result.ok) {
-        setError(result.error.message);
-        return;
-      }
-      router.refresh();
-    });
+    void (async () => {
+      const ok = await confirm({
+        title: 'Archive this discount?',
+        description:
+          'It’ll stop applying at checkout immediately. Archiving can’t be undone from here — you’d need to create a new discount to bring the offer back.',
+        confirmLabel: 'Archive',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      setError(null);
+      startTransition(async () => {
+        const result = await archiveDiscountAction(discountId);
+        if (!result.ok) {
+          setError(result.error.message);
+          return;
+        }
+        router.refresh();
+      });
+    })();
   }
 
   // Acknowledge to satisfy lint; the draft transition is exposed as an

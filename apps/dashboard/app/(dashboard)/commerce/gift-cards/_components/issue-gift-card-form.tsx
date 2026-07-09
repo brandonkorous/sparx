@@ -16,6 +16,8 @@ import { useFieldValidation } from '@sparx/forms';
 
 import { issueGiftCardAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Issue-gift-card form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -146,6 +148,12 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="Issue a gift card"
+        backLabel="Gift cards"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="gift-card" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

@@ -17,6 +17,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createServiceType, updateServiceType } from '../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Service-type create/edit on the standard form surface (docs/86 F layout). ONE
 // component drives page / overlay / modal — see scheduling/service-form.tsx for
@@ -287,6 +289,12 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Service types"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="b2b-service-type" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

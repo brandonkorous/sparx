@@ -17,6 +17,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { grantAccountCreditAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Grant-account-credit form, on the standard create surface (docs/86 F layout).
 // The SAME component renders in both presentations, picked by the host:
@@ -134,6 +136,12 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="Grant account credit"
+        backLabel="Account credit"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="account-credit" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

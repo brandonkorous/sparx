@@ -52,6 +52,8 @@ import { createTaskAction, recordActivityAction } from '../../activity-task-acti
 import { createDealAction } from '../../deal-actions';
 import { createQuoteAction } from '../../quote-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 type ActivityKind = 'note' | 'call' | 'meeting';
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
@@ -531,6 +533,12 @@ function CustomerWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New customer"
+      backLabel="Customers"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="customer" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

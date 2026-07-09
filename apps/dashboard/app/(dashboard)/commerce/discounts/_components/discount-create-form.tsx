@@ -21,6 +21,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createDiscountAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // New-discount form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -182,6 +184,12 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New discount"
+        backLabel="Discounts"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="discount" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

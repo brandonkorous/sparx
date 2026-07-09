@@ -19,6 +19,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createShippingZoneAction } from '../../../../shipping-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../../_components/detail-panel';
 
 // New shipping-zone form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -149,6 +151,12 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New shipping zone"
+        backLabel="Shipping zones"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="shipping-zone" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

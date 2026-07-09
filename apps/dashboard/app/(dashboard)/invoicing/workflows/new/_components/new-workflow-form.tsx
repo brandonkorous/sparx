@@ -30,6 +30,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createWorkflowAction } from '../../../workflow-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
 interface NewWorkflowFormProps {
   surface: 'page' | 'overlay';
@@ -115,6 +117,12 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New workflow"
+        backLabel="Workflows"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="workflow" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

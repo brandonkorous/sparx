@@ -88,6 +88,7 @@ export function NewEntryForm({ surface, typeKey, typeName, urlPattern, schema }:
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title={`New ${typeName.toLowerCase()}`}
+        backLabel={typeName}
         steps={STEPS}
         current={0}
         onCancel={cancel}

@@ -27,6 +27,20 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
     });
   }
 
+  function onArchive() {
+    void (async () => {
+      const ok = await confirm({
+        title: 'Archive this template?',
+        description:
+          'It’ll stop applying to new cart items. Existing carts and orders that already reference it are unaffected.',
+        confirmLabel: 'Archive',
+        tone: 'warning',
+      });
+      if (!ok) return;
+      updateStatus('archived');
+    })();
+  }
+
   function onDelete() {
     void (async () => {
       const ok = await confirm({
@@ -66,7 +80,7 @@ export function TemplateStatusBar({ templateId, status }: { templateId: string; 
         </Button>
       )}
       {status !== 'archived' && (
-        <Button variant="ghost" disabled={pending} onClick={() => updateStatus('archived')}>
+        <Button variant="ghost" disabled={pending} onClick={onArchive}>
           Archive
         </Button>
       )}

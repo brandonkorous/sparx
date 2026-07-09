@@ -24,6 +24,8 @@ import { createLotBatchAction } from '../../../_lib/lot-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { HAZMAT_OPTIONS } from '../../_components/types';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
 interface WarehouseOption {
   id: string;
@@ -176,6 +178,12 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New lot"
+        backLabel="Lots"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="lot" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

@@ -31,6 +31,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createPipelineAction } from '../../../pipeline-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 interface NewPipelineFormProps {
   surface: 'page' | 'overlay';
@@ -118,6 +120,12 @@ export function NewPipelineForm({ surface }: NewPipelineFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New pipeline"
+        backLabel="Pipelines"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="pipeline" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

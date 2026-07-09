@@ -44,6 +44,8 @@ import {
 import { createQuoteAction } from '../../../quote-actions';
 import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -275,6 +277,12 @@ function QuoteWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New quote"
+      backLabel="Quotes"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="quote" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

@@ -43,6 +43,8 @@ import { createEntry, getTypeSchema } from '../../types/actions';
 import { createAuthor } from '../../authors/actions';
 import { ContentEntryForm } from '../../_components/content-entry-form';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -658,6 +660,12 @@ function ContentEntryWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New content"
+      backLabel="Content"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="content-entry" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

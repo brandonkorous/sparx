@@ -25,6 +25,8 @@ import { useFieldValidation } from '@sparx/forms';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 export interface BundleProductOption {
   id: string;
@@ -499,6 +501,12 @@ export function BundleEditor({
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New bundle"
+        backLabel="Bundles"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="bundle" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={CREATE_STEPS}
         current={0}
         onCancel={cancel}

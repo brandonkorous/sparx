@@ -28,6 +28,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTaskAction } from '../../../activity-task-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 interface NewTaskFormProps {
   surface: 'page' | 'overlay';
@@ -120,6 +122,12 @@ export function NewTaskForm({
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New task"
+        backLabel="Tasks"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="task" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

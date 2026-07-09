@@ -31,6 +31,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createDealAction } from '../../../deal-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 // Optional non-negative number: blank is allowed (defaults to 0), otherwise must
 // be a finite number ≥ 0. `@sparx/forms` has no numeric-range builder yet.
@@ -213,6 +215,12 @@ export function NewDealForm({
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New deal"
+        backLabel="Deals"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="deal" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

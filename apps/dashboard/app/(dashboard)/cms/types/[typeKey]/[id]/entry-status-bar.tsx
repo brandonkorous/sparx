@@ -15,7 +15,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { statusLabel, statusTone } from '@sparx/ui';
+import { statusLabel, statusTone, useConfirm } from '@sparx/ui';
 import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { CalendarClock, History } from 'lucide-react';
 import { PreviewButton } from '../../../[id]/preview-button';
@@ -54,6 +54,26 @@ export function EntryStatusBar({
   onSchedule,
 }: EntryStatusBarProps) {
   const published = status === 'published';
+  const confirm = useConfirm();
+
+  // Publish is a forward action (draft → live); Unpublish takes a live entry
+  // off the site immediately, so — unlike Publish — it's gated.
+  function handleTogglePublish() {
+    if (!published) {
+      onTogglePublish();
+      return;
+    }
+    void (async () => {
+      const ok = await confirm({
+        title: 'Unpublish this entry?',
+        description:
+          'It’ll come down from your site immediately. You can publish it again any time.',
+        confirmLabel: 'Unpublish',
+        tone: 'warning',
+      });
+      if (ok) onTogglePublish();
+    })();
+  }
 
   const statusBadge = (
     <Badge color={statusTone(status)} variant="soft">
@@ -106,7 +126,7 @@ export function EntryStatusBar({
         color={published ? 'neutral' : 'module'}
         variant={published ? 'outline' : 'solid'}
         size="sm"
-        onClick={onTogglePublish}
+        onClick={handleTogglePublish}
         disabled={pending}
       >
         {published ? 'Unpublish' : 'Publish'}

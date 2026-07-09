@@ -21,6 +21,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // New-category form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -150,6 +152,12 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New category"
+        backLabel="Categories"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="category" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

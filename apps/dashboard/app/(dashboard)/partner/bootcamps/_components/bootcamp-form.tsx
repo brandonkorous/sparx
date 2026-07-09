@@ -186,6 +186,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
       <SurfaceFrame
         variant="embedded"
         title={mode === 'create' ? 'New bootcamp' : (bootcamp?.title ?? 'Bootcamp')}
+        backLabel="Bootcamps"
         headerActions={
           mode === 'edit' && bootcamp ? (
             <BootcampStatusActions id={bootcamp.id} status={bootcamp.status} slug={bootcamp.slug} />

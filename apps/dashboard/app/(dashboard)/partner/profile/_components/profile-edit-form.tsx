@@ -140,6 +140,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
       <SurfaceFrame
         variant="embedded"
         title="Directory profile"
+        backLabel="Profile"
         steps={STEPS}
         current={0}
         onCancel={cancel}

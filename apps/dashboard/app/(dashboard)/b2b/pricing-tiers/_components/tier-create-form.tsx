@@ -19,6 +19,8 @@ import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 import { createPricingTier } from '../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Pricing-tier create on the standard form surface (docs/86 F layout). Create-only
 // — tiers are read-only reference data in the list, so this drives just
@@ -149,6 +151,12 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title="New pricing tier"
+        backLabel="Pricing tiers"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="b2b-pricing-tier" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

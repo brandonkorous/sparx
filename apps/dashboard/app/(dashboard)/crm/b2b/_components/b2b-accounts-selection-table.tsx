@@ -49,6 +49,9 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     },
     {
       label: 'Suspend',
+      requiresConfirm: true,
+      confirmLabel:
+        'Suspend {count} B2B account(s)? Their portal access is blocked immediately. Set them active again any time.',
       onAction: async (ids) => {
         await bulkSetB2bStatusAction(ids, 'suspended');
       },

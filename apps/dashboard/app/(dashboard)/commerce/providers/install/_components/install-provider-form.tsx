@@ -158,6 +158,7 @@ export function InstallProviderForm({
       <SurfaceFrame
         variant="embedded"
         title={`Install ${displayName}`}
+        backLabel="Providers"
         steps={STEPS}
         current={0}
         onCancel={cancel}

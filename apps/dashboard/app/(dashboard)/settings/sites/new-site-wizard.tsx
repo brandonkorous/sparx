@@ -38,6 +38,8 @@ import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-reac
 
 import { createSiteWithBlueprint } from './actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../_shell/detail-registry';
 
 export interface SiteBlueprintOption {
   key: string;
@@ -468,6 +470,12 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New site"
+      backLabel="Sites"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="site" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={STEPS}
       current={result || upsell ? 2 : step}
       onCancel={result ? undefined : cancel}

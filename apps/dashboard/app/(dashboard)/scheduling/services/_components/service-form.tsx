@@ -32,6 +32,8 @@ import {
   updateServiceAction,
 } from '../../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Service create/edit on the standard form surface (docs/86 F layout). ONE
 // component drives all three presentations the host picks:
@@ -409,6 +411,12 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Services"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="service" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

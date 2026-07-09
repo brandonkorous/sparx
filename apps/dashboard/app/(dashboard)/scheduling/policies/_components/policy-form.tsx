@@ -27,6 +27,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 import type { BookingPolicy, DepositType, FeeType } from '../../_lib/types';
 import { createBookingPolicyAction, updateBookingPolicyAction } from '../../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 type Presentation = 'page' | 'overlay' | 'modal';
 
@@ -333,6 +335,12 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Policies"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="booking-policy" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

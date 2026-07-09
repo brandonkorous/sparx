@@ -19,6 +19,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTaxZoneAction } from '../../../../tax-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../../_components/detail-panel';
 
 // New tax-zone form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -143,6 +145,12 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New tax zone"
+        backLabel="Tax zones"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="tax-zone" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

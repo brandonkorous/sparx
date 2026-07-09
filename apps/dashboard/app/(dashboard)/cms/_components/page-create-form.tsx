@@ -18,6 +18,8 @@ import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 
 import { createPage } from '../actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../_shell/detail-registry';
 
 // New-page form, on the standard create surface (docs/86 F layout). The SAME
 // component renders in both presentations, picked by the host:
@@ -121,6 +123,12 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New page"
+        backLabel="Pages"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="page" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

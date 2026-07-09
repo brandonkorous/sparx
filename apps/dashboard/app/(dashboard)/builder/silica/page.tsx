@@ -8,8 +8,9 @@ import { getBindingCatalog } from '../_lib/api';
 import { getBrand, getConfig } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
+import { starterSite } from '@sparx/silica-catalog';
+
 import { buildPreviewData } from '../_builder/binding-catalog';
-import { starterSilicaDocument } from '../_builder/silica-starter';
 import { SilicaStudio } from '../_builder/silica-studio';
 
 // /builder/silica — the engine-adoption studio (docs/118): the SAME editor surface
@@ -88,5 +89,11 @@ export default async function SilicaBuilderRoute() {
       : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
   const theme = tenantTheme(effectiveBrand, config);
 
-  return <SilicaStudio doc={starterSilicaDocument(theme)} root={root} dataSources={dataSources} />;
+  // The full multi-page silica Site (shared frame + starter pages) in the tenant's
+  // brand — silica's `<Builder>` owns page-switching, the frame/Outlet chrome, and
+  // undo. Until the site-sync persistence lands (onChange/onPublish), this opens on
+  // the starter seed; the re-seed then makes it the tenant's stored Site.
+  const site = theme ? starterSite(theme) : starterSite();
+
+  return <SilicaStudio site={site} root={root} dataSources={dataSources} />;
 }

@@ -20,6 +20,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTemplateAction } from '../../../configurator-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 // Surface-aware create form for a configurator template, on the standard create
 // surface (docs/86 F layout). The SAME component renders in both presentations,
@@ -181,6 +183,16 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New configurator template"
+        backLabel="Configurator"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher
+              typeId="configurator-template"
+              entityId={CREATE_SENTINEL}
+              current="page"
+            />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

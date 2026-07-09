@@ -24,6 +24,8 @@ import { useFieldValidation } from '@sparx/forms';
 import { createInventoryCountAction } from '../../../_lib/count-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
 interface PartyOption {
   id: string;
@@ -167,6 +169,12 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New count"
+        backLabel="Counts"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="count" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

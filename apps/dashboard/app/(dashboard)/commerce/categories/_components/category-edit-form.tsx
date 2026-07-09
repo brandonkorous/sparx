@@ -220,6 +220,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title={category.name}
+        backLabel="Categories"
         // Full-page only: the embedded title strip has no host chrome, so it
         // carries the drawer/modal presentation switch for parity with the overlay
         // (the overlay's DetailHeader already supplies switch + close).

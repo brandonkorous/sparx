@@ -32,6 +32,8 @@ import {
   type RecurrenceValue,
 } from './recurrence-fields';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // Booking create on the standard form surface (docs/86 F layout). Create-only —
 // bookings have no edit form (status changes go through booking-actions), so this
@@ -332,6 +334,12 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title="New booking"
+        backLabel="Bookings"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="booking" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

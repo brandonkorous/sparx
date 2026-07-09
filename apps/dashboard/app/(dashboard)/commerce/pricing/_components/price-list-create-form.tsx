@@ -28,6 +28,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createPriceListAction } from '../../pricing-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 
 // New-price-list form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -172,6 +174,12 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
       <SurfaceFrame
         variant={surface === 'overlay' ? 'inline' : 'embedded'}
         title="New price list"
+        backLabel="Pricing"
+        headerActions={
+          surface === 'page' ? (
+            <ViewSwitcher typeId="price-list" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={STEPS}
         current={0}
         onCancel={cancel}

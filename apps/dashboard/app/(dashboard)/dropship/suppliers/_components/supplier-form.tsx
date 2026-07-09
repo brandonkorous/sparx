@@ -22,6 +22,8 @@ import { rule, useFieldValidation } from '@sparx/forms';
 import { createSupplier, updateSupplier } from '../_lib/actions';
 import { VendorPicker } from './vendor-picker';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
 // ── Shared shapes (mirror @sparx/dropship/vendors, delivered via the API) ──────
 
@@ -605,6 +607,12 @@ export function SupplierForm({
       <SurfaceFrame
         variant={presentation === 'overlay' ? 'inline' : 'embedded'}
         title={heading}
+        backLabel="Suppliers"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="dropship-supplier" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
         steps={steps}
         current={isEdit ? 0 : step}
         onCancel={cancel}

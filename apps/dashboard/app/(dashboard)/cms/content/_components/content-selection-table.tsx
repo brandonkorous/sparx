@@ -70,6 +70,9 @@ export function ContentSelectionTable({
     {
       label: 'Archive',
       icon: Archive,
+      requiresConfirm: true,
+      confirmLabel:
+        'Archive {count} entries? They’ll be hidden from your site — restore them any time.',
       onAction: async (ids) => {
         await bulkArchiveEntriesAction(ids);
       },

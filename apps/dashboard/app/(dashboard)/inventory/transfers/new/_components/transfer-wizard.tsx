@@ -45,6 +45,8 @@ import {
 import { createInventoryTransferAction } from '../../../_lib/transfer-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -225,6 +227,12 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New transfer"
+      backLabel="Transfers"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="transfer" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

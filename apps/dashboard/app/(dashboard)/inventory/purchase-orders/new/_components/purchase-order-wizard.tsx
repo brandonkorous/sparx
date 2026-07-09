@@ -50,6 +50,8 @@ import { createPurchaseOrderAction } from '../../../_lib/purchase-order-actions'
 import { LineAddRow, type ResolvedLine } from '../../_components/line-add-row';
 import { formatMoney } from '../../_components/types';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -255,6 +257,12 @@ function PurchaseOrderWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New purchase order"
+      backLabel="Purchase orders"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="purchase-order" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

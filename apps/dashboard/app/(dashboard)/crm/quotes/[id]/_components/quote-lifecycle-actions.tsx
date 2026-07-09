@@ -9,7 +9,7 @@ import { useTransition } from 'react';
 import { ArrowRight, Check, X, Clock, Send } from 'lucide-react';
 
 import { Button } from '@wizeworks/silicaui-react';
-import { toast } from '@sparx/ui';
+import { toast, useConfirm } from '@sparx/ui';
 
 import {
   acceptQuoteAction,
@@ -26,6 +26,7 @@ interface QuoteLifecycleActionsProps {
 
 export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActionsProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [isPending, startTransition] = useTransition();
 
   function run(label: string, fn: () => Promise<{ ok: boolean; error?: { message: string } }>) {
@@ -38,6 +39,22 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
       toast.success(`Quote ${label}`);
       router.refresh();
     });
+  }
+
+  // Decline and Expire are terminal — the quote can't be moved forward again
+  // from either state — so both go through a confirm, unlike Submit/Accept/
+  // Convert which just advance the quote and are cheap to recover from.
+  function runGuarded(
+    title: string,
+    description: string,
+    label: string,
+    fn: () => Promise<{ ok: boolean; error?: { message: string } }>
+  ) {
+    void (async () => {
+      const ok = await confirm({ title, description, confirmLabel: title, tone: 'warning' });
+      if (!ok) return;
+      run(label, fn);
+    })();
   }
 
   return (
@@ -66,7 +83,14 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
             variant="outline"
             iconStart={<X className="h-4 w-4" />}
             disabled={isPending}
-            onClick={() => run('declined', () => declineQuoteAction({ quoteId }))}
+            onClick={() =>
+              runGuarded(
+                'Decline this quote?',
+                'The customer will be marked as having declined it. This can’t be undone — you’d need to create a new quote to continue the deal.',
+                'declined',
+                () => declineQuoteAction({ quoteId })
+              )
+            }
           >
             Decline
           </Button>
@@ -77,7 +101,14 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
           variant="ghost"
           iconStart={<Clock className="h-4 w-4" />}
           disabled={isPending}
-          onClick={() => run('expired', () => expireQuoteAction({ quoteId }))}
+          onClick={() =>
+            runGuarded(
+              'Expire this quote?',
+              'It’ll be marked expired and can no longer be accepted. This can’t be undone — you’d need to create a new quote to continue the deal.',
+              'expired',
+              () => expireQuoteAction({ quoteId })
+            )
+          }
         >
           Expire
         </Button>

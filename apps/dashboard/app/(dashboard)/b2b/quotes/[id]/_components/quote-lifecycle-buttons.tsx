@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@wizeworks/silicaui-react';
+import { useConfirm } from '@sparx/ui';
 import { quoteLifecycleAction } from '../../_lib/actions';
 
 interface Props {
@@ -13,11 +14,21 @@ interface Props {
 
 export function QuoteLifecycleButtons({ quoteId, canAccept, canDecline }: Props) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [, startTransition] = useTransition();
   const [acting, setActing] = useState<'accept' | 'decline' | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   async function handle(action: 'accept' | 'decline') {
+    if (action === 'decline') {
+      const ok = await confirm({
+        title: 'Decline this quote?',
+        description: 'The customer will be notified it was declined. This can’t be undone.',
+        confirmLabel: 'Decline',
+        tone: 'warning',
+      });
+      if (!ok) return;
+    }
     setActing(action);
     setActionError(null);
     try {

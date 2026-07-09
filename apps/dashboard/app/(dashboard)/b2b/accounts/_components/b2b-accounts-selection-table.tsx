@@ -57,6 +57,8 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     {
       label: 'Set inactive',
       icon: CircleSlash,
+      requiresConfirm: true,
+      confirmLabel: 'Set {count} B2B account(s) inactive? Set them active again any time.',
       onAction: async (ids) => {
         await bulkSetB2bAccountStatusAction(ids, 'inactive');
       },

@@ -44,6 +44,8 @@ import {
 import { createOrderAction } from '../../../order-actions';
 import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -260,6 +262,12 @@ function OrderWizardInner({
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New order"
+      backLabel="Orders"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="order" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}
