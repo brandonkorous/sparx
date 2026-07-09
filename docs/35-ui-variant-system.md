@@ -29,17 +29,17 @@ without enumerating the cartesian product by hand.
 > Tailwind v4 plugin) — it emits the `color × variant × size × shape` classes
 > (`btn-<color> btn-<variant> btn-<size> btn-<shape>`) directly, and the semantic palette lives
 > in **`@sparx/brand/theme.css`** (`--color-primary/secondary/accent/neutral/info/success/warning/
-> error/danger` + `-content`) rather than `@sparx/ui`'s `tokens.css`. `sparx` and `silica` are the
+error/danger` + `-content`) rather than `@sparx/ui`'s `tokens.css`. `sparx` and `silica` are the
 > same design language, so the API here is API-identical to what silica ships. §3–§4 below are
 > updated to the silica mechanism; the axis semantics (§2) are unchanged.
 
 ### Decisions locked (2026-05-31)
 
-| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                          |
-| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                       |
-| 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                 |
-| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                           |
+| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                                                                                                         |
+| 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                                                                                                   |
+| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                                                                                                             |
 | 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). The Radix controls that can't take a color class use a per-instance `--sx-sel` via `colorVars()`. |
 
 > **Relationship to Token Model v2 (doc 33).** Doc 33 §6 deliberately scoped `@sparx/ui`
@@ -57,17 +57,17 @@ without enumerating the cartesian product by hand.
 
 ### 2.1 `color` — semantic palette
 
-| Token       | Meaning                           | Notes                                     |
-| ----------- | --------------------------------- | ----------------------------------------- |
-| `primary`   | Brand action                      | = `--color-primary` (`#6366F1`)           |
-| `secondary` | Brand-adjacent secondary identity | new; defaults to a slate/indigo-muted     |
-| `accent`    | Pop / highlight                   | new                                       |
-| `neutral`   | Default, low-chroma UI            | new; the "no color specified" default     |
-| `info`      | Informational status              | new themeable                             |
-| `success`   | Positive status                   | normalizes existing `--color-success*`    |
-| `warning`   | Caution status                    | normalizes existing `--color-warning*`    |
-| `danger`    | Destructive / error status        | normalizes existing `--color-danger*`     |
-| `module`    | The active module's color         | reads `--color-module` (ModuleProvider)   |
+| Token       | Meaning                           | Notes                                   |
+| ----------- | --------------------------------- | --------------------------------------- |
+| `primary`   | Brand action                      | = `--color-primary` (`#6366F1`)         |
+| `secondary` | Brand-adjacent secondary identity | new; defaults to a slate/indigo-muted   |
+| `accent`    | Pop / highlight                   | new                                     |
+| `neutral`   | Default, low-chroma UI            | new; the "no color specified" default   |
+| `info`      | Informational status              | new themeable                           |
+| `success`   | Positive status                   | normalizes existing `--color-success*`  |
+| `warning`   | Caution status                    | normalizes existing `--color-warning*`  |
+| `danger`    | Destructive / error status        | normalizes existing `--color-danger*`   |
+| `module`    | The active module's color         | reads `--color-module` (ModuleProvider) |
 
 `module` is special: it tracks `--color-module` so a `<Button color="module">` inside a
 `<ModuleProvider module="cms">` is teal automatically (existing behaviour, kept). `ModuleProvider`
@@ -82,14 +82,14 @@ one-off color with no surrounding provider (it sets `--sx-sel`) — not the norm
 
 ### 2.2 `variant` — style / treatment
 
-| Token     | Treatment                                                     | silica class      |
-| --------- | ------------------------------------------------------------- | ----------------- |
-| `solid`   | Filled: `bg-<color>`, `text-<color>-content`                  | bare `btn`        |
-| `soft`    | Tinted: `bg-<color> bg-soft`, `text-<color>` (low-emphasis)   | `btn-soft`        |
-| `outline` | Bordered transparent: `border-<color>`, `text-<color>`        | `btn-outline`     |
-| `dashed`  | `outline` + dashed border                                     | **`btn-dash`** (silica spells it `dash`) |
-| `ghost`   | No border/bg, `text-<color>`, hover → tint                    | `btn-ghost`       |
-| `link`    | Inline text link, underline-on-hover, no padding/height       | `btn-link`        |
+| Token     | Treatment                                                   | silica class                             |
+| --------- | ----------------------------------------------------------- | ---------------------------------------- |
+| `solid`   | Filled: `bg-<color>`, `text-<color>-content`                | bare `btn`                               |
+| `soft`    | Tinted: `bg-<color> bg-soft`, `text-<color>` (low-emphasis) | `btn-soft`                               |
+| `outline` | Bordered transparent: `border-<color>`, `text-<color>`      | `btn-outline`                            |
+| `dashed`  | `outline` + dashed border                                   | **`btn-dash`** (silica spells it `dash`) |
+| `ghost`   | No border/bg, `text-<color>`, hover → tint                  | `btn-ghost`                              |
+| `link`    | Inline text link, underline-on-hover, no padding/height     | `btn-link`                               |
 
 `solid` is the default treatment for Button; `soft` for Badge/Tag; `soft` for Alert. A `soft` fill
 is `bg-<color> bg-soft` — there are no baked `-tint` tokens; `bg-soft` mixes the current accent into
@@ -170,7 +170,7 @@ btn  btn-<color>  btn-<variant>  btn-<size>  btn-<shape>
 ```
 
 - **color** → `btn-primary / btn-secondary / btn-accent / btn-neutral / btn-info / btn-success /
-  btn-warning / btn-error / btn-danger / btn-module`
+btn-warning / btn-error / btn-danger / btn-module`
 - **variant** → bare `btn` (solid), `btn-soft`, `btn-outline`, `btn-dash` (dashed), `btn-ghost`,
   `btn-link`
 - **size** → `btn-xs … btn-xl`
@@ -203,10 +203,12 @@ Because the plugin emits static classes for every registered slot, a tenant/them
 // Feature code — the primitive from @wizeworks/silicaui-react; the classes are the plugin's.
 import { Button } from '@wizeworks/silicaui-react';
 
-<Button color="danger" variant="soft" size="lg" shape="wide">Delete</Button>;
+<Button color="danger" variant="soft" size="lg" shape="wide">
+  Delete
+</Button>;
 // → class="btn btn-danger btn-soft btn-lg btn-wide"
 
-<Button>Save</Button>;                       // defaults: primary / solid / md
+<Button>Save</Button>; // defaults: primary / solid / md
 <Button color="module" variant="outline" />; // module hue from the nearest ModuleProvider
 ```
 

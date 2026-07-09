@@ -44,17 +44,17 @@ must use the component instead. See §15 for the exact rule the linter enforces.
 
 ## 2. Stack
 
-| Layer                   | Technology                                | Role                                                                                 |
-| ----------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
-| Color token authority   | `@sparx/brand/theme.css` (CSS vars)       | Sole source of truth for all colors — semantic palette + `--color-base-*` + modules  |
-| Non-color tokens        | `packages/ui/src/tokens.css`              | Type / space / radius / shadow / motion + the `--chart-*` palette                    |
-| Component classes        | `@wizeworks/silicaui` (Tailwind v4 plugin) | Statically emits every color + component utility (`btn-*`, `badge-*`, `bg-<color>`, `bg-soft`, …) |
-| React primitives        | `@wizeworks/silicaui-react`               | Button/Badge/Card/Input/Select/Table/Tabs/Dialog/Alert/… imported directly by feature code |
-| Compositions            | `@sparx/ui`                               | The ~25 sparx compositions (shell, SurfaceFrame, ModuleProvider, toolbars) on silica primitives |
-| Primitive accessibility | Radix UI                                  | ARIA, keyboard nav, focus — still underlies the few interactive controls `@sparx/ui` keeps |
-| Style composition       | `cn()` (clsx + tailwind-merge)            | Class dedup + conditional logic; `extendTailwindMerge` keeps `bg-<color> bg-soft` intact |
-| Module theming          | `ModuleProvider`                          | Sets `--color-module` on its subtree per active module                               |
-| Icons                   | Lucide React                              | Consistent, tree-shakeable, outline style                                            |
+| Layer                   | Technology                                 | Role                                                                                              |
+| ----------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Color token authority   | `@sparx/brand/theme.css` (CSS vars)        | Sole source of truth for all colors — semantic palette + `--color-base-*` + modules               |
+| Non-color tokens        | `packages/ui/src/tokens.css`               | Type / space / radius / shadow / motion + the `--chart-*` palette                                 |
+| Component classes       | `@wizeworks/silicaui` (Tailwind v4 plugin) | Statically emits every color + component utility (`btn-*`, `badge-*`, `bg-<color>`, `bg-soft`, …) |
+| React primitives        | `@wizeworks/silicaui-react`                | Button/Badge/Card/Input/Select/Table/Tabs/Dialog/Alert/… imported directly by feature code        |
+| Compositions            | `@sparx/ui`                                | The ~25 sparx compositions (shell, SurfaceFrame, ModuleProvider, toolbars) on silica primitives   |
+| Primitive accessibility | Radix UI                                   | ARIA, keyboard nav, focus — still underlies the few interactive controls `@sparx/ui` keeps        |
+| Style composition       | `cn()` (clsx + tailwind-merge)             | Class dedup + conditional logic; `extendTailwindMerge` keeps `bg-<color> bg-soft` intact          |
+| Module theming          | `ModuleProvider`                           | Sets `--color-module` on its subtree per active module                                            |
+| Icons                   | Lucide React                               | Consistent, tree-shakeable, outline style                                                         |
 
 ---
 
@@ -113,7 +113,7 @@ Colors and non-color tokens now live in **two files** with a clean split:
   `--color-base-content`), and the 18-module palette (`--color-module-<name>` + `-content`).
   Each color is defined **once**, so dark mode resolves correctly (the old duplicate `:root`
   overrides that clobbered brand's dark `--color-primary` are gone — that was a real bug).
-- **`packages/ui/src/tokens.css`** — everything that is *not* a color: type, space, radius,
+- **`packages/ui/src/tokens.css`** — everything that is _not_ a color: type, space, radius,
   shadow, motion, plus the `--chart-*` palette and a little component CSS.
 
 Both are imported once in each app's root layout. Silicaui's Tailwind plugin turns the brand
@@ -223,7 +223,6 @@ components reference those, never hardcoded values.
   --transition-base: 175ms ease;
   --transition-slow: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 ```
 
 **Dark mode.** Color dark values live in `@sparx/brand/theme.css` — the same `--color-*` vars
@@ -265,7 +264,7 @@ remain plain `var(--…)` reads from `tokens.css`.
 ## 6. The four-axis API on silica classes
 
 Every color-bearing control is **`color × variant × size × shape`** — four orthogonal axes, never
-a flat enum (full treatment in doc 35). `sparx` and `silica` are the *same* design language, so
+a flat enum (full treatment in doc 35). `sparx` and `silica` are the _same_ design language, so
 the primitive is imported straight from `@wizeworks/silicaui-react`; its props map to the classes
 silicaui's plugin already emitted. No CVA config, no per-component Tailwind authoring — the plugin
 is where the treatments live.
@@ -274,17 +273,23 @@ is where the treatments live.
 // Feature code — import the primitive directly.
 import { Button, Badge } from '@wizeworks/silicaui-react';
 
-<Button color="danger" variant="soft" size="lg" shape="wide">Delete</Button>;
+<Button color="danger" variant="soft" size="lg" shape="wide">
+  Delete
+</Button>;
 // → class="btn btn-danger btn-soft btn-lg btn-wide"
 
-<Button color="module" variant="outline">Publish</Button>; // module hue from ModuleProvider
-<Badge color={statusTone(s)} variant="soft" size="sm">{statusLabel(s)}</Badge>;
+<Button color="module" variant="outline">
+  Publish
+</Button>; // module hue from ModuleProvider
+<Badge color={statusTone(s)} variant="soft" size="sm">
+  {statusLabel(s)}
+</Badge>;
 ```
 
 **How the axes resolve to classes:**
 
 - **`color`** → `btn-<color>` / `badge-<color>` / `bg-<color>`. Slots: `primary secondary accent
-  neutral info success warning error danger module`.
+neutral info success warning error danger module`.
 - **`variant`** → `solid` (bare `btn`), `soft` (`btn-soft`), `outline` (`btn-outline`), `dashed`
   → **`btn-dash`** (silica spells it `dash`), `ghost` (`btn-ghost`), `link` (`btn-link`).
 - **`size`** → `btn-xs … btn-xl`.
@@ -481,22 +486,22 @@ action/status primitives.
 
 ### Primitives
 
-| Component    | Key variants                                                    | Notes                                                                                       |
-| ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `Button`     | color × variant (solid soft outline dash ghost link)            | Sizes xs–xl; shapes square / circle / block / wide                                          |
-| `Badge`      | color × variant (solid soft outline dash)                       | Default `neutral / soft`; status pills via `statusTone()`                                   |
-| `Input`      | default, error                                                  | Sizes: sm, md, lg                                                                           |
-| `Textarea`   | default, error                                                  |                                                                                             |
-| `Select`     | default, error                                                  | Wraps Radix Select                                                                          |
-| `Checkbox`   | —                                                               | Wraps Radix Checkbox, uses primary color                                                    |
-| `RadioGroup` | —                                                               | Wraps Radix Radio                                                                           |
-| `Switch`     | —                                                               | Uses primary color, module-aware                                                            |
-| `Slider`     | —                                                               | Uses primary/module color                                                                   |
-| `Avatar`     | default, initials                                               | Sizes: sm, md, lg; falls back to initials on image error                                    |
-| `Spinner`    | —                                                               | Sizes: sm, md, lg; inherits current color                                                   |
-| `Skeleton`   | —                                                               | Pulse animation, used for loading states                                                    |
-| `Heading`    | levels 1–6                                                      | Visual size via `level`; semantic tag via `as` override (e.g. visually H1, semantically H2) |
-| `Text`       | default, muted, subtle, inverse, danger, success                | Sizes: xs, sm, md, lg; `as` polymorphism for `p` / `span` / `div` / `label`                 |
+| Component    | Key variants                                         | Notes                                                                                       |
+| ------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `Button`     | color × variant (solid soft outline dash ghost link) | Sizes xs–xl; shapes square / circle / block / wide                                          |
+| `Badge`      | color × variant (solid soft outline dash)            | Default `neutral / soft`; status pills via `statusTone()`                                   |
+| `Input`      | default, error                                       | Sizes: sm, md, lg                                                                           |
+| `Textarea`   | default, error                                       |                                                                                             |
+| `Select`     | default, error                                       | Wraps Radix Select                                                                          |
+| `Checkbox`   | —                                                    | Wraps Radix Checkbox, uses primary color                                                    |
+| `RadioGroup` | —                                                    | Wraps Radix Radio                                                                           |
+| `Switch`     | —                                                    | Uses primary color, module-aware                                                            |
+| `Slider`     | —                                                    | Uses primary/module color                                                                   |
+| `Avatar`     | default, initials                                    | Sizes: sm, md, lg; falls back to initials on image error                                    |
+| `Spinner`    | —                                                    | Sizes: sm, md, lg; inherits current color                                                   |
+| `Skeleton`   | —                                                    | Pulse animation, used for loading states                                                    |
+| `Heading`    | levels 1–6                                           | Visual size via `level`; semantic tag via `as` override (e.g. visually H1, semantically H2) |
+| `Text`       | default, muted, subtle, inverse, danger, success     | Sizes: xs, sm, md, lg; `as` polymorphism for `p` / `span` / `div` / `label`                 |
 
 ### Layout
 
@@ -528,14 +533,14 @@ action/status primitives.
 
 ### Navigation
 
-| Component     | Key variants    | Notes                                 |
-| ------------- | --------------- | ------------------------------------- |
-| `Sidebar`     | —               | Dashboard sidebar shell               |
+| Component     | Key variants    | Notes                                                 |
+| ------------- | --------------- | ----------------------------------------------------- |
+| `Sidebar`     | —               | Dashboard sidebar shell                               |
 | `SidebarItem` | default, active | Active state uses `text-module` (from ModuleProvider) |
-| `Tabs`        | default, pills  | Wraps Radix Tabs                      |
-| `Breadcrumb`  | —               |                                       |
-| `Pagination`  | —               |                                       |
-| `Stepper`     | —               | Multi-step flows (onboarding)         |
+| `Tabs`        | default, pills  | Wraps Radix Tabs                                      |
+| `Breadcrumb`  | —               |                                                       |
+| `Pagination`  | —               |                                                       |
+| `Stepper`     | —               | Multi-step flows (onboarding)                         |
 
 ### Data Display
 
@@ -607,7 +612,7 @@ styling is emitted by the `@wizeworks/silicaui` Tailwind plugin. To wire a new d
 2. In `app/globals.css`, `@import 'tailwindcss'`, then `@import '@sparx/brand/theme.css'` (colors)
    and `@import '@sparx/ui/tokens.css'` (non-color), then register the plugin naming the palette
    (§5): `@plugin '@wizeworks/silicaui' { colors: primary, secondary, accent, neutral, info,
-   success, warning, error, danger, module }`.
+success, warning, error, danger, module }`.
 3. Import primitives from `@wizeworks/silicaui-react`; import compositions
    (`ModuleProvider`, shell, `SurfaceFrame`, `statusTone`, `cn`, …) from `@sparx/ui`.
 4. Wrap each module layout in `<ModuleProvider module="{module}">` so `--color-module` tracks the
@@ -812,7 +817,7 @@ layout false-positives.
 When wiring the dashboard component stack, the moving parts are:
 
 1. `@sparx/brand` owns `theme.css` — the `--color-*` authority (semantic palette + `--color-base-*`
-   + the 18-module palette). Colors live here and nowhere else.
+   - the 18-module palette). Colors live here and nowhere else.
 2. `@sparx/ui` keeps the compositions (§3), the non-color `tokens.css`, and the helpers
    (`cn` with the `soft`-family `extendTailwindMerge`, `colorVars`, `statusTone`).
 3. Styled primitives come from `@wizeworks/silicaui-react`; their classes from the

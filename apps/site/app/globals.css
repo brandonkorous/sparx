@@ -41,7 +41,7 @@
 
   /* Storefront chrome aliases (hand-coded pages) + Next fonts, retained. These
      now point at the silica base ramp (itself driven off the tenant --st-* theme
-     above), since the legacy --color-bg-*/-text-* neutrals are retired. */
+     above), since the legacy --color-bg- and --color-text- neutrals are retired. */
   --color-foreground: var(--color-base-content);
   --color-foreground-muted: color-mix(in oklab, var(--color-base-content) 70%, transparent);
   --color-page: var(--color-base-200);

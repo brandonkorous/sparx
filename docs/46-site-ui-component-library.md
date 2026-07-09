@@ -52,10 +52,10 @@ The preview cannot drift from production because they are the same code.
 
 Two component libraries, cleanly split by **whose brand they wear**:
 
-| Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                   |
-| --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
+| Library                     | Theme tokens                                                                                 | Wears the brand of    | Consumers                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
 | `@sparx/ui` (`packages/ui`) | silicaui: `--color-base-*`, `--color-*` (semantic), `--color-module-*` (from `@sparx/brand`) | **sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
-| `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
+| `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md))                                        | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
 They never overlap. `@sparx/ui` is the operator's tools, in sparx Indigo. `@sparx/site-ui` is
 the tenant's published site, in the tenant's brand. The dashboard chrome around the Builder

@@ -6,11 +6,6 @@
     "declaration": false,
     "declarationMap": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "vitest.config.ts",
-    "vitest.setup.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules", "dist", "coverage", ".turbo"]
 }

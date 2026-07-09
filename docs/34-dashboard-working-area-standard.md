@@ -96,11 +96,11 @@ subtitle paragraph (muted, one or two sentences)
 
 | Slot         | Rule                                                                                                                                                                                                           |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Icon**     | The module's `lucide` icon, in `--color-module`. Present on every module-scoped page; omitted only on the platform-level `/` Home and `/settings` index.                                                      |
+| **Icon**     | The module's `lucide` icon, in `--color-module`. Present on every module-scoped page; omitted only on the platform-level `/` Home and `/settings` index.                                                       |
 | **Title**    | `<Heading level={1}>`. The page/entity name.                                                                                                                                                                   |
 | **Badge**    | Optional. A single inline pill for a **count** ("12 products") or **status** ("Active", "Module preview"). Uses `Badge`; never colored eyebrow text, never free-floating. At most one.                         |
 | **Subtitle** | Optional `<Text variant="muted">`, ≤ 2 sentences. One consistent style — not sometimes a long paragraph, sometimes a meta string. Tenant ids / "last 30 days" framing belongs in body stats, not the subtitle. |
-| **Actions**  | Right-aligned. **Exactly one** primary (`Button color="module"`); zero or more secondaries (`variant="outline"`/`"ghost"`). Empty when the archetype's actions live elsewhere (forms, previews).             |
+| **Actions**  | Right-aligned. **Exactly one** primary (`Button color="module"`); zero or more secondaries (`variant="outline"`/`"ghost"`). Empty when the archetype's actions live elsewhere (forms, previews).               |
 
 **Forbidden:** primary actions placed below the header or left-aligned (seen on Discounts, Segments); a second `Create` button duplicated into an empty state; the in-content "← Back to X" link (seen on every `/new` and the product detail) — delete it, the breadcrumb owns up-nav.
 
@@ -276,22 +276,22 @@ The not-yet-built modules (B2B, AI, Dropship) already share one template via `ap
 
 ## 15. Components: build vs. reuse
 
-| Need                        | Status   | Location                                                                                                                                              |
-| --------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Container` (widths)        | ✅ reuse | `packages/ui/src/components/layout/container.tsx`                                                                                                     |
-| `Card` + `variant="module"` | ✅ reuse | `packages/ui/src/components/layout/card.tsx`                                                                                                          |
-| `Stat` (KPI card)           | ✅ reuse | `packages/ui/src/components/data/stat.tsx`                                                                                                            |
-| `DataTable` / `Table`       | ✅ reuse | `packages/ui/src/components/data/{data-table,table}.tsx`                                                                                              |
-| `EmptyState`                | ✅ reuse | `packages/ui/src/components/data/empty-state.tsx`                                                                                                     |
-| `Tabs variant="default"`    | ✅ reuse | `packages/ui/src/components/navigation/tabs.tsx`                                                                                                      |
-| `Grid` / `Stack`            | ✅ reuse | `packages/ui/src/components/layout/{grid,stack}.tsx`                                                                                                  |
-| `Form*` primitives          | ✅ reuse | `packages/ui/src/components/form/form.tsx`                                                                                                            |
-| `ModuleStub` (preview)      | ✅ reuse | `apps/dashboard/components/module-stub.tsx`                                                                                                           |
-| **`PageHeader`**            | ✅ built | `packages/ui/src/components/layout/page-header.tsx` — the §5 anatomy                                                                                  |
-| **`FilterBar`**             | ✅ built | `packages/ui/src/components/data/filter-bar.tsx` — the §7.1 toolbar                                                                                   |
-| **`FormActionBar`**         | ✅ built | `packages/ui/src/components/form/form-action-bar.tsx` — the §13 bar                                                                                   |
+| Need                        | Status   | Location                                                                                                                                             |
+| --------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Container` (widths)        | ✅ reuse | `packages/ui/src/components/layout/container.tsx`                                                                                                    |
+| `Card` + `variant="module"` | ✅ reuse | `packages/ui/src/components/layout/card.tsx`                                                                                                         |
+| `Stat` (KPI card)           | ✅ reuse | `packages/ui/src/components/data/stat.tsx`                                                                                                           |
+| `DataTable` / `Table`       | ✅ reuse | `packages/ui/src/components/data/{data-table,table}.tsx`                                                                                             |
+| `EmptyState`                | ✅ reuse | `packages/ui/src/components/data/empty-state.tsx`                                                                                                    |
+| `Tabs variant="default"`    | ✅ reuse | `packages/ui/src/components/navigation/tabs.tsx`                                                                                                     |
+| `Grid` / `Stack`            | ✅ reuse | `packages/ui/src/components/layout/{grid,stack}.tsx`                                                                                                 |
+| `Form*` primitives          | ✅ reuse | `packages/ui/src/components/form/form.tsx`                                                                                                           |
+| `ModuleStub` (preview)      | ✅ reuse | `apps/dashboard/components/module-stub.tsx`                                                                                                          |
+| **`PageHeader`**            | ✅ built | `packages/ui/src/components/layout/page-header.tsx` — the §5 anatomy                                                                                 |
+| **`FilterBar`**             | ✅ built | `packages/ui/src/components/data/filter-bar.tsx` — the §7.1 toolbar                                                                                  |
+| **`FormActionBar`**         | ✅ built | `packages/ui/src/components/form/form-action-bar.tsx` — the §13 bar                                                                                  |
 | **Trend charts**            | ✅ built | `packages/ui/src/components/data/chart/*` — `LineChart`/`BarChart`/`AreaChart`/`Sparkline` (Recharts, encapsulated; token + `--color-module` themed) |
-| **`OverviewChartCard`**     | ✅ built | `apps/dashboard/.../_components/overview-charts.tsx` — overview chart wrapper + the `SAMPLE_*` datasets (sample-labeled until live timeseries)        |
+| **`OverviewChartCard`**     | ✅ built | `apps/dashboard/.../_components/overview-charts.tsx` — overview chart wrapper + the `SAMPLE_*` datasets (sample-labeled until live timeseries)       |
 
 The three layout primitives (built 2026-05-31 — pure layout containers; actions/filters are slots, decoupled from the Button API) + the chart components + targeted prop fixes (mostly `color="module"`) cover the standard. No primitive needs restyling. **Charts need a real data source:** today only point-in-time `/v1/{module}/reports/*` summaries exist — no timeseries endpoints — so the trend cards render `SAMPLE_*` data behind a "Sample data" badge until `*-timeseries` endpoints land.
 

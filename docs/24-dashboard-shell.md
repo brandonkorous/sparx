@@ -355,13 +355,13 @@ Deferred to Phase 2. Until MCP-integrated answering is ready, the combobox is a 
 
 ## 7. Theme
 
-| Property       | Value                                                                                                                              |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Modes          | `light` (default), `dark`                                                                                                          |
-| Storage        | `localStorage['sparx:theme']`                                                                                                      |
-| Initial seed   | First login on a device: server preference (`user.preferred_theme`). Subsequent loads: device value.                               |
+| Property       | Value                                                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Modes          | `light` (default), `dark`                                                                                                                                                                                    |
+| Storage        | `localStorage['sparx:theme']`                                                                                                                                                                                |
+| Initial seed   | First login on a device: server preference (`user.preferred_theme`). Subsequent loads: device value.                                                                                                         |
 | Implementation | Toggles `data-theme="dark"` on `<html>`; color custom properties in `@sparx/brand/theme.css` are scoped on `:root[data-theme="dark"]` (defined once — non-color tokens stay in `packages/ui/src/tokens.css`) |
-| Module colors  | `--color-module-<name>` light/dark pairs defined in `@sparx/brand/theme.css`; module accent shifts intensity, not hue                                                    |
+| Module colors  | `--color-module-<name>` light/dark pairs defined in `@sparx/brand/theme.css`; module accent shifts intensity, not hue                                                                                        |
 
 No system-pref auto-follow. Rationale: explicit, predictable, and avoids the "phone-in-sun unreadable dark theme" failure mode that motivated per-device persistence.
 

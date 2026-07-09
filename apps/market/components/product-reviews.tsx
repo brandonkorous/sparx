@@ -7,7 +7,15 @@
 
 import { useState } from 'react';
 import { BadgeCheck, PenLine, ThumbsUp } from 'lucide-react';
-import { Alert, Button, Field, FieldLabel, Input, Rating, Textarea } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  Button,
+  Field,
+  FieldLabel,
+  Input,
+  Rating,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { Stars } from '@/components/stars';
 import { submitProductReview, ReviewRequestError } from '@/lib/reviews-client';

@@ -150,25 +150,25 @@ The platform runs on silicaui's base ramp (`@sparx/brand/theme.css`). `base-100`
 
 ### Light Mode
 
-| Purpose          | Token                        | Value     |
-| ---------------- | ---------------------------- | --------- |
-| Page canvas      | `--color-base-200`           | `#F4F4F5` |
-| Surface (cards)  | `--color-base-100`           | `#FFFFFF` |
-| Border           | `--color-base-300`           | `#E4E4E7` |
-| Body text        | `--color-base-content`       | `#0A0A0A` |
-| Supporting text  | `text-base-content/70`       | derived   |
-| Hint/placeholder | `text-base-content/50`       | derived   |
+| Purpose          | Token                  | Value     |
+| ---------------- | ---------------------- | --------- |
+| Page canvas      | `--color-base-200`     | `#F4F4F5` |
+| Surface (cards)  | `--color-base-100`     | `#FFFFFF` |
+| Border           | `--color-base-300`     | `#E4E4E7` |
+| Body text        | `--color-base-content` | `#0A0A0A` |
+| Supporting text  | `text-base-content/70` | derived   |
+| Hint/placeholder | `text-base-content/50` | derived   |
 
 ### Dark Mode
 
-| Purpose          | Token                        | Value     |
-| ---------------- | ---------------------------- | --------- |
-| Page canvas      | `--color-base-200`           | `#1F1F1F` |
-| Surface (cards)  | `--color-base-100`           | `#1A1A1A` |
-| Border           | `--color-base-300`           | `#2A2A2A` |
-| Body text        | `--color-base-content`       | `#F0F0F0` |
-| Supporting text  | `text-base-content/70`       | derived   |
-| Hint/placeholder | `text-base-content/50`       | derived   |
+| Purpose          | Token                  | Value     |
+| ---------------- | ---------------------- | --------- |
+| Page canvas      | `--color-base-200`     | `#1F1F1F` |
+| Surface (cards)  | `--color-base-100`     | `#1A1A1A` |
+| Border           | `--color-base-300`     | `#2A2A2A` |
+| Body text        | `--color-base-content` | `#F0F0F0` |
+| Supporting text  | `text-base-content/70` | derived   |
+| Hint/placeholder | `text-base-content/50` | derived   |
 
 Neither pure white nor pure black — this is the Notion trick. Near-white/near-black backgrounds feel intentional in both modes, never like an inverted screenshot.
 
