@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2 } from 'lucide-react';
-import { Badge, Button, Table } from 'silicaui-react';
+import { Badge, Button, Table } from '@wizeworks/silicaui-react';
 import { deleteAccountOverride } from '../../_lib/actions';
 
 interface Override {
@@ -127,9 +127,7 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                   {rowErrors.get(o.id) && (
-                    <p className="text-right text-xs text-[var(--color-danger)]">
-                      {rowErrors.get(o.id)}
-                    </p>
+                    <p className="text-danger text-right text-xs">{rowErrors.get(o.id)}</p>
                   )}
                 </div>
               </td>
@@ -138,7 +136,7 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
         </tbody>
       </Table>
 
-      <div className="border-t border-[var(--color-border-default)] p-4">
+      <div className="border-base-300 border-t p-4">
         <Button
           color="module"
           variant="outline"

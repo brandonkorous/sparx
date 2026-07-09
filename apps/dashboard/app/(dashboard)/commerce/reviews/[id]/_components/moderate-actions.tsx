@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, Flag, Trash2, X } from 'lucide-react';
 
-import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
+import { Button, Dialog, DialogContent, DialogTitle, Textarea } from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import { deleteReviewAction, moderateReviewAction } from '../../../review-actions';

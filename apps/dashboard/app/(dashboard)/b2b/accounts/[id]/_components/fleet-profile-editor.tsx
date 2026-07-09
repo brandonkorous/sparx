@@ -17,11 +17,12 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
   Loading,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { Plus, Trash2, Truck } from 'lucide-react';
 
 import {
@@ -191,7 +192,7 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
 
             <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
               {!domainsLoaded ? (
-                <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+                <div className="text-base-content/60 flex items-center gap-2 py-8">
                   <Loading className="h-4 w-4" /> Loading fitment…
                 </div>
               ) : domains.length === 0 ? (
@@ -207,7 +208,7 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
                 vehicles.map((v, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2"
+                    className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-row flex-wrap items-center gap-2">
@@ -370,42 +371,38 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
           </div>
           <div className="flex max-h-[28rem] flex-col gap-4 overflow-y-auto py-2">
             <div className="flex gap-3">
-              <div className="flex-1">
-                <Label htmlFor="fleet-label">Label</Label>
-                <Input
-                  id="fleet-label"
+              <Field className="flex-1">
+                <FieldLabel>Label</FieldLabel>
+                <FieldControl
+                  name="fleet-label"
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
                   placeholder="e.g. Truck #14"
                 />
-              </div>
-              <div className="w-24">
-                <Label htmlFor="fleet-count">Count</Label>
-                <Input
-                  id="fleet-count"
+              </Field>
+              <Field className="w-24">
+                <FieldLabel>Count</FieldLabel>
+                <FieldControl
+                  name="fleet-count"
                   type="number"
                   min={1}
                   value={count}
                   onChange={(e) => setCount(e.target.value)}
                 />
-              </div>
+              </Field>
             </div>
 
             {domains.length > 1 && (
-              <div>
-                <Label htmlFor="fleet-domain">Kind</Label>
-                <NativeSelect
-                  id="fleet-domain"
-                  value={domainId}
-                  onChange={(e) => setDomainId(e.target.value)}
-                >
+              <Field>
+                <FieldLabel>Kind</FieldLabel>
+                <NativeSelect value={domainId} onChange={(e) => setDomainId(e.target.value)}>
                   {domains.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.displayName}
                     </option>
                   ))}
                 </NativeSelect>
-              </div>
+              </Field>
             )}
 
             {/* Level drill — one select per level dimension, generic over labels. */}
@@ -414,10 +411,9 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
               const enabled = level === 0 || Boolean(levelPicks[level - 1]);
               if (!enabled) return null;
               return (
-                <div key={dim.key}>
-                  <Label htmlFor={`fleet-level-${dim.key}`}>{dim.label}</Label>
+                <Field key={dim.key}>
+                  <FieldLabel>{dim.label}</FieldLabel>
                   <NativeSelect
-                    id={`fleet-level-${dim.key}`}
                     value={levelPicks[level]?.id ?? ''}
                     onChange={(e) => pickLevel(level, e.target.value)}
                     disabled={loadingLevel === level || options.length === 0}
@@ -429,7 +425,7 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
+                </Field>
               );
             })}
 
@@ -437,13 +433,13 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
             {rangeDims.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-2">
                 {rangeDims.map((dim) => (
-                  <div key={dim.key}>
-                    <Label htmlFor={`fleet-range-${dim.key}`}>
+                  <Field key={dim.key}>
+                    <FieldLabel>
                       {dim.label}
                       {dim.unit ? ` (${dim.unit})` : ''}
-                    </Label>
-                    <Input
-                      id={`fleet-range-${dim.key}`}
+                    </FieldLabel>
+                    <FieldControl
+                      name={`fleet-range-${dim.key}`}
                       inputMode="numeric"
                       value={rangeInputs[dim.key] ?? ''}
                       onChange={(e) =>
@@ -451,7 +447,7 @@ function AddVehicleForm({ domains, onAdd }: AddVehicleFormProps) {
                       }
                       placeholder="e.g. 2020"
                     />
-                  </div>
+                  </Field>
                 ))}
               </div>
             )}

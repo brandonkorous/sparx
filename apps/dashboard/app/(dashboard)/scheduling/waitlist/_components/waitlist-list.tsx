@@ -16,7 +16,7 @@ import {
   Input,
   Label,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { CalendarPlus, MoreHorizontal, Send, Trash2 } from 'lucide-react';
 
@@ -90,7 +90,7 @@ function BookOfferModal({
           <DialogTitle>Book for {entry.customerName}</DialogTitle>
         </div>
         <div className="flex flex-col gap-3 px-1 py-2">
-          <p className="text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-base-content/70 text-xs">
             {entry.serviceName} · requested {formatDate(entry.desiredFrom)} –{' '}
             {formatDate(entry.desiredTo)}
           </p>
@@ -111,14 +111,12 @@ function BookOfferModal({
             </Button>
           </div>
           {loading ? (
-            <div className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
+            <div className="text-base-content/70 flex items-center gap-2 text-sm">
               <Loading size="sm" /> Checking…
             </div>
           ) : slots ? (
             slots.length === 0 ? (
-              <p className="text-sm text-[var(--color-muted-foreground)]">
-                No open times that day.
-              </p>
+              <p className="text-base-content/70 text-sm">No open times that day.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {slots.map((s) => (
@@ -194,7 +192,7 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
               <tr key={e.id}>
                 <td className="font-medium">{e.customerName}</td>
                 <td>{e.serviceName ?? 'Service'}</td>
-                <td className="text-[var(--color-muted-foreground)]">
+                <td className="text-base-content/70">
                   {formatDate(e.desiredFrom)} – {formatDate(e.desiredTo)}
                 </td>
                 <td>
@@ -225,10 +223,7 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
                             <CalendarPlus className="mr-2 h-4 w-4" />
                             Book a slot
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => void remove(e)}
-                            className="text-[var(--color-danger)]"
-                          >
+                          <DropdownMenuItem onClick={() => void remove(e)} className="text-danger">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Remove
                           </DropdownMenuItem>

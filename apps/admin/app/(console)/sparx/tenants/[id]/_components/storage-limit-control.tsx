@@ -8,7 +8,9 @@
 // GB and converts to bytes on save.
 
 import * as React from 'react';
-import { Button, Card, Heading, Input, Label, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Button, Card, Heading, Stack, Text, toast, useConfirm } from '@sparx/ui';
+import { Field, FieldControl, FieldLabel } from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { formatBytes } from '@/lib/format';
 import { setTenantStorageLimitAction } from '../actions';
 
@@ -29,18 +31,19 @@ export function StorageLimitControl({
   const [gb, setGb] = React.useState(toGbInput(currentLimitBytes));
   const [pending, startTransition] = React.useTransition();
 
+  const v = useFieldValidation(
+    { gb },
+    { gb: rule.number({ gt: 0, message: 'Enter a limit in GB greater than zero.' }) }
+  );
+
   // Reconcile to server truth after a save/clear revalidates the page.
   React.useEffect(() => {
     setGb(toGbInput(currentLimitBytes));
   }, [currentLimitBytes]);
 
   function save() {
-    const value = Number.parseFloat(gb);
-    if (!Number.isFinite(value) || value <= 0) {
-      toast.error('Enter a limit in GB greater than zero.');
-      return;
-    }
-    const limitBytes = Math.round(value * BYTES_PER_GB);
+    if (!v.validate()) return;
+    const limitBytes = Math.round(Number.parseFloat(gb) * BYTES_PER_GB);
     startTransition(async () => {
       const res = await setTenantStorageLimitAction(tenantId, limitBytes);
       if (res.ok) toast.success(`Storage limit set to ${formatBytes(limitBytes)}.`);
@@ -75,18 +78,19 @@ export function StorageLimitControl({
           </Text>
         </Stack>
         <div className="flex flex-wrap items-end gap-2">
-          <Stack gap={1} className="max-w-[200px] flex-1">
-            <Label htmlFor="storage-gb">Limit (GB)</Label>
-            <Input
-              id="storage-gb"
+          <Field {...v.field('gb')} className="max-w-[200px] flex-1">
+            <FieldLabel>Limit (GB)</FieldLabel>
+            <FieldControl
+              name="storage-gb"
               type="number"
               min="0"
               step="0.1"
               value={gb}
               onChange={(e) => setGb(e.target.value)}
+              {...v.control('gb')}
               placeholder="e.g. 50"
             />
-          </Stack>
+          </Field>
           <Button type="button" color="primary" onClick={save} disabled={pending} loading={pending}>
             Save limit
           </Button>

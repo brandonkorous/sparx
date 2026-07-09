@@ -4,7 +4,16 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createAuthor } from './actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
@@ -32,11 +41,15 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [errorField, setErrorField] = React.useState<string | null>(null);
 
   const [displayName, setDisplayName] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [bio, setBio] = React.useState('');
+
+  const v = useFieldValidation(
+    { display_name: displayName, slug },
+    { display_name: rule.required('Display name is required.') }
+  );
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -85,12 +98,7 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
 
   function submit() {
     setError(null);
-    setErrorField(null);
-    if (!displayName.trim()) {
-      setError('Display name is required.');
-      setErrorField('display_name');
-      return;
-    }
+    if (!v.validate()) return;
     const data = new FormData();
     data.append('display_name', displayName.trim());
     data.append('slug', slug.trim());
@@ -98,16 +106,17 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
     startTransition(async () => {
       const result = await createAuthor(data);
       if (!result.ok || !result.data) {
-        setError(result.error ?? 'Could not create author.');
-        setErrorField(result.field ?? null);
+        const message = result.error ?? 'Could not create author.';
+        if (result.field === 'slug' || result.field === 'display_name') {
+          v.setServerErrors({ [result.field]: message });
+        } else {
+          setError(message);
+        }
         return;
       }
       onCreated(result.data.id);
     });
   }
-
-  const slugError = errorField === 'slug' ? error : null;
-  const generalError = errorField === 'slug' ? null : error;
 
   return (
     <ModuleProvider module="cms" className="h-full">
@@ -135,59 +144,49 @@ export function AuthorCreateForm({ surface }: AuthorCreateFormProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="display_name">
-                      Display name{' '}
-                      <span className="text-error" aria-hidden="true">
-                        *
-                      </span>
-                    </Label>
-                    <Input
-                      id="display_name"
+                  <Field {...v.field('display_name')} className="flex-1">
+                    <FieldLabel required>Display name</FieldLabel>
+                    <FieldControl
+                      name="display_name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
+                      {...v.control('display_name')}
                       placeholder="Jane Doe"
                     />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="slug">Slug (optional)</Label>
-                    <Input
-                      id="slug"
+                  </Field>
+                  <Field {...v.field('slug')} className="flex-1">
+                    <FieldLabel>Slug (optional)</FieldLabel>
+                    <FieldControl
+                      name="slug"
                       value={slug}
                       onChange={(e) => setSlug(e.target.value)}
+                      {...v.control('slug')}
                       placeholder="jane-doe"
-                      aria-invalid={slugError ? true : undefined}
-                      aria-describedby={slugError ? 'slug-error' : undefined}
                     />
-                    {slugError && (
-                      <p
-                        id="slug-error"
-                        className="text-danger text-xs"
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {slugError}
-                      </p>
-                    )}
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
+                <Field>
+                  <FieldLabel>Bio</FieldLabel>
+                  <FieldControl
+                    name="bio"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    rows={3}
-                    placeholder="Short author blurb…"
+                    render={<Textarea rows={3} placeholder="Short author blurb…" />}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
-          {generalError && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
-              {generalError}
-            </p>
+          {error && (
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
+              {error}
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

@@ -4,7 +4,7 @@
 // Recursive: a group's children are rendered as RuleNodes themselves.
 
 import { Plus, Trash2 } from 'lucide-react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { PredicateRow } from './predicate-row';
 import { type GroupKind, type Rule, emptyGroup, emptyNot, emptyPredicate } from './types';
@@ -42,7 +42,7 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
 
   if (rule.kind === 'not') {
     return (
-      <div className="flex flex-col gap-2 rounded-md border border-dashed border-[var(--color-border-default)] p-3">
+      <div className="border-base-300 flex flex-col gap-2 rounded-md border border-dashed p-3">
         <div className="flex flex-row items-center justify-between">
           <Badge color="warning" variant="soft" size="sm">
             NOT
@@ -71,10 +71,10 @@ export function RuleNode({ rule, onChange, onRemove, depth = 0 }: Props) {
   // AND / OR
   const groupKind: GroupKind = rule.kind;
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded-md border p-3">
       <div className="flex flex-row items-center justify-between">
         <select
-          className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-xs font-medium uppercase"
+          className="border-base-300 bg-base-100 rounded-md border px-2 py-1 text-xs font-medium uppercase"
           value={groupKind}
           onChange={(e) => onChange({ kind: e.target.value as GroupKind, children: rule.children })}
         >

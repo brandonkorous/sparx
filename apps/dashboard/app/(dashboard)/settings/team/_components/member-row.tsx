@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Avatar, Badge, Button, Select, Tooltip } from 'silicaui-react';
+import { Avatar, Badge, Button, Select, Tooltip } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { UserX } from 'lucide-react';
 import { ASSIGNABLE_ORG_ROLES, type AssignableOrgRole } from '@sparx/auth/org-roles';
@@ -64,7 +64,7 @@ export function MemberRow({
           <div className="flex min-w-0 flex-col gap-0">
             <p className="truncate font-medium">
               {displayName}
-              {isSelf ? <span className="text-[var(--color-text-secondary)]"> (you)</span> : null}
+              {isSelf ? <span className="text-base-content/70"> (you)</span> : null}
             </p>
             <p className="text-base-content/70 truncate text-sm">{member.email}</p>
           </div>

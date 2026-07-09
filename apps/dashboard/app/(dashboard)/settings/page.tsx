@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardActions, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardActions, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { SETTINGS_NAV } from './nav';
 
 export default function SettingsPage() {
@@ -19,7 +19,7 @@ export default function SettingsPage() {
               <Card key={g.id}>
                 <CardBody>
                   <div className="flex flex-row items-center gap-2">
-                    <span aria-hidden className="text-[var(--color-text-secondary)]">
+                    <span aria-hidden className="text-base-content/70">
                       <Icon className="h-4 w-4" />
                     </span>
                     <CardTitle>{g.label}</CardTitle>

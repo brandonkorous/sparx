@@ -14,11 +14,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Loading,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 
 import { applyBulkPriceAction, previewBulkPriceAction } from '../../product-actions';
 import type { BulkPricePreview, PriceAdjustment } from '../_lib/bulk-price-types';
@@ -63,10 +66,24 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
   }
 
   const amountNum = Number(amount);
-  const amountFilled = amount.trim() !== '' && Number.isFinite(amountNum) && amountNum >= 0;
-  // A decrease can't exceed 100 %.
-  const amountValid =
-    amountFilled && !(mode === 'percent' && direction === 'decrease' && amountNum > 100);
+
+  // A decrease can't exceed 100 %; the amount must be a non-negative number.
+  const v = useFieldValidation(
+    { amount, mode, direction },
+    {
+      amount: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter an amount.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a valid number.';
+        if (n < 0) return 'Cannot be negative.';
+        if (mode === 'percent' && direction === 'decrease' && n > 100) {
+          return 'A decrease can’t be more than 100%.';
+        }
+        return null;
+      },
+    }
+  );
 
   function buildAdjustment(): PriceAdjustment {
     if (mode === 'set') return { mode: 'set', priceCents: Math.round(amountNum * 100) };
@@ -76,6 +93,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
   }
 
   async function runPreview() {
+    if (!v.validate()) return;
     setBusy(true);
     setError(null);
     const res = await previewBulkPriceAction(productIds, buildAdjustment());
@@ -119,7 +137,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
         ) : (
           <div className="flex flex-col gap-5 py-2">
             <div className="flex flex-col gap-2">
-              <Label>Adjustment</Label>
+              <FieldLabel>Adjustment</FieldLabel>
               <div className="flex flex-row flex-wrap gap-2">
                 {MODES.map((m) => (
                   <Button
@@ -139,7 +157,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
 
             {mode !== 'set' ? (
               <div className="flex flex-col gap-2">
-                <Label>Direction</Label>
+                <FieldLabel>Direction</FieldLabel>
                 <div className="flex flex-row gap-2">
                   <Button
                     type="button"
@@ -165,33 +183,32 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
               </div>
             ) : null}
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="bulk-price-amount">{amountLabel}</Label>
+            <Field {...v.field('amount')} className="gap-2">
+              <FieldLabel htmlFor="bulk-price-amount">{amountLabel}</FieldLabel>
               <div className="flex flex-row items-center gap-2">
                 {unit === '$' ? <span className="text-base-content/70 text-sm">$</span> : null}
-                <Input
+                <FieldControl
                   id="bulk-price-amount"
                   type="number"
                   min={0}
                   step={mode === 'percent' ? 1 : 0.01}
-                  inputMode="decimal"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder={mode === 'percent' ? '10' : '0.00'}
                   className="max-w-40"
+                  {...v.control('amount')}
                 />
                 {unit === '%' ? <span className="text-base-content/70 text-sm">%</span> : null}
               </div>
-              {amountFilled && !amountValid ? (
-                <p className="text-xs text-[var(--color-danger)]">
-                  A decrease can’t be more than 100%.
-                </p>
-              ) : null}
-            </div>
+            </Field>
           </div>
         )}
 
-        {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+        {error && (
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {error}
+          </FieldStatus>
+        )}
 
         <div className="mt-4 flex justify-end gap-2">
           {preview ? (
@@ -222,7 +239,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
               <Button
                 color="module"
                 onClick={() => void runPreview()}
-                disabled={busy || !amountValid}
+                disabled={busy || !v.isValid}
                 iconStart={busy ? <Loading className="h-4 w-4" /> : undefined}
               >
                 Preview changes
@@ -239,7 +256,7 @@ function PreviewStep({ preview }: { preview: BulkPricePreview }) {
   return (
     <div className="flex flex-col gap-3 py-2">
       <p className="text-base-content/70 text-sm">
-        <span className="font-medium text-[var(--color-text-primary)]">{preview.label}.</span>{' '}
+        <span className="text-base-content font-medium">{preview.label}.</span>{' '}
         {preview.changedVariantCount} of {preview.variantCount} variant
         {preview.variantCount === 1 ? '' : 's'} across {preview.productCount} product
         {preview.productCount === 1 ? '' : 's'} will change.
@@ -273,9 +290,7 @@ function PreviewStep({ preview }: { preview: BulkPricePreview }) {
                   <td className="text-right tabular-nums">
                     <span
                       className={
-                        changed
-                          ? 'text-sm font-medium text-[var(--module-active)]'
-                          : 'text-base-content/70 text-sm'
+                        changed ? 'text-module text-sm font-medium' : 'text-base-content/70 text-sm'
                       }
                     >
                       {priceRange(p.newMinCents, p.newMaxCents)}

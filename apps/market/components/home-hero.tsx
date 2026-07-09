@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { Container } from '@/components/ui/layout';
 import { HERO_IMAGE, HERO_ALT } from '@/lib/editorial';

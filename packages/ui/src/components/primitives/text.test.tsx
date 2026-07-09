@@ -21,6 +21,6 @@ describe('Text', () => {
 
   it('uses muted token for variant="muted"', () => {
     render(<Text variant="muted">caption</Text>);
-    expect(screen.getByText('caption').className).toMatch(/text-\[var\(--color-text-secondary\)\]/);
+    expect(screen.getByText('caption').className).toMatch(/text-base-content\/70/);
   });
 });

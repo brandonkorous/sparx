@@ -6,7 +6,7 @@
 // and the count loss (the platform destructive-action rule).
 
 import * as React from 'react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { statusTone, useConfirm } from '@sparx/ui';
 import { disconnectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelConnectionView } from '../_types';
@@ -53,7 +53,7 @@ export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) 
   }
 
   return (
-    <div className="flex flex-row items-center gap-3 rounded-md border border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex flex-row items-center gap-3 rounded-md border p-3">
       <div className="flex flex-1 flex-col gap-1">
         <div className="flex flex-row items-center gap-2">
           <p className="text-base font-medium">{name}</p>

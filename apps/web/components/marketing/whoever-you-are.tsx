@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, SectionHeader, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { VideoMontage } from './video-montage';
@@ -47,11 +47,10 @@ export function WhoeverYouAre() {
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button asChild size="lg" variant="solid">
-                <a href={signupHref('whoever')}>Start free →</a>
+              <Button size="lg" variant="solid" render={<a href={signupHref('whoever')} />}>
+                Start free →
               </Button>
               <Button
-                asChild
                 size="lg"
                 variant="outline"
                 style={{
@@ -59,8 +58,9 @@ export function WhoeverYouAre() {
                   color: '#ffffff',
                   borderColor: 'rgba(255, 255, 255, 0.4)',
                 }}
+                render={<a href="#modules" />}
               >
-                <a href="#modules">Explore the modules</a>
+                Explore the modules
               </Button>
             </div>
             <span

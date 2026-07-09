@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import { archivePriceListAction, updatePriceListAction } from '../../../pricing-actions';
@@ -56,7 +56,7 @@ export function PriceListStatusBar({
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
       {status === 'draft' && (
         <Button color="module" size="sm" disabled={pending} onClick={() => transition('active')}>
           Activate

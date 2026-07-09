@@ -13,7 +13,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import type { MarketplaceInstallState } from '../_types';

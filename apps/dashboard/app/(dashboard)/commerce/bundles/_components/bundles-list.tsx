@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -36,7 +36,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
       href={`/commerce/bundles/${b.id}`}
       entityType="bundle"
       entityId={b.id}
-      className={className ?? 'hover:text-[var(--module-active)]'}
+      className={className ?? 'hover:text-module'}
     >
       {b.bundleProductTitle}
     </EntityRowLink>
@@ -78,7 +78,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
   ];
 
   const card: SelectionCard<BundleRow> = {
-    title: (b) => titleLink(b, 'truncate hover:text-[var(--module-active)]'),
+    title: (b) => titleLink(b, 'truncate hover:text-module'),
     badge: inventoryBadge,
     body: (b) => (
       <div className="flex flex-col gap-2">

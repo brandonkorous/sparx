@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.2.1
+**Version:** 1.2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-29
+**Last Updated:** 2026-07-08
 
 ---
 
@@ -21,9 +21,17 @@ color   ×   variant   ×   size   ×   shape
 ```
 
 so `<Button color="danger" variant="soft" size="lg" shape="wide" />` is expressible
-without enumerating the cartesian product by hand. It also brings the **Token Model v2**
-semantic palette (accent / info / neutral + `-content` pairs + `color-mix` derivation)
-_into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
+without enumerating the cartesian product by hand.
+
+> **Status: shipped on silicaui.** The four axes below are exactly what shipped, but the
+> _resolution mechanism_ is no longer the hand-rolled `.sx-c-*` role-var recipe this doc
+> originally proposed. The dashboard migrated 100% onto **silicaui** (`@wizeworks/silicaui`, a
+> Tailwind v4 plugin) — it emits the `color × variant × size × shape` classes
+> (`btn-<color> btn-<variant> btn-<size> btn-<shape>`) directly, and the semantic palette lives
+> in **`@sparx/brand/theme.css`** (`--color-primary/secondary/accent/neutral/info/success/warning/
+> error/danger` + `-content`) rather than `@sparx/ui`'s `tokens.css`. `sparx` and `silica` are the
+> same design language, so the API here is API-identical to what silica ships. §3–§4 below are
+> updated to the silica mechanism; the axis semantics (§2) are unchanged.
 
 ### Decisions locked (2026-05-31)
 
@@ -32,7 +40,7 @@ _into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
 | 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                       |
 | 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                 |
 | 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                           |
-| 4   | **Color mechanism** | **Role-variable indirection (no codegen).** Variants are written once against generic role vars (`--c-bg`/`--c-content`/`--c-hover`/`--c-tint`); the `color` axis remaps them, so `color × variant` composes automatically and **runtime/custom theme colors work with no rebuild** (§4). Call-site migration via codemod (§7). |
+| 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). The Radix controls that can't take a color class use a per-instance `--sx-sel` via `colorVars()`. |
 
 > **Relationship to Token Model v2 (doc 33).** Doc 33 §6 deliberately scoped `@sparx/ui`
 > _out_ of the v2 token refactor ("the dashboard depends on them and that's out of scope").
@@ -51,7 +59,7 @@ _into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
 
 | Token       | Meaning                           | Notes                                     |
 | ----------- | --------------------------------- | ----------------------------------------- |
-| `primary`   | Brand action                      | = `--sparx-primary` (`#6366F1`)           |
+| `primary`   | Brand action                      | = `--color-primary` (`#6366F1`)           |
 | `secondary` | Brand-adjacent secondary identity | new; defaults to a slate/indigo-muted     |
 | `accent`    | Pop / highlight                   | new                                       |
 | `neutral`   | Default, low-chroma UI            | new; the "no color specified" default     |
@@ -59,32 +67,33 @@ _into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
 | `success`   | Positive status                   | normalizes existing `--color-success*`    |
 | `warning`   | Caution status                    | normalizes existing `--color-warning*`    |
 | `danger`    | Destructive / error status        | normalizes existing `--color-danger*`     |
-| `module`    | The active module's color         | reads `--module-active*` (ModuleProvider) |
+| `module`    | The active module's color         | reads `--color-module` (ModuleProvider)   |
 
-`module` is special: it tracks `--module-active` so a `<Button color="module">` inside a
-`<ModuleProvider module="cms">` is teal automatically (existing behaviour, kept).
+`module` is special: it tracks `--color-module` so a `<Button color="module">` inside a
+`<ModuleProvider module="cms">` is teal automatically (existing behaviour, kept). `ModuleProvider`
+now sets **only** `--color-module` (+ `-content`) on its subtree; the old `--module-active*` family
+is gone.
 
-`<Card variant="module">`'s tint background works the same way — it reads `--module-active`
-**directly** (not via the shared `--c-bg` role var, which inherits and would let an
-ancestor's color leak into a nested card) and mixes it into `--color-bg-surface`
-(`color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`) so the tint is
-theme-aware. So a card's tint follows the nearest `<ModuleProvider>`: wrap a cross-module
-panel in its provider and its `module` cards re-tint with no props. The Card `accent` prop
-is an **escape hatch** for a one-off color with no surrounding provider — not the normal
-way to color a card.
+`<Card variant="module">`'s tint background is the universal `soft` treatment — `bg-module bg-soft`,
+which paints `color-mix(in oklab, var(--color-module) 15%, var(--color-base-100))`, theme-aware and
+computed once. It follows the nearest `<ModuleProvider>`: wrap a cross-module panel in its provider
+and its `module` cards re-tint with no props. The Card `accent` prop is an **escape hatch** for a
+one-off color with no surrounding provider (it sets `--sx-sel`) — not the normal way to color a card.
 
 ### 2.2 `variant` — style / treatment
 
-| Token     | Treatment                                                             |
-| --------- | --------------------------------------------------------------------- |
-| `solid`   | Filled: `bg-{color}`, `text-{color}-content`, hover → `{color}-hover` |
-| `soft`    | Tinted: `bg-{color}-tint`, `text-{color}` (low-emphasis fill)         |
-| `outline` | Bordered transparent: `border-{color}`, `text-{color}`, hover → tint  |
-| `dashed`  | `outline` + `border-dashed` (DaisyUI `dash`)                          |
-| `ghost`   | No border/bg, `text-{color}`, hover → tint                            |
-| `link`    | Inline text link, underline-on-hover, no padding/height               |
+| Token     | Treatment                                                     | silica class      |
+| --------- | ------------------------------------------------------------- | ----------------- |
+| `solid`   | Filled: `bg-<color>`, `text-<color>-content`                  | bare `btn`        |
+| `soft`    | Tinted: `bg-<color> bg-soft`, `text-<color>` (low-emphasis)   | `btn-soft`        |
+| `outline` | Bordered transparent: `border-<color>`, `text-<color>`        | `btn-outline`     |
+| `dashed`  | `outline` + dashed border                                     | **`btn-dash`** (silica spells it `dash`) |
+| `ghost`   | No border/bg, `text-<color>`, hover → tint                    | `btn-ghost`       |
+| `link`    | Inline text link, underline-on-hover, no padding/height       | `btn-link`        |
 
-`solid` is the default treatment for Button; `soft` for Badge/Tag; `soft` for Alert.
+`solid` is the default treatment for Button; `soft` for Badge/Tag; `soft` for Alert. A `soft` fill
+is `bg-<color> bg-soft` — there are no baked `-tint` tokens; `bg-soft` mixes the current accent into
+the base surface, so it is theme-aware and can't drift.
 
 ### 2.3 `size`
 
@@ -106,175 +115,116 @@ icon buttons become `shape="square" size="md"` (geometry × size, orthogonal).
 
 ---
 
-## 3. Token additions (`packages/ui/src/tokens.css`)
+## 3. Color tokens (`@sparx/brand/theme.css`) + silica derivation
 
-### 3.1 Per-color quartet
+### 3.1 Per-color pair (stored)
 
-Every semantic color gets a four-token quartet (DaisyUI parity: base + content,
-plus the two derived shades the variants need):
-
-```css
---color-{c}:          /* base fill (hex, stored)            */
---color-{c}-content:  /* text/icon on the base fill         */
---color-{c}-hover:    /* solid hover — derived              */
---color-{c}-tint:     /* soft/ghost/outline-hover bg — derived */
-```
-
-### 3.2 Derivation (`color-mix` in OKLCH)
-
-Hover and tint are **derived in CSS** from the stored base (same strategy as v2 §4),
-so a single base hex yields a coherent set and dark mode adapts for free:
+Every semantic color is stored as a **base + content pair** in `@sparx/brand/theme.css` — no
+stored hover/tint quartet; those are derived at the class level by silicaui:
 
 ```css
---color-primary: #6366f1;
---color-primary-content: #ffffff;
---color-primary-hover: color-mix(in oklch, var(--color-primary) 88%, black);
---color-primary-tint: color-mix(in oklch, var(--color-primary) 12%, transparent);
+--color-{c}:          /* base fill (hex, stored)     */
+--color-{c}-content:  /* text/icon on the base fill  */
 ```
 
-`-tint` mixes toward **`transparent`** (not white) so the soft fill reads correctly over
-any surface in both light and dark mode without a second dark-mode declaration.
+The registered slots are `primary secondary accent neutral info success warning error danger`
+(+ `module`, set by `ModuleProvider`). Light `--color-primary: #6366f1` / dark `#818cf8`;
+`--color-secondary: #db2777` / `#f472b6`; warning keeps its dark amber ink `--color-warning-content:
+#422006`. Each color is defined **once** (light + dark selectors), so there is no duplicate `:root`
+set to clobber the dark values — the old duplication was a real bug, now dead.
 
-### 3.3 Legacy aliases (no breakage)
+### 3.2 Derivation is done by silica, not stored tokens
 
-Existing tokens that other components read are **kept as aliases**, not deleted:
+There are **no** `--color-{c}-hover` / `--color-{c}-tint` tokens. The `soft` treatment is the
+plugin's `bg-soft` utility: `bg-<color> bg-soft` paints `color-mix(in oklab, var(--color-<color>)
+15%, base)`, theme-aware and computed once. Solid hover comes from silica's own state classes. So a
+single base hex yields a coherent set and dark mode adapts for free, with nothing to keep in sync.
 
-```css
---color-success-tint: var(--color-success-tint); /* already this name */
---color-success-text: var(--color-success-content); /* alias old → new   */
-```
+### 3.3 Reading surfaces + text opacity
 
-So `--color-{success|warning|danger}-text` (used in today's Badge and elsewhere) keep
-resolving while we migrate. `--sparx-primary*` and `--module-active*` are untouched.
+Surfaces are `--color-base-100` (topmost reading surface) / `--color-base-200` (page ground) /
+`--color-base-300` (deepest / borders); text is `--color-base-content` with opacity modifiers for
+the rest (`text-base-content/70` secondary, `/60` muted, `/50` tertiary, `/40` disabled). Borders
+are `border-base-300` (default) / `border-base-content/30` (strong). The old `--color-bg-*` /
+`--color-surface-*` / `--color-text-*` / `--color-border-*` names are gone.
 
-### 3.4 What we are NOT changing
+### 3.4 What lives elsewhere / is unchanged
 
-- No change to `--space-*`, `--radius-*`, `--shadow-*`, type tokens. Shape/rhythm stays
-  as-is in the dashboard (v2's radius-trio / space-base are a site concern).
-- No change to the `--st-*` layer or `@sparx/site-themes`.
-- No new dark-mode declarations beyond the few base colors that need a dark variant
-  (`neutral`, surfaces already present). Derived tokens inherit automatically.
+- Non-color tokens (`--space-*`, `--radius-*`, `--shadow-*`, type, motion, `--chart-*`) stay in
+  `packages/ui/src/tokens.css`. Shape/rhythm is unchanged in the dashboard.
+- No change to the `--st-*` layer or `@sparx/site-themes` (the site system is untouched — its
+  `--st-*` bridge now simply targets silica base tokens: `colorBackground → --color-base-200`,
+  `colorForeground → --color-base-content`, `colorPrimary → --color-primary`).
 
 ---
 
-## 4. Color via role-variable indirection (no codegen)
+## 4. Color via silicaui plugin classes
 
 ### 4.1 The mechanism
 
-Each color-bearing element carries a set of **role variables** describing "the current
-color of this element":
+silicaui's Tailwind v4 plugin **statically emits a component class per axis value** from the
+registered palette (§5 of doc 23). A `<Button color variant size shape>` maps to a class string:
 
 ```
---c-bg       /* base fill           */
---c-content  /* text/icon on the fill */
---c-hover    /* solid hover shade   */
---c-tint     /* soft / hover-tint bg */
+btn  btn-<color>  btn-<variant>  btn-<size>  btn-<shape>
 ```
 
-The **`variant` (treatment)** classes are written **once**, against the role vars — six
-static class strings, fully visible to Tailwind:
+- **color** → `btn-primary / btn-secondary / btn-accent / btn-neutral / btn-info / btn-success /
+  btn-warning / btn-error / btn-danger / btn-module`
+- **variant** → bare `btn` (solid), `btn-soft`, `btn-outline`, `btn-dash` (dashed), `btn-ghost`,
+  `btn-link`
+- **size** → `btn-xs … btn-xl`
+- **shape** → `btn-square / btn-circle / btn-block / btn-wide`
 
-```ts
-const variant = {
-  solid: 'bg-[var(--c-bg)] text-[var(--c-content)] hover:bg-[var(--c-hover)]',
-  soft: 'bg-[var(--c-tint)] text-[var(--c-bg)] hover:brightness-95',
-  outline: 'border border-[var(--c-bg)] text-[var(--c-bg)] hover:bg-[var(--c-tint)]',
-  dashed: 'border border-dashed border-[var(--c-bg)] text-[var(--c-bg)] hover:bg-[var(--c-tint)]',
-  ghost: 'text-[var(--c-bg)] hover:bg-[var(--c-tint)]',
-  link: 'h-auto p-0 text-[var(--c-bg)] underline-offset-4 hover:underline',
-};
-```
+`color × variant` **composes automatically** at the class level — the plugin already emitted every
+`btn-<color>` and every `btn-<variant>`, so there is no cartesian product, no `compoundVariants`, no
+codegen, and no per-component Tailwind authoring. The same holds for `badge-*`, `alert-*`,
+`bg-<color>` + `bg-soft`, etc. `module` tracks `--color-module` (set by `ModuleProvider`), so
+`<Button color="module">` inside `<ModuleProvider>` stays automatic.
 
-The **`color` axis** is a thin mapping that just **reassigns the role vars** to a palette
-slot. These are plain CSS classes in `tokens.css` (not Tailwind utilities):
+For the few **Radix-based controls** (Checkbox/Radio/Switch/Slider) that can't take a plugin color
+class, `@sparx/ui` sets a per-instance `--sx-sel` / `--sx-sel-fg` via the `colorVars(color)` helper,
+consumed by `data-[state=checked]:bg-[var(--sx-sel)]`-style classes.
 
-```css
-.sx-c-primary {
-  --c-bg: var(--color-primary);
-  --c-content: var(--color-primary-content);
-  --c-hover: var(--color-primary-hover);
-  --c-tint: var(--color-primary-tint);
-}
-.sx-c-success {
-  --c-bg: var(--color-success);
-  --c-content: var(--color-success-content);
-  --c-hover: var(--color-success-hover);
-  --c-tint: var(--color-success-tint);
-}
-/* … one rule per slot … */
-.sx-c-module {
-  --c-bg: var(--module-active);
-  --c-content: var(--module-active-content);
-  --c-hover: var(--module-active-hover);
-  --c-tint: var(--module-active-tint);
-}
-```
+### 4.2 Why plugin emission wins — custom theme colors
 
-Each role-var read carries a `neutral` fallback — e.g. `bg-[var(--c-bg,var(--color-neutral))]`
-— so an element with an unknown/unmapped `color` degrades to neutral instead of rendering
-unstyled.
+Because the plugin emits static classes for every registered slot, a tenant/theme color change does
+**not** require rebuilding the component package:
 
-`color × variant` now **composes automatically**: the `color` class sets the role vars,
-the `variant` class consumes them. No cartesian product, no `compoundVariants`, no codegen
-— ~9 color rules + 6 variant strings instead of 48 cells per component, and the variant
-treatment is authored once and reused by Button/Badge/Tag/Alert.
+- **Re-skinning an existing slot** (the common case): the theme overrides the _value_ —
+  `--color-primary: <their hex>` in the theme layer — and every `bg-primary` / `btn-primary` /
+  `bg-primary bg-soft` element updates live (the `soft` mix recomputes). Zero component change.
+- The plugin's build-time emission is satisfied **once, for every registered color that will ever
+  exist** — the property a per-component codegen approach could not provide.
 
-### 4.2 Why this beats codegen — custom theme colors
-
-This is the **decisive** advantage. A tenant custom theme color does **not**
-require regenerating or rebuilding the component package, because the component CSS only
-ever references role vars and the `color` mapping is open-ended:
-
-- **Re-skinning an existing slot** (the common case, matches Token Model v2's fixed
-  semantic slots): the theme overrides the _value_ — `--color-primary: <their hex>` — and
-  the derived `-hover`/`-tint` recompute via `color-mix`. Every `.sx-c-primary` element
-  updates live. Zero component change.
-- **A brand-new named color** created at runtime: the theme layer emits one extra rule
-  `.sx-c-<name> { --c-bg: …; --c-content: …; --c-hover: …; --c-tint: … }` (and, if it wants
-  derivation, a `--color-<name>` quartet). The component accepts `color="<name>"` as a
-  passthrough string. Nothing in `@sparx/ui` is rebuilt — Tailwind already shipped the
-  `var(--c-*)` treatment classes; only a CSS rule is added.
-
-Because the treatment classes are static `var(--c-*)` references, Tailwind's build-time
-scan is satisfied **once, for all colors that will ever exist** — the exact property the
-codegen approach could not provide.
-
-### 4.3 Component anatomy
+### 4.3 Component usage
 
 ```tsx
-// button.tsx — every axis is a static map; nothing generated.
-const buttonVariants = cva(BASE, {
-  variants: {
-    color:   { primary:'sx-c-primary', secondary:'sx-c-secondary', accent:'sx-c-accent',
-               neutral:'sx-c-neutral', info:'sx-c-info', success:'sx-c-success',
-               warning:'sx-c-warning', danger:'sx-c-danger', module:'sx-c-module' },
-    variant: { solid:…, soft:…, outline:…, dashed:…, ghost:…, link:… },  // the 6 above
-    size:    { xs:…, sm:…, md:…, lg:…, xl:… },
-    shape:   { default:'', wide:…, block:'w-full', square:…, circle:… },
-  },
-  defaultVariants: { color:'primary', variant:'solid', size:'md', shape:'default' },
-});
+// Feature code — the primitive from @wizeworks/silicaui-react; the classes are the plugin's.
+import { Button } from '@wizeworks/silicaui-react';
 
-// color is typed as the known slots `| (string & {})` so a runtime custom-color name
-// (e.g. color="brand-mint") is accepted without a type error — it maps to `sx-c-${color}`.
+<Button color="danger" variant="soft" size="lg" shape="wide">Delete</Button>;
+// → class="btn btn-danger btn-soft btn-lg btn-wide"
+
+<Button>Save</Button>;                       // defaults: primary / solid / md
+<Button color="module" variant="outline" />; // module hue from the nearest ModuleProvider
 ```
 
-The `color` prop maps to `` `sx-c-${color}` `` (with the known union for autocomplete plus
-a `string` escape hatch for runtime colors). `module` keeps tracking `--module-active*`,
-so `<Button color="module">` inside `<ModuleProvider>` stays automatic.
+Defaults stay `color="primary" variant="solid" size="md"` so a bare `<Button>` is visually
+unchanged from the old sparx four-axis — the primitive swap was mechanical because the two systems
+share the API.
 
 ---
 
 ## 5. Components
 
-**Framing.** Every component is a hand-authored Radix/shadcn-pattern shell (Radix
-primitive + CVA + `cn()` + token vars). This work is a **comprehensive pass over the whole
-inventory** — each component gains the axes that fit its semantics, all backed by the v2
-token palette and the `--c-*` role-var mechanism. Not every component takes a full color
+**Framing.** The styled primitives are silicaui's (`@wizeworks/silicaui-react`), their appearance
+emitted by the silica plugin; the few interactive controls `@sparx/ui` keeps are Radix-backed
+shells that emit silica classes. Each component carries the axes that fit its semantics, backed by
+the `@sparx/brand` palette and the plugin classes (§4). Not every component takes a full color
 palette: action/status components do; structural ones take a relevant subset (size, a
-validation/state color, an accent). Axis treatments (`solid/soft/outline/…`) are authored
-once (§4.1) and shared, so applying them across many components is mostly wiring, not
-re-derivation.
+validation/state color, an accent). Axis treatments (`solid/soft/outline/…`) are silica utilities
+shared across Button/Badge/Tag/Alert, so the four-axis surface is uniform.
 
 ### 5.1 Tier A — full color axis (`color × variant` via role vars)
 
@@ -374,14 +324,22 @@ not guessed, and fixed by hand.
 
 ## 7. Build order
 
+> **Superseded by the silicaui migration.** Steps 1–2 below (the `--c-*` role-var recipe + the
+> `.sx-c-{color}` mapping classes + per-color quartets in `tokens.css`) describe the original
+> hand-rolled plan. As shipped, the palette lives in `@sparx/brand/theme.css` (base + content pairs
+> only) and the axis classes are emitted by silicaui's plugin (§4) — no quartets, no `.sx-c-*`. The
+> codemod / showcase / verify steps (3–6) still describe the sparx-internal migration accurately.
+
 1. **Tokens** — add the per-color quartets (`--color-{c}` / `-content` / `-hover` / `-tint`)
    with `color-mix` derivation + legacy aliases to `tokens.css`; add the `.sx-c-{color}`
    role-var mapping classes (§4.1); add `neutral`/`secondary`/`accent`/`info` dark-mode
-   bases. _No component change yet; nothing breaks._
+   bases. _No component change yet; nothing breaks._ _(As shipped: replaced by `@sparx/brand`
+   base+content pairs + the silica plugin.)_
 2. **Refactor color-bearing components** — Button, Badge, Tag onto the four axes. Variant
    treatments authored once against `--c-*` role vars (§4.1); `color` maps to `sx-c-${color}`
    with a `string` escape hatch for runtime custom colors. Clean break on the old `variant`
-   values — the codemod handles call sites (decision #1).
+   values — the codemod handles call sites (decision #1). _(As shipped: the primitives are
+   silicaui's; `color`/`variant` map to `btn-<color>`/`btn-<variant>`.)_
 3. **Codemod the apps** — run `migrate-variants.mjs`, review diffs, fix reported edge cases.
 4. **Net-new components** — Alert, Progress, Kbd, StatusDot, ButtonGroup; export from barrel.
 5. **Showcase** — rebuild `apps/dashboard/app/showcase/page.tsx` to render the **full
@@ -406,11 +364,11 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
 - **`color-mix(in oklch …)` support.** Evergreen browsers only — fine for the dashboard
   (authenticated app, modern browsers). Unlike the site we do not SSR-derive to hex;
   if a legacy browser matters later we precompute. Noted, not blocking.
-- **Runtime custom colors (the `string` escape hatch).** `color` accepts arbitrary strings
-  so a tenant color maps to `sx-c-<name>`. If the theme layer hasn't emitted that
-  `.sx-c-<name>` rule, the role vars fall back to the `neutral` defaults (graceful, not
-  broken). The theme/inspector that introduces custom slots owns emitting the matching rule
-  — documented as the contract, not enforced by the type.
+- **Runtime custom colors.** The registered slots are fixed at the plugin's `colors:` list (§5,
+  doc 23). A one-off color with no registered slot uses the `accent` escape hatch (a per-instance
+  `--sx-sel` via `colorVars()`), not a new `btn-<name>` class. Introducing a genuinely new named
+  slot means adding it to the plugin's `colors:` list and rebuilding — a deliberate, not runtime,
+  act (the dashboard is a fixed house palette, unlike per-tenant site themes).
 - **AA contrast on arbitrary `-content`.** Our palette is fixed (not tenant-set), so
   `-content` pairs are authored to clear AA once; no runtime contrast concern here (that's
   the site's problem, doc 33 §8).
@@ -433,11 +391,11 @@ status appears):
    partial), `info` (in motion), `danger` (failure / terminal-bad), or `neutral`
    (inert / retired). Green = good, amber = attention, red = problem, grey = inert.
 2. **Use the canonical resolver.** `statusTone(status)` and `statusLabel(status)`
-   are exported from `@sparx/ui` (defined alongside `Badge` in
-   `primitives/badge.tsx`). The dictionary covers the universal business-status
-   vocabulary, so the default is one line:
+   are exported from `@sparx/ui` (`utils/statusTone.ts`); `Badge` is the silica primitive.
+   The dictionary covers the universal business-status vocabulary, so the default is one line:
    ```tsx
-   import { Badge, statusTone, statusLabel } from '@sparx/ui';
+   import { Badge } from '@wizeworks/silicaui-react';
+   import { statusTone, statusLabel } from '@sparx/ui';
    <Badge color={statusTone(s)} variant="soft" size="sm">
      {statusLabel(s)}
    </Badge>;

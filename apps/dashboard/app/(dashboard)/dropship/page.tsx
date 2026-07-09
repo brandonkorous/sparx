@@ -26,7 +26,7 @@ import {
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -173,7 +173,7 @@ function marginTone(pct: number): { tone: 'success' | 'warning' | 'danger'; labe
 // Donut color cycle for the live orders-by-supplier split (top suppliers first).
 const DONUT_COLORS = [
   'module',
-  'var(--module-active-tint)',
+  'color-mix(in oklch, var(--color-module) 15%, transparent)',
   '#6ee7b7',
   '#a7f3d0',
   '#d1fae5',
@@ -366,9 +366,9 @@ export default async function DropshipPage() {
                 <p className="text-[1.65rem] leading-none font-medium">
                   {fmtMoneyCents(profitCents)}
                 </p>
-                <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
+                <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
                   Net profit on dropship orders ·{' '}
-                  <span className="text-[var(--color-text-secondary)]">last 30 days</span>
+                  <span className="text-base-content/70">last 30 days</span>
                 </p>
                 <OverviewRow
                   icon={<DollarSign className="h-4 w-4" />}
@@ -395,11 +395,7 @@ export default async function DropshipPage() {
                   icon={<TrendingUp className="h-4 w-4" />}
                   tone="success"
                   title="Net margin"
-                  right={
-                    <span className="text-[var(--module-active-text)]">
-                      {fmtMoneyCents(profitCents)}
-                    </span>
-                  }
+                  right={<span className="text-module">{fmtMoneyCents(profitCents)}</span>}
                 />
               </>
             ) : (
@@ -427,10 +423,10 @@ export default async function DropshipPage() {
                   valueFormat="number"
                   ariaLabel="Orders routed, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {volumeFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -606,9 +602,7 @@ export default async function DropshipPage() {
                   <TimelineItem key={a.key} showConnector={i < activityEntries.length - 1}>
                     <TimelineTitle>
                       <span className="font-medium">{a.what}</span>{' '}
-                      <span className="font-normal text-[var(--color-text-secondary)]">
-                        {a.detail}
-                      </span>
+                      <span className="text-base-content/70 font-normal">{a.detail}</span>
                     </TimelineTitle>
                     <TimelineTime>{a.when}</TimelineTime>
                   </TimelineItem>

@@ -20,7 +20,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import type { EntityType } from '@sparx/seo-audit';
 
 import { SeoReport, useSeoAudit } from '@/components/seo/seo-score';
@@ -88,7 +88,7 @@ export function SeoRowLink({
         className="block text-left hover:underline focus-visible:underline focus-visible:outline-none"
       >
         <div className="font-medium">{title}</div>
-        <div className="text-xs text-[var(--color-text-tertiary)]">{subtitle}</div>
+        <div className="text-base-content/50 text-xs">{subtitle}</div>
       </Link>
 
       {overlay === 'drawer' ? (
@@ -106,7 +106,7 @@ export function SeoRowLink({
       {overlay === 'modal' ? (
         <Dialog open onOpenChange={(o) => !o && setOverlay(null)}>
           <DialogContent className="p-0">
-            <div className="border-b border-[var(--color-border-default)] p-4 pr-10">
+            <div className="border-base-300 border-b p-4 pr-10">
               <DialogTitle>{title}</DialogTitle>
               <DialogDescription>{subtitle}</DialogDescription>
             </div>

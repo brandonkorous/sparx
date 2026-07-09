@@ -684,7 +684,7 @@ function DetailContentSkeleton({ fullBleed }: { fullBleed: boolean }) {
           <Skeleton key={i} className="h-7 w-20" />
         ))}
       </div>
-      <div className="space-y-4 rounded-lg border border-[var(--color-border-default)] p-4">
+      <div className="border-base-300 space-y-4 rounded-lg border p-4">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-9 w-full" />
         <Skeleton className="h-4 w-28" />

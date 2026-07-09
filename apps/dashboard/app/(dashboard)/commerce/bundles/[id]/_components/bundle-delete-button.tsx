@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
 import { useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { deleteBundleAction } from '../../../configurator-actions';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   type SelectionCard,
   type SelectionColumn,

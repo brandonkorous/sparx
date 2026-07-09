@@ -13,7 +13,14 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal } from 'lucide-react';
-import { Button, Checkbox, Drawer, DrawerContent, DrawerTitle, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Checkbox,
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import type { MarketplaceFacetBucket, MarketplaceListing } from '../../_types';
 
 import { ListingCard } from '../../_components/listing-card';
@@ -198,7 +205,7 @@ export function CategoryBrowse({
         ) : null}
 
         {items.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-lg border border-[var(--color-border)] p-10 text-center">
+          <div className="border-base-300 flex flex-col items-center gap-3 rounded-lg border p-10 text-center">
             <p className="text-base-content/70">No {singular}s match these filters.</p>
             <Button variant="outline" size="sm" onClick={() => router.push(pathname)}>
               Clear filters
@@ -234,7 +241,7 @@ export function CategoryBrowse({
         <DrawerContent side="bottom" className="max-h-[85vh] rounded-t-xl pt-2">
           <DrawerTitle className="px-4 pt-2 pb-1">Filters</DrawerTitle>
           <div className="overflow-y-auto p-4">{rail}</div>
-          <div className="border-t border-[var(--color-border)] p-4">
+          <div className="border-base-300 border-t p-4">
             <Button color="primary" className="w-full" onClick={() => setFiltersOpen(false)}>
               Show {total.toLocaleString()} results
             </Button>
@@ -281,10 +288,8 @@ function FacetRow({
   return (
     <label className="flex cursor-pointer items-center gap-2 py-1 text-sm">
       <Checkbox checked={checked} onChange={() => onToggle()} />
-      <span className="text-[var(--color-text-secondary)]">{label}</span>
-      <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
-        {count.toLocaleString()}
-      </span>
+      <span className="text-base-content/70">{label}</span>
+      <span className="text-base-content/50 ml-auto text-xs">{count.toLocaleString()}</span>
     </label>
   );
 }

@@ -6,7 +6,7 @@ import { cn } from '../../utils/cn';
 // keep feature pages free of raw Tailwind typography classes. Adding them
 // here is a spec extension — flag if doc 23 should be updated to match.
 
-const headingVariants = cva('font-medium tracking-tight text-[var(--color-text-primary)]', {
+const headingVariants = cva('text-base-content font-medium tracking-tight', {
   variants: {
     level: {
       1: 'text-3xl leading-tight',
@@ -14,7 +14,7 @@ const headingVariants = cva('font-medium tracking-tight text-[var(--color-text-p
       3: 'text-xl leading-snug',
       4: 'text-lg leading-snug',
       5: 'text-base',
-      6: 'text-sm tracking-wider text-[var(--color-text-secondary)] uppercase',
+      6: 'text-base-content/70 text-sm tracking-wider uppercase',
     },
   },
   defaultVariants: { level: 2 },

@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Eyebrow, EyebrowBadge, Spark } from './primitives';
 
 /**
@@ -30,7 +30,7 @@ export function ComingSoon({
         paddingBottom: 'clamp(96px, 12vw, 160px)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
         minHeight: 'calc(100vh - 80px)',
         display: 'flex',
         alignItems: 'center',
@@ -45,15 +45,17 @@ export function ComingSoon({
         }}
       >
         <EyebrowBadge
-          color="var(--sparx-primary)"
-          background="var(--sparx-primary-tint)"
+          color="var(--color-primary)"
+          background="color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))"
           text="#4338CA"
         >
           Coming soon
         </EyebrowBadge>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Eyebrow color="var(--color-text-tertiary)">{eyebrow}</Eyebrow>
+          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
+            {eyebrow}
+          </Eyebrow>
           <Display as="h1" size={88} lineHeight={84}>
             {title}
             <Spark />
@@ -65,7 +67,7 @@ export function ComingSoon({
             fontFamily: 'var(--font-sans)',
             fontSize: '18px',
             lineHeight: '30px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '640px',
             margin: 0,
           }}
@@ -85,7 +87,7 @@ export function ComingSoon({
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '13px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 textDecoration: 'none',
                 padding: '12px 0',
               }}

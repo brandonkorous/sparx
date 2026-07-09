@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -42,7 +42,7 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
       href={`/inventory/warehouses/${w.id}`}
       entityType="warehouse"
       entityId={w.id}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
+      className="hover:text-module font-mono text-xs"
     >
       {w.code}
     </EntityRowLink>

@@ -140,12 +140,7 @@ function ViewRow({
         title={view.isDefault ? 'Default view' : 'Set as default'}
         onClick={onDefault}
       >
-        <Star
-          className={cn(
-            'h-3.5 w-3.5',
-            view.isDefault && 'fill-current text-[var(--module-active)]'
-          )}
-        />
+        <Star className={cn('h-3.5 w-3.5', view.isDefault && 'text-module fill-current')} />
       </Button>
       <Button variant="ghost" size="xs" title="Delete view" onClick={remove}>
         <Trash2 className="h-3.5 w-3.5" />

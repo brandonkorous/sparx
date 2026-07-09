@@ -1,4 +1,4 @@
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { ModuleProvider } from '@sparx/ui';
 
 import { SampleBadge } from '../_components/overview-bits';
@@ -48,7 +48,7 @@ export function WebVitalsCard({ vitals }: { vitals: SiteVitals | null }) {
             {rows.map((r) => (
               <div
                 key={r.label}
-                className="flex items-center justify-between gap-2 border-b border-[var(--color-border-default)] py-3 last:border-b-0"
+                className="border-base-300 flex items-center justify-between gap-2 border-b py-3 last:border-b-0"
               >
                 <p className="text-base-content/70 text-sm">{r.label}</p>
                 <Badge color={r.tone} variant="soft">

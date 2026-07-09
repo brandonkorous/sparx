@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Settings2 } from 'lucide-react';
 
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -115,7 +115,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
             Product:{' '}
             <Link
               href={`/commerce/products/${template.productId}`}
-              className="underline hover:text-[var(--module-active)]"
+              className="hover:text-module underline"
             >
               {template.productTitle}
             </Link>

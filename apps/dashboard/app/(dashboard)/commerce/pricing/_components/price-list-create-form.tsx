@@ -3,7 +3,17 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   statusTone,
@@ -14,6 +24,7 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createPriceListAction } from '../../pricing-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -65,13 +76,19 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [currency, setCurrency] = React.useState('USD');
   const [channel, setChannel] = React.useState('');
   const [priority, setPriority] = React.useState('0');
+
+  // Field validation. `currency` carries no client rule but is validated-tracked
+  // so a server-side currency error maps onto its field.
+  const values = { name, currency };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -126,7 +143,7 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
 
   function submit() {
     setError(null);
-    setFieldErrors({});
+    if (!v.validate()) return;
     const input = {
       name: name.trim(),
       description: description.trim() || undefined,
@@ -137,10 +154,13 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
     startTransition(async () => {
       const result = await createPriceListAction(input);
       if (!result.ok) {
-        setError(result.error.message);
-        const map: Record<string, string> = {};
-        for (const d of result.error.details ?? []) map[d.field] = d.message;
-        setFieldErrors(map);
+        if (result.error.details?.length) {
+          v.setServerErrors(
+            Object.fromEntries(result.error.details.map((d) => [d.field, d.message]))
+          );
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       onCreated(result.data.id);
@@ -180,69 +200,78 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="pl-name">Name</Label>
-                  <Input
-                    id="pl-name"
+                <Field {...v.field('name')}>
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Fleet wholesale"
+                    {...v.control('name')}
                   />
-                  {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="pl-description">Description</Label>
-                  <Textarea
-                    id="pl-description"
+                </Field>
+                <Field>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
+                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
+                    render={<Textarea rows={3} />}
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex w-28 flex-col gap-2">
-                    <Label htmlFor="pl-currency">Currency</Label>
-                    <Input
-                      id="pl-currency"
+                  <Field {...v.field('currency')} className="w-28">
+                    <FieldLabel>Currency</FieldLabel>
+                    <FieldControl
+                      name="currency"
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
                       maxLength={3}
+                      {...v.control('currency')}
                     />
-                    {fieldErrors.currency && (
-                      <p className="text-danger text-xs">{fieldErrors.currency}</p>
-                    )}
-                  </div>
-                  <div className="flex min-w-[11rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="pl-channel">Channel</Label>
-                    <NativeSelect
-                      id="pl-channel"
+                  </Field>
+                  <Field className="min-w-[11rem] flex-1">
+                    <FieldLabel>Channel</FieldLabel>
+                    <FieldControl
+                      name="channel"
                       value={channel}
                       onChange={(e) => setChannel(e.target.value)}
-                    >
-                      <option value="">All channels</option>
-                      {CHANNELS.map((c) => (
-                        <option key={c} value={c}>
-                          {CHANNEL_LABELS[c]}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <div className="flex w-28 flex-col gap-2">
-                    <Label htmlFor="pl-priority">Priority</Label>
-                    <Input
-                      id="pl-priority"
+                      render={
+                        <NativeSelect>
+                          <option value="">All channels</option>
+                          {CHANNELS.map((c) => (
+                            <option key={c} value={c}>
+                              {CHANNEL_LABELS[c]}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
+                  <Field className="w-28">
+                    <FieldLabel>Priority</FieldLabel>
+                    <FieldControl
+                      name="priority"
+                      type="number"
+                      step="1"
                       value={priority}
                       onChange={(e) => setPriority(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

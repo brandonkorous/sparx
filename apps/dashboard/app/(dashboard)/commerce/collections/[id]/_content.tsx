@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Layers, Sparkles, Star } from 'lucide-react';
 
 import { TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -154,7 +154,7 @@ export async function CollectionDetailContent({ id }: Props) {
                     merchants can still edit metadata and watch the projection.
                   </p>
                 </div>
-                <pre className="overflow-auto rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 text-xs">
+                <pre className="border-base-300 bg-base-200 overflow-auto rounded border p-3 text-xs">
                   {JSON.stringify(collection.ruleSet ?? {}, null, 2)}
                 </pre>
               </CardBody>

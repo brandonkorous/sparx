@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import {
   Ban,
@@ -180,10 +180,7 @@ export function BookingDetailActions({
                     <UserX className="mr-2 h-4 w-4" />
                     No-show
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => void cancel()}
-                    className="text-[var(--color-danger)]"
-                  >
+                  <DropdownMenuItem onClick={() => void cancel()} className="text-danger">
                     <Ban className="mr-2 h-4 w-4" />
                     Cancel
                   </DropdownMenuItem>

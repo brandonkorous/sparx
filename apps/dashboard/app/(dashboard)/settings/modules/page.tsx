@@ -11,7 +11,7 @@
 import { Layers } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { listModuleStateForCurrentTenant } from './actions';
 import { ModuleSwitchboard } from './_components/module-switchboard';

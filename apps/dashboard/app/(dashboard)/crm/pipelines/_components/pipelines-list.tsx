@@ -13,7 +13,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, Archive, Settings } from 'lucide-react';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 export interface PipelineStageRow {
@@ -44,7 +44,7 @@ function StageFunnel({ stages }: { stages: PipelineStageRow[] }) {
       {stages.map((stage) => (
         <div
           key={stage.id}
-          className="flex flex-row items-center gap-1 rounded-md border border-[var(--color-border-default)] px-2 py-1"
+          className="border-base-300 flex flex-row items-center gap-1 rounded-md border px-2 py-1"
         >
           <span
             className="h-2 w-2 rounded-full"
@@ -52,10 +52,10 @@ function StageFunnel({ stages }: { stages: PipelineStageRow[] }) {
               backgroundColor:
                 stage.color ??
                 (stage.stageType === 'won'
-                  ? 'var(--color-success-500)'
+                  ? 'var(--color-success)'
                   : stage.stageType === 'lost'
-                    ? 'var(--color-danger-500)'
-                    : 'var(--module-active)'),
+                    ? 'var(--color-danger)'
+                    : 'var(--color-module)'),
             }}
           />
           <p className="text-sm">{stage.name}</p>
@@ -122,7 +122,7 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
       header: 'Name',
       cell: (p) => (
         <div className="flex min-w-0 flex-col gap-1">
-          {nameCell(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+          {nameCell(p, 'text-sm font-medium hover:text-module hover:underline')}
           <p className="text-base-content/70 text-xs">
             slug <code>{p.slug}</code>
           </p>
@@ -143,15 +143,13 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
   ];
 
   const card: SelectionCard<PipelineRow> = {
-    title: (p) => nameCell(p, 'hover:text-[var(--module-active)] hover:underline'),
+    title: (p) => nameCell(p, 'hover:text-module hover:underline'),
     render: (p) => (
       <Card>
         <CardBody>
           <div className="flex flex-row flex-wrap items-center justify-between">
             <div className="flex flex-col gap-1">
-              <CardTitle>
-                {nameCell(p, 'hover:text-[var(--module-active)] hover:underline')}
-              </CardTitle>
+              <CardTitle>{nameCell(p, 'hover:text-module hover:underline')}</CardTitle>
               <p className="text-base-content/70 text-sm">
                 {p.stages.length} stage{p.stages.length === 1 ? '' : 's'} — slug{' '}
                 <code>{p.slug}</code>

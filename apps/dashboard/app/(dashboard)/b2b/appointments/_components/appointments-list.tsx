@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { AppointmentActions } from './appointment-actions';
 
@@ -76,7 +76,7 @@ export function AppointmentsList({ appointments, view }: AppointmentsListProps) 
     appt.b2bAccountId ? (
       <Link
         href={`/b2b/accounts/${appt.b2bAccountId}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {appt.companyName ?? appt.b2bAccountId}
       </Link>

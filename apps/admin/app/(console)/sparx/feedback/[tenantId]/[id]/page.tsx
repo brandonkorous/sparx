@@ -60,7 +60,7 @@ export default async function FeedbackDetailPage({
   }
 
   const backLink = (
-    <Link href="/sparx/feedback" className="text-sm text-[var(--color-text-muted)] hover:underline">
+    <Link href="/sparx/feedback" className="text-base-content/60 text-sm hover:underline">
       ← All feedback
     </Link>
   );
@@ -83,10 +83,7 @@ export default async function FeedbackDetailPage({
       <Stack gap={2}>
         {backLink}
         <Stack direction="row" align="center" gap={3} className="flex-wrap">
-          <CategoryIcon
-            category={feedback.category}
-            className="h-5 w-5 text-[var(--color-text-muted)]"
-          />
+          <CategoryIcon category={feedback.category} className="text-base-content/60 h-5 w-5" />
           <Heading level={1}>{titleOf(feedback)}</Heading>
           <Badge color={feedbackStatusTone(feedback.status)} variant="soft">
             {feedbackStatusLabel(feedback.status)}
@@ -101,7 +98,7 @@ export default async function FeedbackDetailPage({
           {categoryLabel(feedback.category)} ·{' '}
           <Link
             href={`/sparx/tenants/${feedback.tenantId}`}
-            className="text-[var(--module-active-text)] hover:underline"
+            className="text-module hover:underline"
           >
             {feedback.tenantName}
           </Link>{' '}

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 

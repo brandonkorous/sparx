@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Store } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { Container } from '@/components/ui/layout';
 import { SELL_IMAGE, SELL_ALT } from '@/lib/editorial';

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -107,7 +107,7 @@ export async function ReviewDetailContent({ id }: Props) {
                     src={mediaUrl(mid, tenant.slug)}
                     alt="Submitted with this review"
                     loading="lazy"
-                    className="h-20 w-20 rounded-md border border-[var(--color-border-default)] object-cover"
+                    className="border-base-300 h-20 w-20 rounded-md border object-cover"
                   />
                 ))}
               </div>
@@ -120,7 +120,7 @@ export async function ReviewDetailContent({ id }: Props) {
                 {review.productTitle ? (
                   <Link
                     href={`/commerce/products/${review.productId}`}
-                    className="text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+                    className="text-base-content/70 hover:text-module hover:underline"
                   >
                     {review.productTitle}
                   </Link>
@@ -170,8 +170,8 @@ function Stars({ value }: { value: number }) {
           key={i}
           className={
             i <= value
-              ? 'h-4 w-4 fill-[var(--module-active)] text-[var(--module-active)]'
-              : 'h-4 w-4 text-[var(--color-text-muted)]'
+              ? 'text-module h-4 w-4 fill-[var(--color-module)]'
+              : 'text-base-content/60 h-4 w-4'
           }
         />
       ))}

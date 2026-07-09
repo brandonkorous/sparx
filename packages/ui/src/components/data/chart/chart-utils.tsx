@@ -28,16 +28,20 @@ const CHART_PALETTE_SIZE = 6;
 /** Resolve a `ChartSeries.color` (or absence of one) to a CSS color string. */
 export function resolveSeriesColor(color: string | undefined, index: number): string {
   if (!color) return `var(--chart-${(index % CHART_PALETTE_SIZE) + 1})`;
-  if (color === 'module') return 'var(--module-active)';
-  if ((MODULE_COLOR_KEYS as readonly string[]).includes(color)) return `var(--module-${color})`;
+  if (color === 'module') return 'var(--color-module)';
+  if ((MODULE_COLOR_KEYS as readonly string[]).includes(color))
+    return `var(--color-module-${color})`;
   return color;
 }
 
 // Shared axis / grid styling, expressed as plain objects so each chart can
 // spread them onto the Recharts elements.
-export const AXIS_TICK = { fill: 'var(--color-text-tertiary)', fontSize: 12 } as const;
-export const AXIS_LINE = { stroke: 'var(--color-border-default)' } as const;
-export const GRID_STROKE = 'var(--color-border-default)';
+export const AXIS_TICK = {
+  fill: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+  fontSize: 12,
+} as const;
+export const AXIS_LINE = { stroke: 'var(--color-base-300)' } as const;
+export const GRID_STROKE = 'var(--color-base-300)';
 
 // Value formatting lives in the pure (non-client) ./value-format module so
 // server components can use it too; re-exported here for existing importers.
@@ -72,9 +76,9 @@ export function ChartTooltipContent({
 }: ChartTooltipContentProps) {
   if (!active || !payload || payload.length === 0) return null;
   return (
-    <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-xs shadow-md">
+    <div className="rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)] px-3 py-2 text-xs shadow-md">
       {label != null && label !== '' && (
-        <div className="mb-1.5 font-medium text-[var(--color-text-primary)]">{label}</div>
+        <div className="text-base-content mb-1.5 font-medium">{label}</div>
       )}
       <div className="flex flex-col gap-1">
         {payload.map((entry, i) => (
@@ -84,8 +88,8 @@ export function ChartTooltipContent({
               className="h-2 w-2 shrink-0 rounded-full"
               style={{ background: entry.color }}
             />
-            <span className="text-[var(--color-text-secondary)]">{entry.name}</span>
-            <span className="ml-auto font-medium text-[var(--color-text-primary)]">
+            <span className="text-base-content/70">{entry.name}</span>
+            <span className="text-base-content ml-auto font-medium">
               {typeof entry.value === 'number' && valueFormatter
                 ? valueFormatter(entry.value)
                 : entry.value}
@@ -114,7 +118,7 @@ export function ChartLegendContent({ payload }: { payload?: LegendEntry[] }) {
             className="h-2 w-2 shrink-0 rounded-full"
             style={{ background: entry.color }}
           />
-          <span className="text-xs text-[var(--color-text-secondary)]">{entry.value}</span>
+          <span className="text-base-content/70 text-xs">{entry.value}</span>
         </div>
       ))}
     </div>

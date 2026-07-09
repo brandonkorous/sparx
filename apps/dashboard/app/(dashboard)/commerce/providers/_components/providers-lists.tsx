@@ -18,7 +18,7 @@ import type {
   ProviderMetadata,
 } from '@sparx/commerce-schemas';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -152,7 +152,7 @@ function KindSection({ group, view }: { group: KindGroup; view: 'table' | 'card'
 
 function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: ProviderKind }) {
   return (
-    <div className="flex flex-row items-start justify-between gap-4 rounded border border-[var(--color-border-default)] p-4">
+    <div className="border-base-300 flex flex-row items-start justify-between gap-4 rounded border p-4">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-row items-center gap-2">
           <p className="text-base font-medium">{provider.displayName}</p>
@@ -220,7 +220,7 @@ const installedProvider = (inst: InstallationRow) => (
     href={`/commerce/providers/${inst.id}`}
     entityType="provider-installation"
     entityId={inst.id}
-    className="font-medium hover:text-[var(--module-active)]"
+    className="hover:text-module font-medium"
   >
     {inst.providerSlug}
   </EntityRowLink>
@@ -263,7 +263,7 @@ const installedCard: SelectionCard<InstallationRow> = {
         {installedEnvironment(inst)}
         {inst.label ? <p className="text-base-content/70 text-xs">{inst.label}</p> : null}
       </div>
-      <div className="flex flex-row flex-wrap items-center gap-1 text-xs text-[var(--color-text-secondary)]">
+      <div className="text-base-content/70 flex flex-row flex-wrap items-center gap-1 text-xs">
         <span>Health:</span>
         {installedHealth(inst)}
       </div>

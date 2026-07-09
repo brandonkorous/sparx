@@ -3,7 +3,17 @@
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
-import { Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createServiceType, updateServiceType } from '../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -35,6 +45,16 @@ interface ServiceTypeFormProps {
 
 const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
+// Duration is held as string state from a number input; validate it parses to an
+// integer in the bookable 5–480 minute range. `@sparx/forms` ships no numeric-range
+// builder, so this stays local (promotion candidate, same as tier-create-form).
+const durationRange =
+  (message: string) =>
+  (value: unknown): string | null => {
+    const n = typeof value === 'string' ? parseInt(value.trim(), 10) : NaN;
+    return Number.isFinite(n) && n >= 5 && n <= 480 ? null : message;
+  };
+
 export function ServiceTypeForm({ presentation, type, open, onOpenChange }: ServiceTypeFormProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -46,6 +66,14 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
   const [requiresVehicle, setRequiresVehicle] = useState(type?.requiresVehicle ?? false);
   const [notes, setNotes] = useState(type?.notes ?? '');
   const [saving, setSaving] = useState(false);
+
+  const v = useFieldValidation(
+    { name, durationMinutes },
+    {
+      name: rule.required('Name is required.'),
+      durationMinutes: durationRange('Duration must be between 5 and 480 minutes.'),
+    }
+  );
 
   const snapshot = () =>
     JSON.stringify({ name, description, durationMinutes, color, requiresVehicle, notes });
@@ -89,15 +117,8 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
   }
 
   async function submit() {
-    if (!name.trim()) {
-      toast.error('Name is required');
-      return;
-    }
+    if (!v.validate()) return;
     const duration = parseInt(durationMinutes, 10);
-    if (isNaN(duration) || duration < 5 || duration > 480) {
-      toast.error('Duration must be between 5 and 480 minutes');
-      return;
-    }
     setSaving(true);
     const body = {
       name: name.trim(),
@@ -140,45 +161,45 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
         <CardBody>
           <CardTitle>Service type</CardTitle>
           <div className="flex flex-col gap-4">
-            <div>
-              <Label htmlFor="st-name">
-                Name <span className="text-[var(--color-danger)]">*</span>
-              </Label>
-              <Input
-                id="st-name"
+            <Field {...v.field('name')}>
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
+                name="name"
                 placeholder="e.g. Oil Change, Inspection"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={saving}
+                {...v.control('name')}
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="st-desc">Description</Label>
-              <Input
-                id="st-desc"
+            <Field>
+              <FieldLabel>Description</FieldLabel>
+              <FieldControl
+                name="description"
                 placeholder="Brief description for customers"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 disabled={saving}
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="st-duration">Duration (minutes)</Label>
-              <Input
-                id="st-duration"
+            <Field {...v.field('durationMinutes')}>
+              <FieldLabel required>Duration (minutes)</FieldLabel>
+              <FieldControl
+                name="durationMinutes"
                 type="number"
                 min={5}
                 max={480}
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(e.target.value)}
                 disabled={saving}
+                {...v.control('durationMinutes')}
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="st-color">Calendar color</Label>
+            <Field>
+              <FieldLabel>Calendar color</FieldLabel>
               <div className="flex flex-row items-center gap-2">
                 <input
                   type="color"
@@ -188,8 +209,8 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
                   disabled={saving}
                   className="border-input h-9 w-14 cursor-pointer rounded border"
                 />
-                <Input
-                  id="st-color"
+                <FieldControl
+                  name="color"
                   placeholder="#6366F1"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
@@ -208,7 +229,7 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
                   </Button>
                 )}
               </div>
-            </div>
+            </Field>
 
             <label className="flex cursor-pointer items-center gap-3">
               <Checkbox
@@ -220,16 +241,16 @@ export function ServiceTypeForm({ presentation, type, open, onOpenChange }: Serv
               <p className="text-sm">Requires vehicle information</p>
             </label>
 
-            <div>
-              <Label htmlFor="st-notes">Internal notes</Label>
-              <Input
-                id="st-notes"
+            <Field>
+              <FieldLabel>Internal notes</FieldLabel>
+              <FieldControl
+                name="notes"
                 placeholder="Notes visible to staff only"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 disabled={saving}
               />
-            </div>
+            </Field>
           </div>
         </CardBody>
       </Card>

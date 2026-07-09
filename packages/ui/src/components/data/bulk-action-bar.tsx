@@ -118,16 +118,16 @@ export function BulkActionBar({ selected, onClear, actions, className }: BulkAct
         direction="row"
         align="center"
         gap={2}
-        className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3 shadow-xl shadow-black/10 backdrop-blur-sm"
+        className="rounded-xl border border-[var(--color-base-300)] bg-[var(--color-base-100)] px-4 py-3 shadow-xl shadow-black/10 backdrop-blur-sm"
       >
         {/* Selection count + clear */}
         <Stack
           direction="row"
           align="center"
           gap={2}
-          className="border-r border-[var(--color-border-default)] pr-2"
+          className="border-r border-[var(--color-base-300)] pr-2"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--module-active)] text-[10px] font-bold text-white">
+          <span className="bg-module flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white">
             {count > 99 ? '99+' : count}
           </span>
           <Text size="sm" className="font-medium tabular-nums">

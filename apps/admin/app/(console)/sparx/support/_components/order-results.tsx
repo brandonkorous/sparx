@@ -46,7 +46,7 @@ export function OrderResults({ orders, canAct }: { orders: OperatorOrderHit[]; c
             <TableCell>
               <Link
                 href={`/sparx/tenants/${o.tenantId}`}
-                className="text-sm text-[var(--module-active-text)] hover:underline"
+                className="text-module text-sm hover:underline"
               >
                 {o.tenantName}
               </Link>

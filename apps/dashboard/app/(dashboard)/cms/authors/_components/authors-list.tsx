@@ -1,7 +1,7 @@
 'use client';
 
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
-import { Avatar, Button } from 'silicaui-react';
+import { Avatar, Button } from '@wizeworks/silicaui-react';
 import { Pencil } from 'lucide-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -64,10 +64,7 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
         <div className="flex flex-row items-center gap-3">
           <Avatar size="sm" alt={a.display_name} />
           <div className="flex min-w-0 flex-col gap-0">
-            {nameLink(
-              a,
-              'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-            )}
+            {nameLink(a, 'truncate text-sm font-medium hover:text-module hover:underline')}
             <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
           </div>
         </div>
@@ -94,10 +91,7 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
       <div className="flex flex-row items-center gap-3">
         <Avatar size="md" alt={a.display_name} />
         <div className="flex min-w-0 flex-col gap-0">
-          {nameLink(
-            a,
-            'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-          )}
+          {nameLink(a, 'truncate text-sm font-medium hover:text-module hover:underline')}
           <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
         </div>
       </div>

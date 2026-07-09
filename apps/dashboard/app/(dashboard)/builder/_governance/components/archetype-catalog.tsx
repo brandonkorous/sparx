@@ -119,14 +119,11 @@ export function ArchetypeCatalog({
           <CardContent className="p-0">
             <ul>
               {rows.map((row, i) => (
-                <li
-                  key={row.key}
-                  className={i > 0 ? 'border-t border-[var(--color-border)]' : undefined}
-                >
+                <li key={row.key} className={i > 0 ? 'border-base-300 border-t' : undefined}>
                   <div className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <DynamicIcon
                       name={row.icon as IconName}
-                      className="h-5 w-5 shrink-0 text-[var(--color-text-secondary)]"
+                      className="text-base-content/70 h-5 w-5 shrink-0"
                       aria-hidden
                     />
                     <div className="min-w-40 flex-1">

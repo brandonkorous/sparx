@@ -6,8 +6,8 @@ import { Reveal } from './reveal';
 // price-contrast panel (the section's single tinted accent); the feature cards
 // stay neutral so six same-hue cards don't read as a wall of identical wash.
 const B2B = getModuleColor('b2b');
-const CHIP_BG = `color-mix(in oklab, ${B2B.color} 13%, var(--color-bg-surface))`;
-const PANEL_BG = `color-mix(in oklab, ${B2B.color} 7%, var(--color-bg-surface))`;
+const CHIP_BG = `color-mix(in oklab, ${B2B.color} 13%, var(--color-base-100))`;
+const PANEL_BG = `color-mix(in oklab, ${B2B.color} 7%, var(--color-base-100))`;
 
 const FEATURES = [
   {
@@ -110,8 +110,8 @@ function FeatureCard({
         display: 'flex',
         flexDirection: 'column',
         padding: '28px',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '12px',
         gap: '16px',
       }}
@@ -134,7 +134,7 @@ function FeatureCard({
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {number}
@@ -147,7 +147,7 @@ function FeatureCard({
           fontSize: '20px',
           letterSpacing: '-0.02em',
           lineHeight: '26px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >
@@ -158,7 +158,7 @@ function FeatureCard({
           fontFamily: 'var(--font-sans)',
           fontSize: '13px',
           lineHeight: '20px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
         }}
       >
@@ -178,7 +178,7 @@ function PricePanel() {
         maxWidth: '384px',
         flexShrink: 0,
         backgroundColor: PANEL_BG,
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         padding: '26px',
         display: 'flex',
@@ -208,7 +208,7 @@ function PricePanel() {
           gap: '12px',
           padding: '12px 14px',
           borderRadius: '10px',
-          backgroundColor: `color-mix(in oklab, ${B2B.color} 16%, var(--color-bg-surface))`,
+          backgroundColor: `color-mix(in oklab, ${B2B.color} 16%, var(--color-base-100))`,
         }}
       >
         <span
@@ -249,7 +249,9 @@ function PriceRow({ vendor, amount, muted }: { vendor: string; amount: string; m
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          color: muted ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
+          color: muted
+            ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+            : 'var(--color-base-content)',
         }}
       >
         {vendor}
@@ -260,11 +262,19 @@ function PriceRow({ vendor, amount, muted }: { vendor: string; amount: string; m
           fontWeight: muted ? 400 : 500,
           fontSize: muted ? '18px' : '24px',
           letterSpacing: '-0.02em',
-          color: muted ? 'var(--color-text-tertiary)' : B2B.text,
+          color: muted
+            ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+            : B2B.text,
         }}
       >
         {amount}
-        <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontSize: '13px',
+            fontWeight: 400,
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           /mo
         </span>
       </span>

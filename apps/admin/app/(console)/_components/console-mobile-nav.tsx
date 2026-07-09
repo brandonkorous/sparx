@@ -28,7 +28,7 @@ export function ConsoleMobileNav({
         return (
           <div key={group.label ?? 'overview'} className="flex flex-col gap-1">
             {group.label ? (
-              <div className="px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase">
+              <div className="text-base-content/50 px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider uppercase">
                 {group.label}
               </div>
             ) : null}
@@ -43,14 +43,14 @@ export function ConsoleMobileNav({
                   className={cn(
                     'group flex h-9 items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors',
                     active
-                      ? 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]'
-                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]'
+                      ? 'bg-module bg-soft text-module'
+                      : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'
                   )}
                 >
                   <span
                     className={cn(
                       'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-                      active ? 'text-[var(--module-active)]' : 'text-[var(--color-text-tertiary)]'
+                      active ? 'text-module' : 'text-base-content/50'
                     )}
                   >
                     <Icon className="h-4 w-4" />

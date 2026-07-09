@@ -3,9 +3,20 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createShippingProfileAction } from '../../../../shipping-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -54,6 +65,11 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
   const [hazmat, setHazmat] = React.useState<Set<string>>(new Set(['none']));
   const [requiresSignature, setRequiresSignature] = React.useState(false);
   const [requiresFreight, setRequiresFreight] = React.useState(false);
+
+  const values = { name, description, carriersRaw };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+  });
 
   function toggleHazmat(cls: string) {
     setHazmat((prev) => {
@@ -119,6 +135,7 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
 
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     const trimmedDescription = description.trim();
     const carriers = carriersRaw
       .split(/[,\s]+/)
@@ -135,7 +152,12 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
         requiresFreight,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        const known = (result.error.details ?? []).filter((d) => d.field in values);
+        if (known.length) {
+          v.setServerErrors(Object.fromEntries(known.map((d) => [d.field, d.message])));
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       onCreated(result.data.id);
@@ -166,39 +188,38 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="profile-name">Name *</Label>
-                  <Input
-                    id="profile-name"
+                <Field {...v.field('name')}>
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="General goods"
+                    {...v.control('name')}
                   />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="profile-description">Description</Label>
-                  <Input
-                    id="profile-description"
+                </Field>
+                <Field>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
+                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="profile-carriers">Allowed carrier services</Label>
-                  <Textarea
-                    id="profile-carriers"
-                    rows={2}
+                </Field>
+                <Field>
+                  <FieldLabel>Allowed carrier services</FieldLabel>
+                  <FieldControl
+                    render={<Textarea rows={2} className="font-mono text-xs" />}
                     value={carriersRaw}
                     onChange={(e) => setCarriersRaw(e.target.value)}
                     placeholder="usps_priority, ups_ground"
-                    className="font-mono text-xs"
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     Carrier service slugs separated by commas. Leave empty to allow any.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label>Hazmat classes allowed</Label>
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Hazmat classes allowed</FieldLabel>
                   <div className="flex flex-row flex-wrap gap-2">
                     {HAZMAT_CLASSES.map((cls) => (
                       <label key={cls} className="flex items-center gap-1.5">
@@ -211,7 +232,7 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
                       </label>
                     ))}
                   </div>
-                </div>
+                </Field>
                 <div className="flex flex-row gap-4">
                   <label className="flex items-center gap-2">
                     <Checkbox
@@ -234,9 +255,15 @@ export function NewProfileForm({ surface }: NewProfileFormProps) {
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

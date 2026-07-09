@@ -12,7 +12,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { Popover, PopoverTrigger, PopoverContent } from '@sparx/ui';
 import type {
   CategoryScore,
@@ -100,7 +100,7 @@ function Ring({ score, color, size }: { score: number | null; color: string; siz
           position: 'absolute',
           inset: Math.round(size * 0.12),
           borderRadius: '50%',
-          background: 'var(--color-bg-surface, #fff)',
+          background: 'var(--color-base-100)',
         }}
       />
       <span
@@ -260,7 +260,13 @@ export function SeoReport({
 }) {
   if (!card) {
     return (
-      <div style={{ padding: 20, fontSize: 13, color: 'var(--color-text-secondary, #52525b)' }}>
+      <div
+        style={{
+          padding: 20,
+          fontSize: 13,
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+        }}
+      >
         {error
           ? `Couldn’t run the audit: ${error}`
           : loading
@@ -276,7 +282,7 @@ export function SeoReport({
   );
 
   return (
-    <div style={{ fontSize: 13, color: 'var(--color-text-primary, #0a0a0a)' }}>
+    <div style={{ fontSize: 13, color: 'var(--color-base-content)' }}>
       {/* Header */}
       <div
         style={{
@@ -305,7 +311,7 @@ export function SeoReport({
           <div
             style={{
               fontSize: 12,
-              color: 'var(--color-text-secondary, #52525b)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               marginTop: 4,
             }}
           >
@@ -330,7 +336,7 @@ export function SeoReport({
             style={{
               fontSize: 12,
               fontWeight: 500,
-              color: 'var(--module-active, #6366f1)',
+              color: 'var(--color-module)',
               textDecoration: 'none',
             }}
           >
@@ -400,7 +406,7 @@ function CategoryBar({ cat }: { cat: CategoryScore }) {
           display: 'flex',
           justifyContent: 'space-between',
           fontSize: 11,
-          color: 'var(--color-text-secondary, #52525b)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           marginBottom: 6,
         }}
       >
@@ -409,7 +415,7 @@ function CategoryBar({ cat }: { cat: CategoryScore }) {
           {Math.round(cat.earned)}/{cat.max}
         </span>
       </div>
-      <div style={{ height: 5, borderRadius: 999, background: 'var(--color-bg-subtle, #f4f4f5)' }}>
+      <div style={{ height: 5, borderRadius: 999, background: 'var(--color-base-200)' }}>
         <span
           style={{
             display: 'block',
@@ -433,7 +439,7 @@ function CheckGroup({ label, checks }: { label: string; checks: CheckResult[] })
           fontSize: 10,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          color: 'var(--color-text-tertiary, #a1a1aa)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           padding: '12px 16px 4px',
         }}
       >
@@ -483,7 +489,7 @@ function CheckRow({ check }: { check: CheckResult }) {
             <span
               style={{
                 fontSize: 12,
-                color: 'var(--color-text-secondary, #52525b)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 whiteSpace: 'nowrap',
                 fontVariantNumeric: 'tabular-nums',
               }}
@@ -496,7 +502,7 @@ function CheckRow({ check }: { check: CheckResult }) {
           <div
             style={{
               fontSize: 12,
-              color: 'var(--color-text-secondary, #52525b)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               marginTop: 2,
               lineHeight: 1.45,
             }}

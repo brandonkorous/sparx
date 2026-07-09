@@ -1,6 +1,6 @@
 import { Truck } from 'lucide-react';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { PageHeader } from '@sparx/ui';
 

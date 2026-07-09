@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
@@ -94,9 +94,9 @@ export function SocialAuthSection() {
       </p>
 
       <div className="flex items-center gap-3 py-1" aria-hidden>
-        <span className="h-px flex-1 bg-[var(--color-border-default)]" />
-        <span className="text-xs text-[var(--color-text-tertiary)]">or</span>
-        <span className="h-px flex-1 bg-[var(--color-border-default)]" />
+        <span className="bg-base-300 h-px flex-1" />
+        <span className="text-base-content/50 text-xs">or</span>
+        <span className="bg-base-300 h-px flex-1" />
       </div>
     </div>
   );

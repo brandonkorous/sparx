@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Spark } from '../primitives';
 import { CopyValue } from './interactive';
 import { OfficialWordmark } from './assets';
@@ -34,8 +34,8 @@ export function BrandHero() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
-        borderBottom: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -51,7 +51,7 @@ export function BrandHero() {
               fontFamily: 'var(--font-sans)',
               fontSize: '19px',
               lineHeight: '31px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '660px',
               margin: 0,
             }}
@@ -73,7 +73,7 @@ export function BrandHero() {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               textDecoration: 'none',
               padding: '12px 0',
             }}
@@ -94,7 +94,7 @@ export function BrandHero() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             Tap any swatch, hex, or token to copy it.
@@ -113,7 +113,7 @@ function IdentityList() {
       style={{
         margin: '8px 0 0',
         paddingTop: '8px',
-        borderTop: '1px solid var(--color-border-default)',
+        borderTop: '1px solid var(--color-base-300)',
       }}
     >
       {IDENTITY.map((row) => (
@@ -125,7 +125,7 @@ function IdentityList() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {row.label}
@@ -136,7 +136,7 @@ function IdentityList() {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '15px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {row.value}
@@ -161,12 +161,12 @@ function SectionIndex() {
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '13px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             textDecoration: 'none',
             padding: '7px 13px',
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: 'var(--radius-full)',
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: 'var(--color-base-100)',
           }}
         >
           {s.label}

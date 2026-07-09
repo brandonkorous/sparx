@@ -44,7 +44,7 @@ export function Wordmark({ size = 22, icon = false, className, style, ...rest }:
         fontWeight: 700,
         letterSpacing: '-0.03em',
         lineHeight: 1,
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-base-content)',
         ...(icon ? { gap: Math.round(size * 0.28) } : {}),
         ...style,
       }}
@@ -54,7 +54,7 @@ export function Wordmark({ size = 22, icon = false, className, style, ...rest }:
         <SparxMark size={Math.round(size * 1.5)} />
       ) : (
         <span>
-          spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
+          spar<span style={{ color: 'var(--color-primary)' }}>x</span>
         </span>
       )}
     </span>

@@ -93,8 +93,8 @@ export default async function MetricsPage({
               aria-current={w === windowDays ? 'true' : undefined}
               className={
                 w === windowDays
-                  ? 'text-sm font-medium text-[var(--color-text-primary)] underline'
-                  : 'text-sm font-medium text-[var(--color-text-muted)] hover:underline'
+                  ? 'text-base-content text-sm font-medium underline'
+                  : 'text-base-content/60 text-sm font-medium hover:underline'
               }
             >
               {w} days

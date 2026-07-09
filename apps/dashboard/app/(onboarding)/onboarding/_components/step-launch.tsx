@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Card, CardBody } from 'silicaui-react';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import {
   ArrowRight,
   Boxes,
@@ -116,15 +116,15 @@ export function StepLaunch({
     return (
       <div className="mx-auto max-w-xl">
         <div className="flex flex-col items-center gap-5 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
-            <PencilRuler className="h-7 w-7 text-[var(--module-active)]" />
+          <span className="bg-module bg-soft flex h-14 w-14 items-center justify-center rounded-full">
+            <PencilRuler className="text-module h-7 w-7" />
           </span>
           <div className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-semibold tracking-tight">Your workspace is ready</h2>
             <p className="text-base-content/70">
               You&apos;re starting from a blank canvas. Hit{' '}
-              <span className="font-medium text-[var(--color-text-primary)]">Finish setup</span> to
-              open the Builder and design your site — publish whenever you&apos;re ready.
+              <span className="text-base-content font-medium">Finish setup</span> to open the
+              Builder and design your site — publish whenever you&apos;re ready.
             </p>
           </div>
         </div>
@@ -153,27 +153,24 @@ export function StepLaunch({
   return (
     <div className="mx-auto max-w-xl">
       <div className="flex flex-col items-center gap-5 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
-          <Rocket className="h-7 w-7 text-[var(--module-active)]" />
+        <span className="bg-module bg-soft flex h-14 w-14 items-center justify-center rounded-full">
+          <Rocket className="text-module h-7 w-7" />
         </span>
         <div className="flex flex-col items-center gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">Your site is ready</h2>
           <p className="text-base-content/70">
             {blueprint ? (
               <>
-                The{' '}
-                <span className="font-medium text-[var(--color-text-primary)]">
-                  {blueprint.name}
-                </span>{' '}
+                The <span className="text-base-content font-medium">{blueprint.name}</span>{' '}
                 blueprint is installed as a private draft. Publishing makes it live at{' '}
-                <span className="font-medium text-[var(--color-text-primary)]">{host}</span> —
-                nothing&apos;s locked, so keep editing in the Builder anytime.
+                <span className="text-base-content font-medium">{host}</span> — nothing&apos;s
+                locked, so keep editing in the Builder anytime.
               </>
             ) : (
               <>
                 Your site is installed as a private draft. Publishing makes it live at{' '}
-                <span className="font-medium text-[var(--color-text-primary)]">{host}</span> — and
-                you can keep editing it in the Builder afterward.
+                <span className="text-base-content font-medium">{host}</span> — and you can keep
+                editing it in the Builder afterward.
               </>
             )}
           </p>
@@ -200,20 +197,20 @@ export function StepLaunch({
       )}
 
       {/* ── Why that number is real (the platform value) ──────────────────── */}
-      <div className="mt-5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5">
+      <div className="border-base-300 bg-base-100 mt-5 rounded-xl border p-5">
         <div className="flex flex-col gap-4">
           <ValuePoint
-            icon={<Boxes className="h-4 w-4 text-[var(--module-active)]" />}
+            icon={<Boxes className="text-module h-4 w-4" />}
             title="One platform, not a patched-together stack"
             body="Your site, content, customers, and email run on one database — nothing to integrate, sync, or keep in step. It just works together."
           />
           <ValuePoint
-            icon={<Receipt className="h-4 w-4 text-[var(--module-active)]" />}
+            icon={<Receipt className="text-module h-4 w-4" />}
             title="One login, one invoice"
             body="Flat per-module pricing — no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
           />
           <ValuePoint
-            icon={<TrendingUp className="h-4 w-4 text-[var(--module-active)]" />}
+            icon={<TrendingUp className="text-module h-4 w-4" />}
             title="Built to grow with you"
             body="From your first sale to enterprise volume on the same platform — and an MCP-native API so AI can run it all, no re-platforming ever."
           />
@@ -279,16 +276,16 @@ function DomainChargeCard({ domain }: { domain: PendingDomain }) {
       ? `$${(domain.renewalDisplayPrice / 100).toFixed(2)}`
       : null;
   return (
-    <div className="rounded-2xl border border-[var(--module-active)] bg-[var(--module-active-tint)] px-6 py-5 text-left">
+    <div className="border-module bg-module bg-soft rounded-2xl border px-6 py-5 text-left">
       <div className="flex items-center gap-2">
-        <Globe className="h-4 w-4 text-[var(--module-active)]" />
-        <p className="text-sm font-medium text-[var(--module-active)]">Custom domain</p>
+        <Globe className="text-module h-4 w-4" />
+        <p className="text-module text-sm font-medium">Custom domain</p>
       </div>
       <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="text-lg font-medium">{domain.domain}</p>
         <p className="text-base-content/70 text-sm">
-          <span className="font-medium text-[var(--color-text-primary)]">{first}</span> charged when
-          you publish{renews ? ` · then ${renews}/yr` : ''}
+          <span className="text-base-content font-medium">{first}</span> charged when you publish
+          {renews ? ` · then ${renews}/yr` : ''}
         </p>
       </div>
       <p className="text-base-content/70 mt-2 block text-xs">
@@ -302,7 +299,7 @@ function DomainChargeCard({ domain }: { domain: PendingDomain }) {
 function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--module-active-tint)]">
+      <span className="bg-module bg-soft mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
         {icon}
       </span>
       <div>
@@ -325,22 +322,21 @@ function SavingsBanner({
   monthlyTotal: number;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--color-success-border,var(--color-border-default))] bg-[var(--color-success-tint)] px-6 py-5 text-center">
+    <div className="border-success bg-success bg-soft rounded-2xl border px-6 py-5 text-center">
       <div className="flex items-center justify-center gap-2">
-        <Sparkles className="h-4 w-4 text-[var(--color-success-text)]" />
-        <p className="text-sm font-medium text-[var(--color-success-text)]">You&apos;re saving</p>
+        <Sparkles className="text-success h-4 w-4" />
+        <p className="text-success text-sm font-medium">You&apos;re saving</p>
       </div>
       <div className="mt-1 flex items-baseline justify-center gap-1">
-        <span className="text-[3rem] leading-[1] font-medium tracking-[-0.04em] text-[var(--color-success-text)]">
+        <span className="text-success text-[3rem] leading-[1] font-medium tracking-[-0.04em]">
           ${usd(monthlySavings)}
         </span>
-        <span className="text-lg text-[var(--color-success-text)]/70">/mo</span>
+        <span className="text-success/70 text-lg">/mo</span>
       </div>
       <p className="text-base-content/70 mx-auto mt-2 block max-w-[42ch] text-sm">
-        That&apos;s{' '}
-        <span className="font-medium text-[var(--color-text-primary)]">${usd(annualSavings)}</span>{' '}
-        a year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login,
-        one invoice — for ${usd(monthlyTotal)}/mo after your free trial.
+        That&apos;s <span className="text-base-content font-medium">${usd(annualSavings)}</span> a
+        year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login, one
+        invoice — for ${usd(monthlyTotal)}/mo after your free trial.
       </p>
     </div>
   );
@@ -360,8 +356,8 @@ function LaunchSuccess({
     <div className="mx-auto max-w-xl">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col items-center gap-3 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
-            <PartyPopper className="h-7 w-7 text-[var(--module-active)]" />
+          <span className="bg-module bg-soft flex h-14 w-14 items-center justify-center rounded-full">
+            <PartyPopper className="text-module h-7 w-7" />
           </span>
           <h2 className="text-2xl font-semibold tracking-tight">You&apos;re live</h2>
           <p className="text-base-content/70">
@@ -410,14 +406,14 @@ function NextCard({
 }) {
   return (
     <Link href={href}>
-      <Card className="hover:border-[var(--module-active)]">
+      <Card className="hover:border-module">
         <CardBody>
           <div className="flex flex-row items-center justify-between gap-3">
             <div className="flex flex-col gap-1">
               <p className="font-medium">{title}</p>
               <p className="text-base-content/70 text-sm">{description}</p>
             </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+            <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
           </div>
         </CardBody>
       </Card>

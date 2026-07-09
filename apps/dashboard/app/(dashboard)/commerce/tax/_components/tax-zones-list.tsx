@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
 
@@ -35,7 +35,7 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
       href={`/commerce/tax/zones/${z.id}`}
       entityType="tax-zone"
       entityId={z.id}
-      className={className ?? 'font-medium hover:text-[var(--module-active)]'}
+      className={className ?? 'hover:text-module font-medium'}
     >
       {z.country}
     </EntityRowLink>
@@ -75,7 +75,7 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
   ];
 
   const card: SelectionCard<TaxZoneRow> = {
-    title: (z) => countryLink(z, 'truncate font-medium hover:text-[var(--module-active)]'),
+    title: (z) => countryLink(z, 'truncate font-medium hover:text-module'),
     subtitle: (z) => (z.region ? <p className="text-base-content/70 text-xs">{z.region}</p> : null),
     badge: statusBadge,
     body: (z) => (

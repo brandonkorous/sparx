@@ -119,10 +119,7 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
             </Button>
             {view === 'render' ? (
               <>
-                <span
-                  className="mx-1 w-px self-stretch bg-[var(--color-border-default)]"
-                  aria-hidden
-                />
+                <span className="bg-base-300 mx-1 w-px self-stretch" aria-hidden />
                 <Button
                   variant={width === 'desktop' ? 'soft' : 'ghost'}
                   size="sm"
@@ -181,13 +178,13 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
           </div>
         </div>
 
-        <div className="mt-3 flex justify-center rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+        <div className="border-base-300 bg-base-200 mt-3 flex justify-center rounded-md border p-4">
           {loading ? (
-            <div className="flex h-[600px] items-center justify-center text-sm text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex h-[600px] items-center justify-center text-sm">
               Rendering preview…
             </div>
           ) : error ? (
-            <div className="flex h-[600px] items-center justify-center text-sm text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex h-[600px] items-center justify-center text-sm">
               {error}
             </div>
           ) : view === 'source' ? (
@@ -202,7 +199,7 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
             <iframe
               title="Email preview"
               srcDoc={html ?? ''}
-              className="h-[600px] rounded-sm border border-[var(--color-border-default)] bg-white"
+              className="border-base-300 h-[600px] rounded-sm border bg-white"
               style={{
                 width: width === 'mobile' ? 375 : '100%',
                 maxWidth: width === 'mobile' ? 375 : 640,

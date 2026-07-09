@@ -38,7 +38,7 @@ export function PrinciplesSection() {
     <Section id="principles" surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline="Six principles that hold it together"
           lede="The brand is a set of decisions as much as a set of colors. These are the rules that make a sparx surface feel like sparx, whatever module you’re in."
         />
@@ -52,8 +52,8 @@ export function PrinciplesSection() {
                 flexDirection: 'column',
                 gap: '14px',
                 padding: '28px',
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: 'var(--radius-xl)',
               }}
             >
@@ -61,7 +61,7 @@ export function PrinciplesSection() {
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '12px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {p.n}
@@ -72,7 +72,7 @@ export function PrinciplesSection() {
                   fontWeight: 500,
                   fontSize: '18px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                   margin: 0,
                 }}
               >
@@ -83,7 +83,7 @@ export function PrinciplesSection() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
                   lineHeight: '22px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: 0,
                 }}
               >

@@ -35,7 +35,7 @@ export interface SparxMarkProps extends Omit<React.SVGProps<SVGSVGElement>, 'chi
 export function SparxMark({
   size = 24,
   title,
-  accentColor = 'var(--sparx-primary)',
+  accentColor = 'var(--color-primary)',
   ...rest
 }: SparxMarkProps) {
   return (

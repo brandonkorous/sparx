@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
+import { Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { Mail } from 'lucide-react';
 import type { OrgInvitation, OrgMember } from '@sparx/auth';
 import { InviteForm } from './invite-form';

@@ -40,21 +40,5 @@
     "turbo": "^2.3.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.20.0"
-  },
-  "pnpm": {
-    "//": "LOCAL-ONLY silicaui link overrides — DO NOT COMMIT. Points the whole silicaui family at the local checkout (G:\\code\\@wizeworks\\silicaui) for builder-migration testing. Remove this entire `overrides` block and re-run `pnpm install` before pushing/releasing so the lockfile snaps back to registry versions.",
-    "overrides": {
-      "silicaui": "link:../silicaui/packages/silicaui",
-      "silicaui-react": "link:../silicaui/packages/silicaui-react",
-      "silicaui-builder": "link:../silicaui/packages/silicaui-builder",
-      "silicaui-editor": "link:../silicaui/packages/silicaui-editor",
-      "silicaui-dnd": "link:../silicaui/packages/silicaui-dnd",
-      "silicaui-panels": "link:../silicaui/packages/silicaui-panels",
-      "silicaui-behaviors": "link:../silicaui/packages/silicaui-behaviors",
-      "silicaui-charts": "link:../silicaui/packages/silicaui-charts",
-      "silicaui-html": "link:../silicaui/packages/silicaui-html",
-      "silicaui-mcp": "link:../silicaui/packages/silicaui-mcp",
-      "silicaui-table": "link:../silicaui/packages/silicaui-table"
-    }
   }
 }

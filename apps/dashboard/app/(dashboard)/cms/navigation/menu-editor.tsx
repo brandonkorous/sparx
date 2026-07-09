@@ -22,11 +22,15 @@ import {
   CardActions,
   CardBody,
   Checkbox,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Label,
   Select,
   SelectItem,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { ChevronDown, ChevronUp, Plus, Save, Trash2 } from 'lucide-react';
 import { saveMenu } from './menu-actions';
 
@@ -123,6 +127,8 @@ export function MenuEditor({
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
 
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
+
   function addRoot() {
     setItems((prev) => [...prev, emptyItem()]);
   }
@@ -204,6 +210,7 @@ export function MenuEditor({
   function onSave() {
     setError(null);
     setMessage(null);
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await saveMenu(location, {
         name,
@@ -224,16 +231,15 @@ export function MenuEditor({
         <CardBody>
           <h3 className="text-xl font-semibold">Menu name</h3>
           <p className="opacity-70">Internal label so editors recognise the menu in the listing.</p>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="menu-name">Name</Label>
-            <Input
-              id="menu-name"
+          <Field {...v.field('name')}>
+            <FieldLabel required>Name</FieldLabel>
+            <FieldControl
+              name="menu-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
-              aria-required
+              {...v.control('name')}
             />
-          </div>
+          </Field>
         </CardBody>
       </Card>
 
@@ -286,14 +292,14 @@ export function MenuEditor({
               Save menu
             </Button>
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
             {message && (
-              <p className="text-success text-sm" aria-live="polite">
+              <FieldStatus status="success" attached={false} aria-live="polite">
                 {message}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardActions>
@@ -324,20 +330,17 @@ function ItemList({
       {items.map((item, index) => {
         const itemPath: PathStep[] = [...path, { index }];
         return (
-          <div
-            key={item.uid}
-            className="flex flex-col gap-3 rounded-lg border border-[var(--color-border-default)] p-3"
-          >
+          <div key={item.uid} className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
             <div className="flex flex-row items-end gap-2">
-              <div className="flex flex-1 flex-col gap-1">
-                <Label htmlFor={`label-${item.uid}`}>Label</Label>
-                <Input
-                  id={`label-${item.uid}`}
+              <Field className="flex-1">
+                <FieldLabel>Label</FieldLabel>
+                <FieldControl
+                  name={`label-${item.uid}`}
                   value={item.label}
                   onChange={(e) => onPatch(itemPath, { label: e.target.value })}
                   placeholder="Display label"
                 />
-              </div>
+              </Field>
               <div className="flex flex-row gap-1">
                 <Button
                   type="button"
@@ -375,22 +378,22 @@ function ItemList({
             </div>
 
             <div className="flex flex-row gap-3">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor={`kind-${item.uid}`}>Link kind</Label>
+              <Field>
+                <FieldLabel>Link kind</FieldLabel>
                 <Select
                   id={`kind-${item.uid}`}
                   aria-label="Link kind"
                   value={item.kind}
-                  onValueChange={(v) =>
+                  onValueChange={(val) =>
                     onPatch(itemPath, {
-                      kind: v as 'entry' | 'external',
+                      kind: val as 'entry' | 'external',
                       // Clear the other side so the XOR constraint never breaks.
-                      ...(v === 'entry' ? { externalUrl: '' } : { entryId: null }),
+                      ...(val === 'entry' ? { externalUrl: '' } : { entryId: null }),
                     })
                   }
                   items={{ external: 'External URL', entry: 'CMS entry' }}
                 />
-              </div>
+              </Field>
               <div className="flex flex-1 flex-col gap-1">
                 {item.kind === 'entry' ? (
                   <EntryField
@@ -400,16 +403,16 @@ function ItemList({
                     onChange={(entryId) => onPatch(itemPath, { entryId })}
                   />
                 ) : (
-                  <>
-                    <Label htmlFor={`target-${item.uid}`}>External URL</Label>
-                    <Input
-                      id={`target-${item.uid}`}
+                  <Field>
+                    <FieldLabel>External URL</FieldLabel>
+                    <FieldControl
+                      name={`target-${item.uid}`}
                       type="url"
                       value={item.externalUrl ?? ''}
                       onChange={(e) => onPatch(itemPath, { externalUrl: e.target.value })}
                       placeholder="https://…"
                     />
-                  </>
+                  </Field>
                 )}
               </div>
               <div className="flex flex-col gap-1">
@@ -476,9 +479,9 @@ function EntryField({
 
   if (mode === 'manual') {
     return (
-      <>
+      <Field>
         <div className="flex flex-row items-end justify-between">
-          <Label htmlFor={id}>Entry ID</Label>
+          <FieldLabel>Entry ID</FieldLabel>
           <Button
             type="button"
             color="primary"
@@ -490,20 +493,20 @@ function EntryField({
             Pick from list
           </Button>
         </div>
-        <Input
-          id={id}
+        <FieldControl
+          name={id}
           value={value ?? ''}
           onChange={(e) => onChange(e.target.value || null)}
           placeholder="UUID of a published content entry"
         />
-      </>
+      </Field>
     );
   }
 
   return (
-    <>
+    <Field>
       <div className="flex flex-row items-end justify-between">
-        <Label htmlFor={id}>Published entry</Label>
+        <FieldLabel>Published entry</FieldLabel>
         <Button
           type="button"
           color="primary"
@@ -520,7 +523,7 @@ function EntryField({
         aria-label="Published entry"
         placeholder="Choose a published entry…"
         value={value ?? ''}
-        onValueChange={(v) => onChange((v as string) || null)}
+        onValueChange={(val) => onChange((val as string) || null)}
       >
         {choices.length === 0 ? (
           <SelectItem value="__empty__" disabled>
@@ -535,6 +538,6 @@ function EntryField({
           ))
         )}
       </Select>
-    </>
+    </Field>
   );
 }

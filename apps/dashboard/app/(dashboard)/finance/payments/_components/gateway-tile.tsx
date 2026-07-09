@@ -7,7 +7,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { cn } from '@sparx/ui';
 
 import type { GatewayDescriptor } from '../actions';

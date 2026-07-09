@@ -1,5 +1,5 @@
 import { Globe, Plus } from 'lucide-react';
-import { EmptyState } from 'silicaui-react';
+import { EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';

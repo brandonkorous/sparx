@@ -28,13 +28,11 @@ function isWithin(pathname: string | null, href: string): boolean {
 // muted (not an uppercase kicker); collapsed it degrades to a bare rule.
 function FlowDivider({ label, collapsed }: { label: string; collapsed: boolean }) {
   if (collapsed) {
-    return (
-      <div aria-hidden className="my-1 h-px w-7 self-center bg-[var(--color-border-default)]" />
-    );
+    return <div aria-hidden className="bg-base-300 my-1 h-px w-7 self-center" />;
   }
   return (
-    <div className="mt-3 mb-1 border-t border-[var(--color-border-subtle)] px-2 pt-2">
-      <span className="text-xs font-medium text-[var(--color-text-tertiary)]">{label}</span>
+    <div className="border-base-300 mt-3 mb-1 border-t px-2 pt-2">
+      <span className="text-base-content/50 text-xs font-medium">{label}</span>
     </div>
   );
 }

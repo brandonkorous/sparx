@@ -11,8 +11,8 @@ import styles from './story.module.css';
 // Used to preview the example stories before the owner starts their own.
 
 const NEUTRAL_TINT: CSSProperties = {
-  background: 'color-mix(in oklch, var(--color-text-primary) 7%, transparent)',
-  color: 'var(--color-text-muted)',
+  background: 'color-mix(in oklch, var(--color-base-content) 7%, transparent)',
+  color: 'color-mix(in oklch, var(--color-base-content) 60%, transparent)',
 };
 
 function conn(i: number, n: number): string {

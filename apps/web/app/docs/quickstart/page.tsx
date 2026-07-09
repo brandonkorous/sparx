@@ -164,7 +164,7 @@ export default function QuickstartPage() {
           </span>
           <span
             className="pillbox"
-            style={{ borderColor: 'var(--sparx-primary)', color: 'var(--sparx-primary-hover)' }}
+            style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
           >
             api.sparx.works/v1
           </span>

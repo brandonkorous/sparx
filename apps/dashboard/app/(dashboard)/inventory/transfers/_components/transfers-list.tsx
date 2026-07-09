@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { formatDate, transferStatus, warehouseLabel, type InventoryTransferRow } from './types';
@@ -19,10 +19,7 @@ interface TransfersListProps {
 
 export function TransfersList({ rows, view }: TransfersListProps) {
   const numberLink = (t: InventoryTransferRow) => (
-    <Link
-      href={`/inventory/transfers/${t.id}`}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
-    >
+    <Link href={`/inventory/transfers/${t.id}`} className="hover:text-module font-mono text-xs">
       {t.number}
     </Link>
   );
@@ -35,7 +32,7 @@ export function TransfersList({ rows, view }: TransfersListProps) {
   const route = (t: InventoryTransferRow) => (
     <div className="flex min-w-0 flex-row items-center gap-1">
       <p className="truncate text-sm">{warehouseLabel(t.fromWarehouseName, t.fromWarehouseCode)}</p>
-      <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]" />
+      <ArrowRight className="text-base-content/60 h-3.5 w-3.5 shrink-0" />
       <p className="truncate text-sm">{warehouseLabel(t.toWarehouseName, t.toWarehouseCode)}</p>
     </div>
   );

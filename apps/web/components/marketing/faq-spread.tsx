@@ -62,8 +62,10 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
                   fontSize: '15px',
                   lineHeight: '22px',
                   fontWeight: on ? 500 : 400,
-                  color: on ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                  backgroundColor: on ? 'var(--color-bg-surface)' : 'transparent',
+                  color: on
+                    ? 'var(--color-base-content)'
+                    : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                  backgroundColor: on ? 'var(--color-base-100)' : 'transparent',
                   transition: 'color 0.15s ease, background-color 0.15s ease',
                 }}
               >
@@ -75,7 +77,9 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
                     borderRadius: 9999,
                     flexShrink: 0,
                     marginTop: '6px',
-                    backgroundColor: on ? accent : 'var(--color-border-strong)',
+                    backgroundColor: on
+                      ? accent
+                      : 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
                     transition: 'background-color 0.15s ease',
                   }}
                 />
@@ -90,8 +94,8 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
         style={{
           flex: 1,
           minWidth: 0,
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           padding: 'clamp(24px, 3vw, 40px)',
         }}
@@ -104,7 +108,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
             fontSize: 'clamp(20px, 2.4vw, 26px)',
             letterSpacing: '-0.02em',
             lineHeight: 1.25,
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {hasMark ? q.slice(0, -1) : q}
@@ -116,7 +120,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
             fontFamily: SANS,
             fontSize: '15px',
             lineHeight: '26px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             whiteSpace: 'pre-line',
           }}
         >

@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { CalendarDays, ExternalLink, MapPin, Package, Store } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { ProductGrid } from '@/components/product-grid';
 import { MarketPager } from '@/components/market-pager';

@@ -3,7 +3,14 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
-import { Button, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import type { PartnerTier } from '@sparx/partner-schemas';
 
 import { TIERS } from '../../_lib/tiers';
@@ -45,21 +52,21 @@ export function TierApply({ requestedTier }: { requestedTier: PartnerTier }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="tier-note">Why you’re ready (optional)</Label>
-        <Textarea
+      <Field>
+        <FieldLabel>Why you’re ready (optional)</FieldLabel>
+        <FieldControl
           id="tier-note"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          rows={3}
           maxLength={2000}
           placeholder={`Tell us about the client launches or experience that qualify you for ${target.label}.`}
+          render={<Textarea rows={3} />}
         />
-      </div>
+      </Field>
       {error && (
-        <p className="text-danger text-sm" role="alert" aria-live="polite">
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {error}
-        </p>
+        </FieldStatus>
       )}
       <div>
         <Button

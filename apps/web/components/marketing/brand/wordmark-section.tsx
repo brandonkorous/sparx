@@ -27,11 +27,15 @@ export function WordmarkSection() {
     <Section id="wordmark" surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               The wordmark.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>The “x” always sparks</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                The “x” always sparks
+              </span>
             </>
           }
           lede="Lowercase sparx, with one detail doing the work: the “x” carries sparx Indigo — the instant of ignition the brand is named for. The outlined lockup is the canonical artwork; the live UI renders the same wordmark in the interface font."
@@ -57,8 +61,8 @@ function Showcase() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 'clamp(44px, 8vw, 96px) 24px',
-        backgroundColor: moduleTint('var(--sparx-primary)'),
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: moduleTint('var(--color-primary)'),
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
       }}
     >
@@ -80,14 +84,14 @@ function ConstructionPanel() {
               justifyContent: 'space-between',
               gap: '16px',
               padding: '14px 0',
-              borderTop: i === 0 ? 'none' : '1px solid var(--color-border-default)',
+              borderTop: i === 0 ? 'none' : '1px solid var(--color-base-300)',
             }}
           >
             <dt
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {row.label}
@@ -101,7 +105,7 @@ function ConstructionPanel() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '14px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {row.value}
@@ -124,9 +128,9 @@ function ClearSpacePanel() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: 'clamp(28px, 5vw, 48px)',
-          border: '1px dashed var(--color-border-strong)',
+          border: '1px dashed color-mix(in oklab, var(--color-base-content) 30%, transparent)',
           borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <OfficialWordmark style={{ width: 'min(240px, 60vw)' }} />
@@ -136,12 +140,12 @@ function ClearSpacePanel() {
           fontFamily: 'var(--font-sans)',
           fontSize: '13.5px',
           lineHeight: '21px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
         }}
       >
         The dashed frame marks the minimum clear space — the height of the “x” on all sides. Below{' '}
-        <strong style={{ color: 'var(--color-text-primary)' }}>16px</strong> tall the “x” loses its
+        <strong style={{ color: 'var(--color-base-content)' }}>16px</strong> tall the “x” loses its
         color contrast; switch to the monogram mark instead.
       </p>
     </Panel>
@@ -156,7 +160,7 @@ function OneColorVariants() {
           fontFamily: 'var(--font-sans)',
           fontSize: '13.5px',
           lineHeight: '21px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
         }}
       >
@@ -188,7 +192,7 @@ function VariantTile({
         justifyContent: 'center',
         padding: 'clamp(28px, 5vw, 44px)',
         backgroundColor: bg,
-        border: border ? '1px solid var(--color-border-default)' : 'none',
+        border: border ? '1px solid var(--color-base-300)' : 'none',
         borderRadius: 'var(--radius-lg)',
       }}
     >
@@ -216,7 +220,7 @@ function SizeLadder() {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {h}px tall
@@ -249,10 +253,10 @@ function Rules() {
             fontFamily: 'var(--font-sans)',
             fontSize: '15px',
             lineHeight: '24px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
-          <span aria-hidden style={{ color: 'var(--sparx-primary)', flexShrink: 0 }}>
+          <span aria-hidden style={{ color: 'var(--color-primary)', flexShrink: 0 }}>
             —
           </span>
           <span>{rule}</span>
@@ -270,8 +274,8 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
         flexDirection: 'column',
         gap: '20px',
         padding: '28px',
-        backgroundColor: 'var(--color-bg-page)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
       }}
     >
@@ -280,7 +284,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '15px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >

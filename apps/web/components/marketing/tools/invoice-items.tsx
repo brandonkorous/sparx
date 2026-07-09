@@ -1,7 +1,7 @@
 'use client';
 
 import { Plus, Trash2 } from 'lucide-react';
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Field } from './ui-kit';
 import { newLineItem, formatMoney, type LineItem } from './lib/invoice';
 
@@ -29,7 +29,7 @@ export function InvoiceItems({
             gap: '10px',
             padding: '12px',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
           }}
         >
           <Input
@@ -65,7 +65,7 @@ export function InvoiceItems({
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '13px',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {formatMoney(

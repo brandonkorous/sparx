@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { FileUpload, Input, Switch, Slider, ColorPicker, toast } from '@sparx/ui';
+import { FileUpload, ColorPicker, toast } from '@sparx/ui';
+import { Input, Switch, Range } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 import { loadImageFromFile } from './lib/canvas';
 import { generateFavicons, type FaviconResult } from './lib/favicon';
@@ -89,7 +90,7 @@ export function FaviconTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >
@@ -111,18 +112,18 @@ export function FaviconTool() {
             </Field>
           ) : null}
           <Field label="Padding" adornment={`${padding}%`}>
-            <Slider
+            <Range
               value={[padding]}
-              onValueChange={(vals) => setPadding(vals[0] ?? 0)}
+              onValueChange={(vals) => setPadding((vals as number[])[0] ?? 0)}
               min={0}
               max={40}
               step={1}
             />
           </Field>
           <Field label="Corner radius" adornment={`${radius}%`}>
-            <Slider
+            <Range
               value={[radius]}
-              onValueChange={(vals) => setRadius(vals[0] ?? 0)}
+              onValueChange={(vals) => setRadius((vals as number[])[0] ?? 0)}
               min={0}
               max={50}
               step={1}
@@ -183,7 +184,7 @@ export function FaviconTool() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontWeight: 500,
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {img ? 'Rendering your favicons…' : 'Upload an image to begin'}
@@ -192,7 +193,7 @@ export function FaviconTool() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 Live previews, the full icon package, and copy-paste markup appear here.

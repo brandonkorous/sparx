@@ -107,9 +107,7 @@ export function SitePreviewFrame({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-          Live site preview
-        </span>
+        <span className="text-base-content text-sm font-semibold">Live site preview</span>
         <div className="flex items-center gap-2">
           <Button
             size="xs"
@@ -123,10 +121,10 @@ export function SitePreviewFrame({
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-default)] shadow-sm">
+      <div className="border-base-300 relative overflow-hidden rounded-[var(--radius-lg)] border shadow-sm">
         {status === 'loading' ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--color-bg-surface)]">
-            <span className="text-sm text-[var(--color-text-muted)]">Loading your site…</span>
+          <div className="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
+            <span className="text-base-content/60 text-sm">Loading your site…</span>
           </div>
         ) : null}
         {src ? (
@@ -134,7 +132,7 @@ export function SitePreviewFrame({
             ref={iframeRef}
             src={src}
             title="Live site preview"
-            className="h-[760px] w-full bg-[var(--color-bg-surface)]"
+            className="bg-base-100 h-[760px] w-full"
             // Same-origin so the bridge can read cookies/postMessage; allow forms
             // so interactive chrome doesn't error in the preview.
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
@@ -143,7 +141,7 @@ export function SitePreviewFrame({
         ) : null}
       </div>
 
-      <p className="text-xs text-[var(--color-text-muted)]">
+      <p className="text-base-content/60 text-xs">
         Your live site, re-themed as you edit. Content reflects your latest saved draft —{' '}
         <strong>Publish</strong> to make it public.
       </p>

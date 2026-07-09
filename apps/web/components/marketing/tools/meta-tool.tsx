@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Input, Textarea } from '@sparx/ui';
+import { Input, Textarea } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 
 const esc = (s: string) =>
@@ -11,7 +11,13 @@ const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trim
 function counter(len: number, max: number): React.ReactNode {
   const over = len > max;
   return (
-    <span style={{ color: over ? 'var(--color-danger)' : 'var(--color-text-tertiary)' }}>
+    <span
+      style={{
+        color: over
+          ? 'var(--color-danger)'
+          : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+      }}
+    >
       {len}/{max}
     </span>
   );
@@ -130,13 +136,13 @@ export function MetaTool() {
             style={{
               borderRadius: 'var(--radius-lg)',
               overflow: 'hidden',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
             }}
           >
             <div
               style={{
                 aspectRatio: '1200 / 630',
-                backgroundColor: 'var(--color-bg-subtle)',
+                backgroundColor: 'var(--color-base-200)',
                 backgroundImage: image ? `url("${image}")` : undefined,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
@@ -150,20 +156,20 @@ export function MetaTool() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   og:image preview
                 </span>
               ) : null}
             </div>
-            <div style={{ padding: '12px 14px', backgroundColor: 'var(--color-bg-surface)' }}>
+            <div style={{ padding: '12px 14px', backgroundColor: 'var(--color-base-100)' }}>
               <div
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '11px',
                   textTransform: 'uppercase',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {host}
@@ -173,7 +179,7 @@ export function MetaTool() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '15px',
                   fontWeight: 600,
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {clip(title || 'Your page title', 70)}
@@ -182,7 +188,7 @@ export function MetaTool() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {clip(description || 'Your description.', 120)}

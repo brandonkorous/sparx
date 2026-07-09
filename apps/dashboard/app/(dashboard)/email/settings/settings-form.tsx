@@ -3,10 +3,23 @@
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { toast } from '@sparx/ui';
-import { Button, Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { updateEmailSettingsAction } from './actions';
 import type { EmailSettingsView } from '../_lib/types';
+
+// Reuse the shared email rule but treat empty as valid — these addresses are optional.
+const optionalEmail = (value: string): string | null => (value.trim() ? rule.email()(value) : null);
 
 interface SettingsFormProps {
   initial: EmailSettingsView;
@@ -18,11 +31,15 @@ export function SettingsForm({ initial }: SettingsFormProps) {
   const [fromAddress, setFromAddress] = useState(initial.fromAddress ?? '');
   const [replyTo, setReplyTo] = useState(initial.replyTo ?? '');
   const [physicalAddress, setPhysicalAddress] = useState(initial.physicalAddress ?? '');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const v = useFieldValidation(
+    { fromName, fromAddress, replyTo, physicalAddress },
+    { fromAddress: optionalEmail, replyTo: optionalEmail }
+  );
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setFieldErrors({});
+    if (!v.validate()) return;
 
     // No brand fields here on purpose — email brand (color, fonts, logo) is
     // read from the tenant-level brand (docs/30 §6), never re-entered per
@@ -39,7 +56,9 @@ export function SettingsForm({ initial }: SettingsFormProps) {
       if (result.ok) {
         toast.success('Email settings saved.');
       } else if (result.error.details?.length) {
-        setFieldErrors(Object.fromEntries(result.error.details.map((d) => [d.field, d.message])));
+        v.setServerErrors(
+          Object.fromEntries(result.error.details.map((d) => [d.field, d.message]))
+        );
         toast.error('Please fix the highlighted fields.');
       } else {
         toast.error(result.error.message);
@@ -50,70 +69,64 @@ export function SettingsForm({ initial }: SettingsFormProps) {
   return (
     <form onSubmit={onSubmit}>
       <div className="flex max-w-2xl flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="fromName">From name</Label>
-          <Input
-            id="fromName"
+        <Field {...v.field('fromName')}>
+          <FieldLabel>From name</FieldLabel>
+          <FieldControl
+            name="fromName"
             value={fromName}
             onChange={(e) => setFromName(e.target.value)}
+            {...v.control('fromName')}
             placeholder="Acme Store"
             disabled={pending}
           />
-          <p className="text-base-content/70 text-sm">
-            The display name recipients see in their inbox.
-          </p>
-          {fieldErrors.fromName ? (
-            <p className="text-danger text-sm">{fieldErrors.fromName}</p>
-          ) : null}
-        </div>
+          <FieldDescription>The display name recipients see in their inbox.</FieldDescription>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="fromAddress">From address</Label>
-          <Input
-            id="fromAddress"
+        <Field {...v.field('fromAddress')}>
+          <FieldLabel>From address</FieldLabel>
+          <FieldControl
+            name="fromAddress"
             type="email"
             value={fromAddress}
             onChange={(e) => setFromAddress(e.target.value)}
+            {...v.control('fromAddress')}
             placeholder="orders@yourstore.com"
             disabled={pending}
           />
-          <p className="text-base-content/70 text-sm">
+          <FieldDescription>
             Must be on a verified sending domain to send from your own brand.
-          </p>
-          {fieldErrors.fromAddress ? (
-            <p className="text-danger text-sm">{fieldErrors.fromAddress}</p>
-          ) : null}
-        </div>
+          </FieldDescription>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="replyTo">Reply-to address</Label>
-          <Input
-            id="replyTo"
+        <Field {...v.field('replyTo')}>
+          <FieldLabel>Reply-to address</FieldLabel>
+          <FieldControl
+            name="replyTo"
             type="email"
             value={replyTo}
             onChange={(e) => setReplyTo(e.target.value)}
+            {...v.control('replyTo')}
             placeholder="support@yourstore.com"
             disabled={pending}
           />
-          {fieldErrors.replyTo ? (
-            <p className="text-danger text-sm">{fieldErrors.replyTo}</p>
-          ) : null}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="physicalAddress">Physical mailing address</Label>
-          <Textarea
-            id="physicalAddress"
+        <Field {...v.field('physicalAddress')}>
+          <FieldLabel>Physical mailing address</FieldLabel>
+          <FieldControl
+            name="physicalAddress"
             value={physicalAddress}
             onChange={(e) => setPhysicalAddress(e.target.value)}
-            placeholder={'Acme Store\n123 Main St\nVisalia, CA 93291'}
-            rows={3}
+            {...v.control('physicalAddress')}
             disabled={pending}
+            render={
+              <Textarea placeholder={'Acme Store\n123 Main St\nVisalia, CA 93291'} rows={3} />
+            }
           />
-          <p className="text-base-content/70 text-sm">
+          <FieldDescription>
             Required by CAN-SPAM / GDPR — shown in the footer of every email.
-          </p>
-        </div>
+          </FieldDescription>
+        </Field>
 
         <Card className="border-transparent bg-transparent shadow-none">
           <CardBody>

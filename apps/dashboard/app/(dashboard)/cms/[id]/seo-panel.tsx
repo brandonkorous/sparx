@@ -14,7 +14,17 @@
 // signal to spot truncation before publishing.
 
 import * as React from 'react';
-import { Button, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ImageOff, Pencil } from 'lucide-react';
 import { SeoScoreChip } from '@/components/seo/seo-score';
 import { MediaPicker, type PickedAsset } from '../_components/media-picker';
@@ -97,39 +107,41 @@ export function SeoPanel({
             description={previewDescription}
           />
 
-          <div className="flex flex-col gap-2">
+          <Field>
             <div className="flex flex-row items-end justify-between gap-4">
-              <Label htmlFor="seoTitle">Search title</Label>
+              <FieldLabel>Search title</FieldLabel>
               <CharCount value={value.title} max={TITLE_MAX} />
             </div>
-            <Input
-              id="seoTitle"
+            <FieldControl
               name="seoTitle"
               value={value.title}
               onChange={(e) => update('title', e.target.value)}
               maxLength={TITLE_MAX + 20}
               placeholder={fallbackTitle || 'Falls back to the page title.'}
             />
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-2">
+          <Field>
             <div className="flex flex-row items-end justify-between gap-4">
-              <Label htmlFor="metaDescription">Meta description</Label>
+              <FieldLabel>Meta description</FieldLabel>
               <CharCount value={value.description} max={DESCRIPTION_MAX} />
             </div>
-            <Textarea
-              id="metaDescription"
+            <FieldControl
               name="metaDescription"
               value={value.description}
               onChange={(e) => update('description', e.target.value)}
-              rows={3}
               maxLength={DESCRIPTION_MAX + 40}
-              placeholder="One-sentence summary Google can show as the snippet."
+              render={
+                <Textarea
+                  rows={3}
+                  placeholder="One-sentence summary Google can show as the snippet."
+                />
+              }
             />
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="ogImage">Social share image</Label>
+          <Field>
+            <FieldLabel>Social share image</FieldLabel>
             <OgImageField
               assetId={value.ogImage}
               preview={ogPreview}
@@ -139,10 +151,10 @@ export function SeoPanel({
                 update('ogImage', '');
               }}
             />
-            <p className="text-base-content/70 text-xs">
+            <FieldDescription>
               Used as the Open Graph image when this page is shared on Facebook, LinkedIn, Slack,
               etc. Falls back to your default OG image when blank.
-            </p>
+            </FieldDescription>
             <MediaPicker
               open={pickerOpen}
               onOpenChange={setPickerOpen}
@@ -153,25 +165,24 @@ export function SeoPanel({
                 setPickerOpen(false);
               }}
             />
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="canonical">Canonical URL</Label>
-            <Input
-              id="canonical"
+          <Field>
+            <FieldLabel>Canonical URL</FieldLabel>
+            <FieldControl
               name="canonical"
               value={value.canonical}
               onChange={(e) => update('canonical', e.target.value)}
               placeholder={`${previewOrigin}/${slug || ''}`}
             />
-            <p className="text-base-content/70 text-xs">
+            <FieldDescription>
               Set this if the same content lives at multiple URLs. Leave blank to use the
               page&apos;s own URL.
-            </p>
-          </div>
+            </FieldDescription>
+          </Field>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="robots">Robots directive</Label>
+          <Field>
+            <FieldLabel>Robots directive</FieldLabel>
             {/* A plain native select — like the Page template picker below. A simple
                 text-option enum needs no Radix Select (whose hidden form-mirror is an
                 absolutely-positioned element that escapes scroll containers). */}
@@ -187,10 +198,10 @@ export function SeoPanel({
                 </option>
               ))}
             </NativeSelect>
-            <p className="text-base-content/70 text-xs">
+            <FieldDescription>
               Controls whether search engines index this page and follow its links.
-            </p>
-          </div>
+            </FieldDescription>
+          </Field>
         </div>
       </CardBody>
     </Card>
@@ -235,8 +246,8 @@ function OgImageField({
           className="h-14 w-14 rounded-md object-cover"
         />
       ) : (
-        <div className="flex h-14 w-14 flex-col items-center justify-center rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
-          <ImageOff aria-hidden className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+        <div className="border-base-300 bg-base-200 flex h-14 w-14 flex-col items-center justify-center rounded-md border">
+          <ImageOff aria-hidden className="text-base-content/50 h-5 w-5" />
         </div>
       )}
       <div className="flex flex-col gap-1">
@@ -295,7 +306,7 @@ function GooglePreview({
   // sparx tokens. The surrounding chrome (border / background) does use
   // tokens.
   return (
-    <div className="flex flex-col gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-4">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-1 rounded-md border p-4">
       <p className="text-base-content/70 text-xs">Google preview</p>
       <p className="text-xs text-[#202124]">{displayUrl}</p>
       <p className="text-lg font-medium text-[#1a0dab]">{truncate(title, 60)}</p>

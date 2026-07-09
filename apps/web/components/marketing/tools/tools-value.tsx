@@ -66,8 +66,8 @@ export function ToolsValue() {
                   alignItems: 'flex-start',
                   padding: '24px',
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                 }}
               >
                 <span
@@ -94,7 +94,7 @@ export function ToolsValue() {
                       fontWeight: 500,
                       fontSize: '17px',
                       letterSpacing: '-0.01em',
-                      color: 'var(--color-text-primary)',
+                      color: 'var(--color-base-content)',
                       margin: 0,
                     }}
                   >
@@ -105,7 +105,7 @@ export function ToolsValue() {
                       fontFamily: 'var(--font-sans)',
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                       margin: 0,
                     }}
                   >

@@ -15,7 +15,7 @@ import {
   Card,
   CardBody,
   CardTitle,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';
@@ -118,10 +118,7 @@ export default async function CommerceChannelsPage({
           {hasRevenue && (
             <p className="text-base-content/70 text-sm">
               See the full revenue breakdown — gross, fees, net, and top products by channel — in{' '}
-              <Link
-                href="/finance/channels"
-                className="font-medium text-[var(--module-active-text)] hover:underline"
-              >
+              <Link href="/finance/channels" className="text-module font-medium hover:underline">
                 Finance → Channels
               </Link>
               .

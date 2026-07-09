@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Lock } from 'lucide-react';
-import { Badge, Button, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider } from '@sparx/ui';
 import type { ModuleSlug } from '@sparx/auth';
 

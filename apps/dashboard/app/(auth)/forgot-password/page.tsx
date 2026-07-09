@@ -2,19 +2,24 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Input, Label } from 'silicaui-react';
+import { Button, Field, FieldControl, FieldLabel } from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState('');
   const [submitted, setSubmitted] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  const v = useFieldValidation(
+    { email },
+    { email: rules(rule.required('Enter your email.'), rule.email()) }
+  );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
 
     await authClient.requestPasswordReset({
@@ -51,24 +56,17 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={onSubmit} noValidate>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
+              <Field {...v.field('email')}>
+                <FieldLabel required>Email</FieldLabel>
+                <FieldControl
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  {...v.control('email')}
                 />
-              </div>
-
-              {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
-                  {error}
-                </p>
-              )}
+              </Field>
 
               <Button type="submit" disabled={submitting} loading={submitting}>
                 Send reset link

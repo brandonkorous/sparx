@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { SeoScoreBadge } from '@/components/seo/seo-score';
 import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';

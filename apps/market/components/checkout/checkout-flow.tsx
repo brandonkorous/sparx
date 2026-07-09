@@ -8,7 +8,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Steps, Step, Alert, Button, Input } from 'silicaui-react';
+import { Steps, Step, Alert, Button, Input } from '@wizeworks/silicaui-react';
 
 import {
   createPaymentIntent,

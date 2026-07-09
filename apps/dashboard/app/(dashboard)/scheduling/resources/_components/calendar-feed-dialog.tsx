@@ -10,12 +10,14 @@
 import { useEffect, useState } from 'react';
 import {
   Button,
-  Input,
+  Field,
+  FieldControl,
+  FieldStatus,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 import { Copy } from 'lucide-react';
 
@@ -75,15 +77,19 @@ export function CalendarFeedDialog({
         <p className="px-1 pt-1 text-sm font-medium">Subscribe to this resource&rsquo;s bookings</p>
         <div className="flex flex-col gap-3 px-1 py-2">
           {error ? (
-            <p className="text-danger text-sm">{error}</p>
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+              {error}
+            </FieldStatus>
           ) : (
             <div className="flex items-center gap-2">
-              <Input
-                readOnly
-                value={feedUrl ?? 'Generating…'}
-                onFocus={(e) => e.currentTarget.select()}
-                aria-label="Calendar feed URL"
-              />
+              <Field className="flex-1">
+                <FieldControl
+                  readOnly
+                  value={feedUrl ?? 'Generating…'}
+                  onFocus={(e) => e.currentTarget.select()}
+                  aria-label="Calendar feed URL"
+                />
+              </Field>
               <Button
                 type="button"
                 variant="soft"
@@ -96,14 +102,14 @@ export function CalendarFeedDialog({
               </Button>
             </div>
           )}
-          <p className="text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-base-content/70 text-xs">
             Keep this link private — anyone with it can see this resource&rsquo;s schedule.
             Subscribed calendars refresh on the provider&rsquo;s own cadence (Google ~12h, Outlook
             ~24h), so it can lag; sparx remains the source of truth for availability.
           </p>
         </div>
 
-        <hr className="my-1 border-[var(--color-border)]" />
+        <hr className="border-base-300 my-1" />
 
         <div className="px-1 py-2">
           <CalendarConnectionsSection resourceId={resourceId} />

@@ -61,10 +61,7 @@ export default async function TenantSupportPage({
   }
 
   const backLink = (
-    <Link
-      href={`/sparx/tenants/${id}`}
-      className="text-sm text-[var(--color-text-muted)] hover:underline"
-    >
+    <Link href={`/sparx/tenants/${id}`} className="text-base-content/60 text-sm hover:underline">
       ← Back to tenant
     </Link>
   );
@@ -107,7 +104,7 @@ export default async function TenantSupportPage({
         <Text variant="muted">
           Search-index health and the email delivery log for this tenant. Cross-tenant order and
           customer lookup lives in{' '}
-          <Link href="/sparx/support" className="text-[var(--module-active-text)] hover:underline">
+          <Link href="/sparx/support" className="text-module hover:underline">
             Support
           </Link>
           .

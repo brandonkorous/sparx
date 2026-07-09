@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, ExternalLink, XCircle } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 import type { BootcampStatus } from '@sparx/partner-schemas';
 

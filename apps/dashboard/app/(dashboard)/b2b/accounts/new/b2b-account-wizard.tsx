@@ -27,7 +27,16 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  FieldStatus,
+  Input,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { createB2bAccountAction } from '../../../crm/b2b-actions';
@@ -192,7 +201,7 @@ function FleetProfilesCard({
             {profiles.map((profile) => (
               <div
                 key={profile.id}
-                className="flex flex-row items-center gap-2 rounded-md border border-[var(--color-border-default)] p-2"
+                className="border-base-300 flex flex-row items-center gap-2 rounded-md border p-2"
               >
                 <Input
                   type="number"
@@ -281,9 +290,18 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
   });
   const [engineProfiles, setEngineProfiles] = React.useState<EngineProfileDraft[]>([]);
 
-  const [companyErrors, setCompanyErrors] = React.useState<Record<string, string>>({});
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Only the company name is required. Drive the shared Field/FieldStatus engine
+  // over it and feed the resolved message into SchemaFieldRenderer's `errors` map,
+  // which renders the field-level status the same way the rest of the platform does.
+  const companyName = typeof company.companyName === 'string' ? company.companyName : '';
+  const v = useFieldValidation(
+    { companyName },
+    { companyName: rule.required('Company name is required.') }
+  );
+  const companyNameError = v.visibleError('companyName');
 
   // Unsaved-changes guard. A create form starts blank, so "dirty" is "the user
   // entered or changed anything" — company identity, a changed status, any
@@ -323,21 +341,10 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  // ── Validation ─────────────────────────────────────────────────────────────
-
-  function validateCompany(): boolean {
-    const errs: Record<string, string> = {};
-    if (!company.companyName || (company.companyName as string).trim() === '') {
-      errs.companyName = 'Company name is required.';
-    }
-    setCompanyErrors(errs);
-    return Object.keys(errs).length === 0;
-  }
-
   // ── Submit ───────────────────────────────────────────────────────────────────
 
   async function handleSubmit() {
-    if (!validateCompany()) return;
+    if (!v.validate()) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -475,7 +482,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
                 fields={COMPANY_FIELDS}
                 values={company}
                 onChange={(key, value) => setCompany((prev) => ({ ...prev, [key]: value }))}
-                errors={companyErrors}
+                errors={companyNameError ? { companyName: companyNameError } : undefined}
                 disabled={submitting}
               />
             </CardBody>
@@ -505,9 +512,9 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
           />
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>

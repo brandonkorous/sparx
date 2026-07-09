@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PageHeader } from '@sparx/ui';
-import { Button, Card, CardBody } from 'silicaui-react';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { ArrowRight, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 
@@ -55,9 +55,7 @@ export default async function CmsNavigationPage() {
                     <div className="flex flex-col gap-1">
                       <div className="flex flex-row items-center gap-2">
                         <h4 className="text-lg font-semibold">{label}</h4>
-                        <code className="text-xs text-[var(--color-text-tertiary)]">
-                          /{location}
-                        </code>
+                        <code className="text-base-content/50 text-xs">/{location}</code>
                       </div>
                       <p className="text-base-content/70 text-sm">
                         {existing
@@ -90,9 +88,7 @@ export default async function CmsNavigationPage() {
                     <div className="flex flex-row items-center justify-between gap-3">
                       <div className="flex flex-col gap-1">
                         <h4 className="text-lg font-semibold">{m.name}</h4>
-                        <code className="text-xs text-[var(--color-text-tertiary)]">
-                          /{m.location}
-                        </code>
+                        <code className="text-base-content/50 text-xs">/{m.location}</code>
                       </div>
                       <Button
                         variant="ghost"

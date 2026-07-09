@@ -16,7 +16,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
-import { Button, Card, CardBody, Switch } from 'silicaui-react';
+import { Button, Card, CardBody, Switch } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
 import type { AutomationDto } from '../_lib/types';
 import {
@@ -99,7 +99,7 @@ export function AutomationList({
       cell: (a) => (
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-2">
-            {nameLink(a, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+            {nameLink(a, 'text-sm font-medium hover:text-module hover:underline')}
             <OriginBadge origin={a.origin} locked={a.locked} />
           </div>
           <p className="text-base-content/70 text-xs">
@@ -122,25 +122,21 @@ export function AutomationList({
     {
       header: 'Enabled',
       align: 'right',
-      cell: (a) => statusToggle(a) ?? <span className="text-[var(--color-text-tertiary)]">—</span>,
+      cell: (a) => statusToggle(a) ?? <span className="text-base-content/50">—</span>,
     },
   ];
 
   const card: SelectionCard<AutomationDto> = {
     // `render` is a full escape hatch and overrides `title`; the title fallback
     // is the same name link, kept for safety if the slot is ever read directly.
-    title: (a) =>
-      nameLink(a, 'text-base font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (a) => nameLink(a, 'text-base font-medium hover:text-module hover:underline'),
     render: (a) => (
       <Card>
         <CardBody>
           <div className="flex flex-row flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <div className="flex flex-row flex-wrap items-center gap-2">
-                {nameLink(
-                  a,
-                  'text-base font-medium hover:text-[var(--module-active)] hover:underline'
-                )}
+                {nameLink(a, 'text-base font-medium hover:text-module hover:underline')}
                 <OriginBadge origin={a.origin} locked={a.locked} />
               </div>
               <p className="text-base-content/70 text-sm">

@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { RefreshCw } from 'lucide-react';
 
 import { reindexSeoAudits } from '@/components/seo/actions';
@@ -30,7 +30,7 @@ export function RescanButton({ size = 'sm' }: { size?: 'sm' | 'md' }) {
 
   return (
     <div className="flex items-center gap-3">
-      {note ? <span className="text-xs text-[var(--color-text-tertiary)]">{note}</span> : null}
+      {note ? <span className="text-base-content/50 text-xs">{note}</span> : null}
       <Button color="module" size={size} onClick={() => void run()} disabled={pending}>
         <RefreshCw className={`mr-1 h-3.5 w-3.5 ${pending ? 'animate-spin' : ''}`} />
         {pending ? 'Scanning…' : 'Re-scan site'}

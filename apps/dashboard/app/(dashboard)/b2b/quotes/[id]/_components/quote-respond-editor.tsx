@@ -2,7 +2,17 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Input, Select, Table, Textarea } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  Table,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import {
   applyMarkupRule,
   type BandMethod,
@@ -225,54 +235,52 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
                     />
 
                     {st.mode === 'manual' ? (
-                      <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        className="w-32"
-                        aria-label="Quoted unit price"
-                        value={st.price}
-                        onChange={(e) => patch(item.id, { price: e.target.value })}
-                      />
+                      <Field className="w-32">
+                        <FieldControl
+                          type="number"
+                          min={0}
+                          step={0.01}
+                          aria-label="Quoted unit price"
+                          value={st.price}
+                          onChange={(e) => patch(item.id, { price: e.target.value })}
+                        />
+                      </Field>
                     ) : (
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-row flex-wrap items-end gap-2">
-                          <div className="flex flex-col gap-1">
-                            <p className="text-base-content/70 text-xs">
+                          <Field className="w-28">
+                            <FieldLabel>
                               Cost {item.variantId ? '(blank = catalog cost)' : ''}
-                            </p>
-                            <Input
+                            </FieldLabel>
+                            <FieldControl
                               type="number"
                               min={0}
                               step={0.01}
-                              className="w-28"
                               placeholder={item.variantId ? 'catalog' : '0.00'}
                               value={st.cost}
                               onChange={(e) => patch(item.id, { cost: e.target.value })}
                             />
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <p className="text-base-content/70 text-xs">Markup</p>
+                          </Field>
+                          <Field className="w-44">
+                            <FieldLabel>Markup</FieldLabel>
                             <Select
                               value={st.source}
                               onValueChange={(v) => patch(item.id, { source: v as string })}
-                              className="w-44"
                               items={[
                                 ...rules.map((r) => ({ value: r.id, label: r.name })),
                                 { value: ADHOC, label: 'Ad-hoc markup…' },
                               ]}
                             />
-                          </div>
+                          </Field>
                         </div>
 
                         {st.source === ADHOC && (
                           <div className="flex flex-row flex-wrap items-end gap-2">
-                            <div className="flex flex-col gap-1">
-                              <p className="text-base-content/70 text-xs">Method</p>
+                            <Field className="w-40">
+                              <FieldLabel>Method</FieldLabel>
                               <Select
                                 value={st.method}
                                 onValueChange={(v) => patch(item.id, { method: v as BandMethod })}
-                                className="w-40"
                                 items={{
                                   percentage: 'Markup %',
                                   margin_target: 'Target margin %',
@@ -280,19 +288,16 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
                                   flat: 'Add fixed $',
                                 }}
                               />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                              <p className="text-base-content/70 text-xs">
-                                {METHOD_META[st.method].label}
-                              </p>
-                              <Input
+                            </Field>
+                            <Field className="w-28">
+                              <FieldLabel>{METHOD_META[st.method].label}</FieldLabel>
+                              <FieldControl
                                 type="number"
                                 step={0.01}
-                                className="w-28"
                                 value={st.value}
                                 onChange={(e) => patch(item.id, { value: e.target.value })}
                               />
-                            </div>
+                            </Field>
                           </div>
                         )}
 
@@ -325,17 +330,28 @@ export function QuoteRespondEditor({ quoteId, items, rules }: Props) {
         </tbody>
       </Table>
 
-      {error && <p className="text-danger px-4 text-sm">{error}</p>}
+      {error && (
+        <div className="px-4">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {error}
+          </FieldStatus>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2 px-4 pb-4">
-        <p className="text-base-content/70 text-sm">Note to customer (optional)</p>
-        <Textarea
-          rows={2}
-          placeholder="Any notes or conditions to include with the quoted prices…"
-          value={merchantNote}
-          onChange={(e) => setMerchantNote(e.target.value)}
-          className="max-w-xl"
-        />
+        <Field className="max-w-xl">
+          <FieldLabel>Note to customer (optional)</FieldLabel>
+          <FieldControl
+            value={merchantNote}
+            onChange={(e) => setMerchantNote(e.target.value)}
+            render={
+              <Textarea
+                rows={2}
+                placeholder="Any notes or conditions to include with the quoted prices…"
+              />
+            }
+          />
+        </Field>
         <div>
           <Button color="module" disabled={saving} onClick={() => void handleSubmit()}>
             {saving ? 'Sending…' : 'Send quoted prices to customer'}

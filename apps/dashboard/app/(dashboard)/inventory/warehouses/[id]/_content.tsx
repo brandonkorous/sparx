@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Warehouse as WarehouseIcon } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -122,7 +122,7 @@ export async function WarehouseDetailContent({ id }: Props) {
               Full per-variant levels live on the{' '}
               <Link
                 href={`/inventory/stock?warehouse=${warehouse.id}`}
-                className="underline hover:text-[var(--module-active)]"
+                className="hover:text-module underline"
               >
                 inventory page
               </Link>{' '}
@@ -155,9 +155,7 @@ function Stat({
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
           <p className="text-base-content/70 text-xs">{label}</p>
-          <p className={`text-lg${tone === 'warn' ? 'text-[var(--color-warning)]' : ''}`}>
-            {value}
-          </p>
+          <p className={`text-lg${tone === 'warn' ? 'text-warning' : ''}`}>{value}</p>
         </div>
       </CardBody>
     </Card>

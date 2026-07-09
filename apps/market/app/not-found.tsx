@@ -2,7 +2,7 @@
 // the page was never published. Framed by the root layout's header + footer.
 
 import Link from 'next/link';
-import { Button, Heading, Text } from 'silicaui-react';
+import { Button, Heading, Text } from '@wizeworks/silicaui-react';
 
 import { Container } from '@/components/ui/layout';
 

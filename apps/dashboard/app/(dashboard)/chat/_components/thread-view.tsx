@@ -8,7 +8,7 @@
 // "/" in the composer opens the quick-reply picker.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Badge, Textarea } from 'silicaui-react';
+import { Button, Badge, Textarea } from '@wizeworks/silicaui-react';
 import { Check, UserCheck } from 'lucide-react';
 
 import { useChatSocket } from './chat-socket-provider';
@@ -130,9 +130,9 @@ export function ThreadView({
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] px-5 py-3">
+      <header className="border-base-300 flex items-center justify-between gap-3 border-b px-5 py-3">
         <div className="min-w-0">
-          <div className="truncate text-sm font-semibold text-[var(--color-text-primary)]">
+          <div className="text-base-content truncate text-sm font-semibold">
             {conversation.customerName ?? conversation.customerEmail ?? 'Anonymous visitor'}
           </div>
           <Badge color={STATUS_COLOR[status]} variant="soft" size="sm">
@@ -163,7 +163,7 @@ export function ThreadView({
         </div>
       </header>
 
-      <div className="flex-1 space-y-2 overflow-y-auto bg-[var(--color-bg-subtle)] p-5">
+      <div className="bg-base-200 flex-1 space-y-2 overflow-y-auto p-5">
         {messages.map((m) => (
           <div
             key={m.id}
@@ -173,40 +173,36 @@ export function ThreadView({
               <div
                 className={`rounded-2xl px-3.5 py-2 text-sm ${
                   m.senderType === 'customer'
-                    ? 'rounded-bl-sm bg-[var(--color-surface)] text-[var(--color-text-primary)]'
-                    : 'rounded-br-sm bg-[var(--module-active)] text-white'
+                    ? 'bg-base-100 text-base-content rounded-bl-sm'
+                    : 'bg-module rounded-br-sm text-white'
                 }`}
                 style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
               >
                 {m.body}
               </div>
-              <div className="mt-0.5 px-1 text-[11px] text-[var(--color-text-secondary)]">
+              <div className="text-base-content/70 mt-0.5 px-1 text-[11px]">
                 {m.senderType === 'ai' ? 'AI' : m.senderType === 'staff' ? 'You' : ''}
               </div>
             </div>
           </div>
         ))}
-        {typing ? (
-          <div className="px-1 text-xs text-[var(--color-text-secondary)] italic">typing…</div>
-        ) : null}
+        {typing ? <div className="text-base-content/70 px-1 text-xs italic">typing…</div> : null}
         <div ref={endRef} />
       </div>
 
-      <div className="relative border-t border-[var(--color-border)] p-3">
+      <div className="border-base-300 relative border-t p-3">
         {quickMatches.length > 0 ? (
-          <div className="absolute right-3 bottom-full left-3 mb-1 overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg">
+          <div className="border-base-300 bg-base-100 absolute right-3 bottom-full left-3 mb-1 overflow-hidden rounded-lg border shadow-lg">
             {quickMatches.map((r) => (
               <button
                 key={r.id}
                 type="button"
-                className="block w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-bg-subtle)]"
+                className="hover:bg-base-200 block w-full px-3 py-2 text-left text-sm"
                 onClick={() => setInput(r.body)}
               >
                 <span className="font-medium">{r.title}</span>
                 {r.shortcut ? (
-                  <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
-                    /{r.shortcut}
-                  </span>
+                  <span className="text-base-content/70 ml-2 text-xs">/{r.shortcut}</span>
                 ) : null}
               </button>
             ))}

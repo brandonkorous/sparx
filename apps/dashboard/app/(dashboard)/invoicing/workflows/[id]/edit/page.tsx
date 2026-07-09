@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 

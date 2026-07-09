@@ -4,7 +4,7 @@
 // and a helpful empty state. Anchored #directory so the hero "Find a bootcamp"
 // CTA and the facet links land here.
 
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { SectionHeader } from '@/components/marketing/primitives';
 import type { BootcampListResponse } from '@/lib/bootcamp';
 import { BootcampDirectoryCard } from './bootcamp-card';
@@ -31,15 +31,15 @@ export function BootcampDirectory({
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
-        borderTop: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderTop: '1px solid var(--color-base-300)',
         scrollMarginTop: '80px',
       }}
     >
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <SectionHeader accent="var(--sparx-primary)" headline={<>Upcoming bootcamps</>} />
+            <SectionHeader accent="var(--color-primary)" headline={<>Upcoming bootcamps</>} />
             <form method="get" action="/bootcamp" className="mkt-cluster" style={{ gap: '8px' }}>
               {current.format ? <input type="hidden" name="format" value={current.format} /> : null}
               {current.location ? (
@@ -64,11 +64,11 @@ export function BootcampDirectory({
 
           <div
             style={{
-              borderTop: '1px solid var(--color-border-default)',
+              borderTop: '1px solid var(--color-base-300)',
               paddingTop: '20px',
               fontFamily: 'var(--font-sans)',
               fontSize: '14px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {showing > 0
@@ -112,7 +112,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '17px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
           maxWidth: '440px',
           lineHeight: '26px',

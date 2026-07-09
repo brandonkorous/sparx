@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { BarChart3, TrendingUp, Users, AlertCircle } from 'lucide-react';
 
 import { PageHeader, Stat } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -152,9 +152,9 @@ export default async function ReportsPage() {
                           ${b.totalValue.toLocaleString()}
                         </p>
                       </div>
-                      <div className="h-2 rounded-full bg-[var(--color-surface-subtle)]">
+                      <div className="bg-base-200 h-2 rounded-full">
                         <div
-                          className="h-full rounded-full bg-[var(--module-active)]"
+                          className="bg-module h-full rounded-full"
                           style={{ width: `${(b.count / max) * 100}%` }}
                         />
                       </div>
@@ -224,9 +224,9 @@ export default async function ReportsPage() {
                     <p className="text-sm">{p.month}</p>
                     <p className="text-sm tabular-nums">{p.newCustomers}</p>
                   </div>
-                  <div className="h-1.5 rounded-full bg-[var(--color-surface-subtle)]">
+                  <div className="bg-base-200 h-1.5 rounded-full">
                     <div
-                      className="h-full rounded-full bg-[var(--module-active)]"
+                      className="bg-module h-full rounded-full"
                       style={{
                         width: `${
                           maxAcquisition > 0 ? (p.newCustomers / maxAcquisition) * 100 : 0
@@ -244,7 +244,7 @@ export default async function ReportsPage() {
           <Card>
             <CardBody>
               <div className="flex flex-row items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-[var(--color-warning-500)]" />
+                <AlertCircle className="text-warning h-5 w-5" />
                 <div className="flex flex-1 flex-col gap-1">
                   <p className="text-base font-medium">
                     {snapshot.overdueTasks} overdue tasks across the team

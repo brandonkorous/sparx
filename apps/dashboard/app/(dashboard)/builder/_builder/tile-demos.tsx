@@ -139,7 +139,7 @@ export function columnsDemo(value: string): React.ReactNode {
  *  (surface-coloured gap + the ring) reads distinctly from a plain border. */
 function ringShadow(px: number): string {
   if (!px) return 'none';
-  return `0 0 0 1.5px var(--color-bg-subtle), 0 0 0 ${1.5 + px}px var(--tile-ink)`;
+  return `0 0 0 1.5px var(--color-base-200), 0 0 0 ${1.5 + px}px var(--tile-ink)`;
 }
 
 /** The inner demo node for every non-radius kind (radius rounds the chip itself). */

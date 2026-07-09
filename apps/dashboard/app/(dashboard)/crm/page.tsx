@@ -23,7 +23,7 @@ import {
   PageHeader,
   Stat,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -125,12 +125,18 @@ const CUSTOMER_SWATCHES = [
 const OPEN_DEAL_COLORS = [
   'module',
   'module',
-  'var(--module-active-tint)',
+  'color-mix(in oklch, var(--color-module) 25%, var(--color-base-100))',
   '#67e8f9',
   '#a5f3fc',
 ] as const;
 // Cyan donut palette (CRM module color + tints) for the lead-source split.
-const SOURCE_COLORS = ['module', 'var(--module-active-tint)', '#67e8f9', '#a5f3fc', '#cffafe'];
+const SOURCE_COLORS = [
+  'module',
+  'color-mix(in oklch, var(--color-module) 25%, var(--color-base-100))',
+  '#67e8f9',
+  '#a5f3fc',
+  '#cffafe',
+];
 
 const TYPE_LABEL: Record<string, string> = {
   b2b: 'Wholesale',
@@ -419,9 +425,9 @@ export default async function CrmOverviewPage() {
           icon={<Filter className="h-4 w-4" />}
           right={
             snapshot ? (
-              <span className="text-xs text-[var(--color-text-tertiary)]">
+              <span className="text-base-content/50 text-xs">
                 Open value{' '}
-                <span className="font-medium text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70 font-medium">
                   {fmtMoney(snapshot.pipelineValue)}
                 </span>
               </span>
@@ -487,15 +493,15 @@ export default async function CrmOverviewPage() {
               />
             )}
             {taskStats && (
-              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[var(--color-border-default)] pt-3 text-xs">
+              <div className="border-base-300 mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t pt-3 text-xs">
                 {[
                   ['Open tasks', fmtNumber(taskStats.open)],
                   ['Overdue', fmtNumber(taskStats.overdue)],
                   ['Done · 30d', fmtNumber(taskStats.completedLast30d)],
                 ].map(([label, value]) => (
                   <div key={label}>
-                    <div className="text-[var(--color-text-tertiary)]">{label}</div>
-                    <div className="font-medium text-[var(--color-text-secondary)]">{value}</div>
+                    <div className="text-base-content/50">{label}</div>
+                    <div className="text-base-content/70 font-medium">{value}</div>
                   </div>
                 ))}
               </div>
@@ -544,9 +550,7 @@ export default async function CrmOverviewPage() {
                       </td>
                       <td className="text-right tabular-nums">{fmtNumber(c.orders)}</td>
                       <td className="text-right tabular-nums">{c.ltv}</td>
-                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                        {c.last}
-                      </td>
+                      <td className="text-base-content/50 text-right tabular-nums">{c.last}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -642,9 +646,9 @@ export default async function CrmOverviewPage() {
               <>
                 <BarList items={openDealsRows} />
                 {snapshot && (
-                  <div className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  <div className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
                     Open pipeline ·{' '}
-                    <span className="font-medium text-[var(--color-text-secondary)]">
+                    <span className="text-base-content/70 font-medium">
                       {fmtMoney(snapshot.pipelineValue)}
                     </span>{' '}
                     across {fmtNumber(snapshot.openDeals)} deals

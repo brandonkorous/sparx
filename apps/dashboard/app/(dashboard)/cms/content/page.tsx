@@ -11,7 +11,7 @@
 
 import Link from 'next/link';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';

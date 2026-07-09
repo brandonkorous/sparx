@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button, FieldStatus } from '@wizeworks/silicaui-react';
 import { cn } from '@sparx/ui';
 import { ArrowLeft, Check, ChevronDown } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export interface SummaryPlanItem {
   /** A bundled capability (e.g. Invoicing with Commerce/B2B) — shown "Included"
    *  rather than a price, and contributes $0 to the total. */
   included?: boolean;
-  /** Token var for the module's dot color, e.g. `var(--module-builder)`. */
+  /** Token var for the module's dot color, e.g. `var(--color-module-builder)`. */
   colorVar: string;
   /** Optional sub-caption under the name (e.g. the story's "comes with Dropship"). */
   caption?: string;
@@ -71,7 +71,7 @@ export function SummaryCard({
   const showList = !collapsibleModules || expanded;
 
   return (
-    <aside className="w-full overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md lg:sticky lg:top-2">
+    <aside className="border-base-300 bg-base-100 w-full overflow-hidden rounded-2xl border shadow-md lg:sticky lg:top-2">
       {/* ── Plan total ────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
@@ -81,10 +81,10 @@ export function SummaryCard({
           </Badge>
         </div>
         <div className="flex items-baseline gap-1">
-          <span className="text-[3.25rem] leading-[1] font-medium tracking-[-0.04em] text-[var(--color-text-primary)]">
+          <span className="text-base-content text-[3.25rem] leading-[1] font-medium tracking-[-0.04em]">
             ${plan.total}
           </span>
-          <span className="text-lg text-[var(--color-text-tertiary)]">/mo</span>
+          <span className="text-base-content/50 text-lg">/mo</span>
         </div>
         <p className="text-base-content/70 text-xs">
           After your 14-day trial · one invoice for everything
@@ -92,7 +92,7 @@ export function SummaryCard({
       </div>
 
       {/* ── Per-module breakdown (what you're paying for) ─────────────────── */}
-      <div className="flex flex-col gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-6 py-4">
+      <div className="border-base-300 bg-base-200 flex flex-col gap-3 border-t px-6 py-4">
         {collapsibleModules && plan.items.length > 0 && (
           <button
             type="button"
@@ -105,7 +105,7 @@ export function SummaryCard({
             </p>
             <ChevronDown
               className={cn(
-                'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-200',
+                'text-base-content/50 h-4 w-4 transition-transform duration-200',
                 expanded && 'rotate-180'
               )}
             />
@@ -129,12 +129,7 @@ export function SummaryCard({
                   )}
                 </span>
               </span>
-              <p
-                className={cn(
-                  'text-sm font-medium',
-                  m.included && 'text-[var(--color-success-text)]'
-                )}
-              >
+              <p className={cn('text-sm font-medium', m.included && 'text-success')}>
                 {m.included ? 'Included' : `$${m.price}`}
               </p>
             </div>
@@ -144,17 +139,15 @@ export function SummaryCard({
 
       {/* ── Savings ───────────────────────────────────────────────────────── */}
       {plan.items.length > 0 && (
-        <div className="flex flex-col gap-2.5 border-t border-[var(--color-border-default)] px-6 py-4">
+        <div className="border-base-300 flex flex-col gap-2.5 border-t px-6 py-4">
           <div className="flex items-center justify-between">
             <p className="text-base-content/70 text-xs">Same stack, stitched together</p>
-            <span className="text-sm text-[var(--color-text-tertiary)] line-through">
-              ${plan.elsewhere}/mo
-            </span>
+            <span className="text-base-content/50 text-sm line-through">${plan.elsewhere}/mo</span>
           </div>
           {savings > 0 && (
-            <div className="flex items-center gap-2.5 rounded-lg bg-[var(--color-success-tint)] px-3.5 py-3">
-              <Check className="h-4 w-4 shrink-0 text-[var(--color-success-text)]" />
-              <span className="text-sm text-[var(--color-success-text)]">
+            <div className="bg-success bg-soft flex items-center gap-2.5 rounded-lg px-3.5 py-3">
+              <Check className="text-success h-4 w-4 shrink-0" />
+              <span className="text-success text-sm">
                 You save{' '}
                 <span className="text-base font-semibold">${savings.toLocaleString()}/mo</span> on
                 one bill
@@ -169,13 +162,13 @@ export function SummaryCard({
 
       {/* ── Accreting receipt rows (the choices made downstream) ──────────── */}
       {entries.length > 0 && (
-        <div className="border-t border-[var(--color-border-default)]">
+        <div className="border-base-300 border-t">
           {entries.map((e) => (
             <div
               key={e.key}
               className={cn(
-                'flex items-start gap-3 border-b border-[var(--color-border-default)] px-6 py-3 last:border-b-0',
-                e.status === 'active' && 'bg-[var(--module-active-tint)]'
+                'border-base-300 flex items-start gap-3 border-b px-6 py-3 last:border-b-0',
+                e.status === 'active' && 'bg-module bg-soft'
               )}
             >
               <span
@@ -183,10 +176,10 @@ export function SummaryCard({
                 className={cn(
                   'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full',
                   e.status === 'done'
-                    ? 'bg-[var(--module-active)] text-white'
+                    ? 'bg-module text-white'
                     : e.status === 'active'
-                      ? 'border-2 border-[var(--module-active)]'
-                      : 'border-2 border-[var(--color-border-strong)]'
+                      ? 'border-module border-2'
+                      : 'border-base-content/30 border-2'
                 )}
               >
                 {e.status === 'done' && <Check className="h-2.5 w-2.5" />}
@@ -197,8 +190,8 @@ export function SummaryCard({
                   className={cn(
                     'truncate text-sm',
                     e.status === 'pending'
-                      ? 'text-[var(--color-text-tertiary)]'
-                      : 'font-medium text-[var(--color-text-primary)]'
+                      ? 'text-base-content/50'
+                      : 'text-base-content font-medium'
                   )}
                 >
                   {e.value}
@@ -210,11 +203,11 @@ export function SummaryCard({
       )}
 
       {/* ── CTA (fixed home for the primary action, every step) ───────────── */}
-      <div className="flex flex-col gap-2.5 border-t border-[var(--color-border-default)] px-6 py-5">
+      <div className="border-base-300 flex flex-col gap-2.5 border-t px-6 py-5">
         {error && (
-          <p className="text-danger text-xs" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
         <Button
           color="module"
@@ -232,7 +225,7 @@ export function SummaryCard({
           <button
             type="button"
             onClick={onBack}
-            className="mt-1 flex items-center justify-center gap-1 text-xs text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-primary)]"
+            className="text-base-content/50 hover:text-base-content mt-1 flex items-center justify-center gap-1 text-xs transition-colors"
           >
             <ArrowLeft className="h-3 w-3" />
             Back

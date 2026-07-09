@@ -71,7 +71,7 @@ export function FieldControl({ field, value, onChange, config, onPatch }: FieldC
         config={config}
         onPatch={onPatch}
       />
-      {field.help ? <p className="text-xs text-[var(--color-text-muted)]">{field.help}</p> : null}
+      {field.help ? <p className="text-base-content/60 text-xs">{field.help}</p> : null}
       {isLucideIconField(field.help) && <LucideIconLink />}
     </div>
   );
@@ -176,9 +176,7 @@ function Control({
             onValueChange={(v) => onChange(v[0])}
             className="flex-1"
           />
-          <span className="w-10 text-right text-sm text-[var(--color-text-muted)] tabular-nums">
-            {n}
-          </span>
+          <span className="text-base-content/60 w-10 text-right text-sm tabular-nums">{n}</span>
         </div>
       );
     }
@@ -256,11 +254,11 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <div className="flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+        <div className="border-base-300 bg-base-200 flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border">
           {preview ? (
             <img src={preview} alt="" className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+            <ImageIcon className="text-base-content/50 h-5 w-5" />
           )}
         </div>
         <div className="flex flex-col gap-1.5">
@@ -283,9 +281,9 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
             ) : null}
           </div>
           {current && !isUrl ? (
-            <span className="font-mono text-[11px] text-[var(--color-text-muted)]">{current}</span>
+            <span className="text-base-content/60 font-mono text-[11px]">{current}</span>
           ) : (
-            <span className="text-xs text-[var(--color-text-muted)]">
+            <span className="text-base-content/60 text-xs">
               {isUrl ? 'External URL' : 'No image selected'}
             </span>
           )}
@@ -305,7 +303,7 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
             type="button"
             onClick={() => setFramingOpen(true)}
             disabled={!preview}
-            className="self-start text-sm text-[var(--module-active)] hover:underline disabled:cursor-not-allowed disabled:text-[var(--color-text-muted)] disabled:no-underline"
+            className="text-module disabled:text-base-content/60 self-start text-sm hover:underline disabled:cursor-not-allowed disabled:no-underline"
           >
             Adjust framing…
           </button>
@@ -370,18 +368,15 @@ function ListField({ field, value, onChange }: FieldControlProps) {
   return (
     <div className="flex flex-col gap-3">
       {items.map((item, i) => (
-        <div
-          key={i}
-          className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] p-3"
-        >
+        <div key={i} className="border-base-300 flex flex-col gap-2 rounded-md border p-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--color-text-muted)]">
+            <span className="text-base-content/60 text-xs font-medium">
               {field.itemLabel ?? 'Item'} {i + 1}
             </span>
             <button
               type="button"
               onClick={() => removeItem(i)}
-              className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+              className="text-base-content/60 hover:text-base-content text-xs"
             >
               Remove
             </button>
@@ -401,7 +396,7 @@ function ListField({ field, value, onChange }: FieldControlProps) {
       <button
         type="button"
         onClick={addItem}
-        className="self-start text-sm text-[var(--module-active)] hover:underline"
+        className="text-module self-start text-sm hover:underline"
       >
         + Add {field.itemLabel ?? 'item'}
       </button>

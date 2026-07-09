@@ -145,7 +145,7 @@ function SystemComponentDetail({ def }: { def: ComponentDef }) {
     <Stack gap={6}>
       <Stack direction="row" align="start" justify="between" gap={3} wrap>
         <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
-          <Icon className="h-7 w-7 shrink-0 text-[var(--module-active)]" aria-hidden />
+          <Icon className="text-module h-7 w-7 shrink-0" aria-hidden />
           <Stack gap={2} className="min-w-0">
             <Stack direction="row" align="center" gap={3} wrap>
               <Heading level={1}>{def.label}</Heading>
@@ -372,10 +372,7 @@ function CustomComponentDetail({
     <Stack gap={6}>
       <Stack direction="row" align="start" justify="between" gap={3} wrap>
         <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
-          <LucideByName
-            name={component.icon}
-            className="h-7 w-7 shrink-0 text-[var(--module-active)]"
-          />
+          <LucideByName name={component.icon} className="text-module h-7 w-7 shrink-0" />
           <Stack gap={2} className="min-w-0">
             <Stack direction="row" align="center" gap={3} wrap>
               <Heading level={1}>{component.name}</Heading>

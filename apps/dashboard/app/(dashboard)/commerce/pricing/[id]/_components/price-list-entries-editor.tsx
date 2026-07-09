@@ -4,8 +4,19 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Badge, Button, EmptyState, Input, Label, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  Table,
+} from '@wizeworks/silicaui-react';
 import { RadioGroup, RadioGroupItem } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import { deletePriceListEntryAction, setPriceListEntryAction } from '../../../pricing-actions';
 
@@ -44,43 +55,58 @@ export function PriceListEntriesEditor({
   const [error, setError] = React.useState<string | null>(null);
   const [mode, setMode] = React.useState<'fixed' | 'percent'>('fixed');
 
+  const [variantId, setVariantId] = React.useState('');
+  const [fixedPrice, setFixedPrice] = React.useState('');
+  const [percentOff, setPercentOff] = React.useState('');
+  const [minQuantity, setMinQuantity] = React.useState('1');
+  const [maxQuantity, setMaxQuantity] = React.useState('');
+
+  // Field validation. A variant is required; the override value is validated for
+  // the active mode (fixed price > 0, or percent off 1–100).
+  const values = { variantId, fixedPrice, percentOff };
+  const v = useFieldValidation(values, {
+    variantId: (val) => (String(val).trim() === '' ? 'Pick a variant.' : null),
+    fixedPrice: (val) => {
+      if (mode !== 'fixed') return null;
+      const n = Number(String(val).trim());
+      return Number.isFinite(n) && n > 0 ? null : 'Fixed price must be greater than 0.';
+    },
+    percentOff: (val) => {
+      if (mode !== 'percent') return null;
+      const n = Number(String(val).trim());
+      return Number.isFinite(n) && n > 0 && n <= 100
+        ? null
+        : 'Percent off must be between 1 and 100.';
+    },
+  });
+
+  function resetEntry() {
+    setVariantId('');
+    setFixedPrice('');
+    setPercentOff('');
+    setMinQuantity('1');
+    setMaxQuantity('');
+  }
+
   function onAddEntry(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const variantId = stringOr(form.get('variantId'), '');
-    if (!variantId) {
-      setError('Pick a variant');
-      return;
-    }
-    const minQuantity = Number(stringOr(form.get('minQuantity'), '1')) || 1;
-    const maxRaw = stringOr(form.get('maxQuantity'), '');
-    const maxQuantity = maxRaw ? Number(maxRaw) : undefined;
+    if (!v.validate()) return;
 
-    let fixedPriceCents: number | undefined;
-    let percentOffList: number | undefined;
-    if (mode === 'fixed') {
-      const dollars = Number(stringOr(form.get('fixedPrice'), '0'));
-      if (!Number.isFinite(dollars) || dollars <= 0) {
-        setError('Fixed price must be positive');
-        return;
-      }
-      fixedPriceCents = Math.round(dollars * 100);
-    } else {
-      const percent = Number(stringOr(form.get('percentOff'), '0'));
-      if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
-        setError('Percent off must be 1-100');
-        return;
-      }
-      percentOffList = percent;
-    }
+    const min = Number(minQuantity.trim() || '1') || 1;
+    const maxRaw = maxQuantity.trim();
+    const max = maxRaw ? Number(maxRaw) : undefined;
+
+    const fixedPriceCents =
+      mode === 'fixed' ? Math.round(Number(fixedPrice.trim()) * 100) : undefined;
+    const percentOffList = mode === 'percent' ? Number(percentOff.trim()) : undefined;
 
     startTransition(async () => {
       const result = await setPriceListEntryAction({
         priceListId,
         variantId,
-        minQuantity,
-        maxQuantity,
+        minQuantity: min,
+        maxQuantity: max,
         fixedPriceCents: fixedPriceCents ?? null,
         percentOffList: percentOffList ?? null,
       });
@@ -88,7 +114,7 @@ export function PriceListEntriesEditor({
         setError(result.error.message);
         return;
       }
-      (e.target as HTMLFormElement).reset();
+      resetEntry();
       router.refresh();
     });
   }
@@ -107,29 +133,34 @@ export function PriceListEntriesEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={onAddEntry}>
-        <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
-          <div className="flex min-w-[16rem] flex-1 flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Variant</p>
-            <select
+      <form onSubmit={onAddEntry} noValidate>
+        <div className="border-base-300 bg-base-200 flex flex-row flex-wrap items-end gap-3 rounded border p-3">
+          <Field {...v.field('variantId')} className="min-w-[16rem] flex-1">
+            <FieldLabel required>Variant</FieldLabel>
+            <FieldControl
               name="variantId"
-              defaultValue=""
-              className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-            >
-              <option value="">— pick —</option>
-              {variants.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.productTitle} · {v.sku}
-                  {v.title ? ` (${v.title})` : ''} — base {moneyFmt.format(v.basePriceCents / 100)}
-                </option>
-              ))}
-            </select>
-          </div>
+              value={variantId}
+              onChange={(e) => setVariantId(e.target.value)}
+              {...v.control('variantId')}
+              render={
+                <select className="border-base-300 bg-base-100 h-9 rounded border px-3 text-sm">
+                  <option value="">— pick —</option>
+                  {variants.map((variant) => (
+                    <option key={variant.id} value={variant.id}>
+                      {variant.productTitle} · {variant.sku}
+                      {variant.title ? ` (${variant.title})` : ''} — base{' '}
+                      {moneyFmt.format(variant.basePriceCents / 100)}
+                    </option>
+                  ))}
+                </select>
+              }
+            />
+          </Field>
           <div className="flex flex-col gap-1">
             <p className="text-base-content/70 text-xs">Mode</p>
             <RadioGroup
               value={mode}
-              onValueChange={(v) => setMode(v as 'fixed' | 'percent')}
+              onValueChange={(val) => setMode(val as 'fixed' | 'percent')}
               className="flex flex-row gap-2"
             >
               <Label htmlFor="mode-fixed" className="flex items-center gap-1">
@@ -143,29 +174,72 @@ export function PriceListEntriesEditor({
             </RadioGroup>
           </div>
           {mode === 'fixed' ? (
-            <div className="flex w-[8rem] flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Fixed ($)</p>
-              <Input name="fixedPrice" defaultValue="" placeholder="0.00" />
-            </div>
+            <Field {...v.field('fixedPrice')} className="w-[8rem]">
+              <FieldLabel>Fixed ($)</FieldLabel>
+              <FieldControl
+                name="fixedPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                value={fixedPrice}
+                onChange={(e) => setFixedPrice(e.target.value)}
+                placeholder="0.00"
+                {...v.control('fixedPrice')}
+              />
+            </Field>
           ) : (
-            <div className="flex w-[8rem] flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Percent off</p>
-              <Input name="percentOff" defaultValue="" placeholder="10" />
-            </div>
+            <Field {...v.field('percentOff')} className="w-[8rem]">
+              <FieldLabel>Percent off</FieldLabel>
+              <FieldControl
+                name="percentOff"
+                type="number"
+                min="0"
+                step="1"
+                value={percentOff}
+                onChange={(e) => setPercentOff(e.target.value)}
+                placeholder="10"
+                {...v.control('percentOff')}
+              />
+            </Field>
           )}
-          <div className="flex w-[6rem] flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Min qty</p>
-            <Input name="minQuantity" defaultValue="1" />
-          </div>
-          <div className="flex w-[6rem] flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Max qty</p>
-            <Input name="maxQuantity" defaultValue="" placeholder="any" />
-          </div>
+          <Field className="w-[6rem]">
+            <FieldLabel>Min qty</FieldLabel>
+            <FieldControl
+              name="minQuantity"
+              type="number"
+              min="1"
+              step="1"
+              value={minQuantity}
+              onChange={(e) => setMinQuantity(e.target.value)}
+            />
+          </Field>
+          <Field className="w-[6rem]">
+            <FieldLabel>Max qty</FieldLabel>
+            <FieldControl
+              name="maxQuantity"
+              type="number"
+              min="1"
+              step="1"
+              value={maxQuantity}
+              onChange={(e) => setMaxQuantity(e.target.value)}
+              placeholder="any"
+            />
+          </Field>
           <Button color="module" type="submit" size="sm" disabled={pending}>
             {pending ? 'Saving…' : 'Add'}
           </Button>
         </div>
-        {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
+        {error && (
+          <FieldStatus
+            status="error"
+            attached={false}
+            role="alert"
+            aria-live="polite"
+            className="mt-2"
+          >
+            {error}
+          </FieldStatus>
+        )}
       </form>
 
       {entries.length === 0 ? (
@@ -224,8 +298,4 @@ export function PriceListEntriesEditor({
       )}
     </div>
   );
-}
-
-function stringOr(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

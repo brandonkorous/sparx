@@ -39,7 +39,7 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {count} {count === 1 ? cat.singular : cat.label.toLowerCase()}
@@ -52,7 +52,7 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                     fontSize: '11px',
                     letterSpacing: '0.04em',
                     textTransform: 'uppercase',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   Coming soon
@@ -66,7 +66,7 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                 fontWeight: 500,
                 fontSize: '20px',
                 letterSpacing: '-0.015em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 paddingTop: '28px',
                 margin: 0,
               }}
@@ -78,7 +78,7 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 paddingTop: '8px',
                 margin: 0,
               }}
@@ -110,8 +110,8 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
           minHeight: '200px',
           // Category menu: each tile wears a soft 8% wash of its category hue
           // (a color legend) instead of the retired 3px top stripe.
-          backgroundColor: `color-mix(in oklab, ${cat.accent} 8%, var(--color-bg-surface))`,
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: `color-mix(in oklab, ${cat.accent} 8%, var(--color-base-100))`,
+          border: '1px solid var(--color-base-300)',
           borderRadius: '8px',
           padding: '24px',
           opacity: live ? 1 : 0.72,

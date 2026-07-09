@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Loading } from 'silicaui-react';
+import { Button, Loading } from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
 

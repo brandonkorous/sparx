@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Banknote, CheckCircle2 } from 'lucide-react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { setupPayoutsAction } from '../actions';
 

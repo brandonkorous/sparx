@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { GraduationCap } from 'lucide-react';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { MODULE_GUIDES } from '../_lib/content';
@@ -17,7 +17,7 @@ export default function PartnerGuidesPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="text-base-content/70 hover:text-base-content text-sm"
           >
             ← Resources
           </Link>
@@ -34,15 +34,13 @@ export default function PartnerGuidesPage() {
                   <CardBody>
                     <div className="flex flex-col gap-3">
                       <div className="flex flex-col gap-1">
-                        <p className="text-base font-medium text-[var(--module-active-text)]">
-                          {guide.label}
-                        </p>
+                        <p className="text-module text-base font-medium">{guide.label}</p>
                         <p className="text-base-content/70 text-sm">{guide.blurb}</p>
                       </div>
                       <ol className="flex flex-col gap-2">
                         {guide.steps.map((step, i) => (
                           <li key={step} className="flex items-start gap-3">
-                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--module-active)] font-mono text-xs text-[var(--module-active-text)]">
+                            <span className="border-module text-module mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border font-mono text-xs">
                               {i + 1}
                             </span>
                             <p className="text-sm">{step}</p>

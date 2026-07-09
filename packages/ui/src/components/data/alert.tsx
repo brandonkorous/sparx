@@ -1,38 +1,25 @@
 import * as React from 'react';
 import { X } from 'lucide-react';
-import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
-import { colorClass, type ColorKey } from '../_recipes/variants';
+import { type ColorKey } from '../_recipes/variants';
 
-// Alert — inline status banner on the shared color axis (docs/35 Tier-A).
-// Treatments are alert-specific (no hover state) but read the same --c-* role
-// vars set by the `.sx-c-{color}` class, so any palette/custom color works.
+// Alert — inline status banner on the shared color axis (docs/35 Tier-A),
+// composed from silicaui's `.alert` component classes (which own the fill /
+// border / radius / padding). The icon, title, body and dismiss affordance are
+// sparx-specific and layered on top.
 
-const alertVariants = cva('relative flex rounded-lg', {
-  variants: {
-    variant: {
-      soft: 'bg-[var(--c-tint,var(--color-bg-subtle))] text-[var(--c-ink,var(--color-text-primary))]',
-      solid:
-        'bg-[var(--c-bg,var(--color-neutral))] text-[var(--c-fg,var(--color-neutral-content))]',
-      outline:
-        'border border-[var(--c-bg,var(--color-border-strong))] text-[var(--c-ink,var(--color-text-primary))]',
-    },
-    size: {
-      sm: 'gap-2 p-3 text-xs',
-      md: 'gap-3 p-4 text-sm',
-      lg: 'gap-3 p-5 text-base',
-    },
-  },
-  defaultVariants: { variant: 'soft', size: 'md' },
-});
+const ALERT_VARIANT = { solid: '', soft: 'alert-soft', outline: 'alert-outline' } as const;
+const ALERT_SIZE = { sm: 'alert-sm', md: 'alert-md', lg: 'alert-lg' } as const;
 
-export interface AlertProps
-  extends
-    Omit<React.HTMLAttributes<HTMLDivElement>, 'color' | 'title'>,
-    VariantProps<typeof alertVariants> {
+export type AlertVariant = keyof typeof ALERT_VARIANT;
+export type AlertSize = keyof typeof ALERT_SIZE;
+
+export interface AlertProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color' | 'title'> {
   /** Semantic color slot (known slots autocomplete; any string accepted for
    *  runtime custom theme colors). Defaults to `info`. */
   color?: ColorKey | (string & {});
+  variant?: AlertVariant;
+  size?: AlertSize;
   /** Leading icon (e.g. a Lucide icon). Inherits the alert's text color. */
   icon?: React.ReactNode;
   /** Bold heading line above the body. */
@@ -47,8 +34,8 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     {
       className,
       color = 'info',
-      variant,
-      size,
+      variant = 'soft',
+      size = 'md',
       icon,
       title,
       onDismiss,
@@ -61,7 +48,14 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     <div
       ref={ref}
       role="alert"
-      className={cn(colorClass(color), alertVariants({ variant, size }), className)}
+      className={cn(
+        'alert',
+        `alert-${color}`,
+        ALERT_VARIANT[variant],
+        ALERT_SIZE[size],
+        'flex',
+        className
+      )}
       {...props}
     >
       {icon && <span className="mt-0.5 shrink-0 [&>svg]:h-[1.1em] [&>svg]:w-[1.1em]">{icon}</span>}
@@ -77,7 +71,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
           className={cn(
             '-mt-0.5 -mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm',
             'opacity-60 hover:opacity-100',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none'
+            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
           )}
         >
           <X className="h-3.5 w-3.5" />
@@ -87,5 +81,3 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   )
 );
 Alert.displayName = 'Alert';
-
-export { alertVariants };

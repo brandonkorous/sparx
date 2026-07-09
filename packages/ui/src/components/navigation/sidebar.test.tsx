@@ -23,7 +23,7 @@ describe('Sidebar', () => {
     );
     const active = screen.getByRole('button', { name: 'Orders' });
     expect(active).toHaveAttribute('data-active', 'true');
-    expect(active.className).toMatch(/bg-\[var\(--module-active-tint\)\]/);
+    expect(active.className).toMatch(/bg-module bg-soft/);
   });
 
   it('fires onClick when a SidebarItem is activated', async () => {

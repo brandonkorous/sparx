@@ -5,7 +5,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Palette, Trash2 } from 'lucide-react';
 import { Code, useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { deleteSite, renameSite } from '../../actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -57,9 +68,12 @@ export function SiteGeneralTab({
   const dirty = value.trim() !== baseline.trim();
   useUnsavedGuard(dirty, { kind: 'edit', noun: 'site' });
 
+  const v = useFieldValidation({ name: value }, { name: rule.required('Enter a site name.') });
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const fd = new FormData();
     fd.set('propertyId', propertyId);
     fd.set('name', value.trim());
@@ -106,41 +120,41 @@ export function SiteGeneralTab({
               The name shows to customers in this site&apos;s title bar, header, and emails.
             </p>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="site-name">Site name</Label>
-                <Input
-                  id="site-name"
+              <Field {...v.field('name')}>
+                <FieldLabel required>Site name</FieldLabel>
+                <FieldControl
+                  name="name"
                   value={value}
                   onChange={(e) => {
                     setValue(e.target.value);
                     setError(null);
                   }}
-                  required
                   maxLength={255}
+                  {...v.control('name')}
                 />
-              </div>
+              </Field>
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="site-handle">URL handle</Label>
-                <Input id="site-handle" value={slug} readOnly disabled />
-                <p className="text-base-content/70 text-xs">
+              <Field>
+                <FieldLabel>URL handle</FieldLabel>
+                <FieldControl name="handle" value={slug} readOnly disabled />
+                <FieldDescription>
                   Anchors this site&apos;s built-in address{' '}
                   <Code>
                     {slug}.{zoneSuffix}
                   </Code>
                   . Connect your own domain from the Domains tab.
-                </p>
-              </div>
+                </FieldDescription>
+              </Field>
 
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
 
               <div className="flex flex-row items-center justify-end gap-2">
                 {savedAt !== null && !dirty && (
-                  <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+                  <div className="text-success flex flex-row items-center gap-1">
                     <Check className="h-4 w-4" />
                     <p className="text-success text-sm">Saved</p>
                   </div>
@@ -160,7 +174,7 @@ export function SiteGeneralTab({
           <div className="flex flex-row items-center gap-3">
             <span
               aria-hidden
-              className="flex size-9 shrink-0 items-center justify-center rounded-md bg-[var(--module-active-tint)] text-[var(--module-active)]"
+              className="bg-module bg-soft text-module flex size-9 shrink-0 items-center justify-center rounded-md"
             >
               <Palette className="h-4 w-4" />
             </span>
@@ -187,19 +201,19 @@ export function SiteGeneralTab({
         <CardBody>
           <h3 className="text-xl font-semibold">At a glance</h3>
           <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-3 text-sm">
-            <dt className="text-[var(--color-text-muted)]">Status</dt>
+            <dt className="text-base-content/60">Status</dt>
             <dd>
               <Badge color={status.color} variant="soft">
                 {status.label}
               </Badge>
             </dd>
-            <dt className="text-[var(--color-text-muted)]">Primary domain</dt>
+            <dt className="text-base-content/60">Primary domain</dt>
             <dd>{primaryHost ?? '—'}</dd>
-            <dt className="text-[var(--color-text-muted)]">Handle</dt>
+            <dt className="text-base-content/60">Handle</dt>
             <dd>
               <Code>{slug}</Code>
             </dd>
-            <dt className="text-[var(--color-text-muted)]">Created</dt>
+            <dt className="text-base-content/60">Created</dt>
             <dd>{formatDate(createdAt)}</dd>
           </dl>
         </CardBody>
@@ -207,7 +221,7 @@ export function SiteGeneralTab({
 
       {/* Danger zone — the primary site can't be deleted (api-rest refuses it). */}
       {!isPrimary && (
-        <Card className="border-[var(--color-danger-border)]">
+        <Card className="border-danger">
           <CardBody>
             <h3 className="text-xl font-semibold">Delete this site</h3>
             <p className="opacity-70">

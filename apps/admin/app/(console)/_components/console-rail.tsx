@@ -15,14 +15,13 @@ import {
 // h-8 tiles, two-tone icon coloring, and expand-to-labels behavior owned by the
 // shared SidebarAppShell (`useRailExpanded`). Collapsed it's icon-only with hover
 // titles; expanded, every tile grows a label and each group gains a heading. The
-// console wears the neutral `platform` hue, so the active tile uses
-// `--module-active-*` (platform indigo) rather than per-module colors.
+// console wears the neutral `platform` hue, so the active tile uses the
+// active-module bridge (`text-module`/`bg-module`, platform indigo) rather than per-module colors.
 
 const TILE_BASE =
-  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none';
-const TILE_INACTIVE =
-  'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]';
-const TILE_ACTIVE = 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]';
+  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none';
+const TILE_INACTIVE = 'text-base-content/70 hover:bg-base-200 hover:text-base-content';
+const TILE_ACTIVE = 'bg-module bg-soft text-module';
 
 function tileClass(active: boolean, expanded: boolean): string {
   const shape = expanded ? 'w-full justify-start gap-2 px-2' : 'w-8 justify-center';
@@ -32,9 +31,7 @@ function tileClass(active: boolean, expanded: boolean): string {
 function tileIconClass(active: boolean): string {
   return cn(
     'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-    active
-      ? 'text-[var(--module-active)]'
-      : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
+    active ? 'text-module' : 'text-base-content/50 group-hover:text-base-content/70'
   );
 }
 
@@ -84,10 +81,7 @@ export function ConsoleRail({
 
       <div
         aria-hidden
-        className={cn(
-          'my-1 h-px shrink-0 bg-[var(--color-border-default)]',
-          expanded ? 'w-full' : 'w-7'
-        )}
+        className={cn('bg-base-300 my-1 h-px shrink-0', expanded ? 'w-full' : 'w-7')}
       />
 
       <div
@@ -106,16 +100,11 @@ export function ConsoleRail({
             >
               {group.label ? (
                 expanded ? (
-                  <div className="px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase">
+                  <div className="text-base-content/50 px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider uppercase">
                     {group.label}
                   </div>
                 ) : (
-                  i > 0 && (
-                    <div
-                      aria-hidden
-                      className="my-1 h-px w-7 shrink-0 bg-[var(--color-border-default)]"
-                    />
-                  )
+                  i > 0 && <div aria-hidden className="bg-base-300 my-1 h-px w-7 shrink-0" />
                 )
               ) : null}
               {items.map((item) => (

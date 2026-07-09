@@ -49,7 +49,7 @@ export function FeedbackTable({
                 <Stack gap={0}>
                   <Link
                     href={`/sparx/feedback/${s.tenantId}/${s.id}`}
-                    className="font-medium text-[var(--color-text-primary)] hover:underline"
+                    className="text-base-content font-medium hover:underline"
                   >
                     {firstText(s.subject, s.excerpt, categoryLabel(s.category))}
                   </Link>
@@ -63,7 +63,7 @@ export function FeedbackTable({
             <TableCell>
               <Link
                 href={`/sparx/tenants/${s.tenantId}`}
-                className="text-sm text-[var(--module-active-text)] hover:underline"
+                className="text-module text-sm hover:underline"
               >
                 {s.tenantName}
               </Link>
@@ -77,7 +77,7 @@ export function FeedbackTable({
               <Stack direction="row" align="center" gap={2}>
                 {s.userUnread ? (
                   <span
-                    className="h-2 w-2 shrink-0 rounded-full bg-[var(--module-active)]"
+                    className="bg-module h-2 w-2 shrink-0 rounded-full"
                     aria-label="Unread by submitter"
                   />
                 ) : null}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Check, GripVertical, Plus, X } from 'lucide-react';
 
 import { statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Button, Input } from 'silicaui-react';
+import { Badge, Button, Input } from '@wizeworks/silicaui-react';
 
 import { setCollectionProductsAction } from '../../../collection-actions';
 
@@ -101,7 +101,7 @@ export function CollectionMembershipEditor({
     return (
       <div className="flex flex-col gap-3">
         {selectedRows.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+          <div className="border-base-300 flex flex-col items-center gap-2 rounded border border-dashed p-6 text-center">
             <p className="text-base-content/70 text-sm">
               The rule hasn&apos;t projected any products yet. The indexer worker re-evaluates on
               its next tick (Phase 1.5).
@@ -123,7 +123,7 @@ export function CollectionMembershipEditor({
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium">In this collection ({selectedRows.length})</p>
         {selectedRows.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+          <div className="border-base-300 flex flex-col items-center gap-1 rounded border border-dashed p-6 text-center">
             <p className="text-base-content/70 text-sm">Add products from the picker below.</p>
           </div>
         ) : (
@@ -131,9 +131,9 @@ export function CollectionMembershipEditor({
             {selectedRows.map((p, idx) => (
               <div
                 key={p.id}
-                className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2"
+                className="border-base-300 bg-base-100 flex flex-row items-center gap-2 rounded border px-3 py-2"
               >
-                <GripVertical className="h-4 w-4 text-[var(--color-text-muted)]" aria-hidden />
+                <GripVertical className="text-base-content/60 h-4 w-4" aria-hidden />
                 <div className="flex flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{p.title}</p>
                   <p className="text-base-content/70 text-xs">
@@ -199,7 +199,7 @@ export function CollectionMembershipEditor({
             {remaining.map((p) => (
               <div
                 key={p.id}
-                className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2"
+                className="border-base-300 bg-base-200 flex flex-row items-center gap-2 rounded border px-3 py-2"
               >
                 <div className="flex flex-1 flex-col gap-0">
                   <p className="text-sm">{p.title}</p>
@@ -235,7 +235,7 @@ export function CollectionMembershipEditor({
 
       <div className="flex flex-row items-center justify-end gap-2">
         {savedAt !== null && (
-          <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+          <div className="text-success flex flex-row items-center gap-1">
             <Check className="h-4 w-4" />
             <p className="text-success text-sm">Saved</p>
           </div>
@@ -250,7 +250,7 @@ export function CollectionMembershipEditor({
 
 function ProductRow({ product }: { product: ProductBrief }) {
   return (
-    <div className="flex flex-row items-center gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
+    <div className="border-base-300 bg-base-100 flex flex-row items-center gap-2 rounded border px-3 py-2">
       <div className="flex flex-1 flex-col gap-0">
         <p className="text-sm font-medium">{product.title}</p>
         <p className="text-base-content/70 text-xs">

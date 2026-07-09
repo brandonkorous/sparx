@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Spark } from './primitives';
 import { RotatingWord } from './rotating-word';
 import { SparkMascot } from './spark-mascot';
@@ -51,7 +51,7 @@ export function Hero() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--sparx-primary)',
+        backgroundColor: 'var(--color-primary)',
         // Faint dot-grid texture for depth — a tiled SVG pattern, NOT a gradient
         // (gradients are banned brand-wide as an AI-slop tell).
         backgroundImage:
@@ -108,16 +108,20 @@ export function Hero() {
               }}
             >
               <div className="mkt-cluster" style={{ gap: '12px', justifyContent: 'center' }}>
-                <Button asChild size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
-                  <a href={signupHref('hero')}>Launch your site</a>
+                <Button
+                  size="lg"
+                  style={{ backgroundColor: ON, color: ON_CTA_TEXT }}
+                  render={<a href={signupHref('hero')} />}
+                >
+                  Launch your site
                 </Button>
                 <Button
-                  asChild
                   size="lg"
                   variant="outline"
                   style={{ backgroundColor: 'transparent', color: ON, borderColor: ON_RING }}
+                  render={<a href={PLATFORM_HREF} />}
                 >
-                  <a href={PLATFORM_HREF}>See the platform</a>
+                  See the platform
                 </Button>
               </div>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: ON_MUTED }}>

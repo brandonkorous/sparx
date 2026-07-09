@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { Button, Card, cn, colorClass } from '@sparx/ui';
+import { Button, Card, cn } from '@sparx/ui';
 
 // Small shared pieces for the module overview pages (docs/34 overview archetype).
 // The charts/sample-data live in ./overview-charts; this file holds the
@@ -93,11 +93,11 @@ export function fmtPercent(value?: number | null, digits = 1): string {
 export type MetricTone = 'default' | 'warning' | 'danger' | 'success' | 'module';
 
 const TONE_CLASS: Record<MetricTone, string> = {
-  default: 'text-[var(--color-text-primary)]',
-  warning: 'text-[var(--color-warning-text)]',
-  danger: 'text-[var(--color-danger-text)]',
-  success: 'text-[var(--color-success-text)]',
-  module: 'text-[var(--module-active-text)]',
+  default: 'text-base-content',
+  warning: 'text-warning',
+  danger: 'text-danger',
+  success: 'text-success',
+  module: 'text-module',
 };
 
 export interface MetricTileProps {
@@ -109,9 +109,9 @@ export interface MetricTileProps {
 
 export function MetricTile({ value, label, tone = 'default', className }: MetricTileProps) {
   return (
-    <div className={cn('rounded-md border border-[var(--color-border-default)] p-3', className)}>
+    <div className={cn('border-base-300 rounded-md border p-3', className)}>
       <div className={cn('text-xl leading-none font-medium', TONE_CLASS[tone])}>{value}</div>
-      <div className="mt-1.5 text-xs text-[var(--color-text-tertiary)]">{label}</div>
+      <div className="text-base-content/50 mt-1.5 text-xs">{label}</div>
     </div>
   );
 }
@@ -158,17 +158,15 @@ export function OverviewCard({
     <Card variant={plain ? 'default' : 'module'} padding={padding} className={className}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="flex items-center gap-2 text-base font-medium text-[var(--color-text-primary)]">
+          <h3 className="text-base-content flex items-center gap-2 text-base font-medium">
             {icon && (
-              <span aria-hidden className="text-[var(--module-active)]">
+              <span aria-hidden className="text-module">
                 {icon}
               </span>
             )}
             {title}
           </h3>
-          {description && (
-            <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{description}</p>
-          )}
+          {description && <p className="text-base-content/70 mt-1 text-sm">{description}</p>}
         </div>
         {right && <div className="shrink-0">{right}</div>}
       </div>
@@ -204,7 +202,7 @@ export function OverviewRow({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 border-b border-[var(--color-border-default)] py-3 last:border-b-0',
+        'border-base-300 flex items-center gap-3 border-b py-3 last:border-b-0',
         className
       )}
     >
@@ -212,19 +210,19 @@ export function OverviewRow({
         <span
           aria-hidden
           className={cn(
-            colorClass(tone),
-            'flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--c-tint,var(--color-bg-subtle))] text-[var(--c-ink,var(--color-text-primary))]'
+            `bg-${tone} bg-soft text-${tone}`,
+            'flex h-8 w-8 shrink-0 items-center justify-center rounded-md'
           )}
         >
           {icon}
         </span>
       )}
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-medium text-[var(--color-text-primary)]">{title}</div>
-        {hint && <div className="mt-0.5 text-xs text-[var(--color-text-tertiary)]">{hint}</div>}
+        <div className="text-base-content truncate text-sm font-medium">{title}</div>
+        {hint && <div className="text-base-content/50 mt-0.5 text-xs">{hint}</div>}
       </div>
       {right != null && (
-        <div className="shrink-0 text-right text-sm font-medium text-[var(--color-text-primary)] tabular-nums">
+        <div className="text-base-content shrink-0 text-right text-sm font-medium tabular-nums">
           {right}
         </div>
       )}

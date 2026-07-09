@@ -48,7 +48,7 @@ export function CustomerResults({ customers }: { customers: OperatorCustomerHit[
             <TableCell>
               <Link
                 href={`/sparx/tenants/${c.tenantId}`}
-                className="text-sm text-[var(--module-active-text)] hover:underline"
+                className="text-module text-sm hover:underline"
               >
                 {c.tenantName}
               </Link>

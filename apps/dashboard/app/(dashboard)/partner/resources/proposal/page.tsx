@@ -23,7 +23,7 @@ export default async function PartnerProposalPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="text-base-content/70 hover:text-base-content text-sm"
           >
             ← Resources
           </Link>

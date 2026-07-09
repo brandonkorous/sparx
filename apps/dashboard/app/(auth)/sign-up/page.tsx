@@ -5,10 +5,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
-import { Button, Checkbox, Input, Label } from 'silicaui-react';
-import { PasswordInput } from '@sparx/ui';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  PasswordInput,
+} from '@wizeworks/silicaui-react';
 import { AuthScreen, RailPoints } from '../_components/auth-screen';
 import { SocialAuthSection } from '../_components/social-auth';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
 import { signUpAction } from '../actions';
@@ -39,31 +48,40 @@ function identifyWithFirstTouch(userId: string): void {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [error, setError] = React.useState<string | null>(null);
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [agreeLegal, setAgreeLegal] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+
+  const values = { name, email, password, confirmPassword, agreeLegal };
+  const v = useFieldValidation(values, {
+    name: rule.required('Enter your name.'),
+    email: rules(rule.required('Enter your email.'), rule.email()),
+    password: rule.minLength(8, 'Password must be at least 8 characters.'),
+    confirmPassword: rule.matches('password', 'Passwords do not match.'),
+    agreeLegal: rule.required('You must accept the policies to continue.'),
+  });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const pw = formData.get('password');
-    const cf = formData.get('confirmPassword');
-    const password = typeof pw === 'string' ? pw : '';
-    const confirm = typeof cf === 'string' ? cf : '';
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
-    if (password !== confirm) {
-      setError('Passwords do not match.');
-      return;
-    }
-    setError(null);
+    setFormError(null);
+    if (!v.validate()) return;
 
     startTransition(async () => {
+      const formData = new FormData(e.currentTarget);
       const result = await signUpAction(formData);
       if (!result.ok) {
-        setError(result.error ?? 'Could not create account.');
+        const message = result.error ?? 'Could not create account.';
+        // Route a duplicate-account error onto the email field; otherwise surface it
+        // above the submit button.
+        if (/email|account|exist|use|taken|registered/i.test(message)) {
+          v.setServerErrors({ email: message });
+        } else {
+          setFormError(message);
+        }
         return;
       }
       if (result.userId) identifyWithFirstTouch(result.userId);
@@ -108,80 +126,104 @@ export default function SignUpPage() {
 
         <form onSubmit={onSubmit} noValidate>
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Your name</Label>
-              <Input id="name" name="name" autoComplete="name" required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Work email</Label>
-              <Input id="email" name="email" type="email" autoComplete="email" required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
-              <PasswordInput
-                id="password"
+            <Field {...v.field('name')}>
+              <FieldLabel required>Your name</FieldLabel>
+              <FieldControl
+                name="name"
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
+              />
+            </Field>
+            <Field {...v.field('email')}>
+              <FieldLabel required>Work email</FieldLabel>
+              <FieldControl
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                {...v.control('email')}
+              />
+            </Field>
+            <Field {...v.field('password')}>
+              <FieldLabel required>Password</FieldLabel>
+              <FieldControl
                 name="password"
                 autoComplete="new-password"
-                minLength={8}
-                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                {...v.control('password')}
+                render={<PasswordInput />}
               />
-              <p className="text-base-content/70 text-xs">At least 8 characters.</p>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="confirmPassword">Confirm password</Label>
-              <PasswordInput
-                id="confirmPassword"
+              <FieldDescription>At least 8 characters.</FieldDescription>
+            </Field>
+            <Field {...v.field('confirmPassword')}>
+              <FieldLabel required>Confirm password</FieldLabel>
+              <FieldControl
                 name="confirmPassword"
                 autoComplete="new-password"
-                minLength={8}
-                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                {...v.control('confirmPassword')}
+                render={<PasswordInput />}
               />
+            </Field>
+
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="agreeLegal"
+                  name="agreeLegal"
+                  aria-label="I agree to the Terms of Service, Privacy Policy, and Acceptable Use Policy"
+                  className="mt-1"
+                  checked={agreeLegal}
+                  onChange={(e) => setAgreeLegal(e.target.checked)}
+                  onBlur={() => v.touch('agreeLegal')}
+                />
+                <p className="text-base-content/70 text-sm">
+                  I agree to the{' '}
+                  <a
+                    href={`${LEGAL_BASE}/terms`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Terms of Service
+                  </a>
+                  ,{' '}
+                  <a
+                    href={`${LEGAL_BASE}/privacy`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Privacy Policy
+                  </a>
+                  , and{' '}
+                  <a
+                    href={`${LEGAL_BASE}/aup`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Acceptable Use Policy
+                  </a>
+                  .
+                </p>
+              </div>
+              {v.visibleError('agreeLegal') && (
+                <FieldStatus status="error" attached={false}>
+                  {v.visibleError('agreeLegal')}
+                </FieldStatus>
+              )}
             </div>
 
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="agreeLegal"
-                name="agreeLegal"
-                aria-label="I agree to the Terms of Service, Privacy Policy, and Acceptable Use Policy"
-                className="mt-1"
-                required
-              />
-              <p className="text-base-content/70 text-sm">
-                I agree to the{' '}
-                <a
-                  href={`${LEGAL_BASE}/terms`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Terms of Service
-                </a>
-                ,{' '}
-                <a
-                  href={`${LEGAL_BASE}/privacy`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Privacy Policy
-                </a>
-                , and{' '}
-                <a
-                  href={`${LEGAL_BASE}/aup`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  Acceptable Use Policy
-                </a>
-                .
-              </p>
-            </div>
-
-            {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
-                {error}
-              </p>
+            {formError && (
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {formError}
+              </FieldStatus>
             )}
 
             <Button type="submit" disabled={pending} loading={pending}>

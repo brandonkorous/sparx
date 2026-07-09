@@ -106,7 +106,7 @@ export function FeedbackPulse({
       role="dialog"
       aria-label="Quick feedback"
       aria-live="polite"
-      className="motion-safe:animate-in motion-safe:slide-in-from-bottom-4 fixed right-4 bottom-4 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 shadow-lg"
+      className="motion-safe:animate-in motion-safe:slide-in-from-bottom-4 border-base-300 bg-base-100 fixed right-4 bottom-4 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-lg border p-4 shadow-lg"
     >
       <Button
         variant="ghost"
@@ -138,7 +138,7 @@ function PulseAsk({
 }) {
   return (
     <>
-      <p className="pr-5 text-sm font-medium text-[var(--color-text-primary)]">{question}</p>
+      <p className="text-base-content pr-5 text-sm font-medium">{question}</p>
       <div className="mt-3 flex items-center justify-between gap-1">
         {SENTIMENTS.map((s) => (
           <button
@@ -147,7 +147,7 @@ function PulseAsk({
             onClick={() => onAnswer(s.value)}
             aria-label={s.label}
             title={s.label}
-            className="flex h-10 w-10 items-center justify-center rounded-md text-xl transition-transform hover:scale-110 hover:bg-[var(--color-bg-subtle)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none"
+            className="hover:bg-base-200 focus-visible:ring-primary flex h-10 w-10 items-center justify-center rounded-md text-xl transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:outline-none"
           >
             {s.emoji}
           </button>
@@ -156,7 +156,7 @@ function PulseAsk({
       <button
         type="button"
         onClick={onDismiss}
-        className="mt-2 text-xs text-[var(--color-text-tertiary)] underline-offset-2 hover:underline"
+        className="text-base-content/50 mt-2 text-xs underline-offset-2 hover:underline"
       >
         Not now
       </button>
@@ -167,8 +167,8 @@ function PulseAsk({
 function PulseThanks({ onShareMore }: { onShareMore: () => void }) {
   return (
     <>
-      <p className="pr-5 text-sm font-medium text-[var(--color-text-primary)]">Thanks! 🙏</p>
-      <p className="mt-1 text-xs text-[var(--color-text-secondary)]">Anything you’d like to add?</p>
+      <p className="text-base-content pr-5 text-sm font-medium">Thanks! 🙏</p>
+      <p className="text-base-content/70 mt-1 text-xs">Anything you’d like to add?</p>
       <Button color="primary" variant="soft" size="sm" className="mt-3" onClick={onShareMore}>
         Share more
       </Button>

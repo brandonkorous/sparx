@@ -15,11 +15,43 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, CardTitle, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createDealAction } from '../../../deal-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+
+// Optional non-negative number: blank is allowed (defaults to 0), otherwise must
+// be a finite number ≥ 0. `@sparx/forms` has no numeric-range builder yet.
+const optionalNonNegative =
+  (message: string) =>
+  (value: unknown): string | null => {
+    const s = typeof value === 'string' ? value.trim() : '';
+    if (s === '') return null;
+    const n = Number(s);
+    return Number.isFinite(n) && n >= 0 ? null : message;
+  };
+
+// Optional number constrained to a [min, max] range; blank is allowed.
+const optionalRange =
+  (min: number, max: number, message: string) =>
+  (value: unknown): string | null => {
+    const s = typeof value === 'string' ? value.trim() : '';
+    if (s === '') return null;
+    const n = Number(s);
+    return Number.isFinite(n) && n >= min && n <= max ? null : message;
+  };
 
 interface StageOpt {
   id: string;
@@ -65,7 +97,6 @@ export function NewDealForm({
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const startPipelineId = initialPipelineId ?? pipelines[0]?.id ?? '';
   const [pipelineId, setPipelineId] = React.useState(startPipelineId);
@@ -80,6 +111,13 @@ export function NewDealForm({
   const [expectedCloseDate, setExpectedCloseDate] = React.useState('');
   const [source, setSource] = React.useState('');
   const [tags, setTags] = React.useState('');
+
+  const values = { title, value, probability, stageId, expectedCloseDate };
+  const v = useFieldValidation(values, {
+    title: rule.required('Title is required.'),
+    value: optionalNonNegative('Enter a value of 0 or more.'),
+    probability: optionalRange(0, 100, 'Enter a probability between 0 and 100.'),
+  });
 
   function onPipelineChange(id: string) {
     setPipelineId(id);
@@ -135,11 +173,7 @@ export function NewDealForm({
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-    if (!title.trim()) {
-      setError('Title is required.');
-      return;
-    }
+    if (!v.validate()) return;
     const input = {
       pipelineId,
       stageId,
@@ -164,9 +198,11 @@ export function NewDealForm({
         return;
       }
       if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-        const fe: Record<string, string> = {};
-        for (const d of result.error.details) fe[d.field] = d.message;
-        setFieldErrors(fe);
+        const fe: Partial<Record<keyof typeof values, string>> = {};
+        for (const d of result.error.details) {
+          fe[d.field as keyof typeof values] = d.message;
+        }
+        v.setServerErrors(fe);
       }
       setError(result.error.message);
     });
@@ -198,22 +234,21 @@ export function NewDealForm({
             <CardBody>
               <CardTitle>Deal details</CardTitle>
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="deal-title">Title</Label>
-                  <Input
-                    id="deal-title"
+                <Field {...v.field('title')}>
+                  <FieldLabel required>Title</FieldLabel>
+                  <FieldControl
+                    name="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    {...v.control('title')}
                     placeholder="Q3 fleet renewal"
                   />
-                  <FieldError msg={fieldErrors.title} />
-                </div>
+                </Field>
 
                 <div className="flex flex-row flex-wrap gap-4">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="deal-pipeline">Pipeline</Label>
+                  <Field className="flex-1">
+                    <FieldLabel>Pipeline</FieldLabel>
                     <NativeSelect
-                      id="deal-pipeline"
                       value={pipelineId}
                       onChange={(e) => onPipelineChange(e.target.value)}
                     >
@@ -223,13 +258,13 @@ export function NewDealForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="deal-stage">Stage</Label>
+                  </Field>
+                  <Field {...v.field('stageId')} className="flex-1">
+                    <FieldLabel>Stage</FieldLabel>
                     <NativeSelect
-                      id="deal-stage"
                       value={stageId}
                       onChange={(e) => setStageId(e.target.value)}
+                      onBlur={() => v.touch('stageId')}
                     >
                       {pipeline?.stages.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -237,17 +272,17 @@ export function NewDealForm({
                         </option>
                       ))}
                     </NativeSelect>
-                    <FieldError msg={fieldErrors.stageId} />
-                  </div>
+                    {v.visibleError('stageId') && (
+                      <FieldStatus status="error" attached={false}>
+                        {v.visibleError('stageId')}
+                      </FieldStatus>
+                    )}
+                  </Field>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="deal-customer">Customer</Label>
-                  <NativeSelect
-                    id="deal-customer"
-                    value={customerId}
-                    onChange={(e) => setCustomerId(e.target.value)}
-                  >
+                <Field>
+                  <FieldLabel>Customer</FieldLabel>
+                  <NativeSelect value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
                     <option value="">(none)</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -255,83 +290,85 @@ export function NewDealForm({
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
+                </Field>
 
                 <div className="flex flex-row flex-wrap gap-4">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="deal-value">Value</Label>
-                    <Input
-                      id="deal-value"
+                  <Field {...v.field('value')} className="flex-1">
+                    <FieldLabel>Value</FieldLabel>
+                    <FieldControl
+                      name="value"
                       type="number"
                       min="0"
                       step="0.01"
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
+                      {...v.control('value')}
                       placeholder="0.00"
                     />
-                    <FieldError msg={fieldErrors.value} />
-                  </div>
-                  <div className="flex w-32 flex-col gap-2">
-                    <Label htmlFor="deal-currency">Currency</Label>
-                    <Input
-                      id="deal-currency"
+                  </Field>
+                  <Field className="w-32">
+                    <FieldLabel>Currency</FieldLabel>
+                    <FieldControl
+                      name="currency"
                       value={currency}
                       maxLength={3}
                       className="uppercase"
                       onChange={(e) => setCurrency(e.target.value)}
                     />
-                  </div>
-                  <div className="flex w-32 flex-col gap-2">
-                    <Label htmlFor="deal-probability">Probability</Label>
-                    <Input
-                      id="deal-probability"
+                  </Field>
+                  <Field {...v.field('probability')} className="w-32">
+                    <FieldLabel>Probability</FieldLabel>
+                    <FieldControl
+                      name="probability"
                       type="number"
                       min="0"
                       max="100"
                       value={probability}
                       onChange={(e) => setProbability(e.target.value)}
+                      {...v.control('probability')}
                       placeholder="0"
                     />
-                  </div>
+                  </Field>
                 </div>
 
                 <div className="flex flex-row flex-wrap gap-4">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="deal-close">Expected close</Label>
-                    <Input
-                      id="deal-close"
+                  <Field {...v.field('expectedCloseDate')} className="flex-1">
+                    <FieldLabel>Expected close</FieldLabel>
+                    <FieldControl
+                      name="expectedCloseDate"
                       type="date"
                       value={expectedCloseDate}
                       onChange={(e) => setExpectedCloseDate(e.target.value)}
+                      {...v.control('expectedCloseDate')}
                     />
-                    <FieldError msg={fieldErrors.expectedCloseDate} />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="deal-source">Source</Label>
-                    <Input
-                      id="deal-source"
+                  </Field>
+                  <Field className="flex-1">
+                    <FieldLabel>Source</FieldLabel>
+                    <FieldControl
+                      name="source"
                       value={source}
                       onChange={(e) => setSource(e.target.value)}
                       placeholder="trade show, referral, …"
                     />
-                  </div>
+                  </Field>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="deal-tags">Tags</Label>
-                  <Textarea
-                    id="deal-tags"
+                <Field>
+                  <FieldLabel>Tags</FieldLabel>
+                  <FieldControl
+                    name="tags"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
-                    rows={2}
-                    placeholder="fleet, q3, gillett (comma-separated)"
+                    render={
+                      <Textarea rows={2} placeholder="fleet, q3, gillett (comma-separated)" />
+                    }
                   />
-                </div>
+                </Field>
 
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardBody>
@@ -346,9 +383,4 @@ function numOrZero(value: string): number {
   const s = value.trim();
   const n = Number(s);
   return Number.isFinite(n) ? n : 0;
-}
-
-function FieldError({ msg }: { msg: string | undefined }) {
-  if (!msg) return null;
-  return <p className="text-danger text-xs">{msg}</p>;
 }

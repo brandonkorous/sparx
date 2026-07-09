@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { Tag, toast, useConfirm } from '@sparx/ui';
 import { CalendarDays, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
@@ -83,9 +83,7 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                     <Tag key={t}>{t}</Tag>
                   ))}
                   {r.skillTags.length > 4 ? (
-                    <span className="text-xs text-[var(--color-muted-foreground)]">
-                      +{r.skillTags.length - 4}
-                    </span>
+                    <span className="text-base-content/70 text-xs">+{r.skillTags.length - 4}</span>
                   ) : null}
                 </span>
               </td>
@@ -115,10 +113,7 @@ export function ResourcesList({ resources }: { resources: SchedulingResource[] }
                       <CalendarDays className="mr-2 h-4 w-4" />
                       Calendar feed
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => void remove(r)}
-                      className="text-[var(--color-danger)]"
-                    >
+                    <DropdownMenuItem onClick={() => void remove(r)} className="text-danger">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
                     </DropdownMenuItem>

@@ -5,7 +5,15 @@
 // as waitlisted and auto-promote when one frees.
 
 import { useEffect, useState } from 'react';
-import { Badge, Button, Input, Dialog, DialogContent, DialogTitle } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 import { Check, UserPlus, X } from 'lucide-react';
 
@@ -81,12 +89,14 @@ export function RosterDialog({
         </div>
         <div className="flex flex-col gap-3 px-1 py-2">
           <div className="flex items-center gap-2">
-            <Input
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-              placeholder="Add attendee by name"
-              aria-label="Attendee name"
-            />
+            <Field className="flex-1">
+              <FieldControl
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                placeholder="Add attendee by name"
+                aria-label="Attendee name"
+              />
+            </Field>
             <Button
               type="button"
               color="module"
@@ -100,17 +110,15 @@ export function RosterDialog({
           </div>
 
           {roster === null ? (
-            <p className="text-xs text-[var(--color-muted-foreground)]">Loading…</p>
+            <p className="text-base-content/70 text-xs">Loading…</p>
           ) : active.length === 0 ? (
-            <p className="text-xs text-[var(--color-muted-foreground)]">
-              No one&rsquo;s booked yet.
-            </p>
+            <p className="text-base-content/70 text-xs">No one&rsquo;s booked yet.</p>
           ) : (
             <ul className="flex flex-col gap-2">
               {active.map((a) => (
                 <li
                   key={a.id}
-                  className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2"
+                  className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
                 >
                   <div className="min-w-0">
                     <span className="truncate text-sm font-medium">
@@ -145,7 +153,7 @@ export function RosterDialog({
                       shape="square"
                       size="sm"
                       aria-label="Remove from roster"
-                      className="text-[var(--color-danger)]"
+                      className="text-danger"
                       disabled={busy}
                       onClick={() => void setStatus(a, 'cancelled')}
                     >

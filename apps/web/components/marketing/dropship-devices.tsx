@@ -54,7 +54,7 @@ export function DropshipRouting() {
       />
       <div
         className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-bg-surface)' }}
+        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
       >
         {stages.map((s, i) => (
           <div
@@ -75,7 +75,7 @@ export function DropshipRouting() {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.n}
@@ -101,7 +101,7 @@ export function DropshipRouting() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -117,8 +117,8 @@ export function DropshipRouting() {
                   width: 22,
                   height: 22,
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -173,8 +173,8 @@ export function DropshipInventory() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '186px',
             }}
@@ -209,7 +209,7 @@ export function DropshipInventory() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {c.body}
@@ -261,7 +261,7 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
     <div
       style={{
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',
@@ -279,7 +279,7 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
             display: 'block',
             fontFamily: MONO,
             fontSize: '11.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             marginTop: '4px',
           }}
         >
@@ -297,8 +297,8 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
                   height: 18,
                   borderRadius: '9999px',
                   flexShrink: 0,
-                  backgroundColor: done ? M.color : 'var(--color-bg-subtle)',
-                  border: done ? 'none' : '1px solid var(--color-border-default)',
+                  backgroundColor: done ? M.color : 'var(--color-base-200)',
+                  border: done ? 'none' : '1px solid var(--color-base-300)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -311,7 +311,9 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
                   fontFamily: SANS,
                   fontSize: '14px',
                   fontWeight: i === activeIdx ? 500 : 400,
-                  color: done ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                  color: done
+                    ? 'var(--color-base-content)'
+                    : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {s}
@@ -342,8 +344,8 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -354,12 +356,18 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '10px',
           padding: '14px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Dot color={M.color} size={8} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           from {email.sender}
         </span>
       </div>
@@ -375,7 +383,7 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontSize: '13.5px',
             lineHeight: '21px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           Hi {customer.name.split(' ')[0]} — {d.routed.number} is on its way via {d.routed.carrier}.
@@ -385,8 +393,8 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
           style={{
             marginTop: '16px',
             padding: '14px 16px',
-            backgroundColor: 'var(--color-bg-page)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-200)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
@@ -406,7 +414,11 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
               {d.routed.carrier}
             </span>
             <span
-              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '11px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {d.routed.tracking}
             </span>
@@ -429,7 +441,13 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginTop: '16px' }}>
           <Dot color={M.color} size={6} />
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             sent via sparx Email · {d.supplier} never named
           </span>
         </div>

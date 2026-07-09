@@ -11,7 +11,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { AreaChart, ModuleProvider, PageHeader, Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import {

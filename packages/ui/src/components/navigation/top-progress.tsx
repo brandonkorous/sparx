@@ -65,9 +65,9 @@ export function TopProgress({
 
   const style: React.CSSProperties = { zIndex };
   if (inModule) {
-    // Point the bar's --module-active at the resolved module's token, since the
-    // bar mounts at the app root (outside any ModuleProvider subtree).
-    (style as Record<string, string>)['--module-active'] = `var(--module-${module})`;
+    // Point the bar's --color-module at the resolved module's silica token, since
+    // the bar mounts at the app root (outside any ModuleProvider subtree).
+    (style as Record<string, string>)['--color-module'] = `var(--color-module-${module})`;
   }
 
   const visible = state.active && !state.fading;

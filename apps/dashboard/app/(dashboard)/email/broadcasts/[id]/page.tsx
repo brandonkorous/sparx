@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import type { ComponentProps } from 'react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { BroadcastActions } from './broadcast-actions';

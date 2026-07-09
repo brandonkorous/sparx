@@ -14,7 +14,7 @@ export function NotSection() {
     <Section id="not" surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
-          accent="var(--module-ai)"
+          accent="var(--color-module-ai)"
           headline="What sparx is not"
           lede="The brand is defined as much by what it refuses. sparx is the tool a senior developer wishes existed — technical enough to be trusted, simple enough for anyone to use."
         />
@@ -28,7 +28,7 @@ export function NotSection() {
                 gap: '16px',
                 alignItems: 'flex-start',
                 padding: '22px 0',
-                borderTop: '1px solid var(--color-border-default)',
+                borderTop: '1px solid var(--color-base-300)',
               }}
             >
               <span
@@ -42,8 +42,9 @@ export function NotSection() {
                   width: '22px',
                   height: '22px',
                   borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--color-border-strong)',
-                  color: 'var(--color-text-tertiary)',
+                  border:
+                    '1px solid color-mix(in oklab, var(--color-base-content) 30%, transparent)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   fontSize: '12px',
                 }}
               >
@@ -55,7 +56,7 @@ export function NotSection() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '16px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {n.not}
@@ -65,7 +66,7 @@ export function NotSection() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '14px',
                     lineHeight: '21px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {n.because}

@@ -21,5 +21,5 @@
  *   @import '@sparx/brand/layers.css';
  *   @import 'tailwindcss';
  *   @import '@sparx/brand/theme.css';
- *   @plugin 'silicaui' { colors: primary, …, danger; } */
+ *   @plugin '@wizeworks/silicaui' { colors: primary, …, danger; } */
 @layer theme, base, components, utilities;

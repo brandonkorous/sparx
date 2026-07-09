@@ -2,14 +2,15 @@
 
 import * as React from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
 import { Spinner } from './spinner';
-import { colorClass, treatmentVariants, type ColorKey } from '../_recipes/variants';
+import { type ColorKey } from '../_recipes/variants';
 
-// Button — the four-axis API (docs/35). `color` (semantic palette, runtime-
-// extensible) is applied as a role-var class; `variant` (treatment), `size` and
-// `shape` are CVA variants. color × variant composes through the --c-* role vars.
+// Button — the four-axis API (docs/35). `color` (semantic palette) × `variant`
+// (treatment) × `size` × `shape` compose onto silicaui's `.btn` component
+// classes: silica owns the full look (padding, height, radius, focus ring,
+// disabled, cursor, gap, transition), so this component only picks the class
+// tokens and keeps the sparx ergonomics — asChild, loading spinner, icon slots.
 
 // Icon slot — `inline-flex items-center` centers the glyph in its own box. The
 // span wrapper is needed for `shrink-0`, but a bare lucide `<svg>` inside renders
@@ -19,55 +20,97 @@ import { colorClass, treatmentVariants, type ColorKey } from '../_recipes/varian
 // glyph sits true to the label across every button on the platform.
 const ICON_SLOT = 'inline-flex shrink-0 items-center';
 
-const buttonVariants = cva(
-  [
-    'inline-flex items-center justify-center',
-    'rounded-md font-medium',
-    // Tailwind v4's Preflight no longer sets `cursor: pointer` on <button>, so a
-    // bare <button> (unlike an asChild <a>, which the browser gives a pointer)
-    // would render the default arrow — reading as "dead" and inconsistent with
-    // link-buttons. Restore it here so every Button feels clickable; the
-    // `disabled:pointer-events-none` below already suppresses it when disabled.
-    'cursor-pointer',
-    'transition-[color,background-color,border-color,filter] duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
-    'disabled:pointer-events-none disabled:opacity-40',
-    'whitespace-nowrap select-none',
-  ],
-  {
-    variants: {
-      variant: treatmentVariants,
-      size: {
-        xs: 'h-7 gap-1.5 px-2.5 text-xs',
-        sm: 'h-8 gap-1.5 px-3 text-sm',
-        md: 'h-9 gap-2 px-4 text-sm',
-        lg: 'h-10 gap-2 px-5 text-base',
-        xl: 'h-11 gap-2.5 px-6 text-base',
-      },
-      shape: {
-        default: '',
-        // Extra horizontal presence for a hero / primary action.
-        wide: 'min-w-32',
-        // Fills its container.
-        block: 'w-full',
-        // 1:1 icon button, field radius.
-        square: 'aspect-square p-0',
-        // 1:1 icon button, fully round.
-        circle: 'aspect-square rounded-full p-0',
-      },
-    },
-    defaultVariants: { variant: 'solid', size: 'md', shape: 'default' },
-  }
-);
+// ── silica class maps ───────────────────────────────────────────────────────
+// `color` → `btn-<color>`. The known semantic slots map 1:1 to silica's
+// registered colors (danger + module are registered in each app's silicaui
+// plugin config); an unmapped runtime color falls back to `btn-<color>`, which
+// styles once a matching plugin color exists.
+const BTN_COLOR: Record<ColorKey, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  accent: 'btn-accent',
+  neutral: 'btn-neutral',
+  info: 'btn-info',
+  success: 'btn-success',
+  warning: 'btn-warning',
+  danger: 'btn-danger',
+  module: 'btn-module',
+  // per-module direct slots resolve through the active <ModuleProvider>; a bare
+  // color="cms" emits btn-cms (styled only where that plugin color is registered).
+  builder: 'btn-builder',
+  commerce: 'btn-commerce',
+  cms: 'btn-cms',
+  crm: 'btn-crm',
+  email: 'btn-email',
+  b2b: 'btn-b2b',
+  invoicing: 'btn-invoicing',
+  ai: 'btn-ai',
+  dropship: 'btn-dropship',
+  inventory: 'btn-inventory',
+  chat: 'btn-chat',
+  scheduling: 'btn-scheduling',
+  automations: 'btn-automations',
+  seo: 'btn-seo',
+};
 
-export interface ButtonProps
-  extends
-    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'color'>,
-    VariantProps<typeof buttonVariants> {
-  /** Semantic color slot. Known slots autocomplete; any string is accepted so
-   *  a runtime custom theme color (`color="brand-mint"`) works once its
-   *  `.sx-c-brand-mint` rule exists. Defaults to `primary`. */
+// `variant` (treatment) → silica modifier. `solid` is silica's default `.btn`
+// (no modifier); `dashed` is silica's `btn-dash`.
+const BTN_VARIANT = {
+  solid: '',
+  soft: 'btn-soft',
+  outline: 'btn-outline',
+  dashed: 'btn-dash',
+  ghost: 'btn-ghost',
+  link: 'btn-link',
+} as const;
+
+const BTN_SIZE = {
+  xs: 'btn-xs',
+  sm: 'btn-sm',
+  md: 'btn-md',
+  lg: 'btn-lg',
+  xl: 'btn-xl',
+} as const;
+
+const BTN_SHAPE = {
+  default: '',
+  wide: 'btn-wide',
+  block: 'btn-block',
+  square: 'btn-square',
+  circle: 'btn-circle',
+} as const;
+
+export type ButtonVariant = keyof typeof BTN_VARIANT;
+export type ButtonSize = keyof typeof BTN_SIZE;
+export type ButtonShape = keyof typeof BTN_SHAPE;
+
+/** Resolve the four axes to a silicaui `.btn` class string. Shared with the
+ *  handful of composites that style a bare element as a button (alert-dialog,
+ *  confirm-provider) instead of rendering <Button>. */
+export function buttonClasses(opts?: {
   color?: ColorKey | (string & {});
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  shape?: ButtonShape;
+}): string {
+  const { color = 'primary', variant = 'solid', size = 'md', shape = 'default' } = opts ?? {};
+  return cn(
+    'btn',
+    BTN_COLOR[color as ColorKey] ?? `btn-${color}`,
+    BTN_VARIANT[variant],
+    BTN_SIZE[size],
+    BTN_SHAPE[shape]
+  );
+}
+
+export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'color'> {
+  /** Semantic color slot. Known slots autocomplete; any string is accepted so a
+   *  runtime custom theme color works once its silicaui plugin color exists.
+   *  Defaults to `primary`. */
+  color?: ColorKey | (string & {});
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  shape?: ButtonShape;
   loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -79,9 +122,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     {
       className,
       color = 'primary',
-      variant,
-      size,
-      shape,
+      variant = 'solid',
+      size = 'md',
+      shape = 'default',
       loading = false,
       leftIcon,
       rightIcon,
@@ -92,7 +135,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const classes = cn(colorClass(color), buttonVariants({ variant, size, shape }), className);
+    const classes = cn(buttonClasses({ color, variant, size, shape }), className);
 
     // With asChild, Slot merges the button's styling onto the provided child
     // (e.g. a `<Link>`).
@@ -143,5 +186,3 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 Button.displayName = 'Button';
-
-export { buttonVariants };

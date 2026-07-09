@@ -25,14 +25,14 @@ describe('ModuleProvider', () => {
     expect(screen.getByTestId('module').textContent).toBe('platform');
   });
 
-  it('sets --module-active inline so children adopt the module color', () => {
+  it('sets --color-module inline so children adopt the module color', () => {
     const { container } = render(
       <ModuleProvider module="cms">
         <div>child</div>
       </ModuleProvider>
     );
     const wrapper = container.firstElementChild as HTMLElement;
-    expect(wrapper.style.getPropertyValue('--module-active')).toBe(CMS_COLOR);
+    expect(wrapper.style.getPropertyValue('--color-module')).toBe(CMS_COLOR);
     expect(wrapper.dataset.module).toBe('cms');
   });
 
@@ -46,7 +46,7 @@ describe('ModuleProvider', () => {
       );
       const wrapper = container.firstElementChild as HTMLElement;
       expect(wrapper.dataset.module).toBe(m);
-      expect(wrapper.style.getPropertyValue('--module-active')).not.toBe('');
+      expect(wrapper.style.getPropertyValue('--color-module')).not.toBe('');
       unmount();
     }
   });

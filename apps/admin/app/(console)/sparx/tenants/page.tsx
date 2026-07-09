@@ -103,7 +103,7 @@ function Pager({
     const qs = params.toString();
     return qs ? `/sparx/tenants?${qs}` : '/sparx/tenants';
   };
-  const linkClass = 'text-sm font-medium text-[var(--module-active-text)] hover:underline';
+  const linkClass = 'text-sm font-medium text-module hover:underline';
   return (
     <Stack direction="row" align="center" justify="between">
       <Text size="sm" variant="muted">

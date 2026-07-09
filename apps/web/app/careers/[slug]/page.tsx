@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Badge } from '@sparx/ui';
+import { Badge } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
 import { ROLES, OPEN_APPLICATION, getRole, type Role } from '../roles';
 import { ApplyForm } from './apply-form';
 
-const INDIGO = 'var(--sparx-primary)';
+const INDIGO = 'var(--color-primary)';
 const MEASURE = '720px';
 
 export function generateStaticParams() {
@@ -35,7 +35,7 @@ const paragraphStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '17px',
   lineHeight: '28px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
 };
 
 const headingStyle: React.CSSProperties = {
@@ -44,7 +44,7 @@ const headingStyle: React.CSSProperties = {
   fontWeight: 500,
   fontSize: '15px',
   letterSpacing: '0.01em',
-  color: 'var(--color-text-primary)',
+  color: 'var(--color-base-content)',
 };
 
 function BulletList({ items }: { items: string[] }) {
@@ -60,7 +60,7 @@ function BulletList({ items }: { items: string[] }) {
               fontFamily: 'var(--font-sans)',
               fontSize: '16px',
               lineHeight: '26px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {item}
@@ -81,7 +81,7 @@ function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
           fontWeight: 500,
           fontSize: '22px',
           letterSpacing: '-0.01em',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {heading}
@@ -99,7 +99,7 @@ function RoleHeader({ role }: { role: Role }) {
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           textDecoration: 'none',
         }}
       >
@@ -126,9 +126,9 @@ function RoleHeader({ role }: { role: Role }) {
           flexDirection: 'column',
           gap: '8px',
           padding: '18px 20px',
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--color-bg-subtle)',
+          backgroundColor: 'var(--color-base-200)',
           maxWidth: MEASURE,
         }}
       >
@@ -142,7 +142,7 @@ function RoleHeader({ role }: { role: Role }) {
             fontFamily: 'var(--font-sans)',
             fontSize: '15px',
             lineHeight: '24px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           {role.compensation}

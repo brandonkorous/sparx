@@ -9,7 +9,7 @@ import type { ElementType, ReactNode } from 'react';
 // Server-safe entry — the main `silicaui-react` barrel is `'use client'`, so its
 // `cx` can't be CALLED from a Server Component; `/server` ships the same utility
 // with no client directive (works in server + client alike).
-import { cx } from 'silicaui-react/server';
+import { cx } from '@wizeworks/silicaui-react/server';
 
 /** Centered content measure — the marketplace runs a slightly wider gutter than
  *  the dashboard so product grids breathe on large displays (max 80rem/1280px). */

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { PackageCheck, ClipboardList } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -81,10 +81,10 @@ function AwaitingRow({ po }: { po: PurchaseOrderRow }) {
   const outstanding = Math.max(0, po.quantityOrdered - po.quantityReceived);
   const s = purchaseOrderStatus(po.status);
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <Link
         href={`/inventory/purchase-orders/${po.id}`}
-        className="font-mono text-xs hover:text-[var(--module-active)]"
+        className="hover:text-module font-mono text-xs"
       >
         {po.number}
       </Link>
@@ -109,10 +109,10 @@ function AwaitingRow({ po }: { po: PurchaseOrderRow }) {
 
 function ReceiptRow({ receipt }: { receipt: GoodsReceiptRow }) {
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <Link
         href={`/inventory/receiving/${receipt.id}`}
-        className="font-mono text-xs hover:text-[var(--module-active)]"
+        className="hover:text-module font-mono text-xs"
       >
         {receipt.number}
       </Link>

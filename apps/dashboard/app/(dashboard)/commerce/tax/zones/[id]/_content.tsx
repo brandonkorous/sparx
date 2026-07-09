@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
-import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { statusLabel, statusTone } from '@sparx/ui';
 

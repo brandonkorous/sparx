@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardBody, Input } from 'silicaui-react';
+import { Button, Card, CardBody, Field, FieldControl } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
 
@@ -94,28 +94,30 @@ export function WeeklyEditor({
           {DAY_LABELS.map((label, d) => (
             <div
               key={d}
-              className="grid grid-cols-[7rem_1fr] items-start gap-3 border-b border-[var(--color-border)] pb-3 last:border-0"
+              className="border-base-300 grid grid-cols-[7rem_1fr] items-start gap-3 border-b pb-3 last:border-0"
             >
               <div className="pt-2 text-sm font-medium">{label}</div>
               <div className="flex flex-col gap-2">
                 {days[d]!.length === 0 ? (
-                  <span className="pt-2 text-sm text-[var(--color-muted-foreground)]">Closed</span>
+                  <span className="text-base-content/70 pt-2 text-sm">Closed</span>
                 ) : (
                   days[d]!.map((r, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <Input
-                        type="time"
-                        value={toHHMM(r.start)}
-                        onChange={(e) => setRange(d, idx, { start: fromHHMM(e.target.value) })}
-                        className="w-32"
-                      />
-                      <span className="text-[var(--color-muted-foreground)]">to</span>
-                      <Input
-                        type="time"
-                        value={toHHMM(r.end)}
-                        onChange={(e) => setRange(d, idx, { end: fromHHMM(e.target.value) })}
-                        className="w-32"
-                      />
+                      <Field className="w-32">
+                        <FieldControl
+                          type="time"
+                          value={toHHMM(r.start)}
+                          onChange={(e) => setRange(d, idx, { start: fromHHMM(e.target.value) })}
+                        />
+                      </Field>
+                      <span className="text-base-content/70">to</span>
+                      <Field className="w-32">
+                        <FieldControl
+                          type="time"
+                          value={toHHMM(r.end)}
+                          onChange={(e) => setRange(d, idx, { end: fromHHMM(e.target.value) })}
+                        />
+                      </Field>
                       <Button
                         type="button"
                         variant="ghost"

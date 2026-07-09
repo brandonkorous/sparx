@@ -6,7 +6,7 @@
 // version the schema-driven form uses for `reference` fields.
 
 import * as React from 'react';
-import { Button, Dialog, DialogContent, DialogTitle, Input } from 'silicaui-react';
+import { Button, Dialog, DialogContent, DialogTitle, Input } from '@wizeworks/silicaui-react';
 import { Search } from 'lucide-react';
 import { searchEntries } from './cms-internal-api';
 
@@ -73,7 +73,7 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
         <div className="px-6 py-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-row items-center gap-2">
-              <Search className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+              <Search className="text-base-content/50 h-4 w-4" />
               <Input
                 placeholder={
                   typeKey ? `Search ${typeKey.replace(/_/g, ' ')} entries…` : 'Search any entry…'
@@ -103,7 +103,7 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
                       label: r.title || r.slug || r.id,
                     })
                   }
-                  className="rounded-md border border-[var(--color-border-default)] px-3 py-2 text-left hover:bg-[var(--color-bg-subtle)] focus:ring-2 focus:ring-[var(--color-border-focus)] focus:outline-none"
+                  className="border-base-300 hover:bg-base-200 focus:ring-primary rounded-md border px-3 py-2 text-left focus:ring-2 focus:outline-none"
                 >
                   <div className="flex flex-col gap-0">
                     {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */}

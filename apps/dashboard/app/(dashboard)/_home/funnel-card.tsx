@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { SampleBadge } from '../_components/overview-bits';
 import { fmtNumber } from './format';
@@ -33,15 +33,15 @@ export function ConversionFunnel({
                   <p className="text-sm font-medium">{s.label}</p>
                   <div className="flex items-center gap-2">
                     {s.rate && i > 0 && <p className="text-base-content/70 text-xs">{s.rate}</p>}
-                    <span className="text-sm font-medium text-[var(--color-text-primary)] tabular-nums">
+                    <span className="text-base-content text-sm font-medium tabular-nums">
                       {fmtNumber(s.value)}
                     </span>
                   </div>
                 </div>
-                <div className="h-2.5 overflow-hidden rounded-full bg-[var(--color-bg-subtle)]">
+                <div className="bg-base-200 h-2.5 overflow-hidden rounded-full">
                   <div
                     className="h-full rounded-full transition-[width]"
-                    style={{ width: `${pct}%`, background: `var(--module-${s.module})` }}
+                    style={{ width: `${pct}%`, background: `var(--color-module-${s.module})` }}
                   />
                 </div>
               </div>

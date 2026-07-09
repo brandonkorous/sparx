@@ -44,7 +44,7 @@ export function DomainsTable({ domains }: { domains: OperatorDomainListItem[] })
               <Stack gap={0}>
                 <Link
                   href={`/sparx/domains/${d.id}`}
-                  className="font-medium text-[var(--color-text-primary)] hover:underline"
+                  className="text-base-content font-medium hover:underline"
                 >
                   {d.host}
                 </Link>
@@ -58,7 +58,7 @@ export function DomainsTable({ domains }: { domains: OperatorDomainListItem[] })
             <TableCell>
               <Link
                 href={`/sparx/tenants/${d.tenantId}`}
-                className="text-sm text-[var(--module-active-text)] hover:underline"
+                className="text-module text-sm hover:underline"
               >
                 {d.tenantName}
               </Link>

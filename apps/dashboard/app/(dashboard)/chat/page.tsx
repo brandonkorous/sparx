@@ -26,7 +26,7 @@ import {
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -193,7 +193,11 @@ export default async function ChatPage() {
     : 0;
   const donutData = [
     { label: 'AI-resolved', value: summary?.aiResolved ?? 0, color: 'module' },
-    { label: 'Human', value: summary?.humanResolved ?? 0, color: 'var(--module-active-tint)' },
+    {
+      label: 'Human',
+      value: summary?.humanResolved ?? 0,
+      color: 'color-mix(in oklch, var(--color-module) 14%, transparent)',
+    },
   ];
 
   // Conversations-over-time area — live once the window has any started convo.
@@ -371,14 +375,18 @@ export default async function ChatPage() {
                   data={tsPoints}
                   series={[
                     { key: 'started', label: 'Started', color: 'module' },
-                    { key: 'resolved', label: 'Resolved', color: 'var(--module-active-tint)' },
+                    {
+                      key: 'resolved',
+                      label: 'Resolved',
+                      color: 'color-mix(in oklch, var(--color-module) 14%, transparent)',
+                    },
                   ]}
                   xKey="label"
                   height={210}
                   valueFormat="number"
                   ariaLabel="Conversations started and resolved, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {(
                     [
                       ['Started', fmtNumber(timeseries?.totals.started ?? 0)],
@@ -388,7 +396,7 @@ export default async function ChatPage() {
                     ] as [string, string][]
                   ).map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -440,7 +448,7 @@ export default async function ChatPage() {
                       <td className="font-medium">
                         <Link
                           href={`/chat/inbox/${c.id}`}
-                          className="text-[var(--color-text-primary)] hover:text-[var(--module-active-text)]"
+                          className="text-base-content hover:text-module"
                         >
                           {c.customerName ?? c.customerEmail ?? 'Anonymous visitor'}
                         </Link>
@@ -450,16 +458,16 @@ export default async function ChatPage() {
                           </Badge>
                         )}
                       </td>
-                      <td className="max-w-[22rem] truncate text-[var(--color-text-secondary)]">
+                      <td className="text-base-content/70 max-w-[22rem] truncate">
                         {c.lastMessageSnippet ?? 'No messages yet'}
                       </td>
-                      <td className="text-[var(--color-text-tertiary)] capitalize">{c.source}</td>
+                      <td className="text-base-content/50 capitalize">{c.source}</td>
                       <td>
                         <Badge color={meta.color} variant="soft">
                           {meta.label}
                         </Badge>
                       </td>
-                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      <td className="text-base-content/50 text-right tabular-nums">
                         {waitLabel(c)}
                       </td>
                     </tr>
@@ -476,9 +484,9 @@ export default async function ChatPage() {
             {channelRows ? (
               <>
                 <BarList items={channelRows} color="module" valueFormat="number" />
-                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
                   Top source ·{' '}
-                  <span className="font-medium text-[var(--color-text-secondary)]">
+                  <span className="text-base-content/70 font-medium">
                     {channelRows[0]?.label ?? '—'}
                   </span>{' '}
                   — {fmtNumber(channelRows[0]?.value ?? 0)} chats

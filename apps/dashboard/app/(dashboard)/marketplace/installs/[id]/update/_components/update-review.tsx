@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import { applyUpdateAction } from '../../../../actions';
@@ -236,15 +236,14 @@ function ConflictRow({
   toVersion: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border)] p-3">
+    <div className="border-base-300 flex flex-col gap-2 rounded-md border p-3">
       <p className="text-sm">{change.path}</p>
       <div className="flex flex-col gap-1">
         <p className="text-base-content/70 text-xs">
-          Yours: <span className="text-[var(--color-text-primary)]">{fmt(change.mine)}</span>
+          Yours: <span className="text-base-content">{fmt(change.mine)}</span>
         </p>
         <p className="text-base-content/70 text-xs">
-          Blueprint v{toVersion}:{' '}
-          <span className="text-[var(--color-text-primary)]">{fmt(change.theirs)}</span>
+          Blueprint v{toVersion}: <span className="text-base-content">{fmt(change.theirs)}</span>
         </p>
       </div>
       <div className="flex flex-row gap-2">

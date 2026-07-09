@@ -6,9 +6,9 @@ import type { SparxModule } from '../../providers/module-provider';
 // app feeding a changing `route` prop (it owns `usePathname()`); this file only
 // detects when a navigation BEGINS.
 
-/** Path segments that carry a module identity (each has a `--module-<name>`
- *  token + `.sx-c-<name>` recipe). `platform` is intentionally absent — no
- *  segment → the bar shows the full-spectrum platform identity. */
+/** Path segments that carry a module identity (each has a `--color-module-<name>`
+ *  token). `platform` is intentionally absent — no segment → the bar shows the
+ *  full-spectrum platform identity. */
 const MODULE_SEGMENTS = new Set<string>([
   'builder',
   'commerce',

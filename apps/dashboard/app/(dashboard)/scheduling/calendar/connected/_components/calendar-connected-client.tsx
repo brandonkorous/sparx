@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Button, Card } from 'silicaui-react';
+import { Button, Card } from '@wizeworks/silicaui-react';
 import { CalendarCheck2, CircleAlert, Loader2 } from 'lucide-react';
 
 import { completeCalendarOAuthAction } from '../../../_lib/actions';
@@ -58,7 +58,7 @@ export function CalendarConnectedClient({
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         {phase.kind === 'working' ? (
           <>
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--module-scheduling)]" />
+            <Loader2 className="h-8 w-8 animate-spin text-[var(--color-module-scheduling)]" />
             <div>
               <p className="text-base font-semibold">Finishing the connection…</p>
               <p className="text-base-content/70 text-sm">
@@ -68,7 +68,7 @@ export function CalendarConnectedClient({
           </>
         ) : phase.kind === 'connected' ? (
           <>
-            <CalendarCheck2 className="h-8 w-8 text-[var(--color-success)]" />
+            <CalendarCheck2 className="text-success h-8 w-8" />
             <div>
               <p className="text-base font-semibold">Calendar connected</p>
               <p className="text-base-content/70 text-sm">
@@ -82,7 +82,7 @@ export function CalendarConnectedClient({
           </>
         ) : (
           <>
-            <CircleAlert className="h-8 w-8 text-[var(--color-danger)]" />
+            <CircleAlert className="text-danger h-8 w-8" />
             <div>
               <p className="text-base font-semibold">
                 {phase.kind === 'declined' ? 'Connection cancelled' : 'Could not connect'}

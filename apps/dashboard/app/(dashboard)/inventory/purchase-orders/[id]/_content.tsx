@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ClipboardList } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -112,11 +112,11 @@ function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
               {receipts.map((r) => (
                 <div
                   key={r.id}
-                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
                 >
                   <Link
                     href={`/inventory/receiving/${r.id}`}
-                    className="font-mono text-xs hover:text-[var(--module-active)]"
+                    className="hover:text-module font-mono text-xs"
                   >
                     {r.number}
                   </Link>
@@ -145,10 +145,7 @@ function ReadOnlySummary({ po }: { po: PurchaseOrderDetail }) {
         <div className="flex flex-col gap-3 py-2">
           <div className="flex flex-row flex-wrap gap-6">
             <Field label="Supplier">
-              <Link
-                href={`/inventory/suppliers/${po.supplierId}`}
-                className="hover:text-[var(--module-active)]"
-              >
+              <Link href={`/inventory/suppliers/${po.supplierId}`} className="hover:text-module">
                 {po.supplierName ?? po.supplierCode ?? '—'}
               </Link>
             </Field>

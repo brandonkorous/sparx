@@ -4,7 +4,16 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Clock, Plus, Search } from 'lucide-react';
-import { Badge, Button, Card, CardBody, CardTitle, Input, Loading, Skeleton } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Input,
+  Loading,
+  Skeleton,
+} from '@wizeworks/silicaui-react';
 
 import type { Property } from '@/lib/sites';
 import { searchDomains, type DomainSuggestion } from '../actions';
@@ -36,7 +45,7 @@ function SearchResults({
       {suggestions.map((s) => (
         <div
           key={s.domain}
-          className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] px-4 py-3"
+          className="border-base-300 flex items-center justify-between gap-2 rounded-lg border px-4 py-3"
         >
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">{s.domain}</p>
@@ -115,12 +124,10 @@ export function DomainSearch({
         <CardTitle>Find a new domain</CardTitle>
         <div className="flex flex-col gap-4">
           {!purchaseEnabled && (
-            <div className="flex items-start gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
-              <Clock className="mt-0.5 size-4 shrink-0 text-[var(--color-text-secondary)]" />
+            <div className="border-base-300 bg-base-200 flex items-start gap-2.5 rounded-lg border px-4 py-3">
+              <Clock className="text-base-content/70 mt-0.5 size-4 shrink-0" />
               <p className="text-base-content/70 text-sm">
-                <strong className="font-medium text-[var(--color-text)]">
-                  Checkout opens soon.
-                </strong>{' '}
+                <strong className="text-base-content font-medium">Checkout opens soon.</strong>{' '}
                 Search and pricing are live, but buying a new domain isn&apos;t open yet. In the
                 meantime, connect a domain you already own from{' '}
                 <Link href="/settings/sites" className="underline">
@@ -133,7 +140,7 @@ export function DomainSearch({
 
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--color-text-secondary)]" />
+              <Search className="text-base-content/70 absolute top-1/2 left-3 size-4 -translate-y-1/2" />
               <Input
                 placeholder="Search for a domain (e.g. yourbrand.com)"
                 value={query}

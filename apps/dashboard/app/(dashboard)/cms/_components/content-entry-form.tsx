@@ -15,7 +15,7 @@
 // around it. ContentEntryForm only ever owns the `body` JSONB.
 
 import * as React from 'react';
-import { Button } from 'silicaui-react';
+import { Button, FieldStatus } from '@wizeworks/silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { FieldRenderer } from './field-renderer';
 import { Save } from 'lucide-react';
@@ -172,8 +172,16 @@ export function ContentEntryForm({
       <div className="flex flex-col gap-5">
         {fields}
 
-        {error && <p className="text-danger text-sm">{error}</p>}
-        {success && <p className="text-success text-sm">{success}</p>}
+        {error && (
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {error}
+          </FieldStatus>
+        )}
+        {success && (
+          <FieldStatus status="success" attached={false} aria-live="polite">
+            {success}
+          </FieldStatus>
+        )}
 
         <div className="flex flex-row items-center justify-end gap-2">
           <Button

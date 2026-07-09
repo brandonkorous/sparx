@@ -7,8 +7,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
-import { Badge, type BadgeColor, type BadgeVariant, Card } from 'silicaui-react';
-import { cx } from 'silicaui-react/server';
+import { Badge, type BadgeColor, type BadgeVariant, Card } from '@wizeworks/silicaui-react';
+import { cx } from '@wizeworks/silicaui-react/server';
 
 import { formatPriceRange } from '@/lib/format';
 import { Stars } from '@/components/stars';

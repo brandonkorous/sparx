@@ -46,7 +46,7 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
     <div
       style={{
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',
@@ -65,7 +65,7 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
           style={{
             fontFamily: MONO,
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             marginTop: '4px',
           }}
         >
@@ -75,12 +75,20 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <span
-            style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+            style={{
+              fontFamily: SANS,
+              fontSize: '13px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
           >
             Credit used
           </span>
           <span
-            style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+            style={{
+              fontFamily: SANS,
+              fontSize: '13px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
           >
             {b2b.creditUsed} / {b2b.creditLimit}
           </span>
@@ -90,7 +98,7 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
             display: 'block',
             height: '8px',
             borderRadius: '9999px',
-            backgroundColor: 'var(--color-bg-subtle)',
+            backgroundColor: 'var(--color-base-200)',
             overflow: 'hidden',
           }}
         >
@@ -104,7 +112,13 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
             }}
           />
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           {b2b.creditUsedPct} of limit used
         </span>
       </div>
@@ -140,8 +154,8 @@ function AgingLedger() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
       }}
@@ -150,7 +164,13 @@ function AgingLedger() {
         <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '15px' }}>
           Accounts receivable
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           outstanding by age
         </span>
       </div>
@@ -169,7 +189,7 @@ function AgingLedger() {
         style={{
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           marginBottom: '20px',
         }}
       >
@@ -182,7 +202,11 @@ function AgingLedger() {
               style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}
             >
               <span
-                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+                style={{
+                  fontFamily: SANS,
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                }}
               >
                 {r.label}
               </span>
@@ -195,7 +219,7 @@ function AgingLedger() {
                 display: 'block',
                 height: '6px',
                 borderRadius: '9999px',
-                backgroundColor: 'var(--color-bg-subtle)',
+                backgroundColor: 'var(--color-base-200)',
                 overflow: 'hidden',
               }}
             >
@@ -252,8 +276,8 @@ export function B2bBulkPo() {
               display: 'flex',
               gap: '16px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
             }}
           >
@@ -289,7 +313,7 @@ export function B2bBulkPo() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   lineHeight: '21px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {r.body}

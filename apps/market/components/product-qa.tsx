@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { CircleHelp, MessageCircleQuestion, ShieldCheck } from 'lucide-react';
-import { Alert, Button, EmptyState, Field, FieldLabel, Input, Textarea } from 'silicaui-react';
+import { Alert, Button, EmptyState, Field, FieldLabel, Input, Textarea } from '@wizeworks/silicaui-react';
 
 import { submitProductQuestion, ReviewRequestError } from '@/lib/reviews-client';
 import type { ProductQuestion } from '@/lib/market';

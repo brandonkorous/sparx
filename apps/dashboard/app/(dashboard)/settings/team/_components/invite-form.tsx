@@ -1,8 +1,18 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Card, CardBody, Input, Label, Select } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Select,
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { UserPlus } from 'lucide-react';
 import { ASSIGNABLE_ORG_ROLES, type OrgRole } from '@sparx/auth/org-roles';
 import { inviteMember } from '../actions';
@@ -17,11 +27,18 @@ const ROLE_ITEMS: Record<string, string> = Object.fromEntries(
 // plugin). Rendered only for owners/admins.
 export function InviteForm() {
   const formRef = React.useRef<HTMLFormElement>(null);
+  const [email, setEmail] = React.useState('');
   const [role, setRole] = React.useState<OrgRole>('editor');
   const [pending, startTransition] = React.useTransition();
 
+  const v = useFieldValidation(
+    { email },
+    { email: rules(rule.required('Enter an email address.'), rule.email()) }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!v.validate()) return;
     const formData = new FormData(e.currentTarget);
     formData.set('role', role);
     startTransition(async () => {
@@ -29,9 +46,15 @@ export function InviteForm() {
       if (result.ok) {
         toast.success('Invitation sent');
         formRef.current?.reset();
+        setEmail('');
         setRole('editor');
       } else {
-        toast.error(result.error ?? 'Could not send the invitation.');
+        const msg = result.error ?? 'Could not send the invitation.';
+        if (/email|invit|member|exist/i.test(msg)) {
+          v.setServerErrors({ email: msg });
+        } else {
+          toast.error(msg);
+        }
       }
     });
   }
@@ -39,29 +62,29 @@ export function InviteForm() {
   return (
     <Card>
       <CardBody>
-        <form ref={formRef} onSubmit={onSubmit}>
+        <form ref={formRef} onSubmit={onSubmit} noValidate>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col items-end gap-3 sm:flex-row sm:items-end">
-              <div className="flex w-full flex-col gap-2 sm:flex-1">
-                <Label htmlFor="invite-email">Email address</Label>
-                <Input
-                  id="invite-email"
+              <Field {...v.field('email')} className="w-full sm:flex-1">
+                <FieldLabel required>Email address</FieldLabel>
+                <FieldControl
                   name="email"
                   type="email"
                   autoComplete="off"
                   placeholder="teammate@example.com"
-                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  {...v.control('email')}
                 />
-              </div>
-              <div className="flex w-full flex-col gap-2 sm:w-48">
-                <Label htmlFor="invite-role">Role</Label>
+              </Field>
+              <Field className="w-full sm:w-48">
+                <FieldLabel>Role</FieldLabel>
                 <Select
-                  id="invite-role"
                   value={role}
-                  onValueChange={(v) => setRole(v as OrgRole)}
+                  onValueChange={(val) => setRole(val as OrgRole)}
                   items={ROLE_ITEMS}
                 />
-              </div>
+              </Field>
               <Button
                 type="submit"
                 loading={pending}
@@ -72,7 +95,7 @@ export function InviteForm() {
                 Send invite
               </Button>
             </div>
-            <p className="text-base-content/70 text-sm">{ROLE_DESCRIPTIONS[role]}</p>
+            <FieldDescription>{ROLE_DESCRIPTIONS[role]}</FieldDescription>
           </div>
         </form>
       </CardBody>

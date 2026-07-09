@@ -43,14 +43,14 @@ const ROWS: {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '2px 8px',
-            backgroundColor: moduleTint('var(--module-ai)'),
-            border: '1px solid var(--module-ai)',
+            backgroundColor: moduleTint('var(--color-module-ai)'),
+            border: '1px solid var(--color-module-ai)',
             borderRadius: '9999px',
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '10px',
             letterSpacing: '0.05em',
-            color: 'color-mix(in oklab, var(--module-ai) 60%, var(--color-text-primary))',
+            color: 'color-mix(in oklab, var(--color-module-ai) 60%, var(--color-base-content))',
             textTransform: 'uppercase',
           }}
         >
@@ -145,10 +145,10 @@ export function CompareTable() {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '8px',
               overflow: 'hidden',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: 'var(--color-base-100)',
               minWidth: '760px',
             }}
           >
@@ -157,8 +157,8 @@ export function CompareTable() {
                 display: 'flex',
                 alignItems: 'center',
                 padding: '18px 24px',
-                backgroundColor: 'var(--color-bg-page)',
-                borderBottom: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                borderBottom: '1px solid var(--color-base-300)',
                 gap: '16px',
               }}
             >
@@ -168,7 +168,7 @@ export function CompareTable() {
                   fontWeight: 500,
                   fontSize: '11px',
                   letterSpacing: '0.08em',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   textTransform: 'uppercase',
                   flex: 1,
                 }}
@@ -180,7 +180,7 @@ export function CompareTable() {
                 highlight
                 title={<Wordmark size={13} />}
                 subtitle="$79–$449/mo"
-                subtitleColor="var(--sparx-primary)"
+                subtitleColor="var(--color-primary)"
               />
               <ColHeader width={COL_WIDTHS[1]} title="Shopify" subtitle="$39–$399/mo" />
               <ColHeader width={COL_WIDTHS[2]} title="HubSpot" subtitle="$45–$1,600/mo" />
@@ -196,8 +196,8 @@ export function CompareTable() {
                   padding: '18px 24px',
                   gap: '16px',
                   borderBottom:
-                    i === ROWS.length - 1 ? undefined : '1px solid var(--color-bg-subtle)',
-                  backgroundColor: row.highlight ? moduleTint('var(--module-ai)') : undefined,
+                    i === ROWS.length - 1 ? undefined : '1px solid var(--color-base-200)',
+                  backgroundColor: row.highlight ? moduleTint('var(--color-module-ai)') : undefined,
                 }}
               >
                 <span
@@ -205,7 +205,7 @@ export function CompareTable() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '14px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                     flex: 1,
                   }}
                 >
@@ -246,8 +246,8 @@ function ColHeader({
         width,
         flexShrink: 0,
         padding: highlight ? '4px 8px' : undefined,
-        backgroundColor: highlight ? 'var(--color-bg-surface)' : undefined,
-        border: highlight ? '1px solid var(--sparx-primary)' : undefined,
+        backgroundColor: highlight ? 'var(--color-base-100)' : undefined,
+        border: highlight ? '1px solid var(--color-primary)' : undefined,
         borderRadius: highlight ? '6px' : undefined,
       }}
     >
@@ -256,7 +256,7 @@ function ColHeader({
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '13px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {title}
@@ -265,7 +265,7 @@ function ColHeader({
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
-          color: subtitleColor ?? 'var(--color-text-tertiary)',
+          color: subtitleColor ?? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         {subtitle}
@@ -293,7 +293,7 @@ function CellView({ cell, width }: { cell: Cell; width: string }) {
             justifyContent: 'center',
             width: 22,
             height: 22,
-            backgroundColor: 'var(--color-success-tint)',
+            backgroundColor: 'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
             borderRadius: 9999,
           }}
         >
@@ -303,14 +303,18 @@ function CellView({ cell, width }: { cell: Cell; width: string }) {
         </span>
       ) : cell.kind === 'cross' ? (
         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M5 5L19 19M19 5L5 19" stroke="var(--color-text-tertiary)" strokeWidth={2.5} />
+          <path
+            d="M5 5L19 19M19 5L5 19"
+            stroke="color-mix(in oklab, var(--color-base-content) 50%, transparent)"
+            strokeWidth={2.5}
+          />
         </svg>
       ) : (
         <span
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',
-            color: cell.color ?? 'var(--color-text-tertiary)',
+            color: cell.color ?? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {cell.text}

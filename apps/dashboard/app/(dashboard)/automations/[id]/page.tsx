@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Workflow } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -102,7 +102,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
               </p>
               <Link
                 href={`/automations/${automation.id}/edit`}
-                className="text-sm font-semibold text-[var(--module-active)] hover:underline"
+                className="text-module text-sm font-semibold hover:underline"
               >
                 Review &amp; publish →
               </Link>
@@ -148,7 +148,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                 Recent runs
                 <Link
                   href={`/automations/${automation.id}/runs`}
-                  className="text-sm font-normal text-[var(--module-active)] hover:underline"
+                  className="text-module text-sm font-normal hover:underline"
                 >
                   View all
                 </Link>
@@ -162,7 +162,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                   <Link
                     key={run.id}
                     href={`/automations/${automation.id}/runs/${run.id}`}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2 hover:bg-[var(--color-bg-subtle)]"
+                    className="border-base-300 hover:bg-base-200 flex flex-wrap items-center justify-between gap-3 rounded-md border px-3 py-2"
                   >
                     <span className="flex items-center gap-3">
                       <RunStatusBadge status={run.status} />

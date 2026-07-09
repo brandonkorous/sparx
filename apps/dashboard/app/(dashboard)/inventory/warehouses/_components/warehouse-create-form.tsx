@@ -3,8 +3,20 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, CardTitle, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createWarehouseAction } from '../../_lib/inventory-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -26,6 +38,16 @@ import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 const TYPES = ['owned', '3pl', 'dropship', 'virtual'] as const;
 
+// Server validation errors arrive keyed by the API's dotted path (address.line1);
+// map them onto the flat client state keys the Fields are bound to.
+const SERVER_FIELD_MAP: Record<string, 'name' | 'code' | 'line1' | 'city' | 'country'> = {
+  name: 'name',
+  code: 'code',
+  'address.line1': 'line1',
+  'address.city': 'city',
+  'address.country': 'country',
+};
+
 interface WarehouseCreateFormProps {
   surface: 'page' | 'overlay';
 }
@@ -38,7 +60,6 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const [name, setName] = React.useState('');
   const [code, setCode] = React.useState('');
@@ -51,6 +72,15 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
   const [country, setCountry] = React.useState('');
   const [channels, setChannels] = React.useState<Record<string, boolean>>({});
   const [isActive, setIsActive] = React.useState(true);
+
+  const values = { name, code, line1, city, country };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    code: rule.required('Code is required.'),
+    line1: rule.required('Address line 1 is required.'),
+    city: rule.required('City is required.'),
+    country: rule.required('Country is required.'),
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -110,9 +140,9 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-    const trimmed = (v: string) => v.trim();
-    const optional = (v: string) => (trimmed(v) ? trimmed(v) : undefined);
+    if (!v.validate()) return;
+    const trimmed = (val: string) => val.trim();
+    const optional = (val: string) => (trimmed(val) ? trimmed(val) : undefined);
     const input = {
       name: trimmed(name),
       code: trimmed(code).toUpperCase(),
@@ -133,9 +163,12 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
       const result = await createWarehouseAction(input);
       if (!result.ok) {
         setError(result.error.message);
-        const map: Record<string, string> = {};
-        for (const d of result.error.details ?? []) map[d.field] = d.message;
-        setFieldErrors(map);
+        const map: Partial<Record<keyof typeof values, string>> = {};
+        for (const d of result.error.details ?? []) {
+          const key = SERVER_FIELD_MAP[d.field];
+          if (key) map[key] = d.message;
+        }
+        v.setServerErrors(map);
         return;
       }
       onCreated(result.data.id);
@@ -170,37 +203,47 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                 <CardTitle>Basics</CardTitle>
                 <p className="opacity-70">Name shows in the dashboard; code is the SKU prefix.</p>
                 <div className="flex flex-col gap-4">
-                  <Field
-                    label="Name"
-                    id="name"
-                    value={name}
-                    onChange={setName}
-                    required
-                    error={fieldErrors.name}
-                  />
-                  <Field
-                    label="Code"
-                    id="code"
-                    value={code}
-                    onChange={setCode}
-                    required
-                    hint="A-Z, 0-9, _, -. Used as the SKU prefix. Examples: MAIN, EAST, 3PL-NYC."
-                    error={fieldErrors.code}
-                  />
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="type">Type</Label>
-                    <NativeSelect id="type" value={type} onChange={(e) => setType(e.target.value)}>
-                      {TYPES.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                    <p className="text-base-content/70 text-xs">
+                  <Field {...v.field('name')}>
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
+                      name="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      {...v.control('name')}
+                    />
+                  </Field>
+                  <Field {...v.field('code')}>
+                    <FieldLabel required>Code</FieldLabel>
+                    <FieldControl
+                      name="code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      {...v.control('code')}
+                    />
+                    <FieldDescription>
+                      A-Z, 0-9, _, -. Used as the SKU prefix. Examples: MAIN, EAST, 3PL-NYC.
+                    </FieldDescription>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Type</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {TYPES.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                    />
+                    <FieldDescription>
                       `dropship` warehouses are populated by supplier feeds; `virtual` is a
                       placeholder for digital-only catalogs.
-                    </p>
-                  </div>
+                    </FieldDescription>
+                  </Field>
                 </div>
               </CardBody>
             </Card>
@@ -212,50 +255,60 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                   Country is required and ISO 3166-1 alpha-2 (US, CA, GB…).
                 </p>
                 <div className="flex flex-col gap-4">
-                  <Field
-                    label="Line 1"
-                    id="line1"
-                    value={line1}
-                    onChange={setLine1}
-                    required
-                    error={fieldErrors['address.line1']}
-                  />
-                  <Field label="Line 2" id="line2" value={line2} onChange={setLine2} />
+                  <Field {...v.field('line1')}>
+                    <FieldLabel required>Line 1</FieldLabel>
+                    <FieldControl
+                      name="line1"
+                      value={line1}
+                      onChange={(e) => setLine1(e.target.value)}
+                      {...v.control('line1')}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Line 2</FieldLabel>
+                    <FieldControl
+                      name="line2"
+                      value={line2}
+                      onChange={(e) => setLine2(e.target.value)}
+                    />
+                  </Field>
                   <div className="flex flex-row flex-wrap gap-3">
-                    <Field
-                      label="City"
-                      id="city"
-                      value={city}
-                      onChange={setCity}
-                      required
-                      className="flex-1"
-                      error={fieldErrors['address.city']}
-                    />
-                    <Field
-                      label="Region / State"
-                      id="region"
-                      value={region}
-                      onChange={setRegion}
-                      className="flex-1"
-                    />
-                    <Field
-                      label="Postal code"
-                      id="postalCode"
-                      value={postalCode}
-                      onChange={setPostalCode}
-                      className="flex-1"
-                    />
-                    <Field
-                      label="Country"
-                      id="country"
-                      value={country}
-                      onChange={setCountry}
-                      required
-                      maxLength={2}
-                      placeholder="US"
-                      className="flex-1"
-                      error={fieldErrors['address.country']}
-                    />
+                    <Field className="flex-1" {...v.field('city')}>
+                      <FieldLabel required>City</FieldLabel>
+                      <FieldControl
+                        name="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        {...v.control('city')}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Region / State</FieldLabel>
+                      <FieldControl
+                        name="region"
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Postal code</FieldLabel>
+                      <FieldControl
+                        name="postalCode"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1" {...v.field('country')}>
+                      <FieldLabel required>Country</FieldLabel>
+                      <FieldControl
+                        name="country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        maxLength={2}
+                        placeholder="US"
+                        {...v.control('country')}
+                      />
+                    </Field>
                   </div>
                 </div>
               </CardBody>
@@ -295,54 +348,18 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
             </Card>
           </div>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>
-  );
-}
-
-function Field({
-  label,
-  id,
-  value,
-  onChange,
-  required,
-  hint,
-  error,
-  maxLength,
-  placeholder,
-  className,
-}: {
-  label: string;
-  id: string;
-  value: string;
-  onChange: (value: string) => void;
-  required?: boolean;
-  hint?: string;
-  error?: string;
-  maxLength?: number;
-  placeholder?: string;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-1${className ? ` ${className}` : ''}`}>
-      <Label htmlFor={id}>
-        {label}
-        {required && <span className="text-[var(--color-danger)]">*</span>}
-      </Label>
-      <Input
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        maxLength={maxLength}
-        placeholder={placeholder}
-      />
-      {hint && <p className="text-base-content/70 text-xs">{hint}</p>}
-      {error && <p className="text-danger text-xs">{error}</p>}
-    </div>
   );
 }

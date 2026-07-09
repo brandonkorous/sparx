@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { SCHEDULING_SCENES, type SchedulingScene } from './scheduling-data';
@@ -52,7 +52,7 @@ export function SchedulingHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '580px',
                 margin: '28px 0 0',
               }}
@@ -81,8 +81,8 @@ export function SchedulingHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -91,7 +91,7 @@ export function SchedulingHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -119,8 +119,8 @@ function BookingCard({ scene: s }: { scene: SchedulingScene }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -141,7 +141,7 @@ function BookingHeader({ s }: { s: SchedulingScene }) {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '16px 20px',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
@@ -149,7 +149,13 @@ function BookingHeader({ s }: { s: SchedulingScene }) {
         <span style={{ minWidth: 0 }}>
           <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>{s.service}</span>
           <br />
-          <span style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: SANS,
+              fontSize: '12px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {s.customer} · {s.business}
           </span>
         </span>
@@ -186,7 +192,7 @@ function BookingResource({ s }: { s: SchedulingScene }) {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       {cells.map(([v, l], i) => (
@@ -194,7 +200,7 @@ function BookingResource({ s }: { s: SchedulingScene }) {
           key={l}
           style={{
             padding: '14px 16px',
-            borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+            borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
             minWidth: 0,
           }}
         >
@@ -204,7 +210,7 @@ function BookingResource({ s }: { s: SchedulingScene }) {
               fontWeight: 500,
               fontSize: '14.5px',
               letterSpacing: '-0.01em',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {v}
@@ -213,7 +219,7 @@ function BookingResource({ s }: { s: SchedulingScene }) {
             style={{
               fontFamily: MONO,
               fontSize: '11px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               marginTop: '3px',
             }}
           >
@@ -234,8 +240,8 @@ function BookingFooter({ s }: { s: SchedulingScene }) {
           alignItems: 'center',
           gap: '10px',
           padding: '12px 14px',
-          backgroundColor: 'var(--color-bg-page)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '10px',
         }}
       >
@@ -247,12 +253,18 @@ function BookingFooter({ s }: { s: SchedulingScene }) {
               fontFamily: SANS,
               fontSize: '13px',
               fontWeight: 500,
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {s.deposit === '—' ? 'No deposit · free booking' : `${s.deposit} taken`}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             reminders {s.reminders}
           </span>
         </span>
@@ -271,7 +283,13 @@ function BookingFooter({ s }: { s: SchedulingScene }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
         <Dot color={M.color} size={6} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           {s.ref} · {s.capacityNote}
         </span>
       </div>

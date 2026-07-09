@@ -15,9 +15,13 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Label,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createApiKeyAction } from '../actions';
 
@@ -30,8 +34,11 @@ const SCOPE_OPTIONS = [
 export function IssueKeyForm() {
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
+  const [name, setName] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [issued, setIssued] = React.useState<{ plaintext: string; prefix: string } | null>(null);
+
+  const v = useFieldValidation({ name }, { name: rule.required('Give the key a label.') });
 
   // Reset to a fresh form whenever the modal closes (the reveal must not persist).
   function onOpenChange(next: boolean) {
@@ -39,6 +46,7 @@ export function IssueKeyForm() {
     setOpen(next);
     if (!next) {
       setIssued(null);
+      setName('');
       setError(null);
     }
   }
@@ -46,16 +54,25 @@ export function IssueKeyForm() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const form = new FormData(e.currentTarget);
-    const name = (form.get('name') as string | null)?.trim() ?? '';
     const scopes = form.getAll('scopes').map(String);
+    if (scopes.length === 0) {
+      setError('Select at least one scope for this key.');
+      return;
+    }
     const rawExpiresAt = (form.get('expiresAt') as string | null)?.trim();
     const expiresAt = rawExpiresAt ? new Date(rawExpiresAt).toISOString() : null;
 
     startTransition(async () => {
-      const res = await createApiKeyAction({ name, scopes, expiresAt });
+      const res = await createApiKeyAction({ name: name.trim(), scopes, expiresAt });
       if (!res.ok) {
-        setError(res.error.message);
+        const msg = res.error.message;
+        if (/name|label/i.test(msg)) {
+          v.setServerErrors({ name: msg });
+        } else {
+          setError(msg);
+        }
         return;
       }
       setIssued({ plaintext: res.data.plaintext, prefix: res.data.prefix });
@@ -87,7 +104,7 @@ export function IssueKeyForm() {
               Key issued. Copy it now — you won&apos;t see this again.
             </p>
             <div className="flex flex-row items-center gap-2">
-              <code className="flex-1 rounded bg-[var(--color-bg-subtle)] p-2 font-mono text-xs break-all select-all">
+              <code className="bg-base-200 flex-1 rounded p-2 font-mono text-xs break-all select-all">
                 {issued.plaintext}
               </code>
               <Button type="button" variant="outline" size="sm" onClick={copyKey}>
@@ -107,14 +124,20 @@ export function IssueKeyForm() {
           <form id="issue-key-form" onSubmit={onSubmit} noValidate>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-4">
-                <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-                  <Label htmlFor="name">Label</Label>
-                  <Input id="name" name="name" required placeholder="Claude Desktop — sales rep" />
-                </div>
-                <div className="flex w-56 flex-col gap-2">
-                  <Label htmlFor="expiresAt">Expires at (optional)</Label>
-                  <Input id="expiresAt" name="expiresAt" type="date" />
-                </div>
+                <Field {...v.field('name')} className="min-w-[14rem] flex-1">
+                  <FieldLabel required>Label</FieldLabel>
+                  <FieldControl
+                    name="name"
+                    placeholder="Claude Desktop — sales rep"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    {...v.control('name')}
+                  />
+                </Field>
+                <Field className="w-56">
+                  <FieldLabel>Expires at (optional)</FieldLabel>
+                  <FieldControl name="expiresAt" type="date" />
+                </Field>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -138,9 +161,9 @@ export function IssueKeyForm() {
               </div>
 
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
           </form>

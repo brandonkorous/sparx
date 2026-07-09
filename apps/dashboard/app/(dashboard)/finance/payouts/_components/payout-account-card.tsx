@@ -20,7 +20,7 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerTitle,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone, toast } from '@sparx/ui';
 
 import type { MarketPayoutAccount } from '../_types';

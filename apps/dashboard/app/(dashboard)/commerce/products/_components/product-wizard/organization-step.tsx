@@ -10,7 +10,14 @@
 // router.refresh, which doesn't fit the client wizard).
 
 import * as React from 'react';
-import { Card, CardBody, Checkbox, Label, Loading } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  FieldLabel,
+  FieldStatus,
+  Loading,
+} from '@wizeworks/silicaui-react';
 import { SurfaceStep } from '@sparx/ui';
 
 import { updateProductAction } from '../../../product-actions';
@@ -117,7 +124,7 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading collections & categories…
             </div>
           ) : (
@@ -167,9 +174,9 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
               )}
 
               {error && (
-                <p className="text-danger text-sm" role="alert">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
           )}
@@ -194,7 +201,7 @@ function PickerSection({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <Label>{title}</Label>
+      <FieldLabel>{title}</FieldLabel>
       {items.length === 0 ? (
         <p className="text-base-content/70 text-sm">{empty}</p>
       ) : (
@@ -202,7 +209,7 @@ function PickerSection({
           {items.map((it) => (
             <div
               key={it.id}
-              className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[var(--color-bg-subtle)]"
+              className="hover:bg-base-200 flex items-center gap-2 rounded-md px-2 py-1.5"
             >
               <Checkbox
                 checked={selected.has(it.id)}

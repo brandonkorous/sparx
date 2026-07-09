@@ -60,7 +60,7 @@ export function FacetBar({
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 500,
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {facet.label}
@@ -80,19 +80,26 @@ export function FacetBar({
                       padding: '5px 11px',
                       borderRadius: '9999px',
                       border: '1px solid',
-                      borderColor: isOn ? category.accent : 'var(--color-border-default)',
+                      borderColor: isOn ? category.accent : 'var(--color-base-300)',
                       backgroundColor: isOn
                         ? `color-mix(in srgb, ${category.accent} 12%, transparent)`
-                        : 'var(--color-bg-surface)',
+                        : 'var(--color-base-100)',
                       fontFamily: 'var(--font-sans)',
                       fontSize: '13px',
                       fontWeight: isOn ? 500 : 400,
-                      color: isOn ? category.accent : 'var(--color-text-secondary)',
+                      color: isOn
+                        ? category.accent
+                        : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                       textDecoration: 'none',
                     }}
                   >
                     {value}
-                    <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>
+                    <span
+                      style={{
+                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                        fontWeight: 400,
+                      }}
+                    >
                       {counts[value] ?? 0}
                     </span>
                     {isOn ? <span aria-hidden>×</span> : null}
@@ -111,7 +118,7 @@ export function FacetBar({
             alignSelf: 'flex-start',
             fontFamily: 'var(--font-sans)',
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             textDecoration: 'underline',
           }}
         >

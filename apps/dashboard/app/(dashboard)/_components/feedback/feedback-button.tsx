@@ -43,7 +43,7 @@ export function FeedbackButton() {
           {hasUnread && (
             <span
               aria-hidden
-              className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--color-text-link)] ring-2 ring-[var(--color-bg-surface)]"
+              className="bg-primary ring-base-100 absolute top-1 right-1 h-2 w-2 rounded-full ring-2"
             />
           )}
         </Button>

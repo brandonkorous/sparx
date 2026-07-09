@@ -73,8 +73,8 @@ export function SchedulingShapes() {
               flexDirection: 'column',
               gap: '14px',
               padding: '26px',
-              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '236px',
             }}
@@ -96,7 +96,7 @@ export function SchedulingShapes() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '23px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 fontWeight: 500,
               }}
             >
@@ -124,7 +124,7 @@ export function SchedulingShapes() {
                 fontFamily: SANS,
                 fontSize: '12.5px',
                 lineHeight: '19px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.verticals}
@@ -180,8 +180,8 @@ export function SchedulingDeposits() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: p.emphasis ? M.tint : 'var(--color-bg-surface)',
-              border: p.emphasis ? `1px solid ${M.color}` : '1px solid var(--color-border-default)',
+              backgroundColor: p.emphasis ? M.tint : 'var(--color-base-100)',
+              border: p.emphasis ? `1px solid ${M.color}` : '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '208px',
             }}
@@ -193,7 +193,7 @@ export function SchedulingDeposits() {
                 fontSize: '20px',
                 fontWeight: 500,
                 letterSpacing: '-0.01em',
-                color: p.emphasis ? M.text : 'var(--color-text-primary)',
+                color: p.emphasis ? M.text : 'var(--color-base-content)',
               }}
             >
               {p.name}
@@ -203,7 +203,9 @@ export function SchedulingDeposits() {
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.03em',
-                color: p.emphasis ? M.text : 'var(--color-text-tertiary)',
+                color: p.emphasis
+                  ? M.text
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {p.tag}
@@ -214,7 +216,7 @@ export function SchedulingDeposits() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p.body}
@@ -228,8 +230,8 @@ export function SchedulingDeposits() {
           marginTop: '24px',
           gap: '10px',
           padding: '16px 20px',
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
         }}
       >
@@ -239,7 +241,7 @@ export function SchedulingDeposits() {
             fontFamily: SANS,
             fontSize: '13.5px',
             lineHeight: '21px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           Deposits need only a connected payment gateway &mdash; Stripe, sparx Pay, PayPal, or
@@ -291,8 +293,8 @@ export function SchedulingCalendar() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
@@ -324,7 +326,7 @@ export function SchedulingCalendar() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p.body}
@@ -340,7 +342,7 @@ export function SchedulingCalendar() {
                       fontFamily: SANS,
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {pt}
@@ -411,8 +413,8 @@ export function SchedulingLoop() {
               flexDirection: 'column',
               gap: '11px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '196px',
             }}
@@ -423,7 +425,7 @@ export function SchedulingLoop() {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.n}
@@ -449,7 +451,7 @@ export function SchedulingLoop() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -521,8 +523,8 @@ export function SchedulingVerticals() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
             }}
           >
@@ -556,7 +558,7 @@ export function SchedulingVerticals() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {v.note}

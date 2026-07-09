@@ -9,7 +9,7 @@
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { RotateCcw } from 'lucide-react';
 import { restoreRevision } from '../../actions';
 

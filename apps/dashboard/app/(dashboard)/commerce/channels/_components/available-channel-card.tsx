@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { connectChannelAction } from '../actions';
 import type { ChannelCatalogItem, ChannelShape } from '../_types';
 
@@ -41,7 +41,7 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] p-4">
+    <div className="border-base-300 flex flex-col gap-2 rounded-md border p-4">
       <div className="flex flex-row flex-wrap items-center gap-2">
         <p className="text-base font-medium">{channel.name}</p>
         <Badge variant="outline" className="text-xs">

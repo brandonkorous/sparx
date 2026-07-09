@@ -18,7 +18,7 @@ import {
   AlertTitle,
   Button,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 
 import { formatCents } from '@/lib/format';
 import { addCartItem, createCart, readStoredCart } from '@/lib/cart-client';

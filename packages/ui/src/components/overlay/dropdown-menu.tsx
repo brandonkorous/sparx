@@ -14,7 +14,7 @@ export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 const contentClasses = [
   'z-50 min-w-[10rem] overflow-hidden rounded-md p-1',
-  'border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md',
+  'border border-[var(--color-base-300)] bg-[var(--color-base-100)] shadow-md',
   'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
   'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
   'data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1',
@@ -38,9 +38,9 @@ DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 const itemBase = [
   'relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
-  'text-[var(--color-text-primary)]',
+  'text-base-content',
   'transition-colors duration-100',
-  'focus:bg-[var(--color-bg-subtle)]',
+  'focus:bg-[var(--color-base-200)]',
   'data-[disabled]:pointer-events-none data-[disabled]:opacity-40',
 ];
 
@@ -102,7 +102,7 @@ export const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'px-2 py-1.5 text-xs font-medium tracking-wide text-[var(--color-text-tertiary)] uppercase',
+      'text-base-content/50 px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
       inset && 'pl-8',
       className
     )}
@@ -117,7 +117,7 @@ export const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-[var(--color-border-default)]', className)}
+    className={cn('-mx-1 my-1 h-px bg-[var(--color-base-300)]', className)}
     {...props}
   />
 ));
@@ -128,7 +128,7 @@ export const DropdownMenuShortcut = ({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cn('ml-auto text-xs tracking-wide text-[var(--color-text-tertiary)]', className)}
+    className={cn('text-base-content/50 ml-auto text-xs tracking-wide', className)}
     {...props}
   />
 );
@@ -142,7 +142,7 @@ export const DropdownMenuSubTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       ...itemBase,
-      'data-[state=open]:bg-[var(--color-bg-subtle)]',
+      'data-[state=open]:bg-[var(--color-base-200)]',
       inset && 'pl-8',
       className
     )}

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Check, Copy } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, toast } from '@sparx/ui';
-import { Badge, Button, Input } from 'silicaui-react';
+import { Badge, Button, Input } from '@wizeworks/silicaui-react';
 
 import type { Domain } from '@/lib/sites';
 
@@ -39,7 +39,7 @@ function CopyField({ label, hint, value }: { label: string; hint?: string; value
     <div className="flex flex-col gap-1">
       <p className="text-base-content/70 text-xs">
         {label}
-        {hint ? <span className="text-[var(--color-text-tertiary)]"> — {hint}</span> : null}
+        {hint ? <span className="text-base-content/50"> — {hint}</span> : null}
       </p>
       <div className="flex flex-row items-center gap-2">
         <Input
@@ -78,7 +78,7 @@ function RecordCard({
   value: string;
 }) {
   return (
-    <div className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+    <div className="border-base-300 bg-base-200 rounded-md border p-3">
       <div className="flex flex-col gap-3">
         <div className="flex flex-row items-center justify-between gap-2">
           <p className="text-sm font-medium">{purpose}</p>
@@ -127,7 +127,7 @@ export function DomainDnsInstructions({
       collapsible
       variant="ghost"
       defaultValue={setupMode ? ['dns'] : []}
-      className="border-t border-[var(--color-border-default)] pt-1"
+      className="border-base-300 border-t pt-1"
     >
       <AccordionItem value="dns">
         <AccordionTrigger className="text-sm font-medium">{triggerLabel}</AccordionTrigger>
@@ -137,12 +137,10 @@ export function DomainDnsInstructions({
               <div className="flex flex-col gap-2">
                 <p className="text-base-content/70 text-sm">
                   Add the {recordCount > 1 ? 'records' : 'record'} below wherever{' '}
-                  <strong className="font-medium text-[var(--color-text-primary)]">
-                    {domain.host}
-                  </strong>{' '}
-                  is managed, then press <strong className="font-medium">Verify</strong>:
+                  <strong className="text-base-content font-medium">{domain.host}</strong> is
+                  managed, then press <strong className="font-medium">Verify</strong>:
                 </p>
-                <ol className="list-decimal space-y-1.5 pl-5 text-sm text-[var(--color-text-secondary)]">
+                <ol className="text-base-content/70 list-decimal space-y-1.5 pl-5 text-sm">
                   <li>
                     Sign in to your <strong className="font-medium">domain provider</strong> — the
                     company you bought this domain from (GoDaddy, Namecheap, Cloudflare, Google
@@ -163,10 +161,8 @@ export function DomainDnsInstructions({
               </div>
             ) : (
               <p className="text-base-content/70 text-sm">
-                <strong className="font-medium text-[var(--color-text-primary)]">
-                  {domain.host}
-                </strong>{' '}
-                is connected using the record below. Leave it in place at your domain provider — if
+                <strong className="text-base-content font-medium">{domain.host}</strong> is
+                connected using the record below. Leave it in place at your domain provider — if
                 this site ever stops loading on this address, sign in and make sure the record still
                 matches (you can re-enter it from here).
               </p>

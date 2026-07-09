@@ -36,8 +36,8 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                 gap: '8px',
                 padding: '22px',
                 borderRadius: 'var(--radius-xl)',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
               }}
             >
               <h3
@@ -46,7 +46,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                   fontWeight: 500,
                   fontSize: '16px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                   margin: 0,
                 }}
               >
@@ -57,7 +57,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14.5px',
                   lineHeight: '23px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: 0,
                 }}
               >
@@ -75,7 +75,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                 fontWeight: 500,
                 fontSize: '18px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 margin: 0,
               }}
             >
@@ -120,11 +120,11 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                       fontFamily: 'var(--font-sans)',
                       fontSize: '14.5px',
                       lineHeight: '24px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                       margin: 0,
                     }}
                   >
-                    <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+                    <strong style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
                       {step.name}.
                     </strong>{' '}
                     {step.text}
@@ -142,7 +142,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
               fontWeight: 500,
               fontSize: '18px',
               letterSpacing: '-0.01em',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
               margin: '0 0 8px',
             }}
           >
@@ -152,7 +152,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
             <details
               key={item.q}
               className="mkt-faq-item"
-              style={{ borderBottom: '1px solid var(--color-border-default)' }}
+              style={{ borderBottom: '1px solid var(--color-base-300)' }}
             >
               <summary
                 className="mkt-summary"
@@ -169,7 +169,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '15.5px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {item.q}
@@ -181,7 +181,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14.5px',
                   lineHeight: '23px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: '0 4px 18px',
                   maxWidth: '720px',
                 }}

@@ -3,9 +3,17 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input } from 'silicaui-react';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 
-import { formBool, formNumber } from '../../../../../../lib/forms';
+import { useFieldValidation } from '@sparx/forms';
+
 import { issueReturnRefundAction } from '../../../return-actions';
 
 export function ReturnRefundForm({
@@ -19,28 +27,53 @@ export function ReturnRefundForm({
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
+  const [amount, setAmount] = React.useState('');
+  const [restockingFee, setRestockingFee] = React.useState('');
+  const [asAccountCredit, setAsAccountCredit] = React.useState(
+    preferredOutcome === 'account_credit'
+  );
+
+  const values = { amount, restockingFee, asAccountCredit };
+  const v = useFieldValidation(values, {
+    amount: (val) => {
+      const raw = String(val).trim();
+      const n = Number(raw);
+      if (raw === '' || !Number.isFinite(n)) return 'Enter a refund amount.';
+      if (n <= 0) return 'Refund amount must be greater than zero.';
+      return null;
+    },
+    restockingFee: (val) => {
+      const raw = String(val).trim();
+      if (raw === '') return null;
+      const n = Number(raw);
+      if (!Number.isFinite(n)) return 'Enter a number.';
+      if (n < 0) return 'Restocking fee cannot be negative.';
+      return null;
+    },
+  });
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const amount = formNumber(form, 'amount');
-    const restockingFee = formNumber(form, 'restockingFee');
-    const asAccountCredit = formBool(form, 'asAccountCredit');
+    if (!v.validate()) return;
 
-    if (amount <= 0) {
-      setError('Refund amount must be greater than zero.');
-      return;
-    }
+    const amountValue = Number(amount.trim());
+    const feeValue = restockingFee.trim() === '' ? 0 : Number(restockingFee.trim());
 
     startTransition(async () => {
       const result = await issueReturnRefundAction({
         returnId,
-        refundAmountCents: Math.round(amount * 100),
-        ...(restockingFee > 0 ? { restockingFeeCents: Math.round(restockingFee * 100) } : {}),
+        refundAmountCents: Math.round(amountValue * 100),
+        ...(feeValue > 0 ? { restockingFeeCents: Math.round(feeValue * 100) } : {}),
         asAccountCredit,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        const known = (result.error.details ?? []).filter((d) => d.field in values);
+        if (known.length) {
+          v.setServerErrors(Object.fromEntries(known.map((d) => [d.field, d.message])));
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       router.refresh();
@@ -48,32 +81,49 @@ export function ReturnRefundForm({
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-3">
         <div className="flex flex-row flex-wrap gap-3">
-          <div className="flex w-40 flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Refund amount (dollars) *</p>
-            <Input name="amount" type="number" step="0.01" min="0" required />
-          </div>
-          <div className="flex w-40 flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Restocking fee (dollars)</p>
-            <Input name="restockingFee" type="number" step="0.01" min="0" />
-          </div>
+          <Field {...v.field('amount')} className="w-40">
+            <FieldLabel required>Refund amount (dollars)</FieldLabel>
+            <FieldControl
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              {...v.control('amount')}
+            />
+          </Field>
+          <Field {...v.field('restockingFee')} className="w-40">
+            <FieldLabel>Restocking fee (dollars)</FieldLabel>
+            <FieldControl
+              name="restockingFee"
+              type="number"
+              step="0.01"
+              min="0"
+              value={restockingFee}
+              onChange={(e) => setRestockingFee(e.target.value)}
+              {...v.control('restockingFee')}
+            />
+          </Field>
         </div>
         <label className="flex items-center gap-2">
           <Checkbox
             color="module"
             name="asAccountCredit"
-            defaultChecked={preferredOutcome === 'account_credit'}
+            checked={asAccountCredit}
+            onChange={(e) => setAsAccountCredit(e.target.checked)}
           />
           <span className="text-sm">
             Issue as account credit instead of refunding to original payment
           </span>
         </label>
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
         <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>

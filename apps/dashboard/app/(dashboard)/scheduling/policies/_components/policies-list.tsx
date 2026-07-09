@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
@@ -83,7 +83,7 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
               <td className="font-medium">{p.name}</td>
               <td>
                 {p.depositType === 'none' ? (
-                  <span className="text-[var(--color-muted-foreground)]">—</span>
+                  <span className="text-base-content/70">—</span>
                 ) : (
                   <Badge color="module" variant="soft" size="sm">
                     {depositSummary(p)}
@@ -108,10 +108,7 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => void remove(p)}
-                      className="text-[var(--color-danger)]"
-                    >
+                    <DropdownMenuItem onClick={() => void remove(p)} className="text-danger">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
                     </DropdownMenuItem>

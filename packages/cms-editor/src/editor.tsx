@@ -103,11 +103,11 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
       aria-pressed={active}
       className={cn(
         'inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors duration-150',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'focus-visible:ring-primary focus-visible:ring-2 focus-visible:outline-none',
         'disabled:pointer-events-none disabled:opacity-40',
         active
-          ? 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]'
-          : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]'
+          ? 'bg-module bg-soft text-module'
+          : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'
       )}
     >
       {children}
@@ -116,7 +116,7 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
 }
 
 function ToolDivider() {
-  return <span aria-hidden className="mx-1 h-4 w-px bg-[var(--color-border-default)]" />;
+  return <span aria-hidden className="bg-base-300 mx-1 h-4 w-px" />;
 }
 
 // Small floating overlay used by the "More blocks" button.
@@ -144,8 +144,8 @@ function BlockMenu({
       ref={ref}
       role="menu"
       className={cn(
-        'absolute z-50 mt-1 min-w-[14rem] rounded-md border bg-[var(--color-bg-surface)] p-1 shadow-lg',
-        'border-[var(--color-border-default)]'
+        'bg-base-100 absolute z-50 mt-1 min-w-[14rem] rounded-md border p-1 shadow-lg',
+        'border-base-300'
       )}
     >
       {children}
@@ -169,11 +169,11 @@ function MenuItem({
       onClick={onClick}
       className={cn(
         'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm',
-        'text-[var(--color-text-primary)] hover:bg-[var(--color-bg-subtle)]',
-        'focus-visible:bg-[var(--color-bg-subtle)] focus-visible:outline-none'
+        'text-base-content hover:bg-base-200',
+        'focus-visible:bg-base-200 focus-visible:outline-none'
       )}
     >
-      {icon ? <span className="text-[var(--color-text-secondary)]">{icon}</span> : null}
+      {icon ? <span className="text-base-content/70">{icon}</span> : null}
       {label}
     </button>
   );
@@ -316,9 +316,9 @@ export function ContentBlockEditor({
   return (
     <div
       className={cn(
-        'relative rounded-md border bg-[var(--color-bg-surface)]',
-        'border-[var(--color-border-default)] focus-within:border-[var(--color-border-focus)]',
-        'focus-within:ring-2 focus-within:ring-[var(--color-border-focus)] focus-within:ring-offset-2',
+        'bg-base-100 relative rounded-md border',
+        'border-base-300 focus-within:border-primary',
+        'focus-within:ring-primary focus-within:ring-2 focus-within:ring-offset-2',
         'transition-colors duration-150',
         disabled && 'cursor-not-allowed opacity-50',
         className
@@ -328,7 +328,7 @@ export function ContentBlockEditor({
       <div
         role="toolbar"
         aria-label="Formatting"
-        className="flex flex-wrap items-center gap-0.5 border-b border-[var(--color-border-default)] p-1"
+        className="border-base-300 flex flex-wrap items-center gap-0.5 border-b p-1"
       >
         <ToolButton
           label="Bold"

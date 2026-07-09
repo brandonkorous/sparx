@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../../../_components/list-toolbar';
 import { ImportButton } from './_components/import-button';
@@ -75,7 +75,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
       <div className="flex flex-col gap-6 py-10">
         <Link
           href="/dropship/suppliers"
-          className="flex w-fit items-center gap-1 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+          className="text-base-content/70 hover:text-base-content flex w-fit items-center gap-1 text-sm"
         >
           <ChevronLeft className="h-4 w-4" /> Suppliers
         </Link>
@@ -108,10 +108,10 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
           </Card>
         ) : (
           <>
-            <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+            <div className="border-base-300 overflow-x-auto rounded-lg border">
               <table className="w-full text-sm">
                 {/* eslint-disable-next-line no-restricted-syntax -- table header with muted bg, not a reimplemented control */}
-                <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                <thead className="bg-base-200 text-base-content/70">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Product</th>
                     <th className="px-4 py-3 text-left font-medium">Supplier ID</th>
@@ -122,33 +122,31 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                     <th className="px-4 py-3 text-left font-medium"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--color-border)]">
+                <tbody className="divide-base-300 divide-y">
                   {products.map((p) => (
-                    <tr key={p.id} className="hover:bg-[var(--color-muted)]">
+                    <tr key={p.id} className="hover:bg-base-200">
                       <td className="px-4 py-3">
                         <div className="flex flex-row items-center gap-3">
                           {p.images[0] ? (
                             <img
                               src={p.images[0]}
                               alt={p.title}
-                              className="h-10 w-10 flex-shrink-0 rounded bg-[var(--color-muted)] object-cover"
+                              className="bg-base-200 h-10 w-10 flex-shrink-0 rounded object-cover"
                             />
                           ) : (
-                            <div className="h-10 w-10 flex-shrink-0 rounded bg-[var(--color-muted)]" />
+                            <div className="bg-base-200 h-10 w-10 flex-shrink-0 rounded" />
                           )}
                           <p className="line-clamp-1 text-base font-medium">{p.title}</p>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-[var(--color-muted-foreground)]">
+                      <td className="text-base-content/70 px-4 py-3 font-mono text-xs">
                         {p.supplierProductId}
                       </td>
-                      <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
-                        {p.variants.length}
-                      </td>
+                      <td className="text-base-content/70 px-4 py-3">{p.variants.length}</td>
                       <td className="px-4 py-3">
                         {p.costPriceCents > 0 ? formatCents(p.costPriceCents) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
+                      <td className="text-base-content/70 px-4 py-3">
                         {p.msrpCents ? formatCents(p.msrpCents) : '—'}
                       </td>
                       <td className="px-4 py-3">
@@ -173,7 +171,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
 
             {total > take && (
               <div className="flex flex-row items-center justify-end gap-2">
-                <p className="text-sm text-[var(--color-muted-foreground)]">
+                <p className="text-base-content/70 text-sm">
                   {skip + 1}–{Math.min(skip + take, total)} of {total}
                 </p>
                 {skip > 0 && (

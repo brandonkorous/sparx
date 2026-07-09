@@ -1,6 +1,6 @@
 import { Globe, Plus } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Badge, EmptyState } from 'silicaui-react';
+import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 import {
   getActivePropertyId,
   listDomains,

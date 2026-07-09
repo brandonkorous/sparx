@@ -19,7 +19,20 @@ import { useRouter } from 'next/navigation';
 import { Lock, Plus, Trash2 } from 'lucide-react';
 
 import { useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Input,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { type BandMethod } from '@sparx/commerce-schemas';
 
 import { addLineAction, removeLineAction, updateLineAction } from '../../../document-actions';
@@ -105,7 +118,7 @@ export function LineGrid({
           </div>
         </CardTitle>
         <div className="flex flex-col gap-3">
-          <div className="hidden grid-cols-12 gap-2 px-1 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase md:grid">
+          <div className="text-base-content/60 hidden grid-cols-12 gap-2 px-1 text-xs font-medium tracking-wide uppercase md:grid">
             <div className="col-span-2">Type</div>
             <div className="col-span-4">Description</div>
             <div className="col-span-1 text-right">Qty</div>
@@ -219,10 +232,8 @@ function EditableLineRow({
 
   if (locked) {
     return (
-      <div className="grid grid-cols-12 items-center gap-2 rounded-md border border-[var(--color-border-default)] px-2 py-2">
-        <div className="col-span-2 text-sm text-[var(--color-text-muted)]">
-          {currentType?.label ?? '—'}
-        </div>
+      <div className="border-base-300 grid grid-cols-12 items-center gap-2 rounded-md border px-2 py-2">
+        <div className="text-base-content/60 col-span-2 text-sm">{currentType?.label ?? '—'}</div>
         <div className="col-span-4 text-sm">{line.description}</div>
         <div className="col-span-1 text-right text-sm tabular-nums">{line.quantity}</div>
         <div className="col-span-2 text-right text-sm tabular-nums">
@@ -236,7 +247,7 @@ function EditableLineRow({
   }
 
   return (
-    <div className="rounded-md border border-[var(--color-border-default)] px-2 py-2">
+    <div className="border-base-300 rounded-md border px-2 py-2">
       <div className="grid grid-cols-12 items-center gap-2">
         <div className="col-span-12 md:col-span-2">
           <select
@@ -286,7 +297,7 @@ function EditableLineRow({
         {markupMode ? (
           <div className="col-span-8 text-right text-sm tabular-nums md:col-span-2">
             {formatMoney(line.unitPrice, currency)}
-            <span className="ml-1 text-xs text-[var(--color-text-muted)]">/ unit</span>
+            <span className="text-base-content/60 ml-1 text-xs">/ unit</span>
           </div>
         ) : (
           <div className="col-span-4 md:col-span-2">
@@ -348,7 +359,7 @@ function EditableLineRow({
       )}
 
       <div className="mt-2 flex flex-row flex-wrap items-center gap-3 px-1">
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             defaultChecked={line.taxable}
@@ -364,9 +375,9 @@ function EditableLineRow({
           </Badge>
         )}
         {error && (
-          <p className="text-danger text-xs" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </div>
     </div>
@@ -434,6 +445,33 @@ function AddLineRow({
   );
   const resolved = resolveMarkup(markupState, markupRules, pricingMode);
 
+  const v = useFieldValidation(
+    { description, quantity, unitPrice, cost },
+    {
+      description: rule.required('Add a description.'),
+      quantity: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n <= 0) return 'Quantity must be greater than 0.';
+        return null;
+      },
+      unitPrice: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n < 0) return 'Price cannot be negative.';
+        return null;
+      },
+      cost: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return null;
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n < 0) return 'Cost cannot be negative.';
+        return null;
+      },
+    }
+  );
+
   // Re-seed the markup editor when switching into a different markup mode so the
   // pass-through-at-cost default tracks the selected line type.
   function onTypeChange(nextKey: string) {
@@ -451,10 +489,8 @@ function AddLineRow({
   }
 
   function add() {
-    if (!description.trim()) {
-      setError('Add a description.');
-      return;
-    }
+    setError(null);
+    if (!v.validate()) return;
     const common = {
       lineTypeKey: lineTypeKey || undefined,
       description: description.trim(),
@@ -492,10 +528,10 @@ function AddLineRow({
   }
 
   return (
-    <div className="rounded-md border border-dashed border-[var(--color-border-default)] px-2 py-3">
+    <div className="border-base-300 rounded-md border border-dashed px-2 py-3">
       <div className="grid grid-cols-12 items-end gap-2">
-        <div className="col-span-12 md:col-span-2">
-          <Label className="text-xs">Type</Label>
+        <Field className="col-span-12 md:col-span-2">
+          <FieldLabel className="text-xs">Type</FieldLabel>
           <select
             className={SELECT_CLASS}
             value={lineTypeKey}
@@ -508,19 +544,26 @@ function AddLineRow({
               </option>
             ))}
           </select>
-        </div>
-        <div className="col-span-12 md:col-span-4">
-          <Label className="text-xs">Description</Label>
-          <Input
+        </Field>
+        <Field {...v.field('description')} className="col-span-12 md:col-span-4">
+          <FieldLabel className="text-xs" required>
+            Description
+          </FieldLabel>
+          <FieldControl
+            name="line-description"
             value={description}
             disabled={pending}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What is this charge?"
+            {...v.control('description')}
           />
-        </div>
-        <div className="col-span-3 md:col-span-1">
-          <Label className="text-xs">Qty</Label>
-          <Input
+        </Field>
+        <Field {...v.field('quantity')} className="col-span-3 md:col-span-1">
+          <FieldLabel className="text-xs" required>
+            Qty
+          </FieldLabel>
+          <FieldControl
+            name="line-quantity"
             type="number"
             min="0"
             step="0.001"
@@ -528,8 +571,9 @@ function AddLineRow({
             value={quantity}
             disabled={pending}
             onChange={(e) => setQuantity(e.target.value)}
+            {...v.control('quantity')}
           />
-        </div>
+        </Field>
 
         {markupMode ? (
           <div className="col-span-9 md:col-span-4">
@@ -545,9 +589,10 @@ function AddLineRow({
           </div>
         ) : (
           <>
-            <div className="col-span-4 md:col-span-2">
-              <Label className="text-xs">Unit price</Label>
-              <Input
+            <Field {...v.field('unitPrice')} className="col-span-4 md:col-span-2">
+              <FieldLabel className="text-xs">Unit price</FieldLabel>
+              <FieldControl
+                name="line-unit-price"
                 type="number"
                 min="0"
                 step="0.01"
@@ -555,11 +600,13 @@ function AddLineRow({
                 value={unitPrice}
                 disabled={pending}
                 onChange={(e) => setUnitPrice(e.target.value)}
+                {...v.control('unitPrice')}
               />
-            </div>
-            <div className="col-span-3 md:col-span-2">
-              <Label className="text-xs">Cost (opt.)</Label>
-              <Input
+            </Field>
+            <Field {...v.field('cost')} className="col-span-3 md:col-span-2">
+              <FieldLabel className="text-xs">Cost (opt.)</FieldLabel>
+              <FieldControl
+                name="line-cost"
                 type="number"
                 min="0"
                 step="0.01"
@@ -568,8 +615,9 @@ function AddLineRow({
                 disabled={pending}
                 onChange={(e) => setCost(e.target.value)}
                 placeholder="—"
+                {...v.control('cost')}
               />
-            </div>
+            </Field>
           </>
         )}
 
@@ -588,9 +636,9 @@ function AddLineRow({
         </div>
       </div>
       {error && (
-        <p className="text-danger mt-2 text-xs" role="alert">
+        <FieldStatus status="error" attached={false} role="alert" className="mt-2">
           {error}
-        </p>
+        </FieldStatus>
       )}
     </div>
   );

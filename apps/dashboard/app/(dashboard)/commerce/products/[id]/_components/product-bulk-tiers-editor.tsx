@@ -4,8 +4,19 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Layers, Trash2 } from 'lucide-react';
 
-import { Badge, Button, EmptyState, Input, Label, NativeSelect, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Table,
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import { createBulkTierAction, deleteBulkTierAction } from '../../../pricing-actions';
 
@@ -62,6 +73,28 @@ export function ProductBulkTiersEditor({
   const [minQuantity, setMinQuantity] = React.useState('');
   const [unitPrice, setUnitPrice] = React.useState('');
 
+  const v = useFieldValidation(
+    { minQuantity, unitPrice },
+    {
+      minQuantity: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter a minimum quantity.';
+        const n = Number(s);
+        if (!Number.isInteger(n) || n < 2)
+          return 'Minimum quantity must be a whole number of 2 or more.';
+        return null;
+      },
+      unitPrice: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter a unit price.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a valid number.';
+        if (n <= 0) return 'Unit price must be greater than zero.';
+        return null;
+      },
+    }
+  );
+
   const single = variants.length === 1;
   const byId = React.useMemo(() => new Map(variants.map((v) => [v.id, v])), [variants]);
   const currency = byId.get(variantId)?.currency ?? variants[0]?.currency ?? 'USD';
@@ -94,16 +127,9 @@ export function ProductBulkTiersEditor({
       setError('Pick a variant.');
       return;
     }
+    if (!v.validate()) return;
     const min = Number(minQuantity);
-    if (!Number.isInteger(min) || min < 2) {
-      setError('Minimum quantity must be a whole number of 2 or more.');
-      return;
-    }
     const dollars = Number(unitPrice);
-    if (!Number.isFinite(dollars) || dollars <= 0) {
-      setError('Unit price must be greater than zero.');
-      return;
-    }
     startTransition(async () => {
       const result = await createBulkTierAction({
         variantId,
@@ -145,51 +171,71 @@ export function ProductBulkTiersEditor({
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={onAdd}>
-        <div className="flex flex-row flex-wrap items-end gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+        <div className="border-base-300 bg-base-200 flex flex-row flex-wrap items-end gap-3 rounded-lg border p-3">
           {!single && (
             <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-              <Label htmlFor="bt-variant">Variant</Label>
-              <NativeSelect
-                id="bt-variant"
-                value={variantId}
-                onChange={(e) => setVariantId(e.target.value)}
-              >
-                {variants.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.title ?? v.sku} · base {money(v.priceCents, v.currency)}
-                  </option>
-                ))}
-              </NativeSelect>
+              <Field>
+                <FieldLabel>Variant</FieldLabel>
+                <NativeSelect
+                  id="bt-variant"
+                  value={variantId}
+                  onChange={(e) => setVariantId(e.target.value)}
+                >
+                  {variants.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.title ?? v.sku} · base {money(v.priceCents, v.currency)}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
             </div>
           )}
           <div className="flex w-28 flex-col gap-1">
-            <Label htmlFor="bt-min">Min qty</Label>
-            <Input
-              id="bt-min"
-              value={minQuantity}
-              onChange={(e) => setMinQuantity(e.target.value)}
-              placeholder="10"
-              inputMode="numeric"
-            />
+            <Field {...v.field('minQuantity')}>
+              <FieldLabel>Min qty</FieldLabel>
+              <FieldControl
+                id="bt-min"
+                type="number"
+                min="2"
+                step="1"
+                inputMode="numeric"
+                value={minQuantity}
+                onChange={(e) => setMinQuantity(e.target.value)}
+                placeholder="10"
+                {...v.control('minQuantity')}
+              />
+            </Field>
           </div>
           <div className="flex w-36 flex-col gap-1">
-            <Label htmlFor="bt-price">Unit price ({currency})</Label>
-            <Input
-              id="bt-price"
-              value={unitPrice}
-              onChange={(e) => setUnitPrice(e.target.value)}
-              placeholder="0.00"
-              inputMode="decimal"
-            />
+            <Field {...v.field('unitPrice')}>
+              <FieldLabel>Unit price ({currency})</FieldLabel>
+              <FieldControl
+                id="bt-price"
+                type="number"
+                min="0"
+                step="0.01"
+                inputMode="decimal"
+                value={unitPrice}
+                onChange={(e) => setUnitPrice(e.target.value)}
+                placeholder="0.00"
+                {...v.control('unitPrice')}
+              />
+            </Field>
           </div>
           <Button color="module" type="submit" disabled={pending} loading={pending}>
             Add tier
           </Button>
         </div>
         {error && (
-          <p className="text-danger mt-2 text-xs" role="alert" aria-live="polite">
+          <FieldStatus
+            status="error"
+            attached={false}
+            role="alert"
+            aria-live="polite"
+            className="mt-2"
+          >
             {error}
-          </p>
+          </FieldStatus>
         )}
       </form>
 
@@ -234,9 +280,7 @@ function BulkTierTable({
             <td>
               <div className="flex flex-col gap-0">
                 <span className="font-medium">{name}</span>
-                {sku && (
-                  <span className="font-mono text-xs text-[var(--color-text-muted)]">{sku}</span>
-                )}
+                {sku && <span className="text-base-content/60 font-mono text-xs">{sku}</span>}
               </div>
             </td>
             <td className="text-right tabular-nums">{tier.minQuantity}+</td>

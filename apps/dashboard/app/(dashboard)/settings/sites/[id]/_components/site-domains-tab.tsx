@@ -4,7 +4,16 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Globe, Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { Domain } from '@/lib/sites';
 import {
@@ -28,6 +37,12 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
+  const [host, setHost] = React.useState('');
+
+  const v = useFieldValidation(
+    { host },
+    { host: rule.required('Enter the domain you want to connect.') }
+  );
 
   const run = React.useCallback(
     (action: () => Promise<ActionResult>, success?: string) => {
@@ -46,11 +61,12 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
 
   function onConnect(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
+    if (!v.validate()) return;
+    const fd = new FormData();
     fd.set('propertyId', propertyId);
+    fd.set('host', host.trim());
     run(() => connectDomain(fd), 'Domain added — add the DNS records below, then verify.');
-    form.reset();
+    setHost('');
   }
 
   async function onDisconnect(d: Domain) {
@@ -95,12 +111,12 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
               return (
                 <div
                   key={d.id}
-                  className="flex flex-col gap-2 rounded-lg border border-[var(--color-border-default)] p-3"
+                  className="border-base-300 flex flex-col gap-2 rounded-lg border p-3"
                 >
                   {/* Host owns its own line (+ status), so a long domain never has to
                       share a row with the actions and wrap awkwardly. */}
                   <div className="flex items-center gap-2">
-                    <Globe className="size-4 shrink-0 text-[var(--color-text-secondary)]" />
+                    <Globe className="text-base-content/70 size-4 shrink-0" />
                     <span className="min-w-0 font-medium break-all">{d.host}</span>
                     <Badge color={status.color} variant="soft" size="sm" className="shrink-0">
                       {status.label}
@@ -176,12 +192,19 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
 
             <form
               onSubmit={onConnect}
-              className="flex flex-col gap-2 border-t border-[var(--color-border-default)] pt-3 sm:flex-row sm:items-end"
+              noValidate
+              className="border-base-300 flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-end"
             >
-              <div className="flex-1">
-                <Label htmlFor="connect-host">Connect a domain you own</Label>
-                <Input id="connect-host" name="host" placeholder="shop.yourbrand.com" />
-              </div>
+              <Field {...v.field('host')} className="flex-1">
+                <FieldLabel required>Connect a domain you own</FieldLabel>
+                <FieldControl
+                  name="host"
+                  placeholder="shop.yourbrand.com"
+                  value={host}
+                  onChange={(e) => setHost(e.target.value)}
+                  {...v.control('host')}
+                />
+              </Field>
               <Button
                 type="submit"
                 variant="soft"

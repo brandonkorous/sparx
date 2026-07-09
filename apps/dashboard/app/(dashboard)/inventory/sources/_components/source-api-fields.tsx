@@ -1,7 +1,12 @@
 'use client';
 
-import * as React from 'react';
-import { Input, Select } from 'silicaui-react';
+import {
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Select,
+} from '@wizeworks/silicaui-react';
 
 // The declarative config for a `type: 'api'` (Tier B) inventory source — endpoint,
 // auth, the dot-paths that map a JSON response onto stock rows, and pagination. The
@@ -105,46 +110,54 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <Field label="API endpoint" required hint="The URL the worker fetches stock from.">
-        <Input
+      <Field>
+        <FieldLabel required>API endpoint</FieldLabel>
+        <FieldControl
           type="url"
           placeholder="https://api.example.com/v1/inventory"
           value={value.endpoint}
           onChange={(e) => set('endpoint', e.target.value)}
         />
+        <FieldDescription>The URL the worker fetches stock from.</FieldDescription>
       </Field>
 
-      <Field label="Authentication">
-        <Select
-          value={value.authScheme}
-          onValueChange={(v) => set('authScheme', v as never)}
-          items={{ none: 'None', bearer: 'Bearer token', header: 'Custom header' }}
+      <Field>
+        <FieldLabel>Authentication</FieldLabel>
+        <FieldControl
+          render={
+            <Select
+              value={value.authScheme}
+              onValueChange={(v) => set('authScheme', v as never)}
+              items={{ none: 'None', bearer: 'Bearer token', header: 'Custom header' }}
+            />
+          }
         />
       </Field>
 
       {value.authScheme !== 'none' && (
         <div className="flex flex-row flex-wrap gap-3">
           {value.authScheme === 'header' && (
-            <Field label="Header name" className="min-w-[12rem] flex-1">
-              <Input
+            <Field className="min-w-[12rem] flex-1">
+              <FieldLabel>Header name</FieldLabel>
+              <FieldControl
                 placeholder="X-API-Key"
                 value={value.headerName}
                 onChange={(e) => set('headerName', e.target.value)}
               />
             </Field>
           )}
-          <Field
-            label="API key / token"
-            className="min-w-[16rem] flex-1"
-            hint={hasApiKey ? 'A key is stored — leave blank to keep it.' : undefined}
-          >
-            <Input
+          <Field className="min-w-[16rem] flex-1">
+            <FieldLabel>API key / token</FieldLabel>
+            <FieldControl
               type="password"
               autoComplete="off"
               placeholder={hasApiKey ? '•••••••• (unchanged)' : 'Paste the secret'}
               value={value.apiKey}
               onChange={(e) => set('apiKey', e.target.value)}
             />
+            {hasApiKey && (
+              <FieldDescription>A key is stored — leave blank to keep it.</FieldDescription>
+            )}
           </Field>
         </div>
       )}
@@ -157,22 +170,25 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
         </p>
       </div>
       <div className="flex flex-row flex-wrap gap-3">
-        <Field label="Items path" className="min-w-[12rem] flex-1">
-          <Input
+        <Field className="min-w-[12rem] flex-1">
+          <FieldLabel>Items path</FieldLabel>
+          <FieldControl
             placeholder="data.items"
             value={value.itemsPath}
             onChange={(e) => set('itemsPath', e.target.value)}
           />
         </Field>
-        <Field label="SKU field" required className="min-w-[10rem] flex-1">
-          <Input
+        <Field className="min-w-[10rem] flex-1">
+          <FieldLabel required>SKU field</FieldLabel>
+          <FieldControl
             placeholder="sku"
             value={value.skuField}
             onChange={(e) => set('skuField', e.target.value)}
           />
         </Field>
-        <Field label="Quantity field" required className="min-w-[10rem] flex-1">
-          <Input
+        <Field className="min-w-[10rem] flex-1">
+          <FieldLabel required>Quantity field</FieldLabel>
+          <FieldControl
             placeholder="available"
             value={value.quantityField}
             onChange={(e) => set('quantityField', e.target.value)}
@@ -180,51 +196,62 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
         </Field>
       </div>
       <div className="flex flex-row flex-wrap gap-3">
-        <Field label="Location field" className="min-w-[10rem] flex-1">
-          <Input
+        <Field className="min-w-[10rem] flex-1">
+          <FieldLabel>Location field</FieldLabel>
+          <FieldControl
             placeholder="warehouse"
             value={value.locationField}
             onChange={(e) => set('locationField', e.target.value)}
           />
         </Field>
-        <Field label="Cost field" className="min-w-[10rem] flex-1">
-          <Input
+        <Field className="min-w-[10rem] flex-1">
+          <FieldLabel>Cost field</FieldLabel>
+          <FieldControl
             placeholder="unitCost"
             value={value.costField}
             onChange={(e) => set('costField', e.target.value)}
           />
         </Field>
-        <Field label="Cost unit" className="min-w-[8rem]">
-          <Select
-            value={value.costUnit}
-            onValueChange={(v) => set('costUnit', v as never)}
-            items={{ cents: 'Cents', dollars: 'Dollars' }}
+        <Field className="min-w-[8rem]">
+          <FieldLabel>Cost unit</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                value={value.costUnit}
+                onValueChange={(v) => set('costUnit', v as never)}
+                items={{ cents: 'Cents', dollars: 'Dollars' }}
+              />
+            }
           />
         </Field>
-        <Field
-          label="Updated-at field"
-          className="min-w-[10rem] flex-1"
-          hint="Source timestamp → last-writer ordering."
-        >
-          <Input
+        <Field className="min-w-[10rem] flex-1">
+          <FieldLabel>Updated-at field</FieldLabel>
+          <FieldControl
             placeholder="updatedAt"
             value={value.syncedAtField}
             onChange={(e) => set('syncedAtField', e.target.value)}
           />
+          <FieldDescription>Source timestamp → last-writer ordering.</FieldDescription>
         </Field>
       </div>
 
       <div className="flex flex-row flex-wrap items-start gap-3">
-        <Field label="Pagination" className="min-w-[10rem]">
-          <Select
-            value={value.paginationMode}
-            onValueChange={(v) => set('paginationMode', v as never)}
-            items={{ none: 'Single page', page: 'Page number', cursor: 'Cursor' }}
+        <Field className="min-w-[10rem]">
+          <FieldLabel>Pagination</FieldLabel>
+          <FieldControl
+            render={
+              <Select
+                value={value.paginationMode}
+                onValueChange={(v) => set('paginationMode', v as never)}
+                items={{ none: 'Single page', page: 'Page number', cursor: 'Cursor' }}
+              />
+            }
           />
         </Field>
         {value.paginationMode === 'page' && (
-          <Field label="Page param" className="min-w-[10rem] flex-1">
-            <Input
+          <Field className="min-w-[10rem] flex-1">
+            <FieldLabel>Page param</FieldLabel>
+            <FieldControl
               placeholder="page"
               value={value.pageParam}
               onChange={(e) => set('pageParam', e.target.value)}
@@ -232,8 +259,9 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
           </Field>
         )}
         {value.paginationMode === 'cursor' && (
-          <Field label="Cursor path" className="min-w-[10rem] flex-1">
-            <Input
+          <Field className="min-w-[10rem] flex-1">
+            <FieldLabel>Cursor path</FieldLabel>
+            <FieldControl
               placeholder="meta.next"
               value={value.cursorPath}
               onChange={(e) => set('cursorPath', e.target.value)}
@@ -241,8 +269,9 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
           </Field>
         )}
         {value.paginationMode !== 'none' && (
-          <Field label="Max pages" className="min-w-[8rem]">
-            <Input
+          <Field className="min-w-[8rem]">
+            <FieldLabel>Max pages</FieldLabel>
+            <FieldControl
               type="number"
               min={1}
               max={100}
@@ -252,30 +281,6 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
           </Field>
         )}
       </div>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  required = false,
-  hint,
-  className,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  hint?: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={`flex flex-col gap-2${className ? ` ${className}` : ''}`}>
-      <p className="text-sm font-medium">
-        {label} {required ? <span className="text-[var(--color-danger)]">*</span> : null}
-      </p>
-      {children}
-      {hint ? <p className="text-xs text-[var(--color-muted-foreground)]">{hint}</p> : null}
     </div>
   );
 }

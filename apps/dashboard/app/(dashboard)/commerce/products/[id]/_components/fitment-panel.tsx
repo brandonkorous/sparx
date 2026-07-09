@@ -4,7 +4,18 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Boxes, Plus, Trash } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody, Input, Label, NativeSelect, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Table,
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import type {
@@ -50,7 +61,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
         <CardBody className="p-0">
           <div className="flex flex-col gap-2 p-6">
             <div className="flex flex-row items-center gap-2">
-              <Boxes className="h-4 w-4 text-[var(--module-active)]" />
+              <Boxes className="text-module h-4 w-4" />
               <h3 className="text-xl font-semibold">Fitment rules</h3>
               <Badge color="module" variant="soft">
                 {fitments.length} rule{fitments.length === 1 ? '' : 's'}
@@ -64,8 +75,8 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
             </p>
           </div>
           {fitments.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 border-t border-[var(--color-border-default)] py-10 text-center">
-              <Boxes className="h-5 w-5 text-[var(--color-text-muted)]" />
+            <div className="border-base-300 flex flex-col items-center gap-2 border-t py-10 text-center">
+              <Boxes className="text-base-content/60 h-5 w-5" />
               <p className="text-base-content/70 text-sm">
                 No fitment rules yet. Add one below so storefront filters can find this product.
               </p>
@@ -99,7 +110,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
       <Card>
         <CardBody>
           <div className="flex flex-row items-center gap-2">
-            <Plus className="h-4 w-4 text-[var(--module-active)]" />
+            <Plus className="text-module h-4 w-4" />
             <h3 className="text-xl font-semibold">Add fitment rule</h3>
           </div>
           <p className="opacity-70">
@@ -309,21 +320,16 @@ function NewFitmentForm({
     <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-3">
         <div className="flex flex-row flex-wrap gap-3">
-          <div className="flex min-w-[160px] flex-1 flex-col gap-1">
-            <Label htmlFor="fit-domain">Domain</Label>
-            <NativeSelect
-              id="fit-domain"
-              value={domainId}
-              onChange={(e) => setDomainId(e.target.value)}
-              required
-            >
+          <Field className="min-w-[160px] flex-1">
+            <FieldLabel>Domain</FieldLabel>
+            <NativeSelect value={domainId} onChange={(e) => setDomainId(e.target.value)} required>
               {domains.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.displayName}
                 </option>
               ))}
             </NativeSelect>
-          </div>
+          </Field>
           <FitmentNodeDrill
             key={domainId}
             domainId={domain.id}
@@ -336,14 +342,12 @@ function NewFitmentForm({
           <div className="flex flex-row flex-wrap gap-3">
             {ranges.map((dim) => (
               <div key={dim.key} className="flex flex-row items-end gap-2">
-                <div className="flex w-28 flex-col gap-1">
-                  <Label htmlFor={`fit-range-${dim.key}-min`}>
+                <Field className="w-28">
+                  <FieldLabel>
                     {dim.label} from{dim.unit ? ` (${dim.unit})` : ''}
-                  </Label>
-                  <Input
-                    id={`fit-range-${dim.key}-min`}
+                  </FieldLabel>
+                  <FieldControl
                     type="number"
-                    inputMode="decimal"
                     value={rangeInputs[dim.key]?.min ?? ''}
                     onChange={(e) =>
                       setRangeInputs((prev) => ({
@@ -352,13 +356,11 @@ function NewFitmentForm({
                       }))
                     }
                   />
-                </div>
-                <div className="flex w-28 flex-col gap-1">
-                  <Label htmlFor={`fit-range-${dim.key}-max`}>{dim.label} to</Label>
-                  <Input
-                    id={`fit-range-${dim.key}-max`}
+                </Field>
+                <Field className="w-28">
+                  <FieldLabel>{dim.label} to</FieldLabel>
+                  <FieldControl
                     type="number"
-                    inputMode="decimal"
                     value={rangeInputs[dim.key]?.max ?? ''}
                     onChange={(e) =>
                       setRangeInputs((prev) => ({
@@ -367,26 +369,25 @@ function NewFitmentForm({
                       }))
                     }
                   />
-                </div>
+                </Field>
               </div>
             ))}
           </div>
         )}
 
-        <div className="flex min-w-[200px] flex-col gap-1">
-          <Label htmlFor="fit-notes">Notes</Label>
-          <Input
-            id="fit-notes"
+        <Field className="min-w-[200px]">
+          <FieldLabel>Notes</FieldLabel>
+          <FieldControl
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="e.g. requires harness adapter, fleet-only"
           />
-        </div>
+        </Field>
 
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
 
         <div className="flex flex-row justify-end">

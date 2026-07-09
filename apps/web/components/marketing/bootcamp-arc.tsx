@@ -14,31 +14,31 @@ const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
 // The page's brand accent = sparx primary (not a module hue — the bootcamp is a
 // platform program). The four build waypoints below keep their own module hues.
-const PRIMARY = 'var(--sparx-primary)';
-const PRIMARY_TINT = 'var(--sparx-primary-tint)';
-const PRIMARY_TEXT = 'var(--sparx-primary-hover)';
+const PRIMARY = 'var(--color-primary)';
+const PRIMARY_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const PRIMARY_TEXT = 'var(--color-primary)';
 
 const WAYPOINTS: { color: string; tag: string; title: React.ReactNode; body: string }[] = [
   {
-    color: 'var(--module-builder)',
+    color: 'var(--color-module-builder)',
     tag: 'week 1',
     title: 'Site',
     body: 'Stand up your site with the builder — pages, content, and catalog.',
   },
   {
-    color: 'var(--module-crm)',
+    color: 'var(--color-module-crm)',
     tag: 'week 2',
     title: 'Customers',
     body: 'Set up the CRM — contacts, segments, the pipeline that tracks every lead.',
   },
   {
-    color: 'var(--module-email)',
+    color: 'var(--color-module-email)',
     tag: 'week 3',
     title: 'Email',
     body: 'Design your welcome flow and first broadcast on a warm sending domain.',
   },
   {
-    color: 'var(--module-automations)',
+    color: 'var(--color-module-automations)',
     tag: 'week 4',
     title: 'Automation',
     body: 'Wire the flows that run the business while you sleep — the automation layer.',
@@ -56,10 +56,7 @@ export function BootcampArc() {
 
       <div style={{ marginTop: '60px' }}>
         <div className="mkt-arc-track">
-          <span
-            className="mkt-arc-line"
-            style={{ backgroundColor: 'var(--color-border-default)' }}
-          />
+          <span className="mkt-arc-line" style={{ backgroundColor: 'var(--color-base-300)' }} />
           {WAYPOINTS.map((w) => (
             <div key={w.tag} className="mkt-arc-wp">
               <Dot color={w.color} />
@@ -67,7 +64,7 @@ export function BootcampArc() {
                 style={{
                   fontFamily: MONO,
                   fontSize: '11px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   display: 'block',
                 }}
               >
@@ -90,7 +87,7 @@ export function BootcampArc() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   lineHeight: '20px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {w.body}
@@ -108,7 +105,7 @@ export function BootcampArc() {
                 height: 28,
                 borderRadius: 9999,
                 backgroundColor: PRIMARY,
-                border: '3px solid var(--color-bg-surface)',
+                border: '3px solid var(--color-base-100)',
                 boxShadow: `0 0 0 6px ${PRIMARY_TINT}`,
               }}
             />
@@ -116,7 +113,7 @@ export function BootcampArc() {
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 display: 'block',
               }}
             >
@@ -141,7 +138,7 @@ export function BootcampArc() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               Hit publish. Your business is live — and everything you built is yours.
@@ -183,8 +180,8 @@ function Dot({ color }: { color: string }) {
         height: 24,
         borderRadius: 9999,
         backgroundColor: color,
-        border: '3px solid var(--color-bg-surface)',
-        boxShadow: '0 0 0 1px var(--color-border-default)',
+        border: '3px solid var(--color-base-100)',
+        boxShadow: '0 0 0 1px var(--color-base-300)',
       }}
     />
   );

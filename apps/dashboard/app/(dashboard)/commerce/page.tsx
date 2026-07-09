@@ -15,7 +15,7 @@ import {
 
 import { requireSession } from '@sparx/auth';
 import { AreaChart, ModuleProvider, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState } from 'silicaui-react';
+import { Badge, Button, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -337,10 +337,10 @@ export default async function CommercePage() {
                   valueFormat={{ kind: 'currency', currency }}
                   ariaLabel="Net revenue, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {revenueFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -400,7 +400,7 @@ export default async function CommercePage() {
                 {topProducts.map((p, i) => (
                   <div
                     key={`${p.name}-${i}`}
-                    className="flex items-center gap-3 border-b border-[var(--color-border-default)] py-2.5 last:border-b-0"
+                    className="border-base-300 flex items-center gap-3 border-b py-2.5 last:border-b-0"
                   >
                     <span
                       aria-hidden
@@ -409,15 +409,13 @@ export default async function CommercePage() {
                     />
                     <div className="min-w-0">
                       <div className="truncate text-sm font-medium">{p.name}</div>
-                      {p.meta && (
-                        <div className="text-xs text-[var(--color-text-tertiary)]">{p.meta}</div>
-                      )}
+                      {p.meta && <div className="text-base-content/50 text-xs">{p.meta}</div>}
                     </div>
                     <div className="ml-auto text-right">
                       <div className="text-sm font-medium tabular-nums">
                         {fmtMoneyCents(p.revenueCents, currency)}
                       </div>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">
+                      <div className="text-base-content/50 text-xs">
                         {fmtNumber(p.units)} {p.unitsSuffix}
                       </div>
                     </div>

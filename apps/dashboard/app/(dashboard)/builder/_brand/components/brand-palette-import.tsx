@@ -206,7 +206,7 @@ function PaletteMapper({
           <span
             key={s.id}
             title={`${s.label} · ${s.fill}`}
-            className="h-7 w-7 rounded-md border border-[var(--color-border-default)]"
+            className="border-base-300 h-7 w-7 rounded-md border"
             style={{ backgroundColor: s.fill }}
           />
         ))}
@@ -217,9 +217,7 @@ function PaletteMapper({
           const chosen = sources.find((s) => s.id === sel) ?? null;
           return (
             <div key={role.key} className="flex items-center gap-2">
-              <span className="w-20 shrink-0 text-xs text-[var(--color-text-secondary)]">
-                {role.label}
-              </span>
+              <span className="text-base-content/70 w-20 shrink-0 text-xs">{role.label}</span>
               <NativeSelect
                 aria-label={`${role.label} source color`}
                 value={sel}
@@ -235,7 +233,7 @@ function PaletteMapper({
               </NativeSelect>
               <span
                 aria-hidden
-                className="h-7 w-7 shrink-0 rounded-md border border-[var(--color-border-default)]"
+                className="border-base-300 h-7 w-7 shrink-0 rounded-md border"
                 style={{ backgroundColor: chosen?.fill ?? 'transparent' }}
               />
             </div>

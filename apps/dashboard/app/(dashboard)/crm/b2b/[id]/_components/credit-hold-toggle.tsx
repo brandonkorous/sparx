@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
 
 import { toast, useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { setB2bAccountStatusAction } from '../../../b2b-actions';
 

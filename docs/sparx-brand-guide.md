@@ -1,8 +1,8 @@
 # sparx Brand Guide
 
-**Version:** 1.7.1
+**Version:** 1.7.2
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-29
+**Last Updated:** 2026-07-08
 
 ---
 
@@ -51,7 +51,7 @@ use the lowercase **"sx" monogram** from `images/SVG/icon.svg`:
 - One-color variants ship alongside it (`icon-black.svg` / `icon-white.svg`, "x" at
   50% opacity) plus a reversed `icon-light.svg` (white "s" + indigo "x") for dark fills
 - In product UI, render it via `<SparxMark>` from `@sparx/ui` (s = `currentColor`,
-  x = `--sparx-primary`). For the icon + wordmark lockup, use `<Wordmark icon />`
+  x = `--color-primary`). For the icon + wordmark lockup, use `<Wordmark icon />`
 - As a browser favicon (where CSS variables can't resolve), each app ships a
   static `app/icon.svg` that inlines the hex plus a `prefers-color-scheme` rule
 
@@ -61,12 +61,14 @@ use the lowercase **"sx" monogram** from `images/SVG/icon.svg`:
 
 ### Primary Brand Color
 
-| Token                   | Hex       | Use                                                |
-| ----------------------- | --------- | -------------------------------------------------- |
-| `--sparx-primary`       | `#6366F1` | Buttons, links, active states, the "x" in wordmark |
-| `--sparx-primary-hover` | `#4F46E5` | Hover state                                        |
-| `--sparx-primary-light` | `#818CF8` | Dark mode variant                                  |
-| `--sparx-primary-tint`  | `#EEF2FF` | Background tints                                   |
+These are silicaui tokens defined in `@sparx/brand/theme.css` (dark values in parentheses); the silica plugin turns them into `bg-primary` / `text-primary` / `btn-primary`, and hover states are computed by silica (no separate hover token).
+
+| Token                     | Hex (light / dark)    | Use                                                |
+| ------------------------- | --------------------- | -------------------------------------------------- |
+| `--color-primary`         | `#6366F1` / `#818CF8` | Buttons, links, active states, the "x" in wordmark |
+| `--color-primary-content` | `#EEF2FF` / `#14122E` | Legible ink on a primary fill                      |
+
+A background tint is `bg-primary bg-soft` (silica's theme-aware `soft` treatment), never a baked tint hex.
 
 ### Module Color System
 
@@ -144,27 +146,29 @@ Like Notion and Framer, sparx lets typography do the heavy lifting. No decorativ
 
 ## 5. Platform Palette
 
+The platform runs on silicaui's base ramp (`@sparx/brand/theme.css`). `base-100` is the topmost reading surface (card white); the page canvas sits one step below on `base-200`. Text inks are **opacity on the base ink**, not separate colors.
+
 ### Light Mode
 
-| Purpose          | Token                    | Value     |
-| ---------------- | ------------------------ | --------- |
-| Page background  | `--color-bg-page`        | `#FAFAFA` |
-| Surface (cards)  | `--color-bg-surface`     | `#FFFFFF` |
-| Border           | `--color-border`         | `#E5E5E5` |
-| Body text        | `--color-text-primary`   | `#0A0A0A` |
-| Supporting text  | `--color-text-secondary` | `#52525B` |
-| Hint/placeholder | `--color-text-tertiary`  | `#A1A1AA` |
+| Purpose          | Token                        | Value     |
+| ---------------- | ---------------------------- | --------- |
+| Page canvas      | `--color-base-200`           | `#F4F4F5` |
+| Surface (cards)  | `--color-base-100`           | `#FFFFFF` |
+| Border           | `--color-base-300`           | `#E4E4E7` |
+| Body text        | `--color-base-content`       | `#0A0A0A` |
+| Supporting text  | `text-base-content/70`       | derived   |
+| Hint/placeholder | `text-base-content/50`       | derived   |
 
 ### Dark Mode
 
-| Purpose          | Token                    | Value     |
-| ---------------- | ------------------------ | --------- |
-| Page background  | `--color-bg-page`        | `#0F0F0F` |
-| Surface (cards)  | `--color-bg-surface`     | `#1A1A1A` |
-| Border           | `--color-border`         | `#2A2A2A` |
-| Body text        | `--color-text-primary`   | `#F0F0F0` |
-| Supporting text  | `--color-text-secondary` | `#A1A1AA` |
-| Hint/placeholder | `--color-text-tertiary`  | `#52525B` |
+| Purpose          | Token                        | Value     |
+| ---------------- | ---------------------------- | --------- |
+| Page canvas      | `--color-base-200`           | `#1F1F1F` |
+| Surface (cards)  | `--color-base-100`           | `#1A1A1A` |
+| Border           | `--color-base-300`           | `#2A2A2A` |
+| Body text        | `--color-base-content`       | `#F0F0F0` |
+| Supporting text  | `text-base-content/70`       | derived   |
+| Hint/placeholder | `text-base-content/50`       | derived   |
 
 Neither pure white nor pure black — this is the Notion trick. Near-white/near-black backgrounds feel intentional in both modes, never like an inverted screenshot.
 

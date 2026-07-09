@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, type MarketingModule, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -65,7 +65,7 @@ export function CrmHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '560px',
                 margin: '28px 0 0',
               }}
@@ -94,8 +94,8 @@ export function CrmHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -104,7 +104,7 @@ export function CrmHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -134,8 +134,8 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -147,7 +147,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '13px',
           padding: '18px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span
@@ -173,7 +173,13 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
           <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
             {customer.name}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '12px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {crm.type} · one record · 5 live signals
           </span>
         </span>
@@ -183,7 +189,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         {[
@@ -195,7 +201,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
             key={l}
             style={{
               padding: '14px 18px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
             }}
           >
             <div
@@ -212,7 +218,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: '2px',
               }}
             >
@@ -228,7 +234,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
             fontSize: '10.5px',
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             padding: '12px 0 4px',
           }}
         >
@@ -242,7 +248,7 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
               alignItems: 'center',
               gap: '11px',
               padding: '10px 0',
-              borderTop: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+              borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
               fontFamily: SANS,
               fontSize: '13.5px',
             }}
@@ -254,9 +260,9 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
                 marginLeft: 'auto',
                 fontFamily: MONO,
                 fontSize: '10.5px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 padding: '3px 8px',
-                border: '1px solid var(--color-border-default)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '9999px',
                 flexShrink: 0,
               }}

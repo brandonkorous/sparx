@@ -7,7 +7,7 @@
 // state resets correctly.
 
 import * as React from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import type { PartnerCard } from '@/lib/partners';
 import { PartnerDirectoryCard } from './partner-card';
 import { loadMorePartners } from './actions';

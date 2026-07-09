@@ -12,7 +12,7 @@
 // text, and values are lightly coerced (true/false → boolean, numeric → number)
 // so a natural entry like `customer.totalSpent ≥ 100` stores a real number.
 
-import { Button, Input, Label, Select } from 'silicaui-react';
+import { Button, Input, Label, Select } from '@wizeworks/silicaui-react';
 import { Combobox } from '@sparx/ui';
 import { FolderPlus, Plus, Trash2 } from 'lucide-react';
 import {
@@ -171,7 +171,7 @@ export function ConditionEditor({
       className={
         isRoot
           ? 'flex flex-col gap-3'
-          : 'flex flex-col gap-3 rounded-md border-l-2 border-[var(--module-active)] bg-[var(--color-bg-subtle)] p-3'
+          : 'border-module bg-base-200 flex flex-col gap-3 rounded-md border-l-2 p-3'
       }
     >
       <div className="flex items-center justify-between gap-2">
@@ -183,7 +183,7 @@ export function ConditionEditor({
             items={{ AND: 'All of', OR: 'Any of' }}
             className="w-28"
           />
-          <span className="text-sm text-[var(--color-text-secondary)]">the following {label}</span>
+          <span className="text-base-content/70 text-sm">the following {label}</span>
         </div>
         {onRemove && (
           <Button
@@ -200,7 +200,7 @@ export function ConditionEditor({
       </div>
 
       {value.conditions.length === 0 ? (
-        <p className="text-sm text-[var(--color-text-tertiary)]">
+        <p className="text-base-content/50 text-sm">
           {isRoot
             ? 'No conditions — the automation runs on every trigger.'
             : 'Empty group — add a condition.'}

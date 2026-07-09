@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 import { ImageIcon, Plus, Star, Trash } from 'lucide-react';
-import { Badge, Button, Card, CardBody, Loading, NativeSelect } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, Loading, NativeSelect } from '@wizeworks/silicaui-react';
 import { SurfaceStep, useConfirm } from '@sparx/ui';
 
 import {
@@ -228,7 +228,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading photos…
             </div>
           ) : (
@@ -239,7 +239,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                   const boundVariant = img.variantId ? variantById.get(img.variantId) : undefined;
                   return (
                     <div key={img.id} className="flex flex-col gap-1.5">
-                      <div className="group relative aspect-square overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+                      <div className="group border-base-300 bg-base-200 relative aspect-square overflow-hidden rounded-xl border">
                         {url ? (
                           <img
                             src={url}
@@ -249,7 +249,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">
-                            <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
+                            <ImageIcon className="text-base-content/50 h-6 w-6" />
                           </div>
                         )}
                         {img.isPrimary && (
@@ -316,7 +316,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                   type="button"
                   onClick={() => setPickerOpen(true)}
                   disabled={busy}
-                  className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-[var(--color-border-default)] text-[var(--color-text-muted)] transition-colors hover:border-[var(--module-active)] hover:text-[var(--module-active)] disabled:opacity-40"
+                  className="border-base-300 text-base-content/60 hover:border-module hover:text-module flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed transition-colors disabled:opacity-40"
                 >
                   <Plus className="h-5 w-5" />
                   <span className="text-sm">Add image</span>

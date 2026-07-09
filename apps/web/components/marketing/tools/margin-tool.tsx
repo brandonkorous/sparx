@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input, NativeSelect } from '@sparx/ui';
+import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 import { CURRENCIES, formatMoney } from './lib/invoice';
 
@@ -14,15 +14,15 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
         gap: '4px',
         padding: '18px',
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--color-border-default)',
-        backgroundColor: 'var(--color-bg-surface)',
+        border: '1px solid var(--color-base-300)',
+        backgroundColor: 'var(--color-base-100)',
       }}
     >
       <span
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         {label}
@@ -33,7 +33,7 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
           fontWeight: 600,
           fontSize: '24px',
           letterSpacing: '-0.02em',
-          color: accent ? 'var(--module-active)' : 'var(--color-text-primary)',
+          color: accent ? 'var(--color-module)' : 'var(--color-base-content)',
         }}
       >
         {value}
@@ -126,11 +126,11 @@ export function MarginTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               Charge{' '}
-              <strong style={{ color: 'var(--color-text-primary)' }}>
+              <strong style={{ color: 'var(--color-base-content)' }}>
                 {money(priceForTarget)}
               </strong>
             </span>
@@ -178,7 +178,7 @@ export function MarginTool() {
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
               lineHeight: '20px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

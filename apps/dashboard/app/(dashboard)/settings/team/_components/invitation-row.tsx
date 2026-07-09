@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Tooltip } from 'silicaui-react';
+import { Badge, Button, Tooltip } from '@wizeworks/silicaui-react';
 import { statusTone, toast, useConfirm } from '@sparx/ui';
 import { Trash2 } from 'lucide-react';
 import type { OrgInvitation } from '@sparx/auth';

@@ -24,7 +24,17 @@
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SchemaFieldRenderer,
@@ -581,7 +591,7 @@ function CustomerWizardInner({
                   </div>
                   <button
                     type="button"
-                    className="shrink-0 text-xs text-[var(--color-text-muted)] underline-offset-4 hover:underline"
+                    className="text-base-content/60 shrink-0 text-xs underline-offset-4 hover:underline"
                     onClick={() => {
                       setSkipAddress(true);
                       setAddressErrors({});
@@ -600,16 +610,16 @@ function CustomerWizardInner({
               </CardBody>
             </Card>
           ) : (
-            <Card className="bg-[var(--color-bg-subtle)]">
+            <Card className="bg-base-200">
               <CardBody className="p-3">
                 <div className="flex flex-row items-center gap-3">
-                  <UserPlus className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
+                  <UserPlus className="text-base-content/60 h-4 w-4 shrink-0" />
                   <p className="text-base-content/70 text-sm">
                     No address will be added. You can add one from the customer’s profile.
                   </p>
                   <button
                     type="button"
-                    className="ml-auto shrink-0 text-xs text-[var(--module-active)] hover:underline"
+                    className="text-module ml-auto shrink-0 text-xs hover:underline"
                     onClick={() => setSkipAddress(false)}
                   >
                     Add address
@@ -633,10 +643,9 @@ function CustomerWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">What just happened?</h3>
               <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="cw-note-kind">Interaction</Label>
+                <Field>
+                  <FieldLabel>Interaction</FieldLabel>
                   <NativeSelect
-                    id="cw-note-kind"
                     value={noteKind}
                     onChange={(e) => setNoteKind(e.target.value as ActivityKind)}
                   >
@@ -644,17 +653,18 @@ function CustomerWizardInner({
                     <option value="call">Call</option>
                     <option value="meeting">Meeting</option>
                   </NativeSelect>
-                </div>
-                <div>
-                  <Label htmlFor="cw-note">Details</Label>
-                  <Textarea
-                    id="cw-note"
-                    rows={3}
+                </Field>
+                <Field>
+                  <FieldLabel>Details</FieldLabel>
+                  <FieldControl
+                    name="cw-note"
                     value={noteDescription}
                     onChange={(e) => setNoteDescription(e.target.value)}
-                    placeholder="What did you discuss? Leave blank to skip."
+                    render={
+                      <Textarea rows={3} placeholder="What did you discuss? Leave blank to skip." />
+                    }
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -663,29 +673,28 @@ function CustomerWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Follow-up task</h3>
               <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="cw-task">Task</Label>
-                  <Input
-                    id="cw-task"
+                <Field>
+                  <FieldLabel>Task</FieldLabel>
+                  <FieldControl
+                    name="cw-task"
                     value={taskTitle}
                     onChange={(e) => setTaskTitle(e.target.value)}
                     placeholder="e.g. Send a quote, schedule a call — leave blank to skip"
                   />
-                </div>
+                </Field>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="cw-due">Due date</Label>
-                    <Input
-                      id="cw-due"
+                  <Field>
+                    <FieldLabel>Due date</FieldLabel>
+                    <FieldControl
+                      name="cw-due"
                       type="date"
                       value={taskDueAt}
                       onChange={(e) => setTaskDueAt(e.target.value)}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="cw-priority">Priority</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Priority</FieldLabel>
                     <NativeSelect
-                      id="cw-priority"
                       value={taskPriority}
                       onChange={(e) => setTaskPriority(e.target.value as TaskPriority)}
                     >
@@ -694,7 +703,7 @@ function CustomerWizardInner({
                       <option value="high">High</option>
                       <option value="urgent">Urgent</option>
                     </NativeSelect>
-                  </div>
+                  </Field>
                 </div>
               </div>
             </CardBody>
@@ -714,10 +723,9 @@ function CustomerWizardInner({
                     Name the opportunity to open it on a pipeline. Leave the name blank to skip.
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="cw-deal-pipeline">Pipeline</Label>
+                    <Field>
+                      <FieldLabel>Pipeline</FieldLabel>
                       <NativeSelect
-                        id="cw-deal-pipeline"
                         value={dealPipelineId}
                         onChange={(e) => onPipelineChange(e.target.value)}
                       >
@@ -727,11 +735,10 @@ function CustomerWizardInner({
                           </option>
                         ))}
                       </NativeSelect>
-                    </div>
-                    <div>
-                      <Label htmlFor="cw-deal-stage">Stage</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Stage</FieldLabel>
                       <NativeSelect
-                        id="cw-deal-stage"
                         value={dealStageId}
                         onChange={(e) => setDealStageId(e.target.value)}
                         disabled={dealStages.length === 0}
@@ -742,21 +749,21 @@ function CustomerWizardInner({
                           </option>
                         ))}
                       </NativeSelect>
-                    </div>
+                    </Field>
                   </div>
-                  <div>
-                    <Label htmlFor="cw-deal-title">Deal name</Label>
-                    <Input
-                      id="cw-deal-title"
+                  <Field>
+                    <FieldLabel>Deal name</FieldLabel>
+                    <FieldControl
+                      name="cw-deal-title"
                       value={dealTitle}
                       onChange={(e) => setDealTitle(e.target.value)}
                       placeholder="e.g. 2026 fleet maintenance — leave blank to skip"
                     />
-                  </div>
-                  <div className="max-w-[12rem]">
-                    <Label htmlFor="cw-deal-value">Value (USD)</Label>
-                    <Input
-                      id="cw-deal-value"
+                  </Field>
+                  <Field className="max-w-[12rem]">
+                    <FieldLabel>Value (USD)</FieldLabel>
+                    <FieldControl
+                      name="cw-deal-value"
                       type="number"
                       min={0}
                       step="0.01"
@@ -765,7 +772,7 @@ function CustomerWizardInner({
                       onChange={(e) => setDealValue(e.target.value)}
                       placeholder="0.00"
                     />
-                  </div>
+                  </Field>
                 </div>
               )}
             </CardBody>
@@ -779,29 +786,29 @@ function CustomerWizardInner({
                   Add a first line item to open a draft quote. You can add more lines and send it
                   from the quote later. Leave the item blank to skip.
                 </p>
-                <div>
-                  <Label htmlFor="cw-quote-name">Item</Label>
-                  <Input
-                    id="cw-quote-name"
+                <Field>
+                  <FieldLabel>Item</FieldLabel>
+                  <FieldControl
+                    name="cw-quote-name"
                     value={quoteItemName}
                     onChange={(e) => setQuoteItemName(e.target.value)}
                     placeholder="e.g. Annual service plan — leave blank to skip"
                   />
-                </div>
+                </Field>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="cw-quote-sku">SKU</Label>
-                    <Input
-                      id="cw-quote-sku"
+                  <Field>
+                    <FieldLabel>SKU</FieldLabel>
+                    <FieldControl
+                      name="cw-quote-sku"
                       value={quoteSku}
                       onChange={(e) => setQuoteSku(e.target.value)}
                       placeholder="Auto from item"
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="cw-quote-qty">Quantity</Label>
-                    <Input
-                      id="cw-quote-qty"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Quantity</FieldLabel>
+                    <FieldControl
+                      name="cw-quote-qty"
                       type="number"
                       min={1}
                       step={1}
@@ -809,11 +816,11 @@ function CustomerWizardInner({
                       value={quoteQuantity}
                       onChange={(e) => setQuoteQuantity(e.target.value)}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="cw-quote-price">Unit price (USD)</Label>
-                    <Input
-                      id="cw-quote-price"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Unit price (USD)</FieldLabel>
+                    <FieldControl
+                      name="cw-quote-price"
                       type="number"
                       min={0}
                       step="0.01"
@@ -822,22 +829,21 @@ function CustomerWizardInner({
                       onChange={(e) => setQuoteUnitPrice(e.target.value)}
                       placeholder="0.00"
                     />
-                  </div>
+                  </Field>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="cw-quote-valid">Valid until</Label>
-                    <Input
-                      id="cw-quote-valid"
+                  <Field>
+                    <FieldLabel>Valid until</FieldLabel>
+                    <FieldControl
+                      name="cw-quote-valid"
                       type="date"
                       value={quoteValidUntil}
                       onChange={(e) => setQuoteValidUntil(e.target.value)}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="cw-quote-terms">Payment terms</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Payment terms</FieldLabel>
                     <NativeSelect
-                      id="cw-quote-terms"
                       value={quoteTerms}
                       onChange={(e) => setQuoteTerms(e.target.value as QuoteTerms)}
                     >
@@ -848,16 +854,16 @@ function CustomerWizardInner({
                       <option value="net60">Net 60</option>
                       <option value="net90">Net 90</option>
                     </NativeSelect>
-                  </div>
+                  </Field>
                 </div>
               </div>
             </CardBody>
           </Card>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>

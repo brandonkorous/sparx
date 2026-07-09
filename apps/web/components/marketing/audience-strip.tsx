@@ -39,9 +39,9 @@ export function AudienceStrip() {
         paddingBottom: '40px',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-surface)',
-        borderTop: '1px solid var(--color-border-default)',
-        borderBottom: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        borderTop: '1px solid var(--color-base-300)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -50,7 +50,7 @@ export function AudienceStrip() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Built for whatever you run
@@ -59,7 +59,7 @@ export function AudienceStrip() {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '12px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             content, commerce, or both
@@ -97,7 +97,7 @@ export function AudienceStrip() {
                     fontWeight: 500,
                     fontSize: '18px',
                     letterSpacing: '-0.02em',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                     whiteSpace: 'nowrap',
                   }}
                 >

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';

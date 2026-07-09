@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { AreaChart, LineChart, ModuleProvider, cn } from '@sparx/ui';
 
 import { SampleBadge } from '../_components/overview-bits';
@@ -15,9 +15,9 @@ import type { PerfPanel } from './types';
 // remain the stable single tint per hue.
 
 const DELTA_CLASS: Record<string, string> = {
-  up: 'text-[var(--color-success-text)]',
-  down: 'text-[var(--color-danger-text)]',
-  neutral: 'text-[var(--color-text-tertiary)]',
+  up: 'text-success',
+  down: 'text-danger',
+  neutral: 'text-base-content/50',
 };
 
 export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeLabel: string }) {
@@ -32,7 +32,11 @@ export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeL
       valueFormat={metric.format}
       series={[
         { key: 'value', label: metric.label, color: 'module' },
-        { key: 'prev', label: 'Previous period', color: 'var(--color-text-tertiary)' },
+        {
+          key: 'prev',
+          label: 'Previous period',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+        },
       ]}
       ariaLabel={`${metric.label} over ${rangeLabel}`}
     />
@@ -55,7 +59,7 @@ export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeL
             <div className="flex flex-col gap-1">
               <CardTitle>Performance</CardTitle>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold tracking-tight text-[var(--color-text-primary)] tabular-nums">
+                <span className="text-base-content text-3xl font-semibold tracking-tight tabular-nums">
                   {total}
                 </span>
                 {delta && (

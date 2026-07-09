@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
-import { cx } from 'silicaui-react/server';
+import { cx } from '@wizeworks/silicaui-react/server';
 
 import type { ListingImage } from '@/lib/market';
 

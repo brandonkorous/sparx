@@ -4,7 +4,20 @@ import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
-import { Button, Card, CardBody, Checkbox, Input, Label, Select, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createSupplier, updateSupplier } from '../_lib/actions';
 import { VendorPicker } from './vendor-picker';
@@ -151,6 +164,20 @@ export function SupplierForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Real field rules: name is always required; the pricing amount must be a
+  // number when a pricing rule is enabled. Dynamic credential + per-site checks
+  // stay form-level (they depend on the chosen vendor's field set).
+  const v = useFieldValidation(
+    { name, pricingValue },
+    {
+      name: rule.required('Name is required.'),
+      pricingValue: (val) =>
+        hasPricingRule && Number.isNaN(parseFloat(String(val)))
+          ? 'Pricing rule value must be a number.'
+          : null,
+    }
+  );
+
   // Create is dirty once a vendor is chosen (the work begins at selection); edit
   // is dirty once any field changes from the loaded record.
   const editSnapshot = () =>
@@ -231,10 +258,7 @@ export function SupplierForm({
 
   async function submit() {
     setError(null);
-    if (!name.trim()) {
-      setError('Name is required.');
-      return;
-    }
+    if (!v.validate()) return;
     if (!isEdit) {
       for (const f of fields) {
         if (f.required && !creds[f.key]?.trim()) {
@@ -244,10 +268,6 @@ export function SupplierForm({
       }
     }
     const value = parseFloat(pricingValue);
-    if (hasPricingRule && isNaN(value)) {
-      setError('Pricing rule value must be a number.');
-      return;
-    }
     if (multiSite && limitSites && selectedSites.size === 0) {
       setError('Select at least one site, or switch back to all sites.');
       return;
@@ -333,26 +353,25 @@ export function SupplierForm({
       <Card>
         <CardBody className="py-6">
           <div className="flex flex-col gap-5">
-            <div>
-              <Label htmlFor="sup-name">
-                Name <span className="text-[var(--color-danger)]">*</span>
-              </Label>
-              <Input
+            <Field {...v.field('name')}>
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
                 id="sup-name"
                 placeholder="e.g. Printify — Main shop"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
               />
-            </div>
+            </Field>
 
             {fields.length > 0 && (
               <div className="flex flex-col gap-2">
                 <p className="text-sm font-medium">Connection credentials</p>
 
                 {isEdit && hasStoredCreds && !credsOpen && (
-                  <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2.5">
+                  <div className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2.5">
                     <div className="flex flex-row items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--color-success)]" />
+                      <CheckCircle2 className="text-success h-4 w-4 shrink-0" />
                       <p className="text-base-content/70 text-sm">
                         Saved — you don&apos;t need to re-enter it to make changes.
                       </p>
@@ -377,14 +396,9 @@ export function SupplierForm({
                       </p>
                     )}
                     {fields.map((f) => (
-                      <div key={f.key}>
-                        <Label htmlFor={`sup-cred-${f.key}`}>
-                          {f.label}
-                          {f.required && !isEdit && (
-                            <span className="text-[var(--color-danger)]"> *</span>
-                          )}
-                        </Label>
-                        <Input
+                      <Field key={f.key}>
+                        <FieldLabel required={f.required && !isEdit}>{f.label}</FieldLabel>
+                        <FieldControl
                           id={`sup-cred-${f.key}`}
                           type={
                             f.type === 'password' ? 'password' : f.type === 'url' ? 'url' : 'text'
@@ -394,8 +408,8 @@ export function SupplierForm({
                           onChange={(e) => setCreds((p) => ({ ...p, [f.key]: e.target.value }))}
                           autoComplete="off"
                         />
-                        {f.help && <p className="text-base-content/70 mt-1 text-xs">{f.help}</p>}
-                      </div>
+                        {f.help && <FieldDescription>{f.help}</FieldDescription>}
+                      </Field>
                     ))}
 
                     {activeVendor?.credentialsHelpUrl && (
@@ -415,7 +429,7 @@ export function SupplierForm({
                     {isEdit && hasStoredCreds && replacingCreds && (
                       <button
                         type="button"
-                        className="self-start text-xs text-[var(--color-text-muted)] underline"
+                        className="text-base-content/60 self-start text-xs underline"
                         onClick={() => {
                           setReplacingCreds(false);
                           setCreds((p) => {
@@ -447,7 +461,7 @@ export function SupplierForm({
                   <p className="text-base-content/70 text-xs">Available on all of your sites.</p>
                 )}
                 {limitSites && (
-                  <div className="flex flex-col gap-2 border-l-2 border-[var(--color-border-default)] pl-6">
+                  <div className="border-base-300 flex flex-col gap-2 border-l-2 pl-6">
                     {sites.map((s) => (
                       <label key={s.id} className="flex cursor-pointer items-center gap-2">
                         <Checkbox
@@ -457,9 +471,7 @@ export function SupplierForm({
                         />
                         <p className="text-sm">
                           {s.name}
-                          {s.isPrimary && (
-                            <span className="text-[var(--color-text-muted)]"> (primary)</span>
-                          )}
+                          {s.isPrimary && <span className="text-base-content/60"> (primary)</span>}
                         </p>
                       </label>
                     ))}
@@ -479,25 +491,29 @@ export function SupplierForm({
               </label>
 
               {hasPricingRule && (
-                <div className="flex flex-col gap-3 border-l-2 border-[var(--color-border-default)] pl-6">
-                  <div className="flex flex-col gap-1">
-                    <Label>Rule type</Label>
-                    <Select
-                      value={pricingType}
-                      onValueChange={(v) => setPricingType(v as string)}
-                      items={PRICING_TYPES}
+                <div className="border-base-300 flex flex-col gap-3 border-l-2 pl-6">
+                  <Field>
+                    <FieldLabel>Rule type</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Select
+                          value={pricingType}
+                          onValueChange={(val) => setPricingType(val as string)}
+                          items={PRICING_TYPES}
+                        />
+                      }
                     />
-                  </div>
+                  </Field>
 
-                  <div>
-                    <Label htmlFor="sup-pricing-value">
+                  <Field {...v.field('pricingValue')}>
+                    <FieldLabel>
                       {pricingType === 'percentage_markup' || pricingType === 'fixed_margin'
                         ? 'Percentage (%)'
                         : pricingType === 'multiplier'
                           ? 'Multiplier'
                           : 'Flat amount (cents)'}
-                    </Label>
-                    <Input
+                    </FieldLabel>
+                    <FieldControl
                       id="sup-pricing-value"
                       type="number"
                       step="0.01"
@@ -505,17 +521,22 @@ export function SupplierForm({
                       placeholder={pricingType === 'multiplier' ? '1.5' : '30'}
                       value={pricingValue}
                       onChange={(e) => setPricingValue(e.target.value)}
+                      {...v.control('pricingValue')}
                     />
-                  </div>
+                  </Field>
 
-                  <div className="flex flex-col gap-1">
-                    <Label>Round retail price to</Label>
-                    <Select
-                      value={roundTo}
-                      onValueChange={(v) => setRoundTo(v as string)}
-                      items={ROUND_OPTIONS}
+                  <Field>
+                    <FieldLabel>Round retail price to</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Select
+                          value={roundTo}
+                          onValueChange={(val) => setRoundTo(val as string)}
+                          items={ROUND_OPTIONS}
+                        />
+                      }
                     />
-                  </div>
+                  </Field>
 
                   <label className="flex cursor-pointer items-center gap-2">
                     <Checkbox
@@ -529,21 +550,21 @@ export function SupplierForm({
               )}
             </div>
 
-            <div>
-              <Label htmlFor="sup-notes">Internal notes</Label>
-              <Textarea
+            <Field>
+              <FieldLabel>Internal notes</FieldLabel>
+              <FieldControl
                 id="sup-notes"
                 placeholder="Optional notes about this supplier"
-                rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                render={<Textarea rows={2} />}
               />
-            </div>
+            </Field>
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>

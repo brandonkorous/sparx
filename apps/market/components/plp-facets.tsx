@@ -11,8 +11,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useId, useState, type ReactNode } from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { MARKET_CATEGORIES, marketCategoryLabel } from '@sparx/commerce-schemas';
-import { Badge, Button, Input, NativeSelect } from 'silicaui-react';
-import { cx } from 'silicaui-react/server';
+import { Badge, Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
+import { cx } from '@wizeworks/silicaui-react/server';
 
 import type { MarketSort, MarketFacets } from '@/lib/market';
 

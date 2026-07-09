@@ -14,7 +14,7 @@ export function CategoryIcon({ category, className }: { category: string; classN
   const Icon = ICONS[category as keyof typeof ICONS] ?? Lightbulb;
   return (
     <Icon
-      className={className ?? 'h-4 w-4 text-[var(--color-text-muted)]'}
+      className={className ?? 'text-base-content/60 h-4 w-4'}
       aria-label={categoryLabel(category)}
     />
   );

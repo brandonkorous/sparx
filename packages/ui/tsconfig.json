@@ -10,8 +10,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "vitest.config.ts",
-    "vitest.setup.ts",
-    "tailwind.config.ts"
+    "vitest.setup.ts"
   ],
   "exclude": ["node_modules", "dist", "coverage", ".turbo"]
 }

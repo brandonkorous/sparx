@@ -1,7 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Checkbox, Input, Label, NativeSelect, Stack, Text, toast } from '@sparx/ui';
+import { Button, Checkbox, Stack, Text, toast } from '@sparx/ui';
+import {
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import type { OperatorFeedbackTriageInput } from '@sparx/operator';
 import {
   FEEDBACK_STATUSES,
@@ -68,49 +75,55 @@ export function TriageControls({
   return (
     <Stack gap={4}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Stack gap={2}>
-          <Label htmlFor="triage-status">Status</Label>
-          <NativeSelect
-            id="triage-status"
+        <Field>
+          <FieldLabel>Status</FieldLabel>
+          <FieldControl
+            name="triage-status"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-          >
-            {FEEDBACK_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {feedbackStatusLabel(s)}
-              </option>
-            ))}
-          </NativeSelect>
-        </Stack>
-        <Stack gap={2}>
-          <Label htmlFor="triage-assignee">Assignee</Label>
-          <NativeSelect
-            id="triage-assignee"
+            render={
+              <NativeSelect>
+                {FEEDBACK_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {feedbackStatusLabel(s)}
+                  </option>
+                ))}
+              </NativeSelect>
+            }
+          />
+        </Field>
+        <Field>
+          <FieldLabel>Assignee</FieldLabel>
+          <FieldControl
+            name="triage-assignee"
             value={assignee}
             onChange={(e) => setAssignee(e.target.value)}
-          >
-            <option value="">Unassigned</option>
-            {operators.map((o) => (
-              <option key={o.id} value={o.id}>
-                {firstText(o.name, o.email)}
-              </option>
-            ))}
-          </NativeSelect>
-        </Stack>
+            render={
+              <NativeSelect>
+                <option value="">Unassigned</option>
+                {operators.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {firstText(o.name, o.email)}
+                  </option>
+                ))}
+              </NativeSelect>
+            }
+          />
+        </Field>
       </div>
 
-      <Stack gap={2}>
-        <Label htmlFor="triage-tags">Internal tags</Label>
-        <Input
-          id="triage-tags"
+      <Field>
+        <FieldLabel>Internal tags</FieldLabel>
+        <FieldControl
+          name="triage-tags"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="dup, mobile, quick-win"
         />
-        <Text size="xs" variant="muted">
+        <FieldDescription>
           Comma-separated, staff-only. Never shown to the submitter.
-        </Text>
-      </Stack>
+        </FieldDescription>
+      </Field>
 
       {notifyForced ? (
         <Text size="sm" variant="muted">

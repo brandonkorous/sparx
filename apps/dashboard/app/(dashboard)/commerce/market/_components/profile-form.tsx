@@ -10,7 +10,16 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { formatBps, MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Button, Input, Label, Select, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { updateMarketProfileAction } from '../actions';
 import type { MarketProfile } from '../_types';
@@ -85,57 +94,60 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="market-headline">Headline</Label>
-          <Input
-            id="market-headline"
+        <Field>
+          <FieldLabel>Headline</FieldLabel>
+          <FieldControl
+            name="headline"
             value={form.headline}
             maxLength={255}
             placeholder="One line that sums up your store"
             onChange={(e) => set('headline', e.target.value)}
           />
-          <p className="text-base-content/70 text-xs">
+          <FieldDescription>
             Shown under your store name on your marketplace profile.
-          </p>
-        </div>
+          </FieldDescription>
+        </Field>
 
         <div className="flex flex-row flex-wrap gap-4">
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="market-location">Location</Label>
-            <Input
-              id="market-location"
+          <Field className="min-w-[14rem] flex-1">
+            <FieldLabel>Location</FieldLabel>
+            <FieldControl
+              name="location"
               value={form.location}
               maxLength={160}
               placeholder="City, State"
               onChange={(e) => set('location', e.target.value)}
             />
-          </div>
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="market-category">Default category</Label>
-            <Select
-              id="market-category"
-              value={form.defaultCategory}
-              onValueChange={(v) => set('defaultCategory', v as string)}
-              placeholder="No default"
-              items={CATEGORY_ITEMS}
+          </Field>
+          <Field className="min-w-[14rem] flex-1">
+            <FieldLabel>Default category</FieldLabel>
+            <FieldControl
+              render={
+                <Select
+                  value={form.defaultCategory}
+                  onValueChange={(val) => set('defaultCategory', val as string)}
+                  placeholder="No default"
+                  items={CATEGORY_ITEMS}
+                />
+              }
             />
-            <p className="text-base-content/70 text-xs">New listings default to this aisle.</p>
-          </div>
+            <FieldDescription>New listings default to this aisle.</FieldDescription>
+          </Field>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="market-bio">About your store</Label>
-          <Textarea
-            id="market-bio"
-            rows={5}
+        <Field>
+          <FieldLabel>About your store</FieldLabel>
+          <FieldControl
+            name="bio"
             value={form.bio}
             maxLength={2000}
             placeholder="Tell shoppers who you are and what you sell."
             onChange={(e) => set('bio', e.target.value)}
+            render={<Textarea rows={5} />}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3 rounded-md bg-[var(--color-bg-subtle)] px-4 py-3">
+        <div className="bg-base-200 flex flex-row flex-wrap items-center justify-between gap-3 rounded-md px-4 py-3">
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">Commission rate</p>
             <p className="text-base-content/70 text-xs">
@@ -148,12 +160,18 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
 
         <div className="flex flex-row flex-wrap items-center justify-end gap-3">
           {error && (
-            <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mr-auto"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
           {savedAt !== null && !dirty && (
-            <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+            <div className="text-success flex flex-row items-center gap-1">
               <Check className="h-4 w-4" />
               <p className="text-success text-sm">Saved</p>
             </div>

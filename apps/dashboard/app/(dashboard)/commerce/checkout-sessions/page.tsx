@@ -1,7 +1,7 @@
 import { CreditCard } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';

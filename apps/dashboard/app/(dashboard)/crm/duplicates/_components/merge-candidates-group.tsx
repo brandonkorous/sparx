@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { statusLabel } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { mergeCustomersAction } from '../../actions';
 
@@ -90,9 +90,7 @@ export function MergeCandidatesGroup({ customers }: Props) {
             <div
               key={c.id}
               className={`flex flex-row items-center justify-between rounded-md border p-3 ${
-                isPrimary
-                  ? 'border-[var(--module-active)] bg-[var(--module-active-subtle,transparent)]'
-                  : 'border-[var(--color-border-default)]'
+                isPrimary ? 'border-module bg-module/10' : 'border-base-300'
               }`}
             >
               <div className="flex flex-col gap-1">

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { redirect } from 'next/navigation';
 import { AlertCircle, AlertTriangle } from 'lucide-react';
-import { Alert, AlertContent, AlertDescription, AlertTitle } from 'silicaui-react';
+import { Alert, AlertContent, AlertDescription, AlertTitle } from '@wizeworks/silicaui-react';
 import { Wordmark } from '@sparx/ui';
 import {
   getSession,
@@ -30,8 +30,8 @@ const one = (v: string | string[] | undefined): string =>
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-[var(--color-surface-300)] p-4">
-      <div className="w-full max-w-xl rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-100)] p-6 shadow-sm sm:p-8">
+    <main className="bg-base-300 flex min-h-dvh items-center justify-center p-4">
+      <div className="border-base-300 bg-base-100 w-full max-w-xl rounded-xl border p-6 shadow-sm sm:p-8">
         <div className="flex flex-col gap-6">
           <Wordmark />
           {children}

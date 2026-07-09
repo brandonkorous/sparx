@@ -101,8 +101,8 @@ export default async function PartnersPage({
                       className={cn(
                         'border-b-2 pb-1 text-sm font-medium transition-colors',
                         status === t.value
-                          ? 'border-[var(--module-active)] text-[var(--color-text-primary)]'
-                          : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+                          ? 'border-module text-base-content'
+                          : 'text-base-content/60 hover:text-base-content border-transparent'
                       )}
                     >
                       {t.label}
@@ -178,7 +178,7 @@ function RosterTable({ partners }: { partners: OperatorPartnerListItem[] }) {
               <Stack gap={0}>
                 <Link
                   href={`/sparx/partners/${p.tenantId}`}
-                  className="font-medium text-[var(--color-text-primary)] hover:underline"
+                  className="text-base-content font-medium hover:underline"
                 >
                   {p.displayName}
                 </Link>

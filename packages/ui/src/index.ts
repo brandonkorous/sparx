@@ -12,10 +12,8 @@ export {
   COLOR_KEYS,
   MODULE_COLOR_KEYS,
   ALL_COLOR_KEYS,
-  colorVariants,
-  colorClass,
-  treatmentVariants,
-  chipTreatmentVariants,
+  TREATMENT_KEYS,
+  colorVars,
   type ColorKey,
   type SemanticColorKey,
   type ModuleColorKey,
@@ -43,7 +41,14 @@ export {
 
 // ── Primitives ────────────────────────────────────────────
 export { Spinner, type SpinnerProps } from './components/primitives/spinner';
-export { Button, buttonVariants, type ButtonProps } from './components/primitives/button';
+export {
+  Button,
+  buttonClasses,
+  type ButtonProps,
+  type ButtonVariant,
+  type ButtonSize,
+  type ButtonShape,
+} from './components/primitives/button';
 export {
   ButtonGroup,
   buttonGroupVariants,
@@ -51,10 +56,11 @@ export {
 } from './components/primitives/button-group';
 export {
   Badge,
-  badgeVariants,
   statusTone,
   statusLabel,
   type BadgeProps,
+  type BadgeVariant,
+  type BadgeSize,
   type StatusTone,
 } from './components/primitives/badge';
 export { Avatar, avatarVariants, type AvatarProps } from './components/primitives/avatar';
@@ -337,9 +343,9 @@ export { resolveRouteModule } from './components/navigation/top-progress-nav';
 // ── Data display ──────────────────────────────────────────
 export { Code, codeVariants, type CodeProps } from './components/data/code';
 export { Kbd, kbdVariants, type KbdProps } from './components/data/kbd';
-export { Alert, alertVariants, type AlertProps } from './components/data/alert';
-export { Progress, progressVariants, type ProgressProps } from './components/data/progress';
-export { StatusDot, dotVariants, type StatusDotProps } from './components/data/status-dot';
+export { Alert, type AlertProps } from './components/data/alert';
+export { Progress, type ProgressProps } from './components/data/progress';
+export { StatusDot, type StatusDotProps } from './components/data/status-dot';
 export {
   Table,
   TableHeader,
@@ -369,7 +375,7 @@ export {
   type ListToolbarSort,
   type ListToolbarView,
 } from './components/data/list-toolbar';
-export { Tag, tagVariants, type TagProps } from './components/data/tag';
+export { Tag, type TagProps } from './components/data/tag';
 export {
   BulkActionBar,
   type BulkActionBarProps,

@@ -12,7 +12,7 @@ import {
   TabsList,
   TabsTab,
   TabsPanel,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -148,7 +148,7 @@ export async function CustomerDetailContent({ id }: Props) {
         </div>
         {customer.company && (
           <div className="flex flex-row items-center gap-2">
-            <Building2 className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+            <Building2 className="text-base-content/50 h-4 w-4" />
             <p className="text-base-content/70">{customer.company}</p>
             {customer.jobTitle && (
               <p className="text-base-content/70 text-sm">· {customer.jobTitle}</p>
@@ -242,11 +242,11 @@ export async function CustomerDetailContent({ id }: Props) {
                       {openTasks.map((task) => (
                         <div
                           key={task.id}
-                          className="flex flex-row items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] p-3"
+                          className="border-base-300 flex flex-row items-center justify-between gap-4 rounded-md border p-3"
                         >
                           <div className="flex flex-col gap-1">
                             <div className="flex flex-row items-center gap-2">
-                              <CheckSquare className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+                              <CheckSquare className="text-base-content/50 h-3.5 w-3.5" />
                               <p className="text-sm">{task.title}</p>
                               <Badge color={taskPriorityVariant(task.priority)}>
                                 {task.priority}
@@ -303,7 +303,7 @@ export async function CustomerDetailContent({ id }: Props) {
               <div className="flex flex-col gap-3">
                 {customer.email ? (
                   <div className="flex flex-row items-center gap-2">
-                    <Mail className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                    <Mail className="text-base-content/50 h-4 w-4" />
                     <p className="text-sm">{customer.email}</p>
                   </div>
                 ) : (
@@ -311,7 +311,7 @@ export async function CustomerDetailContent({ id }: Props) {
                 )}
                 {customer.phone && (
                   <div className="flex flex-row items-center gap-2">
-                    <Phone className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                    <Phone className="text-base-content/50 h-4 w-4" />
                     <p className="text-sm">{customer.phone}</p>
                   </div>
                 )}
@@ -461,8 +461,8 @@ function B2BAccountCard({
                   ${used.toLocaleString()} / ${limit.toLocaleString()}
                 </p>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-bg-subtle)]">
-                <div className="h-full bg-[var(--module-active)]" style={{ width: `${pct}%` }} />
+              <div className="bg-base-200 h-1.5 w-full overflow-hidden rounded-full">
+                <div className="bg-module h-full" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )}

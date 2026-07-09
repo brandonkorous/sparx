@@ -8,7 +8,7 @@
 import Link from 'next/link';
 import { ArrowRight, Store } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

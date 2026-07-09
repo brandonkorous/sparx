@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
 import { useConfirm } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { advanceStageAction } from '../../../document-actions';
 
@@ -74,7 +74,7 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
             return (
               <React.Fragment key={stage.id}>
                 {idx > 0 && (
-                  <span aria-hidden className="text-[var(--color-text-muted)]">
+                  <span aria-hidden className="text-base-content/60">
                     ›
                   </span>
                 )}
@@ -87,7 +87,7 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
                     type="button"
                     disabled={pending}
                     onClick={() => void advance(stage)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-border-default)] px-3 py-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:border-[var(--module-active)] hover:text-[var(--module-active)] disabled:opacity-50"
+                    className="border-base-300 text-base-content/70 hover:border-module hover:text-module inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-50"
                   >
                     {isPast && <Check className="h-3.5 w-3.5" />}
                     {stage.customerLabel}

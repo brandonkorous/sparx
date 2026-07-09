@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { History } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 import type { GateLogEntry } from '@sparx/automation-schemas';
 
@@ -30,7 +30,7 @@ const GATE_DECISION_COLOR: Record<string, string> = {
 
 function JsonBlock({ value }: { value: unknown }) {
   return (
-    <pre className="overflow-x-auto rounded-md bg-[var(--color-bg-subtle)] p-3 font-mono text-xs">
+    <pre className="bg-base-200 overflow-x-auto rounded-md p-3 font-mono text-xs">
       {JSON.stringify(value, null, 2)}
     </pre>
   );
@@ -75,10 +75,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
           title="Run detail"
           badge={<RunStatusBadge status={run.status} />}
           description={
-            <Link
-              href={`/automations/${id}/runs`}
-              className="text-sm text-[var(--module-active)] hover:underline"
-            >
+            <Link href={`/automations/${id}/runs`} className="text-module text-sm hover:underline">
               ← Back to run history
             </Link>
           }
@@ -99,7 +96,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
               </div>
               {run.errorMessage && <p className="text-danger text-sm">{run.errorMessage}</p>}
               <details>
-                <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                <summary className="text-base-content/70 cursor-pointer text-sm">
                   Trigger event
                 </summary>
                 <div className="mt-2">
@@ -119,7 +116,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                 <CardBody>
                   <CardTitle>
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm text-[var(--color-text-tertiary)]">
+                      <span className="text-base-content/50 text-sm">
                         Step {step.actionIndex + 1}
                       </span>
                       <code className="font-mono text-sm">{step.actionType}</code>
@@ -135,7 +132,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                     {step.gateLog && step.gateLog.length > 0 && <GateLog entries={step.gateLog} />}
                     {step.input !== null && step.input !== undefined && (
                       <details>
-                        <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                        <summary className="text-base-content/70 cursor-pointer text-sm">
                           Input
                         </summary>
                         <div className="mt-2">
@@ -145,7 +142,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                     )}
                     {step.output !== null && step.output !== undefined && (
                       <details>
-                        <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)]">
+                        <summary className="text-base-content/70 cursor-pointer text-sm">
                           Output
                         </summary>
                         <div className="mt-2">

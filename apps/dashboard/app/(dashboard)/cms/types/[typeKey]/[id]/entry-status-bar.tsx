@@ -16,7 +16,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { CalendarClock, History } from 'lucide-react';
 import { PreviewButton } from '../../../[id]/preview-button';
 

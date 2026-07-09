@@ -10,7 +10,15 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { recordActivityAction } from '../../actions';
 
@@ -34,13 +42,15 @@ export function RecordActivityForm({ customerId, dealId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const v = useFieldValidation(
+    { description },
+    { description: rule.required('Description is required.') }
+  );
+
   function onSubmit(formData: FormData) {
     setError(null);
+    if (!v.validate()) return;
     const desc = (formData.get('description') as string | null)?.trim() ?? '';
-    if (!desc) {
-      setError('Description is required.');
-      return;
-    }
     startTransition(async () => {
       const result = await recordActivityAction({
         type: kind,
@@ -76,26 +86,33 @@ export function RecordActivityForm({ customerId, dealId }: Props) {
           ))}
         </div>
 
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
+        <Field {...v.field('description')}>
+          <FieldLabel required>Description</FieldLabel>
+          <FieldControl
             name="description"
-            placeholder={
-              kind === 'call'
-                ? 'Summary of the call…'
-                : kind === 'meeting'
-                  ? 'Meeting notes…'
-                  : 'Add a note…'
-            }
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            required
+            {...v.control('description')}
+            render={
+              <Textarea
+                rows={3}
+                placeholder={
+                  kind === 'call'
+                    ? 'Summary of the call…'
+                    : kind === 'meeting'
+                      ? 'Meeting notes…'
+                      : 'Add a note…'
+                }
+              />
+            }
           />
-        </div>
+        </Field>
 
-        {error && <p className="text-danger text-xs">{error}</p>}
+        {error && (
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {error}
+          </FieldStatus>
+        )}
 
         <Button type="submit" color="module" disabled={pending}>
           {pending ? 'Saving…' : 'Add activity'}

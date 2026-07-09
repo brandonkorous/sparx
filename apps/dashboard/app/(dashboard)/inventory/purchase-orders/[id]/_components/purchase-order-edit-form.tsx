@@ -3,7 +3,19 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardActions, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 
 import { updatePurchaseOrderAction } from '../../../_lib/purchase-order-actions';
 import type { PurchaseOrderDetail } from '../../_components/types';
@@ -30,21 +42,45 @@ export function PurchaseOrderEditForm({
   const [error, setError] = React.useState<string | null>(null);
   const [saved, setSaved] = React.useState(false);
 
+  const [warehouseId, setWarehouseId] = React.useState(po.warehouseId);
+  const [paymentTerms, setPaymentTerms] = React.useState(po.paymentTerms ?? '');
+  const [reference, setReference] = React.useState(po.reference ?? '');
+  const [expectedArrival, setExpectedArrival] = React.useState(
+    po.expectedArrivalAt ? po.expectedArrivalAt.slice(0, 10) : ''
+  );
+  const [currency, setCurrency] = React.useState(po.currency);
+  const [shipping, setShipping] = React.useState((po.shippingCents / 100).toFixed(2));
+  const [notes, setNotes] = React.useState(po.notes ?? '');
+
+  const v = useFieldValidation(
+    { shipping },
+    {
+      shipping: (val) => {
+        const s = String(val).trim();
+        if (s === '') return null;
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a shipping amount.';
+        if (n < 0) return 'Shipping cannot be negative.';
+        return null;
+      },
+    }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSaved(false);
-    const form = new FormData(e.currentTarget);
-    const expected = str(form.get('expectedArrival'));
-    const shipping = str(form.get('shipping'));
+    if (!v.validate()) return;
+
+    const shippingTrim = shipping.trim();
     const input = {
-      warehouseId: str(form.get('warehouseId')),
-      currency: (str(form.get('currency')) || 'USD').toUpperCase(),
-      paymentTerms: str(form.get('paymentTerms')) || null,
-      reference: str(form.get('reference')) || null,
-      expectedArrivalAt: expected ? new Date(expected).toISOString() : null,
-      shippingCents: shipping ? Math.round(Number(shipping) * 100) : 0,
-      notes: str(form.get('notes')) || null,
+      warehouseId,
+      currency: (currency.trim() || 'USD').toUpperCase(),
+      paymentTerms: paymentTerms.trim() || null,
+      reference: reference.trim() || null,
+      expectedArrivalAt: expectedArrival ? new Date(expectedArrival).toISOString() : null,
+      shippingCents: shippingTrim ? Math.round(Number(shippingTrim) * 100) : 0,
+      notes: notes.trim() || null,
     };
 
     startTransition(async () => {
@@ -71,59 +107,85 @@ export function PurchaseOrderEditForm({
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row flex-wrap gap-3">
-              <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-                <Label htmlFor="warehouseId">Warehouse</Label>
-                <NativeSelect id="warehouseId" name="warehouseId" defaultValue={po.warehouseId}>
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} ({w.code})
-                    </option>
-                  ))}
-                </NativeSelect>
-              </div>
-              <Field
-                label="Payment terms"
-                name="paymentTerms"
-                defaultValue={po.paymentTerms ?? ''}
-                placeholder="net30"
-              />
-              <Field
-                label="Reference"
-                name="reference"
-                defaultValue={po.reference ?? ''}
-                placeholder="optional"
-              />
+              <Field className="min-w-[14rem] flex-1">
+                <FieldLabel>Warehouse</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      {warehouses.map((w) => (
+                        <option key={w.id} value={w.id}>
+                          {w.name} ({w.code})
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  }
+                  value={warehouseId}
+                  onChange={(e) => setWarehouseId(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Payment terms</FieldLabel>
+                <FieldControl
+                  value={paymentTerms}
+                  onChange={(e) => setPaymentTerms(e.target.value)}
+                  placeholder="net30"
+                />
+              </Field>
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Reference</FieldLabel>
+                <FieldControl
+                  value={reference}
+                  onChange={(e) => setReference(e.target.value)}
+                  placeholder="optional"
+                />
+              </Field>
             </div>
             <div className="flex flex-row flex-wrap gap-3">
-              <Field
-                label="Expected arrival"
-                name="expectedArrival"
-                type="date"
-                defaultValue={po.expectedArrivalAt ? po.expectedArrivalAt.slice(0, 10) : ''}
-              />
-              <Field label="Currency" name="currency" defaultValue={po.currency} maxLength={3} />
-              <Field
-                label="Shipping ($)"
-                name="shipping"
-                type="number"
-                defaultValue={(po.shippingCents / 100).toFixed(2)}
-              />
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Expected arrival</FieldLabel>
+                <FieldControl
+                  type="date"
+                  value={expectedArrival}
+                  onChange={(e) => setExpectedArrival(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Currency</FieldLabel>
+                <FieldControl
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  maxLength={3}
+                />
+              </Field>
+              <Field className="min-w-[10rem] flex-1" {...v.field('shipping')}>
+                <FieldLabel>Shipping ($)</FieldLabel>
+                <FieldControl
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={shipping}
+                  onChange={(e) => setShipping(e.target.value)}
+                  {...v.control('shipping')}
+                />
+              </Field>
             </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="notes">Notes</Label>
-              <textarea
-                id="notes"
-                name="notes"
-                rows={2}
-                defaultValue={po.notes ?? ''}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+            <Field>
+              <FieldLabel>Notes</FieldLabel>
+              <FieldControl
+                render={<Textarea rows={2} />}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
-            </div>
+            </Field>
           </div>
         </CardBody>
         <CardActions>
           <div className="flex w-full flex-row items-center gap-3">
-            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {error && (
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {error}
+              </FieldStatus>
+            )}
             {saved && !error && <p className="text-base-content/70 text-sm">Saved.</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save changes'}
@@ -133,38 +195,4 @@ export function PurchaseOrderEditForm({
       </Card>
     </form>
   );
-}
-
-function Field({
-  label,
-  name,
-  type,
-  defaultValue,
-  placeholder,
-  maxLength,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  defaultValue?: string;
-  placeholder?: string;
-  maxLength?: number;
-}) {
-  return (
-    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-      <Label htmlFor={name}>{label}</Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-        maxLength={maxLength}
-      />
-    </div>
-  );
-}
-
-function str(value: FormDataEntryValue | null): string {
-  return typeof value === 'string' ? value.trim() : '';
 }

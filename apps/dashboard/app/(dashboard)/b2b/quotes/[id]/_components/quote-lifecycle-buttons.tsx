@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { quoteLifecycleAction } from '../../_lib/actions';
 
 interface Props {
@@ -36,7 +36,7 @@ export function QuoteLifecycleButtons({ quoteId, canAccept, canDecline }: Props)
 
   return (
     <div className="flex flex-col gap-2">
-      {actionError && <p className="text-sm text-[var(--color-danger)]">{actionError}</p>}
+      {actionError && <p className="text-danger text-sm">{actionError}</p>}
       <div className="flex flex-row gap-2">
         {canDecline && (
           <Button

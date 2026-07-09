@@ -10,7 +10,7 @@
 import { Gauge } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { type SeoAuditRow } from '@/components/seo/types';

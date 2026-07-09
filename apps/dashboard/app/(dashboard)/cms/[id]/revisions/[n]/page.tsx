@@ -9,7 +9,7 @@
 import { notFound } from 'next/navigation';
 import { renderDocToHtml } from '@sparx/cms-editor';
 import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { RestoreButton } from '../restore-button';
@@ -224,7 +224,7 @@ function SeoDiff({
           ))}
           {unchangedRows.length > 0 && (
             <details>
-              <summary className="cursor-pointer text-sm text-[var(--color-text-muted)]">
+              <summary className="text-base-content/60 cursor-pointer text-sm">
                 Show {unchangedRows.length} unchanged{' '}
                 {unchangedRows.length === 1 ? 'field' : 'fields'}
               </summary>
@@ -243,7 +243,7 @@ function SeoDiff({
 
 function SeoDiffRow({ fieldKey, rev, cur }: { fieldKey: string; rev: string; cur: string }) {
   return (
-    <div className="grid grid-cols-1 gap-4 border-b border-[var(--color-border-default)] pb-2 md:grid-cols-3">
+    <div className="border-base-300 grid grid-cols-1 gap-4 border-b pb-2 md:grid-cols-3">
       <p className="text-sm">{fieldKey}</p>
       <p className="font-mono text-sm break-all">{rev || <em>empty</em>}</p>
       <p className="font-mono text-sm break-all">{cur || <em>empty</em>}</p>
@@ -256,7 +256,7 @@ function BodyPanel({ title, html }: { title: string; html: string }) {
     <div className="flex flex-col gap-2">
       <p className="text-base-content/70 text-xs">{title}</p>
       <div
-        className="sparx-content max-h-[600px] min-h-[200px] overflow-auto rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4"
+        className="sparx-content border-base-300 bg-base-100 max-h-[600px] min-h-[200px] overflow-auto rounded-lg border p-4"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>

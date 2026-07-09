@@ -22,10 +22,11 @@ describe('Tag', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it('carries the module color class for color="module"', () => {
+  it('carries the module color utilities for color="module"', () => {
     render(<Tag color="module">cms</Tag>);
-    // The span itself carries the color class
+    // The span itself carries the silicaui color utilities (soft treatment)
     const tag = screen.getByText('cms').parentElement!;
-    expect(tag.className).toMatch(/sx-c-module/);
+    expect(tag.className).toMatch(/bg-module/);
+    expect(tag.className).toMatch(/text-module/);
   });
 });

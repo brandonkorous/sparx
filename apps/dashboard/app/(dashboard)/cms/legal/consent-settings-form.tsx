@@ -9,11 +9,15 @@ import {
   CardBody,
   CardTitle,
   Checkbox,
-  Input,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
   Label,
   Select,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { saveConsentSettings } from './actions';
 
 export interface ConsentConfig {
@@ -92,17 +96,17 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
             category (analytics or marketing) is active.
           </p>
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="consent-mode">Mode</Label>
+            <Field>
+              <FieldLabel>Mode</FieldLabel>
               <Select
                 id="consent-mode"
                 className="max-w-xs"
                 value={mode}
-                onValueChange={(v) => setMode(v as ConsentConfig['mode'])}
+                onValueChange={(val) => setMode(val as ConsentConfig['mode'])}
                 items={{ off: 'Off', gdpr: 'GDPR (opt-in)', ccpa: 'CCPA (opt-out)' }}
               />
-              <p className="text-base-content/70 text-xs">{MODE_HELP[mode]}</p>
-            </div>
+              <FieldDescription>{MODE_HELP[mode]}</FieldDescription>
+            </Field>
 
             <div className="flex flex-col gap-2">
               <Label>Cookie categories in use</Label>
@@ -127,37 +131,40 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="consent-policy">Cookie policy page slug</Label>
-              <Input
-                id="consent-policy"
+            <Field className="max-w-xs">
+              <FieldLabel>Cookie policy page slug</FieldLabel>
+              <FieldControl
+                name="consent-policy"
                 value={policySlug}
                 onChange={(e) => setPolicySlug(e.target.value)}
                 placeholder="cookie-policy"
-                className="max-w-xs"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="consent-title">Banner title (optional)</Label>
-              <Input
-                id="consent-title"
+            <Field>
+              <FieldLabel>Banner title (optional)</FieldLabel>
+              <FieldControl
+                name="consent-title"
                 value={bannerTitle}
                 onChange={(e) => setBannerTitle(e.target.value)}
                 placeholder="We value your privacy"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="consent-body">Banner text (optional)</Label>
-              <Textarea
-                id="consent-body"
+            <Field>
+              <FieldLabel>Banner text (optional)</FieldLabel>
+              <FieldControl
+                name="consent-body"
                 value={bannerBody}
                 onChange={(e) => setBannerBody(e.target.value)}
-                rows={3}
-                placeholder="We use cookies to run this site and, with your consent, to improve it."
+                render={
+                  <Textarea
+                    rows={3}
+                    placeholder="We use cookies to run this site and, with your consent, to improve it."
+                  />
+                }
               />
-            </div>
+            </Field>
 
             <div className="flex items-center gap-3">
               <Button color="primary" onClick={save} disabled={pending}>
@@ -166,8 +173,16 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
               <Badge color={bannerEnabled ? 'warning' : 'neutral'} variant="soft">
                 {bannerEnabled ? 'Banner: shown' : 'Banner: quiet notice'}
               </Badge>
-              {saved ? <p className="text-base-content/70 text-sm">Saved.</p> : null}
-              {error ? <p className="text-danger text-sm">{error}</p> : null}
+              {saved ? (
+                <FieldStatus status="success" attached={false} aria-live="polite">
+                  Saved.
+                </FieldStatus>
+              ) : null}
+              {error ? (
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                  {error}
+                </FieldStatus>
+              ) : null}
             </div>
           </div>
         </CardBody>

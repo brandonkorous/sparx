@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Nav } from '../nav';
 import { Footer } from '../footer';
 import { Section, Display, Spark, getModuleColor } from '../primitives';
@@ -25,7 +25,7 @@ export function ToolsIndex() {
                 fontFamily: 'var(--font-sans)',
                 fontSize: '19px',
                 lineHeight: '31px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 margin: 0,
               }}
             >
@@ -57,8 +57,8 @@ export function ToolsIndex() {
               gap: '28px',
               padding: '40px',
               borderRadius: 'var(--radius-xl)',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
             }}
           >
             <div
@@ -72,7 +72,7 @@ export function ToolsIndex() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '16px',
                   lineHeight: '26px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: 0,
                 }}
               >
@@ -82,11 +82,15 @@ export function ToolsIndex() {
                 years.
               </p>
             </div>
-            <Button asChild color="primary" variant="solid" size="lg" style={{ flexShrink: 0 }}>
-              <a href="/platform">
-                Explore the platform
-                <ArrowRight className="h-4 w-4" />
-              </a>
+            <Button
+              color="primary"
+              variant="solid"
+              size="lg"
+              style={{ flexShrink: 0 }}
+              render={<a href="/platform" />}
+            >
+              Explore the platform
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </Section>

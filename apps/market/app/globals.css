@@ -25,7 +25,7 @@
    The text/border hierarchy needs no new colors — it's expressed with opacity
    modifiers on the base ink (`text-base-content/70` muted, `/50` faint,
    `border-base-content/20` strong), which silicaui supports natively. */
-@plugin 'silicaui' {
+@plugin '@wizeworks/silicaui' {
   colors: primary, secondary, accent, neutral, info, success, warning, error, danger;
 }
 

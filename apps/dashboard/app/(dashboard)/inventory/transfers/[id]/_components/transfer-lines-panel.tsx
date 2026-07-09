@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Input,
+  Label,
+} from '@wizeworks/silicaui-react';
 
 import {
   addTransferLineAction,
@@ -82,7 +90,7 @@ function DraftLines({ id, lines }: { id: string; lines: InventoryTransferLineRow
         </div>
         {error && (
           <CardActions className="justify-start">
-            <p className="text-sm text-[var(--color-danger)]">{error}</p>
+            <p className="text-danger text-sm">{error}</p>
           </CardActions>
         )}
       </CardBody>
@@ -111,7 +119,7 @@ function DraftLineRow({
   }
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <LineIdentity line={l} />
       <div className="flex w-[5.5rem] flex-col gap-0">
         <Label htmlFor={`qty-${l.id}`} className="sr-only">
@@ -188,7 +196,7 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
           {lines.map((l) => (
             <div
               key={l.id}
-              className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+              className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
             >
               <LineIdentity line={l} />
               <Stat label="Shipped" value={String(l.quantity)} />
@@ -212,7 +220,7 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
         <CardActions>
           <div className="flex w-full flex-row items-center justify-between gap-3">
             {error ? (
-              <p className="text-sm text-[var(--color-danger)]">{error}</p>
+              <p className="text-danger text-sm">{error}</p>
             ) : short ? (
               <p className="text-base-content/70 text-sm">
                 Some lines are short — the difference is written off in transit.
@@ -246,7 +254,7 @@ function ReadonlyLines({ lines }: { lines: InventoryTransferLineRow[] }) {
             return (
               <div
                 key={l.id}
-                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
               >
                 <LineIdentity line={l} />
                 <Stat label="Shipped" value={String(l.quantity)} />
@@ -337,7 +345,7 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
         <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="transfer-line-sku">Add item by SKU</Label>
           <Input
@@ -367,7 +375,7 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
           {busy ? 'Adding…' : 'Add item'}
         </Button>
       </div>
-      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
     </div>
   );
 }

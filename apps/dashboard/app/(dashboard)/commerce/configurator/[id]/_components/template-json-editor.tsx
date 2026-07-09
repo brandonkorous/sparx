@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Textarea } from 'silicaui-react';
+import { Button, FieldStatus, Textarea } from '@wizeworks/silicaui-react';
 
 import { updateTemplateAction } from '../../../configurator-actions';
 
@@ -56,9 +56,9 @@ export function TemplateJsonEditor({
         className="font-mono text-xs"
       />
       {error && (
-        <p className="text-danger text-sm" role="alert" aria-live="polite">
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {error}
-        </p>
+        </FieldStatus>
       )}
       <div className="flex flex-row justify-end gap-2">
         <Button color="module" type="button" disabled={pending} onClick={onSave}>

@@ -1,7 +1,7 @@
 import { Settings2 } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 

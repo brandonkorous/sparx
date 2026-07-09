@@ -6,7 +6,7 @@ status: active
 
 # components
 
-If [[design]] is the *language*, this node is the *library and the layouts*. Appearance lives here so feature code never reinvents it — the partner pages proved that when the library is used right, the surface is mostly right.
+If [[design]] is the *language*, this node is the *library and the layouts*. Appearance lives here so feature code never reinvents it — the partner pages proved that when the library is used right, the surface is mostly right. The dashboard library runs on **silicaui**: styled primitives come from `@wizeworks/silicaui-react`, and `@sparx/ui` holds the sparx compositions built on them (see [[appearance-lives-in-ui]]).
 
 ## The two rules that prevent most drift
 

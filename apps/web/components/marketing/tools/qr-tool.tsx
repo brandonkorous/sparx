@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Download, Trash2 } from 'lucide-react';
-import { Button, ColorPicker, NativeSelect, Slider, FileUpload, toast } from '@sparx/ui';
+import { ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { Button, NativeSelect, Range } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { QrFieldSet } from './qr-fields';
 import { buildQrPayload, renderQrCanvas, renderQrSvg, type QrType, type QrStyle } from './lib/qr';
@@ -109,9 +110,9 @@ export function QrTool() {
               </NativeSelect>
             </Field>
             <Field label="Quiet zone" adornment={`${margin}`}>
-              <Slider
+              <Range
                 value={[margin]}
-                onValueChange={(v) => setMargin(v[0] ?? 0)}
+                onValueChange={(v) => setMargin((v as number[])[0] ?? 0)}
                 min={0}
                 max={8}
                 step={1}
@@ -192,7 +193,7 @@ export function QrTool() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 Fill in the content to generate your code

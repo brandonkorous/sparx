@@ -11,11 +11,15 @@ import {
   Card,
   CardBody,
   Checkbox,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Switch,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule as fieldRule, useFieldValidation } from '@sparx/forms';
 
 import {
   createSurchargeRuleAction,
@@ -226,6 +230,18 @@ function RuleForm({
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
+  const values = { name, label, value };
+  const v = useFieldValidation(values, {
+    name: fieldRule.required('Name is required.'),
+    label: fieldRule.required('A customer-facing label is required.'),
+    value: (val) => {
+      const n = Number(String(val).trim());
+      if (!Number.isFinite(n)) return 'Enter a number.';
+      if (n < 0) return 'Fee cannot be negative.';
+      return null;
+    },
+  });
+
   // Live readout on a $100 sample order.
   const sample = type === 'percentage' ? (100 * Number(value || 0)) / 100 : Number(value || 0);
 
@@ -236,11 +252,8 @@ function RuleForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const num = Number(value);
-    if (!Number.isFinite(num) || num < 0) {
-      setError('Enter a valid fee value.');
-      return;
-    }
     if (methods.length === 0) {
       setError('Pick at least one payment method.');
       return;
@@ -275,58 +288,68 @@ function RuleForm({
         <form onSubmit={onSubmit}>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Name" className="min-w-[14rem] flex-1">
-                <Input
+              <Field {...v.field('name')} className="min-w-[14rem] flex-1">
+                <FieldLabel>Name</FieldLabel>
+                <FieldControl
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Card processing fee"
-                  required
+                  {...v.control('name')}
                 />
               </Field>
-              <Field label="Customer-facing line label" className="min-w-[14rem] flex-1">
-                <Input
+              <Field {...v.field('label')} className="min-w-[14rem] flex-1">
+                <FieldLabel>Customer-facing line label</FieldLabel>
+                <FieldControl
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
                   placeholder="Card processing fee"
-                  required
+                  {...v.control('label')}
                 />
               </Field>
             </div>
 
             <div className="flex flex-row flex-wrap items-end gap-3">
-              <Field label="Type" className="min-w-[9rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[9rem] flex-1">
+                <FieldLabel>Type</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="percentage">Percentage</option>
+                      <option value="flat">Flat amount</option>
+                    </NativeSelect>
+                  }
                   value={type}
                   onChange={(e) => setType(e.target.value as SurchargeType)}
-                >
-                  <option value="percentage">Percentage</option>
-                  <option value="flat">Flat amount</option>
-                </NativeSelect>
+                />
               </Field>
-              <Field
-                label={type === 'percentage' ? 'Percent (%)' : 'Amount ($)'}
-                className="min-w-[8rem] flex-1"
-              >
-                <Input
+              <Field {...v.field('value')} className="min-w-[8rem] flex-1">
+                <FieldLabel>{type === 'percentage' ? 'Percent (%)' : 'Amount ($)'}</FieldLabel>
+                <FieldControl
                   type="number"
                   inputMode="decimal"
                   step="any"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
+                  {...v.control('value')}
                 />
               </Field>
-              <Field label="Computed on" className="min-w-[12rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Computed on</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="total">Order total (after tax)</option>
+                      <option value="subtotal_plus_shipping">Subtotal + shipping</option>
+                      <option value="subtotal">Subtotal only</option>
+                    </NativeSelect>
+                  }
                   value={basis}
                   onChange={(e) => setBasis(e.target.value as SurchargeBasis)}
-                >
-                  <option value="total">Order total (after tax)</option>
-                  <option value="subtotal_plus_shipping">Subtotal + shipping</option>
-                  <option value="subtotal">Subtotal only</option>
-                </NativeSelect>
+                />
               </Field>
-              <Field label="Cap ($, optional)" className="min-w-[8rem] flex-1">
-                <Input
+              <Field className="min-w-[8rem] flex-1">
+                <FieldLabel>Cap ($, optional)</FieldLabel>
+                <FieldControl
                   type="number"
                   inputMode="decimal"
                   step="any"
@@ -358,7 +381,7 @@ function RuleForm({
               </p>
             </div>
 
-            <div className="flex flex-row items-center gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+            <div className="border-base-300 bg-base-200 flex flex-row items-center gap-3 rounded border p-3">
               <p className="text-base-content/70 text-sm">On a $100 order →</p>
               <p className="text-sm">
                 fee <strong>{money.format(Math.max(0, sample))}</strong>
@@ -370,9 +393,9 @@ function RuleForm({
             </div>
 
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
 
             <div className="flex flex-row justify-end gap-2">
@@ -387,22 +410,5 @@ function RuleForm({
         </form>
       </CardBody>
     </Card>
-  );
-}
-
-function Field({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
-      <p className="text-base-content/70 text-xs font-medium">{label}</p>
-      {children}
-    </div>
   );
 }

@@ -114,11 +114,7 @@ function InlineDetailBody({ target, children }: InlineDetailProps) {
   return (
     <Stack gap={0} className="h-full">
       <DetailHeader target={target} />
-      <div
-        className={
-          fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto bg-[var(--color-bg-subtle)] p-6'
-        }
-      >
+      <div className={fullBleed ? 'min-h-0 flex-1' : 'bg-base-200 flex-1 overflow-y-auto p-6'}>
         {children}
       </div>
       {/* Floored below the scroll body — the body's form teleports its Save here so
@@ -215,13 +211,7 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
             creates + single-form details manage their own internal scroll. */}
         <Stack gap={0} className={fixedHeight ? 'h-[88vh]' : 'max-h-[88vh]'}>
           <DetailHeader target={target} />
-          <div
-            className={
-              fullBleed
-                ? 'min-h-0 flex-1'
-                : 'flex-1 overflow-y-auto bg-[var(--color-bg-subtle)] p-6'
-            }
-          >
+          <div className={fullBleed ? 'min-h-0 flex-1' : 'bg-base-200 flex-1 overflow-y-auto p-6'}>
             {children}
           </div>
           {/* Floored below the scroll body so a teleported Save pins to the modal's
@@ -287,8 +277,8 @@ function DetailHeader({ target }: { target: DetailTarget }) {
     <ModuleProvider module={manifest.id}>
       {/* Title on the left, window controls on the right with Close last (the
           corner), matching the wizard F layout (docs/86). */}
-      <div className="flex h-[52px] shrink-0 items-center gap-1 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] pr-2 pl-5">
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+      <div className="border-base-300 bg-base-100 flex h-[52px] shrink-0 items-center gap-1 border-b pr-2 pl-5">
+        <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
           {describeTarget(target)}
         </span>
 

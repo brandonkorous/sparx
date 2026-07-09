@@ -54,7 +54,7 @@ Two component libraries, cleanly split by **whose brand they wear**:
 
 | Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                   |
 | --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
-| `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
+| `@sparx/ui` (`packages/ui`) | silicaui: `--color-base-*`, `--color-*` (semantic), `--color-module-*` (from `@sparx/brand`) | **sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
 | `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
 They never overlap. `@sparx/ui` is the operator's tools, in sparx Indigo. `@sparx/site-ui` is
@@ -164,9 +164,10 @@ There is no flat `variant: primary | soft | …` enum anywhere — `primary` is 
 ([packages/site-ui/src/components/\_recipes/variants.ts](../packages/site-ui/src/components/_recipes/variants.ts)
 \+ [styles/recipes.css](../packages/site-ui/src/styles/recipes.css)):
 
-- **`color` axis** — a `.st-c-{color}` role-var class (the `--st-*` analog of tokens.css `.sx-c-*`)
-  that maps the five role vars `--c-bg / --c-fg / --c-ink / --c-hover / --c-tint` from `--st-*`
-  (oklch mixes toward the readable ink, mirroring `@sparx/ui`). Slots: `primary, secondary, accent,
+- **`color` axis** — a `.st-c-{color}` role-var class (the tenant-themed `--st-*` recipe; the
+  dashboard side has since moved to silicaui plugin classes, so this role-var quartet is now
+  site-ui's own) that maps the five role vars `--c-bg / --c-fg / --c-ink / --c-hover / --c-tint`
+  from `--st-*` (oklch mixes toward the readable ink). Slots: `primary, secondary, accent,
 neutral, info, success, warning, danger` **+ `surface`** (base-100 fill / base-content ink — the
   light-glass / chrome case). Any string is accepted (`color="brand-mint"`) once a matching
   `.st-c-*` rule exists.

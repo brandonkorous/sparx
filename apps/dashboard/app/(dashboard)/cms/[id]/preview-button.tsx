@@ -13,7 +13,7 @@
 
 import * as React from 'react';
 import { toast } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { Check, Eye } from 'lucide-react';
 import { mintPreviewUrl } from '../actions';
 

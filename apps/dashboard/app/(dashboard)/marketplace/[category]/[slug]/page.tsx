@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import type { MarketplaceListing, MarketplaceListResponse } from '../../_types';
 
 import { api } from '@/lib/api-rest-client';
@@ -91,10 +91,10 @@ export default async function ListingDetailPage({
               <img
                 src={preview}
                 alt={`${item.name} preview`}
-                className="w-full rounded-lg border border-[var(--color-border)]"
+                className="border-base-300 w-full rounded-lg border"
               />
             ) : (
-              <div className="aspect-[16/10] w-full rounded-lg border border-[var(--color-border)]" />
+              <div className="border-base-300 aspect-[16/10] w-full rounded-lg border" />
             )}
             <p className="text-base-content/70 mt-4">{item.description ?? item.tagline ?? ''}</p>
           </div>

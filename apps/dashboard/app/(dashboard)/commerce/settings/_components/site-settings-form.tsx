@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input, Label, Switch } from 'silicaui-react';
+import { Button, Input, Label, Switch } from '@wizeworks/silicaui-react';
 
 import { updateCommerceSiteSettingsAction } from '../../site-actions';
 
@@ -114,7 +114,7 @@ export function CommerceSiteSettingsForm({
           id="warehouse"
           value={form.defaultWarehouseId ?? ''}
           onChange={(e) => set('defaultWarehouseId', e.target.value || null)}
-          className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-default)] px-3 py-2 text-sm"
+          className="border-base-300 bg-base-100 rounded border px-3 py-2 text-sm"
         >
           <option value="">— None —</option>
           {warehouses.map((w) => (
@@ -140,8 +140,8 @@ export function CommerceSiteSettingsForm({
                 onClick={() => toggleChannel(c.id)}
                 className={
                   on
-                    ? 'rounded border border-[var(--module-active)] bg-[var(--module-active-tint)] px-3 py-1.5 text-xs text-[var(--module-active-text)]'
-                    : 'rounded border border-[var(--color-border-default)] px-3 py-1.5 text-xs hover:bg-[var(--color-bg-subtle)]'
+                    ? 'border-module bg-module bg-soft text-module rounded border px-3 py-1.5 text-xs'
+                    : 'border-base-300 hover:bg-base-200 rounded border px-3 py-1.5 text-xs'
                 }
               >
                 {c.label}
@@ -213,8 +213,8 @@ export function CommerceSiteSettingsForm({
 
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-col gap-0">
-          {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
-          {saved && !error && <p className="text-xs text-[var(--color-success-text)]">Saved</p>}
+          {error && <p className="text-danger text-xs">{error}</p>}
+          {saved && !error && <p className="text-success text-xs">Saved</p>}
         </div>
         <Button color="module" disabled={pending} onClick={onSave}>
           Save settings

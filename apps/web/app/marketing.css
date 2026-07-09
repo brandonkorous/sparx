@@ -42,7 +42,7 @@
   width: 100%;
   height: 100%;
   background-color: var(--tile-tint);
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--color-base-300);
   border-radius: 12px;
   padding: 22px;
   text-decoration: none;
@@ -54,7 +54,7 @@
 }
 a.mkt-module-tile:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--tile-accent) 42%, var(--color-border-default));
+  border-color: color-mix(in oklab, var(--tile-accent) 42%, var(--color-base-300));
   box-shadow: 0 10px 28px rgba(9, 9, 11, 0.07);
 }
 
@@ -90,9 +90,9 @@ a.mkt-module-tile:hover {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
-  background-color: var(--color-border-default);
-  border-top: 1px solid var(--color-border-default);
-  border-bottom: 1px solid var(--color-border-default);
+  background-color: var(--color-base-300);
+  border-top: 1px solid var(--color-base-300);
+  border-bottom: 1px solid var(--color-base-300);
 }
 @media (max-width: 1024px) {
   .mkt-grid-5-wrap {
@@ -180,7 +180,7 @@ a.mkt-module-tile:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-tertiary);
+  color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
 }
 @media (max-width: 640px) {
   .mkt-swap-row {
@@ -232,7 +232,7 @@ a.mkt-module-tile:hover {
    (<footer>) aren't <section>, so they stay full width. */
 .mkt-paneled {
   --panel-radius: clamp(20px, 2vw, 28px);
-  background: var(--color-surface-300);
+  background: var(--color-base-300);
 }
 .mkt-paneled > section {
   margin: 0;
@@ -243,25 +243,25 @@ a.mkt-module-tile:hover {
    surface — front-of-house copy, social proof, pricing, FAQ. */
 .mkt-paneled
   > section:not(.mkt-accent):not(.mkt-brand):not(.mkt-stage):not(.mkt-ground):not(.mkt-secondary) {
-  background-color: var(--color-surface-100) !important;
+  background-color: var(--color-base-100) !important;
 }
 /* stage tier: the recessed surface-200 shelf that visual exhibits sit on (the
    modules grid, dashboard showcase, code/API panel, comparison table). Set back
    one level from content, so a long run breaks into distinct stacked plates. */
 .mkt-paneled > section.mkt-stage {
-  background-color: var(--color-surface-200) !important;
+  background-color: var(--color-base-200) !important;
 }
 /* ground tier: a section dropped to the page base (surface-300), FLUSH with no
    plate of its own. No rounding — it IS the reveal colour, so the lifted content
    above and the stage below notch straight into it. The recessed "baseline /
    before" beat the rest of the page floats above. */
 .mkt-paneled > section.mkt-ground {
-  background-color: var(--color-surface-300) !important;
+  background-color: var(--color-base-300) !important;
   border-radius: 0;
 }
 /* cinematic accent: theme-aware inverse surface */
 .mkt-paneled > section.mkt-accent {
-  background-color: var(--color-surface-opposite) !important;
+  background-color: var(--color-neutral) !important;
 }
 /* brand region (hero + video): a flush full-bleed purple band — it runs up to
    the header with no seam, and the only rounded element up top is the video
@@ -279,10 +279,10 @@ a.mkt-module-tile:hover {
    warm counterweight to the indigo hero, used for the developer/API beat. A
    colored plate between the neutral surfaces above and below; it rounds like any
    plate so the deeper page notches through its corners. Content inside inverts to
-   on-color (white). Pulls --sparx-secondary (the brand pink), NOT the neutral
-   slate --color-secondary UI token. */
+   on-color (white). Pulls the silica --color-secondary, which the @sparx/brand
+   theme defines as the brand pink (#db2777). */
 .mkt-paneled > section.mkt-secondary {
-  background-color: var(--sparx-secondary) !important;
+  background-color: var(--color-secondary) !important;
 }
 /* same-tier merge: flatten the seam between two adjacent same-tier sections so a
    run reads as one continuous object (content↔content, stage↔stage, accent↔accent).
@@ -397,13 +397,13 @@ a.mkt-module-tile:hover {
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 400;
-  color: var(--color-text-secondary);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.15s ease;
 }
 .mkt-navlink:hover {
-  color: var(--color-text-primary);
+  color: var(--color-base-content);
 }
 .mkt-navlink-trigger {
   height: auto;
@@ -422,15 +422,15 @@ a.mkt-module-tile:hover {
   transition: background-color 0.12s ease;
 }
 .mkt-mm-item:hover {
-  background-color: var(--color-bg-page);
+  background-color: var(--color-base-200);
 }
 
 /* The mobile drawer pops out from the top, full-width, when open. */
 .mkt-mobile-drawer {
   position: fixed;
   inset: 64px 0 0 0;
-  background-color: var(--color-bg-page);
-  border-top: 1px solid var(--color-border-default);
+  background-color: var(--color-base-200);
+  border-top: 1px solid var(--color-base-300);
   padding: 24px var(--gutter-page);
   display: flex;
   flex-direction: column;
@@ -473,7 +473,7 @@ a.mkt-module-tile:hover {
   justify-content: center;
   gap: 9px;
   padding: 15px;
-  background-color: var(--sparx-primary);
+  background-color: var(--color-primary);
   border: none;
   border-radius: 10px;
   font-family: var(--font-sans);
@@ -557,7 +557,7 @@ a.mkt-module-tile:hover {
   min-width: 230px;
   font-size: 13.5px;
   line-height: 18px;
-  color: var(--color-text-secondary);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
 }
 @media (max-width: 680px) {
   .mkt-ft-summary {
@@ -633,13 +633,13 @@ a.mkt-module-tile:hover {
 .mkt-pipeline {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--color-base-300);
   border-radius: 14px;
   overflow: hidden;
 }
 /* Stage dividers: left border by default, first in each row has none. */
 .mkt-pipeline > .mkt-stage {
-  border-left: 1px solid var(--color-border-default);
+  border-left: 1px solid var(--color-base-300);
 }
 .mkt-pipeline > .mkt-stage:nth-child(1) {
   border-left: none;
@@ -652,7 +652,7 @@ a.mkt-module-tile:hover {
     border-left: none;
   }
   .mkt-pipeline > .mkt-stage:nth-child(n + 3) {
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
 }
 @media (max-width: 640px) {
@@ -663,7 +663,7 @@ a.mkt-module-tile:hover {
     border-left: none;
   }
   .mkt-pipeline > .mkt-stage:nth-child(n + 2) {
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
 }
 
@@ -736,8 +736,8 @@ a.mkt-module-tile:hover {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
-  background-color: var(--color-border-default);
-  border: 1px solid var(--color-border-default);
+  background-color: var(--color-base-300);
+  border: 1px solid var(--color-base-300);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -756,13 +756,13 @@ a.mkt-module-tile:hover {
   display: grid;
   grid-template-columns: 1fr 56px 1fr;
   align-items: stretch;
-  background-color: var(--color-bg-surface);
-  border: 1px solid var(--color-border-default);
+  background-color: var(--color-base-100);
+  border: 1px solid var(--color-base-300);
   border-radius: 14px;
   overflow: hidden;
 }
 .mkt-auto-then {
-  border-left: 1px solid var(--color-border-default);
+  border-left: 1px solid var(--color-base-300);
 }
 .mkt-auto-arrow svg {
   display: block;
@@ -773,7 +773,7 @@ a.mkt-module-tile:hover {
   }
   .mkt-auto-then {
     border-left: none;
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
   .mkt-auto-arrow {
     transform: rotate(90deg);
@@ -907,7 +907,7 @@ a.mkt-module-tile:hover {
   grid-template-columns: repeat(4, 1fr);
 }
 .mkt-bstats > .mkt-bstat {
-  border-left: 1px solid var(--color-bg-subtle);
+  border-left: 1px solid var(--color-base-200);
 }
 .mkt-bstats > .mkt-bstat:first-child {
   border-left: none;
@@ -920,7 +920,7 @@ a.mkt-module-tile:hover {
     border-left: none;
   }
   .mkt-bstats > .mkt-bstat:nth-child(n + 3) {
-    border-top: 1px solid var(--color-bg-subtle);
+    border-top: 1px solid var(--color-base-200);
   }
 }
 
@@ -930,10 +930,10 @@ a.mkt-module-tile:hover {
   align-items: center;
   gap: 18px;
   padding: 18px 24px;
-  background-color: var(--color-bg-surface);
+  background-color: var(--color-base-100);
 }
 .mkt-auto-grid .mkt-auto-chev {
-  color: var(--color-text-tertiary);
+  color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -995,7 +995,7 @@ a.mkt-module-tile:hover {
   gap: 8px;
 }
 .mkt-consent-link {
-  color: var(--sparx-primary);
+  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -1195,12 +1195,12 @@ a.mkt-module-tile:hover {
   margin: 0;
   padding: 16px;
   border-radius: var(--radius-lg);
-  background-color: var(--color-bg-subtle);
-  border: 1px solid var(--color-border-default);
+  background-color: var(--color-base-200);
+  border: 1px solid var(--color-base-300);
   font-family: var(--font-mono);
   font-size: 12.5px;
   line-height: 1.6;
-  color: var(--color-text-primary);
+  color: var(--color-base-content);
   overflow: auto;
   max-height: 340px;
   white-space: pre;
@@ -1229,8 +1229,8 @@ a.mkt-module-tile:hover {
   flex-direction: column;
   gap: 12px;
   padding: 22px;
-  background-color: var(--color-bg-surface);
-  border: 1px solid var(--color-border-default);
+  background-color: var(--color-base-100);
+  border: 1px solid var(--color-base-300);
   border-radius: var(--radius-xl);
   text-decoration: none;
   transition:
@@ -1239,7 +1239,7 @@ a.mkt-module-tile:hover {
     transform 0.15s ease;
 }
 .tool-card:hover {
-  border-color: var(--color-border-strong);
+  border-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
@@ -1258,13 +1258,13 @@ a.mkt-module-tile:hover {
   box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.06);
 }
 .tool-card__arrow {
-  color: var(--color-text-tertiary);
+  color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
   transition:
     transform 0.15s ease,
     color 0.15s ease;
 }
 .tool-card:hover .tool-card__arrow {
-  color: var(--color-text-primary);
+  color: var(--color-base-content);
   transform: translate(2px, -2px);
 }
 .tool-card__name {
@@ -1273,14 +1273,14 @@ a.mkt-module-tile:hover {
   font-weight: 500;
   font-size: 16px;
   letter-spacing: -0.01em;
-  color: var(--color-text-primary);
+  color: var(--color-base-content);
 }
 .tool-card__desc {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 13.5px;
   line-height: 20px;
-  color: var(--color-text-secondary);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
@@ -1475,7 +1475,7 @@ a.mkt-module-tile:hover {
   padding: var(--section-py-xl) var(--gutter-page);
   /* Purple band that matches the hero, so the video's rounded corner notches
      read as purple and connect to the flush hero above. */
-  background-color: var(--sparx-primary);
+  background-color: var(--color-primary);
   scroll-margin-top: 80px;
 }
 .mkt-video-bg {
@@ -1550,13 +1550,13 @@ a.mkt-module-tile:hover {
   box-shadow: var(--shadow-md);
 }
 .mkt-role-card:hover .mkt-role-arrow {
-  color: var(--sparx-primary);
+  color: var(--color-primary);
 }
 .mkt-role-card:hover .mkt-role-arrow span {
   transform: translateX(3px);
 }
 .mkt-role-card:focus-visible {
-  outline: 2px solid var(--sparx-primary);
+  outline: 2px solid var(--color-primary);
   outline-offset: 3px;
 }
 .mkt-role-arrow {
@@ -1566,7 +1566,7 @@ a.mkt-module-tile:hover {
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
   transition: color 0.15s ease;
   white-space: nowrap;
 }
@@ -1592,26 +1592,26 @@ a.mkt-module-tile:hover {
 .mkt-file-input {
   font-family: var(--font-sans);
   font-size: 14px;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-default);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+  border: 1px solid var(--color-base-300);
   border-radius: var(--radius-md);
-  background-color: var(--color-bg-surface);
+  background-color: var(--color-base-100);
   padding: 8px 10px;
   width: 100%;
   cursor: pointer;
 }
 .mkt-file-input:focus-visible {
   outline: none;
-  border-color: var(--sparx-primary);
+  border-color: var(--color-primary);
   box-shadow: var(--shadow-focus);
 }
 .mkt-file-input::file-selector-button {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-primary);
-  background-color: var(--color-bg-subtle);
-  border: 1px solid var(--color-border-default);
+  color: var(--color-base-content);
+  background-color: var(--color-base-200);
+  border: 1px solid var(--color-base-300);
   border-radius: var(--radius-sm);
   padding: 6px 12px;
   margin-right: 12px;
@@ -1619,7 +1619,7 @@ a.mkt-module-tile:hover {
   transition: background-color 0.12s ease;
 }
 .mkt-file-input::file-selector-button:hover {
-  background-color: var(--color-border-default);
+  background-color: var(--color-base-300);
 }
 
 /* Numbered "how we hire" ledger: index + text, hairline dividers. */
@@ -1628,10 +1628,10 @@ a.mkt-module-tile:hover {
   gap: 20px;
   align-items: baseline;
   padding: 22px 0;
-  border-top: 1px solid var(--color-border-default);
+  border-top: 1px solid var(--color-base-300);
 }
 .mkt-step-row:last-child {
-  border-bottom: 1px solid var(--color-border-default);
+  border-bottom: 1px solid var(--color-base-300);
 }
 @media (prefers-reduced-motion: reduce) {
   .mkt-role-card,
@@ -1658,7 +1658,7 @@ a.mkt-module-tile:hover {
   grid-template-columns: repeat(3, 1fr);
 }
 .mkt-proof-3 > * {
-  border-left: 1px solid var(--color-border-default);
+  border-left: 1px solid var(--color-base-300);
 }
 .mkt-proof-3 > *:first-child {
   border-left: none;
@@ -1669,7 +1669,7 @@ a.mkt-module-tile:hover {
   }
   .mkt-proof-3 > * {
     border-left: none;
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
   .mkt-proof-3 > *:first-child {
     border-top: none;
@@ -1684,10 +1684,10 @@ a.mkt-module-tile:hover {
   gap: 32px;
   align-items: center;
   padding: 32px 0;
-  border-top: 1px solid var(--color-border-default);
+  border-top: 1px solid var(--color-base-300);
 }
 .mkt-opp-row:last-child {
-  border-bottom: 1px solid var(--color-border-default);
+  border-bottom: 1px solid var(--color-base-300);
 }
 @media (max-width: 640px) {
   .mkt-opp-row {
@@ -1791,11 +1791,11 @@ a.mkt-module-tile:hover {
 .mkt-formats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--color-border-default);
-  border-bottom: 1px solid var(--color-border-default);
+  border-top: 1px solid var(--color-base-300);
+  border-bottom: 1px solid var(--color-base-300);
 }
 .mkt-formats > * {
-  border-left: 1px solid var(--color-border-default);
+  border-left: 1px solid var(--color-base-300);
 }
 .mkt-formats > *:first-child {
   border-left: none;
@@ -1808,7 +1808,7 @@ a.mkt-module-tile:hover {
     border-left: none;
   }
   .mkt-formats > *:nth-child(n + 3) {
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
 }
 @media (max-width: 640px) {
@@ -1817,7 +1817,7 @@ a.mkt-module-tile:hover {
   }
   .mkt-formats > * {
     border-left: none;
-    border-top: 1px solid var(--color-border-default);
+    border-top: 1px solid var(--color-base-300);
   }
   .mkt-formats > *:first-child {
     border-top: none;
@@ -1878,7 +1878,7 @@ a.mkt-module-tile:hover {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.7;
-  color: var(--color-text-secondary);
+  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
 }
 .mkt-prose > * {
   margin: 0 0 18px;
@@ -1890,7 +1890,7 @@ a.mkt-module-tile:hover {
 .mkt-prose h3 {
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: var(--color-text-primary);
+  color: var(--color-base-content);
   margin-top: 32px;
 }
 .mkt-prose h2 {
@@ -1907,6 +1907,6 @@ a.mkt-module-tile:hover {
   margin-bottom: 8px;
 }
 .mkt-prose a {
-  color: var(--sparx-primary);
+  color: var(--color-primary);
   text-underline-offset: 2px;
 }

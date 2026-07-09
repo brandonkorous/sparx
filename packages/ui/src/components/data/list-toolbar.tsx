@@ -99,7 +99,7 @@ export function ListToolbar({
           <div className="relative min-w-48 flex-1">
             <Search
               aria-hidden
-              className="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]"
+              className="text-base-content/50 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2"
             />
             <Input
               type="search"
@@ -152,7 +152,7 @@ export function ListToolbar({
               <div
                 role="group"
                 aria-label="List view"
-                className="inline-flex shrink-0 rounded-md border border-[var(--color-border-default)] p-0.5"
+                className="inline-flex shrink-0 rounded-md border border-[var(--color-base-300)] p-0.5"
               >
                 <ViewButton
                   active={view === 'table'}
@@ -181,9 +181,9 @@ export function ListToolbar({
               key={f.key}
               type="button"
               onClick={() => onFilterChange?.(f.key, '')}
-              className="inline-flex items-center gap-1 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] py-1 pr-1.5 pl-2.5 text-xs text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text-primary)]"
+              className="text-base-content/70 hover:text-base-content inline-flex items-center gap-1 rounded-full border border-[var(--color-base-300)] bg-[var(--color-base-200)] py-1 pr-1.5 pl-2.5 text-xs transition-colors"
             >
-              <span className="text-[var(--color-text-tertiary)]">{f.label}:</span>
+              <span className="text-base-content/50">{f.label}:</span>
               <span className="font-medium">{labelForValue(f)}</span>
               <X aria-hidden className="h-3.5 w-3.5" />
               <span className="sr-only">Remove {f.label} filter</span>
@@ -213,7 +213,7 @@ function RefreshButton({ onRefresh }: { onRefresh: () => void }) {
       type="button"
       aria-label="Refresh"
       onClick={handleClick}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-border-default)] text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none"
+      className="text-base-content/50 hover:text-base-content/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-base-300)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none"
     >
       <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />
     </button>
@@ -236,9 +236,7 @@ function ViewButton({ active, label, onClick, children }: ViewButtonProps) {
       onClick={onClick}
       className={cn(
         'flex h-7 w-7 items-center justify-center rounded transition-colors',
-        active
-          ? 'bg-[var(--module-active-tint)] text-[var(--module-active)]'
-          : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'
+        active ? 'bg-module bg-soft text-module' : 'text-base-content/50 hover:text-base-content/70'
       )}
     >
       {children}

@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Bell } from 'lucide-react';
-import { Loading, Switch } from 'silicaui-react';
+import { Loading, Switch } from '@wizeworks/silicaui-react';
 
 import { subscribePushAction, unsubscribePushAction } from '../actions';
 
@@ -121,14 +121,14 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
           disabled={busy || supported === null}
         />
         <div className="flex flex-row items-center gap-2">
-          <Bell className="h-4 w-4 text-[var(--color-text-secondary)]" />
+          <Bell className="text-base-content/70 h-4 w-4" />
           <p className="text-sm">
             {enabled ? 'Browser notifications are on' : 'Enable browser notifications'}
           </p>
           {busy ? <Loading size="sm" /> : null}
         </div>
       </div>
-      {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
+      {error ? <p className="text-danger text-xs">{error}</p> : null}
     </div>
   );
 }

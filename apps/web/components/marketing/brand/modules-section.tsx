@@ -115,11 +115,15 @@ export function ModulesSection() {
     <Section id="modules" surface="page" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
-          accent="var(--module-commerce)"
+          accent="var(--color-module-commerce)"
           headline={
             <>
               Fourteen modules.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>One color each</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                One color each
+              </span>
             </>
           }
           lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
@@ -138,8 +142,8 @@ export function ModulesSection() {
                 // tint reads as a color key rather than the "wall of washes" the
                 // rule bans elsewhere — every card legitimately IS its module.
                 // Softer 8% wash (matching modules-grid) than a lead card's 12%.
-                backgroundColor: `color-mix(in oklab, ${m.hex} 8%, var(--color-bg-surface))`,
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: `color-mix(in oklab, ${m.hex} 8%, var(--color-base-100))`,
+                border: '1px solid var(--color-base-300)',
                 borderRadius: 'var(--radius-lg)',
               }}
             >
@@ -157,7 +161,7 @@ export function ModulesSection() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '15px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {m.module}
@@ -166,7 +170,7 @@ export function ModulesSection() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '12.5px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {m.colorName}
@@ -181,7 +185,7 @@ export function ModulesSection() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '12.5px',
                   lineHeight: '18px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {m.why}
@@ -225,8 +229,8 @@ function Callout({
         flexDirection: 'column',
         gap: '12px',
         padding: '28px',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderLeft: `3px solid ${accent}`,
         borderRadius: 'var(--radius-xl)',
       }}
@@ -236,7 +240,7 @@ function Callout({
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '16px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >
@@ -247,7 +251,7 @@ function Callout({
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
         }}
       >

@@ -11,11 +11,14 @@ import {
   CardBody,
   CardTitle,
   EmptyState,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createLotBatchAction } from '../../../_lib/lot-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
@@ -42,10 +45,19 @@ interface PickedVariant {
 // Single-step form. Resolve the item by SKU, pick the warehouse, and record the
 // batch (lot number, quantity, manufactured/expiry dates, hazmat, supplier ref).
 // Lots have no @detail drawer (the lot detail manages serials + recalls full-page),
-// so on success we navigate there. The fields stay an uncontrolled native form, so
-// the frame's toolbar primary bridges to it via requestSubmit().
+// so on success we navigate there.
 
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+// Non-negative integer quantity (traceability metadata, not the stock ledger).
+const quantityRule = (value: unknown): string | null => {
+  const s = String(value ?? '').trim();
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a quantity.';
+  if (n < 0) return 'Quantity cannot be negative.';
+  return null;
+};
 
 interface LotCreateFormProps {
   surface: 'page' | 'overlay';
@@ -60,26 +72,28 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [variant, setVariant] = React.useState<PickedVariant | null>(null);
 
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [fieldsDirty, setFieldsDirty] = React.useState(false);
-  const recomputeDirty = React.useCallback(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const str = (k: string) => {
-      const v = data.get(k);
-      return typeof v === 'string' ? v.trim() : '';
-    };
-    setFieldsDirty(
-      str('lotNumber') !== '' ||
-        (str('quantity') !== '' && str('quantity') !== '0') ||
-        str('manufacturedAt') !== '' ||
-        str('expiresAt') !== '' ||
-        str('hazmatClass') !== 'none' ||
-        str('supplierBatchRef') !== ''
-    );
-  }, []);
-  const dirty = variant !== null || fieldsDirty;
+  const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
+  const [lotNumber, setLotNumber] = React.useState('');
+  const [quantity, setQuantity] = React.useState('0');
+  const [manufacturedAt, setManufacturedAt] = React.useState('');
+  const [expiresAt, setExpiresAt] = React.useState('');
+  const [hazmatClass, setHazmatClass] = React.useState('none');
+  const [supplierBatchRef, setSupplierBatchRef] = React.useState('');
+
+  const values = { lotNumber, quantity };
+  const v = useFieldValidation(values, {
+    lotNumber: rule.required('Enter a lot number.'),
+    quantity: quantityRule,
+  });
+
+  const dirty =
+    variant !== null ||
+    lotNumber.trim() !== '' ||
+    (quantity.trim() !== '' && quantity.trim() !== '0') ||
+    manufacturedAt !== '' ||
+    expiresAt !== '' ||
+    hazmatClass !== 'none' ||
+    supplierBatchRef.trim() !== '';
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'lot' });
 
   const close = React.useCallback(() => {
@@ -98,29 +112,26 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
     if (!variant) {
       setError('Resolve an item by SKU first.');
       return;
     }
-    const form = new FormData(e.currentTarget);
-    const warehouseId = str(form.get('warehouseId'));
-    const lotNumber = str(form.get('lotNumber'));
-    if (!warehouseId || !lotNumber) {
-      setError('Choose a warehouse and enter a lot number.');
+    if (!v.validate()) return;
+    if (!warehouseId) {
+      setError('Choose a warehouse.');
       return;
     }
     const input = {
       variantId: variant.variantId,
       warehouseId,
-      lotNumber,
-      quantity: Math.max(0, Math.round(Number(str(form.get('quantity')) || '0'))),
-      hazmatClass: str(form.get('hazmatClass')) || 'none',
-      ...isoDate('manufacturedAt', form),
-      ...isoDate('expiresAt', form),
-      ...nonEmpty('supplierBatchRef', form),
+      lotNumber: lotNumber.trim(),
+      quantity: Math.max(0, Math.round(Number(quantity.trim() || '0'))),
+      hazmatClass: hazmatClass || 'none',
+      ...(manufacturedAt ? { manufacturedAt: `${manufacturedAt}T00:00:00.000Z` } : {}),
+      ...(expiresAt ? { expiresAt: `${expiresAt}T00:00:00.000Z` } : {}),
+      ...(supplierBatchRef.trim() ? { supplierBatchRef: supplierBatchRef.trim() } : {}),
     };
 
     startTransition(async () => {
@@ -176,94 +187,117 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
               'A lot is one batch of an item at a warehouse. Quantity is traceability metadata — on-hand is managed separately through the stock ledger.',
           }}
           actions={{
-            onNext: () => formRef.current?.requestSubmit(),
+            onNext: submit,
             nextLabel: 'Create lot',
             nextLoading: pending,
             nextDisabled: pending,
           }}
         >
-          <form
-            ref={formRef}
-            onSubmit={onSubmit}
-            onInput={recomputeDirty}
-            onChange={recomputeDirty}
-            className="contents"
-          >
-            <Card>
-              <CardBody>
-                <div className="flex flex-col gap-1">
-                  <CardTitle>Lot details</CardTitle>
-                  <p className="opacity-70">
-                    Resolve the item by SKU, choose its warehouse, and record the batch.
-                  </p>
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <CardTitle>Lot details</CardTitle>
+                <p className="opacity-70">
+                  Resolve the item by SKU, choose its warehouse, and record the batch.
+                </p>
+              </div>
+              <div className="flex flex-col gap-4">
+                <SkuResolver
+                  variant={variant}
+                  onResolve={setVariant}
+                  onClear={() => setVariant(null)}
+                />
+
+                <div className="flex flex-row flex-wrap gap-3">
+                  <Field className="min-w-[14rem] flex-1">
+                    <FieldLabel>Warehouse</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {warehouses.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.name} ({w.code})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                      value={warehouseId}
+                      onChange={(e) => setWarehouseId(e.target.value)}
+                    />
+                  </Field>
+                  <Field className="min-w-[10rem] flex-1" {...v.field('lotNumber')}>
+                    <FieldLabel required>Lot number</FieldLabel>
+                    <FieldControl
+                      value={lotNumber}
+                      onChange={(e) => setLotNumber(e.target.value)}
+                      placeholder="e.g. LOT-2026-001"
+                      {...v.control('lotNumber')}
+                    />
+                  </Field>
+                  <Field className="min-w-[7rem]" {...v.field('quantity')}>
+                    <FieldLabel>Quantity</FieldLabel>
+                    <FieldControl
+                      type="number"
+                      min={0}
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      {...v.control('quantity')}
+                    />
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <SkuResolver
-                    variant={variant}
-                    onResolve={setVariant}
-                    onClear={() => setVariant(null)}
+
+                <div className="flex flex-row flex-wrap gap-3">
+                  <Field className="min-w-[10rem]">
+                    <FieldLabel>Manufactured</FieldLabel>
+                    <FieldControl
+                      type="date"
+                      value={manufacturedAt}
+                      onChange={(e) => setManufacturedAt(e.target.value)}
+                    />
+                  </Field>
+                  <Field className="min-w-[10rem]">
+                    <FieldLabel>Expires</FieldLabel>
+                    <FieldControl
+                      type="date"
+                      value={expiresAt}
+                      onChange={(e) => setExpiresAt(e.target.value)}
+                    />
+                  </Field>
+                  <Field className="min-w-[14rem] flex-1">
+                    <FieldLabel>Hazmat class</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {HAZMAT_OPTIONS.map((o) => (
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                      value={hazmatClass}
+                      onChange={(e) => setHazmatClass(e.target.value)}
+                    />
+                  </Field>
+                </div>
+
+                <Field>
+                  <FieldLabel>Supplier batch reference</FieldLabel>
+                  <FieldControl
+                    value={supplierBatchRef}
+                    onChange={(e) => setSupplierBatchRef(e.target.value)}
+                    placeholder="Optional"
                   />
+                </Field>
 
-                  <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-                      <Label htmlFor="warehouseId">Warehouse</Label>
-                      <NativeSelect
-                        id="warehouseId"
-                        name="warehouseId"
-                        defaultValue={warehouses[0]?.id}
-                      >
-                        {warehouses.map((w) => (
-                          <option key={w.id} value={w.id}>
-                            {w.name} ({w.code})
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                      <Label htmlFor="lotNumber">Lot number</Label>
-                      <Input id="lotNumber" name="lotNumber" placeholder="e.g. LOT-2026-001" />
-                    </div>
-                    <div className="flex min-w-[7rem] flex-col gap-1">
-                      <Label htmlFor="quantity">Quantity</Label>
-                      <Input id="quantity" name="quantity" type="number" min={0} defaultValue={0} />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[10rem] flex-col gap-1">
-                      <Label htmlFor="manufacturedAt">Manufactured</Label>
-                      <Input id="manufacturedAt" name="manufacturedAt" type="date" />
-                    </div>
-                    <div className="flex min-w-[10rem] flex-col gap-1">
-                      <Label htmlFor="expiresAt">Expires</Label>
-                      <Input id="expiresAt" name="expiresAt" type="date" />
-                    </div>
-                    <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-                      <Label htmlFor="hazmatClass">Hazmat class</Label>
-                      <NativeSelect id="hazmatClass" name="hazmatClass" defaultValue="none">
-                        {HAZMAT_OPTIONS.map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="supplierBatchRef">Supplier batch reference</Label>
-                    <Input id="supplierBatchRef" name="supplierBatchRef" placeholder="Optional" />
-                  </div>
-
-                  {error && (
-                    <p className="text-danger text-sm" role="alert" aria-live="polite">
-                      {error}
-                    </p>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-          </form>
+                {error && (
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                    {error}
+                  </FieldStatus>
+                )}
+              </div>
+            </CardBody>
+          </Card>
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>
@@ -310,7 +344,7 @@ function SkuResolver({
 
   if (variant) {
     return (
-      <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+      <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
           <p className="text-sm font-medium">{variant.title ?? variant.sku}</p>
           <p className="text-base-content/70 font-mono text-xs">{variant.sku}</p>
@@ -324,11 +358,10 @@ function SkuResolver({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
-        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-          <Label htmlFor="lot-item-sku">Item SKU</Label>
-          <Input
-            id="lot-item-sku"
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
+        <Field className="min-w-[12rem] flex-1">
+          <FieldLabel>Item SKU</FieldLabel>
+          <FieldControl
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
@@ -339,26 +372,16 @@ function SkuResolver({
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </div>
+        </Field>
         <Button color="module" type="button" onClick={resolve} disabled={busy}>
           {busy ? 'Finding…' : 'Find item'}
         </Button>
       </div>
-      {error && <p className="text-danger text-sm">{error}</p>}
+      {error && (
+        <FieldStatus status="error" attached={false}>
+          {error}
+        </FieldStatus>
+      )}
     </div>
   );
-}
-
-function isoDate(name: string, form: FormData): Record<string, string> {
-  const value = str(form.get(name));
-  return value ? { [name]: `${value}T00:00:00.000Z` } : {};
-}
-
-function nonEmpty(name: string, form: FormData): Record<string, string> {
-  const value = str(form.get(name));
-  return value ? { [name]: value } : {};
-}
-
-function str(value: FormDataEntryValue | null): string {
-  return typeof value === 'string' ? value.trim() : '';
 }

@@ -110,8 +110,8 @@ export function Footer() {
         paddingBottom: '32px',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
-        borderTop: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderTop: '1px solid var(--color-base-300)',
       }}
     >
       <div
@@ -138,7 +138,7 @@ export function Footer() {
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
             }}
           >
@@ -151,7 +151,8 @@ export function Footer() {
               alignItems: 'center',
               gap: '8px',
               padding: '5px 12px',
-              backgroundColor: 'var(--color-success-tint)',
+              backgroundColor:
+                'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
               borderRadius: '9999px',
               width: 'fit-content',
             }}
@@ -164,13 +165,13 @@ export function Footer() {
                 backgroundColor: 'var(--color-success)',
               }}
             />
-            <Eyebrow color="var(--color-success-text)">All systems operational</Eyebrow>
+            <Eyebrow color="var(--color-success)">All systems operational</Eyebrow>
           </span>
           <span
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             status.sparx.works
@@ -188,7 +189,7 @@ export function Footer() {
               minWidth: '140px',
             }}
           >
-            <Eyebrow color="var(--color-text-primary)">{col.title}</Eyebrow>
+            <Eyebrow color="var(--color-base-content)">{col.title}</Eyebrow>
             {col.links.map((link) => {
               const external = link.href.startsWith('http');
               return (
@@ -199,7 +200,7 @@ export function Footer() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     textDecoration: 'none',
                   }}
                 >
@@ -207,7 +208,10 @@ export function Footer() {
                   {external ? (
                     <span
                       aria-hidden
-                      style={{ color: 'var(--color-text-tertiary)', marginLeft: '4px' }}
+                      style={{
+                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                        marginLeft: '4px',
+                      }}
                     >
                       ↗
                     </span>
@@ -225,7 +229,7 @@ export function Footer() {
           flexDirection: 'column',
           gap: '20px',
           paddingTop: '32px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         <Eyebrow>The sparx domain network</Eyebrow>
@@ -239,8 +243,8 @@ export function Footer() {
                   fontSize: '12px',
                   color:
                     'primary' in d && d.primary
-                      ? 'var(--color-text-primary)'
-                      : 'var(--color-text-secondary)',
+                      ? 'var(--color-base-content)'
+                      : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {d.name}
@@ -255,7 +259,7 @@ export function Footer() {
         style={{
           justifyContent: 'space-between',
           paddingTop: '24px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
           rowGap: '12px',
         }}
       >
@@ -263,7 +267,7 @@ export function Footer() {
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           © 2026 WizeWorks, Inc. · Visalia, California · sparx is a registered trademark of
@@ -274,7 +278,7 @@ export function Footer() {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             v1.0 · 2026-05-27
@@ -283,7 +287,7 @@ export function Footer() {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             EN · USD

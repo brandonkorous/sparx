@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
 import { Display, Dot, Section, SectionHeader } from './primitives';
 import { Reveal } from './reveal';
@@ -51,11 +51,13 @@ export function EverythingIncluded() {
     <Section padding="lg">
       <Reveal>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               The tiles are the labels.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
                 Look what&apos;s under them
               </span>
             </>
@@ -63,7 +65,7 @@ export function EverythingIncluded() {
           lede={
             <>
               Each module is a deep product, not a checkbox. Together they ship{' '}
-              <b style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+              <b style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
                 {counts.live} capabilities
               </b>{' '}
               you can use today — with {counts.building} more in build. Here&apos;s a taste.
@@ -79,7 +81,7 @@ export function EverythingIncluded() {
           <div style={{ width: '320px', flexShrink: 0 }}>
             <Display size={72} lineHeight={68}>
               {counts.live}
-              <span style={{ color: 'var(--sparx-primary)' }}>+</span>
+              <span style={{ color: 'var(--color-primary)' }}>+</span>
             </Display>
             <p
               style={{
@@ -87,7 +89,7 @@ export function EverythingIncluded() {
                 fontFamily: SANS,
                 fontSize: '16px',
                 lineHeight: '25px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               shipped capabilities across {counts.modules} modules and the shared platform — one
@@ -106,7 +108,7 @@ export function EverythingIncluded() {
                 marginTop: '14px',
                 fontFamily: MONO,
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {counts.live} live · {counts.building} in build · {counts.planned} planned
@@ -124,11 +126,11 @@ export function EverythingIncluded() {
                   gap: '8px',
                   padding: '8px 14px',
                   borderRadius: '9999px',
-                  border: '1px solid var(--color-border-default)',
-                  backgroundColor: 'var(--color-bg-surface)',
+                  border: '1px solid var(--color-base-300)',
+                  backgroundColor: 'var(--color-base-100)',
                   fontFamily: SANS,
                   fontSize: '13.5px',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 <Dot color={cap.accent} size={7} />
@@ -143,12 +145,12 @@ export function EverythingIncluded() {
                 gap: '6px',
                 padding: '8px 14px',
                 borderRadius: '9999px',
-                border: '1px dashed var(--color-border-default)',
+                border: '1px dashed var(--color-base-300)',
                 backgroundColor: 'transparent',
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 fontWeight: 500,
-                color: 'var(--sparx-primary)',
+                color: 'var(--color-primary)',
                 textDecoration: 'none',
               }}
             >

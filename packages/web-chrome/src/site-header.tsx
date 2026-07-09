@@ -63,8 +63,8 @@ export function SiteHeader({
           // (the dashboard doesn't define --gutter-page).
           paddingLeft: 'var(--gutter-page, clamp(20px, 5vw, 64px))',
           paddingRight: 'var(--gutter-page, clamp(20px, 5vw, 64px))',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
           position: 'sticky',
           top: 0,
           zIndex: 50,
@@ -130,9 +130,9 @@ export function SiteHeader({
               height: 36,
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-bg-page)',
+              backgroundColor: 'var(--color-base-200)',
               cursor: 'pointer',
               padding: 0,
             }}
@@ -160,7 +160,7 @@ export function SiteHeader({
               justifyContent: 'space-between',
               background: 'transparent',
               border: 'none',
-              borderBottom: '1px solid var(--color-border-default)',
+              borderBottom: '1px solid var(--color-base-300)',
               width: '100%',
               cursor: 'pointer',
               textAlign: 'left',
@@ -180,7 +180,7 @@ export function SiteHeader({
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 400,
                     fontSize: '15px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     textDecoration: 'none',
                     padding: '10px 0 10px 16px',
                   }}
@@ -190,7 +190,7 @@ export function SiteHeader({
                     style={{
                       fontFamily: 'var(--font-sans)',
                       fontSize: '13px',
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       marginLeft: '8px',
                     }}
                   >
@@ -219,7 +219,7 @@ export function SiteHeader({
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '18px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               textDecoration: 'none',
               padding: '14px 0',
             }}
@@ -236,10 +236,10 @@ const drawerLinkStyle = {
   fontFamily: 'var(--font-sans)',
   fontWeight: 500,
   fontSize: '18px',
-  color: 'var(--color-text-primary)',
+  color: 'var(--color-base-content)',
   textDecoration: 'none',
   padding: '14px 0',
-  borderBottom: '1px solid var(--color-border-default)',
+  borderBottom: '1px solid var(--color-base-300)',
 } as const;
 
 function Caret({ open }: { open: boolean }) {

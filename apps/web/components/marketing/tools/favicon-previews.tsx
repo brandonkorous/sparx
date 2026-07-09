@@ -25,8 +25,8 @@ const cardStyle: React.CSSProperties = {
   gap: '10px',
   padding: '16px',
   borderRadius: 'var(--radius-lg)',
-  border: '1px solid var(--color-border-default)',
-  backgroundColor: 'var(--color-bg-surface)',
+  border: '1px solid var(--color-base-300)',
+  backgroundColor: 'var(--color-base-100)',
 };
 
 const labelStyle: React.CSSProperties = {
@@ -35,7 +35,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 500,
   letterSpacing: '0.04em',
   textTransform: 'uppercase',
-  color: 'var(--color-text-tertiary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
 };
 
 export function FaviconPreviews({
@@ -60,8 +60,8 @@ export function FaviconPreviews({
             padding: '8px 12px',
             borderRadius: '8px 8px 0 0',
             borderTop: `2px solid ${themeColor}`,
-            backgroundColor: 'var(--color-bg-subtle)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-200)',
+            border: '1px solid var(--color-base-300)',
           }}
         >
           <img src={small} alt="" width={16} height={16} style={{ flexShrink: 0 }} />
@@ -69,7 +69,7 @@ export function FaviconPreviews({
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -78,7 +78,11 @@ export function FaviconPreviews({
             {name}
           </span>
           <span
-            style={{ marginLeft: 'auto', color: 'var(--color-text-tertiary)', fontSize: '14px' }}
+            style={{
+              marginLeft: 'auto',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              fontSize: '14px',
+            }}
           >
             ×
           </span>
@@ -97,7 +101,7 @@ export function FaviconPreviews({
               width: '26px',
               height: '26px',
               borderRadius: '9999px',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               backgroundColor: '#fff',
               flexShrink: 0,
             }}
@@ -109,7 +113,7 @@ export function FaviconPreviews({
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '12px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {name}
@@ -118,7 +122,7 @@ export function FaviconPreviews({
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {domain}

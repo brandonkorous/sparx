@@ -14,7 +14,7 @@ export const SPARX_THEME_DARK = 'sparx-dark' as const;
 /** Every semantic color registered on the silicaui plugin (`colors:` list) that
  *  carries the sparx brand. `danger` is the sparx-specific N-th color beyond
  *  silicaui's defaults, paired with `--color-danger` in theme.css — it backs the
- *  `statusTone()` vocabulary. Keep in sync with each app's `@plugin 'silicaui'`. */
+ *  `statusTone()` vocabulary. Keep in sync with each app's `@plugin '@wizeworks/silicaui'`. */
 export const SPARX_PLUGIN_COLORS = [
   'primary',
   'secondary',

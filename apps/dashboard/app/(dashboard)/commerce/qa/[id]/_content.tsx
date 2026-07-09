@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -84,7 +84,7 @@ export async function QuestionDetailContent({ id }: Props) {
               {detail.productTitle ? (
                 <Link
                   href={`/commerce/products/${detail.productId}`}
-                  className="hover:text-[var(--module-active)] hover:underline"
+                  className="hover:text-module hover:underline"
                 >
                   {detail.productTitle}
                 </Link>

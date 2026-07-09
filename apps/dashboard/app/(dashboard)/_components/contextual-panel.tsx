@@ -82,9 +82,7 @@ function PanelHead({ eyebrow, title, dot }: { eyebrow: string; title: string; do
         {eyebrow}
       </Text>
       <div className="mt-0.5 flex items-center gap-2">
-        {dot && (
-          <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-[var(--module-active)]" />
-        )}
+        {dot && <span aria-hidden className="bg-module h-2 w-2 shrink-0 rounded-full" />}
         <Text size="sm" weight="medium" className="truncate">
           {title}
         </Text>
@@ -104,7 +102,7 @@ function PanelHeadIcon({
 }) {
   return (
     <div className="flex shrink-0 justify-center px-2 pt-4 pb-2" title={label}>
-      <Icon className="h-5 w-5 text-[var(--module-active)]" aria-hidden />
+      <Icon className="text-module h-5 w-5" aria-hidden />
     </div>
   );
 }

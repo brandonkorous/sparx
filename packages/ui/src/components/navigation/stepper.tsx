@@ -42,12 +42,9 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                 className={cn(
                   'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium',
                   'transition-colors duration-150',
-                  status === 'complete' &&
-                    'border-[var(--module-active)] bg-[var(--module-active)] text-white',
-                  status === 'current' &&
-                    'border-[var(--module-active)] bg-[var(--module-active-tint)] text-[var(--module-active-text)]',
-                  status === 'upcoming' &&
-                    'border-[var(--color-border-default)] text-[var(--color-text-tertiary)]'
+                  status === 'complete' && 'border-module bg-module text-white',
+                  status === 'current' && 'border-module bg-module bg-soft text-module',
+                  status === 'upcoming' && 'text-base-content/50 border-[var(--color-base-300)]'
                 )}
               >
                 {status === 'complete' ? <Check className="h-3.5 w-3.5" /> : idx + 1}
@@ -57,9 +54,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   aria-hidden
                   className={cn(
                     'h-px flex-1',
-                    status === 'complete'
-                      ? 'bg-[var(--module-active)]'
-                      : 'bg-[var(--color-border-default)]'
+                    status === 'complete' ? 'bg-module' : 'bg-[var(--color-base-300)]'
                   )}
                 />
               )}
@@ -68,17 +63,13 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
               <p
                 className={cn(
                   'text-xs leading-tight font-medium',
-                  status === 'current'
-                    ? 'text-[var(--color-text-primary)]'
-                    : 'text-[var(--color-text-secondary)]'
+                  status === 'current' ? 'text-base-content' : 'text-base-content/70'
                 )}
               >
                 {step.label}
               </p>
               {step.description && (
-                <p className="mt-0.5 text-xs text-[var(--color-text-tertiary)]">
-                  {step.description}
-                </p>
+                <p className="text-base-content/50 mt-0.5 text-xs">{step.description}</p>
               )}
             </div>
           </li>

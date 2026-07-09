@@ -15,7 +15,15 @@
 // remaining combinations are created fresh.
 
 import * as React from 'react';
-import { Badge, Button, Card, CardBody, Input, Loading } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  FieldStatus,
+  Input,
+  Loading,
+} from '@wizeworks/silicaui-react';
 import { SurfaceStep } from '@sparx/ui';
 
 import {
@@ -199,7 +207,7 @@ export function VariantsStep({
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading options & variants…
             </div>
           ) : (
@@ -221,7 +229,7 @@ export function VariantsStep({
                 </div>
 
                 {editingOptions ? (
-                  <div className="rounded-xl border border-[var(--color-border-default)] p-4">
+                  <div className="border-base-300 rounded-xl border p-4">
                     <OptionsEditor
                       productId={productId}
                       productTitle={productTitle}
@@ -280,14 +288,14 @@ export function VariantsStep({
                   </div>
 
                   {overCap ? (
-                    <p className="text-danger text-sm" role="alert">
+                    <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                       {combos.length} combinations exceeds the {MAX_COMBOS}-variant limit. Trim
                       option values, then generate.
-                    </p>
+                    </FieldStatus>
                   ) : (
-                    <div className="overflow-hidden rounded-xl border border-[var(--color-border-default)]">
+                    <div className="border-base-300 overflow-hidden rounded-xl border">
                       {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
-                      <div className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
+                      <div className="border-base-300 bg-base-200 text-base-content/60 grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b px-3 py-2 text-xs font-medium">
                         <span>Combination</span>
                         <span>SKU</span>
                         <span>Price (USD)</span>
@@ -302,7 +310,7 @@ export function VariantsStep({
                           return (
                             <div
                               key={key}
-                              className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] px-3 py-2 last:border-b-0"
+                              className="border-base-300 grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b px-3 py-2 last:border-b-0"
                             >
                               <span className="truncate text-sm">{label}</span>
                               <Input
@@ -315,6 +323,8 @@ export function VariantsStep({
                                 className="h-8"
                               />
                               <Input
+                                type="number"
+                                min="0"
                                 inputMode="decimal"
                                 value={priceFor(key, existing)}
                                 onChange={(e) =>
@@ -345,9 +355,9 @@ export function VariantsStep({
               )}
 
               {error && (
-                <p className="text-danger text-sm" role="alert">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
           )}

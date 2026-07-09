@@ -85,7 +85,7 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
           className={cn(
             variant === 'separated' && 'space-y-2',
             variant === 'bordered' &&
-              'divide-y divide-[var(--color-border-default)] rounded-lg border border-[var(--color-border-default)]',
+              'divide-y divide-[var(--color-base-300)] rounded-lg border border-[var(--color-base-300)]',
             className
           )}
           {...props}
@@ -126,7 +126,7 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
           data-state={open ? 'open' : 'closed'}
           className={cn(
             variant === 'separated' &&
-              'rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]',
+              'rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)]',
             className
           )}
           {...props}
@@ -156,9 +156,9 @@ export const AccordionTrigger = React.forwardRef<
       onClick={() => toggle(item.value)}
       className={cn(
         'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium',
-        'text-[var(--color-text-primary)] transition-colors',
-        'hover:bg-[var(--color-bg-subtle)]',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'text-base-content transition-colors',
+        'hover:bg-[var(--color-base-200)]',
+        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         className
       )}
       {...props}
@@ -166,7 +166,7 @@ export const AccordionTrigger = React.forwardRef<
       {children}
       <ChevronDown
         className={cn(
-          'h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-transform duration-200',
+          'text-base-content/50 h-4 w-4 shrink-0 transition-transform duration-200',
           item.open && 'rotate-180'
         )}
       />
@@ -196,7 +196,7 @@ export const AccordionContent = React.forwardRef<
       <div className="overflow-hidden" inert={!item.open ? true : undefined}>
         <div
           ref={ref}
-          className={cn('px-4 pb-3 text-sm text-[var(--color-text-secondary)]', className)}
+          className={cn('text-base-content/70 px-4 pb-3 text-sm', className)}
           {...props}
         >
           {children}

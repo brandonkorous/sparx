@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Section, SectionHeader, Spark } from './primitives';
 
 /**
@@ -10,9 +10,9 @@ import { Container, Display, Section, SectionHeader, Spark } from './primitives'
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const INDIGO = 'var(--sparx-primary)';
-const INDIGO_TINT = 'var(--sparx-primary-tint)';
-const INDIGO_TEXT = 'var(--sparx-primary-hover)';
+const INDIGO = 'var(--color-primary)';
+const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const INDIGO_TEXT = 'var(--color-primary)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function PartnersHero() {
@@ -45,7 +45,7 @@ export function PartnersHero() {
             fontFamily: SANS,
             fontSize: 'clamp(17px, 1.7vw, 20px)',
             lineHeight: 1.55,
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '620px',
             margin: 0,
           }}
@@ -112,7 +112,7 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
                   fontSize: 'clamp(30px, 4vw, 44px)',
                   fontWeight: 500,
                   letterSpacing: '-0.03em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {c.num === 'Be first.' ? (
@@ -129,7 +129,7 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
                   fontFamily: SANS,
                   fontSize: '14px',
                   lineHeight: '21px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   marginTop: '8px',
                   maxWidth: '300px',
                 }}
@@ -182,11 +182,16 @@ export function PartnersOpportunity() {
                 letterSpacing: '-0.02em',
                 lineHeight: 1.35,
                 maxWidth: '720px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {r.claim}{' '}
-              <span style={{ color: 'var(--color-text-secondary)', fontWeight: 400 }}>
+              <span
+                style={{
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                  fontWeight: 400,
+                }}
+              >
                 {r.thin}
               </span>
             </p>
@@ -246,7 +251,10 @@ export function PartnersSteps() {
             <span
               className="mkt-step-arrow"
               aria-hidden
-              style={{ color: 'var(--color-text-tertiary)', fontSize: '20px' }}
+              style={{
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                fontSize: '20px',
+              }}
             >
               →
             </span>
@@ -280,7 +288,7 @@ export function PartnersSteps() {
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.d}
@@ -304,10 +312,10 @@ export function PartnersDirectoryCta() {
       <div
         className="mkt-dircta"
         style={{
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '18px',
           padding: 'clamp(28px, 4vw, 48px)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <div>
@@ -329,7 +337,7 @@ export function PartnersDirectoryCta() {
               fontFamily: SANS,
               fontSize: '16px',
               lineHeight: 1.6,
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '460px',
             }}
           >
@@ -352,14 +360,18 @@ export function PartnersDirectoryCta() {
                 justifyContent: 'space-between',
                 gap: '14px',
                 padding: '14px 18px',
-                border: '1px solid var(--color-border-default)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '12px',
-                backgroundColor: 'var(--color-bg-surface)',
+                backgroundColor: 'var(--color-base-100)',
               }}
             >
               <span style={{ fontFamily: SANS, fontSize: '15px' }}>{p.name}</span>
               <span
-                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-tertiary)' }}
+                style={{
+                  fontFamily: SANS,
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                }}
               >
                 {p.loc}
               </span>

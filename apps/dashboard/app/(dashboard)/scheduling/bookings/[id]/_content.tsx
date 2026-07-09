@@ -15,7 +15,7 @@ import {
   Users,
 } from 'lucide-react';
 
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { Stat, Timeline, TimelineItem, TimelineTime, TimelineTitle } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -166,7 +166,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-row items-start gap-3">
-      <span className="mt-0.5 text-[var(--color-text-tertiary)]">{icon}</span>
+      <span className="text-base-content/50 mt-0.5">{icon}</span>
       <div className="flex min-w-0 flex-col gap-1">
         <p className="text-base-content/70 text-xs">{label}</p>
         <div className="text-sm">{children}</div>
@@ -226,7 +226,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
           {booking.seriesId && (
             <Link
               href="/scheduling/series"
-              className="inline-flex items-center gap-1 text-sm hover:text-[var(--module-active)] hover:underline"
+              className="hover:text-module inline-flex items-center gap-1 text-sm hover:underline"
             >
               <Repeat className="h-3.5 w-3.5" /> Recurring series
             </Link>
@@ -281,12 +281,12 @@ export async function BookingDetailContent({ id }: { id: string }) {
                   {customer ? (
                     <Link
                       href={`/crm/customers/${customer.id}`}
-                      className="hover:text-[var(--module-active)] hover:underline"
+                      className="hover:text-module hover:underline"
                     >
                       {customerName}
                     </Link>
                   ) : (
-                    (customerName ?? <span className="text-[var(--color-text-tertiary)]">—</span>)
+                    (customerName ?? <span className="text-base-content/50">—</span>)
                   )}
                 </Field>
                 {custStats && custStats.total > 0 ? (
@@ -308,7 +308,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                   {staffNames.length ? (
                     staffNames.join(', ')
                   ) : (
-                    <span className="text-[var(--color-text-tertiary)]">Unassigned</span>
+                    <span className="text-base-content/50">Unassigned</span>
                   )}
                 </Field>
                 {booking.partySize ? (

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
 
-const dividerVariants = cva('shrink-0 bg-[var(--color-border-default)]', {
+const dividerVariants = cva('shrink-0 bg-[var(--color-base-300)]', {
   variants: {
     orientation: {
       horizontal: 'h-px w-full',

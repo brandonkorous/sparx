@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';

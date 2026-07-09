@@ -12,7 +12,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 import type { MarketplaceListResponse } from '../_types';
 

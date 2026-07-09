@@ -98,7 +98,7 @@ export default async function DomainsPage({
             </Text>
             <Link
               href={hrefWith({ tenantId: undefined, offset: undefined })}
-              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+              className="text-module text-sm font-medium hover:underline"
             >
               Clear tenant filter
             </Link>

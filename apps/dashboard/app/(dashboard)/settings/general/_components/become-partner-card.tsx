@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Clock, Handshake } from 'lucide-react';
 import { ModuleProvider } from '@sparx/ui';
-import { Button, Card, CardBody } from 'silicaui-react';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { requireSession } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';

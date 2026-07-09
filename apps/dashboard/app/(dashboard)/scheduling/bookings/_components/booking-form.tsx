@@ -7,13 +7,15 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
   Label,
   NativeSelect,
   Loading,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 
 import type { AvailabilitySlot, SchedulingService } from '../../_lib/types';
@@ -209,10 +211,9 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
             <CardTitle>Service &amp; time</CardTitle>
             <div className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="bk-service">Service</Label>
+                <Field>
+                  <FieldLabel>Service</FieldLabel>
                   <NativeSelect
-                    id="bk-service"
                     value={serviceId}
                     onChange={(e) => {
                       setServiceId(e.target.value);
@@ -227,29 +228,27 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
-                <div>
-                  <Label htmlFor="bk-date">Date</Label>
-                  <Input
-                    id="bk-date"
+                </Field>
+                <Field>
+                  <FieldLabel>Date</FieldLabel>
+                  <FieldControl
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
 
               {isReservation ? (
-                <div className="max-w-[12rem]">
-                  <Label htmlFor="bk-party">Party size</Label>
-                  <Input
-                    id="bk-party"
+                <Field className="max-w-[12rem]">
+                  <FieldLabel>Party size</FieldLabel>
+                  <FieldControl
                     type="number"
                     min={1}
                     value={partySize}
                     onChange={(e) => setPartySize(Math.max(1, Number(e.target.value) || 1))}
                   />
-                </div>
+                </Field>
               ) : null}
 
               <div>
@@ -288,25 +287,23 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
 
               {repeat ? null : (
                 <>
-                  <div>
-                    <Label htmlFor="bk-customer">Customer name</Label>
-                    <Input
-                      id="bk-customer"
+                  <Field>
+                    <FieldLabel>Customer name</FieldLabel>
+                    <FieldControl
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="Optional — for walk-ins or phone bookings"
                     />
-                  </div>
+                  </Field>
 
-                  <div>
-                    <Label htmlFor="bk-notes">Notes</Label>
-                    <Textarea
-                      id="bk-notes"
+                  <Field>
+                    <FieldLabel>Notes</FieldLabel>
+                    <FieldControl
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      rows={2}
+                      render={<Textarea rows={2} />}
                     />
-                  </div>
+                  </Field>
                 </>
               )}
 

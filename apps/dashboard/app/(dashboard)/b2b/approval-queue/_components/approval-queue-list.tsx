@@ -38,7 +38,7 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
     order.b2bAccountId ? (
       <Link
         href={`/b2b/accounts/${order.b2bAccountId}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {order.companyName ?? order.b2bAccountId}
       </Link>

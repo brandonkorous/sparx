@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardBody, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Input,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 import { RECALL_FILTER_OPTIONS } from './types';
@@ -131,7 +139,7 @@ export function LotsFilterBar({
               Expiring within a year
             </label>
             <div className="ml-auto flex flex-row items-center gap-2">
-              {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+              {error && <p className="text-danger text-sm">{error}</p>}
               <Button variant="ghost" size="sm" onClick={clear} disabled={busy}>
                 Clear
               </Button>

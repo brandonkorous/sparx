@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import { ExportCsvButton } from './export-buttons';
 import {
@@ -17,7 +17,7 @@ import {
 
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="flex min-w-[10rem] flex-1 flex-col gap-1 rounded border border-[var(--color-border-default)] px-4 py-3">
+    <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-4 py-3">
       <p className="text-base-content/70 text-xs">{label}</p>
       <p className="text-lg">{value}</p>
       {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}

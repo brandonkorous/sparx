@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Package } from 'lucide-react';
 
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 import { Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -87,7 +87,7 @@ export async function QuoteDetailContent({ id }: Props) {
             {customer && (
               <Link
                 href={`/crm/customers/${customer.id}`}
-                className="text-sm hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module text-sm hover:underline"
               >
                 {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
                   (customer.company ?? customer.email)}
@@ -96,7 +96,7 @@ export async function QuoteDetailContent({ id }: Props) {
             {quote.convertedToOrderId && (
               <Link
                 href={`/crm/orders/${quote.convertedToOrderId}`}
-                className="text-sm hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module text-sm hover:underline"
               >
                 → Converted order
               </Link>

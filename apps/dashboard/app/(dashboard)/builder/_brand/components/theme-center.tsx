@@ -157,7 +157,7 @@ function ThemeDots({ colors }: { colors: string[] }) {
       {colors.map((c, i) => (
         <span
           key={i}
-          className="h-4 w-4 rounded-full border border-[var(--color-border-default)]"
+          className="border-base-300 h-4 w-4 rounded-full border"
           style={{ backgroundColor: c }}
         />
       ))}
@@ -176,7 +176,7 @@ function PreviewSurfaceToggle({
   onChange: (v: 'components' | 'site') => void;
 }) {
   return (
-    <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
+    <div className="border-base-300 flex rounded-md border p-0.5">
       {(
         [
           ['components', 'Components'],
@@ -833,7 +833,7 @@ export function ThemeCenter({
           type="button"
           aria-label="Theme"
           disabled={pending}
-          className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="bx-tplselect border-base-300 bg-base-100 hover:border-base-content/30 focus-visible:ring-primary inline-flex h-8 items-center gap-2 rounded-md border py-1.5 pr-2.5 pl-2.5 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ThemeDots colors={currentColors} />
           <span className="min-w-0 flex-1 truncate text-left font-medium">{currentName}</span>
@@ -844,9 +844,7 @@ export function ThemeCenter({
         <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
           <DropdownMenuLabel>My themes</DropdownMenuLabel>
           {savedThemes.length === 0 ? (
-            <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
-              No saved themes yet
-            </p>
+            <p className="text-base-content/60 px-2 py-1.5 text-xs">No saved themes yet</p>
           ) : (
             savedThemes.map((t) => (
               <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
@@ -1051,11 +1049,11 @@ export function ThemeCenter({
             Like the page/site editors: the controls are a light surface panel and
             the preview sits on the darker "stage" (base-200). */}
         <div className="grid gap-4 lg:grid-cols-[400px_1fr]">
-          <div className="min-w-0 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
+          <div className="border-base-300 bg-base-100 min-w-0 rounded-[var(--radius-lg)] border p-4">
             {controls}
           </div>
 
-          <div className="min-w-0 rounded-[var(--radius-lg)] bg-[var(--color-bg-subtle)] p-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="bg-base-200 min-w-0 rounded-[var(--radius-lg)] p-4 lg:sticky lg:top-4 lg:self-start">
             {previewSurface === 'site' && canPreviewSite && sitePreview.origin ? (
               <SitePreviewFrame
                 origin={sitePreview.origin}

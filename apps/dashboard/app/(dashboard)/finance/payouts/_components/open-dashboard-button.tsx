@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { openSparxPayDashboard } from '../../payments/actions';
 

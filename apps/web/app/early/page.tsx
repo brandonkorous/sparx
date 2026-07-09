@@ -35,7 +35,7 @@ export default function EarlyAccessPage() {
           paddingBottom: 'clamp(72px, 10vw, 140px)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Container>
@@ -63,7 +63,7 @@ export default function EarlyAccessPage() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '19px',
                   lineHeight: '31px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   maxWidth: '560px',
                   margin: 0,
                 }}
@@ -93,7 +93,7 @@ export default function EarlyAccessPage() {
                       fontFamily: 'var(--font-sans)',
                       fontSize: '15px',
                       lineHeight: '24px',
-                      color: 'var(--color-text-primary)',
+                      color: 'var(--color-base-content)',
                     }}
                   >
                     <span style={{ display: 'inline-flex', paddingTop: '9px', flexShrink: 0 }}>
@@ -113,8 +113,8 @@ export default function EarlyAccessPage() {
                   flexDirection: 'column',
                   gap: '20px',
                   padding: 'clamp(24px, 4vw, 36px)',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   borderRadius: '16px',
                   boxShadow: '0 12px 40px rgba(9, 9, 11, 0.06)',
                 }}
@@ -126,7 +126,7 @@ export default function EarlyAccessPage() {
                       fontWeight: 500,
                       fontSize: '20px',
                       letterSpacing: '-0.015em',
-                      color: 'var(--color-text-primary)',
+                      color: 'var(--color-base-content)',
                     }}
                   >
                     Join the waitlist
@@ -136,7 +136,7 @@ export default function EarlyAccessPage() {
                       fontFamily: 'var(--font-sans)',
                       fontSize: '14px',
                       lineHeight: '21px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     Takes ten seconds. We&rsquo;ll only reach out when it matters.

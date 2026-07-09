@@ -1,6 +1,6 @@
 'use client';
 
-import { Input, Textarea, NativeSelect, Switch } from '@sparx/ui';
+import { Input, Textarea, NativeSelect, Switch } from '@wizeworks/silicaui-react';
 import { Field } from './ui-kit';
 import type { QrType, QrFields } from './lib/qr';
 

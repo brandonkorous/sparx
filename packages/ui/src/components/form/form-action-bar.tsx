@@ -18,7 +18,7 @@ export const FormActionBar = React.forwardRef<HTMLDivElement, FormActionBarProps
     <div
       ref={ref}
       className={cn(
-        'mt-2 flex items-center justify-end gap-2 border-t border-[var(--color-border-default)] pt-4',
+        'mt-2 flex items-center justify-end gap-2 border-t border-[var(--color-base-300)] pt-4',
         className
       )}
       {...props}

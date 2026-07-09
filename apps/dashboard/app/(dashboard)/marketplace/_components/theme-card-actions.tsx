@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import { applyThemeAction } from '../actions';

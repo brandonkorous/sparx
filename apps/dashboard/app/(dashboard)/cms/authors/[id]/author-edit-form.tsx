@@ -3,7 +3,19 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useConfirm } from '@sparx/ui';
-import { Button, Card, CardActions, CardBody, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteAuthor, updateAuthor } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -20,42 +32,45 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [errorField, setErrorField] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
 
-  // The fields are an uncontrolled native form (read via FormData on submit), so
-  // dirtiness is recomputed from the live form on every input. Registering it lets
-  // the detail page's guarded back-link / presentation switch confirm before
+  // Controlled fields drive live validation via `useFieldValidation`; dirtiness
+  // derives from comparing against the saved author. Registering it lets the
+  // detail page's guarded back-link / presentation switch confirm before
   // discarding unsaved author edits (docs/105).
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [dirty, setDirty] = React.useState(false);
-  const recomputeDirty = React.useCallback(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const val = (k: string) => {
-      const v = data.get(k);
-      return typeof v === 'string' ? v : '';
-    };
-    setDirty(
-      val('display_name') !== author.displayName ||
-        val('slug') !== author.slug ||
-        val('bio') !== author.bio
-    );
-  }, [author]);
+  const [displayName, setDisplayName] = React.useState(author.displayName);
+  const [slug, setSlug] = React.useState(author.slug);
+  const [bio, setBio] = React.useState(author.bio);
+
+  const v = useFieldValidation(
+    { display_name: displayName, slug },
+    {
+      display_name: rule.required('Display name is required.'),
+      slug: rule.required('Slug is required.'),
+    }
+  );
+
+  const dirty = displayName !== author.displayName || slug !== author.slug || bio !== author.bio;
   useUnsavedGuard(dirty, { kind: 'edit', noun: 'author' });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setErrorField(null);
     setMessage(null);
-    const data = new FormData(e.currentTarget);
+    if (!v.validate()) return;
+    const data = new FormData();
+    data.append('display_name', displayName.trim());
+    data.append('slug', slug.trim());
+    data.append('bio', bio);
     startTransition(async () => {
       const result = await updateAuthor(author.id, data);
       if (!result.ok) {
-        setError(result.error ?? 'Could not save author.');
-        setErrorField(result.field ?? null);
+        const msg = result.error ?? 'Could not save author.';
+        if (result.field === 'slug' || result.field === 'display_name') {
+          v.setServerErrors({ [result.field]: msg });
+        } else {
+          setError(msg);
+        }
         return;
       }
       setMessage('Saved.');
@@ -89,72 +104,43 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
     });
   }
 
-  const slugError = errorField === 'slug' ? error : null;
-  const generalError = errorField ? null : error;
-
   return (
-    <form
-      ref={formRef}
-      onSubmit={onSubmit}
-      onInput={recomputeDirty}
-      onChange={recomputeDirty}
-      noValidate
-    >
+    <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-5">
         <Card>
           <CardBody>
             <h3 className="text-xl font-semibold">Details</h3>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="display_name">
-                  Display name{' '}
-                  <span className="text-error" aria-hidden="true">
-                    *
-                  </span>
-                </Label>
-                <Input
-                  id="display_name"
+              <Field {...v.field('display_name')}>
+                <FieldLabel required>Display name</FieldLabel>
+                <FieldControl
                   name="display_name"
-                  defaultValue={author.displayName}
-                  required
-                  aria-required
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  {...v.control('display_name')}
                 />
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="slug">
-                  Slug{' '}
-                  <span className="text-error" aria-hidden="true">
-                    *
-                  </span>
-                </Label>
-                <Input
-                  id="slug"
+              </Field>
+              <Field {...v.field('slug')}>
+                <FieldLabel required>Slug</FieldLabel>
+                <FieldControl
                   name="slug"
-                  defaultValue={author.slug}
-                  required
-                  aria-required
-                  aria-invalid={slugError ? true : undefined}
-                  aria-describedby={slugError ? 'slug-error' : undefined}
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  {...v.control('slug')}
                 />
-                {slugError ? (
-                  <p
-                    id="slug-error"
-                    className="text-danger text-xs"
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    {slugError}
-                  </p>
-                ) : (
-                  <p className="text-base-content/70 text-xs">
-                    Unique per tenant — used in author URLs.
-                  </p>
+                {!v.visibleError('slug') && (
+                  <FieldDescription>Unique per tenant — used in author URLs.</FieldDescription>
                 )}
-              </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea id="bio" name="bio" defaultValue={author.bio} rows={4} />
-              </div>
+              </Field>
+              <Field>
+                <FieldLabel>Bio</FieldLabel>
+                <FieldControl
+                  name="bio"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  render={<Textarea rows={4} />}
+                />
+              </Field>
             </div>
           </CardBody>
           <CardActions>
@@ -177,15 +163,15 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
               >
                 Delete
               </Button>
-              {generalError && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
-                  {generalError}
-                </p>
+              {error && (
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                  {error}
+                </FieldStatus>
               )}
               {message && (
-                <p className="text-success text-sm" aria-live="polite">
+                <FieldStatus status="success" attached={false} aria-live="polite">
                   {message}
-                </p>
+                </FieldStatus>
               )}
             </div>
           </CardActions>

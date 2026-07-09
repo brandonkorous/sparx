@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Download, Package } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Panel, CopyButton } from './ui-kit';
 import { FaviconPreviews } from './favicon-previews';
 import type { FaviconResult } from './lib/favicon';
@@ -96,7 +96,7 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
                 gap: '10px',
                 padding: '8px 10px',
                 borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-border-default)',
+                border: '1px solid var(--color-base-300)',
               }}
             >
               <span
@@ -121,7 +121,7 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '11.5px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -133,7 +133,7 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '11px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {asset.label}

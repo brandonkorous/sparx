@@ -21,11 +21,13 @@ export default function SecurityPage() {
           paddingBottom: 'clamp(32px, 5vw, 56px)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Container style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Eyebrow color="var(--color-text-tertiary)">Trust</Eyebrow>
+          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
+            Trust
+          </Eyebrow>
           <Display as="h1" size={64} lineHeight={64}>
             Security
             <Spark />
@@ -35,7 +37,7 @@ export default function SecurityPage() {
               fontFamily: 'var(--font-sans)',
               fontSize: '18px',
               lineHeight: '30px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '640px',
               margin: 0,
               paddingTop: '8px',
@@ -52,7 +54,7 @@ export default function SecurityPage() {
           paddingBottom: 'clamp(80px, 10vw, 140px)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Container>

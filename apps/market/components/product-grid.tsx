@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 import { PackageOpen } from 'lucide-react';
-import { Button, EmptyState } from 'silicaui-react';
+import { Button, EmptyState } from '@wizeworks/silicaui-react';
 
 import { ProductCard } from './product-card';
 import { CardGrid } from '@/components/ui/layout';

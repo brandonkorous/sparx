@@ -9,7 +9,7 @@
 // honoring the user's defaultListView.
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { Database, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';

@@ -2,8 +2,21 @@
 
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Button, Card, CardBody, CardTitle, Input, Label, Select, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createSource, updateSource } from '../_lib/actions';
 import {
@@ -77,6 +90,17 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
   const [initial] = useState(snapshot);
   const dirty = snapshot() !== initial;
 
+  // CSV URL is required only for a CSV source; the rule closes over `type` (the
+  // rules literal is rebuilt each render). Endpoint / SKU / quantity for an API
+  // source live in the nested SourceApiFields state and stay form-level checks.
+  const v = useFieldValidation(
+    { name, csvUrl },
+    {
+      name: rule.required('Name is required.'),
+      csvUrl: (val) => (type === 'csv' && !String(val).trim() ? 'CSV feed URL is required.' : null),
+    }
+  );
+
   const guardLeave = useUnsavedGuard(
     dirty,
     source ? { kind: 'edit', noun: 'source' } : { kind: 'create', noun: 'source' }
@@ -115,14 +139,7 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
 
   async function submit() {
     setError(null);
-    if (!name.trim()) {
-      setError('Name is required.');
-      return;
-    }
-    if (type === 'csv' && !csvUrl.trim()) {
-      setError('CSV feed URL is required.');
-      return;
-    }
+    if (!v.validate()) return;
     if (type === 'api') {
       if (!apiConfig.endpoint.trim()) {
         setError('API endpoint is required.');
@@ -176,47 +193,49 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
         <CardBody className="py-6">
           <CardTitle>Connection</CardTitle>
           <div className="flex flex-col gap-5">
-            <div>
-              <Label htmlFor="src-name">
-                Name <span className="text-[var(--color-danger)]">*</span>
-              </Label>
-              <Input
+            <Field {...v.field('name')}>
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
                 id="src-name"
                 placeholder="e.g. Main Warehouse CSV"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
               />
-            </div>
+            </Field>
 
             {!source && (
-              <div className="flex flex-col gap-1">
-                <Label>Source type</Label>
-                <Select
-                  value={type}
-                  onValueChange={(v) => setType(v as string)}
-                  items={TYPE_OPTIONS}
+              <Field>
+                <FieldLabel>Source type</FieldLabel>
+                <FieldControl
+                  render={
+                    <Select
+                      value={type}
+                      onValueChange={(val) => setType(val as string)}
+                      items={TYPE_OPTIONS}
+                    />
+                  }
                 />
-              </div>
+              </Field>
             )}
 
             {type === 'csv' && (
-              <div>
-                <Label htmlFor="src-csv">
-                  CSV feed URL <span className="text-[var(--color-danger)]">*</span>
-                </Label>
-                <Input
+              <Field {...v.field('csvUrl')}>
+                <FieldLabel required>CSV feed URL</FieldLabel>
+                <FieldControl
                   id="src-csv"
                   type="url"
                   placeholder="https://your-wms.example.com/inventory.csv"
                   value={csvUrl}
                   onChange={(e) => setCsvUrl(e.target.value)}
+                  {...v.control('csvUrl')}
                 />
-                <p className="text-base-content/70 mt-1 text-xs">
+                <FieldDescription>
                   Required columns: <span className="font-mono">sku</span>,{' '}
                   <span className="font-mono">quantity</span>. Optional:{' '}
                   <span className="font-mono">location</span>.
-                </p>
-              </div>
+                </FieldDescription>
+              </Field>
             )}
 
             {type === 'api' && (
@@ -224,7 +243,7 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
             )}
 
             {type === 'agent' && (
-              <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3">
+              <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border px-3 py-3">
                 <p className="text-sm font-medium">On-prem bridge agent</p>
                 <p className="text-base-content/70 text-xs">
                   For an ERP whose API only lives on your local network (e.g. Fishbowl). After
@@ -235,30 +254,34 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
               </div>
             )}
 
-            <div className="flex flex-col gap-1">
-              <Label>Sync interval</Label>
-              <Select
-                value={interval}
-                onValueChange={(v) => setInterval(v as string)}
-                items={INTERVAL_OPTIONS}
+            <Field>
+              <FieldLabel>Sync interval</FieldLabel>
+              <FieldControl
+                render={
+                  <Select
+                    value={interval}
+                    onValueChange={(val) => setInterval(val as string)}
+                    items={INTERVAL_OPTIONS}
+                  />
+                }
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="src-notes">Internal notes</Label>
-              <Textarea
+            <Field>
+              <FieldLabel>Internal notes</FieldLabel>
+              <FieldControl
+                render={<Textarea rows={2} />}
                 id="src-notes"
                 placeholder="Optional notes about this source"
-                rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
-            </div>
+            </Field>
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>

@@ -43,7 +43,7 @@ export function DatePicker({
           aria-label={value ? format(value, dateFormat) : (ariaLabel ?? placeholder)}
           className={cn(
             'w-full justify-start gap-2 font-normal',
-            !value && 'text-[var(--color-text-tertiary)]',
+            !value && 'text-base-content/50',
             className
           )}
           leftIcon={<CalendarIcon className="h-4 w-4" />}

@@ -8,7 +8,7 @@
 
 import { Trash2 } from 'lucide-react';
 import type { SegmentField, SegmentOperator } from '@sparx/crm-schemas';
-import { Button, Input } from 'silicaui-react';
+import { Button, FieldControl, NativeSelect } from '@wizeworks/silicaui-react';
 
 import {
   type FieldKind,
@@ -46,11 +46,7 @@ export function PredicateRow({ field, op, value, onChange, onRemove }: Props) {
 
   return (
     <div className="flex flex-row flex-wrap items-center gap-2">
-      <select
-        className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-sm"
-        value={field}
-        onChange={(e) => changeField(e.target.value as SegmentField)}
-      >
+      <NativeSelect value={field} onChange={(e) => changeField(e.target.value as SegmentField)}>
         {Array.from(groupBy(FIELDS, (f) => f.group)).map(([group, items]) => (
           <optgroup key={group} label={group}>
             {items.map((f) => (
@@ -60,19 +56,15 @@ export function PredicateRow({ field, op, value, onChange, onRemove }: Props) {
             ))}
           </optgroup>
         ))}
-      </select>
+      </NativeSelect>
 
-      <select
-        className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-sm"
-        value={op}
-        onChange={(e) => changeOp(e.target.value as SegmentOperator)}
-      >
+      <NativeSelect value={op} onChange={(e) => changeOp(e.target.value as SegmentOperator)}>
         {ops.map((o) => (
           <option key={o} value={o}>
             {OPERATOR_LABELS[o]}
           </option>
         ))}
-      </select>
+      </NativeSelect>
 
       {opTakesValue(op) && (
         <ValueInput
@@ -110,7 +102,7 @@ function ValueInput(props: {
   if (isArray) {
     const asText = Array.isArray(value) ? value.join(', ') : '';
     return (
-      <Input
+      <FieldControl
         value={asText}
         onChange={(e) => onChange(parseList(e.target.value, kind))}
         placeholder="comma-separated"
@@ -120,20 +112,18 @@ function ValueInput(props: {
   }
   if (kind === 'boolean') {
     return (
-      <select
-        className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-sm"
+      <NativeSelect
         value={value === true ? 'true' : 'false'}
         onChange={(e) => onChange(e.target.value === 'true')}
       >
         <option value="true">true</option>
         <option value="false">false</option>
-      </select>
+      </NativeSelect>
     );
   }
   if (kind === 'enum' && enumValues) {
     return (
-      <select
-        className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-default)] px-2 py-1 text-sm"
+      <NativeSelect
         value={typeof value === 'string' ? value : ''}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -142,12 +132,12 @@ function ValueInput(props: {
             {v}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     );
   }
   if (kind === 'number') {
     return (
-      <Input
+      <FieldControl
         type="number"
         value={typeof value === 'number' ? value : ''}
         onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
@@ -157,7 +147,7 @@ function ValueInput(props: {
   }
   if (kind === 'datetime') {
     return (
-      <Input
+      <FieldControl
         type="datetime-local"
         value={typeof value === 'string' ? value.slice(0, 16) : ''}
         onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : null)}
@@ -165,7 +155,7 @@ function ValueInput(props: {
     );
   }
   return (
-    <Input
+    <FieldControl
       value={typeof value === 'string' ? value : ''}
       onChange={(e) => onChange(e.target.value)}
       className="w-56"

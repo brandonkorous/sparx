@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Label, NativeSelect, Stack, toast, useConfirm } from '@sparx/ui';
+import { Button, Stack, toast, useConfirm } from '@sparx/ui';
+import { Field, FieldControl, FieldLabel, NativeSelect } from '@wizeworks/silicaui-react';
 import type { OperatorPartnerTier } from '@sparx/operator';
 import { tierLabel } from '@/lib/partners';
 import { setPartnerStatusAction, setPartnerTierAction } from '../../actions';
@@ -58,20 +59,23 @@ export function PartnerControls({
 
   return (
     <Stack direction="row" gap={3} align="end" className="flex-wrap">
-      <Stack gap={1}>
-        <Label htmlFor="partner-tier">Tier</Label>
-        <NativeSelect
-          id="partner-tier"
+      <Field>
+        <FieldLabel>Tier</FieldLabel>
+        <FieldControl
+          name="partner-tier"
           value={selTier}
           onChange={(e) => setSelTier(e.target.value as OperatorPartnerTier)}
-        >
-          {TIERS.map((t) => (
-            <option key={t} value={t}>
-              {tierLabel(t)}
-            </option>
-          ))}
-        </NativeSelect>
-      </Stack>
+          render={
+            <NativeSelect>
+              {TIERS.map((t) => (
+                <option key={t} value={t}>
+                  {tierLabel(t)}
+                </option>
+              ))}
+            </NativeSelect>
+          }
+        />
+      </Field>
       <Button
         type="button"
         color="primary"

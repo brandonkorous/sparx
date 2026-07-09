@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Section, Display, getModuleColor } from '../primitives';
 import { getModule } from '@/lib/modules';
 import type { ToolMeta } from './registry';
@@ -41,7 +41,7 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
           >
             {mod?.label ?? tool.module}
           </span>
-          <Display as="h2" size={28} color="var(--color-text-primary)">
+          <Display as="h2" size={28} color="var(--color-base-content)">
             {tool.ladder.headline}
           </Display>
           <p
@@ -49,18 +49,22 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
               fontFamily: 'var(--font-sans)',
               fontSize: '15.5px',
               lineHeight: '25px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
             }}
           >
             {tool.ladder.body}
           </p>
         </div>
-        <Button asChild color={tool.module} variant="solid" size="lg" style={{ flexShrink: 0 }}>
-          <a href={href}>
-            {tool.ladder.cta}
-            <ArrowRight className="h-4 w-4" />
-          </a>
+        <Button
+          color={tool.module}
+          variant="solid"
+          size="lg"
+          style={{ flexShrink: 0 }}
+          render={<a href={href} />}
+        >
+          {tool.ladder.cta}
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </Section>

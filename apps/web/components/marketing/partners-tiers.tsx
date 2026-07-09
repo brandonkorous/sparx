@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Badge } from '@sparx/ui';
+import { Badge } from '@wizeworks/silicaui-react';
 import type { PartnerTier } from '@/lib/partners';
 
 /**
@@ -12,16 +12,16 @@ import type { PartnerTier } from '@/lib/partners';
  */
 
 const SANS = 'var(--font-sans)';
-const INDIGO = 'var(--sparx-primary)';
-const INDIGO_TEXT = 'var(--sparx-primary-hover)';
-const INDIGO_TINT = 'var(--sparx-primary-tint)';
-const BORDER = 'var(--color-border-default)';
-const CERT_CELL = 'color-mix(in oklab, var(--sparx-primary) 5%, var(--color-bg-surface))';
+const INDIGO = 'var(--color-primary)';
+const INDIGO_TEXT = 'var(--color-primary)';
+const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const BORDER = 'var(--color-base-300)';
+const CERT_CELL = 'color-mix(in oklab, var(--color-primary) 5%, var(--color-base-100))';
 
 // The "/ first payment" · "/ ongoing" qualifier next to each commission figure.
 const SMALL: React.CSSProperties = {
   fontSize: '15px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
   fontWeight: 400,
 };
 
@@ -127,7 +127,7 @@ function Commission({ children }: { children: ReactNode }) {
         fontWeight: 500,
         fontSize: '32px',
         letterSpacing: '-0.03em',
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-base-content)',
       }}
     >
       {children}
@@ -136,9 +136,20 @@ function Commission({ children }: { children: ReactNode }) {
 }
 
 function cellContent(cell: Cell): ReactNode {
-  if (cell === 'dash') return <span style={{ color: 'var(--color-text-tertiary)' }}>—</span>;
+  if (cell === 'dash')
+    return (
+      <span style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}>
+        —
+      </span>
+    );
   return (
-    <span style={{ color: cell.strong ? INDIGO_TEXT : 'var(--color-text-secondary)' }}>
+    <span
+      style={{
+        color: cell.strong
+          ? INDIGO_TEXT
+          : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+      }}
+    >
       {cell.text}
     </span>
   );
@@ -155,7 +166,7 @@ export function PartnerTiers() {
           border: `1px solid ${BORDER}`,
           borderRadius: '16px',
           overflow: 'hidden',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: 'var(--color-base-100)',
         }}
       >
         <div className="mkt-tier-cols">
@@ -196,7 +207,13 @@ export function PartnerTiers() {
 function SpineHeadCell() {
   return (
     <div style={{ padding: '30px 26px', display: 'flex', alignItems: 'flex-end' }}>
-      <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+      <span
+        style={{
+          fontFamily: SANS,
+          fontSize: '13px',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+        }}
+      >
         What each tier unlocks
       </span>
     </div>
@@ -220,7 +237,7 @@ function HeadCell({ head }: { head: TierHead }) {
           margin: '6px 0 0',
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {head.note}
@@ -249,7 +266,7 @@ function BodyCell({
         fontFamily: SANS,
         fontSize: '14px',
         fontWeight: spine ? 500 : 400,
-        color: spine ? 'var(--color-text-primary)' : undefined,
+        color: spine ? 'var(--color-base-content)' : undefined,
       }}
     >
       {children}
@@ -266,7 +283,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
         border: `1px solid ${certified ? INDIGO : BORDER}`,
         borderRadius: '16px',
         overflow: 'hidden',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: 'var(--color-base-100)',
       }}
     >
       <div
@@ -283,7 +300,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
             margin: '6px 0 0',
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           {head.note}
@@ -311,12 +328,12 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
                 fontFamily: SANS,
                 fontSize: '14px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               <span style={{ color: INDIGO, flexShrink: 0 }}>✓</span>
               <span>
-                <span style={{ color: 'var(--color-text-primary)' }}>{r.label}</span>
+                <span style={{ color: 'var(--color-base-content)' }}>{r.label}</span>
                 {detail ? ` — ${detail}` : ''}
               </span>
             </li>

@@ -22,22 +22,19 @@ describe('Card', () => {
     const { container } = render(<Card variant="module" data-testid="card" />);
     const card = container.firstElementChild as HTMLElement;
     // The module card mixes its module color into the surface as the whole
-    // background (no top stripe). With no accent it reads --module-active DIRECTLY
-    // so it follows the nearest <ModuleProvider> and is immune to an inherited
-    // --c-bg.
-    expect(card.className).toMatch(/bg-\[color-mix\(in_oklab,var\(--module-active\)_\d+%/);
+    // background (no top stripe). With no accent it reads --color-module DIRECTLY
+    // so it follows the nearest <ModuleProvider> and can't be leaked into.
+    expect(card.className).toMatch(/bg-\[color-mix\(in_oklab,var\(--color-module\)_\d+%/);
     expect(card.className).not.toMatch(/border-t-\[3px\]/);
-    // It must NOT read the shared, inheritable --c-bg role var when un-accented
-    // (the leak path).
-    expect(card.className).not.toMatch(/var\(--c-bg/);
   });
 
   it('recolors the module tint via the accent prop', () => {
     const { container } = render(<Card variant="module" accent="commerce" />);
     const card = container.firstElementChild as HTMLElement;
-    // accent sets --c-bg ON this card via its role class, so the mix reads it.
-    expect(card.className).toMatch(/sx-c-commerce/);
-    expect(card.className).toMatch(/bg-\[color-mix\(in_oklab,var\(--c-bg\)_\d+%/);
+    // accent pins the tint via a local --sx-sel custom property (set in style),
+    // and the background mix reads it.
+    expect(card.className).toMatch(/bg-\[color-mix\(in_oklab,var\(--sx-sel\)_\d+%/);
+    expect(card.getAttribute('style')).toMatch(/--sx-sel:\s*var\(--color-module-commerce\)/);
   });
 
   it('omits the module tint on the default variant', () => {

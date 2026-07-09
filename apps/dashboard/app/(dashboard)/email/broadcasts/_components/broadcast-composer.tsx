@@ -4,7 +4,8 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from '@sparx/ui';
-import { Button, Input, Label, Select } from 'silicaui-react';
+import { Button, Field, FieldControl, FieldLabel, Select } from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createBroadcastAction } from '../actions';
 import type { SegmentOption } from '../../_lib/types';
@@ -29,12 +30,17 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
   const [segmentId, setSegmentId] = useState('');
   const [builderEmailId, setBuilderEmailId] = useState('');
 
+  const v = useFieldValidation(
+    { name, subject },
+    {
+      name: rule.required('Enter a campaign name.'),
+      subject: rule.required('Enter a subject line.'),
+    }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim() || !subject.trim()) {
-      toast.error('Name and subject are required.');
-      return;
-    }
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await createBroadcastAction({
         name: name.trim(),
@@ -59,39 +65,41 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
   return (
     <form onSubmit={onSubmit}>
       <div className="flex max-w-2xl flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Campaign name</Label>
-          <Input
-            id="name"
+        <Field {...v.field('name')}>
+          <FieldLabel required>Campaign name</FieldLabel>
+          <FieldControl
+            name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            {...v.control('name')}
             placeholder="Spring sale"
             disabled={pending}
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="subject">Subject</Label>
-          <Input
-            id="subject"
+        </Field>
+        <Field {...v.field('subject')}>
+          <FieldLabel required>Subject</FieldLabel>
+          <FieldControl
+            name="subject"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
+            {...v.control('subject')}
             placeholder="20% off this week"
             disabled={pending}
           />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="preheader">Preheader</Label>
-          <Input
-            id="preheader"
+        </Field>
+        <Field>
+          <FieldLabel>Preheader</FieldLabel>
+          <FieldControl
+            name="preheader"
             value={preheader}
             onChange={(e) => setPreheader(e.target.value)}
             placeholder="Inbox preview line"
             disabled={pending}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="segment">Audience (CRM segment)</Label>
+        <Field>
+          <FieldLabel>Audience (CRM segment)</FieldLabel>
           {segments.length === 0 ? (
             <p className="text-base-content/70 text-sm">
               No segments found. Create one in the CRM module to target an audience.
@@ -101,16 +109,16 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
               id="segment"
               className="w-full"
               value={segmentId}
-              onValueChange={(v) => setSegmentId(v as string)}
+              onValueChange={(val) => setSegmentId(val as string)}
               disabled={pending}
               placeholder="Choose a segment"
               items={segmentItems}
             />
           )}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="designed-email">Email</Label>
+        <Field>
+          <FieldLabel>Email</FieldLabel>
           {designedEmails.length === 0 ? (
             <p className="text-base-content/70 text-sm">
               No published emails yet.{' '}
@@ -124,13 +132,13 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
               id="designed-email"
               className="w-full"
               value={builderEmailId}
-              onValueChange={(v) => setBuilderEmailId(v as string)}
+              onValueChange={(val) => setBuilderEmailId(val as string)}
               disabled={pending}
               placeholder="Choose a designed email"
               items={emailItems}
             />
           )}
-        </div>
+        </Field>
 
         <div className="flex flex-row gap-2">
           <Button type="submit" color="module" loading={pending} disabled={pending}>

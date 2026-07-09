@@ -100,7 +100,7 @@ export function CrmTimeline() {
                     top: '24px',
                     bottom: 0,
                     width: '1.5px',
-                    backgroundColor: 'var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-300)',
                   }}
                 />
               ) : null}
@@ -138,9 +138,9 @@ export function CrmTimeline() {
                   style={{
                     fontFamily: MONO,
                     fontSize: '10.5px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     padding: '2px 7px',
-                    border: '1px solid var(--color-border-default)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -153,7 +153,7 @@ export function CrmTimeline() {
                   fontFamily: SANS,
                   fontSize: '13px',
                   lineHeight: '20px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {e.desc}
@@ -163,7 +163,7 @@ export function CrmTimeline() {
                   marginTop: '4px',
                   fontFamily: MONO,
                   fontSize: '11px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {e.time}
@@ -177,8 +177,8 @@ export function CrmTimeline() {
               key={p.title}
               style={{
                 padding: '16px 18px',
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderLeft: `3px solid ${M.color}`,
                 borderRadius: '12px',
                 marginBottom: '14px',
@@ -195,7 +195,7 @@ export function CrmTimeline() {
                   fontFamily: SANS,
                   fontSize: '12.5px',
                   lineHeight: '19px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {p.body}

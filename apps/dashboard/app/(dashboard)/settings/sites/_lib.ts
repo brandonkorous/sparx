@@ -58,5 +58,5 @@ export function primaryDomainOf(domains: Domain[]): Domain | undefined {
 export function siteChipColor(p: Property): string {
   const c = p.brandOverride?.colorPrimary?.trim();
   if (c) return c;
-  return 'var(--module-active)';
+  return 'var(--color-module)';
 }

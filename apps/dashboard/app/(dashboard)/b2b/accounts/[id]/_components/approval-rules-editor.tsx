@@ -3,8 +3,28 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2 } from 'lucide-react';
-import { Badge, Button, Input, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Table,
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 import { addApprovalRule, deleteApprovalRule } from '../../_lib/actions';
+
+// A non-negative dollar amount held as string state (currency chars stripped
+// before parsing). `@sparx/forms` ships no numeric builder, so this stays local —
+// promotion candidate alongside tier-create-form's `nonNegativeNumber`.
+const positiveAmount =
+  (message: string) =>
+  (value: unknown): string | null => {
+    const s = typeof value === 'string' ? value.replace(/[^0-9.]/g, '') : '';
+    const n = parseFloat(s);
+    return s !== '' && Number.isFinite(n) && n >= 0 ? null : message;
+  };
 
 interface ApprovalRule {
   id: string;
@@ -32,12 +52,14 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const v = useFieldValidation(
+    { minAmount },
+    { minAmount: positiveAmount('Enter a valid amount of 0 or more.') }
+  );
+
   async function handleAdd() {
+    if (!v.validate()) return;
     const dollars = parseFloat(minAmount.replace(/[^0-9.]/g, ''));
-    if (isNaN(dollars) || dollars < 0) {
-      setError('Enter a valid amount');
-      return;
-    }
     setSaving(true);
     setError(null);
     try {
@@ -121,9 +143,10 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
       {showAdd ? (
         <div className="flex flex-col gap-3">
           <div className="flex flex-row items-end gap-3">
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium">Require approval for orders over</p>
-              <Input
+            <Field {...v.field('minAmount')}>
+              <FieldLabel>Require approval for orders over</FieldLabel>
+              <FieldControl
+                name="minAmount"
                 type="text"
                 placeholder="e.g. 500"
                 value={minAmount}
@@ -133,8 +156,9 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
                 }}
                 className="w-40"
                 disabled={saving}
+                {...v.control('minAmount')}
               />
-            </div>
+            </Field>
             <Button
               color="module"
               size="sm"
@@ -156,7 +180,11 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
               Cancel
             </Button>
           </div>
-          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && (
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+              {error}
+            </FieldStatus>
+          )}
         </div>
       ) : (
         <Button

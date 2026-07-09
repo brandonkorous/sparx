@@ -17,8 +17,8 @@ export function Testimonial() {
         paddingBottom: 'var(--section-py-xl)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-surface)',
-        borderTop: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        borderTop: '1px solid var(--color-base-300)',
         scrollMarginTop: '80px',
       }}
     >
@@ -28,7 +28,7 @@ export function Testimonial() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             From the founder
@@ -45,18 +45,20 @@ export function Testimonial() {
                 fontSize: 'clamp(24px, 3vw, 40px)',
                 letterSpacing: '-0.025em',
                 lineHeight: 1.32,
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 margin: 0,
                 flex: 1,
               }}
             >
               AI can spin up a website in an afternoon. It&apos;s the second year that&apos;s hard —
               the orders, the customer data, the wholesale accounts,{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
                 the site still being yours when the trend moves on.
               </span>{' '}
               sparx is the home an AI-built site grows into:{' '}
-              <span style={{ color: 'var(--sparx-primary)' }}>
+              <span style={{ color: 'var(--color-primary)' }}>
                 own it, run it, and change it yourself
               </span>{' '}
               — for years, no rebuild and no developer on retainer.
@@ -110,7 +112,7 @@ function FounderCard() {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '15px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             Brandon Korous
@@ -119,7 +121,7 @@ function FounderCard() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Founder, sparx
@@ -133,7 +135,7 @@ function FounderCard() {
           flexDirection: 'column',
           gap: '6px',
           paddingTop: '20px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         <span
@@ -141,7 +143,7 @@ function FounderCard() {
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '13px',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           Design partner
@@ -151,7 +153,7 @@ function FounderCard() {
             fontFamily: 'var(--font-sans)',
             fontSize: '14px',
             lineHeight: '21px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           Gillett Diesel Service is shaping our B2B, fleet, and net-terms features from real-world

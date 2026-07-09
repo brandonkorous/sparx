@@ -2,7 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Input, Label, Stack, Text } from '@sparx/ui';
+import { Button, Stack, Text } from '@sparx/ui';
+import { Field, FieldControl, FieldLabel, FieldStatus } from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { forgetPassword } from '@sparx/operator-auth/client';
 import { AuthShell } from '../_components/auth-shell';
 
@@ -14,9 +16,15 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
 
+  const v = useFieldValidation(
+    { email },
+    { email: rules(rule.required('Enter your email.'), rule.email()) }
+  );
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
     const result = await forgetPassword({ email, redirectTo: '/reset-password' });
     if (result.error) {
@@ -42,22 +50,21 @@ export default function ForgotPasswordPage() {
       ) : (
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>
-            <Stack gap={2}>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
+            <Field {...v.field('email')}>
+              <FieldLabel required>Email</FieldLabel>
+              <FieldControl
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                {...v.control('email')}
               />
-            </Stack>
+            </Field>
             {error ? (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </FieldStatus>
             ) : null}
             <Button type="submit" disabled={submitting} loading={submitting}>
               Send reset link

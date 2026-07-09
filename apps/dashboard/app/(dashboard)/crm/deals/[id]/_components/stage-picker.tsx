@@ -9,7 +9,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { NativeSelect } from 'silicaui-react';
+import { NativeSelect } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { moveDealStageAction } from '../../../deal-actions';

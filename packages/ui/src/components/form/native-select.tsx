@@ -14,16 +14,17 @@ import { cn } from '../../utils/cn';
 
 const nativeSelectVariants = cva(
   [
-    'w-full appearance-none rounded-md border bg-[var(--color-bg-surface)]',
-    'text-[var(--color-text-primary)]',
+    'w-full appearance-none rounded-md border bg-[var(--color-base-100)]',
+    'text-base-content',
     'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-50',
   ],
   {
     variants: {
       variant: {
-        default: 'border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]',
+        default:
+          'border-[var(--color-base-300)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
         error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
         success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
       },

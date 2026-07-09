@@ -4,7 +4,7 @@
 
 import type { Metadata } from 'next';
 import { Store } from 'lucide-react';
-import { EmptyState } from 'silicaui-react';
+import { EmptyState } from '@wizeworks/silicaui-react';
 
 import { MarketPager } from '@/components/market-pager';
 import { MerchantCard } from '@/components/merchant-card';

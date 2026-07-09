@@ -42,11 +42,15 @@ import {
   Card,
   CardBody,
   Checkbox,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import {
   advanceStageAction,
@@ -143,6 +147,16 @@ function toIsoDate(value: string): string | undefined {
   return new Date(`${s}T00:00:00Z`).toISOString();
 }
 
+// A money/charge field is optional but, when present, must be a non-negative number.
+function optionalNonNegative(value: unknown): string | null {
+  const s = String(value ?? '').trim();
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a valid amount.';
+  if (n < 0) return 'Must be 0 or more.';
+  return null;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────────
 
 export function InvoiceWizard(props: InvoiceWizardProps) {
@@ -218,6 +232,25 @@ function InvoiceWizardInner({
 
   const hasParty = Boolean(customerId) || Boolean(b2bAccountId);
 
+  // Document-level charge fields are optional, but a filled value must be a valid,
+  // non-negative number (tax additionally caps at 100%).
+  const v = useFieldValidation(
+    { taxRatePct, shipping, surcharge, depositAmount },
+    {
+      taxRatePct: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return null;
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a valid rate.';
+        if (n < 0 || n > 100) return 'Enter a rate between 0 and 100.';
+        return null;
+      },
+      shipping: optionalNonNegative,
+      surcharge: optionalNonNegative,
+      depositAmount: optionalNonNegative,
+    }
+  );
+
   // Live totals (server is authoritative; this mirrors its math for preview).
   const taxPct = Math.min(100, Math.max(0, Number(taxRatePct) || 0));
   const shippingNum = parseMoney(shipping);
@@ -292,6 +325,7 @@ function InvoiceWizardInner({
       setError('Choose a customer or a B2B account to bill.');
       return;
     }
+    if (!v.validate()) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -427,10 +461,10 @@ function InvoiceWizardInner({
         }}
       >
         {createdDocId ? (
-          <Card className="border-[var(--color-border-default)]">
+          <Card className="border-base-300">
             <CardBody className="p-4">
               <div className="flex flex-row items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--module-active)]" />
+                <CheckCircle2 className="text-module mt-0.5 h-5 w-5 shrink-0" />
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-medium">
                     Document created — but {partialFailures.length} item
@@ -455,15 +489,14 @@ function InvoiceWizardInner({
                   or a B2B account — at least one is required.
                 </p>
                 <div className="flex flex-col gap-4">
-                  <div>
-                    <Label htmlFor="iw-workflow">Workflow</Label>
+                  <Field>
+                    <FieldLabel>Workflow</FieldLabel>
                     {workflows.length === 0 ? (
                       <p className="text-base-content/70 text-sm">
                         No document workflows exist yet. Create one in Invoicing → Workflows first.
                       </p>
                     ) : (
                       <NativeSelect
-                        id="iw-workflow"
                         value={workflowId}
                         onChange={(e) => setWorkflowId(e.target.value)}
                       >
@@ -475,17 +508,16 @@ function InvoiceWizardInner({
                         ))}
                       </NativeSelect>
                     )}
-                    <p className="text-base-content/70 mt-1 text-xs">
+                    <FieldDescription>
                       The workflow’s first stage is where this document starts — you can jump ahead
                       below.
-                    </p>
-                  </div>
+                    </FieldDescription>
+                  </Field>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="iw-customer">Customer</Label>
+                    <Field>
+                      <FieldLabel>Customer</FieldLabel>
                       <NativeSelect
-                        id="iw-customer"
                         value={customerId}
                         onChange={(e) => setCustomerId(e.target.value)}
                       >
@@ -496,11 +528,10 @@ function InvoiceWizardInner({
                           </option>
                         ))}
                       </NativeSelect>
-                    </div>
-                    <div>
-                      <Label htmlFor="iw-b2b">B2B account</Label>
+                    </Field>
+                    <Field>
+                      <FieldLabel>B2B account</FieldLabel>
                       <NativeSelect
-                        id="iw-b2b"
                         value={b2bAccountId}
                         onChange={(e) => setB2bAccountId(e.target.value)}
                       >
@@ -511,20 +542,20 @@ function InvoiceWizardInner({
                           </option>
                         ))}
                       </NativeSelect>
-                    </div>
+                    </Field>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="max-w-[8rem]">
-                      <Label htmlFor="iw-currency">Currency</Label>
-                      <Input
-                        id="iw-currency"
+                    <Field className="max-w-[8rem]">
+                      <FieldLabel>Currency</FieldLabel>
+                      <FieldControl
+                        name="iw-currency"
                         value={currency}
                         maxLength={3}
                         className="uppercase"
                         onChange={(e) => setCurrency(e.target.value)}
                       />
-                    </div>
+                    </Field>
                     {currentUserId && (
                       <label className="flex items-end gap-2 pb-2 text-sm">
                         <Checkbox
@@ -563,7 +594,7 @@ function InvoiceWizardInner({
                     lines.map((l) => (
                       <div
                         key={l.tempId}
-                        className="flex flex-row items-center justify-between gap-3 rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                        className="border-base-300 flex flex-row items-center justify-between gap-3 rounded-md border px-3 py-2"
                       >
                         <div className="flex min-w-0 flex-row flex-wrap items-center gap-2">
                           <Badge color="info" variant="soft" size="sm">
@@ -620,42 +651,45 @@ function InvoiceWizardInner({
                   Document-level charges. Tax applies to the lines you mark taxable. All optional.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="iw-tax">Tax rate %</Label>
-                    <Input
-                      id="iw-tax"
+                  <Field {...v.field('taxRatePct')}>
+                    <FieldLabel>Tax rate %</FieldLabel>
+                    <FieldControl
+                      name="iw-tax"
                       type="number"
                       min="0"
                       max="100"
                       step="0.0001"
                       value={taxRatePct}
                       onChange={(e) => setTaxRatePct(e.target.value)}
+                      {...v.control('taxRatePct')}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="iw-shipping">Shipping</Label>
-                    <Input
-                      id="iw-shipping"
+                  </Field>
+                  <Field {...v.field('shipping')}>
+                    <FieldLabel>Shipping</FieldLabel>
+                    <FieldControl
+                      name="iw-shipping"
                       type="number"
                       min="0"
                       step="0.01"
                       value={shipping}
                       onChange={(e) => setShipping(e.target.value)}
                       placeholder="0.00"
+                      {...v.control('shipping')}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="iw-surcharge">Surcharge</Label>
-                    <Input
-                      id="iw-surcharge"
+                  </Field>
+                  <Field {...v.field('surcharge')}>
+                    <FieldLabel>Surcharge</FieldLabel>
+                    <FieldControl
+                      name="iw-surcharge"
                       type="number"
                       min="0"
                       step="0.01"
                       value={surcharge}
                       onChange={(e) => setSurcharge(e.target.value)}
                       placeholder="0.00"
+                      {...v.control('surcharge')}
                     />
-                  </div>
+                  </Field>
                 </div>
               </CardBody>
             </Card>
@@ -669,35 +703,34 @@ function InvoiceWizardInner({
                 </p>
                 <div className="flex flex-col gap-3">
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label htmlFor="iw-due">Due date</Label>
-                      <Input
-                        id="iw-due"
+                    <Field>
+                      <FieldLabel>Due date</FieldLabel>
+                      <FieldControl
+                        name="iw-due"
                         type="date"
                         value={dueAt}
                         onChange={(e) => setDueAt(e.target.value)}
                       />
-                    </div>
-                    <div>
-                      <Label htmlFor="iw-valid">Valid until</Label>
-                      <Input
-                        id="iw-valid"
+                    </Field>
+                    <Field>
+                      <FieldLabel>Valid until</FieldLabel>
+                      <FieldControl
+                        name="iw-valid"
                         type="date"
                         value={validUntil}
                         onChange={(e) => setValidUntil(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   </div>
-                  <div>
-                    <Label htmlFor="iw-notes">Notes</Label>
-                    <Textarea
-                      id="iw-notes"
-                      rows={3}
+                  <Field>
+                    <FieldLabel>Notes</FieldLabel>
+                    <FieldControl
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Shown on the document — terms, scope, anything the customer should see."
+                      render={<Textarea rows={3} />}
                     />
-                  </div>
+                  </Field>
                 </div>
               </CardBody>
             </Card>
@@ -711,21 +744,19 @@ function InvoiceWizardInner({
                   skip.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-4">
-                  <div>
-                    <Label htmlFor="iw-dep-kind">Type</Label>
+                  <Field>
+                    <FieldLabel>Type</FieldLabel>
                     <NativeSelect
-                      id="iw-dep-kind"
                       value={depositKind}
                       onChange={(e) => setDepositKind(e.target.value as 'deposit' | 'payment')}
                     >
                       <option value="deposit">Deposit</option>
                       <option value="payment">Payment</option>
                     </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="iw-dep-method">Method</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Method</FieldLabel>
                     <NativeSelect
-                      id="iw-dep-method"
                       value={depositMethod}
                       onChange={(e) => setDepositMethod(e.target.value)}
                     >
@@ -737,28 +768,29 @@ function InvoiceWizardInner({
                       <option value="account_credit">Account credit</option>
                       <option value="other">Other</option>
                     </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="iw-dep-amount">Amount</Label>
-                    <Input
-                      id="iw-dep-amount"
+                  </Field>
+                  <Field {...v.field('depositAmount')}>
+                    <FieldLabel>Amount</FieldLabel>
+                    <FieldControl
+                      name="iw-dep-amount"
                       type="number"
                       min="0"
                       step="0.01"
                       value={depositAmount}
                       onChange={(e) => setDepositAmount(e.target.value)}
                       placeholder="0.00"
+                      {...v.control('depositAmount')}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="iw-dep-ref">Reference</Label>
-                    <Input
-                      id="iw-dep-ref"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Reference</FieldLabel>
+                    <FieldControl
+                      name="iw-dep-ref"
                       value={depositReference}
                       onChange={(e) => setDepositReference(e.target.value)}
                       placeholder="Check #, memo…"
                     />
-                  </div>
+                  </Field>
                 </div>
                 {depositNum > 0 && (
                   <p className="text-base-content/70 mt-3 text-xs">
@@ -793,7 +825,7 @@ function InvoiceWizardInner({
                       ))}
                     </NativeSelect>
                     {startStageId !== firstStageId && lines.length === 0 && (
-                      <p className="text-xs text-[var(--color-warning-text)]">
+                      <p className="text-warning text-xs">
                         This stage finalizes the document — consider adding at least one line first.
                       </p>
                     )}
@@ -803,9 +835,9 @@ function InvoiceWizardInner({
             )}
 
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         )}
@@ -849,6 +881,26 @@ function LineComposer({
   );
   const resolved = resolveMarkup(markupState, markupRules, pricingMode);
 
+  const v = useFieldValidation(
+    { description, quantity, unitPrice, cost },
+    {
+      description: rule.required('Add a description.'),
+      quantity: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n <= 0) return 'Quantity must be greater than 0.';
+        return null;
+      },
+      unitPrice: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n < 0) return 'Price cannot be negative.';
+        return null;
+      },
+      cost: optionalNonNegative,
+    }
+  );
+
   function onTypeChange(nextKey: string) {
     setLineTypeKey(nextKey);
     const next = lineTypes.find((t) => t.key === nextKey);
@@ -867,10 +919,8 @@ function LineComposer({
   }
 
   function add() {
-    if (!description.trim()) {
-      setError('Add a description.');
-      return;
-    }
+    setError(null);
+    if (!v.validate()) return;
     const qty = Math.max(0.001, Number(quantity) || 1);
     const common = {
       lineTypeKey: lineTypeKey || undefined,
@@ -920,8 +970,8 @@ function LineComposer({
       <CardBody>
         <h3 className="text-xl font-semibold">Add a charge</h3>
         <div className="grid grid-cols-12 items-end gap-2">
-          <div className="col-span-12 md:col-span-3">
-            <Label className="text-xs">Type</Label>
+          <Field className="col-span-12 md:col-span-3">
+            <FieldLabel className="text-xs">Type</FieldLabel>
             <select
               className={SELECT_CLASS}
               value={lineTypeKey}
@@ -933,28 +983,36 @@ function LineComposer({
                 </option>
               ))}
             </select>
-          </div>
-          <div className="col-span-12 md:col-span-5">
-            <Label className="text-xs">Description</Label>
-            <Input
+          </Field>
+          <Field {...v.field('description')} className="col-span-12 md:col-span-5">
+            <FieldLabel className="text-xs" required>
+              Description
+            </FieldLabel>
+            <FieldControl
+              name="lc-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What is this charge?"
+              {...v.control('description')}
             />
-          </div>
-          <div className="col-span-4 md:col-span-2">
-            <Label className="text-xs">Qty</Label>
-            <Input
+          </Field>
+          <Field {...v.field('quantity')} className="col-span-4 md:col-span-2">
+            <FieldLabel className="text-xs" required>
+              Qty
+            </FieldLabel>
+            <FieldControl
+              name="lc-quantity"
               type="number"
               min="0"
               step="0.001"
               className="text-right"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
+              {...v.control('quantity')}
             />
-          </div>
+          </Field>
           <div className="col-span-8 flex items-center gap-2 md:col-span-2 md:justify-end md:pb-2">
-            <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+            <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
               <Checkbox
                 color="module"
                 checked={taxable}
@@ -978,20 +1036,23 @@ function LineComposer({
             </div>
           ) : (
             <>
-              <div className="col-span-6 md:col-span-3">
-                <Label className="text-xs">Unit price</Label>
-                <Input
+              <Field {...v.field('unitPrice')} className="col-span-6 md:col-span-3">
+                <FieldLabel className="text-xs">Unit price</FieldLabel>
+                <FieldControl
+                  name="lc-unit-price"
                   type="number"
                   min="0"
                   step="0.01"
                   className="text-right"
                   value={unitPrice}
                   onChange={(e) => setUnitPrice(e.target.value)}
+                  {...v.control('unitPrice')}
                 />
-              </div>
-              <div className="col-span-6 md:col-span-3">
-                <Label className="text-xs">Cost (opt.)</Label>
-                <Input
+              </Field>
+              <Field {...v.field('cost')} className="col-span-6 md:col-span-3">
+                <FieldLabel className="text-xs">Cost (opt.)</FieldLabel>
+                <FieldControl
+                  name="lc-cost"
                   type="number"
                   min="0"
                   step="0.01"
@@ -999,8 +1060,9 @@ function LineComposer({
                   value={cost}
                   onChange={(e) => setCost(e.target.value)}
                   placeholder="—"
+                  {...v.control('cost')}
                 />
-              </div>
+              </Field>
             </>
           )}
 
@@ -1017,9 +1079,9 @@ function LineComposer({
           </div>
         </div>
         {error && (
-          <p className="text-danger mt-2 text-xs" role="alert">
+          <FieldStatus status="error" attached={false} role="alert" className="mt-2">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </CardBody>
     </Card>

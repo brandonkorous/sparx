@@ -13,7 +13,18 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, CardTitle, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTaskAction } from '../../../activity-task-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -50,6 +61,8 @@ export function NewTaskForm({
   const [dueAt, setDueAt] = React.useState('');
   const [customerId, setCustomerId] = React.useState(preselectedCustomerId ?? '');
 
+  const v = useFieldValidation({ title }, { title: rule.required('Title is required.') });
+
   // Unsaved-changes guard. "Dirty" is "the user entered or changed anything" off
   // the defaults (assignee defaults to the current user; priority to medium).
   const dirty =
@@ -80,10 +93,7 @@ export function NewTaskForm({
 
   function submit() {
     setError(null);
-    if (!title.trim()) {
-      setError('Title is required.');
-      return;
-    }
+    if (!v.validate()) return;
     const input = {
       title: title.trim(),
       description: description.trim() || undefined,
@@ -131,29 +141,29 @@ export function NewTaskForm({
             <CardBody>
               <CardTitle>Task details</CardTitle>
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="task-title">Title</Label>
-                  <Input
-                    id="task-title"
+                <Field {...v.field('title')}>
+                  <FieldLabel required>Title</FieldLabel>
+                  <FieldControl
+                    name="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    {...v.control('title')}
                     placeholder="Follow up on Acme renewal"
                   />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="task-description">Description</Label>
-                  <Textarea
-                    id="task-description"
-                    rows={3}
+                </Field>
+                <Field>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
+                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    render={<Textarea rows={3} />}
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row flex-wrap gap-4">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="task-assignee">Assigned to</Label>
+                  <Field className="flex-1">
+                    <FieldLabel>Assigned to</FieldLabel>
                     <NativeSelect
-                      id="task-assignee"
                       value={assignedToUserId}
                       onChange={(e) => setAssignedToUserId(e.target.value)}
                     >
@@ -163,35 +173,30 @@ export function NewTaskForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
-                  <div className="flex w-40 flex-col gap-2">
-                    <Label htmlFor="task-priority">Priority</Label>
-                    <NativeSelect
-                      id="task-priority"
-                      value={priority}
-                      onChange={(e) => setPriority(e.target.value)}
-                    >
+                  </Field>
+                  <Field className="w-40">
+                    <FieldLabel>Priority</FieldLabel>
+                    <NativeSelect value={priority} onChange={(e) => setPriority(e.target.value)}>
                       <option value="low">Low</option>
                       <option value="medium">Medium</option>
                       <option value="high">High</option>
                       <option value="urgent">Urgent</option>
                     </NativeSelect>
-                  </div>
-                  <div className="flex w-44 flex-col gap-2">
-                    <Label htmlFor="task-due">Due date</Label>
-                    <Input
-                      id="task-due"
+                  </Field>
+                  <Field className="w-44">
+                    <FieldLabel>Due date</FieldLabel>
+                    <FieldControl
+                      name="dueAt"
                       type="date"
                       value={dueAt}
                       onChange={(e) => setDueAt(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
                 {!preselectedDealId && (
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="task-customer">Customer</Label>
+                  <Field>
+                    <FieldLabel>Customer</FieldLabel>
                     <NativeSelect
-                      id="task-customer"
                       value={customerId}
                       onChange={(e) => setCustomerId(e.target.value)}
                     >
@@ -202,13 +207,13 @@ export function NewTaskForm({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
+                  </Field>
                 )}
 
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardBody>

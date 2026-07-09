@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -161,7 +161,9 @@ function TheInversion() {
           headline={
             <>
               sparx inside your AI &mdash;{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
                 not another AI inside sparx
               </span>
             </>
@@ -214,8 +216,8 @@ function ContrastCard({
         flexDirection: 'column',
         gap: '18px',
         padding: '32px',
-        backgroundColor: accent ? moduleTint(AI.color) : 'var(--color-bg-page)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: accent ? moduleTint(AI.color) : 'var(--color-base-200)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '12px',
       }}
     >
@@ -226,7 +228,9 @@ function ContrastCard({
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
-            color: accent ? AI.text : 'var(--color-text-tertiary)',
+            color: accent
+              ? AI.text
+              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {kicker}
@@ -238,7 +242,7 @@ function ContrastCard({
             fontWeight: 500,
             fontSize: '22px',
             letterSpacing: '-0.02em',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {title}
@@ -248,14 +252,21 @@ function ContrastCard({
         {points.map((p) => (
           <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
             <span style={{ paddingTop: '7px', flexShrink: 0 }}>
-              <Dot color={accent ? AI.color : 'var(--color-text-tertiary)'} size={7} />
+              <Dot
+                color={
+                  accent
+                    ? AI.color
+                    : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+                }
+                size={7}
+              />
             </span>
             <span
               style={{
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '23px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p}
@@ -309,14 +320,18 @@ function HowItWorks() {
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: i === 0 ? moduleTint(AI.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(AI.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '210px',
             }}
           >
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {s.n}
             </span>
@@ -327,7 +342,7 @@ function HowItWorks() {
                 fontWeight: 500,
                 fontSize: '22px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {s.title}
@@ -338,7 +353,7 @@ function HowItWorks() {
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '23px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -414,7 +429,7 @@ function HowItWorks() {
           fontFamily: SANS,
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           maxWidth: '640px',
         }}
       >
@@ -517,8 +532,8 @@ function ChatWindow({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--color-bg-page)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         overflow: 'hidden',
         boxShadow: '0 14px 40px rgba(15, 23, 42, 0.06)',
@@ -531,7 +546,7 @@ function ChatWindow({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '13px 18px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
@@ -541,13 +556,19 @@ function ChatWindow({
               fontFamily: SANS,
               fontWeight: 500,
               fontSize: '13px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {client}
           </span>
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '16px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '16px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           +
         </span>
       </div>
@@ -574,14 +595,14 @@ function ChatWindow({
         >
           <div
             style={{
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: 'var(--color-base-100)',
               borderRadius: '14px 14px 4px 14px',
               padding: '10px 14px',
               fontFamily: SANS,
               fontSize: '14.5px',
               lineHeight: '22px',
               fontWeight: 500,
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {ask}
@@ -595,14 +616,14 @@ function ChatWindow({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
             <div
               style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '14px 14px 14px 4px',
                 padding: '10px 14px',
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {answer}
@@ -615,7 +636,9 @@ function ChatWindow({
                 paddingLeft: '2px',
                 fontFamily: SANS,
                 fontSize: '12px',
-                color: confirm ? AI.text : 'var(--color-text-tertiary)',
+                color: confirm
+                  ? AI.text
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               <Dot color={AI.color} size={6} />
@@ -632,7 +655,7 @@ function ChatWindow({
           alignItems: 'center',
           gap: '10px',
           padding: '12px 14px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         <span
@@ -640,11 +663,11 @@ function ChatWindow({
             flex: 1,
             padding: '9px 14px',
             borderRadius: '9999px',
-            border: '1px solid var(--color-border-default)',
-            backgroundColor: 'var(--color-bg-surface)',
+            border: '1px solid var(--color-base-300)',
+            backgroundColor: 'var(--color-base-100)',
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -690,9 +713,9 @@ function UserAvatar() {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
-        color: 'var(--color-text-tertiary)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
+        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
       }}
     >
       <svg viewBox="0 0 24 24" width={17} height={17} fill="currentColor">
@@ -713,12 +736,14 @@ function ChatAvatar({ label, accent }: { label: string; accent?: boolean }) {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: accent ? AI.color : 'var(--color-bg-surface)',
-        border: accent ? 'none' : '1px solid var(--color-border-default)',
+        backgroundColor: accent ? AI.color : 'var(--color-base-100)',
+        border: accent ? 'none' : '1px solid var(--color-base-300)',
         fontFamily: MONO,
         fontSize: '11px',
         fontWeight: 500,
-        color: accent ? '#FFFFFF' : 'var(--color-text-tertiary)',
+        color: accent
+          ? '#FFFFFF'
+          : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
       }}
     >
       {label}
@@ -804,8 +829,8 @@ function ToolSurface() {
                 flexDirection: 'column',
                 gap: '12px',
                 padding: '24px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '12px',
                 minHeight: '156px',
               }}
@@ -830,7 +855,7 @@ function ToolSurface() {
                   fontWeight: 500,
                   fontSize: '16px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {g.label}
@@ -841,7 +866,7 @@ function ToolSurface() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   lineHeight: '21px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {g.actions}
@@ -995,8 +1020,8 @@ function WorksWithEveryAssistant() {
               flexDirection: 'column',
               gap: '6px',
               padding: '22px 24px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
             }}
           >
@@ -1006,13 +1031,17 @@ function WorksWithEveryAssistant() {
                 fontWeight: 500,
                 fontSize: '17px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {c.name}
             </span>
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {c.note}
             </span>
@@ -1034,7 +1063,7 @@ function AiPricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(AI.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',
         }}
@@ -1047,7 +1076,7 @@ function AiPricing() {
                 fontWeight: 500,
                 fontSize: '40px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               +
@@ -1058,13 +1087,17 @@ function AiPricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $49
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -1074,7 +1107,7 @@ function AiPricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

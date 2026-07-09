@@ -4,7 +4,15 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Package } from 'lucide-react';
 
-import { Badge, Button, Card, CardActions, CardBody, Checkbox, Input } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Checkbox,
+  Input,
+} from '@wizeworks/silicaui-react';
 
 import { draftReorderAction } from '../../_lib/reorder-actions';
 import {
@@ -86,10 +94,10 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
   return (
     <div className="flex flex-col gap-4">
       {created && created.length > 0 ? (
-        <Card className="border-[var(--color-success)]">
+        <Card className="border-success">
           <CardBody>
             <div className="flex flex-row items-center gap-2 py-1">
-              <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
+              <CheckCircle2 className="text-success h-4 w-4" />
               <p className="text-sm">
                 Drafted {created.length} purchase order{created.length === 1 ? '' : 's'}:{' '}
                 <span className="font-mono">{created.join(', ')}</span> — review and submit them on
@@ -100,7 +108,7 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
         </Card>
       ) : null}
 
-      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+      {error ? <p className="text-danger text-sm">{error}</p> : null}
 
       {groups.length > 1 ? (
         <div className="flex flex-row flex-wrap items-center gap-3">
@@ -214,7 +222,7 @@ function LineRow({
     l.unitCostCents !== null && Number(qty) > 0 ? l.unitCostCents * Number(qty) : null;
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <Checkbox
         color="module"
         checked={selected}

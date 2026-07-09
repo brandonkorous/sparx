@@ -1,7 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input, Label, NativeSelect, Stack, Text, toast } from '@sparx/ui';
+import { Button, Stack, Text, toast } from '@sparx/ui';
+import { Field, FieldControl, FieldLabel, NativeSelect } from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import type { OperatorCouponInput } from '@sparx/operator';
 import { createCouponAction } from '../actions';
 
@@ -20,24 +22,27 @@ export function CouponCreateForm() {
   const [months, setMonths] = React.useState('3');
   const [pending, startTransition] = React.useTransition();
 
+  const v = useFieldValidation(
+    { name, value, kind },
+    {
+      name: rule.required('Give the coupon a name.'),
+      // Cross-field: a percentage can’t exceed 100%, a fixed amount can.
+      value: rules(
+        rule.number({ gt: 0, message: 'Enter a discount greater than zero.' }),
+        (val, all) =>
+          all.kind === 'percent' && Number(val) > 100
+            ? 'A percentage discount can’t exceed 100%.'
+            : null
+      ),
+    }
+  );
+
   function submit() {
-    const trimmedName = name.trim();
+    if (!v.validate()) return;
     const numeric = Number(value);
-    if (!trimmedName) {
-      toast.error('Give the coupon a name.');
-      return;
-    }
-    if (!Number.isFinite(numeric) || numeric <= 0) {
-      toast.error('Enter a discount greater than zero.');
-      return;
-    }
-    if (kind === 'percent' && numeric > 100) {
-      toast.error('A percentage discount can’t exceed 100%.');
-      return;
-    }
 
     const input: OperatorCouponInput = {
-      name: trimmedName,
+      name: name.trim(),
       duration,
       ...(duration === 'repeating' ? { durationInMonths: Math.max(1, Number(months) || 1) } : {}),
       ...(kind === 'percent'
@@ -59,70 +64,76 @@ export function CouponCreateForm() {
 
   return (
     <Stack gap={4}>
-      <Stack gap={2}>
-        <Label htmlFor="coupon-name">Name</Label>
-        <Input
-          id="coupon-name"
+      <Field {...v.field('name')}>
+        <FieldLabel required>Name</FieldLabel>
+        <FieldControl
+          name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          {...v.control('name')}
           placeholder="e.g. Launch partner 20%"
           maxLength={200}
         />
-      </Stack>
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Stack gap={2}>
-          <Label htmlFor="coupon-kind">Discount type</Label>
-          <NativeSelect
-            id="coupon-kind"
+        <Field>
+          <FieldLabel>Discount type</FieldLabel>
+          <FieldControl
+            name="kind"
             value={kind}
             onChange={(e) => setKind(e.target.value as DiscountKind)}
-          >
-            <option value="percent">Percentage off</option>
-            <option value="amount">Fixed amount off (USD)</option>
-          </NativeSelect>
-        </Stack>
-        <Stack gap={2}>
-          <Label htmlFor="coupon-value">
-            {kind === 'percent' ? 'Percent off' : 'Amount off ($)'}
-          </Label>
-          <Input
-            id="coupon-value"
+            render={
+              <NativeSelect>
+                <option value="percent">Percentage off</option>
+                <option value="amount">Fixed amount off (USD)</option>
+              </NativeSelect>
+            }
+          />
+        </Field>
+        <Field {...v.field('value')}>
+          <FieldLabel required>{kind === 'percent' ? 'Percent off' : 'Amount off ($)'}</FieldLabel>
+          <FieldControl
+            name="value"
             type="number"
             inputMode="decimal"
             min={0}
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            {...v.control('value')}
             placeholder={kind === 'percent' ? '20' : '50'}
           />
-        </Stack>
+        </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Stack gap={2}>
-          <Label htmlFor="coupon-duration">Applies</Label>
-          <NativeSelect
-            id="coupon-duration"
+        <Field>
+          <FieldLabel>Applies</FieldLabel>
+          <FieldControl
+            name="duration"
             value={duration}
             onChange={(e) => setDuration(e.target.value as Duration)}
-          >
-            <option value="once">Once</option>
-            <option value="repeating">For several months</option>
-            <option value="forever">Forever</option>
-          </NativeSelect>
-        </Stack>
+            render={
+              <NativeSelect>
+                <option value="once">Once</option>
+                <option value="repeating">For several months</option>
+                <option value="forever">Forever</option>
+              </NativeSelect>
+            }
+          />
+        </Field>
         {duration === 'repeating' ? (
-          <Stack gap={2}>
-            <Label htmlFor="coupon-months">Number of months</Label>
-            <Input
-              id="coupon-months"
+          <Field>
+            <FieldLabel>Number of months</FieldLabel>
+            <FieldControl
+              name="months"
               type="number"
               min={1}
               max={60}
               value={months}
               onChange={(e) => setMonths(e.target.value)}
             />
-          </Stack>
+          </Field>
         ) : null}
       </div>
 

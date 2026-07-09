@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { revokeMcpConnectionAction } from '../actions';
 import { RevokeButton } from './revoke-button';

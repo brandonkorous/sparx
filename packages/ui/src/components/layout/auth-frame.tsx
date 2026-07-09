@@ -27,7 +27,7 @@ export function AuthFrame({ lede, aside, asideFooter, children, className }: Aut
   return (
     <div
       className={cn(
-        'grid min-h-screen grid-cols-[minmax(0,46%)_1fr] bg-[var(--color-bg-page)] max-[820px]:grid-cols-1',
+        'grid min-h-screen grid-cols-[minmax(0,46%)_1fr] bg-[var(--color-base-200)] max-[820px]:grid-cols-1',
         className
       )}
     >

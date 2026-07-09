@@ -3,7 +3,7 @@
 // weekly settlement-run history. Server component (no interactivity beyond the
 // status badges), so it renders straight from the settlement reads.
 
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 import { Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import { formatMoney } from '../_format';

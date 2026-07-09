@@ -4,7 +4,15 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 
-import { Badge, Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Input,
+  Label,
+} from '@wizeworks/silicaui-react';
 
 import {
   addCountLineAction,
@@ -133,10 +141,10 @@ export function CountLinesPanel({
           <CardActions>
             <div className="flex w-full flex-row items-center justify-between gap-3">
               <div className="flex flex-row items-center gap-2">
-                {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+                {error && <p className="text-danger text-sm">{error}</p>}
                 {saved && !error && (
                   <div className="flex flex-row items-center gap-1">
-                    <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
+                    <CheckCircle2 className="text-success h-4 w-4" />
                     <p className="text-base-content/70 text-sm">Counts saved</p>
                   </div>
                 )}
@@ -180,7 +188,7 @@ function LineRow({
     variance !== null && l.unitCostCents !== null ? Math.abs(variance) * l.unitCostCents : null;
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
         <p className="text-sm font-medium">
           {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
@@ -241,12 +249,7 @@ function LineRow({
 }
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: 'pos' | 'neg' }) {
-  const color =
-    tone === 'pos'
-      ? 'text-[var(--color-success)]'
-      : tone === 'neg'
-        ? 'text-[var(--color-danger)]'
-        : undefined;
+  const color = tone === 'pos' ? 'text-success' : tone === 'neg' ? 'text-danger' : undefined;
   return (
     <div className="flex w-[5rem] flex-col gap-0 text-right">
       <p className="text-base-content/70 text-xs">{label}</p>
@@ -290,7 +293,7 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
         <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="count-line-sku">Add item by SKU</Label>
           <Input
@@ -310,7 +313,7 @@ function AddLineRow({ id, disabled }: { id: string; disabled: boolean }) {
           {busy ? 'Adding…' : 'Add item'}
         </Button>
       </div>
-      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
     </div>
   );
 }

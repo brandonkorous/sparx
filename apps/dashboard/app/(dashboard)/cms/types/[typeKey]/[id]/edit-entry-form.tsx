@@ -29,8 +29,11 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Label,
-} from 'silicaui-react';
+  Field,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 import { Trash2 } from 'lucide-react';
 import { type FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
@@ -365,14 +368,14 @@ export function EditEntryForm({
           <CardBody>
             <div className="flex flex-col gap-2">
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
               {message && (
-                <p className="text-success text-sm" aria-live="polite">
+                <FieldStatus status="success" attached={false} aria-live="polite">
                   {message}
-                </p>
+                </FieldStatus>
               )}
             </div>
             <CardActions>
@@ -404,26 +407,21 @@ export function EditEntryForm({
             </DialogDescription>
           </div>
           <div className="px-6 py-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="schedule-at">
-                When{' '}
-                <span className="text-error" aria-hidden="true">
-                  *
-                </span>
-              </Label>
+            <Field className="gap-3">
+              <FieldLabel required>When</FieldLabel>
               <DatePicker value={scheduleAt} onValueChange={(d) => setScheduleAt(d ?? undefined)} />
               {scheduleAt && (
-                <p className="text-base-content/70 text-xs" aria-live="polite">
+                <FieldDescription aria-live="polite">
                   Will publish at <strong>{scheduleAt.toLocaleString()}</strong>
                   {' · '}UTC <code>{scheduleAt.toISOString()}</code>
-                </p>
+                </FieldDescription>
               )}
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
-            </div>
+            </Field>
           </div>
           <div>
             <Button type="button" variant="ghost" onClick={() => setScheduleOpen(false)}>

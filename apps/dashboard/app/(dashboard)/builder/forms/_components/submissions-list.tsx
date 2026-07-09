@@ -60,7 +60,7 @@ export function SubmissionsList({
   return (
     <Stack gap={4}>
       <Card padding="none">
-        <ul className="divide-y divide-[var(--color-border-default)]">
+        <ul className="divide-base-300 divide-y">
           {items.map((s) => (
             <SubmissionRow key={s.id} submission={s} />
           ))}
@@ -90,10 +90,10 @@ function SubmissionRow({ submission: s }: { submission: FormSubmission }) {
     <li>
       <Link
         href={`/builder/forms/${s.id}`}
-        className="flex gap-3 px-4 py-3.5 transition-colors hover:bg-[var(--color-bg-subtle)]"
+        className="hover:bg-base-200 flex gap-3 px-4 py-3.5 transition-colors"
       >
         <span aria-hidden className="mt-1.5 w-2 shrink-0">
-          {unread ? <span className="block h-2 w-2 rounded-full bg-[var(--color-info)]" /> : null}
+          {unread ? <span className="bg-info block h-2 w-2 rounded-full" /> : null}
         </span>
 
         <Stack gap={1} className="min-w-0 flex-1">

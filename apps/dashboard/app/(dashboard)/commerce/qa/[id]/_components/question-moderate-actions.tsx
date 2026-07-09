@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, X } from 'lucide-react';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import { moderateQuestionAction } from '../../../review-actions';

@@ -28,7 +28,7 @@ export function VoiceSection() {
     <Section id="voice" surface="page" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline="sparx speaks directly"
           lede="No hedging, no corporate softness, no “revolutionary” or “game-changing.” Short sentences — subject, verb, done. Second person, present tense. sparx doesn’t explain itself; it demonstrates."
         />
@@ -48,9 +48,9 @@ function TaglineBand() {
         flexDirection: 'column',
         gap: '24px',
         padding: 'clamp(28px, 5vw, 48px)',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: 'var(--color-base-100)',
       }}
     >
       <Display size={56} lineHeight={56}>
@@ -59,9 +59,9 @@ function TaglineBand() {
       </Display>
       <p style={lede}>
         The hero rotates the leading noun through the offerings — each landing on{' '}
-        <em style={{ fontStyle: 'normal', color: 'var(--color-text-primary)' }}>ignited.</em> with
+        <em style={{ fontStyle: 'normal', color: 'var(--color-base-content)' }}>ignited.</em> with
         the indigo spark. Static form for titles, OG, and social:{' '}
-        <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+        <strong style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
           Everything, ignited.
         </strong>
       </p>
@@ -72,11 +72,11 @@ function TaglineBand() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '14px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               padding: '6px 12px',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: 'var(--radius-full)',
-              backgroundColor: 'var(--color-bg-page)',
+              backgroundColor: 'var(--color-base-200)',
             }}
           >
             {w}, ignited.
@@ -97,8 +97,8 @@ function VoiceTable() {
           style={{
             gap: '16px',
             padding: '20px 0',
-            borderTop: i === 0 ? '1px solid var(--color-border-default)' : 'none',
-            borderBottom: '1px solid var(--color-border-default)',
+            borderTop: i === 0 ? '1px solid var(--color-base-300)' : 'none',
+            borderBottom: '1px solid var(--color-base-300)',
           }}
         >
           <span
@@ -106,9 +106,10 @@ function VoiceTable() {
               fontFamily: 'var(--font-sans)',
               fontSize: '15px',
               lineHeight: '24px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               textDecoration: 'line-through',
-              textDecorationColor: 'var(--color-border-strong)',
+              textDecorationColor:
+                'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
             }}
           >
             {row.instead}
@@ -119,7 +120,7 @@ function VoiceTable() {
               fontWeight: 500,
               fontSize: '15px',
               lineHeight: '24px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {row.says}
@@ -192,7 +193,7 @@ const lede: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '17px',
   lineHeight: '28px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
   margin: 0,
   maxWidth: '640px',
 };

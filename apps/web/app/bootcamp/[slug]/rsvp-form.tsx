@@ -6,72 +6,98 @@
 // (seat held) or waitlisted (past capacity). Full bootcamps still show the form
 // so people can join the waitlist.
 
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
-import { Button, Input, Label, NativeSelect } from '@sparx/ui';
+import { useActionState, useState } from 'react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { registerForBootcamp, type RsvpState } from './actions';
 
 const INITIAL: RsvpState = { status: 'idle' };
 const SANS = 'var(--font-sans)';
-const PRIMARY = 'var(--sparx-primary)';
+const PRIMARY = 'var(--color-primary)';
 
 const labelStyle: React.CSSProperties = { fontFamily: SANS, fontSize: '13px', fontWeight: 500 };
-const fieldStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '7px' };
 
 export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
-  const [state, action] = useActionState(registerForBootcamp, INITIAL);
+  const [state, action, pending] = useActionState(registerForBootcamp, INITIAL);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const v = useFieldValidation(
+    { name, email },
+    {
+      name: rule.required('Enter your name.'),
+      email: rules(rule.required('Enter your email.'), rule.email()),
+    }
+  );
 
   if (state.status === 'registered' || state.status === 'waitlisted') {
     return <Confirmation waitlisted={state.status === 'waitlisted'} />;
   }
 
+  // Gate the server action on client validation; only dispatch when valid.
+  function clientAction(formData: FormData) {
+    if (!v.validate()) return;
+    action(formData);
+  }
+
   return (
     <form
-      action={action}
+      action={clientAction}
       style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
       noValidate
     >
       <input type="hidden" name="slug" value={slug} />
-      <div style={fieldStyle}>
-        <Label htmlFor="rsvp-name" style={labelStyle}>
+      <Field {...v.field('name')}>
+        <FieldLabel required style={labelStyle}>
           Name
-        </Label>
-        <Input
-          id="rsvp-name"
+        </FieldLabel>
+        <FieldControl
           name="name"
           autoComplete="name"
           placeholder="Ada Lovelace"
-          required
           maxLength={255}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          {...v.control('name')}
         />
-      </div>
-      <div style={fieldStyle}>
-        <Label htmlFor="rsvp-email" style={labelStyle}>
+      </Field>
+      <Field {...v.field('email')}>
+        <FieldLabel required style={labelStyle}>
           Email
-        </Label>
-        <Input
-          id="rsvp-email"
+        </FieldLabel>
+        <FieldControl
           name="email"
           type="email"
           inputMode="email"
           autoComplete="email"
-          required
           placeholder="you@email.com"
           maxLength={255}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          {...v.control('email')}
         />
-      </div>
-      <div style={fieldStyle}>
-        <Label htmlFor="rsvp-seats" style={labelStyle}>
-          Seats
-        </Label>
-        <NativeSelect id="rsvp-seats" name="seats" defaultValue="1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <option key={n} value={n}>
-              {n} {n === 1 ? 'seat' : 'seats'}
-            </option>
-          ))}
-        </NativeSelect>
-      </div>
+      </Field>
+      <Field>
+        <FieldLabel style={labelStyle}>Seats</FieldLabel>
+        <FieldControl
+          render={
+            <NativeSelect name="seats" defaultValue="1">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={n}>
+                  {n} {n === 1 ? 'seat' : 'seats'}
+                </option>
+              ))}
+            </NativeSelect>
+          }
+        />
+      </Field>
 
       {/* Honeypot */}
       <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
@@ -86,27 +112,19 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
       </div>
 
       {state.status === 'error' ? (
-        <p
-          role="alert"
-          style={{
-            margin: 0,
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'var(--color-danger-text)',
-          }}
-        >
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {state.message}
-        </p>
+        </FieldStatus>
       ) : null}
 
-      <SubmitButton full={full} />
+      <SubmitButton full={full} pending={pending} />
       <p
         style={{
           margin: 0,
           fontFamily: SANS,
           fontSize: '12px',
           lineHeight: '18px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         Your details go to the hosting partner, who follows up with the specifics.
@@ -115,8 +133,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
   );
 }
 
-function SubmitButton({ full }: { full: boolean }) {
-  const { pending } = useFormStatus();
+function SubmitButton({ full, pending }: { full: boolean; pending: boolean }) {
   return (
     <Button type="submit" color="primary" size="lg" disabled={pending} style={{ width: '100%' }}>
       {pending ? 'Reserving…' : full ? 'Join the waitlist →' : 'Reserve your seat →'}
@@ -139,7 +156,7 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
           width: 44,
           height: 44,
           borderRadius: 9999,
-          backgroundColor: 'var(--sparx-primary-tint)',
+          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
           color: PRIMARY,
           fontSize: 22,
         }}
@@ -158,7 +175,7 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
           fontFamily: SANS,
           fontSize: '15px',
           lineHeight: '24px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           maxWidth: '320px',
         }}
       >

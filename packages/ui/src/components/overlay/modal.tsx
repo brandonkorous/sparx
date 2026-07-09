@@ -35,7 +35,7 @@ const modalContentVariants = cva(
   [
     'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
     'max-h-[85vh] w-full overflow-y-auto',
-    'rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]',
+    'rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)]',
     'p-6 shadow-md',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -88,9 +88,9 @@ export const ModalContent = React.forwardRef<
           aria-label="Close"
           className={cn(
             'absolute top-3 right-3 rounded-md p-1',
-            'text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]',
+            'text-base-content/50 hover:text-base-content hover:bg-[var(--color-base-200)]',
             'transition-colors duration-150',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none'
+            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
           )}
         >
           <X className="h-4 w-4" />
@@ -123,7 +123,7 @@ export const ModalTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn('text-lg leading-tight font-medium text-[var(--color-text-primary)]', className)}
+    className={cn('text-base-content text-lg leading-tight font-medium', className)}
     {...props}
   />
 ));
@@ -135,7 +135,7 @@ export const ModalDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-[var(--color-text-secondary)]', className)}
+    className={cn('text-base-content/70 text-sm', className)}
     {...props}
   />
 ));

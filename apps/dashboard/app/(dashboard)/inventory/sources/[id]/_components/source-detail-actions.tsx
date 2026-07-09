@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { RefreshCw, Pencil, Trash2 } from 'lucide-react';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import { syncSource, deleteSource } from '../../_lib/actions';

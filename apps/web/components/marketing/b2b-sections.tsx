@@ -56,7 +56,7 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
     <div
       style={{
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',
@@ -86,7 +86,7 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
           style={{
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             marginTop: '4px',
           }}
         >
@@ -104,17 +104,27 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
               fontFamily: SANS,
               fontSize: '13.5px',
               paddingBottom: '10px',
-              borderBottom: '1px solid var(--color-bg-subtle)',
+              borderBottom: '1px solid var(--color-base-200)',
             }}
           >
-            <span style={{ color: 'var(--color-text-secondary)' }}>{l}</span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }}
+            >
+              {l}
+            </span>
             <span style={{ fontWeight: 500 }}>{v}</span>
           </div>
         ))}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginTop: 'auto' }}>
         <Dot color={M.color} size={7} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           resolves automatically at checkout
         </span>
       </div>
@@ -129,8 +139,8 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -138,8 +148,8 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
       <div
         className="mkt-pricerow-head"
         style={{
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         {['Catalog item', 'List price', `${b2b.tier} price`, 'You save'].map((h) => (
@@ -150,14 +160,14 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
               fontSize: '10.5px',
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {h}
           </span>
         ))}
       </div>
-      <div className="mkt-pricerow" style={{ borderBottom: '1px solid var(--color-bg-subtle)' }}>
+      <div className="mkt-pricerow" style={{ borderBottom: '1px solid var(--color-base-200)' }}>
         <span
           className="mkt-pricerow-item"
           style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
@@ -167,7 +177,7 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
               width: 34,
               height: 34,
               borderRadius: '8px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               flexShrink: 0,
               boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
             }}
@@ -177,7 +187,11 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
               {b2b.priceList.item}
             </span>
             <span
-              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '11px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {b2b.priceList.sku}
             </span>
@@ -188,7 +202,7 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
           style={{
             fontFamily: SANS,
             fontSize: '14px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             textDecoration: 'line-through',
           }}
         >
@@ -200,7 +214,7 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontSize: '15px',
             fontWeight: 500,
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {b2b.priceList.account}
@@ -218,11 +232,17 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '9px',
           padding: '14px 22px',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Dot color={M.color} size={6} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           same SKU as retail · account override + tier resolve the price
         </span>
       </div>
@@ -263,7 +283,7 @@ export function B2bRfq() {
       />
       <div
         className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-bg-surface)' }}
+        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
       >
         {stages.map((s, i) => (
           <div
@@ -284,7 +304,7 @@ export function B2bRfq() {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.n}
@@ -310,7 +330,7 @@ export function B2bRfq() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -326,8 +346,8 @@ export function B2bRfq() {
                   width: 22,
                   height: 22,
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

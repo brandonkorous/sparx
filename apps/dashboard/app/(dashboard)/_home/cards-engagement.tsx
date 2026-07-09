@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { ModuleProvider, Sparkline } from '@sparx/ui';
 
 import { CardLink, MetricTile } from '../_components/overview-bits';
@@ -126,12 +126,10 @@ export function ContentCard({
                 {top.map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between gap-3 border-b border-[var(--color-border-default)] py-2 last:border-b-0"
+                    className="border-base-300 flex items-center justify-between gap-3 border-b py-2 last:border-b-0"
                   >
-                    <span className="truncate text-sm text-[var(--color-text-primary)]">
-                      {c.title}
-                    </span>
-                    <span className="shrink-0 text-xs text-[var(--color-text-tertiary)] tabular-nums">
+                    <span className="text-base-content truncate text-sm">{c.title}</span>
+                    <span className="text-base-content/50 shrink-0 text-xs tabular-nums">
                       {fmtNumber(c.views)} views
                     </span>
                   </div>

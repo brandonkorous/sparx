@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      <div className="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+      <div className="rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)]">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -80,11 +80,9 @@ export function DataTable<TData, TValue>({
                           onClick={header.column.getToggleSortingHandler()}
                           className={cn(
                             'inline-flex items-center gap-1 text-xs font-medium tracking-wider uppercase',
-                            'transition-colors duration-150 hover:text-[var(--color-text-primary)]',
-                            'focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
-                            sortDir
-                              ? 'text-[var(--color-text-primary)]'
-                              : 'text-[var(--color-text-tertiary)]'
+                            'hover:text-base-content transition-colors duration-150',
+                            'focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+                            sortDir ? 'text-base-content' : 'text-base-content/50'
                           )}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -162,7 +160,7 @@ function DataTablePager({
   onNext: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between px-1 text-xs text-[var(--color-text-secondary)]">
+    <div className="text-base-content/70 flex items-center justify-between px-1 text-xs">
       <span>
         {totalRows.toLocaleString()} {totalRows === 1 ? 'row' : 'rows'}
       </span>
@@ -175,10 +173,10 @@ function DataTablePager({
           onClick={onPrev}
           disabled={!canPrev}
           className={cn(
-            'rounded-sm border border-[var(--color-border-default)] px-2 py-1',
+            'rounded-sm border border-[var(--color-base-300)] px-2 py-1',
             'transition-colors duration-150',
-            'hover:bg-[var(--color-bg-subtle)]',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+            'hover:bg-[var(--color-base-200)]',
+            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent'
           )}
         >
@@ -189,10 +187,10 @@ function DataTablePager({
           onClick={onNext}
           disabled={!canNext}
           className={cn(
-            'rounded-sm border border-[var(--color-border-default)] px-2 py-1',
+            'rounded-sm border border-[var(--color-base-300)] px-2 py-1',
             'transition-colors duration-150',
-            'hover:bg-[var(--color-bg-subtle)]',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+            'hover:bg-[var(--color-base-200)]',
+            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent'
           )}
         >

@@ -27,12 +27,15 @@ import {
   Button,
   Card,
   CardBody,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -43,6 +46,7 @@ import {
   useConfirm,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import {
   createProductAction,
@@ -180,6 +184,26 @@ function centsToDisplay(cents: number | undefined): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+// Field rules for the numeric inputs (@sparx/forms has no number builder yet).
+// Required money: reject empty, NaN, and negative.
+function requiredMoneyRule(val: unknown): string | null {
+  const s = String(val ?? '').trim();
+  if (s === '') return 'Enter a price.';
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a valid number.';
+  if (n < 0) return 'Cannot be negative.';
+  return null;
+}
+// Optional numeric: empty is allowed; otherwise reject NaN and negative.
+function optionalNonNegativeRule(val: unknown): string | null {
+  const s = String(val ?? '').trim();
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a valid number.';
+  if (n < 0) return 'Cannot be negative.';
+  return null;
+}
+
 // ─── Component ─────────────────────────────────────────────────────────────────
 
 export interface ProductWizardProps {
@@ -248,6 +272,30 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   const [heightCmStr, setHeightCmStr] = React.useState('');
 
   const isPhysical = fulfillmentType === 'physical';
+
+  // Per-step field validation — three independent hooks so each step's validate()
+  // stays scoped to just that step's fields (the wizard commits step by step).
+  const vBasics = useFieldValidation({ title }, { title: rule.required('Enter a product title.') });
+  const vPricing = useFieldValidation(
+    { sku, priceStr, compareAtStr, costStr },
+    {
+      sku: rule.required('Enter a SKU.'),
+      priceStr: requiredMoneyRule,
+      compareAtStr: optionalNonNegativeRule,
+      costStr: optionalNonNegativeRule,
+    }
+  );
+  const vInventory = useFieldValidation(
+    { quantityStr, reorderPointStr, weightKgStr, lengthCmStr, widthCmStr, heightCmStr },
+    {
+      quantityStr: optionalNonNegativeRule,
+      reorderPointStr: optionalNonNegativeRule,
+      weightKgStr: optionalNonNegativeRule,
+      lengthCmStr: optionalNonNegativeRule,
+      widthCmStr: optionalNonNegativeRule,
+      heightCmStr: optionalNonNegativeRule,
+    }
+  );
 
   // Unsaved-changes guard. This wizard creates a real DRAFT product the moment
   // Basics is committed, and `onCancel` already confirms discarding that draft —
@@ -360,6 +408,10 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   async function commitBasics() {
     setSubmitting(true);
     setError(null);
+    if (!vBasics.validate()) {
+      setSubmitting(false);
+      return;
+    }
     const input = {
       title: title.trim(),
       // handle is auto-derived from the title by the API when omitted.
@@ -399,6 +451,10 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     if (!productId) return;
     setSubmitting(true);
     setError(null);
+    if (!vPricing.validate()) {
+      setSubmitting(false);
+      return;
+    }
     const priceCents = dollarsToCents(priceStr) ?? 0;
     const compareAtPriceCents = dollarsToCents(compareAtStr);
     const costCents = dollarsToCents(costStr);
@@ -447,6 +503,10 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
     if (!productId || !variantId) return;
     setSubmitting(true);
     setError(null);
+    if (!vInventory.validate()) {
+      setSubmitting(false);
+      return;
+    }
     const weightGrams = weightKgStr.trim() ? Math.round(Number(weightKgStr) * 1000) : undefined;
     const lengthMm = lengthCmStr.trim() ? Math.round(Number(lengthCmStr) * 10) : undefined;
     const widthMm = widthCmStr.trim() ? Math.round(Number(widthCmStr) * 10) : undefined;
@@ -580,56 +640,57 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       <Card>
         <CardBody className="py-6">
           <div className="flex flex-col gap-5">
-            <div>
-              <Label htmlFor="pw-title">Title</Label>
-              <Input
+            <Field {...vBasics.field('title')}>
+              <FieldLabel required>Title</FieldLabel>
+              <FieldControl
                 id="pw-title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="What you're selling"
+                {...vBasics.control('title')}
               />
-            </div>
+            </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="pw-type">Product type</Label>
-                <Input
+              <Field>
+                <FieldLabel>Product type</FieldLabel>
+                <FieldControl
                   id="pw-type"
                   value={productType}
                   onChange={(e) => setProductType(e.target.value)}
                   placeholder="e.g. Apparel, Book, Tool"
                 />
-              </div>
-              <div>
-                <Label htmlFor="pw-vendor">Vendor / brand</Label>
-                <Input
+              </Field>
+              <Field>
+                <FieldLabel>Vendor / brand</FieldLabel>
+                <FieldControl
                   id="pw-vendor"
                   value={vendor}
                   onChange={(e) => setVendor(e.target.value)}
                   placeholder="Brand or supplier"
                 />
-              </div>
+              </Field>
             </div>
-            <div>
-              <Label htmlFor="pw-desc">Description</Label>
-              <Textarea
+            <Field>
+              <FieldLabel>Description</FieldLabel>
+              <FieldControl
                 id="pw-desc"
-                rows={4}
+                render={<Textarea rows={4} />}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What it is and why someone wants it."
               />
-            </div>
-            <div>
-              <Label htmlFor="pw-tags">Tags</Label>
-              <Input
+            </Field>
+            <Field>
+              <FieldLabel>Tags</FieldLabel>
+              <FieldControl
                 id="pw-tags"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="e.g. featured, sale, new (comma-separated)"
               />
-            </div>
-            <div>
-              <Label htmlFor="pw-fulfillment">Fulfillment</Label>
+            </Field>
+            <Field>
+              <FieldLabel>Fulfillment</FieldLabel>
               <NativeSelect
                 id="pw-fulfillment"
                 value={fulfillmentType}
@@ -639,14 +700,14 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                 <option value="digital">Digital download</option>
                 <option value="service">Service / booking</option>
               </NativeSelect>
-              <p className="text-base-content/70 mt-1.5 text-sm">
+              <FieldDescription>
                 Physical ships and tracks stock. Digital and service skip shipping.
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>
@@ -673,60 +734,70 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       <Card>
         <CardBody className="py-6">
           <div className="flex flex-col gap-5">
-            <div>
-              <Label htmlFor="pw-sku">SKU</Label>
-              <Input
+            <Field {...vPricing.field('sku')}>
+              <FieldLabel required>SKU</FieldLabel>
+              <FieldControl
                 id="pw-sku"
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="SKU-001"
+                {...vPricing.control('sku')}
               />
-            </div>
+            </Field>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <Label htmlFor="pw-price">Price (USD)</Label>
-                <Input
+              <Field {...vPricing.field('priceStr')}>
+                <FieldLabel required>Price (USD)</FieldLabel>
+                <FieldControl
                   id="pw-price"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={priceStr}
                   onChange={(e) => setPriceStr(e.target.value)}
                   placeholder="29.00"
+                  {...vPricing.control('priceStr')}
                 />
-              </div>
-              <div>
-                <Label htmlFor="pw-compare">Compare at</Label>
-                <Input
+              </Field>
+              <Field {...vPricing.field('compareAtStr')}>
+                <FieldLabel>Compare at</FieldLabel>
+                <FieldControl
                   id="pw-compare"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={compareAtStr}
                   onChange={(e) => setCompareAtStr(e.target.value)}
                   placeholder="39.00"
+                  {...vPricing.control('compareAtStr')}
                 />
-              </div>
-              <div>
-                <Label htmlFor="pw-cost">Cost</Label>
-                <Input
+              </Field>
+              <Field {...vPricing.field('costStr')}>
+                <FieldLabel>Cost</FieldLabel>
+                <FieldControl
                   id="pw-cost"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={costStr}
                   onChange={(e) => setCostStr(e.target.value)}
                   placeholder="12.00"
+                  {...vPricing.control('costStr')}
                 />
-              </div>
+              </Field>
             </div>
-            <div>
-              <Label htmlFor="pw-tax">Tax class</Label>
-              <Input
+            <Field>
+              <FieldLabel>Tax class</FieldLabel>
+              <FieldControl
                 id="pw-tax"
                 value={taxClass}
                 onChange={(e) => setTaxClass(e.target.value)}
                 placeholder="standard | food | digital | apparel"
               />
-            </div>
+            </Field>
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>
@@ -752,7 +823,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       <Card>
         <CardBody className="py-6">
           <div className="flex flex-col gap-5">
-            <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
+            <div className="border-base-300 flex items-start justify-between gap-4 rounded-xl border p-4">
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium">Track inventory</span>
                 <span className="text-base-content/70 text-sm">
@@ -769,8 +840,8 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
             {trackInventory && (
               <div className="flex flex-col gap-3">
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="pw-warehouse">Warehouse</Label>
+                  <Field>
+                    <FieldLabel>Warehouse</FieldLabel>
                     <NativeSelect
                       id="pw-warehouse"
                       value={warehouseId}
@@ -787,29 +858,35 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                         ))
                       )}
                     </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="pw-qty">On hand</Label>
-                    <Input
+                  </Field>
+                  <Field {...vInventory.field('quantityStr')}>
+                    <FieldLabel>On hand</FieldLabel>
+                    <FieldControl
                       id="pw-qty"
-                      inputMode="numeric"
+                      type="number"
+                      min="0"
+                      step="1"
                       value={quantityStr}
                       onChange={(e) => setQuantityStr(e.target.value)}
                       placeholder="25"
                       disabled={warehouses.length === 0}
+                      {...vInventory.control('quantityStr')}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="pw-reorder">Reorder at</Label>
-                    <Input
+                  </Field>
+                  <Field {...vInventory.field('reorderPointStr')}>
+                    <FieldLabel>Reorder at</FieldLabel>
+                    <FieldControl
                       id="pw-reorder"
-                      inputMode="numeric"
+                      type="number"
+                      min="0"
+                      step="1"
                       value={reorderPointStr}
                       onChange={(e) => setReorderPointStr(e.target.value)}
                       placeholder="5"
                       disabled={warehouses.length === 0}
+                      {...vInventory.control('reorderPointStr')}
                     />
-                  </div>
+                  </Field>
                 </div>
                 {warehouses.length === 0 && (
                   <p className="text-base-content/70 text-sm">
@@ -820,50 +897,62 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
               </div>
             )}
 
-            <div>
-              <Label htmlFor="pw-weight">Shipping weight (kg)</Label>
-              <Input
+            <Field {...vInventory.field('weightKgStr')}>
+              <FieldLabel>Shipping weight (kg)</FieldLabel>
+              <FieldControl
                 id="pw-weight"
-                inputMode="decimal"
+                type="number"
+                min="0"
+                step="0.01"
                 value={weightKgStr}
                 onChange={(e) => setWeightKgStr(e.target.value)}
                 placeholder="8.5"
+                {...vInventory.control('weightKgStr')}
               />
-            </div>
+            </Field>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <Label htmlFor="pw-length">Length (cm)</Label>
-                <Input
+              <Field {...vInventory.field('lengthCmStr')}>
+                <FieldLabel>Length (cm)</FieldLabel>
+                <FieldControl
                   id="pw-length"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={lengthCmStr}
                   onChange={(e) => setLengthCmStr(e.target.value)}
                   placeholder="30"
+                  {...vInventory.control('lengthCmStr')}
                 />
-              </div>
-              <div>
-                <Label htmlFor="pw-width">Width (cm)</Label>
-                <Input
+              </Field>
+              <Field {...vInventory.field('widthCmStr')}>
+                <FieldLabel>Width (cm)</FieldLabel>
+                <FieldControl
                   id="pw-width"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={widthCmStr}
                   onChange={(e) => setWidthCmStr(e.target.value)}
                   placeholder="30"
+                  {...vInventory.control('widthCmStr')}
                 />
-              </div>
-              <div>
-                <Label htmlFor="pw-height">Height (cm)</Label>
-                <Input
+              </Field>
+              <Field {...vInventory.field('heightCmStr')}>
+                <FieldLabel>Height (cm)</FieldLabel>
+                <FieldControl
                   id="pw-height"
-                  inputMode="decimal"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   value={heightCmStr}
                   onChange={(e) => setHeightCmStr(e.target.value)}
                   placeholder="25"
+                  {...vInventory.control('heightCmStr')}
                 />
-              </div>
+              </Field>
             </div>
-            <div>
-              <Label htmlFor="pw-hazmat">Shipping classification</Label>
+            <Field>
+              <FieldLabel>Shipping classification</FieldLabel>
               <NativeSelect
                 id="pw-hazmat"
                 value={hazmatClass}
@@ -879,15 +968,15 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                 <option value="radioactive">Radioactive</option>
                 <option value="misc">Other regulated</option>
               </NativeSelect>
-              <p className="text-base-content/70 mt-1.5 text-sm">
+              <FieldDescription>
                 Most products are Standard. Set this only for regulated goods (batteries, aerosols,
                 chemicals) so carriers route them correctly.
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>
@@ -919,27 +1008,27 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         <CardBody className="py-6">
           <div className="flex flex-col gap-4">
             <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">
-              <dt className="text-[var(--color-text-muted)]">Title</dt>
+              <dt className="text-base-content/60">Title</dt>
               <dd className="font-medium">{title.trim() || '—'}</dd>
-              <dt className="text-[var(--color-text-muted)]">Type</dt>
+              <dt className="text-base-content/60">Type</dt>
               <dd className="font-medium">
                 {fulfillmentType}
                 {productType.trim() ? ` · ${productType.trim()}` : ''}
               </dd>
-              <dt className="text-[var(--color-text-muted)]">SKU</dt>
+              <dt className="text-base-content/60">SKU</dt>
               <dd className="font-medium">{sku.trim() || '—'}</dd>
-              <dt className="text-[var(--color-text-muted)]">Price</dt>
+              <dt className="text-base-content/60">Price</dt>
               <dd className="font-medium">
                 {centsToDisplay(dollarsToCents(priceStr))}
                 {dollarsToCents(compareAtStr) !== undefined && (
-                  <span className="ml-2 text-[var(--color-text-muted)] line-through">
+                  <span className="text-base-content/60 ml-2 line-through">
                     {centsToDisplay(dollarsToCents(compareAtStr))}
                   </span>
                 )}
               </dd>
               {isPhysical && trackInventory && (
                 <>
-                  <dt className="text-[var(--color-text-muted)]">Initial stock</dt>
+                  <dt className="text-base-content/60">Initial stock</dt>
                   <dd className="font-medium">
                     {toNonNegInt(quantityStr) ?? 0}
                     {warehouses.find((w) => w.id === warehouseId)
@@ -950,20 +1039,20 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
               )}
             </dl>
 
-            <div className="rounded-xl border border-[var(--color-border-default)] p-4">
+            <div className="border-base-300 rounded-xl border p-4">
               <p className="text-base-content/70 text-sm">
                 Next, from the product’s tabs you can add{' '}
-                <span className="text-[var(--color-text-primary)]">variants &amp; options</span>,{' '}
-                <span className="text-[var(--color-text-primary)]">media</span>, and{' '}
-                <span className="text-[var(--color-text-primary)]">fitment</span>. These become
-                guided steps here as the wizard is completed.
+                <span className="text-base-content">variants &amp; options</span>,{' '}
+                <span className="text-base-content">media</span>, and{' '}
+                <span className="text-base-content">fitment</span>. These become guided steps here
+                as the wizard is completed.
               </p>
             </div>
 
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </CardBody>

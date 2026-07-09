@@ -12,7 +12,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import type { CalendarEvent, BookingStatus } from '../../_lib/types';
 import { minuteOfDay, statusColor, STATUS_LABEL } from '../../_lib/format';
@@ -69,7 +69,7 @@ const STATUS_VAR: Record<string, string> = {
   info: 'var(--color-info)',
   warning: 'var(--color-warning)',
   danger: 'var(--color-danger)',
-  neutral: 'var(--color-text-tertiary)',
+  neutral: 'color-mix(in oklch, var(--color-base-content) 50%, transparent)',
 };
 
 export function WeekCalendar({
@@ -136,9 +136,9 @@ export function WeekCalendar({
   const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+    <div className="border-base-300 bg-base-100 flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-lg border">
       {/* Toolbar */}
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4 py-2.5">
+      <div className="border-base-300 flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2.5">
         <p className="text-sm font-semibold">{rangeLabel}</p>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={goToday}>
@@ -155,20 +155,17 @@ export function WeekCalendar({
 
       {/* Day header row */}
       <div
-        className="grid shrink-0 border-b border-[var(--color-border)]"
+        className="border-base-300 grid shrink-0 border-b"
         style={{ gridTemplateColumns: GRID_COLS }}
       >
         <div />
         {days.map((d) => {
           const isToday = ymd(d) === todayYmd;
           return (
-            <div
-              key={ymd(d)}
-              className="border-l border-[var(--color-border)] px-2 py-2 text-center"
-            >
-              <div className="text-xs text-[var(--color-muted-foreground)]">{DOW[d.getDay()]}</div>
+            <div key={ymd(d)} className="border-base-300 border-l px-2 py-2 text-center">
+              <div className="text-base-content/70 text-xs">{DOW[d.getDay()]}</div>
               <div
-                className={`text-sm font-semibold ${isToday ? 'text-[var(--module-scheduling)]' : ''}`}
+                className={`text-sm font-semibold ${isToday ? 'text-[var(--color-module-scheduling)]' : ''}`}
               >
                 {d.getDate()}
               </div>
@@ -185,7 +182,7 @@ export function WeekCalendar({
             {hours.map((h, i) => (
               <div
                 key={h}
-                className="absolute right-2 -translate-y-1/2 text-[11px] whitespace-nowrap text-[var(--color-muted-foreground)] tabular-nums"
+                className="text-base-content/70 absolute right-2 -translate-y-1/2 text-[11px] whitespace-nowrap tabular-nums"
                 style={{ top: `${(i / hours.length) * 100}%` }}
               >
                 {i === 0 ? '' : minuteOfDay(h * 60)}
@@ -197,17 +194,17 @@ export function WeekCalendar({
             const key = ymd(d);
             const isToday = key === todayYmd;
             return (
-              <div key={key} className="relative border-l border-[var(--color-border)]">
+              <div key={key} className="border-base-300 relative border-l">
                 {hours.map((h, i) => (
                   <div
                     key={h}
-                    className="absolute inset-x-0 border-t border-[var(--color-border)]/60"
+                    className="border-base-300/60 absolute inset-x-0 border-t"
                     style={{ top: `${(i / hours.length) * 100}%` }}
                   />
                 ))}
                 {isToday && nowMin >= startHour * 60 && nowMin <= endHour * 60 ? (
                   <div
-                    className="absolute inset-x-0 z-10 border-t-2 border-[var(--module-scheduling)]"
+                    className="absolute inset-x-0 z-10 border-t-2 border-[var(--color-module-scheduling)]"
                     style={{ top: `${pct(nowMin)}%` }}
                   />
                 ) : null}
@@ -241,7 +238,7 @@ function EventBlock({ p, top, bottom }: { p: Positioned; top: number; bottom: nu
         left: `calc(${p.lane * widthPct}% + 2px)`,
         width: `calc(${widthPct}% - 4px)`,
         borderLeftColor: accent,
-        background: `color-mix(in oklch, ${accent} 14%, var(--color-bg-surface))`,
+        background: `color-mix(in oklch, ${accent} 14%, var(--color-base-100))`,
         opacity: muted ? 0.55 : 1,
       }}
     >
@@ -250,7 +247,7 @@ function EventBlock({ p, top, bottom }: { p: Positioned; top: number; bottom: nu
       >
         {p.ev.serviceName}
       </div>
-      <div className="truncate text-[10px] leading-tight text-[var(--color-muted-foreground)]">
+      <div className="text-base-content/70 truncate text-[10px] leading-tight">
         {minuteOfDay(p.startMin)}
         {p.ev.resourceNames.length ? ` · ${p.ev.resourceNames[0]}` : ''}
       </div>

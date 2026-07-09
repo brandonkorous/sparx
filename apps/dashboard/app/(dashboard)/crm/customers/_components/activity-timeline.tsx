@@ -20,7 +20,7 @@ export interface CrmActivity {
   actorType: string;
   correctsActivityId: string | null;
 }
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   Timeline,
   TimelineDescription,
@@ -144,7 +144,7 @@ export function ActivityTimeline({ activities }: Props) {
                 <span
                   aria-hidden
                   // eslint-disable-next-line no-restricted-syntax -- icon marker dot in timeline, not a reimplemented control
-                  className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--module-active)] text-white"
+                  className="bg-module mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-white"
                 >
                   {meta.icon}
                 </span>

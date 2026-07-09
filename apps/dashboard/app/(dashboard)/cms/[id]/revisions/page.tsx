@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { GitCompare, History } from 'lucide-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { RestoreButton } from './restore-button';

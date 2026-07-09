@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { CircleAlert } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -62,7 +62,7 @@ export async function LotDetailContent({ id }: { id: string }) {
         <Card>
           <CardBody>
             <div className="flex flex-col gap-1 py-1">
-              <p className="text-sm font-medium text-[var(--color-danger)]">Recall active</p>
+              <p className="text-danger text-sm font-medium">Recall active</p>
               <p className="text-sm">{lot.recallReason ?? 'No reason recorded.'}</p>
               <p className="text-base-content/70 text-xs">Recalled {formatDate(lot.recalledAt)}</p>
             </div>

@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { LayoutTemplate } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -171,7 +171,7 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
                       <Link
                         key={item.href + item.label}
                         href={item.href}
-                        className="block truncate text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:underline"
+                        className="text-base-content/70 hover:text-base-content block truncate text-sm hover:underline"
                       >
                         {item.label}
                       </Link>

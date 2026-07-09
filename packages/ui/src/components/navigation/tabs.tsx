@@ -20,8 +20,8 @@ export const Tabs = TabsPrimitive.Root;
 const tabsListVariants = cva('flex w-full flex-wrap items-center', {
   variants: {
     variant: {
-      default: 'gap-x-4 gap-y-1 border-b border-[var(--color-border-default)]',
-      pills: 'gap-x-1 gap-y-1 rounded-md bg-[var(--color-bg-subtle)] p-1',
+      default: 'gap-x-4 gap-y-1 border-b border-[var(--color-base-300)]',
+      pills: 'gap-x-1 gap-y-1 rounded-md bg-[var(--color-base-200)] p-1',
     },
   },
   defaultVariants: { variant: 'pills' },
@@ -73,24 +73,24 @@ function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
     return cn(
       'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
       SIZE_PILLS[size],
-      'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
+      'text-base-content/70 hover:text-base-content',
       'transition-colors duration-150',
-      'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+      'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
       'disabled:pointer-events-none disabled:opacity-40',
       // Active pill: white surface lift + the module hue on the label, so the
       // current selection carries the active-module color (DESIGN.md) instead of
       // a flat neutral.
-      'data-[state=active]:bg-[var(--color-bg-surface)] data-[state=active]:text-[var(--module-active-text)] data-[state=active]:shadow-sm'
+      'data-[state=active]:text-module data-[state=active]:bg-[var(--color-base-100)] data-[state=active]:shadow-sm'
     );
   }
   return cn(
     'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
     SIZE_DEFAULT[size],
-    'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
+    'text-base-content/70 hover:text-base-content',
     'border-b-2 border-transparent transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
     'disabled:pointer-events-none disabled:opacity-40',
-    'data-[state=active]:border-[var(--module-active)] data-[state=active]:text-[var(--module-active-text)]'
+    'data-[state=active]:border-module data-[state=active]:text-module'
   );
 }
 
@@ -116,7 +116,7 @@ export const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      'mt-4 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+      'mt-4 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
       className
     )}
     {...props}

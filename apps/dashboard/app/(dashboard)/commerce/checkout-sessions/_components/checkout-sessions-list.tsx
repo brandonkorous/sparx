@@ -7,7 +7,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 // Client wrapper for the checkout-sessions diagnostic list. SelectionList takes
 // render functions (columns/card), which can't cross the server→client

@@ -73,7 +73,7 @@ function CustomTile({ comp, onAdd }: { comp: ComponentDto; onAdd: (type: string)
       className="bx-tile bx-tile--custom"
       onClick={() => onAdd(customType(comp.key))}
     >
-      <span className="bx-tile__mod" style={{ background: 'var(--module-active)' }}>
+      <span className="bx-tile__mod" style={{ background: 'var(--color-module)' }}>
         YOURS
       </span>
       <DynamicIcon name={comp.icon as IconName} className="bx-tile__icon" aria-hidden />
@@ -99,7 +99,7 @@ function ArchetypeTile({
       onClick={() => onStamp(archetype.tree)}
       title={archetype.description ?? undefined}
     >
-      <span className="bx-tile__mod" style={{ background: 'var(--module-active)' }}>
+      <span className="bx-tile__mod" style={{ background: 'var(--color-module)' }}>
         SECTION
       </span>
       <DynamicIcon name={archetype.icon as IconName} className="bx-tile__icon" aria-hidden />
@@ -163,7 +163,12 @@ function OffModulesTeaser({ modules }: { modules: { key: string; label: string }
     <div className="bx-tiles">
       {modules.map((m) => (
         <span key={m.key} className={cn('bx-tile', 'bx-tile--off')}>
-          <span className="bx-tile__mod" style={{ background: 'var(--color-text-muted)' }}>
+          <span
+            className="bx-tile__mod"
+            style={{
+              background: 'color-mix(in oklab, var(--color-base-content) 60%, transparent)',
+            }}
+          >
             {m.label.toUpperCase()}
           </span>
           <span className="bx-tile__name">+ enable</span>

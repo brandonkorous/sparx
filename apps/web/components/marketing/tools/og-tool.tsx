@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Download, Trash2 } from 'lucide-react';
-import { Button, Input, Textarea, ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { Button, Input, Textarea } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { renderOgCanvas, type OgOptions } from './lib/og-image';
 import { downloadBlob, readAsDataUrl } from './lib/download';
@@ -145,7 +146,7 @@ export function OgTool() {
               height: 'auto',
               aspectRatio: '1200 / 630',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               display: 'block',
             }}
           />

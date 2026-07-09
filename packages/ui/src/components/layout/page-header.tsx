@@ -33,7 +33,7 @@ export const PageHeader = React.forwardRef<HTMLElement, PageHeaderProps>(
     >
       <div className="flex min-w-0 items-start gap-3">
         {icon && (
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--module-active-tint)] text-[var(--module-active)]">
+          <span className="bg-module bg-soft text-module mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
             {icon}
           </span>
         )}
@@ -45,9 +45,7 @@ export const PageHeader = React.forwardRef<HTMLElement, PageHeaderProps>(
             {badge}
           </div>
           {description && (
-            <p className="mt-1 max-w-2xl text-sm text-[var(--color-text-secondary)]">
-              {description}
-            </p>
+            <p className="text-base-content/70 mt-1 max-w-2xl text-sm">{description}</p>
           )}
         </div>
       </div>

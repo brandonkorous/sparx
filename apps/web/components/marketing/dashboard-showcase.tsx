@@ -1052,12 +1052,12 @@ const PAGES = MODULES.flatMap((m) => [
 const INTERACTIVE_CSS = `
 .dsx-frame{position:relative;--m:${DEFAULT.color};--m-tint:${DEFAULT.tint};--m-text:${DEFAULT.text};}
 .dsx-radio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
-.dsx-railtile{color:var(--color-text-tertiary);cursor:pointer;transition:background .15s ease,color .15s ease;}
-.dsx-railtile:hover{background:var(--color-bg-subtle);color:var(--color-text-secondary);}
-.dsx-secitem{display:flex;align-items:center;gap:8px;height:32px;flex-shrink:0;padding:0 8px;border-radius:6px;font-family:var(--font-sans);font-size:13px;font-weight:400;color:var(--color-text-secondary);background:transparent;}
+.dsx-railtile{color:color-mix(in oklab, var(--color-base-content) 50%, transparent);cursor:pointer;transition:background .15s ease,color .15s ease;}
+.dsx-railtile:hover{background:var(--color-base-200);color:color-mix(in oklab, var(--color-base-content) 70%, transparent);}
+.dsx-secitem{display:flex;align-items:center;gap:8px;height:32px;flex-shrink:0;padding:0 8px;border-radius:6px;font-family:var(--font-sans);font-size:13px;font-weight:400;color:color-mix(in oklab, var(--color-base-content) 70%, transparent);background:transparent;}
 .dsx-secitem--link{cursor:pointer;}
-.dsx-secitem--link:hover{background:var(--color-bg-subtle);}
-.dsx-secicon{display:inline-flex;flex-shrink:0;color:var(--color-text-tertiary);}
+.dsx-secitem--link:hover{background:var(--color-base-200);}
+.dsx-secicon{display:inline-flex;flex-shrink:0;color:color-mix(in oklab, var(--color-base-content) 50%, transparent);}
 .dsx-panel{display:none;flex-direction:column;flex:1;min-height:0;}
 .dsx-panel--commerce{display:flex;}
 .dsx-page{display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;}
@@ -1088,7 +1088,10 @@ const MONO = 'var(--font-mono)';
 // dashboard's success / neutral / warning / danger Badge colors.
 const STATUS_FAMILIES = {
   success: { bg: '#ECFDF5', fg: '#047857' },
-  neutral: { bg: 'var(--color-bg-subtle)', fg: 'var(--color-text-secondary)' },
+  neutral: {
+    bg: 'var(--color-base-200)',
+    fg: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+  },
   warning: { bg: '#FEF3C7', fg: '#B45309' },
   danger: { bg: '#FFE4E6', fg: '#BE123C' },
 } as const;
@@ -1139,11 +1142,15 @@ export function DashboardShowcase() {
     <Section surface="surface" padding="lg" className="mkt-stage">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               One pane of glass.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>Every module visible</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                Every module visible
+              </span>
             </>
           }
           lede={
@@ -1163,7 +1170,7 @@ export function DashboardShowcase() {
             marginTop: '-40px',
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           Swipe to explore the dashboard →
@@ -1180,10 +1187,10 @@ export function DashboardShowcase() {
           <div
             className="dsx-frame"
             style={{
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px 12px 0 0',
               overflow: 'hidden',
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: 'var(--color-base-100)',
               minWidth: '960px',
             }}
           >
@@ -1207,7 +1214,7 @@ export function DashboardShowcase() {
                 display: 'flex',
                 alignItems: 'stretch',
                 height: '600px',
-                backgroundColor: 'var(--color-bg-page)',
+                backgroundColor: 'var(--color-base-200)',
               }}
             >
               <Rail />
@@ -1229,8 +1236,8 @@ function BrowserChrome() {
         alignItems: 'center',
         gap: '14px',
         padding: '14px 20px',
-        backgroundColor: 'var(--color-bg-subtle)',
-        borderBottom: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
@@ -1244,8 +1251,8 @@ function BrowserChrome() {
           alignItems: 'center',
           gap: '8px',
           padding: '6px 14px',
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '6px',
           flex: 1,
           maxWidth: '520px',
@@ -1255,11 +1262,17 @@ function BrowserChrome() {
         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="M12 1L3 5V11C3 16 7 21 12 23C17 21 21 16 21 11V5L12 1Z"
-            stroke="var(--color-text-secondary)"
+            stroke="color-mix(in oklab, var(--color-base-content) 70%, transparent)"
             strokeWidth={2}
           />
         </svg>
-        <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '12px',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          }}
+        >
           app.sparx.works/dashboard
         </span>
       </div>
@@ -1278,8 +1291,8 @@ function Rail() {
         alignItems: 'center',
         width: '56px',
         flexShrink: 0,
-        backgroundColor: 'var(--color-bg-surface)',
-        borderRight: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        borderRight: '1px solid var(--color-base-300)',
         padding: '12px 0 10px',
         gap: '4px',
       }}
@@ -1331,7 +1344,7 @@ function RailStatic({ icon: Icon, label }: { icon: LucideIcon; label: string }) 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'var(--color-text-tertiary)',
+        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
       }}
     >
       <Icon size={17} strokeWidth={1.8} />
@@ -1346,7 +1359,7 @@ function RailDivider() {
       style={{
         width: 26,
         height: 1,
-        backgroundColor: 'var(--color-border-default)',
+        backgroundColor: 'var(--color-base-300)',
         margin: '5px 0',
       }}
     />
@@ -1363,8 +1376,8 @@ function Panel() {
         flexDirection: 'column',
         width: '212px',
         flexShrink: 0,
-        backgroundColor: 'var(--color-bg-surface)',
-        borderRight: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        borderRight: '1px solid var(--color-base-300)',
         overflow: 'hidden',
       }}
     >
@@ -1378,7 +1391,7 @@ function Panel() {
                 fontSize: '10px',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               Module
@@ -1443,7 +1456,7 @@ function Main() {
         flexDirection: 'column',
         flex: 1,
         minWidth: 0,
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       {MODULES.flatMap((m) => [
@@ -1510,13 +1523,15 @@ function TopBar({ module: m, crumb }: { module: ModuleDef; crumb?: string }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {TENANT}
           <ChevronDown size={13} style={{ opacity: 0.7 }} />
         </span>
-        <span style={{ color: 'var(--color-border-strong)' }}>/</span>
+        <span style={{ color: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)' }}>
+          /
+        </span>
         <span
           style={{
             display: 'inline-flex',
@@ -1530,8 +1545,16 @@ function TopBar({ module: m, crumb }: { module: ModuleDef; crumb?: string }) {
         </span>
         {crumb ? (
           <>
-            <span style={{ color: 'var(--color-border-strong)' }}>/</span>
-            <span style={{ color: 'var(--color-text-secondary)' }}>{crumb}</span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)' }}
+            >
+              /
+            </span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }}
+            >
+              {crumb}
+            </span>
           </>
         ) : null}
       </div>
@@ -1540,7 +1563,7 @@ function TopBar({ module: m, crumb }: { module: ModuleDef; crumb?: string }) {
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         <Clock size={16} strokeWidth={1.8} />
@@ -1617,7 +1640,7 @@ function PageHead({ module: m }: { module: ModuleDef }) {
               fontWeight: 500,
               fontSize: '24px',
               letterSpacing: '-0.02em',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
               margin: 0,
             }}
           >
@@ -1627,7 +1650,7 @@ function PageHead({ module: m }: { module: ModuleDef }) {
             style={{
               fontFamily: SANS,
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: '3px 0 0',
             }}
           >
@@ -1676,7 +1699,7 @@ function ListPageHead({ page }: { page: ListPage }) {
                 fontWeight: 500,
                 fontSize: '24px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 margin: 0,
               }}
             >
@@ -1701,7 +1724,7 @@ function ListPageHead({ page }: { page: ListPage }) {
             style={{
               fontFamily: SANS,
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: '4px 0 0',
               maxWidth: '52ch',
               lineHeight: 1.5,
@@ -1724,12 +1747,12 @@ function ListToolbar({ page }: { page: ListPage }) {
     alignItems: 'center',
     gap: '5px',
     padding: '7px 11px',
-    border: '1px solid var(--color-border-default)',
+    border: '1px solid var(--color-base-300)',
     borderRadius: 8,
-    backgroundColor: 'var(--color-bg-surface)',
+    backgroundColor: 'var(--color-base-100)',
     fontFamily: SANS,
     fontSize: '12.5px',
-    color: 'var(--color-text-secondary)',
+    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
     whiteSpace: 'nowrap' as const,
   };
   return (
@@ -1742,13 +1765,23 @@ function ListToolbar({ page }: { page: ListPage }) {
           flex: '0 1 280px',
           minWidth: 180,
           padding: '7px 12px',
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: 8,
         }}
       >
-        <Search size={14} strokeWidth={1.8} style={{ color: 'var(--color-text-tertiary)' }} />
-        <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+        <Search
+          size={14}
+          strokeWidth={1.8}
+          style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+        />
+        <span
+          style={{
+            fontFamily: SANS,
+            fontSize: '13px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           Search…
         </span>
       </div>
@@ -1766,18 +1799,18 @@ function ListToolbar({ page }: { page: ListPage }) {
       <span
         style={{
           display: 'inline-flex',
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: 8,
           overflow: 'hidden',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: 'var(--color-base-100)',
         }}
       >
         <span
           style={{
             display: 'inline-flex',
             padding: '7px 9px',
-            backgroundColor: 'var(--color-bg-subtle)',
-            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-base-200)',
+            color: 'var(--color-base-content)',
           }}
         >
           <List size={14} strokeWidth={1.8} />
@@ -1786,8 +1819,8 @@ function ListToolbar({ page }: { page: ListPage }) {
           style={{
             display: 'inline-flex',
             padding: '7px 9px',
-            borderLeft: '1px solid var(--color-border-default)',
-            color: 'var(--color-text-tertiary)',
+            borderLeft: '1px solid var(--color-base-300)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           <LayoutGrid size={14} strokeWidth={1.8} />
@@ -1803,8 +1836,8 @@ function ListTable({ page }: { page: ListPage }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 11,
         overflow: 'hidden',
       }}
@@ -1822,8 +1855,8 @@ function ListTable({ page }: { page: ListPage }) {
                   fontWeight: 500,
                   letterSpacing: '0.05em',
                   textTransform: 'uppercase',
-                  color: 'var(--color-text-tertiary)',
-                  borderBottom: '1px solid var(--color-border-default)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                  borderBottom: '1px solid var(--color-base-300)',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -1841,7 +1874,7 @@ function ListTable({ page }: { page: ListPage }) {
                   const col = page.columns[ci]!;
                   const base = {
                     padding: '11px 14px',
-                    borderBottom: last ? 'none' : '1px solid var(--color-border-default)',
+                    borderBottom: last ? 'none' : '1px solid var(--color-base-300)',
                     fontSize: '13px',
                     verticalAlign: 'middle' as const,
                   };
@@ -1851,14 +1884,15 @@ function ListTable({ page }: { page: ListPage }) {
                     const sub = parts[1];
                     return (
                       <td key={ci} style={base}>
-                        <div style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                        <div style={{ fontWeight: 500, color: 'var(--color-base-content)' }}>
                           {main}
                         </div>
                         {sub ? (
                           <div
                             style={{
                               fontSize: '11.5px',
-                              color: 'var(--color-text-tertiary)',
+                              color:
+                                'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                               marginTop: 1,
                             }}
                           >
@@ -1897,7 +1931,7 @@ function ListTable({ page }: { page: ListPage }) {
                           ...base,
                           textAlign: 'right',
                           fontVariantNumeric: 'tabular-nums',
-                          color: 'var(--color-text-secondary)',
+                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                         }}
                       >
                         {cell}
@@ -1905,7 +1939,13 @@ function ListTable({ page }: { page: ListPage }) {
                     );
                   }
                   return (
-                    <td key={ci} style={{ ...base, color: 'var(--color-text-secondary)' }}>
+                    <td
+                      key={ci}
+                      style={{
+                        ...base,
+                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                      }}
+                    >
                       {cell}
                     </td>
                   );
@@ -1928,7 +1968,7 @@ function StatRow({ module: m }: { module: ModuleDef }) {
           <div
             key={s.label}
             style={{
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               borderRadius: 10,
               padding: '13px 14px',
             }}
@@ -1948,7 +1988,7 @@ function StatRow({ module: m }: { module: ModuleDef }) {
                   fontSize: '10px',
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {s.label}
@@ -1974,7 +2014,7 @@ function StatRow({ module: m }: { module: ModuleDef }) {
                 fontWeight: 500,
                 fontSize: '23px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {s.value}
@@ -1984,7 +2024,9 @@ function StatRow({ module: m }: { module: ModuleDef }) {
                 fontFamily: SANS,
                 fontSize: '11.5px',
                 marginTop: 3,
-                color: s.up ? '#047857' : 'var(--color-text-tertiary)',
+                color: s.up
+                  ? '#047857'
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.delta}
@@ -2021,8 +2063,8 @@ function ChartCard({
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 11,
         padding: '14px 16px 10px',
       }}
@@ -2041,7 +2083,7 @@ function ChartCard({
               fontFamily: SANS,
               fontWeight: 500,
               fontSize: '13.5px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {title}
@@ -2050,7 +2092,7 @@ function ChartCard({
             style={{
               fontFamily: SANS,
               fontSize: '11.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               marginTop: 1,
             }}
           >
@@ -2137,8 +2179,8 @@ function CardRow({ module: m }: { module: ModuleDef }) {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: 11,
             overflow: 'hidden',
           }}
@@ -2148,7 +2190,11 @@ function CardRow({ module: m }: { module: ModuleDef }) {
             style={{ display: 'flex', flexDirection: 'column', padding: '13px 15px 14px', flex: 1 }}
           >
             <span
-              style={{ fontFamily: SANS, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '11.5px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {c.desc}
             </span>
@@ -2158,7 +2204,7 @@ function CardRow({ module: m }: { module: ModuleDef }) {
                 fontWeight: 500,
                 fontSize: '15px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
                 marginTop: 2,
               }}
             >

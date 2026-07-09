@@ -5,9 +5,16 @@
 // public newsletter API. On success the whole form swaps for an inline
 // confirmation, so "you're on the list" is shown without an email round-trip.
 
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
-import { Button, Input, Label, Textarea } from '@sparx/ui';
+import { useActionState, useState } from 'react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { Spark } from '@/components/marketing/primitives';
 import { joinWaitlist, type WaitlistState } from './actions';
 
@@ -17,70 +24,79 @@ const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '13px',
   fontWeight: 500,
-  color: 'var(--color-text-primary)',
-};
-
-const fieldStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '7px',
+  color: 'var(--color-base-content)',
 };
 
 export function EarlyAccessForm() {
-  const [state, action] = useActionState(joinWaitlist, INITIAL);
+  const [state, action, pending] = useActionState(joinWaitlist, INITIAL);
+  const [email, setEmail] = useState('');
+
+  const v = useFieldValidation(
+    { email },
+    { email: rules(rule.required('Enter your email.'), rule.email()) }
+  );
 
   if (state.status === 'success') {
     return <Confirmation email={state.email} />;
   }
 
+  // Gate the server action on client validation; only dispatch when valid.
+  function clientAction(formData: FormData) {
+    if (!v.validate()) return;
+    action(formData);
+  }
+
   return (
     <form
-      action={action}
+      action={clientAction}
       style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}
       noValidate
     >
-      <div style={fieldStyle}>
-        <Label htmlFor="ea-name" style={labelStyle}>
-          Name
-        </Label>
-        <Input
-          id="ea-name"
-          name="name"
-          autoComplete="name"
-          placeholder="Ada Lovelace"
-          maxLength={255}
-        />
-      </div>
+      <Field>
+        <FieldLabel style={labelStyle}>Name</FieldLabel>
+        <FieldControl name="name" autoComplete="name" placeholder="Ada Lovelace" maxLength={255} />
+      </Field>
 
-      <div style={fieldStyle}>
-        <Label htmlFor="ea-email" style={labelStyle}>
+      <Field {...v.field('email')}>
+        <FieldLabel required style={labelStyle}>
           Email
-        </Label>
-        <Input
-          id="ea-email"
+        </FieldLabel>
+        <FieldControl
           name="email"
           type="email"
           inputMode="email"
           autoComplete="email"
-          required
           placeholder="you@company.com"
           maxLength={255}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          {...v.control('email')}
         />
-      </div>
+      </Field>
 
-      <div style={fieldStyle}>
-        <Label htmlFor="ea-building" style={labelStyle}>
+      <Field>
+        <FieldLabel style={labelStyle}>
           What are you building?{' '}
-          <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>(optional)</span>
-        </Label>
-        <Textarea
-          id="ea-building"
-          name="building"
-          rows={4}
-          placeholder="A storefront, a content site, a CRM, a bit of everything…"
-          maxLength={2000}
+          <span
+            style={{
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              fontWeight: 400,
+            }}
+          >
+            (optional)
+          </span>
+        </FieldLabel>
+        <FieldControl
+          render={
+            <Textarea
+              name="building"
+              rows={4}
+              placeholder="A storefront, a content site, a CRM, a bit of everything…"
+              maxLength={2000}
+            />
+          }
         />
-      </div>
+      </Field>
 
       {/* Honeypot — hidden from people, catnip for bots. */}
       <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
@@ -89,20 +105,12 @@ export function EarlyAccessForm() {
       </div>
 
       {state.status === 'error' ? (
-        <p
-          role="alert"
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'var(--color-danger-text, #b91c1c)',
-          }}
-        >
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {state.message}
-        </p>
+        </FieldStatus>
       ) : null}
 
-      <SubmitButton />
+      <SubmitButton pending={pending} />
 
       <p
         style={{
@@ -110,7 +118,7 @@ export function EarlyAccessForm() {
           fontFamily: 'var(--font-sans)',
           fontSize: '12px',
           lineHeight: '18px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         No spam. One email when your invite is ready — and the occasional note on what shipped.
@@ -119,9 +127,7 @@ export function EarlyAccessForm() {
   );
 }
 
-function SubmitButton() {
-  // useFormStatus reads the enclosing <form>'s pending state.
-  const { pending } = useFormStatus();
+function SubmitButton({ pending }: { pending: boolean }) {
   return (
     <Button type="submit" size="lg" disabled={pending} style={{ width: '100%' }}>
       {pending ? 'Joining…' : 'Join the waitlist →'}
@@ -151,8 +157,8 @@ function Confirmation({ email }: { email?: string }) {
           width: 44,
           height: 44,
           borderRadius: 9999,
-          backgroundColor: 'var(--sparx-primary-tint, #EEF2FF)',
-          color: 'var(--sparx-primary, #6366F1)',
+          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
+          color: 'var(--color-primary, #6366F1)',
           fontSize: 22,
         }}
       >
@@ -164,7 +170,7 @@ function Confirmation({ email }: { email?: string }) {
           fontWeight: 500,
           fontSize: '24px',
           letterSpacing: '-0.02em',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         You&rsquo;re on the list
@@ -176,13 +182,13 @@ function Confirmation({ email }: { email?: string }) {
           fontFamily: 'var(--font-sans)',
           fontSize: '15px',
           lineHeight: '24px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           maxWidth: '380px',
         }}
       >
         {email ? (
           <>
-            We&rsquo;ve got <strong style={{ color: 'var(--color-text-primary)' }}>{email}</strong>.
+            We&rsquo;ve got <strong style={{ color: 'var(--color-base-content)' }}>{email}</strong>.
             We&rsquo;ll reach out the moment your invite is ready.
           </>
         ) : (

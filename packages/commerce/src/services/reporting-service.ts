@@ -14,6 +14,7 @@ import { Prisma, withTenant, type TxClient } from '@sparx/db';
 import { ORDER_CHANNEL_BUCKETS, channelKeyLabel, deriveChannelKey } from '@sparx/crm-schemas';
 
 import type { ServiceContext } from '../errors';
+import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 
 const DEFAULT_CURRENCY = 'USD';
 
@@ -174,7 +175,7 @@ export async function topCustomers(
     const customerIds = groups.map((g) => g.customerId);
     const customers = await tx.customer.findMany({
       where: { id: { in: customerIds } },
-      select: { id: true, name: true, email: true },
+      select: { id: true, ...CUSTOMER_NAME_SELECT },
     });
     const byId = new Map(customers.map((c) => [c.id, c]));
 
@@ -182,7 +183,7 @@ export async function topCustomers(
       const c = byId.get(g.customerId);
       return {
         customerId: g.customerId,
-        customerName: c?.name ?? c?.email ?? '—',
+        customerName: customerDisplayName(c ?? null) ?? '—',
         ordersCount: g._count._all,
         totalSpentCents: decimalToCents(g._sum.total),
       };

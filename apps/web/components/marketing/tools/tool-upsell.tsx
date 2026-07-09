@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, getModuleColor } from '../primitives';
 import { getModule } from '@/lib/modules';
 import type { ToolMeta } from './registry';
@@ -38,8 +38,8 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
                 gap: '10px',
                 padding: '22px',
                 borderRadius: 'var(--radius-xl)',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
               }}
             >
               <span
@@ -58,7 +58,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
                   fontWeight: 500,
                   fontSize: '16px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                   margin: 0,
                 }}
               >
@@ -69,7 +69,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
                   lineHeight: '22px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: 0,
                 }}
               >
@@ -88,7 +88,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
               fontFamily: 'var(--font-sans)',
               fontSize: '15px',
               lineHeight: '24px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '560px',
               margin: 0,
             }}
@@ -97,14 +97,12 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
             CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <Button asChild color={tool.module} variant="solid" size="md">
-              <a href="/platform">
-                Explore the platform
-                <ArrowRight className="h-4 w-4" />
-              </a>
+            <Button color={tool.module} variant="solid" size="md" render={<a href="/platform" />}>
+              Explore the platform
+              <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button asChild color="neutral" variant="outline" size="md">
-              <a href="/pricing">See pricing</a>
+            <Button color="neutral" variant="outline" size="md" render={<a href="/pricing" />}>
+              See pricing
             </Button>
           </div>
         </div>

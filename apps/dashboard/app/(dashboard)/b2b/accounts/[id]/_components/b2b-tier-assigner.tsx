@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Select, SelectItem } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  SelectItem,
+} from '@wizeworks/silicaui-react';
 import { updateAccountTier } from '../../_lib/actions';
 
 interface TierOption {
@@ -47,32 +54,38 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      {saveError && <p className="text-sm text-[var(--color-danger)]">{saveError}</p>}
-      <div className="flex flex-row flex-wrap items-center gap-3">
-        <Select
-          value={selected}
-          onValueChange={(v) => setSelected(v as string)}
-          className="w-64"
-          placeholder="No pricing tier"
-          items={{
-            __none__: 'No pricing tier (list price)',
-            ...Object.fromEntries(tiers.map((t) => [t.id, t.name])),
-          }}
-        >
-          <SelectItem value="__none__">No pricing tier (list price)</SelectItem>
-          {tiers.map((t) => (
-            <SelectItem key={t.id} value={t.id}>
-              <span className="flex flex-row items-center gap-2">
-                <span>{t.name}</span>
-                <span className="text-base-content/70 text-xs">
-                  {t.discountType === 'percentage'
-                    ? `${t.discountValue}% off`
-                    : `$${(t.discountValue / 100).toFixed(2)} off`}
+      {saveError && (
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+          {saveError}
+        </FieldStatus>
+      )}
+      <div className="flex flex-row flex-wrap items-end gap-3">
+        <Field className="w-64">
+          <FieldLabel>Pricing tier</FieldLabel>
+          <Select
+            value={selected}
+            onValueChange={(v) => setSelected(v as string)}
+            placeholder="No pricing tier"
+            items={{
+              __none__: 'No pricing tier (list price)',
+              ...Object.fromEntries(tiers.map((t) => [t.id, t.name])),
+            }}
+          >
+            <SelectItem value="__none__">No pricing tier (list price)</SelectItem>
+            {tiers.map((t) => (
+              <SelectItem key={t.id} value={t.id}>
+                <span className="flex flex-row items-center gap-2">
+                  <span>{t.name}</span>
+                  <span className="text-base-content/70 text-xs">
+                    {t.discountType === 'percentage'
+                      ? `${t.discountValue}% off`
+                      : `$${(t.discountValue / 100).toFixed(2)} off`}
+                  </span>
                 </span>
-              </span>
-            </SelectItem>
-          ))}
-        </Select>
+              </SelectItem>
+            ))}
+          </Select>
+        </Field>
 
         {isDirty && (
           <Button

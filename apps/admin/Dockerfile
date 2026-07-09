@@ -5,9 +5,10 @@
 #   docker build -f apps/admin/Dockerfile -t sparx/admin:tag .
 #
 # The dependency closure is deliberately tiny (docs/apps/admin/build-plan.md D6):
-# admin imports only @sparx/ui + @sparx/operator + @sparx/operator-auth (which
-# pulls @sparx/operator + @sparx/events). No @sparx/db, no Prisma client — the
-# console holds no tenant business-data DB access; it talks to api-rest.
+# admin imports only @sparx/ui + @sparx/forms + @sparx/operator +
+# @sparx/operator-auth (which pulls @sparx/operator + @sparx/events). No
+# @sparx/db, no Prisma client — the console holds no tenant business-data DB
+# access; it talks to api-rest.
 
 ARG NODE_VERSION=24-alpine
 
@@ -23,6 +24,8 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/admin/package.json apps/admin/
 COPY packages/ui/package.json packages/ui/
+COPY packages/forms/package.json packages/forms/
+COPY packages/brand/package.json packages/brand/
 COPY packages/operator/package.json packages/operator/
 COPY packages/operator-auth/package.json packages/operator-auth/
 COPY packages/events/package.json packages/events/
@@ -33,6 +36,8 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 # Source for every workspace dep + the app itself.
 COPY packages/ui packages/ui
+COPY packages/forms packages/forms
+COPY packages/brand packages/brand
 COPY packages/operator packages/operator
 COPY packages/operator-auth packages/operator-auth
 COPY packages/events packages/events

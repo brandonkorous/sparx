@@ -3,9 +3,19 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createShippingZoneAction } from '../../../../shipping-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -39,6 +49,18 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
   const [priority, setPriority] = React.useState('0');
   const [countriesRaw, setCountriesRaw] = React.useState('');
   const [regionsRaw, setRegionsRaw] = React.useState('');
+
+  const values = { name, priority, countriesRaw, regionsRaw };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    priority: (val) => {
+      const raw = String(val).trim();
+      const n = Number(raw);
+      if (raw === '' || !Number.isFinite(n)) return 'Enter a priority.';
+      if (n < 0) return 'Priority cannot be negative.';
+      return null;
+    },
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -92,6 +114,7 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
 
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     const priorityValue = Number(priority);
     const countries = countriesRaw
       .split(/[,\s]+/)
@@ -109,7 +132,12 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
         targeting: { countries, regions, postalCodeRanges: [] },
       });
       if (!result.ok) {
-        setError(result.error.message);
+        const known = (result.error.details ?? []).filter((d) => d.field in values);
+        if (known.length) {
+          v.setServerErrors(Object.fromEntries(known.map((d) => [d.field, d.message])));
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       onCreated(result.data.id);
@@ -141,63 +169,67 @@ export function NewZoneForm({ surface }: NewZoneFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="zone-name">Name *</Label>
-                  <Input
-                    id="zone-name"
+                <Field {...v.field('name')}>
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Domestic US"
+                    {...v.control('name')}
                   />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="zone-priority">Priority</Label>
-                  <Input
-                    id="zone-priority"
+                </Field>
+                <Field {...v.field('priority')}>
+                  <FieldLabel>Priority</FieldLabel>
+                  <FieldControl
+                    name="priority"
                     type="number"
-                    min={0}
+                    min="0"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
+                    {...v.control('priority')}
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     Higher numbers evaluate first. Use catch-all zones at priority 0.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="zone-countries">Countries</Label>
-                  <Textarea
-                    id="zone-countries"
-                    rows={2}
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Countries</FieldLabel>
+                  <FieldControl
+                    render={<Textarea rows={2} className="font-mono text-xs" />}
                     value={countriesRaw}
                     onChange={(e) => setCountriesRaw(e.target.value)}
                     placeholder="US, CA"
-                    className="font-mono text-xs"
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     ISO 3166-1 alpha-2 codes. Leave empty to match any country.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="zone-regions">Regions (optional)</Label>
-                  <Textarea
-                    id="zone-regions"
-                    rows={2}
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Regions (optional)</FieldLabel>
+                  <FieldControl
+                    render={<Textarea rows={2} className="font-mono text-xs" />}
                     value={regionsRaw}
                     onChange={(e) => setRegionsRaw(e.target.value)}
                     placeholder="US-CA, US-OR"
-                    className="font-mono text-xs"
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     ISO 3166-2 subdivision codes for narrower targeting.
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

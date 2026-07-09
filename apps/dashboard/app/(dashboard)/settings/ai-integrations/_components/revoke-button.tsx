@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Trash2 } from 'lucide-react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 // Shared revoke affordance for the AI Integrations lists — a danger ghost icon
 // button behind a confirm (destructive-actions-confirm). Reused for both API keys

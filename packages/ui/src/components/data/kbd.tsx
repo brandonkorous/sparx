@@ -7,9 +7,9 @@ import { cn } from '../../utils/cn';
 const kbdVariants = cva(
   [
     'inline-flex items-center justify-center rounded',
-    'border border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)]',
-    'font-mono font-medium text-[var(--color-text-secondary)]',
-    'shadow-[0_1px_0_0_var(--color-border-strong)]',
+    'border border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)] bg-[var(--color-base-200)]',
+    'text-base-content/70 font-mono font-medium',
+    'shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
   ],
   {
     variants: {

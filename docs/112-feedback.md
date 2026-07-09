@@ -103,7 +103,7 @@ existing controls.
 - **Icon:** `MessageSquarePlus` (lucide). Ghost `Button size="sm"`, like its neighbors. On `md+` it may
   carry a quiet "Feedback" text label; below `md` it is icon-only and folds into the user menu (§2.4) so
   the `h-12` header never crowds on mobile.
-- **Unread dot:** when the user has an unread staff response, a small `--module-active`-neutral dot sits
+- **Unread dot:** when the user has an unread staff response, a small `--color-module`-neutral dot sits
   top-right of the icon (the same affordance pattern allowed by DESIGN.md for one-off chrome). Clicking
   opens the modal on the **history** tab (§9) and clears the dot for items viewed.
 - **Click:** opens the compose modal (§3) on the **Send** tab.

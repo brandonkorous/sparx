@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Archive, RotateCcw, Send, Undo } from 'lucide-react';
 
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone, toast } from '@sparx/ui';
 
 import {

@@ -23,7 +23,7 @@ import { formatBytes, formatDate, formatDateTime, formatMoneyCents } from '@/lib
 // subscription snapshot mirrors Finance → subscription, module chips wear their
 // module hue, and status pills resolve through `statusTone`. All read-only.
 
-const rowClass = 'border-b border-[var(--color-border-default)] pb-2 last:border-0';
+const rowClass = 'border-b border-base-300 pb-2 last:border-0';
 
 /** A label / value pair for compact fact lists. */
 function Fact({ label, value }: { label: string; value: string }) {

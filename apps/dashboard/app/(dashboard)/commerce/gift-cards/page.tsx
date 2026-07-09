@@ -1,6 +1,6 @@
 import { Gift, Plus } from 'lucide-react';
 
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

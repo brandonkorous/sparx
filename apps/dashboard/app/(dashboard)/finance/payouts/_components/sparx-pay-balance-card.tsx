@@ -4,7 +4,7 @@
 // the only interactive bit (the Stripe-hosted dashboard link) is its own client button.
 
 import Link from 'next/link';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { Stat, statusLabel } from '@sparx/ui';
 
 import { formatMoney } from '../_format';

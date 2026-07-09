@@ -16,15 +16,10 @@
       "types": "./src/shell/index.ts",
       "default": "./src/shell/index.ts"
     },
-    "./tokens.css": "./src/tokens.css",
-    "./tailwind.config": {
-      "types": "./tailwind.config.ts",
-      "default": "./tailwind.config.ts"
-    }
+    "./tokens.css": "./src/tokens.css"
   },
   "files": [
-    "src",
-    "tailwind.config.ts"
+    "src"
   ],
   "scripts": {
     "lint": "eslint .",

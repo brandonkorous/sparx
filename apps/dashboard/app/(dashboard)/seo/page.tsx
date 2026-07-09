@@ -25,7 +25,7 @@ import {
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';
@@ -388,15 +388,12 @@ export default async function SeoPage() {
               >
                 <p className="text-[2.1rem] leading-none font-medium">
                   {avg}
-                  <span className="text-base font-normal text-[var(--color-text-tertiary)]">
-                    {' '}
-                    / 100
-                  </span>
+                  <span className="text-base-content/50 text-base font-normal"> / 100</span>
                 </p>
-                <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
+                <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
                   Average score across{' '}
-                  <span className="text-[var(--color-text-secondary)]">{fmtNumber(count)}</span>{' '}
-                  scored page{count === 1 ? '' : 's'}
+                  <span className="text-base-content/70">{fmtNumber(count)}</span> scored page
+                  {count === 1 ? '' : 's'}
                 </p>
                 {checklistRows.length ? (
                   checklistRows.map((c) => (
@@ -446,7 +443,7 @@ export default async function SeoPage() {
                         {
                           key: 'impressions',
                           label: 'Impressions',
-                          color: 'var(--module-active-tint)',
+                          color: 'color-mix(in oklch, var(--color-module) 15%, transparent)',
                         },
                       ]}
                       xKey="label"
@@ -454,7 +451,7 @@ export default async function SeoPage() {
                       valueFormat="number"
                       ariaLabel="Organic clicks and impressions"
                     />
-                    <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                    <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                       {[
                         ['Clicks', organicKpis.clicks],
                         ['Impressions', organicKpis.impressions],
@@ -462,7 +459,7 @@ export default async function SeoPage() {
                         ['Avg. position', organicKpis.position],
                       ].map(([label, value]) => (
                         <div key={label}>
-                          <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                          <div className="text-base-content/50 text-xs">{label}</div>
                           <div className="font-medium">{value}</div>
                         </div>
                       ))}
@@ -502,26 +499,20 @@ export default async function SeoPage() {
                       return (
                         <tr key={r.id}>
                           <td>
-                            <div className="font-medium text-[var(--color-text-primary)]">
+                            <div className="text-base-content font-medium">
                               {r.title ?? '(untitled)'}
                             </div>
                             {r.path && (
-                              <div className="font-mono text-xs text-[var(--module-active-text)]">
-                                {r.path}
-                              </div>
+                              <div className="text-module font-mono text-xs">{r.path}</div>
                             )}
                           </td>
-                          <td className="text-[var(--color-text-tertiary)]">
-                            {ENTITY_LABEL[r.entityType]}
-                          </td>
+                          <td className="text-base-content/50">{ENTITY_LABEL[r.entityType]}</td>
                           <td className="text-right">
                             <Badge color={rb.color} variant="soft">
                               {r.score}
                             </Badge>
                           </td>
-                          <td className="text-[var(--color-text-secondary)]">
-                            {r.fixFirst ?? '—'}
-                          </td>
+                          <td className="text-base-content/70">{r.fixFirst ?? '—'}</td>
                         </tr>
                       );
                     })}

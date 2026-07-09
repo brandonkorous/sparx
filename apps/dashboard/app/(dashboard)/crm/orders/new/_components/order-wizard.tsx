@@ -29,7 +29,17 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
-import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { createOrderAction } from '../../../order-actions';
 import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
@@ -272,13 +282,9 @@ function OrderWizardInner({
                 An order is placed for a single customer, through a channel.
               </p>
               <div className="flex flex-col gap-4">
-                <div>
-                  <Label htmlFor="ow-customer">Customer</Label>
-                  <NativeSelect
-                    id="ow-customer"
-                    value={customerId}
-                    onChange={(e) => setCustomerId(e.target.value)}
-                  >
+                <Field>
+                  <FieldLabel>Customer</FieldLabel>
+                  <NativeSelect value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
                     <option value="">Choose a customer…</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -286,12 +292,11 @@ function OrderWizardInner({
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
+                </Field>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="ow-channel">Channel</Label>
+                  <Field>
+                    <FieldLabel>Channel</FieldLabel>
                     <NativeSelect
-                      id="ow-channel"
                       value={channel}
                       onChange={(e) => setChannel(e.target.value as Channel)}
                     >
@@ -301,17 +306,17 @@ function OrderWizardInner({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
-                  <div className="max-w-[8rem]">
-                    <Label htmlFor="ow-currency">Currency</Label>
-                    <Input
-                      id="ow-currency"
+                  </Field>
+                  <Field className="max-w-[8rem]">
+                    <FieldLabel>Currency</FieldLabel>
+                    <FieldControl
+                      name="ow-currency"
                       value={currency}
                       maxLength={3}
                       className="uppercase"
                       onChange={(e) => setCurrency(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
               </div>
             </CardBody>
@@ -336,19 +341,19 @@ function OrderWizardInner({
                 A source reference and header shipping — all optional.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="ow-source">Source</Label>
-                  <Input
-                    id="ow-source"
+                <Field>
+                  <FieldLabel>Source</FieldLabel>
+                  <FieldControl
+                    name="ow-source"
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
                     placeholder="quote:Q-000123, ref:…"
                   />
-                </div>
-                <div className="max-w-[10rem]">
-                  <Label htmlFor="ow-shipping">Shipping</Label>
-                  <Input
-                    id="ow-shipping"
+                </Field>
+                <Field className="max-w-[10rem]">
+                  <FieldLabel>Shipping</FieldLabel>
+                  <FieldControl
+                    name="ow-shipping"
                     type="number"
                     min="0"
                     step="0.01"
@@ -356,7 +361,7 @@ function OrderWizardInner({
                     onChange={(e) => setShipping(e.target.value)}
                     placeholder="0.00"
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -366,34 +371,37 @@ function OrderWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Notes</h3>
               <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="ow-cust-note">Customer-facing note</Label>
-                  <Textarea
-                    id="ow-cust-note"
-                    rows={3}
+                <Field>
+                  <FieldLabel>Customer-facing note</FieldLabel>
+                  <FieldControl
+                    name="ow-cust-note"
                     value={customerNote}
                     onChange={(e) => setCustomerNote(e.target.value)}
-                    placeholder="Shown on the order — anything the customer should see."
+                    render={
+                      <Textarea
+                        rows={3}
+                        placeholder="Shown on the order — anything the customer should see."
+                      />
+                    }
                   />
-                </div>
-                <div>
-                  <Label htmlFor="ow-int-note">Internal note</Label>
-                  <Textarea
-                    id="ow-int-note"
-                    rows={3}
+                </Field>
+                <Field>
+                  <FieldLabel>Internal note</FieldLabel>
+                  <FieldControl
+                    name="ow-int-note"
                     value={internalNote}
                     onChange={(e) => setInternalNote(e.target.value)}
-                    placeholder="Only your team sees this."
+                    render={<Textarea rows={3} placeholder="Only your team sees this." />}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>

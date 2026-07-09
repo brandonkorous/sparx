@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, ModuleProvider, toast, useConfirm } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import {
   clearSampleDataAction,

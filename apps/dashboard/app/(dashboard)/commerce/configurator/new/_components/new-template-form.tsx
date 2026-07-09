@@ -3,8 +3,20 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, CardTitle, Input, NativeSelect, Textarea } from 'silicaui-react';
-import { Label, ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTemplateAction } from '../../../configurator-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -79,6 +91,14 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
   const [description, setDescription] = React.useState('');
   const [json, setJson] = React.useState(STARTER_JSON);
 
+  // Field validation. A configurable product must be chosen and the template must
+  // be named; the JSON definition is parse-checked at submit (a form-level error).
+  const values = { productId, name };
+  const v = useFieldValidation(values, {
+    productId: rule.required('Pick a product.'),
+    name: rule.required('Name is required.'),
+  });
+
   // Unsaved-changes guard. A create form starts blank (bar the starter JSON), so
   // "dirty" is "the user has changed anything from the defaults" — guard a Cancel
   // / Close / Switch / backdrop so typed work isn't silently dropped.
@@ -128,14 +148,7 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
 
   function submit() {
     setError(null);
-    if (!productId) {
-      setError('Pick a product');
-      return;
-    }
-    if (!name.trim()) {
-      setError('Name is required');
-      return;
-    }
+    if (!v.validate()) return;
     let parsed: unknown;
     try {
       parsed = JSON.parse(json);
@@ -191,42 +204,43 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
                 <CardTitle>Basics</CardTitle>
                 <p className="opacity-70">Pick the configurable product and name this template.</p>
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="productId" required>
-                      Product
-                    </Label>
-                    <NativeSelect
-                      id="productId"
+                  <Field {...v.field('productId')}>
+                    <FieldLabel required>Product</FieldLabel>
+                    <FieldControl
+                      name="productId"
                       value={productId}
                       onChange={(e) => setProductId(e.target.value)}
-                    >
-                      <option value="">— select a product —</option>
-                      {products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.title} ({p.status})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="name" required>
-                      Template name
-                    </Label>
-                    <Input
-                      id="name"
+                      {...v.control('productId')}
+                      render={
+                        <NativeSelect>
+                          <option value="">— select a product —</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.title} ({p.status})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
+                  <Field {...v.field('name')}>
+                    <FieldLabel required>Template name</FieldLabel>
+                    <FieldControl
+                      name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Default configuration"
+                      {...v.control('name')}
                     />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="description">Description</Label>
-                    <Input
-                      id="description"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Description</FieldLabel>
+                    <FieldControl
+                      name="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
               </CardBody>
             </Card>
@@ -238,27 +252,26 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
                   The starter payload below is a minimal valid template. Edit it as JSON, save, then
                   expand from the detail editor.
                 </p>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="json">Definition (JSON)</Label>
-                  <Textarea
-                    id="json"
+                <Field>
+                  <FieldLabel>Definition (JSON)</FieldLabel>
+                  <FieldControl
+                    name="json"
                     value={json}
                     onChange={(e) => setJson(e.target.value)}
-                    rows={20}
-                    className="font-mono text-xs"
+                    render={<Textarea rows={20} className="font-mono text-xs" />}
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     Must validate against CreateConfigurationTemplateInput in
                     @sparx/commerce-schemas. The starter has one option with two choices — edit,
                     then iterate after save.
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
               </CardBody>
             </Card>
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </SurfaceStep>

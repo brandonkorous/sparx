@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Input, Label } from 'silicaui-react';
+import { Input, Label } from '@wizeworks/silicaui-react';
 
 import type { MappingControls } from './types';
 

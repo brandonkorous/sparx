@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ExternalLink, Star } from 'lucide-react';
 import { Code, SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import type { Domain, Property } from '@/lib/sites';
 import { resolveActiveProperty } from '@/lib/site-scope';
@@ -87,7 +87,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
       href={`https://${host}`}
       target="_blank"
       rel="noreferrer"
-      className={`inline-flex min-w-0 items-center gap-1 ${sizeClass} text-[var(--color-text-secondary)] hover:text-[var(--module-active)]`}
+      className={`inline-flex min-w-0 items-center gap-1 ${sizeClass} text-base-content/70 hover:text-module`}
       title={host}
     >
       <span className="truncate">{host}</span>
@@ -115,7 +115,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
         <SiteChip site={p} />
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-2">
-            {nameLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+            {nameLink(p, 'text-sm font-medium hover:text-module hover:underline')}
             <Code>{p.slug}</Code>
             {badges(p)}
           </div>
@@ -162,10 +162,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
                 <SiteChip site={p} />
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <div className="flex flex-row flex-wrap items-center gap-2">
-                    {nameLink(
-                      p,
-                      'text-base font-medium hover:text-[var(--module-active)] hover:underline'
-                    )}
+                    {nameLink(p, 'text-base font-medium hover:text-module hover:underline')}
                     <Code>{p.slug}</Code>
                     {badges(p)}
                   </div>

@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import {

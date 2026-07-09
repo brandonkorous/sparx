@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Archive, DollarSign, ShoppingBag, Store, Trash2 } from 'lucide-react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   type BulkAction,
   SelectionList,
@@ -180,7 +180,7 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       header: 'Title',
       cell: (p) => (
         <div className="flex flex-col gap-1">
-          {titleLink(p, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+          {titleLink(p, 'text-sm font-medium hover:text-module hover:underline')}
           <p className="text-base-content/70 text-xs">/{p.handle}</p>
         </div>
       ),
@@ -217,11 +217,7 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
   ];
 
   const card: SelectionCard<ProductListItem> = {
-    title: (p) =>
-      titleLink(
-        p,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (p) => titleLink(p, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (p) => <p className="text-base-content/70 text-xs">/{p.handle}</p>,
     badge: statusBadge,
     body: (p) => (

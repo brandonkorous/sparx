@@ -1,20 +1,20 @@
 import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
-import { colorClass, type ColorKey } from '../_recipes/variants';
+import { colorVars, type ColorKey } from '../_recipes/variants';
 
 const cardVariants = cva(
-  'rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]',
+  'rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)]',
   {
     variants: {
       variant: {
         default: '',
         // Background tint only — the tint COLOR is applied in the component so it
-        // can read `--module-active-tint` directly (see below). No top stripe.
+        // can read the active module color directly (see below). No top stripe.
         module: '',
         elevated: 'shadow-md',
         ghost: 'border-transparent bg-transparent',
-        subtle: 'border-transparent bg-[var(--color-bg-subtle)]',
+        subtle: 'border-transparent bg-[var(--color-base-200)]',
       },
       padding: {
         none: '',
@@ -38,34 +38,30 @@ export interface CardProps
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, padding, accent, ...props }, ref) => {
+  ({ className, variant, padding, accent, style, ...props }, ref) => {
     // The module variant tints its whole background by mixing the module color
     // into the card surface (so it reads as a clean tinted-white card in light
     // mode and a tinted-dark card in dark mode — never a fixed light hex). The
     // mix percentage is the "how present" knob; kept just under the soft
     // treatment's 14% so the surface reads as a deliberate module zone without
-    // tipping into a heavy fill. With no `accent` we read `--module-active` DIRECTLY so the
-    // tint follows the nearest <ModuleProvider> (a nested provider on a
-    // cross-module panel just works). We deliberately do NOT fall back through
-    // the shared, inheritable `--c-bg` role var: an ancestor's color recipe can
-    // leak it into this subtree and silently override the active module (the bug
-    // this guards against). An explicit `accent` sets `--c-bg` on THIS card via
-    // its role class, so reading `--c-bg` then is safe and local.
+    // tipping into a heavy fill. With no `accent` we read `--color-module`
+    // DIRECTLY so the tint follows the nearest <ModuleProvider> (a nested
+    // provider on a cross-module panel just works). An explicit `accent` pins a
+    // specific color via a local `--sx-sel` custom property set on THIS card, so
+    // it can't be leaked in from an ancestor.
+    const tintVar = accent ? 'var(--sx-sel)' : 'var(--color-module)';
     const moduleBg =
       variant === 'module'
-        ? accent
-          ? 'bg-[color-mix(in_oklab,var(--c-bg)_12%,var(--color-bg-surface))]'
-          : 'bg-[color-mix(in_oklab,var(--module-active)_12%,var(--color-bg-surface))]'
+        ? `bg-[color-mix(in_oklab,${tintVar}_12%,var(--color-base-100))]`
         : undefined;
+    const accentStyle = accent
+      ? ({ ['--sx-sel']: colorVars(accent).sel, ...style } as React.CSSProperties)
+      : style;
     return (
       <div
         ref={ref}
-        className={cn(
-          accent && colorClass(accent),
-          cardVariants({ variant, padding }),
-          moduleBg,
-          className
-        )}
+        style={accentStyle}
+        className={cn(cardVariants({ variant, padding }), moduleBg, className)}
         {...props}
       />
     );
@@ -84,11 +80,7 @@ export const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, children, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn('text-base font-medium text-[var(--color-text-primary)]', className)}
-    {...props}
-  >
+  <h3 ref={ref} className={cn('text-base-content text-base font-medium', className)} {...props}>
     {children}
   </h3>
 ));
@@ -98,7 +90,7 @@ export const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-sm text-[var(--color-text-secondary)]', className)} {...props} />
+  <p ref={ref} className={cn('text-base-content/70 text-sm', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 
@@ -112,7 +104,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
     <div
       ref={ref}
       className={cn(
-        'mt-4 flex items-center justify-end gap-2 border-t border-[var(--color-border-default)] pt-4',
+        'mt-4 flex items-center justify-end gap-2 border-t border-[var(--color-base-300)] pt-4',
         className
       )}
       {...props}

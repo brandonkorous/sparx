@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Store, MapPin } from 'lucide-react';
-import { Card } from 'silicaui-react';
+import { Card } from '@wizeworks/silicaui-react';
 
 import { Stars } from '@/components/stars';
 import { INTERACTIVE_CARD_CLASS } from '@/components/ui/card';

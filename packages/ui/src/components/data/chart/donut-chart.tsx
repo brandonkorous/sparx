@@ -92,12 +92,12 @@ export function DonutChart({
         {(centerValue != null || centerLabel != null) && (
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
             {centerValue != null && (
-              <span className="text-xl leading-none font-medium text-[var(--color-text-primary)]">
+              <span className="text-base-content text-xl leading-none font-medium">
                 {centerValue}
               </span>
             )}
             {centerLabel != null && (
-              <span className="mt-1 text-xs text-[var(--color-text-tertiary)]">{centerLabel}</span>
+              <span className="text-base-content/50 mt-1 text-xs">{centerLabel}</span>
             )}
           </div>
         )}
@@ -112,8 +112,8 @@ export function DonutChart({
                 className="h-2.5 w-2.5 shrink-0 rounded-sm"
                 style={{ background: colors[i] }}
               />
-              <span className="truncate text-[var(--color-text-secondary)]">{d.label}</span>
-              <span className="ml-auto pl-3 font-medium text-[var(--color-text-primary)] tabular-nums">
+              <span className="text-base-content/70 truncate">{d.label}</span>
+              <span className="text-base-content ml-auto pl-3 font-medium tabular-nums">
                 {valueFormatter ? valueFormatter(d.value) : d.value}
               </span>
             </li>

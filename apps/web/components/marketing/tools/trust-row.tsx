@@ -24,7 +24,7 @@ export function TrustRow({ style }: { style?: React.CSSProperties }) {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {item.label}

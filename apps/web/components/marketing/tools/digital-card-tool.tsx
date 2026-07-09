@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Download } from 'lucide-react';
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { renderQrCanvas } from './lib/qr';
 import { downloadBlob, downloadText } from './lib/download';
@@ -118,9 +118,9 @@ export function DigitalCardTool() {
               gap: '4px',
               padding: '22px',
               borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--color-bg-surface)',
-              borderLeft: '4px solid var(--module-active)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              borderLeft: '4px solid var(--color-module)',
+              border: '1px solid var(--color-base-300)',
             }}
           >
             <span
@@ -128,7 +128,7 @@ export function DigitalCardTool() {
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 600,
                 fontSize: '18px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {full}
@@ -137,7 +137,7 @@ export function DigitalCardTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '13px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {[data.title, data.company].filter(Boolean).join(' · ')}
@@ -150,7 +150,7 @@ export function DigitalCardTool() {
                 marginTop: '8px',
                 fontFamily: 'var(--font-sans)',
                 fontSize: '13px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {data.phone ? <span>{data.phone}</span> : null}
@@ -191,7 +191,7 @@ export function DigitalCardTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

@@ -42,7 +42,7 @@ export function CrmSegments() {
         <div
           style={{
             backgroundColor: moduleTint(M.color),
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
             display: 'flex',
@@ -55,7 +55,7 @@ export function CrmSegments() {
               alignItems: 'center',
               gap: '9px',
               padding: '14px 20px',
-              borderBottom: '1px solid var(--color-border-default)',
+              borderBottom: '1px solid var(--color-base-300)',
             }}
           >
             <Dot color={M.color} size={8} />
@@ -80,7 +80,7 @@ export function CrmSegments() {
                 gap: '8px',
                 flexWrap: 'wrap',
                 padding: '13px 20px',
-                borderBottom: '1px solid var(--color-bg-subtle)',
+                borderBottom: '1px solid var(--color-base-200)',
               }}
             >
               {p.join ? (
@@ -102,15 +102,15 @@ export function CrmSegments() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   padding: '5px 10px',
-                  border: '1px solid var(--color-border-default)',
+                  border: '1px solid var(--color-base-300)',
                   borderRadius: '7px',
-                  backgroundColor: 'var(--color-bg-page)',
+                  backgroundColor: 'var(--color-base-200)',
                 }}
               >
                 <span style={{ fontWeight: 500 }}>{p.field}</span>{' '}
                 <span
                   style={{
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     fontFamily: MONO,
                     fontSize: '12px',
                   }}
@@ -128,11 +128,11 @@ export function CrmSegments() {
               gap: '9px',
               padding: '14px 20px',
               marginTop: 'auto',
-              backgroundColor: 'var(--color-bg-page)',
-              borderTop: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              borderTop: '1px solid var(--color-base-300)',
               fontFamily: MONO,
               fontSize: '11.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             <Dot color={M.color} size={6} />
@@ -141,8 +141,8 @@ export function CrmSegments() {
         </div>
         <div
           style={{
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
             display: 'flex',
@@ -167,7 +167,7 @@ export function CrmSegments() {
                 margin: '8px 0 0',
                 fontFamily: SANS,
                 fontSize: '13px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               customers match right now — auto-added the moment they cross the line, removed when
@@ -182,7 +182,7 @@ export function CrmSegments() {
                 alignItems: 'center',
                 gap: '11px',
                 padding: '12px 22px',
-                borderTop: '1px solid var(--color-bg-subtle)',
+                borderTop: '1px solid var(--color-base-200)',
               }}
             >
               <span
@@ -190,7 +190,7 @@ export function CrmSegments() {
                   width: 28,
                   height: 28,
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-subtle)',
+                  backgroundColor: 'var(--color-base-200)',
                   flexShrink: 0,
                 }}
               />
@@ -209,7 +209,7 @@ export function CrmSegments() {
                   style={{
                     fontFamily: SANS,
                     fontSize: '11.5px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {c.meta}
@@ -220,7 +220,7 @@ export function CrmSegments() {
                   marginLeft: 'auto',
                   fontFamily: MONO,
                   fontSize: '13px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {c.amt}
@@ -294,7 +294,7 @@ export function CrmPipeline() {
           <div
             key={s.name}
             style={{
-              backgroundColor: 'var(--color-bg-surface)',
+              backgroundColor: 'var(--color-base-100)',
               padding: '16px 14px',
               minHeight: '220px',
               display: 'flex',
@@ -335,7 +335,11 @@ export function CrmPipeline() {
                 {s.name}
               </span>
               <span
-                style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+                style={{
+                  fontFamily: MONO,
+                  fontSize: '11px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                }}
               >
                 {s.n}
               </span>
@@ -344,10 +348,10 @@ export function CrmPipeline() {
               <div
                 key={d.t}
                 style={{
-                  border: `1px solid ${d.p === 'won' ? M.color : 'var(--color-border-default)'}`,
+                  border: `1px solid ${d.p === 'won' ? M.color : 'var(--color-base-300)'}`,
                   borderRadius: '9px',
                   padding: '11px',
-                  backgroundColor: 'var(--color-bg-page)',
+                  backgroundColor: 'var(--color-base-200)',
                 }}
               >
                 <div
@@ -359,7 +363,7 @@ export function CrmPipeline() {
                   style={{
                     fontFamily: MONO,
                     fontSize: '11px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     marginTop: '6px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -379,8 +383,8 @@ export function CrmPipeline() {
           gap: '32px',
           marginTop: '22px',
           padding: '18px 22px',
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
         }}
       >
@@ -400,7 +404,7 @@ export function CrmPipeline() {
               style={{
                 fontFamily: SANS,
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: '2px',
               }}
             >

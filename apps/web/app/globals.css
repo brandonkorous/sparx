@@ -21,7 +21,7 @@
    `module` (the ACTIVE-module bridge — <ModuleProvider> points --color-module at
    the wrapping module's hue, so `color="module"` resolves through the standard
    silica color machinery). Per-module solid hues live in @sparx/brand/theme.css. */
-@plugin 'silicaui' {
+@plugin '@wizeworks/silicaui' {
   colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module;
 }
 
@@ -30,18 +30,10 @@
    Phase 3 with @sparx/ui itself. silicaui-react emits only plugin classes. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
+/* Colors are owned entirely by silicaui (the @plugin registers the semantic +
+   module palette, reading @sparx/brand/theme.css); this @theme carries only the
+   non-color tokens Tailwind needs (font, radius). */
 @theme {
-  --color-primary: var(--sparx-primary);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-danger: var(--color-danger);
-  --color-foreground: var(--color-text-primary);
-  --color-foreground-muted: var(--color-text-secondary);
-  --color-page: var(--color-bg-page);
-  --color-surface: var(--color-bg-surface);
-  --color-subtle: var(--color-bg-subtle);
-  --color-border: var(--color-border-default);
-
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 
@@ -57,8 +49,8 @@ html {
 
 html,
 body {
-  background-color: var(--color-bg-page);
-  color: var(--color-text-primary);
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

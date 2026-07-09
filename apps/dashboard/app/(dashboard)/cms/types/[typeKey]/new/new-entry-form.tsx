@@ -17,7 +17,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { FieldDef } from '@sparx/cms-schemas';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody, FieldStatus } from '@wizeworks/silicaui-react';
 
 import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
 import { createEntry } from '../../actions';
@@ -116,9 +116,9 @@ export function NewEntryForm({ surface, typeKey, typeName, urlPattern, schema }:
                 />
 
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardBody>

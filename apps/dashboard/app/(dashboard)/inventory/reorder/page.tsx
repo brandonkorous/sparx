@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { RefreshCw, Truck } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -109,7 +109,7 @@ function UnsuppliedPanel({ items }: { items: UnsuppliedSuggestion[] }) {
             {items.map((it) => (
               <div
                 key={`${it.variantId}-${it.warehouseId}`}
-                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
               >
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">

@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -52,7 +52,7 @@ export function DropshipHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '580px',
                 margin: '28px 0 0',
               }}
@@ -81,8 +81,8 @@ export function DropshipHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -91,7 +91,7 @@ export function DropshipHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -120,8 +120,8 @@ function RoutedOrderCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -144,7 +144,7 @@ function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '16px 20px',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -154,7 +154,13 @@ function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
             {d.routed.number}
           </span>
           <br />
-          <span style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: SANS,
+              fontSize: '12px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {customerName} · routed to {d.supplier}
           </span>
         </span>
@@ -191,7 +197,7 @@ function RoutedProfit({ d }: { d: D }) {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       {cells.map(([v, l], i) => (
@@ -199,7 +205,7 @@ function RoutedProfit({ d }: { d: D }) {
           key={l}
           style={{
             padding: '14px 16px',
-            borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+            borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
           }}
         >
           <div
@@ -208,7 +214,7 @@ function RoutedProfit({ d }: { d: D }) {
               fontWeight: 500,
               fontSize: '17px',
               letterSpacing: '-0.01em',
-              color: i === 2 ? M.text : 'var(--color-text-primary)',
+              color: i === 2 ? M.text : 'var(--color-base-content)',
             }}
           >
             {v}
@@ -217,7 +223,7 @@ function RoutedProfit({ d }: { d: D }) {
             style={{
               fontFamily: MONO,
               fontSize: '11px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               marginTop: '2px',
             }}
           >
@@ -238,8 +244,8 @@ function RoutedTracking({ d }: { d: D }) {
           alignItems: 'center',
           gap: '10px',
           padding: '12px 14px',
-          backgroundColor: 'var(--color-bg-page)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '10px',
         }}
       >
@@ -251,12 +257,18 @@ function RoutedTracking({ d }: { d: D }) {
               fontFamily: SANS,
               fontSize: '13px',
               fontWeight: 500,
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {d.routed.carrier}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {d.routed.tracking}
           </span>
         </span>
@@ -275,7 +287,13 @@ function RoutedTracking({ d }: { d: D }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
         <Dot color={M.color} size={6} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           {d.connection} · {d.rule} · no inventory held
         </span>
       </div>

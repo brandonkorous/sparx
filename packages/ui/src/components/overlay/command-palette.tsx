@@ -18,7 +18,7 @@ export const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      'flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--color-bg-surface)]',
+      'flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--color-base-100)]',
       className
     )}
     {...props}
@@ -30,13 +30,13 @@ export const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div className="flex items-center gap-2 border-b border-[var(--color-border-default)] px-3">
-    <Search className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+  <div className="flex items-center gap-2 border-b border-[var(--color-base-300)] px-3">
+    <Search className="text-base-content/50 h-4 w-4 shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
         'flex h-10 w-full bg-transparent py-2 text-sm outline-none',
-        'placeholder:text-[var(--color-text-tertiary)]',
+        'placeholder:text-base-content/50',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
@@ -64,7 +64,7 @@ export const CommandEmpty = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className={cn('py-6 text-center text-sm text-[var(--color-text-secondary)]', className)}
+    className={cn('text-base-content/70 py-6 text-center text-sm', className)}
     {...props}
   />
 ));
@@ -77,11 +77,11 @@ export const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      'overflow-hidden text-[var(--color-text-primary)]',
+      'text-base-content overflow-hidden',
       '[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5',
       '[&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       '[&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:uppercase',
-      '[&_[cmdk-group-heading]]:text-[var(--color-text-tertiary)]',
+      '[&_[cmdk-group-heading]]:text-base-content/50',
       className
     )}
     {...props}
@@ -95,7 +95,7 @@ export const CommandSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-[var(--color-border-default)]', className)}
+    className={cn('-mx-1 my-1 h-px bg-[var(--color-base-300)]', className)}
     {...props}
   />
 ));
@@ -109,9 +109,9 @@ export const CommandItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none',
-      'text-[var(--color-text-primary)]',
+      'text-base-content',
       'transition-colors duration-100',
-      'data-[selected=true]:bg-[var(--color-bg-subtle)]',
+      'data-[selected=true]:bg-[var(--color-base-200)]',
       'aria-disabled:pointer-events-none aria-disabled:opacity-40',
       className
     )}
@@ -122,7 +122,7 @@ CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 export const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cn('ml-auto text-xs tracking-wide text-[var(--color-text-tertiary)]', className)}
+    className={cn('text-base-content/50 ml-auto text-xs tracking-wide', className)}
     {...props}
   />
 );

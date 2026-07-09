@@ -3,7 +3,7 @@ import { ChevronLeft, MessageSquareText } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
 import { PageHeader } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { PromptLibrary } from './_components/prompt-library';

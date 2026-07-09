@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { SchemaEditor } from './schema-editor';

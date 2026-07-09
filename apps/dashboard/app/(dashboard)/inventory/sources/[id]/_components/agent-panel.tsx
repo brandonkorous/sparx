@@ -13,7 +13,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import { enrollAgentAction, revokeAgentAction } from '../../_lib/agent-actions';
@@ -129,7 +129,7 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
             </div>
           )}
 
-          {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+          {error ? <p className="text-danger text-sm">{error}</p> : null}
         </div>
       </CardBody>
 
@@ -150,11 +150,9 @@ function Tile({
   emphasis?: boolean;
 }) {
   return (
-    <div className="flex min-w-[10rem] flex-1 flex-col gap-1 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-3 py-2">
       <p className="text-base-content/70 text-xs">{label}</p>
-      <p
-        className={`text-sm ${mono ? 'font-mono' : ''} ${emphasis ? 'text-[var(--color-warning)]' : ''}`.trim()}
-      >
+      <p className={`text-sm ${mono ? 'font-mono' : ''} ${emphasis ? 'text-warning' : ''}`.trim()}>
         {value}
       </p>
     </div>
@@ -211,7 +209,7 @@ function CodeBlock({ text }: { text: string }) {
     });
   }
   return (
-    <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border p-3">
       <pre className="overflow-x-auto font-mono text-xs break-all whitespace-pre-wrap">{text}</pre>
       <div className="flex flex-row justify-end">
         <Button

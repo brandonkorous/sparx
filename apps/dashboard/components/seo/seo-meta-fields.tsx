@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { CornerDownLeft } from 'lucide-react';
 
-import { Button, Input, Label, Textarea } from 'silicaui-react';
+import { Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
 import { cn } from '@sparx/ui';
 import type { EntityType } from '@sparx/seo-audit';
 

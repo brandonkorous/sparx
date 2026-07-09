@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Printer, Receipt } from 'lucide-react';
 
 import { Stat } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -274,7 +274,7 @@ export async function DocumentEditorContent({ id }: Props) {
               {Number(doc.surchargeTotal) > 0 && (
                 <TotalRow label="Surcharge" value={formatMoney(doc.surchargeTotal, doc.currency)} />
               )}
-              <div className="border-t border-[var(--color-border-default)] pt-2">
+              <div className="border-base-300 border-t pt-2">
                 <TotalRow label="Total" value={formatMoney(doc.total, doc.currency)} strong />
               </div>
               {Number(doc.depositTotal) > 0 && (
@@ -289,7 +289,7 @@ export async function DocumentEditorContent({ id }: Props) {
                   value={`- ${formatMoney(doc.amountPaid, doc.currency)}`}
                 />
               )}
-              <div className="border-t border-[var(--color-border-default)] pt-2">
+              <div className="border-base-300 border-t pt-2">
                 <TotalRow
                   label="Balance due"
                   value={formatMoney(doc.balance, doc.currency)}
@@ -332,7 +332,7 @@ export async function DocumentEditorContent({ id }: Props) {
               {snapshots.map((s) => (
                 <div
                   key={s.id}
-                  className="flex flex-row items-center justify-between rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row items-center justify-between rounded-md border px-3 py-2"
                 >
                   <div className="flex flex-row flex-wrap items-center gap-3">
                     <p className="text-sm font-medium">{s.documentNumber ?? s.customerLabel}</p>

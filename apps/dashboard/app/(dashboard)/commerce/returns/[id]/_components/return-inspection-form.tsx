@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, NativeSelect } from 'silicaui-react';
+import { Button, Checkbox, FieldStatus, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import type { RecordReturnInspectionInput } from '@sparx/commerce-schemas';
 
@@ -128,9 +128,9 @@ export function ReturnInspectionForm({
           );
         })}
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
         <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>

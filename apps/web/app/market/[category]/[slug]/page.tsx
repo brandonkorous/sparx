@@ -8,7 +8,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark } from '@/components/marketing/primitives';
@@ -122,7 +122,7 @@ export default async function ListingDetailPage({
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               textDecoration: 'none',
             }}
           >
@@ -148,7 +148,7 @@ export default async function ListingDetailPage({
                   style={{
                     width: '100%',
                     borderRadius: '12px',
-                    border: '1px solid var(--color-border-default)',
+                    border: '1px solid var(--color-base-300)',
                   }}
                 />
               ) : (
@@ -157,8 +157,8 @@ export default async function ListingDetailPage({
                     aspectRatio: '16 / 10',
                     width: '100%',
                     borderRadius: '12px',
-                    border: '1px solid var(--color-border-default)',
-                    backgroundColor: 'var(--color-bg-surface)',
+                    border: '1px solid var(--color-base-300)',
+                    backgroundColor: 'var(--color-base-100)',
                   }}
                 />
               )}
@@ -176,7 +176,7 @@ export default async function ListingDetailPage({
                         height: '76px',
                         objectFit: 'cover',
                         borderRadius: '8px',
-                        border: '1px solid var(--color-border-default)',
+                        border: '1px solid var(--color-base-300)',
                       }}
                     />
                   ))}
@@ -189,7 +189,7 @@ export default async function ListingDetailPage({
                     fontFamily: 'var(--font-sans)',
                     fontSize: '16px',
                     lineHeight: '26px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     margin: 0,
                     paddingTop: '8px',
                   }}
@@ -209,8 +209,8 @@ export default async function ListingDetailPage({
                 top: '96px',
                 // The one lead panel on the detail page carries the soft 12%
                 // module wash (the sanctioned single tinted card), no stripe.
-                backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-bg-surface))`,
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-base-100))`,
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '12px',
                 padding: '28px',
                 display: 'flex',
@@ -243,7 +243,7 @@ export default async function ListingDetailPage({
                     fontSize: '26px',
                     letterSpacing: '-0.02em',
                     lineHeight: '32px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                     margin: 0,
                   }}
                 >
@@ -255,7 +255,7 @@ export default async function ListingDetailPage({
                       fontFamily: 'var(--font-sans)',
                       fontSize: '14px',
                       lineHeight: '21px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                       paddingTop: '8px',
                       margin: 0,
                     }}
@@ -271,7 +271,7 @@ export default async function ListingDetailPage({
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '20px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {priceLabel(item.price)}
@@ -281,7 +281,7 @@ export default async function ListingDetailPage({
                     style={{
                       fontFamily: 'var(--font-sans)',
                       fontSize: '13px',
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     }}
                   >
                     {item.installCount} installs
@@ -321,10 +321,10 @@ export default async function ListingDetailPage({
                         style={{
                           padding: '3px 9px',
                           borderRadius: '9999px',
-                          border: '1px solid var(--color-border-default)',
+                          border: '1px solid var(--color-base-300)',
                           fontFamily: 'var(--font-sans)',
                           fontSize: '12px',
-                          color: 'var(--color-text-secondary)',
+                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                         }}
                       >
                         {m}
@@ -374,7 +374,7 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
-        borderTop: '1px solid var(--color-border-default)',
+        borderTop: '1px solid var(--color-base-300)',
         paddingTop: '16px',
       }}
     >
@@ -383,7 +383,7 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         {label}
@@ -399,7 +399,7 @@ function Row({ children }: { children: ReactNode }) {
       style={{
         fontFamily: 'var(--font-sans)',
         fontSize: '14px',
-        color: 'var(--color-text-secondary)',
+        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
       }}
     >
       {children}

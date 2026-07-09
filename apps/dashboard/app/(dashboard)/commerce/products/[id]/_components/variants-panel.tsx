@@ -13,7 +13,15 @@ import {
   X,
 } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody, Input, NativeSelect, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Input,
+  NativeSelect,
+  Table,
+} from '@wizeworks/silicaui-react';
 import { useConfirm, statusLabel } from '@sparx/ui';
 
 import {
@@ -104,7 +112,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
           <div className="flex flex-row flex-wrap items-center justify-between gap-3">
             <div className="flex flex-col gap-1">
               <div className="flex flex-row items-center gap-2">
-                <Sliders className="h-4 w-4 text-[var(--module-active)]" />
+                <Sliders className="text-module h-4 w-4" />
                 <h3 className="text-xl font-semibold">Options</h3>
                 <Badge color="neutral" variant="soft" size="sm">
                   {options.length} option{options.length === 1 ? '' : 's'}
@@ -151,7 +159,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
             <div className="flex flex-row flex-wrap items-center justify-between gap-3">
               <div className="flex flex-col gap-1">
                 <div className="flex flex-row items-center gap-2">
-                  <Boxes className="h-4 w-4 text-[var(--module-active)]" />
+                  <Boxes className="text-module h-4 w-4" />
                   <h3 className="text-xl font-semibold">Variants</h3>
                   <Badge color="neutral" variant="soft" size="sm">
                     {activeVariants.length} active
@@ -186,8 +194,8 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
             )}
           </div>
           {activeVariants.length === 0 && archivedVariants.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 border-t border-[var(--color-border-default)] py-10 text-center">
-              <Boxes className="h-5 w-5 text-[var(--color-text-muted)]" />
+            <div className="border-base-300 flex flex-col items-center gap-2 border-t py-10 text-center">
+              <Boxes className="text-base-content/60 h-5 w-5" />
               <p className="text-base-content/70 text-sm">
                 No variants yet. Add at least one before publishing.
               </p>
@@ -226,7 +234,7 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
 
 function OptionPreview({ option }: { option: OptionRow }) {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded-md border p-3">
       <div className="flex flex-row items-center gap-2">
         <span className="text-sm font-medium">{option.name}</span>
         <Badge color="neutral" variant="soft" size="sm">
@@ -240,12 +248,12 @@ function OptionPreview({ option }: { option: OptionRow }) {
         {option.values.map((v) => (
           <div
             key={v.id}
-            className="flex flex-row items-center gap-1 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 py-1"
+            className="border-base-300 bg-base-100 flex flex-row items-center gap-1 rounded border px-2 py-1"
           >
             {v.swatchHex && (
               <span
                 aria-hidden
-                className="inline-block h-3 w-3 rounded-sm border border-[var(--color-border-default)]"
+                className="border-base-300 inline-block h-3 w-3 rounded-sm border"
                 style={{ backgroundColor: v.swatchHex }}
               />
             )}

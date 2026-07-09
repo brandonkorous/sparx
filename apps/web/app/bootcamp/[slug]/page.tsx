@@ -8,7 +8,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Badge, Button } from '@sparx/ui';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Display, Spark } from '@/components/marketing/primitives';
@@ -29,7 +29,7 @@ export const revalidate = 300;
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const PRIMARY = 'var(--sparx-primary)';
+const PRIMARY = 'var(--color-primary)';
 const BASE_URL = 'https://sparx.works';
 
 export async function generateMetadata({
@@ -122,7 +122,7 @@ export default async function BootcampDetailPage({
       {/* Header band — orange-tinted, mirroring the bootcamp hero identity. */}
       <section
         style={{
-          backgroundColor: 'var(--sparx-primary-tint)',
+          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
           paddingTop: 'clamp(40px, 6vw, 72px)',
           paddingBottom: 'clamp(40px, 6vw, 72px)',
           paddingLeft: 'var(--gutter-page)',
@@ -143,7 +143,7 @@ export default async function BootcampDetailPage({
             style={{
               fontFamily: SANS,
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               textDecoration: 'none',
             }}
           >
@@ -156,8 +156,8 @@ export default async function BootcampDetailPage({
               fontSize: '12px',
               padding: '5px 12px',
               borderRadius: '9999px',
-              backgroundColor: 'var(--color-bg-surface)',
-              color: 'var(--sparx-primary-hover)',
+              backgroundColor: 'var(--color-base-100)',
+              color: 'var(--color-primary)',
             }}
           >
             {FORMAT_LABEL[b.format]}
@@ -176,7 +176,7 @@ export default async function BootcampDetailPage({
               gap: '10px 20px',
               fontFamily: SANS,
               fontSize: '15px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
@@ -198,7 +198,7 @@ export default async function BootcampDetailPage({
           paddingBottom: 'var(--section-py-lg)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
@@ -235,8 +235,8 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '18px',
         padding: 'clamp(24px, 3vw, 32px)',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
@@ -255,14 +255,18 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
               justifyContent: 'space-between',
               gap: '16px',
               padding: '12px 0',
-              borderTop: i === 0 ? undefined : '1px solid var(--color-border-default)',
+              borderTop: i === 0 ? undefined : '1px solid var(--color-base-300)',
               fontFamily: SANS,
               fontSize: '14px',
             }}
           >
-            <span style={{ color: 'var(--color-text-tertiary)' }}>{r.k}</span>
             <span
-              style={{ color: 'var(--color-text-primary)', fontWeight: 500, textAlign: 'right' }}
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+            >
+              {r.k}
+            </span>
+            <span
+              style={{ color: 'var(--color-base-content)', fontWeight: 500, textAlign: 'right' }}
             >
               {r.v}
             </span>
@@ -282,7 +286,7 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
               margin: 0,
               fontFamily: SANS,
               fontSize: '12px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               lineHeight: '18px',
             }}
           >

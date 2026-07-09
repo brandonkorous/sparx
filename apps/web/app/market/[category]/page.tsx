@@ -6,7 +6,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
@@ -93,7 +93,7 @@ export default async function CategoryBrowsePage({
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '13px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 textDecoration: 'none',
               }}
             >
@@ -137,7 +137,7 @@ export default async function CategoryBrowsePage({
               justifyContent: 'space-between',
               gap: '16px',
               flexWrap: 'wrap',
-              borderTop: '1px solid var(--color-border-default)',
+              borderTop: '1px solid var(--color-base-300)',
               paddingTop: '20px',
             }}
           >
@@ -145,7 +145,7 @@ export default async function CategoryBrowsePage({
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {page.total} {page.total === 1 ? cat.singular : cat.label.toLowerCase()}
@@ -161,7 +161,9 @@ export default async function CategoryBrowsePage({
                       fontFamily: 'var(--font-sans)',
                       fontSize: '13px',
                       fontWeight: isOn ? 500 : 400,
-                      color: isOn ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                      color: isOn
+                        ? 'var(--color-base-content)'
+                        : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       textDecoration: 'none',
                     }}
                   >
@@ -211,7 +213,7 @@ function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boo
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '16px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
         }}
       >
@@ -246,7 +248,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               textDecoration: 'none',
             }}
           >
@@ -273,7 +275,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
               fontFamily: 'var(--font-sans)',
               fontSize: '18px',
               lineHeight: '30px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '560px',
               margin: 0,
             }}

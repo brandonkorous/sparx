@@ -2,7 +2,7 @@ import { CheckSquare, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 // Client wrapper for the pricing-tiers list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so

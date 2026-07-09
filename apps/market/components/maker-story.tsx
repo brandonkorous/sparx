@@ -8,7 +8,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { Container } from '@/components/ui/layout';
 import { MAKER_IMAGE, MAKER_ALT } from '@/lib/editorial';

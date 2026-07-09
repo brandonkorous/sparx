@@ -5,9 +5,9 @@
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { Card } from 'silicaui-react';
+import { Card } from '@wizeworks/silicaui-react';
 // Server-safe cx (the main barrel is 'use client'); works in server + client.
-import { cx } from 'silicaui-react/server';
+import { cx } from '@wizeworks/silicaui-react/server';
 
 /** The shared interactive-card treatment: the hover-lift only. The base surface
  *  (base-100 fill, base-300 hairline border, radius, overflow) already comes from

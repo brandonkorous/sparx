@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { GitBranch, Plus } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -89,7 +89,7 @@ export default async function InvoicingWorkflowsPage() {
                                   {s.customerLabel}
                                 </Badge>
                                 {i < stages.length - 1 && (
-                                  <span className="text-[var(--color-text-tertiary)]">→</span>
+                                  <span className="text-base-content/50">→</span>
                                 )}
                               </div>
                             ))

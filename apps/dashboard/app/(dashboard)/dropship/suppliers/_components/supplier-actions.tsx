@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { MoreHorizontal, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { syncSupplier, deleteSupplier } from '../_lib/actions';
 import {
@@ -113,7 +113,7 @@ export function SupplierActions({ supplier, sites, vendors }: Props) {
               Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onDisconnect} className="text-[var(--color-danger)]">
+            <DropdownMenuItem onClick={onDisconnect} className="text-danger">
               <Trash2 className="mr-2 h-4 w-4" />
               Disconnect
             </DropdownMenuItem>

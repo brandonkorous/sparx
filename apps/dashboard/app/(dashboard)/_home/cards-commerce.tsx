@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 import { BarList, ModuleProvider } from '@sparx/ui';
 import { ShoppingBag } from 'lucide-react';
 
@@ -64,13 +64,13 @@ function RankedList<T>({
         {rows.map((r, i) => (
           <div
             key={`${i}-${primary(r)}`}
-            className="flex items-center justify-between gap-3 border-b border-[var(--color-border-default)] py-2 last:border-b-0"
+            className="border-base-300 flex items-center justify-between gap-3 border-b py-2 last:border-b-0"
           >
             <div className="min-w-0">
-              <div className="truncate text-sm text-[var(--color-text-primary)]">{primary(r)}</div>
-              <div className="text-xs text-[var(--color-text-tertiary)]">{secondary(r)}</div>
+              <div className="text-base-content truncate text-sm">{primary(r)}</div>
+              <div className="text-base-content/50 text-xs">{secondary(r)}</div>
             </div>
-            <span className="shrink-0 text-sm font-medium text-[var(--color-text-primary)] tabular-nums">
+            <span className="text-base-content shrink-0 text-sm font-medium tabular-nums">
               {amount(r)}
             </span>
           </div>

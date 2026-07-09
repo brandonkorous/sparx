@@ -7,7 +7,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { DiscountStatusToggle } from './discount-status-toggle';
 

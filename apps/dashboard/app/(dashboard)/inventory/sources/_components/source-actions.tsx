@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { syncSource, deleteSource } from '../_lib/actions';
 import { SourceForm } from './source-form';
@@ -80,7 +80,7 @@ export function SourceActions({ source }: { source: Source }) {
               <Pencil className="mr-2 size-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onRemove} className="text-[var(--color-danger)]">
+            <DropdownMenuItem onClick={onRemove} className="text-danger">
               <Trash2 className="mr-2 size-4" />
               Remove
             </DropdownMenuItem>

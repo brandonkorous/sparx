@@ -3,7 +3,16 @@
 import { useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ModuleProvider, toast, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Input, Label, Select } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Select,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createDomainAction } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -36,6 +45,11 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
   const [region, setRegion] = useState('us');
   const [error, setError] = useState<string | null>(null);
 
+  const v = useFieldValidation(
+    { domain },
+    { domain: rule.required('Enter a domain to send from.') }
+  );
+
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
   // so typed work isn't silently dropped.
@@ -66,6 +80,7 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
 
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await createDomainAction({ domain: domain.trim(), region });
       if (result.ok) {
@@ -104,35 +119,42 @@ export function AddDomainForm({ surface }: AddDomainFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-row flex-wrap items-end gap-3">
-                <div className="flex min-w-64 flex-1 flex-col gap-2">
-                  <Label htmlFor="domain">Domain</Label>
-                  <Input
-                    id="domain"
+                <Field {...v.field('domain')} className="min-w-64 flex-1">
+                  <FieldLabel required>Domain</FieldLabel>
+                  <FieldControl
+                    name="domain"
                     value={domain}
                     onChange={(e) => setDomain(e.target.value)}
+                    {...v.control('domain')}
                     placeholder="mail.yourstore.com"
                     disabled={pending}
                     autoComplete="off"
                   />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="region">Region</Label>
+                </Field>
+                <Field>
+                  <FieldLabel>Region</FieldLabel>
                   <Select
                     id="region"
                     className="w-32"
                     value={region}
-                    onValueChange={(v) => setRegion(v as string)}
+                    onValueChange={(val) => setRegion(val as string)}
                     disabled={pending}
                     items={{ us: 'US', eu: 'EU' }}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

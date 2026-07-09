@@ -15,11 +15,11 @@ describe('<TopProgress>', () => {
     expect(container.querySelector('.sx-topbar--module')).toBeNull();
   });
 
-  it('wears the module palette inside a module route and points --module-active at it', () => {
+  it('wears the module palette inside a module route and points --color-module at it', () => {
     const { container } = render(<TopProgress route="/commerce/products" intercept={false} />);
     const root = container.querySelector<HTMLElement>('.sx-topbar--module')!;
     expect(root).not.toBeNull();
-    expect(root.style.getPropertyValue('--module-active')).toBe('var(--module-commerce)');
+    expect(root.style.getPropertyValue('--color-module')).toBe('var(--color-module-commerce)');
   });
 
   it('reflects controller activity in the bar width', () => {

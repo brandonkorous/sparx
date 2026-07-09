@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Section, SectionHeader, Spark } from './primitives';
 import type { FaqItem } from './faq';
 
@@ -15,9 +15,9 @@ const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
 // The bootcamp is a PLATFORM program, not the commerce module — so it wears the
 // sparx primary brand color, not a module hue (the /partners page does the same).
-const PRIMARY = 'var(--sparx-primary)';
-const PRIMARY_TINT = 'var(--sparx-primary-tint)';
-const PRIMARY_TEXT = 'var(--sparx-primary-hover)';
+const PRIMARY = 'var(--color-primary)';
+const PRIMARY_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const PRIMARY_TEXT = 'var(--color-primary)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function BootcampHero() {
@@ -46,7 +46,7 @@ export function BootcampHero() {
             fontFamily: SANS,
             fontSize: 'clamp(17px, 1.7vw, 20px)',
             lineHeight: 1.55,
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '600px',
             margin: 0,
           }}
@@ -66,8 +66,8 @@ export function BootcampHero() {
               variant="outline"
               style={{
                 backgroundColor: 'transparent',
-                borderColor: 'var(--color-border-strong)',
-                color: 'var(--color-text-primary)',
+                borderColor: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
+                color: 'var(--color-base-content)',
               }}
             >
               Are you a partner? Host one
@@ -149,7 +149,7 @@ export function BootcampWhoFor() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {w.d}
@@ -197,7 +197,7 @@ export function BootcampFormats() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 marginTop: '8px',
               }}
             >

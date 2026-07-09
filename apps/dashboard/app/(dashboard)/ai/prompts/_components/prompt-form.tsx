@@ -11,7 +11,20 @@ import {
   useConfirm,
   type SurfaceStepDef,
 } from '@sparx/ui';
-import { Card, CardBody, Input, Label, NativeSelect, Switch, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Switch,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 import {
   createPromptAction,
@@ -81,7 +94,6 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const [key, setKey] = React.useState(template?.key ?? '');
   const [keyTouched, setKeyTouched] = React.useState(isEdit);
@@ -92,6 +104,25 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
   const [model, setModel] = React.useState(template?.model ?? '');
   const [enabled, setEnabled] = React.useState(template?.enabled ?? true);
   const [variables, setVariables] = React.useState<PromptVariable[]>(template?.variables ?? []);
+
+  // Real per-field validation (name + body always; key only when creating, where
+  // it's editable + kebab-validated). Server CONFLICT maps onto the key field.
+  const v = useFieldValidation(
+    { name, key, body },
+    {
+      name: rule.required('Name is required.'),
+      body: rule.required('A prompt body is required.'),
+      ...(isEdit
+        ? {}
+        : {
+            key: rules(rule.required('A key is required.'), (val) =>
+              isValidPromptKey(String(val).trim())
+                ? null
+                : 'Use lowercase letters, numbers, and hyphens (e.g. support-greeting).'
+            ),
+          }),
+    }
+  );
 
   // Auto-derive the key from the name until the user edits the key directly
   // (create only — an edit never sends key).
@@ -140,22 +171,9 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
       .filter((v) => v.key !== '' && v.label !== '');
   }
 
-  function validate(): boolean {
-    const fe: Record<string, string> = {};
-    if (!name.trim()) fe.name = 'Name is required.';
-    if (!body.trim()) fe.body = 'A prompt body is required.';
-    if (!isEdit) {
-      if (!key.trim()) fe.key = 'A key is required.';
-      else if (!isValidPromptKey(key.trim()))
-        fe.key = 'Use lowercase letters, numbers, and hyphens (e.g. support-greeting).';
-    }
-    setFieldErrors(fe);
-    return Object.keys(fe).length === 0;
-  }
-
   function submit(): void {
     setError(null);
-    if (!validate()) return;
+    if (!v.validate()) return;
 
     startTransition(async () => {
       if (isEdit) {
@@ -188,7 +206,8 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
         const res = await createPromptAction(payload);
         if (!res.ok) {
           if (res.error.code === 'CONFLICT') {
-            setFieldErrors({ key: 'That key is already in use — pick another.' });
+            v.setServerErrors({ key: 'That key is already in use — pick another.' });
+            return;
           }
           setError(res.error.message);
           return;
@@ -228,37 +247,39 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-5">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="prompt-name">Name</Label>
-                    <Input
+                  <Field {...v.field('name')} className="min-w-[12rem] flex-1">
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
                       id="prompt-name"
                       value={name}
                       onChange={(e) => onNameChange(e.target.value)}
                       placeholder="Support greeting"
-                      color={fieldErrors.name ? 'error' : undefined}
+                      {...v.control('name')}
                     />
-                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
-                  </div>
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="prompt-category">Category</Label>
-                    <NativeSelect
+                  </Field>
+                  <Field className="min-w-[12rem] flex-1">
+                    <FieldLabel>Category</FieldLabel>
+                    <FieldControl
                       id="prompt-category"
                       value={category}
                       onChange={(e) => setCategory(e.target.value as PromptCategory)}
-                    >
-                      {PROMPT_CATEGORIES.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
+                      render={
+                        <NativeSelect>
+                          {PROMPT_CATEGORIES.map((c) => (
+                            <option key={c.value} value={c.value}>
+                              {c.label}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
                 </div>
 
                 {!isEdit && (
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="prompt-key">Key</Label>
-                    <Input
+                  <Field {...v.field('key')}>
+                    <FieldLabel required>Key</FieldLabel>
+                    <FieldControl
                       id="prompt-key"
                       value={key}
                       onChange={(e) => {
@@ -266,63 +287,56 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                         setKey(e.target.value);
                       }}
                       placeholder="support-greeting"
-                      color={fieldErrors.key ? 'error' : undefined}
+                      {...v.control('key')}
                     />
-                    {fieldErrors.key ? (
-                      <p className="text-danger text-xs">{fieldErrors.key}</p>
-                    ) : (
-                      <p className="text-base-content/70 text-xs">
-                        A stable, lowercase identifier your flows reference. It can’t change later.
-                      </p>
-                    )}
-                  </div>
+                    <FieldDescription>
+                      A stable, lowercase identifier your flows reference. It can’t change later.
+                    </FieldDescription>
+                  </Field>
                 )}
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="prompt-description">Description (optional)</Label>
-                  <Input
+                <Field>
+                  <FieldLabel>Description (optional)</FieldLabel>
+                  <FieldControl
                     id="prompt-description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="A warm first reply for new support conversations."
                   />
-                </div>
+                </Field>
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="prompt-body">Body</Label>
-                  <Textarea
+                <Field {...v.field('body')}>
+                  <FieldLabel required>Body</FieldLabel>
+                  <FieldControl
                     id="prompt-body"
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
-                    rows={8}
-                    className="font-mono text-[0.8125rem] leading-relaxed"
                     placeholder={
                       'You are a friendly assistant for {{store_name}}. Greet {{customer_name}} and offer help.'
                     }
-                    color={fieldErrors.body ? 'error' : undefined}
+                    {...v.control('body')}
+                    render={
+                      <Textarea rows={8} className="font-mono text-[0.8125rem] leading-relaxed" />
+                    }
                   />
-                  {fieldErrors.body ? (
-                    <p className="text-danger text-xs">{fieldErrors.body}</p>
-                  ) : (
-                    <p className="text-base-content/70 text-xs">
-                      Wrap fill-in values in <code>{'{{double braces}}'}</code> — the consuming flow
-                      substitutes them at call time.
-                    </p>
-                  )}
-                </div>
+                  <FieldDescription>
+                    Wrap fill-in values in <code>{'{{double braces}}'}</code> — the consuming flow
+                    substitutes them at call time.
+                  </FieldDescription>
+                </Field>
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="prompt-model">Model override (optional)</Label>
-                  <Input
+                <Field>
+                  <FieldLabel>Model override (optional)</FieldLabel>
+                  <FieldControl
                     id="prompt-model"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                     placeholder="Inherit the tenant default"
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     Pin a specific model for this prompt, or leave blank to use the tenant default.
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
 
                 <div className="flex flex-row items-center gap-3">
                   <Switch
@@ -351,9 +365,15 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
           </Card>
 
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

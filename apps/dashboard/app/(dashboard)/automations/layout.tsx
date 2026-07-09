@@ -3,7 +3,7 @@
 // trigger-capable module active (the page itself enforces that). It carries its
 // own brand identity, though, so we wrap in a ModuleProvider keyed to the
 // `automations` accent (Fuchsia) — that drives `color="module"` /
-// `variant="module"` and the `var(--module-active*)` tokens the overview reads.
+// `variant="module"` and the `var(--color-module)` token the overview reads.
 
 import { ModuleProvider } from '@sparx/ui';
 

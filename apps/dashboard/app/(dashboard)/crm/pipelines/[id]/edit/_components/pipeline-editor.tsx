@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import {
@@ -120,7 +120,7 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
             </SortableContext>
           </DndContext>
 
-          <div className="mt-4 border-t border-[var(--color-border-default)] pt-4">
+          <div className="border-base-300 mt-4 border-t pt-4">
             <AddStageForm
               pipelineId={pipeline.id}
               nextSortOrder={stages.length}

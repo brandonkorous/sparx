@@ -44,11 +44,13 @@ export function LegalDoc({
           paddingBottom: 'clamp(32px, 5vw, 56px)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Container style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Eyebrow color="var(--color-text-tertiary)">{eyebrow}</Eyebrow>
+          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
+            {eyebrow}
+          </Eyebrow>
           <Display as="h1" size={64} lineHeight={64}>
             {title}
             <Spark />
@@ -57,7 +59,7 @@ export function LegalDoc({
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               display: 'flex',
               gap: '20px',
               flexWrap: 'wrap',
@@ -72,7 +74,7 @@ export function LegalDoc({
                 fontFamily: 'var(--font-sans)',
                 fontSize: '18px',
                 lineHeight: '30px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '640px',
                 margin: 0,
                 paddingTop: '8px',
@@ -89,7 +91,7 @@ export function LegalDoc({
           paddingBottom: 'clamp(80px, 10vw, 140px)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Container>
@@ -126,7 +128,7 @@ export function LegalSection({
           fontSize: '22px',
           lineHeight: '28px',
           letterSpacing: '-0.02em',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >
@@ -145,7 +147,7 @@ export function LegalSubhead({ children }: { children: ReactNode }) {
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '24px',
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-base-content)',
         margin: '8px 0 0',
       }}
     >
@@ -161,7 +163,7 @@ export function LegalP({ children }: { children: ReactNode }) {
         fontFamily: 'var(--font-sans)',
         fontSize: '15px',
         lineHeight: '26px',
-        color: 'var(--color-text-secondary)',
+        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         margin: 0,
       }}
     >
@@ -182,7 +184,7 @@ export function LegalList({ items }: { items: ReactNode[] }) {
         fontFamily: 'var(--font-sans)',
         fontSize: '15px',
         lineHeight: '26px',
-        color: 'var(--color-text-secondary)',
+        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
       }}
     >
       {items.map((item, i) => (

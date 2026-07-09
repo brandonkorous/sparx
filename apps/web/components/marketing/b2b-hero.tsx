@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -50,7 +50,7 @@ export function B2bHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '580px',
                 margin: '28px 0 0',
               }}
@@ -79,8 +79,8 @@ export function B2bHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -89,7 +89,7 @@ export function B2bHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -118,8 +118,8 @@ function AccountCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -140,7 +140,7 @@ function AccountHeader({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         alignItems: 'center',
         gap: '13px',
         padding: '18px 20px',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       <span
@@ -162,7 +162,13 @@ function AccountHeader({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
           {b2b.account}
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '12px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           B2B account · {b2b.terms}
         </span>
       </span>
@@ -198,7 +204,7 @@ function AccountStats({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        borderBottom: '1px solid var(--color-border-default)',
+        borderBottom: '1px solid var(--color-base-300)',
       }}
     >
       {cells.map(([v, l], i) => (
@@ -206,7 +212,7 @@ function AccountStats({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
           key={l}
           style={{
             padding: '14px 16px',
-            borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+            borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
           }}
         >
           <div
@@ -223,7 +229,7 @@ function AccountStats({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
             style={{
               fontFamily: MONO,
               fontSize: '11px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               marginTop: '2px',
             }}
           >
@@ -245,7 +251,7 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
             fontSize: '10.5px',
             letterSpacing: '0.06em',
             textTransform: 'uppercase',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           credit · {b2b.creditUsed} of {b2b.creditLimit}
@@ -259,7 +265,7 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
           display: 'block',
           height: '7px',
           borderRadius: '9999px',
-          backgroundColor: 'var(--color-bg-subtle)',
+          backgroundColor: 'var(--color-base-200)',
           overflow: 'hidden',
         }}
       >
@@ -280,15 +286,21 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
           gap: '10px',
           marginTop: '4px',
           padding: '12px 14px',
-          backgroundColor: 'var(--color-bg-page)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '10px',
         }}
       >
         <span style={{ fontFamily: MONO, fontSize: '12px', color: M.text, flexShrink: 0 }}>
           {b2b.quote.number}
         </span>
-        <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontFamily: SANS,
+            fontSize: '13px',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          }}
+        >
           {b2b.quote.lines} lines · {b2b.quote.total}
         </span>
         <span

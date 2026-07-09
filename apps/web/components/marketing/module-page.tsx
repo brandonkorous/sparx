@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, moduleTint, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
 
@@ -37,7 +37,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -61,7 +61,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
               fontWeight: 400,
               fontSize: 'clamp(16px, 1.6vw, 20px)',
               lineHeight: 1.55,
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '640px',
               margin: 0,
             }}
@@ -90,7 +90,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {meta.marketingDomain ? `${meta.marketingDomain} · ` : ''}
@@ -122,8 +122,8 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '32px',
-                backgroundColor: i === 0 ? moduleTint(color.color) : 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: i === 0 ? moduleTint(color.color) : 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '8px',
                 gap: '14px',
               }}
@@ -152,7 +152,7 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {f.number}
@@ -165,7 +165,7 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
                   fontSize: '20px',
                   letterSpacing: '-0.02em',
                   lineHeight: '26px',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                   paddingTop: '8px',
                   margin: 0,
                 }}
@@ -177,7 +177,7 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
                   lineHeight: '22px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   margin: 0,
                 }}
               >
@@ -201,7 +201,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(color.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',
         }}
@@ -215,7 +215,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
                   fontWeight: 500,
                   fontSize: '40px',
                   letterSpacing: '-0.02em',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {meta.pricing.modifier}
@@ -227,7 +227,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {meta.pricing.price}
@@ -236,7 +236,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '16px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {meta.pricing.period}
@@ -247,7 +247,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
               fontFamily: 'var(--font-sans)',
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

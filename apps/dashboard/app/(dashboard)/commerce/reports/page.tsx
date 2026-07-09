@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { BarChart3 } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -301,8 +301,8 @@ function FilterLink({
       href={`/commerce/reports?range=${value}`}
       className={
         isActive
-          ? 'rounded bg-[var(--module-active)] px-3 py-1 text-xs text-white'
-          : 'rounded border border-[var(--color-border-default)] px-3 py-1 text-xs hover:bg-[var(--color-bg-subtle)]'
+          ? 'bg-module rounded px-3 py-1 text-xs text-white'
+          : 'border-base-300 hover:bg-base-200 rounded border px-3 py-1 text-xs'
       }
     >
       {label}

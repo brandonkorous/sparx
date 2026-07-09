@@ -24,35 +24,29 @@ export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
   ({ className, label, value, delta, icon, hint, chart, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-lg bg-[var(--color-bg-subtle)] p-4', className)}
+      className={cn('rounded-lg bg-[var(--color-base-200)] p-4', className)}
       {...props}
     >
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase">
-          {label}
-        </p>
-        {icon && (
-          <div className="rounded-md bg-[var(--module-active-tint)] p-1.5 text-[var(--module-active)]">
-            {icon}
-          </div>
-        )}
+        <p className="text-base-content/50 text-xs font-medium tracking-wider uppercase">{label}</p>
+        {icon && <div className="bg-module bg-soft text-module rounded-md p-1.5">{icon}</div>}
       </div>
-      <p className="text-2xl font-medium text-[var(--color-text-primary)]">{value}</p>
+      <p className="text-base-content text-2xl font-medium">{value}</p>
       <div className="mt-1 flex items-end justify-between gap-2">
         <div className="min-w-0">
           {delta && (
             <p
               className={cn(
                 'text-xs font-medium',
-                delta.trend === 'up' && 'text-[var(--color-success-text)]',
-                delta.trend === 'down' && 'text-[var(--color-danger-text)]',
-                delta.trend === 'neutral' && 'text-[var(--color-text-tertiary)]'
+                delta.trend === 'up' && 'text-success',
+                delta.trend === 'down' && 'text-danger',
+                delta.trend === 'neutral' && 'text-base-content/50'
               )}
             >
               {delta.value}
             </p>
           )}
-          {hint && !delta && <p className="text-xs text-[var(--color-text-tertiary)]">{hint}</p>}
+          {hint && !delta && <p className="text-base-content/50 text-xs">{hint}</p>}
         </div>
         {chart && <div className="h-8 w-24 shrink-0">{chart}</div>}
       </div>

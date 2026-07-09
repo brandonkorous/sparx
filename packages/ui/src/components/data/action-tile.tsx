@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Slot, Slottable } from '@radix-ui/react-slot';
 import { cn } from '../../utils/cn';
-import { colorClass, type ColorKey } from '../_recipes/variants';
+import { type ColorKey } from '../_recipes/variants';
 
 // ActionTile + ActionQueue — the cross-module "Needs attention" / "Needs you
 // today" triage block (the first thing a working owner scans on a module
 // overview). A tile = a tinted icon square + a big count + a label, the whole
-// surface clickable. `tone` drives the icon square's color via the shared
-// role-var recipe, so warning/danger/success read semantically while the
-// default `module` tints to the active ModuleProvider color.
+// surface clickable. `tone` drives the icon square's color via silicaui's
+// universal `bg-<color> bg-soft` treatment, so warning/danger/success read
+// semantically while the default `module` tints to the active ModuleProvider.
 
 function ChevronRight(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -44,7 +44,7 @@ export interface ActionTileProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const TILE_CLASS =
-  'group relative flex items-center gap-3 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 text-left transition-colors hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2';
+  'group relative flex items-center gap-3 rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)] p-4 text-left transition-colors hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2';
 
 export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
   (
@@ -57,8 +57,8 @@ export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
       <span
         key="icon"
         className={cn(
-          colorClass(tone),
-          'flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--c-tint,var(--color-bg-subtle))] text-[var(--c-ink,var(--color-text-primary))]'
+          `bg-${tone} bg-soft text-${tone}`,
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-md'
         )}
       >
         {icon}
@@ -66,18 +66,14 @@ export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
     );
     const text = (
       <span key="text" className="min-w-0">
-        <span className="block text-2xl leading-none font-medium text-[var(--color-text-primary)]">
-          {count}
-        </span>
-        <span className="mt-1 block truncate text-sm text-[var(--color-text-secondary)]">
-          {label}
-        </span>
+        <span className="text-base-content block text-2xl leading-none font-medium">{count}</span>
+        <span className="text-base-content/70 mt-1 block truncate text-sm">{label}</span>
       </span>
     );
     const chevron = (
       <ChevronRight
         key="chevron"
-        className="ml-auto h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-colors group-hover:text-[var(--module-active)]"
+        className="text-base-content/50 group-hover:text-module ml-auto h-4 w-4 shrink-0 transition-colors"
       />
     );
 
@@ -125,11 +121,11 @@ export const ActionQueue = React.forwardRef<HTMLElement, ActionQueueProps>(
     <section ref={ref} className={className} {...props}>
       {(title != null || meta != null) && (
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-[0.9375rem] font-medium text-[var(--color-text-primary)]">
-            {icon && <span className="text-[var(--module-active)]">{icon}</span>}
+          <h2 className="text-base-content flex items-center gap-2 text-[0.9375rem] font-medium">
+            {icon && <span className="text-module">{icon}</span>}
             {title}
           </h2>
-          {meta && <span className="text-xs text-[var(--color-text-tertiary)]">{meta}</span>}
+          {meta && <span className="text-base-content/50 text-xs">{meta}</span>}
         </div>
       )}
       <div className={cn('grid gap-3', COLUMN_CLASS[columns])}>{children}</div>

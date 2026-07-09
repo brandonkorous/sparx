@@ -15,12 +15,14 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { BookingPolicy, DepositType, FeeType } from '../../_lib/types';
 import { createBookingPolicyAction, updateBookingPolicyAction } from '../../_lib/actions';
@@ -88,6 +90,8 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
 
   const showDepositAmount = depositType === 'deposit' || depositType === 'card_hold';
 
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
+
   const snapshot = () =>
     JSON.stringify({
       name,
@@ -142,10 +146,7 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
   }
 
   async function submit() {
-    if (!name.trim()) {
-      toast.error('Name is required');
-      return;
-    }
+    if (!v.validate()) return;
     setSaving(true);
     const late = formToFee(lateMode, lateValue);
     const noShow = formToFee(noShowMode, noShowValue);
@@ -199,21 +200,20 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
         <CardBody className="py-6">
           <CardTitle>Policy terms</CardTitle>
           <div className="flex flex-col gap-4">
-            <div>
-              <Label htmlFor="pol-name">Name</Label>
-              <Input
-                id="pol-name"
+            <Field {...v.field('name')}>
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
+                name="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Standard, Premium (deposit required)"
-                required
+                {...v.control('name')}
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="pol-deposit">Deposit</Label>
+            <Field>
+              <FieldLabel>Deposit</FieldLabel>
               <NativeSelect
-                id="pol-deposit"
                 value={depositType}
                 onChange={(e) => setDepositType(e.target.value as DepositType)}
               >
@@ -223,45 +223,42 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
                   </option>
                 ))}
               </NativeSelect>
-            </div>
+            </Field>
 
             {showDepositAmount ? (
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="pol-dep-amt">Deposit amount ($)</Label>
-                  <Input
-                    id="pol-dep-amt"
+                <Field>
+                  <FieldLabel>Deposit amount ($)</FieldLabel>
+                  <FieldControl
                     type="number"
                     min={0}
                     step="0.01"
                     value={depositDollars}
                     onChange={(e) => setDepositDollars(Number(e.target.value) || 0)}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="pol-dep-pct">…or percent of price (%)</Label>
-                  <Input
-                    id="pol-dep-pct"
+                </Field>
+                <Field>
+                  <FieldLabel>…or percent of price (%)</FieldLabel>
+                  <FieldControl
                     type="number"
                     min={0}
                     max={100}
                     value={depositPercent}
                     onChange={(e) => setDepositPercent(Number(e.target.value) || 0)}
                   />
-                </div>
+                </Field>
               </div>
             ) : null}
 
-            <div>
-              <Label htmlFor="pol-window">Cancellation notice window (hours)</Label>
-              <Input
-                id="pol-window"
+            <Field>
+              <FieldLabel>Cancellation notice window (hours)</FieldLabel>
+              <FieldControl
                 type="number"
                 min={0}
                 value={cancelWindow}
                 onChange={(e) => setCancelWindow(Math.max(0, Number(e.target.value) || 0))}
               />
-            </div>
+            </Field>
 
             <FeeField
               label="Late-cancel fee"
@@ -278,28 +275,28 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
               onValue={setNoShowValue}
             />
 
-            <div>
-              <Label htmlFor="pol-reminders">
-                Reminder offsets (minutes before, comma-separated)
-              </Label>
-              <Input
-                id="pol-reminders"
+            <Field>
+              <FieldLabel>Reminder offsets (minutes before, comma-separated)</FieldLabel>
+              <FieldControl
                 value={reminders}
                 onChange={(e) => setReminders(e.target.value)}
                 placeholder="1440, 120"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="pol-text">Policy text (shown + accepted at booking)</Label>
-              <Textarea
-                id="pol-text"
+            <Field>
+              <FieldLabel>Policy text (shown + accepted at booking)</FieldLabel>
+              <FieldControl
                 value={policyText}
                 onChange={(e) => setPolicyText(e.target.value)}
-                rows={2}
-                placeholder="Please give at least 24 hours notice to cancel or reschedule."
+                render={
+                  <Textarea
+                    rows={2}
+                    placeholder="Please give at least 24 hours notice to cancel or reschedule."
+                  />
+                }
               />
-            </div>
+            </Field>
           </div>
         </CardBody>
       </Card>
@@ -361,25 +358,25 @@ function FeeField({
 }) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div>
-        <Label>{label}</Label>
+      <Field>
+        <FieldLabel>{label}</FieldLabel>
         <NativeSelect value={mode} onChange={(e) => onMode(e.target.value as FeeMode)}>
           <option value="none">None</option>
           <option value="fixed">Fixed ($)</option>
           <option value="percent">Percent of price (%)</option>
         </NativeSelect>
-      </div>
+      </Field>
       {mode !== 'none' ? (
-        <div>
-          <Label>{mode === 'fixed' ? 'Amount ($)' : 'Percent (%)'}</Label>
-          <Input
+        <Field>
+          <FieldLabel>{mode === 'fixed' ? 'Amount ($)' : 'Percent (%)'}</FieldLabel>
+          <FieldControl
             type="number"
             min={0}
             step={mode === 'fixed' ? '0.01' : '1'}
             value={value}
             onChange={(e) => onValue(Number(e.target.value) || 0)}
           />
-        </div>
+        </Field>
       ) : null}
     </div>
   );

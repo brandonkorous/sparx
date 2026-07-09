@@ -14,7 +14,18 @@
 
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
-import { Badge, Button, Card, CardBody, Input, Label, Loading, NativeSelect } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Loading,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import { SurfaceStep } from '@sparx/ui';
 
 import {
@@ -174,7 +185,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="flex items-center gap-2 py-8 text-[var(--color-text-muted)]">
+            <div className="text-base-content/60 flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading fitment…
             </div>
           ) : (
@@ -184,7 +195,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                   {rows.map((r) => (
                     <div
                       key={r.id}
-                      className="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border-default)] px-3 py-2"
+                      className="border-base-300 flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
                     >
                       <span className="flex items-center gap-2 text-sm">
                         <Badge variant="soft" size="sm">
@@ -207,12 +218,12 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                 </div>
               )}
 
-              <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
+              <div className="border-base-300 flex flex-col gap-3 rounded-xl border p-4">
                 <p className="text-sm font-medium">Add a fit</p>
 
                 {domains.length > 1 && (
-                  <div>
-                    <Label htmlFor="ft-domain">Kind</Label>
+                  <Field>
+                    <FieldLabel>Kind</FieldLabel>
                     <NativeSelect
                       id="ft-domain"
                       value={domainId}
@@ -224,7 +235,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
+                  </Field>
                 )}
 
                 {domain && (
@@ -243,13 +254,13 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                   <div className="grid gap-3 sm:grid-cols-2">
                     {ranges.map((dim) => (
                       <div key={dim.key} className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label htmlFor={`ft-${dim.key}-min`}>
+                        <Field>
+                          <FieldLabel>
                             {dim.label} from{dim.unit ? ` (${dim.unit})` : ''}
-                          </Label>
-                          <Input
+                          </FieldLabel>
+                          <FieldControl
                             id={`ft-${dim.key}-min`}
-                            inputMode="numeric"
+                            type="number"
                             value={rangeInputs[dim.key]?.min ?? ''}
                             onChange={(e) =>
                               setRangeInputs((prev) => ({
@@ -258,12 +269,12 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                               }))
                             }
                           />
-                        </div>
-                        <div>
-                          <Label htmlFor={`ft-${dim.key}-max`}>{dim.label} to</Label>
-                          <Input
+                        </Field>
+                        <Field>
+                          <FieldLabel>{dim.label} to</FieldLabel>
+                          <FieldControl
                             id={`ft-${dim.key}-max`}
-                            inputMode="numeric"
+                            type="number"
                             value={rangeInputs[dim.key]?.max ?? ''}
                             onChange={(e) =>
                               setRangeInputs((prev) => ({
@@ -272,7 +283,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
                               }))
                             }
                           />
-                        </div>
+                        </Field>
                       </div>
                     ))}
                   </div>
@@ -294,9 +305,9 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
               </div>
 
               {error && (
-                <p className="text-danger text-sm" role="alert">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
           )}

@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, MapPin, Package, Store } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { ProductCard } from '@/components/product-card';
 import { Stars } from '@/components/stars';

@@ -4,7 +4,7 @@
 
 import { Bell } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { PushToggle } from './_components/push-toggle';
 

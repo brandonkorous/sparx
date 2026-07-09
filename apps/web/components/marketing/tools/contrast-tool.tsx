@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Check, X, ArrowLeftRight } from 'lucide-react';
-import { Button, ColorPicker, Badge } from '@sparx/ui';
+import { ColorPicker } from '@sparx/ui';
+import { Button, Badge } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 import { contrastRatio, rateContrast } from './lib/color';
 
@@ -16,14 +17,14 @@ function Verdict({ label, pass }: { label: string; pass: boolean }) {
         gap: '12px',
         padding: '12px 14px',
         borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
       }}
     >
       <span
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {label}
@@ -81,7 +82,7 @@ export function ContrastTool() {
               padding: '28px',
               borderRadius: 'var(--radius-lg)',
               backgroundColor: bg,
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
             }}
           >
             <span style={{ fontFamily: 'var(--font-sans)', fontSize: '16px', color: fg }}>
@@ -110,7 +111,7 @@ export function ContrastTool() {
                 fontWeight: 600,
                 fontSize: '44px',
                 letterSpacing: '-0.03em',
-                color: 'var(--module-active)',
+                color: 'var(--color-module)',
               }}
             >
               {ratio.toFixed(2)}
@@ -119,7 +120,7 @@ export function ContrastTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '20px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               : 1
@@ -136,7 +137,7 @@ export function ContrastTool() {
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
               lineHeight: '20px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { History } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { Card, EmptyState } from 'silicaui-react';
+import { Card, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -41,7 +41,7 @@ export default async function AutomationRunsPage({ params }: PageProps) {
           description={
             <Link
               href={`/automations/${automation.id}`}
-              className="text-sm text-[var(--module-active)] hover:underline"
+              className="text-module text-sm hover:underline"
             >
               ← Back to automation
             </Link>
@@ -62,7 +62,7 @@ export default async function AutomationRunsPage({ params }: PageProps) {
               <Link
                 key={run.id}
                 href={`/automations/${automation.id}/runs/${run.id}`}
-                className="block rounded-md border border-[var(--color-border-default)] px-4 py-3 hover:bg-[var(--color-bg-subtle)]"
+                className="border-base-300 hover:bg-base-200 block rounded-md border px-4 py-3"
               >
                 <div className="flex flex-row flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-row items-center gap-3">

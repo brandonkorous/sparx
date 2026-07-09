@@ -14,7 +14,7 @@ import {
   type SelectionCard,
   type SelectionColumn,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import type { B2bAccountRow } from '../page';
 import {
@@ -98,7 +98,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   const columns: SelectionColumn<B2bAccountRow>[] = [
     {
       header: 'Company',
-      cell: (a) => companyLink(a, 'font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (a) => companyLink(a, 'font-medium hover:text-module hover:underline'),
     },
     { header: 'Status', cell: statusBadge },
     { header: 'Pricing tier', cell: tierCell },
@@ -120,8 +120,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   ];
 
   const card: SelectionCard<B2bAccountRow> = {
-    title: (a) =>
-      companyLink(a, 'truncate font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (a) => companyLink(a, 'truncate font-medium hover:text-module hover:underline'),
     subtitle: (a) =>
       a.pricingTierName ? (
         <Badge color="module" variant="soft" size="sm" className="self-start">

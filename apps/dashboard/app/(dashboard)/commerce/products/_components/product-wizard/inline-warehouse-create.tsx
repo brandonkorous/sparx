@@ -10,7 +10,15 @@
 
 import * as React from 'react';
 import { Plus } from 'lucide-react';
-import { Button, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createWarehouseAction } from '../../../../inventory/_lib/inventory-actions';
 
@@ -33,6 +41,21 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
   const [postalCode, setPostalCode] = React.useState('');
   const [country, setCountry] = React.useState('US');
 
+  const v = useFieldValidation(
+    { name, code, line1, city, region, postalCode, country },
+    {
+      name: rule.required('Enter a name.'),
+      code: rule.required('Enter a code.'),
+      line1: rule.required('Enter an address.'),
+      city: rule.required('Enter a city.'),
+      country: (val) => {
+        const s = String(val ?? '').trim();
+        if (s.length !== 2) return 'Use a 2-letter country code.';
+        return null;
+      },
+    }
+  );
+
   const canSubmit =
     name.trim().length > 0 &&
     code.trim().length > 0 &&
@@ -43,6 +66,10 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
   async function submit() {
     setSubmitting(true);
     setError(null);
+    if (!v.validate()) {
+      setSubmitting(false);
+      return;
+    }
     try {
       const res = await createWarehouseAction({
         name: name.trim(),
@@ -90,74 +117,82 @@ export function InlineWarehouseCreate({ onCreated }: InlineWarehouseCreateProps)
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-[var(--color-border-default)] p-4">
+    <div className="border-base-300 flex flex-col gap-3 rounded-xl border p-4">
       <p className="text-sm font-medium">New warehouse</p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="iw-name">Name</Label>
-          <Input
+        <Field {...v.field('name')}>
+          <FieldLabel required>Name</FieldLabel>
+          <FieldControl
             id="iw-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Main warehouse"
+            {...v.control('name')}
           />
-        </div>
-        <div>
-          <Label htmlFor="iw-code">Code (SKU prefix)</Label>
-          <Input
+        </Field>
+        <Field {...v.field('code')}>
+          <FieldLabel required>Code (SKU prefix)</FieldLabel>
+          <FieldControl
             id="iw-code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="MAIN"
+            {...v.control('code')}
           />
-        </div>
+        </Field>
       </div>
-      <div>
-        <Label htmlFor="iw-line1">Address line 1</Label>
-        <Input
+      <Field {...v.field('line1')}>
+        <FieldLabel required>Address line 1</FieldLabel>
+        <FieldControl
           id="iw-line1"
           value={line1}
           onChange={(e) => setLine1(e.target.value)}
           placeholder="123 Market St"
+          {...v.control('line1')}
         />
-      </div>
+      </Field>
       <div className="grid gap-3 sm:grid-cols-4">
-        <div className="sm:col-span-2">
-          <Label htmlFor="iw-city">City</Label>
-          <Input id="iw-city" value={city} onChange={(e) => setCity(e.target.value)} />
-        </div>
-        <div>
-          <Label htmlFor="iw-region">Region</Label>
-          <Input
+        <Field {...v.field('city')} className="sm:col-span-2">
+          <FieldLabel required>City</FieldLabel>
+          <FieldControl
+            id="iw-city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            {...v.control('city')}
+          />
+        </Field>
+        <Field>
+          <FieldLabel>Region</FieldLabel>
+          <FieldControl
             id="iw-region"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
             placeholder="CA"
           />
-        </div>
-        <div>
-          <Label htmlFor="iw-postal">Postal</Label>
-          <Input
+        </Field>
+        <Field>
+          <FieldLabel>Postal</FieldLabel>
+          <FieldControl
             id="iw-postal"
             value={postalCode}
             onChange={(e) => setPostalCode(e.target.value)}
           />
-        </div>
+        </Field>
       </div>
-      <div className="sm:w-32">
-        <Label htmlFor="iw-country">Country</Label>
+      <Field className="sm:w-32">
+        <FieldLabel>Country</FieldLabel>
         <NativeSelect id="iw-country" value={country} onChange={(e) => setCountry(e.target.value)}>
           <option value="US">United States</option>
           <option value="CA">Canada</option>
           <option value="GB">United Kingdom</option>
           <option value="AU">Australia</option>
         </NativeSelect>
-      </div>
+      </Field>
 
       {error && (
-        <p className="text-danger text-sm" role="alert">
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {error}
-        </p>
+        </FieldStatus>
       )}
 
       <div className="flex justify-end gap-2">

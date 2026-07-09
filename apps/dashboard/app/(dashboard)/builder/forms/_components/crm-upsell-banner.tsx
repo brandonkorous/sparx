@@ -50,11 +50,11 @@ export function CrmUpsellBanner({ canActivate }: { canActivate: boolean }) {
 
   return (
     <ModuleProvider module="crm">
-      <div className="relative rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
+      <div className="border-base-300 bg-base-100 relative rounded-lg border p-4">
         <Stack direction="row" align="start" gap={3}>
           <span
             aria-hidden
-            className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--module-active)_14%,transparent)] text-[var(--module-active)]"
+            className="bg-module bg-soft text-module mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
           >
             <Sparkles className="h-4 w-4" />
           </span>
@@ -86,7 +86,7 @@ export function CrmUpsellBanner({ canActivate }: { canActivate: boolean }) {
             type="button"
             aria-label="Dismiss"
             onClick={dismiss}
-            className="absolute top-2 right-2 rounded-md p-1 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+            className="text-base-content/50 hover:text-base-content absolute top-2 right-2 rounded-md p-1"
           >
             <X className="h-4 w-4" />
           </button>

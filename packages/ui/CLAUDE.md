@@ -1,48 +1,60 @@
-# packages/ui — @sparx/ui design system
+# packages/ui — @sparx/ui composition library
 
-Scoped guidance for the platform component library. Loads when working in `@sparx/ui`. See root [CLAUDE.md](../../CLAUDE.md) "Brand & design" for the binding rules that apply everywhere; this file is the build mechanics. Sibling: `@sparx/site-ui` (tenant-themed `--st-*` storefront components).
+Scoped guidance for the platform component library. Loads when working in `@sparx/ui`. See root [CLAUDE.md](../../CLAUDE.md) "Brand & design" for the binding rules that apply everywhere; this file is the build mechanics. Sibling: `@sparx/site-ui` (tenant-themed `--st-*` site components).
 
-## CVA + token mechanics
+## What `@sparx/ui` is now (post-silicaui migration)
 
-- Components are built with the **CVA pattern** ([docs/23](../../docs/23-frontend-component-architecture.md) §6) on top of Shadcn/ui shells and Radix primitives.
-- Every variant references a CSS custom property from [tokens.css](./src/tokens.css) — **never** a hardcoded color.
-- Module color shifting is automatic via `<ModuleProvider module="…">`. Any component referencing `--module-active` adopts the wrapping module's color — no props, no conditional classes.
+The dashboard design system runs on **silicaui** (`@wizeworks/silicaui*`). The old hand-rolled styling layer (the `.sx-c-*` role-var recipe + the `--sparx-*` / `--color-bg-*` / `--color-surface-*` tokens) is **gone**.
+
+- **Styled primitives come from `@wizeworks/silicaui-react`.** Feature code in `apps/*` imports `Button`/`Badge`/`Card`/`Input`/`Select`/`Table`/`Tabs`/`Dialog`/`Alert`/… directly from there. The `@wizeworks/silicaui` Tailwind plugin (wired in each app's `globals.css` via `@plugin '@wizeworks/silicaui' { colors: … }`) statically emits every color + component utility (`.btn-*`, `.badge-*`, `.alert-*`, `bg-primary`, `text-base-content/70`, `bg-soft`, `status-*`, `checkbox-*`, …).
+- **`@sparx/ui` survives ONLY as the home of the ~25 sparx compositions** — `ModuleProvider`, `SurfaceFrame`/`SurfaceStep`/`SurfaceSummary`, the shell (`SidebarAppShell`/`BrandRail`), `ListToolbar`/`FilterBar`/`BulkActionBar`/`SelectionList`, `ConfirmProvider`, `Wordmark`, `toast`/`Toaster`, `PageHeader`, `Stat`, the chart wrappers, `ActionTile`, `statusTone`/`statusLabel`, `cn` — all rebuilt on silicaui primitives + silica tokens. A handful of primitives (Button/Badge/Alert/Checkbox/Radio/Switch/Slider/Progress/StatusDot/Tag/Card/ActionTile) stayed in `@sparx/ui` for API-stability reasons but were **rewritten to emit silicaui classes** with zero call-site churn.
+- **Color source of truth is `@sparx/brand/theme.css`** — `--color-base-100/200/300`, `--color-base-content`, the semantic palette (`--color-primary/secondary/accent/neutral/info/success/warning/error/danger` + each `-content`), and the 18-module palette `--color-module-<name>` (+ `-content`). `packages/ui/src/tokens.css` now holds **only non-color tokens** (type / space / radius / shadow / motion) + the `--chart-*` palette + a little component CSS.
+
+## Emitting silica classes from a kept primitive
+
+The rewritten primitives map the sparx four-axis props onto silica classes rather than building CSS:
+
+- **Plugin-color controls** (Button/Badge/Alert/Tag/StatusDot/Progress): `<Button color variant size>` → `btn btn-<color> btn-<variant> btn-<size>`. Variant vocabulary: `solid` (bare), `soft` (`btn-soft`), `outline` (`btn-outline`), **`dashed` → `btn-dash`** (silica spells it `dash`), `ghost` (`btn-ghost`), `link` (`btn-link`). `buttonClasses({ color, variant, size })` is the exported helper (replaced the old `buttonVariants`).
+- **Radix-based controls** (Checkbox/Radio/Switch/Slider) can't take a plugin color class, so they set a **per-instance `--sx-sel` / `--sx-sel-fg`** custom property from the `colorVars(color)` helper and consume it via `data-[state=checked]:bg-[var(--sx-sel)]`-style classes. `colorVars('commerce')` → `{ sel: 'var(--color-module-commerce)', selFg: 'var(--color-module-content)' }` for module colors, `{ sel: 'var(--color-<c>)', selFg: 'var(--color-<c>-content)' }` for semantic.
+- `_recipes/variants.ts` is now pure vocabulary — `COLOR_KEYS`, `MODULE_COLOR_KEYS`, `TREATMENT_KEYS`, the `ColorKey` type, and `colorVars()`. The old `colorClass` / `treatmentVariants` / `chipTreatmentVariants` are deleted.
+
+### The `cn()` tailwind-merge footgun
+
+`@sparx/ui`'s `cn` uses `extendTailwindMerge` to register `soft` / `bg-soft` / `text-soft` / `border-soft` as their own class groups. Default tailwind-merge classifies them as color utilities and would **strip the preceding `bg-<color>`** from `bg-module bg-soft`, silently dropping the hue. Never swap `cn` back to a bare `twMerge`.
+
+## Tints = the universal `soft` treatment (never a baked value)
+
+A tint is ALWAYS `<color> + soft`, never a hardcoded color. silicaui's `bg-soft` paints `color-mix(in oklab, <current accent> 15%, base)` — theme-aware, computed once, can't drift. Layer it on any color: `bg-module bg-soft`, `bg-success bg-soft`. There are **no baked `-tint` / `-text` tokens** anymore.
+
+## Module color shifting
+
+`<ModuleProvider module="…">` sets **`--color-module` + `--color-module-content`** on its subtree (to the module's hue from `@sparx/brand/theme.css`) — nothing else. Everything beneath re-tints with no props: `color="module"`, `bg-module bg-soft`, `text-module`, `hover:border-module`. Brand provides a `:root` default `--color-module: var(--color-primary)` so those degrade to indigo outside any provider. Per-module hues are **not** registered as named silica colors (only `module` + `danger` are the sparx extras in the plugin `colors` list, by design) — to color for a specific module you wrap in its provider, you don't reach for a `bg-module-<name>` class.
 
 ## Surface elevation model
 
-Depth is a **4-level elevation stack**, back (deepest) to front. Each level's rounded corners reveal **exactly one level beneath it** (the "corner-wrap cascade"), so stacking reads as physical depth instead of flat bands:
-
-1. **`--color-surface-300`** — the page base / ground (deepest).
-2. **`--color-surface-200`** — the stage, lifted off the ground.
-3. **Content layer** — peers at the same elevation, differing only in _hue_: `--color-surface-100` (neutral), `--color-surface-opposite` (the high-contrast, theme-aware inverse panel), module colors, and semantic colors. A neutral card, a module-tinted card, a dark cinematic panel, and a semantic callout all live here.
-4. **Media** — video and full-bleed imagery, the forward-most layer, sitting _on_ a content surface (the marketing video fills a `primary` content surface; its rounded corners reveal that purple).
+Depth is a **3-level base ramp** plus content: `--color-base-200` (page ground) → `--color-base-100` (the lifted reading surface / cards) → content (module-tinted card, semantic callout, `--color-neutral` inverse panel), with media forward-most. The corner-wrap cascade still applies — each level's rounded corners reveal exactly one level beneath, so stacking reads as physical depth.
 
 Rules:
 
-- **Elevation ≠ intensity.** Inside the content layer, color runs neutral (`100`) → soft tint (module/semantic) → full solid (the hero's primary). That saturation axis is **orthogonal** to elevation — never read "more saturated" as "higher up."
-- **Levels are optional.** Because the cascade only reveals one step down, a region can go content-on-`200`-on-`300` for full depth, or content straight on `300` for a flat beat. `200` (and standalone `300`) sections appear _where the composition needs the depth_, not everywhere.
-- **Color carries the depth**; reach for a hairline or soft shadow only where a step is too subtle to read (e.g. `100` on `200`).
-- Light values get **darker with depth** (`100 #fbfbfd` is the easiest reading surface, down to `300`); dark theme inverts (deeper = darker, content lifts lighter). `surface-100` is always the topmost reading surface in both themes.
+- **Elevation ≠ intensity.** Inside the content layer, color runs neutral → soft tint (`bg-<color> bg-soft`) → full solid. That saturation axis is **orthogonal** to elevation.
+- **Color carries the depth**; reach for a hairline (`border-base-300`) or soft shadow only where a step is too subtle to read.
+- Light values get **darker with depth**; dark theme inverts. `--color-base-100` is always the topmost reading surface in both themes.
+- The high-contrast inverse accent panel is `--color-neutral` (theme-aware; flips light↔dark).
 
-This **supersedes the loose neutrals** (`--color-bg-page / -surface / -elevated / -subtle / -muted`) — new work uses the surface scale; those map onto `300/200/100` as we migrate. The marketing site applies the model via `.mkt-paneled` (see [apps/web/app/marketing.css](../../apps/web/app/marketing.css)).
+## Four-axis variant system (color × variant × size × shape)
 
-## Four-axis variant system (color × variant × size)
-
-Every color-bearing component uses **four-axis** `color × variant × size` via a **shared role-var recipe** (`.sx-c-*` in `@sparx/ui`, `.st-c-*` in `@sparx/site-ui`) — never a flat enum. This is not just `<Button>`; it's the rule for elements in general (Badge, etc.). See [docs/35](../../docs/35-ui-variant-system.md).
-
-- `primary` / `success` are **colors** (`color=`), not variants.
-- Variants are `solid | soft | outline | dashed | ghost | link`.
+Every color-bearing component is **four orthogonal axes** — never a flat enum. `primary` / `success` are **colors** (`color=`), not variants; variants are `solid | soft | outline | dashed | ghost | link`. `<Badge color="commerce" variant="soft">` is legal precisely because the axes are independent. Resolution is now silicaui's plugin-emitted classes (see "Emitting silica classes" above), not the old `.sx-c-*` role vars. See [docs/35](../../docs/35-ui-variant-system.md).
 
 ## Non-obvious house decisions
 
-- Radix wrappers are **hand-authored** (not `npx shadcn add` verbatim).
+- Sparx primitive APIs are unchanged across the migration — this is a mechanism swap, not an API break. `asChild` → Base UI's `render={<a … />}` in the silica primitives.
 - `'use client'` is applied **selectively**, only where interactivity needs it.
 - `declaration: false` in tsconfig — no `.d.ts` emit; consumers read source types via project references.
-- The ESLint rule flags the **fill + foreground fingerprint** (a background fill paired with a foreground text color, or hand-built `hover:`/`focus:`/`disabled:` states) — that's re-skinning a control. It does **not** flag raw layout/spacing utilities.
-- **`<Card variant="module">` tints its whole background with the active module's subtle tint — there is no top stripe anymore.** The background is `color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`, reading `--module-active` **DIRECTLY** (not the shared, inheriting `--c-bg`/`--c-tint` role vars — an ancestor's `.sx-c-*` recipe would otherwise leak its color into a nested card and override the active module, the historical bug). Mixing into `--color-bg-surface` (not a fixed light hex) keeps it a clean tinted-white card in light mode and a tinted-dark card in dark mode. So: **to color a card, wrap the panel in its `<ModuleProvider module="…">`** — the tint follows automatically (this also colors the panel's buttons/badges). The `accent` prop (`<Card accent="inventory">`) is an **escape hatch** for a one-off color with no surrounding provider — it sets `--c-bg`, so the bg becomes `color-mix(… var(--c-bg) …)`. Don't reach for `accent` when a provider already wraps the panel.
-- **On a dense cross-module page, tint ONE card per module hue — the section's "primary" card — and leave the rest plain.** A whole page of tinted cards is competing washes; one tinted card per module turns the tint into wayfinding (e.g. `/commerce`: orange Revenue, cyan Top customers via a nested CRM provider, amber Inventory — every other card plain). `OverviewCard` exposes a `plain` prop that drops the non-primary cards to a neutral `variant="default"` surface.
-- **Single-module working surfaces use neutral `variant="default"` cards — NOT the module tint.** Create/edit forms, wizard steps, and editable detail panels are one module by definition, so the tint differentiates nothing there (it's decoration, not wayfinding); identity comes from the frame chrome, the `color="module"` Save button, and the faint module-tinted `SurfaceFrame` summary rail (the rail uses the same 12% as a module card so the lone cue reads consistently). The tint is reserved for cross-module overview/dashboard surfaces. **Exception:** a read-only detail/transaction view (order, quote, invoice, b2b account) may keep ONE tinted KPI/accent card as its lone module cue — that's the "one primary tinted card" discipline, not an editable form.
-- **`--module-active-tint` / `--module-active-text` are theme-aware.** `ModuleProvider` emits the hand-picked LIGHT values (`*-light`) plus a derived DARK variant (`*-dark`, mixed into `--color-bg-surface` / lifted toward `--color-text-primary`), and `tokens.css` selects between them by theme via `[data-module]` / `[data-theme='dark'] [data-module]`. Never use a per-module light hex (or any fixed light color) as a raw background/text — it won't adapt to dark mode (the bug that broke the nav active state, order numbers, and stat chips). Consume the resolved token.
+- The ESLint rule flags the **fill + foreground fingerprint** (a background fill paired with a foreground text color, or hand-built `hover:`/`focus:`/`disabled:` states) — that's re-skinning a control. It does **not** flag raw layout/spacing utilities. Fix: use the `@wizeworks/silicaui-react` primitive / its variant; add to `@sparx/ui` only for a genuine composition.
+- **`<Card variant="module">` = `bg-module bg-soft` inside a `<ModuleProvider>`** — its whole background is the active module's theme-aware soft tint (silica `bg-soft`, ~15% `color-mix` into `--color-base-100`), text/border untouched. There is no top stripe. To color a card, wrap the panel in its `<ModuleProvider module="…">` — the tint follows automatically (and colors the panel's buttons/badges too). The `accent` prop is the **escape hatch** for a one-off color with no surrounding provider (it sets `--sx-sel`).
+- **On a dense cross-module page, tint ONE card per module hue** — the section's "primary" card — and leave the rest plain. A whole page of tinted cards is competing washes, not wayfinding. `OverviewCard` exposes a `plain` prop for the neutral opt-out.
+- **Single-module working surfaces use neutral cards — NOT the module tint.** Create/edit forms, wizard steps, and editable detail panels are one module by definition, so the tint differentiates nothing there; identity comes from the frame chrome, the `color="module"` Save button, and the faint module-tinted `SurfaceFrame` summary rail. **Exception:** a read-only detail/transaction view (order, quote, invoice, b2b account) may keep ONE tinted KPI/accent card as its lone module cue.
+- **Tints are theme-aware because `bg-soft` computes them at render** — never hand-pick a per-module light hex as a raw background/text (it won't adapt to dark mode, the historical bug that broke nav active states and stat chips). Use `bg-module bg-soft` / `text-module`.
 
 ## The wordmark
 

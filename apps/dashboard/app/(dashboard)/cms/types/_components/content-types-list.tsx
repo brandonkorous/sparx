@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -34,7 +34,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
     <div className="flex flex-col gap-1">
       <Link
         href={`/cms/content?type=${t.key}`}
-        className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm font-medium hover:underline"
       >
         {t.plural_name}
       </Link>
@@ -65,10 +65,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
     );
 
   const itemsLink = (t: ContentType) => (
-    <Link
-      href={`/cms/content?type=${t.key}`}
-      className="hover:text-[var(--module-active)] hover:underline"
-    >
+    <Link href={`/cms/content?type=${t.key}`} className="hover:text-module hover:underline">
       {counts[t.key] ?? 0}
     </Link>
   );
@@ -78,7 +75,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
       href={`/cms/types/${t.key}`}
       entityType="content-type"
       entityId={t.key}
-      className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+      className="text-base-content/70 hover:text-module text-xs hover:underline"
     >
       {t.is_built_in ? 'View' : 'Edit'}
     </EntityRowLink>
@@ -101,7 +98,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
     title: (t) => (
       <Link
         href={`/cms/content?type=${t.key}`}
-        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module truncate text-sm font-medium hover:underline"
       >
         {t.plural_name}
       </Link>

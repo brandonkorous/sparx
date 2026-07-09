@@ -60,11 +60,11 @@ export const NavigationMenuItem = NavigationMenuPrimitive.Item;
 export const navigationMenuTriggerStyle = cva(
   cn(
     'group inline-flex h-9 w-max items-center justify-center gap-1 rounded-md px-3 py-2',
-    'text-sm font-medium text-[var(--color-text-secondary)] transition-colors',
-    'hover:text-[var(--color-text-primary)] focus:outline-none',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]',
+    'text-base-content/70 text-sm font-medium transition-colors',
+    'hover:text-base-content focus:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
     'disabled:pointer-events-none disabled:opacity-50',
-    'data-[state=open]:text-[var(--color-text-primary)]'
+    'data-[state=open]:text-base-content'
   )
 );
 
@@ -118,7 +118,7 @@ export const NavigationMenuViewport = React.forwardRef<
       ref={ref}
       className={cn(
         'relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-[var(--radix-navigation-menu-viewport-width)] origin-[top_center] overflow-hidden rounded-lg',
-        'border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-lg',
+        'border border-[var(--color-base-300)] bg-[var(--color-base-100)] shadow-lg',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90',
         className
@@ -142,7 +142,7 @@ export const NavigationMenuIndicator = React.forwardRef<
     )}
     {...props}
   >
-    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-[var(--color-border-default)]" />
+    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-[var(--color-base-300)]" />
   </NavigationMenuPrimitive.Indicator>
 ));
 NavigationMenuIndicator.displayName = NavigationMenuPrimitive.Indicator.displayName;

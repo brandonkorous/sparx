@@ -28,11 +28,13 @@ import {
   Card,
   CardBody,
   EmptyState,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -42,6 +44,7 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import { createPurchaseOrderAction } from '../../../_lib/purchase-order-actions';
 import { LineAddRow, type ResolvedLine } from '../../_components/line-add-row';
@@ -102,6 +105,20 @@ function PurchaseOrderWizardInner({
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  const v = useFieldValidation(
+    { shipping },
+    {
+      shipping: (val) => {
+        const s = String(val).trim();
+        if (s === '') return null;
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a shipping amount.';
+        if (n < 0) return 'Shipping cannot be negative.';
+        return null;
+      },
+    }
+  );
+
   const knownSubtotal = lines.reduce(
     (s, l) => s + (l.unitCostCents !== undefined ? l.unitCostCents * l.quantity : 0),
     0
@@ -157,6 +174,7 @@ function PurchaseOrderWizardInner({
       return;
     }
     setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
     try {
       const input = {
@@ -260,45 +278,48 @@ function PurchaseOrderWizardInner({
               </p>
               <div className="flex flex-col gap-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="po-supplier">Supplier</Label>
-                    <NativeSelect
-                      id="po-supplier"
+                  <Field>
+                    <FieldLabel required>Supplier</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {suppliers.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name} ({s.code})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
                       value={supplierId}
                       onChange={(e) => setSupplierId(e.target.value)}
-                    >
-                      {suppliers.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.code})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="po-warehouse">Warehouse</Label>
-                    <NativeSelect
-                      id="po-warehouse"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel required>Warehouse</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {warehouses.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.name} ({w.code})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
                       value={warehouseId}
                       onChange={(e) => setWarehouseId(e.target.value)}
-                    >
-                      {warehouses.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.name} ({w.code})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
+                    />
+                  </Field>
                 </div>
-                <div className="max-w-[8rem]">
-                  <Label htmlFor="po-currency">Currency</Label>
-                  <Input
-                    id="po-currency"
+                <Field className="max-w-[8rem]">
+                  <FieldLabel>Currency</FieldLabel>
+                  <FieldControl
                     value={currency}
                     maxLength={3}
                     className="uppercase"
                     onChange={(e) => setCurrency(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -322,7 +343,7 @@ function PurchaseOrderWizardInner({
                     {lines.map((l) => (
                       <div
                         key={l.variantId}
-                        className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                        className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
                       >
                         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                           <p className="text-sm font-medium">{l.title ?? l.sku}</p>
@@ -366,63 +387,59 @@ function PurchaseOrderWizardInner({
               </p>
               <div className="flex flex-col gap-3">
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="po-terms">Payment terms</Label>
-                    <Input
-                      id="po-terms"
+                  <Field>
+                    <FieldLabel>Payment terms</FieldLabel>
+                    <FieldControl
                       value={paymentTerms}
                       onChange={(e) => setPaymentTerms(e.target.value)}
                       placeholder="net30"
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="po-ref">Reference</Label>
-                    <Input
-                      id="po-ref"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Reference</FieldLabel>
+                    <FieldControl
                       value={reference}
                       onChange={(e) => setReference(e.target.value)}
                       placeholder="optional"
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="po-eta">Expected arrival</Label>
-                    <Input
-                      id="po-eta"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Expected arrival</FieldLabel>
+                    <FieldControl
                       type="date"
                       value={expectedArrival}
                       onChange={(e) => setExpectedArrival(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
-                <div className="max-w-[10rem]">
-                  <Label htmlFor="po-shipping">Shipping ($)</Label>
-                  <Input
-                    id="po-shipping"
+                <Field className="max-w-[10rem]" {...v.field('shipping')}>
+                  <FieldLabel>Shipping ($)</FieldLabel>
+                  <FieldControl
                     type="number"
                     min="0"
                     step="0.01"
                     value={shipping}
                     onChange={(e) => setShipping(e.target.value)}
                     placeholder="0.00"
+                    {...v.control('shipping')}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="po-notes">Notes</Label>
-                  <Textarea
-                    id="po-notes"
-                    rows={2}
+                </Field>
+                <Field>
+                  <FieldLabel>Notes</FieldLabel>
+                  <FieldControl
+                    render={<Textarea rows={2} />}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Avatar, Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Avatar, Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { toast, statusLabel, statusTone } from '@sparx/ui';
 import { ArrowRight, Building2 } from 'lucide-react';
 import { switchOrganization } from '@/lib/org-actions';

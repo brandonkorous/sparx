@@ -93,11 +93,11 @@ export default async function BootcampPage({
       <Faq
         id="faq"
         items={BOOTCAMP_FAQ}
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         heading={
           <>
             Bootcamp questions
-            <Spark color="var(--sparx-primary)" />
+            <Spark color="var(--color-primary)" />
           </>
         }
         lede="What you'll build, what it costs, and how registration works — before you sign up."

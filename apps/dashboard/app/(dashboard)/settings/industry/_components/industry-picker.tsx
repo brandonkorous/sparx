@@ -23,7 +23,7 @@ import {
   Warehouse,
 } from 'lucide-react';
 import { Card, ModuleProvider, toast } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { installIndustryStarterAction, type IndustryStarterView } from '../actions';
 
@@ -94,11 +94,11 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
             key={starter.slug}
             variant="subtle"
             padding="md"
-            className={isActive ? 'h-full ring-1 ring-[var(--color-success)]' : 'h-full'}
+            className={isActive ? 'ring-success h-full ring-1' : 'h-full'}
           >
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-row items-center gap-2">
-                <Icon className="h-4 w-4 text-[var(--color-text-muted)]" />
+                <Icon className="text-base-content/60 h-4 w-4" />
                 <p className="flex-1 font-medium">{starter.name}</p>
                 {isActive && (
                   <Badge color="success" variant="soft" size="sm">

@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { Store } from 'lucide-react';
-import { Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';

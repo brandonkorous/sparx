@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { Input } from 'silicaui-react';
+import { Input } from '@wizeworks/silicaui-react';
 
 export function MarketplaceSearch() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export function MarketplaceSearch() {
 
   return (
     <form onSubmit={onSubmit} className="relative max-w-xl">
-      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
+      <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}

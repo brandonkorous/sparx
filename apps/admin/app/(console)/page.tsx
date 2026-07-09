@@ -177,10 +177,7 @@ function ConsoleEntry({
             {body}
           </Text>
         </Stack>
-        <Link
-          href={href}
-          className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
-        >
+        <Link href={href} className="text-module text-sm font-medium hover:underline">
           {cta}
         </Link>
       </Stack>

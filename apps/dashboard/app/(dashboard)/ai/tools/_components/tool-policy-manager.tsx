@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, RotateCcw, ShieldCheck } from 'lucide-react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Alert, Badge, Button, Card, CardBody, Switch } from 'silicaui-react';
+import { Alert, Badge, Button, Card, CardBody, Switch } from '@wizeworks/silicaui-react';
 
 import { resetAllToolPoliciesAction, resetToolPolicyAction, setToolPolicyAction } from '../actions';
 import { moduleGroupLabel, PLATFORM_GROUP_LABEL, type ToolPolicyDto } from './tool-types';

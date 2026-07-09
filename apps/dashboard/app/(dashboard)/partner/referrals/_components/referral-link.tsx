@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, Copy } from 'lucide-react';
-import { Button, Card, CardBody, Input, Label } from 'silicaui-react';
+import { Button, Card, CardBody, Input, Label } from '@wizeworks/silicaui-react';
 
 // The referral link card (docs/114 §B.7). A read-only field with the partner's
 // shareable link + a copy button. The link is the canonical `?ref=CODE` capture

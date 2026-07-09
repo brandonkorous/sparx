@@ -1,5 +1,5 @@
 import { requireSession } from '@sparx/auth';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 import { loadOnboardingProgress } from './onboarding';
 import { WelcomeChecklist } from './welcome-checklist';

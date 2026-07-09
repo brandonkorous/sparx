@@ -22,7 +22,7 @@
  * `base-100/200/300` + `base-content` neutral ramp. That standard naming is on
  * purpose — every colored silicaui object (`.btn-primary`, `.badge-danger`, …)
  * is generated from a `{name}` + `{name}-content` pair, so adding a color is just
- * adding a pair here and listing the name in `@plugin "silicaui" { colors }` (in
+ * adding a pair here and listing the name in `@plugin "@wizeworks/silicaui" { colors }` (in
  * each app's globals.css). `danger` below is exactly that: an N-th named color
  * beyond silicaui's defaults, so sparx's `statusTone()` vocabulary (which emits
  * `danger`, not silicaui's `error`) maps 1:1.
@@ -52,6 +52,14 @@
 
   --color-primary: #6366f1;
   --color-primary-content: #eef2ff;
+
+  /* Active-module color. Defaults to primary so `text-module` / `bg-module` /
+     `var(--color-module)` resolve to the brand indigo OUTSIDE any ModuleProvider
+     (matching the retired `--module-active: var(--sparx-primary)` default);
+     <ModuleProvider> overrides this pair per-subtree with the module's hue. The
+     `var()` indirection means the one definition tracks light/dark automatically. */
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
 
   --color-secondary: #db2777;
   --color-secondary-content: #ffffff;

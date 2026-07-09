@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { GitCompareArrows } from 'lucide-react';
-import { Button, Join } from 'silicaui-react';
+import { Button, Join } from '@wizeworks/silicaui-react';
 import { cn } from '@sparx/ui';
 
 import { RANGE_OPTIONS, type RangeKey } from './range';

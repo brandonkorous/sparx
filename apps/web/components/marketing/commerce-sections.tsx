@@ -52,7 +52,7 @@ export function CommerceJourney() {
       />
       <div
         className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-bg-surface)' }}
+        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
       >
         {stages.map((s, i) => (
           <div
@@ -73,7 +73,7 @@ export function CommerceJourney() {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.n}
@@ -99,7 +99,7 @@ export function CommerceJourney() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -115,8 +115,8 @@ export function CommerceJourney() {
                   width: 22,
                   height: 22,
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -178,8 +178,8 @@ export function CommerceCheckout() {
                 display: 'flex',
                 gap: '13px',
                 padding: '18px 20px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
                 borderLeft: `3px solid ${C.color}`,
                 borderRadius: '12px',
               }}
@@ -212,7 +212,7 @@ export function CommerceCheckout() {
                     fontFamily: SANS,
                     fontSize: '13px',
                     lineHeight: '20px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {p.body}
@@ -230,10 +230,10 @@ function CheckoutBrowser({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: 'var(--color-base-100)',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
       }}
     >
@@ -243,8 +243,8 @@ function CheckoutBrowser({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '8px',
           padding: '12px 16px',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <span style={{ display: 'flex', gap: '6px' }}>
@@ -260,9 +260,9 @@ function CheckoutBrowser({ business }: { business: ExampleBusiness }) {
             marginLeft: '8px',
             fontFamily: MONO,
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '7px',
             padding: '5px 12px',
             flex: 1,
@@ -284,12 +284,12 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
     <div
       key={key}
       style={{
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '9px',
         padding: '11px 13px',
         fontFamily: SANS,
         fontSize: '13.5px',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: 'var(--color-base-100)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -311,14 +311,14 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
       {label}
     </span>
   );
-  const ph = { color: 'var(--color-text-tertiary)' };
+  const ph = { color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' };
   return (
     <div style={{ padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
       {step('Contact & shipping')}
-      {field(<span style={{ color: 'var(--color-text-primary)' }}>{business.customer.email}</span>)}
+      {field(<span style={{ color: 'var(--color-base-content)' }}>{business.customer.email}</span>)}
       {field(
         <>
-          <span style={{ color: 'var(--color-text-primary)' }}>
+          <span style={{ color: 'var(--color-base-content)' }}>
             {business.customer.address}
             <span style={ph}> · suggested</span>
           </span>
@@ -335,15 +335,15 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
           <span
             key={w}
             style={{
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '9px',
               padding: '11px',
               textAlign: 'center',
               fontFamily: SANS,
               fontSize: '13px',
               fontWeight: 500,
-              color: 'var(--color-text-secondary)',
-              backgroundColor: 'var(--color-bg-surface)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+              backgroundColor: 'var(--color-base-100)',
             }}
           >
             {w}
@@ -353,7 +353,13 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
       {field(
         <>
           <span style={ph}>Card ending 4242</span>
-          <span style={{ fontFamily: MONO, color: 'var(--color-text-tertiary)', fontSize: '11px' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              fontSize: '11px',
+            }}
+          >
             saved
           </span>
         </>
@@ -388,8 +394,8 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-page)',
-        borderLeft: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderLeft: '1px solid var(--color-base-300)',
         padding: '26px 24px',
         display: 'flex',
         flexDirection: 'column',
@@ -401,7 +407,7 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
           fontFamily: SANS,
           fontSize: '13px',
           fontWeight: 500,
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         Order summary
@@ -415,7 +421,7 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
             alignItems: 'center',
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           <span
@@ -423,12 +429,12 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
               width: 32,
               height: 32,
               borderRadius: '7px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               flexShrink: 0,
             }}
           />
           <span>{t}</span>
-          <span style={{ marginLeft: 'auto', color: 'var(--color-text-primary)' }}>{amt}</span>
+          <span style={{ marginLeft: 'auto', color: 'var(--color-base-content)' }}>{amt}</span>
         </div>
       ))}
       <div
@@ -437,9 +443,9 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
           justifyContent: 'space-between',
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           paddingTop: '12px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         <span>Shipping</span>
@@ -451,7 +457,7 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
           justifyContent: 'space-between',
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         <span>Tax</span>
@@ -465,7 +471,7 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
           fontFamily: SANS,
           fontWeight: 500,
           paddingTop: '12px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         <span>Total</span>

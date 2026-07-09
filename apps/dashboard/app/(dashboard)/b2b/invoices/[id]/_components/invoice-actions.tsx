@@ -8,9 +8,12 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  Field,
+  FieldControl,
+  FieldLabel,
   Select,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 import { CheckCircle, XCircle } from 'lucide-react';
 
@@ -100,30 +103,23 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
             </DialogDescription>
           </div>
           <div className="flex flex-col gap-4 py-2">
-            <div>
-              <label htmlFor="invoice-paid-method" className="mb-1 block text-sm font-medium">
-                Payment method
-              </label>
+            <Field>
+              <FieldLabel>Payment method</FieldLabel>
               <Select
-                id="invoice-paid-method"
                 value={paidMethod}
                 onValueChange={(v) => setPaidMethod(v as string)}
                 items={PAYMENT_METHODS}
                 placeholder="Select method…"
               />
-            </div>
-            <div>
-              <label htmlFor="invoice-paid-notes" className="mb-1 block text-sm font-medium">
-                Notes (optional)
-              </label>
-              <Textarea
-                id="invoice-paid-notes"
+            </Field>
+            <Field>
+              <FieldLabel>Notes (optional)</FieldLabel>
+              <FieldControl
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Reference number, check number, etc."
-                rows={2}
+                render={<Textarea placeholder="Reference number, check number, etc." rows={2} />}
               />
-            </div>
+            </Field>
           </div>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setMarkPaidOpen(false)} disabled={loading}>
@@ -159,18 +155,14 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
             </DialogDescription>
           </div>
           <div className="flex flex-col gap-4 py-2">
-            <div>
-              <label htmlFor="invoice-writeoff-reason" className="mb-1 block text-sm font-medium">
-                Reason (optional)
-              </label>
-              <Textarea
-                id="invoice-writeoff-reason"
+            <Field>
+              <FieldLabel>Reason (optional)</FieldLabel>
+              <FieldControl
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Reason for write-off…"
-                rows={3}
+                render={<Textarea placeholder="Reason for write-off…" rows={3} />}
               />
-            </div>
+            </Field>
           </div>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setWriteOffOpen(false)} disabled={loading}>

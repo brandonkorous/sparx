@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { DollarSign } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';

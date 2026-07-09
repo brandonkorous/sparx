@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Text, toast } from '@sparx/ui';
+import { Button, toast } from '@sparx/ui';
+import { FieldStatus } from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { acceptInvitation } from '@/lib/org-actions';
 
@@ -40,9 +41,15 @@ export function AcceptInviteButton({
         Accept &amp; enter {orgName}
       </Button>
       {error ? (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-2">
+        <FieldStatus
+          status="error"
+          attached={false}
+          role="alert"
+          aria-live="polite"
+          className="mt-2"
+        >
           {error}
-        </Text>
+        </FieldStatus>
       ) : null}
     </div>
   );

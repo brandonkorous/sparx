@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { PLATFORM_HREF, signupHref } from './cta';
@@ -75,16 +75,16 @@ export function Permanence() {
                 alignItems: 'flex-start',
               }}
             >
-              <Button asChild size="xl" variant="solid">
-                <a href={signupHref('permanence')}>Launch your site →</a>
+              <Button size="xl" variant="solid" render={<a href={signupHref('permanence')} />}>
+                Launch your site →
               </Button>
               <Button
-                asChild
                 size="xl"
                 variant="outline"
                 style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
+                render={<a href={PLATFORM_HREF} />}
               >
-                <a href={PLATFORM_HREF}>See how it lasts</a>
+                See how it lasts
               </Button>
               <span
                 style={{

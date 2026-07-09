@@ -80,7 +80,7 @@ export function Faq({
   heading,
   lede,
   id,
-  accent = 'var(--sparx-primary)',
+  accent = 'var(--color-primary)',
 }: {
   /** Page-specific Q&A. Defaults to the homepage set. */
   items?: FaqItem[];

@@ -6,7 +6,7 @@ import type {
   ProviderMetadata,
 } from '@sparx/commerce-schemas';
 import { statusLabel } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { ensureProvidersRegistered } from '../../../../../lib/providers-bootstrap';

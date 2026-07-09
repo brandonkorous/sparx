@@ -1,8 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input, Label, Loading } from 'silicaui-react';
-import { Check } from 'lucide-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Loading,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import type { SlugCheck } from './onboarding-wizard';
 
 const SITE_ZONE = 'sparx.zone';
@@ -39,24 +47,43 @@ export function StepWorkspace({
 }) {
   const normalized = slug.trim().toLowerCase();
 
+  // Company + site are simple required fields (errors reveal on blur, so a
+  // pre-filled form is never a wall of red). The slug carries its OWN live
+  // availability status below — it's async (checked in the orchestrator), so it
+  // drives the Field accent directly rather than through the sync rule engine.
+  const v = useFieldValidation(
+    { companyName, siteName },
+    {
+      companyName: rule.required('Add a company name.'),
+      siteName: rule.required('Name your first site.'),
+    }
+  );
+
+  // Narrow the availability result once (null until a fresh, changed slug resolves)
+  // so both the Field accent and the message rows below read from it type-safely.
+  const result = !unchangedSlug && check.status === 'done' ? check.result : null;
+  const slugAvailable = result?.available === true;
+  const slugUnavailable = result != null && !result.available;
+
   return (
-    <div className="max-w-xl rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6">
+    <div className="border-base-300 bg-base-100 max-w-xl rounded-xl border p-6">
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="ws-company">Company name</Label>
-          <Input
-            id="ws-company"
+        <Field {...v.field('companyName')}>
+          <FieldLabel required>Company name</FieldLabel>
+          <FieldControl
+            name="companyName"
             value={companyName}
             onChange={(e) => onCompany(e.target.value)}
             placeholder="Bob's Barbers"
+            {...v.control('companyName')}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="ws-slug">Workspace address</Label>
+        <Field status={slugUnavailable ? 'error' : slugAvailable ? 'success' : undefined}>
+          <FieldLabel required>Workspace address</FieldLabel>
           <div className="flex items-center gap-2">
-            <Input
-              id="ws-slug"
+            <FieldControl
+              name="slug"
               value={slug}
               onChange={(e) => onSlug(e.target.value)}
               placeholder="bobs-barbers"
@@ -73,23 +100,20 @@ export function StepWorkspace({
               <p className="text-base-content/70 text-xs">Checking availability…</p>
             </div>
           )}
-          {!unchangedSlug && check.status === 'done' && check.result.available && (
-            <div className="flex items-center gap-1.5">
-              <Check className="h-4 w-4 text-[var(--color-success-text)]" />
-              <p className="text-xs text-[var(--color-success-text)]">
-                {normalized}.{SITE_ZONE} is available
-              </p>
-            </div>
+          {result?.available && (
+            <FieldStatus status="success" attached={false}>
+              {normalized}.{SITE_ZONE} is available
+            </FieldStatus>
           )}
-          {!unchangedSlug && check.status === 'done' && !check.result.available && (
+          {result && !result.available && (
             <div className="flex flex-col gap-1">
-              <p className="text-danger text-xs">
-                {REASON_COPY[check.result.reason] ?? 'That address is unavailable.'}
-              </p>
-              {check.result.suggestions.length > 0 && (
+              <FieldStatus status="error" attached={false}>
+                {REASON_COPY[result.reason] ?? 'That address is unavailable.'}
+              </FieldStatus>
+              {result.suggestions.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-base-content/70 text-xs">Try:</p>
-                  {check.result.suggestions.map((s) => (
+                  {result.suggestions.map((s) => (
                     <Button
                       key={s}
                       color="module"
@@ -104,22 +128,19 @@ export function StepWorkspace({
               )}
             </div>
           )}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="ws-site">
-            Site name{' '}
-            <span className="font-normal text-[var(--color-text-tertiary)]">
-              · you can add more sites later
-            </span>
-          </Label>
-          <Input
-            id="ws-site"
+        <Field {...v.field('siteName')}>
+          <FieldLabel required>Site name</FieldLabel>
+          <FieldControl
+            name="siteName"
             value={siteName}
             onChange={(e) => onSite(e.target.value)}
             placeholder="Primary"
+            {...v.control('siteName')}
           />
-        </div>
+          <FieldDescription>You can add more sites later.</FieldDescription>
+        </Field>
       </div>
     </div>
   );

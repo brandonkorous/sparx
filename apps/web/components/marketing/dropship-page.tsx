@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -166,7 +166,7 @@ function DropshipWithCommerce() {
               gap: '16px',
               padding: '32px',
               backgroundColor: moduleTint(p.dot),
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
@@ -198,7 +198,7 @@ function DropshipWithCommerce() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p.body}
@@ -214,7 +214,7 @@ function DropshipWithCommerce() {
                       fontFamily: SANS,
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {pt}
@@ -312,7 +312,7 @@ function DropshipPricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(M.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',
         }}
@@ -325,13 +325,17 @@ function DropshipPricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $29
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -341,7 +345,7 @@ function DropshipPricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '660px',
             }}

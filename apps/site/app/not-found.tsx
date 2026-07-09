@@ -20,10 +20,15 @@ export default function NotFound() {
       <h1 style={{ fontSize: '3rem', fontWeight: 600, margin: 0, letterSpacing: '-0.02em' }}>
         404
       </h1>
-      <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>
+      <p
+        style={{
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          margin: 0,
+        }}
+      >
         That page isn&apos;t published here.
       </p>
-      <Link href="/" style={{ color: 'var(--sparx-primary)', textDecoration: 'underline' }}>
+      <Link href="/" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
         Back to home
       </Link>
     </main>

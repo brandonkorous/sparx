@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
+import { Button, Stack, Text } from '@sparx/ui';
+import {
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  PasswordInput,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { signIn } from '@sparx/operator-auth/client';
 import { AuthShell } from '../_components/auth-shell';
 
@@ -14,9 +22,18 @@ export default function SignInPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
+  const v = useFieldValidation(
+    { email, password },
+    {
+      email: rules(rule.required('Enter your email.'), rule.email()),
+      password: rule.required('Enter your password.'),
+    }
+  );
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
     const result = await signIn.email({ email, password });
     if (result.error) {
@@ -32,41 +49,40 @@ export default function SignInPage() {
     <AuthShell title="Operator sign in" subtitle="WizeWorks staff only.">
       <form onSubmit={onSubmit} noValidate>
         <Stack gap={4}>
-          <Stack gap={2}>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
+          <Field {...v.field('email')}>
+            <FieldLabel required>Email</FieldLabel>
+            <FieldControl
               name="email"
               type="email"
               autoComplete="email"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              {...v.control('email')}
             />
-          </Stack>
-          <Stack gap={2}>
+          </Field>
+          <Field {...v.field('password')}>
             <Stack direction="row" align="center" justify="between">
-              <Label htmlFor="password">Password</Label>
+              <FieldLabel required>Password</FieldLabel>
               <Link href="/forgot-password">
                 <Text size="xs" variant="muted">
                   Forgot password?
                 </Text>
               </Link>
             </Stack>
-            <PasswordInput
-              id="password"
+            <FieldControl
               name="password"
               autoComplete="current-password"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              {...v.control('password')}
+              render={<PasswordInput />}
             />
-          </Stack>
+          </Field>
 
           {error ? (
-            <Text size="sm" variant="danger" role="alert" aria-live="polite">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </Text>
+            </FieldStatus>
           ) : null}
 
           <Button type="submit" disabled={submitting} loading={submitting}>

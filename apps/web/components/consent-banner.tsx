@@ -10,7 +10,7 @@
 // Renders nothing until mounted to avoid an SSR flash / hydration mismatch.
 
 import { useEffect, useState } from 'react';
-import { Button, Checkbox } from '@sparx/ui';
+import { Button, Checkbox } from '@wizeworks/silicaui-react';
 import {
   ALL_GRANTED,
   ESSENTIAL_ONLY,
@@ -148,7 +148,7 @@ export function ConsentBanner() {
                 <strong>Strictly necessary</strong>
                 <span>Required for the site to work. Always on.</span>
               </div>
-              <Checkbox checked disabled aria-label="Strictly necessary (always on)" />
+              <Checkbox checked readOnly disabled aria-label="Strictly necessary (always on)" />
             </div>
 
             {NON_ESSENTIAL.map(({ key, label, copy }) => (
@@ -159,9 +159,7 @@ export function ConsentBanner() {
                 </div>
                 <Checkbox
                   checked={draft[key]}
-                  onCheckedChange={(checked) =>
-                    setDraft((d) => ({ ...d, [key]: checked === true }))
-                  }
+                  onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.checked }))}
                   aria-label={label}
                 />
               </div>

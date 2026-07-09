@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, Display, Spark, moduleTint } from './primitives';
 
 /**
@@ -15,42 +15,42 @@ import { Section, SectionHeader, Display, Spark, moduleTint } from './primitives
 const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] = [
   {
     name: 'Publishers & creators',
-    color: 'var(--module-cms)',
+    color: 'var(--color-module-cms)',
     blurb:
       'Words, media, and SEO with no cart in sight. Publish on your own domain, send the newsletter, own the audience — selling stays optional.',
     runs: 'Builder · CMS · Email',
   },
   {
     name: 'Online retailers',
-    color: 'var(--module-commerce)',
+    color: 'var(--color-module-commerce)',
     blurb:
       'Products, fast checkout, and one customer record that ties every order to email and support. One system, one bill, nothing taped together in the middle.',
     runs: 'Builder · Commerce · CRM · Email',
   },
   {
     name: 'B2B & wholesale',
-    color: 'var(--module-b2b)',
+    color: 'var(--color-module-b2b)',
     blurb:
       'Account pricing, net terms, purchase orders, and RFQ — wholesale the way it actually works. Native to the platform, not a four-figure bolt-on.',
     runs: 'Builder · Commerce · B2B · CRM',
   },
   {
     name: 'Service & fleet',
-    color: 'var(--module-crm)',
+    color: 'var(--color-module-crm)',
     blurb:
       'Fleet vehicles tracked by VIN and cost center, bookable service bays, and net-30 invoicing for the accounts you serve. Built for how industrial actually runs.',
     runs: 'Commerce · B2B · CRM',
   },
   {
     name: 'Agencies & multi-brand',
-    color: 'var(--module-builder)',
+    color: 'var(--color-module-builder)',
     blurb:
       'Run many themed sites under one tenant. Hand each client a finished site, and manage the whole portfolio from one dashboard.',
     runs: 'Builder · CMS · multi-site',
   },
   {
     name: 'AI-first & headless',
-    color: 'var(--module-ai)',
+    color: 'var(--color-module-ai)',
     blurb:
       'Drive everything from the API or a native MCP server. Build your own frontend, and let agents read and write live data with scoped, audited keys.',
     runs: 'AI · MCP · Builder (headless)',
@@ -76,7 +76,7 @@ export function CustomersPage() {
               fontFamily: 'var(--font-sans)',
               fontSize: '18px',
               lineHeight: '30px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Publishers, retailers, distributors, agencies, AI-first teams. sparx isn&apos;t a store
@@ -91,7 +91,7 @@ export function CustomersPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
           <SectionHeader
             headline="However you operate"
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             lede="A CMS-only publisher, a CRM-only team, a B2B distributor — all first-class. Here's the shape it usually takes."
           />
           <div className="mkt-grid-3-2-1">
@@ -104,7 +104,7 @@ export function CustomersPage() {
                   gap: '12px',
                   padding: '28px 26px',
                   backgroundColor: moduleTint(s.color),
-                  border: '1px solid var(--color-border-default)',
+                  border: '1px solid var(--color-base-300)',
                   borderRadius: '12px',
                   minHeight: '230px',
                 }}
@@ -118,7 +118,7 @@ export function CustomersPage() {
                     fontWeight: 500,
                     fontSize: '17px',
                     letterSpacing: '-0.01em',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   <span
@@ -139,7 +139,7 @@ export function CustomersPage() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '14px',
                     lineHeight: '22px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {s.blurb}
@@ -148,7 +148,7 @@ export function CustomersPage() {
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {s.runs}
@@ -167,8 +167,8 @@ export function CustomersPage() {
             flexDirection: 'column',
             gap: '28px',
             padding: 'clamp(32px, 5vw, 56px)',
-            backgroundColor: moduleTint('var(--module-b2b)'),
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: moduleTint('var(--color-module-b2b)'),
+            border: '1px solid var(--color-base-300)',
             borderRadius: '16px',
           }}
         >
@@ -179,14 +179,14 @@ export function CustomersPage() {
               gap: '8px',
               width: 'fit-content',
               padding: '5px 12px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '9999px',
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             <span
@@ -194,7 +194,7 @@ export function CustomersPage() {
                 width: 7,
                 height: 7,
                 borderRadius: 9999,
-                backgroundColor: 'var(--module-b2b)',
+                backgroundColor: 'var(--color-module-b2b)',
               }}
             />
             First enterprise client
@@ -202,7 +202,7 @@ export function CustomersPage() {
 
           <Display as="h2" size={40}>
             Gillett Diesel Service
-            <Spark color="var(--module-b2b)" />
+            <Spark color="var(--color-module-b2b)" />
           </Display>
 
           <p
@@ -212,7 +212,7 @@ export function CustomersPage() {
               fontFamily: 'var(--font-sans)',
               fontSize: '17px',
               lineHeight: '28px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             A diesel service and parts operation running the full industrial playbook on sparx:
@@ -230,10 +230,10 @@ export function CustomersPage() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   padding: '6px 12px',
-                  backgroundColor: 'var(--color-bg-page)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-200)',
+                  border: '1px solid var(--color-base-300)',
                   borderRadius: '9999px',
                 }}
               >
@@ -249,7 +249,7 @@ export function CustomersPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '720px' }}>
           <SectionHeader
             headline="Your story goes here"
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             lede="Running something that doesn't fit a template? That's the point. Tell us what you operate and we'll map it onto sparx."
           />
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

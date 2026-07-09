@@ -201,7 +201,7 @@ export function SignupsCard({ signups }: { signups: OperatorMetricsSignups }) {
               key={p.date}
               title={`${p.date}: ${p.count}`}
               style={{ height: `${Math.max(2, (p.count / max) * 100)}%` }}
-              className="min-h-px flex-1 rounded-sm bg-[var(--module-active)] opacity-80"
+              className="bg-module min-h-px flex-1 rounded-sm opacity-80"
             />
           ))}
         </div>

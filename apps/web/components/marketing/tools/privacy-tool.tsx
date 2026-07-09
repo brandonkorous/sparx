@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Download } from 'lucide-react';
-import { Button, Input, Switch } from '@sparx/ui';
+import { Button, Input, Switch } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { buildPrivacyPolicy, buildTerms, type LegalData } from './lib/legal-templates';
 import { downloadText } from './lib/download';
@@ -168,7 +168,7 @@ export function PrivacyTool() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '14px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {t.label}
@@ -216,7 +216,7 @@ export function PrivacyTool() {
               padding: '24px',
               backgroundColor: '#ffffff',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
             }}
           >
             <Markdown text={text} />
@@ -244,7 +244,7 @@ export function PrivacyTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

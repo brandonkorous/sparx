@@ -13,7 +13,7 @@ import {
   UserPlus,
   type LucideIcon,
 } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,15 +105,15 @@ export function CreateMenu({ modules }: { modules: ReadonlySet<string> }) {
                 aria-hidden
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md"
                 style={{
-                  color: `var(--module-${a.module})`,
-                  background: `color-mix(in oklab, var(--module-${a.module}) 14%, var(--color-bg-surface))`,
+                  color: `var(--color-module-${a.module})`,
+                  background: `color-mix(in oklab, var(--color-module-${a.module}) 14%, var(--color-base-100))`,
                 }}
               >
                 <a.icon className="h-4 w-4" />
               </span>
               <span className="flex flex-col">
                 <span className="text-sm font-medium">{a.label}</span>
-                <span className="text-xs text-[var(--color-text-tertiary)]">{a.hint}</span>
+                <span className="text-base-content/50 text-xs">{a.hint}</span>
               </span>
             </Link>
           </DropdownMenuItem>

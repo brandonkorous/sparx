@@ -25,7 +25,7 @@ export interface KanbanDeal {
 
 export function stageColor(stage: Pick<KanbanStage, 'color' | 'stageType'>): string {
   if (stage.color) return stage.color;
-  if (stage.stageType === 'won') return 'var(--color-success-500)';
-  if (stage.stageType === 'lost') return 'var(--color-danger-500)';
-  return 'var(--module-active)';
+  if (stage.stageType === 'won') return 'var(--color-success)';
+  if (stage.stageType === 'lost') return 'var(--color-danger)';
+  return 'var(--color-module)';
 }

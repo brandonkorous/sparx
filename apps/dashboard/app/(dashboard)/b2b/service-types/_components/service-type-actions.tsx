@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 import { updateServiceType, deleteServiceType } from '../_lib/actions';
 import { ServiceTypeForm } from './service-type-form';
@@ -89,7 +89,7 @@ export function ServiceTypeActions({ type }: Props) {
             <Power className="mr-2 h-4 w-4" />
             {type.isActive ? 'Deactivate' : 'Activate'}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onDelete()} className="text-[var(--color-danger)]">
+          <DropdownMenuItem onClick={() => onDelete()} className="text-danger">
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>

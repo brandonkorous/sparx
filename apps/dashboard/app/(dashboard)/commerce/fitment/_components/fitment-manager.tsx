@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Boxes, Library, Plus } from 'lucide-react';
-import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import type { ModulePresetView } from '../../../_components/preset-actions';
 import { PresetPicker } from '../../../_components/preset-picker';

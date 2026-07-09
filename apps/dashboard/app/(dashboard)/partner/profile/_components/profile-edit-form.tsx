@@ -7,12 +7,16 @@ import {
   Button,
   Card,
   CardBody,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Label,
   NativeSelect,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -51,7 +55,6 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
 
   const [displayName, setDisplayName] = React.useState(profile.displayName);
@@ -65,6 +68,13 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
   const [specialties, setSpecialties] = React.useState<string[]>(profile.specialties);
   const [photoUrl, setPhotoUrl] = React.useState(profile.photoUrl ?? '');
   const [directoryVisible, setDirectoryVisible] = React.useState(profile.directoryVisible);
+
+  // Client rule: a practice name is required. The server can additionally reject
+  // bio / website / photo URLs, which map back onto those fields.
+  const v = useFieldValidation(
+    { displayName, bio, websiteUrl, photoUrl },
+    { displayName: rule.required('A practice name is required.') }
+  );
 
   const dirty =
     displayName !== profile.displayName ||
@@ -95,11 +105,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-    if (!displayName.trim()) {
-      setFieldErrors({ displayName: 'A practice name is required.' });
-      return;
-    }
+    if (!v.validate()) return;
     const payload = {
       displayName: displayName.trim(),
       bio: bio.trim() || null,
@@ -119,7 +125,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
         if (result.fieldErrors?.length) {
           const fe: Record<string, string> = {};
           for (const f of result.fieldErrors) fe[f.field] = f.message;
-          setFieldErrors(fe);
+          v.setServerErrors(fe);
         }
         setError(result.error ?? 'Could not save your profile.');
         return;
@@ -167,88 +173,91 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
             <Card>
               <CardBody>
                 <div className="flex flex-col gap-5">
-                  <Field label="Practice name" htmlFor="p-name" error={fieldErrors.displayName}>
-                    <Input
+                  <Field {...v.field('displayName')}>
+                    <FieldLabel required>Practice name</FieldLabel>
+                    <FieldControl
                       id="p-name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      color={fieldErrors.displayName ? 'error' : undefined}
                       maxLength={255}
+                      {...v.control('displayName')}
                     />
                   </Field>
 
-                  <Field label="Bio" htmlFor="p-bio" error={fieldErrors.bio}>
-                    <Textarea
+                  <Field {...v.field('bio')}>
+                    <FieldLabel>Bio</FieldLabel>
+                    <FieldControl
                       id="p-bio"
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
-                      rows={4}
                       maxLength={2000}
                       placeholder="What you do, who you help, and what makes your practice a good fit."
+                      {...v.control('bio')}
+                      render={<Textarea rows={4} />}
                     />
                   </Field>
 
                   <div className="flex flex-row flex-wrap gap-3">
-                    <Field
-                      label="Website"
-                      htmlFor="p-website"
-                      error={fieldErrors.websiteUrl}
-                      className="min-w-[14rem] flex-1"
-                    >
-                      <Input
+                    <Field {...v.field('websiteUrl')} className="min-w-[14rem] flex-1">
+                      <FieldLabel>Website</FieldLabel>
+                      <FieldControl
                         id="p-website"
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
                         placeholder="https://example.com"
-                        color={fieldErrors.websiteUrl ? 'error' : undefined}
+                        {...v.control('websiteUrl')}
                       />
                     </Field>
-                    <Field
-                      label="What describes you"
-                      htmlFor="p-kind"
-                      className="min-w-[14rem] flex-1"
-                    >
-                      <NativeSelect
+                    <Field className="min-w-[14rem] flex-1">
+                      <FieldLabel>What describes you</FieldLabel>
+                      <FieldControl
                         id="p-kind"
                         value={kind}
                         onChange={(e) => setKind(e.target.value as PartnerProfile['kind'])}
-                      >
-                        {PARTNER_KINDS.map((k) => (
-                          <option key={k.value} value={k.value}>
-                            {k.label}
-                          </option>
-                        ))}
-                      </NativeSelect>
+                        render={
+                          <NativeSelect>
+                            {PARTNER_KINDS.map((k) => (
+                              <option key={k.value} value={k.value}>
+                                {k.label}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
                     </Field>
                   </div>
 
-                  <Field label="Logo / photo URL" htmlFor="p-photo" error={fieldErrors.photoUrl}>
-                    <Input
+                  <Field {...v.field('photoUrl')}>
+                    <FieldLabel>Logo / photo URL</FieldLabel>
+                    <FieldControl
                       id="p-photo"
                       value={photoUrl}
                       onChange={(e) => setPhotoUrl(e.target.value)}
                       placeholder="https://…/logo.png"
-                      color={fieldErrors.photoUrl ? 'error' : undefined}
+                      {...v.control('photoUrl')}
                     />
                   </Field>
 
                   <div className="flex flex-row flex-wrap gap-3">
-                    <Field label="City" htmlFor="p-city" className="min-w-[10rem] flex-1">
-                      <Input id="p-city" value={city} onChange={(e) => setCity(e.target.value)} />
+                    <Field className="min-w-[10rem] flex-1">
+                      <FieldLabel>City</FieldLabel>
+                      <FieldControl
+                        id="p-city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
                     </Field>
-                    <Field
-                      label="State / region"
-                      htmlFor="p-state"
-                      className="min-w-[10rem] flex-1"
-                    >
-                      <Input
+                    <Field className="min-w-[10rem] flex-1">
+                      <FieldLabel>State / region</FieldLabel>
+                      <FieldControl
                         id="p-state"
                         value={state}
                         onChange={(e) => setState(e.target.value)}
                       />
                     </Field>
-                    <Field label="Country" htmlFor="p-country" className="w-28">
-                      <Input
+                    <Field className="w-28">
+                      <FieldLabel>Country</FieldLabel>
+                      <FieldControl
                         id="p-country"
                         value={country}
                         onChange={(e) => setCountry(e.target.value.toUpperCase())}
@@ -306,35 +315,19 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
             </Card>
           </form>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>
-  );
-}
-
-function Field({
-  label,
-  htmlFor,
-  error,
-  className,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  error?: string;
-  className?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={`flex flex-col gap-2${className ? ` ${className}` : ''}`}>
-      <Label htmlFor={htmlFor}>{label}</Label>
-      {children}
-      {error && <p className="text-danger text-xs">{error}</p>}
-    </div>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 // Small copy-to-clipboard control for DNS record values.
 export function CopyButton({ value, label }: { value: string; label?: string }) {

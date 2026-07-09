@@ -12,7 +12,7 @@
 
 import * as React from 'react';
 
-import { Badge, Input, Label } from 'silicaui-react';
+import { Badge, Input, Label } from '@wizeworks/silicaui-react';
 import {
   applyMarkupRule,
   type BandMethod,
@@ -25,7 +25,7 @@ import { formatMoney } from '../../_components/format';
 // A native-select skin matching the platform Input (the grid uses raw <select>
 // for its dense inline pickers; this is shared chrome, not a re-skinned control).
 export const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
+  'flex h-9 w-full rounded-md border border-base-300 bg-base-100 px-2 text-sm text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 export const ADHOC = 'adhoc';
 export const PASSTHROUGH = 'passthrough';

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
 
 import { InventoryRowControls, type InventoryRow } from './inventory-row-editor';
@@ -26,10 +26,7 @@ function isBelowReorder(r: InventoryRow): boolean {
 function productCell(r: InventoryRow) {
   return (
     <div className="flex flex-col gap-0">
-      <Link
-        href={`/commerce/products/${r.productId}`}
-        className="text-sm hover:text-[var(--module-active)]"
-      >
+      <Link href={`/commerce/products/${r.productId}`} className="hover:text-module text-sm">
         {r.productTitle}
       </Link>
       {r.variantTitle && <p className="text-base-content/70 text-xs">{r.variantTitle}</p>}
@@ -49,9 +46,7 @@ function reorderBadge(r: InventoryRow) {
 
 function availableCell(r: InventoryRow) {
   return (
-    <p className={isBelowReorder(r) ? 'text-base text-[var(--color-warning)]' : 'text-base'}>
-      {r.available}
-    </p>
+    <p className={isBelowReorder(r) ? 'text-warning text-base' : 'text-base'}>{r.available}</p>
   );
 }
 

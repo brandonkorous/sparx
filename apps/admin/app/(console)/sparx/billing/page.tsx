@@ -141,7 +141,7 @@ export default async function BillingPage() {
                   direction="row"
                   align="center"
                   justify="between"
-                  className="border-b border-[var(--color-border-default)] pb-2 last:border-0"
+                  className="border-base-300 border-b pb-2 last:border-0"
                 >
                   <Text size="sm" className="font-mono">
                     {e.type}

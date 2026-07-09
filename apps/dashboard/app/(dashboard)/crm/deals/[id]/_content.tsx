@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FileText, Receipt, Calendar, User, Briefcase } from 'lucide-react';
 
-import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -148,13 +148,13 @@ export async function DealDetailContent({ id }: Props) {
         </div>
         <div className="flex flex-row flex-wrap gap-4">
           <div className="flex flex-row items-center gap-1">
-            <Briefcase className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+            <Briefcase className="text-base-content/50 h-3.5 w-3.5" />
             <p className="text-base-content/70 text-sm">
               {deal.currency} {Number(deal.value).toLocaleString()}
             </p>
           </div>
           <div className="flex flex-row items-center gap-1">
-            <Calendar className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+            <Calendar className="text-base-content/50 h-3.5 w-3.5" />
             <p className="text-base-content/70 text-sm">
               {deal.expectedCloseDate
                 ? `Expected ${new Date(deal.expectedCloseDate).toLocaleDateString()}`
@@ -163,10 +163,10 @@ export async function DealDetailContent({ id }: Props) {
           </div>
           {customer && (
             <div className="flex flex-row items-center gap-1">
-              <User className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+              <User className="text-base-content/50 h-3.5 w-3.5" />
               <Link
                 href={`/crm/customers/${customer.id}`}
-                className="text-sm hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module text-sm hover:underline"
               >
                 {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
                   (customer.company ?? customer.email)}
@@ -223,7 +223,7 @@ export async function DealDetailContent({ id }: Props) {
                         <td>
                           <Link
                             href={`/crm/orders/${o.id}`}
-                            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                            className="hover:text-module text-sm font-medium hover:underline"
                           >
                             {o.orderNumber}
                           </Link>
@@ -297,7 +297,7 @@ export async function DealDetailContent({ id }: Props) {
                         <td>
                           <Link
                             href={`/crm/quotes/${q.id}`}
-                            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                            className="hover:text-module text-sm font-medium hover:underline"
                           >
                             {q.quoteNumber}
                           </Link>

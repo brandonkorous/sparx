@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Receipt } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import Link from 'next/link';
 
 import { api } from '@/lib/api-rest-client';
@@ -87,7 +87,7 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
                   <p className="text-base-content/70 text-xs">Due date</p>
                   <p
                     className={`text-sm ${
-                      invoice.status === 'overdue' ? 'font-medium text-[var(--color-danger)]' : ''
+                      invoice.status === 'overdue' ? 'text-danger font-medium' : ''
                     }`}
                   >
                     {new Date(invoice.dueAt).toLocaleDateString()}
@@ -105,7 +105,7 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
                     <p className="text-base-content/70 text-xs">Order</p>
                     <Link
                       href={`/commerce/orders/${invoice.orderId}`}
-                      className="text-sm hover:text-[var(--module-active)] hover:underline"
+                      className="hover:text-module text-sm hover:underline"
                     >
                       View order →
                     </Link>

@@ -98,8 +98,8 @@ export function QuickFilters({
         className={cn(
           'rounded-full border px-3 py-1 text-sm font-medium transition-colors',
           mineActive
-            ? 'border-[var(--module-active)] text-[var(--color-text-primary)]'
-            : 'border-[var(--color-border-default)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+            ? 'border-module text-base-content'
+            : 'border-base-300 text-base-content/60 hover:text-base-content'
         )}
       >
         Assigned to me
@@ -107,7 +107,7 @@ export function QuickFilters({
       {tenantId ? (
         <Link
           href={hrefWith({ tenantId: undefined, page: undefined })}
-          className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+          className="text-module text-sm font-medium hover:underline"
         >
           Clear tenant filter
         </Link>
@@ -115,7 +115,7 @@ export function QuickFilters({
       {tag ? (
         <Link
           href={hrefWith({ tag: undefined, page: undefined })}
-          className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+          className="text-module text-sm font-medium hover:underline"
         >
           Clear tag “{tag}”
         </Link>
@@ -166,8 +166,8 @@ function Chip({
         'border-b-2 pb-1 font-medium transition-colors',
         small ? 'text-xs' : 'text-sm',
         active
-          ? 'border-[var(--module-active)] text-[var(--color-text-primary)]'
-          : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+          ? 'border-module text-base-content'
+          : 'text-base-content/60 hover:text-base-content border-transparent'
       )}
     >
       {label}

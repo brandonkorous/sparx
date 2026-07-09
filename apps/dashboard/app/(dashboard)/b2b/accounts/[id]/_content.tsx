@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 import { Stat } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { B2bTierAssigner } from './_components/b2b-tier-assigner';
@@ -149,10 +149,10 @@ export async function B2bAccountDetailContent({ id }: Props) {
   const util = account.creditUtilizationPct;
   const utilColor =
     util >= 90
-      ? 'var(--color-danger-500)'
+      ? 'var(--color-danger)'
       : util >= 75
-        ? 'var(--color-warning-500)'
-        : 'var(--module-active)';
+        ? 'var(--color-warning)'
+        : 'var(--color-module)';
 
   const fleetVehicles: FleetVehicleView[] = account.fleetVehicles ?? [];
 
@@ -176,7 +176,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
               href={account.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm hover:text-[var(--module-active)] hover:underline"
+              className="hover:text-module flex items-center gap-1 text-sm hover:underline"
             >
               <Globe className="h-3.5 w-3.5" /> Website
             </a>
@@ -219,7 +219,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
             <p className="opacity-70">Payment terms: {account.paymentTerms}</p>
           )}
           <div className="flex flex-col gap-2">
-            <div className="h-3 rounded-full bg-[var(--color-surface-subtle)]">
+            <div className="bg-base-200 h-3 rounded-full">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -232,8 +232,8 @@ export async function B2bAccountDetailContent({ id }: Props) {
               <p className="text-base-content/70 text-sm">{util.toFixed(1)}% used</p>
               {util >= 75 && (
                 <div className="flex flex-row items-center gap-1">
-                  <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                  <p className="text-sm text-[var(--color-warning-500)]">Near credit limit</p>
+                  <AlertTriangle className="text-warning h-3.5 w-3.5" />
+                  <p className="text-warning text-sm">Near credit limit</p>
                 </div>
               )}
             </div>

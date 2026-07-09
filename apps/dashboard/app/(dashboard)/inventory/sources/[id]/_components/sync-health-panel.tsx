@@ -1,4 +1,4 @@
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import {
   formatDateTime,
@@ -70,16 +70,16 @@ function Tile({
   emphasis?: boolean;
 }) {
   return (
-    <div className="flex min-w-[10rem] flex-1 flex-col gap-1 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-3 py-2">
       <p className="text-base-content/70 text-xs">{label}</p>
-      <p className={emphasis ? 'text-lg text-[var(--color-warning)]' : 'text-lg'}>{value}</p>
+      <p className={emphasis ? 'text-warning text-lg' : 'text-lg'}>{value}</p>
     </div>
   );
 }
 
 function LatestRun({ run }: { run: SyncRunRow }) {
   return (
-    <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-3">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border px-3 py-3">
       <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge color={runStatusColor(run.status)}>{run.status}</Badge>
         <p className="text-base-content/70 text-sm">
@@ -94,7 +94,7 @@ function LatestRun({ run }: { run: SyncRunRow }) {
         <Metric label="Out-of-order" value={run.rowsStale} warn={run.rowsStale > 0} />
         <Metric label="Skipped" value={run.rowsSkipped} warn={run.rowsSkipped > 0} />
       </div>
-      {run.error ? <p className="text-sm text-[var(--color-danger)]">{run.error}</p> : null}
+      {run.error ? <p className="text-danger text-sm">{run.error}</p> : null}
     </div>
   );
 }
@@ -102,9 +102,7 @@ function LatestRun({ run }: { run: SyncRunRow }) {
 function Metric({ label, value, warn = false }: { label: string; value: number; warn?: boolean }) {
   return (
     <div className="flex flex-col gap-0">
-      <p className={warn && value > 0 ? 'text-lg text-[var(--color-warning)]' : 'text-lg'}>
-        {value}
-      </p>
+      <p className={warn && value > 0 ? 'text-warning text-lg' : 'text-lg'}>{value}</p>
       <p className="text-base-content/70 text-xs">{label}</p>
     </div>
   );

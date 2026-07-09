@@ -58,8 +58,8 @@ export function B2bFleet() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '186px',
             }}
@@ -94,7 +94,7 @@ export function B2bFleet() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p.body}
@@ -158,7 +158,7 @@ export function B2bSameEngine() {
           fontFamily: SANS,
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           maxWidth: '700px',
         }}
       >
@@ -183,7 +183,7 @@ function EngineColumn({ col }: { col: EngineCol }) {
         gap: '16px',
         padding: '32px',
         backgroundColor: moduleTint(accent.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
       }}
     >
@@ -215,7 +215,7 @@ function EngineColumn({ col }: { col: EngineCol }) {
           fontFamily: SANS,
           fontSize: '15px',
           lineHeight: '24px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {col.body}
@@ -231,7 +231,7 @@ function EngineColumn({ col }: { col: EngineCol }) {
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '23px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p}

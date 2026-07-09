@@ -155,7 +155,7 @@ screen could be guessed from the word "dashboard" alone, it is wrong.
   neutral; the multiplicity lives in the signals, never in fills.
 - **Module color as identity** (14 fixed hues), driven automatically by `<ModuleProvider>` — no per-screen
   conditional styling.
-- **Four-axis components** (`color × variant × size`) from `@sparx/ui`; feature code never re-skins a control.
+- **Four-axis components** (`color × variant × size`) from `@wizeworks/silicaui-react`; feature code never re-skins a control.
 - **Flat by default.** Depth is tonal layering, not shadow. Shadows appear only for true elevation.
 - **Geist, two weights** (400 / 500). A fixed rem scale, not fluid type — this is product, not marketing.
 - **WCAG 2.1 AA**, visible focus rings, `prefers-reduced-motion` honored, structural responsive collapse.
@@ -176,7 +176,7 @@ warmth is never decorative.
 Each module owns exactly one hue, and that hue surfaces **wherever the module's functionality appears** —
 its marketing domain, its sidebar nav item, the subtle module-tint background on its cards, and any panel / badge /
 action representing that module _even when embedded in another module's screen_ (a product page's
-inventory panel wears inventory amber). `--module-active` is set at runtime by the **nearest**
+inventory panel wears inventory amber). `--color-module` is set at runtime by the **nearest**
 `<ModuleProvider>`, which is nestable — wrap a cross-module panel in its own `<ModuleProvider module="…">`
 and everything beneath it re-tints with no props. Any component on the `module` color slot adopts the
 nearest provider's hue.
@@ -188,10 +188,12 @@ nearest provider's hue.
   · **Automations** Fuchsia (`#d946ef`) · **SEO** Yellow (`#eab308`) · **Builder/Storefront** Indigo
   (`#6366f1`, inherits primary).
 
-Every color slot derives its full treatment set from one base via `color-mix` in OKLCH (in the `.sx-c-*`
-role classes): `--c-ink` (base → 60% toward text), `--c-hover` (86% toward text), `--c-tint` (14% over
-transparent). One base hex yields a coherent solid / soft / outline / ghost set in **both** light and dark
-mode, because the mix targets `--color-text-primary`, which flips per mode.
+Every color slot derives its full treatment set from one base hue via **silicaui's Tailwind plugin**, which
+statically emits the `bg-<color>` / `text-<color>` / `btn-<color>` / `badge-<color>` utilities plus the
+universal `soft` family. A tint is always `<color> + soft`: `bg-soft` paints
+`color-mix(in oklab, <accent> 15%, base)` — computed once, theme-aware, never a baked token. One base hex
+yields a coherent solid / soft / outline / ghost set in **both** light and dark mode; the palette lives in
+`@sparx/brand/theme.css` (`--color-*`), defined **once**, so dark mode resolves correctly.
 
 ### Semantic (status only)
 
@@ -295,30 +297,31 @@ drawer, popover, focus — and nothing else.
 ## 5. Components
 
 Every interactive component is built on the **four-axis API** — `color` (semantic or module slot, applied
-as a `.sx-c-*` role-var class), `variant` (treatment), `size`, and `shape` — so `color × variant` composes
-with no cartesian explosion. The feel across all of them is **tactile and modern**: crisp surfaces, hover
-that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
+as a silicaui plugin class: `btn-<color>` / `badge-<color>` / `bg-<color>`), `variant` (treatment), `size`,
+and `shape` — so `color × variant` composes with no cartesian explosion. The feel across all of them is
+**tactile and modern**: crisp surfaces, hover that shifts toward the color's hover mix, a prominent focus
+ring, immediate 175ms state.
 
 ### Buttons
 
 - **Shape:** Gently rounded (`rounded-md`, 6px). Icon-only buttons use `square` (field radius) or `circle` (full).
-- **Variants** (treatment): `solid` (default) · `soft` (tinted `--c-tint` bg + `--c-ink` text) · `outline` · `dashed` · `ghost` · `link`.
+- **Variants** (treatment): `solid` (default, bare `btn`) · `soft` (`bg-soft` tint + `text-<color>` ink) · `outline` · `dashed` (silica spells it `btn-dash`) · `ghost` · `link`.
 - **Primary:** Indigo solid, white text, `h-9` (36px), `px-4`, medium weight.
-- **Hover / Focus:** Background shifts toward `--c-hover`; focus shows a 2px `--color-border-focus` ring with a 2px offset. Disabled drops to 40% opacity, pointer-events off.
+- **Hover / Focus:** Background shifts toward the color's hover mix; focus shows a 2px `--color-border-focus` ring with a 2px offset. Disabled drops to 40% opacity, pointer-events off.
 - **Sizes:** `xs` (28px) → `sm` (32px) → `md` (36px) → `lg` (40px) → `xl` (44px). Loading swaps content for an inline spinner and sets `aria-busy`.
 
 ### Cards / Containers
 
 - **Corner Style:** `rounded-lg` (8px).
 - **Background / Border:** `surface (#fff)` on a `1px default border (#e5e5e5)`.
-- **Variants:** `default` · `module` (background **tinted with the active-module color** — a subtle `color-mix(in oklab, var(--module-active) 12%, surface)`, theme-aware, no stripe) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
+- **Variants:** `default` · `module` (background **tinted with the active-module color** — `bg-module bg-soft`, a theme-aware `color-mix` (~15%) into the surface via silica's `bg-soft`, text/border untouched, no stripe) · `elevated` (`shadow-md`) · `ghost` (borderless, transparent) · `subtle` (borderless on `#f4f4f5`).
 - **Padding:** `none` · `sm` (12px) · `md` (16px, default) · `lg` (24px). Footers right-align actions above a top border. **Never nest cards.**
-- **The `module` tint follows the nearest `<ModuleProvider>`.** A commerce page's cards are orange; a panel that surfaces another module's job is wrapped in **its** provider (`<ModuleProvider module="inventory">`), and its `module` cards turn amber automatically — same mechanism that colors the panel's buttons/badges. This is the cross-module wayfinding cue (Color-Follows-Functionality, below). **On a dense cross-module page, tint only the ONE "primary" card per module hue and pass `plain` to the rest** (a `OverviewCard` prop that renders a neutral card) — a wall of tinted cards is competing washes, not wayfinding. **Don't** pass `accent` to recolor a card when a provider already wraps it — `accent="…"` is only for a one-off color with no surrounding provider. (The tint reads `--module-active` directly and mixes into the surface, so it never picks up a leaked role color and adapts to light/dark — wrap the panel and it just works.)
+- **The `module` tint follows the nearest `<ModuleProvider>`.** A commerce page's cards are orange; a panel that surfaces another module's job is wrapped in **its** provider (`<ModuleProvider module="inventory">`), and its `module` cards turn amber automatically — same mechanism that colors the panel's buttons/badges. This is the cross-module wayfinding cue (Color-Follows-Functionality, below). **On a dense cross-module page, tint only the ONE "primary" card per module hue and pass `plain` to the rest** (a `OverviewCard` prop that renders a neutral card) — a wall of tinted cards is competing washes, not wayfinding. **Don't** pass `accent` to recolor a card when a provider already wraps it — `accent="…"` is only for a one-off color with no surrounding provider. (The tint resolves `--color-module` (set by the provider) through `bg-soft`, so it never picks up a leaked role color and adapts to light/dark — wrap the panel and it just works.)
 
 ### Inputs / Fields
 
 - **Style:** `surface` bg, `1px default border`, `rounded-md`, 16px text, tertiary-gray placeholder (held to AA, not a light wash).
-- **Focus:** 2px `--color-border-focus` ring, no outline. **Hover** strengthens the border to `--color-border-strong`.
+- **Focus:** 2px `--color-border-focus` ring, no outline. **Hover** strengthens the border to `border-base-content/30`.
 - **Variants / States:** `default` · `error` (danger border + ring) · `success` (success border + ring); disabled at 50% opacity. Sizes `sm` (32px) / `md` (36px) / `lg` (40px).
 
 ### Badges / Chips
@@ -335,7 +338,7 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 
 ### Signature Components
 
-- **`<ModuleProvider module="…">`** — sets `--module-active`; everything beneath re-tints with no props. The whole "one console, many colors" effect lives here.
+- **`<ModuleProvider module="…">`** — sets `--color-module`; everything beneath re-tints with no props. The whole "one console, many colors" effect lives here.
 - **`TopProgress`** — the page-top loading bar. Per module it sweeps a light→base→deep ramp of the active hue; at platform scope it reveals the **full module spectrum** as one gradient. The system's signature flourish.
 - **The Wordmark** — "sparx" in Geist 500, tracking -0.03em, with the **"x" always in Sparx Indigo `#6366f1`** — never one solid color.
 
@@ -347,7 +350,7 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 - **Do** color status by meaning with `<Badge color={statusTone(s)} variant="soft">`, and use soft semantic callouts (info/success/warning) to break up dense text instead of a wall of black-on-white (**The Semantic-Status Rule**).
 - **Do** show an entity's identity ONCE — its name/slug is the editable form field, never _also_ a read-only heading atop the body. The drawer chrome's type label + the full-page back-link carry context; the field carries the value. (Read-only / transaction details — orders, quotes, inventory ops — have no editable name field, so their identity heading stays.)
 - **Do** put a detail surface's status badge + lifecycle actions (Publish/Archive, Preview/Revisions/…) in the **frame header** via the `DetailHeaderSlot` teleport (docs/86 §5.1), never a bespoke in-body "Status" card. The status badge + primary action keep text; secondary actions go **icon-only with a tooltip** so the header fits one row.
-- **Do** build every control from `@sparx/ui` on the `color × variant × size` axes; let `<ModuleProvider>` drive color.
+- **Do** build every control from `@wizeworks/silicaui-react` on the `color × variant × size` axes; let `<ModuleProvider>` drive color.
 - **Do** stay flat by default — separate resting elements with a border or the next tonal layer, not a shadow.
 - **Do** hold to Geist at two weights (400 / 500) and the fixed 16px-body rem scale.
 - **Do** hit WCAG 2.1 AA: body ≥4.5:1, placeholders at 4.5:1 (no light-gray wash), a visible focus ring on every interactive element, and a `prefers-reduced-motion` fallback for every animation.
@@ -358,9 +361,9 @@ that shifts toward `--c-hover`, a prominent focus ring, immediate 175ms state.
 
 - **Don't** ship generic AI-slop SaaS: no cream/sand/parchment backgrounds, no tiny uppercase tracked eyebrows over every section, no identical icon + heading + text card grids, no big-number hero-metric template, no gradient text.
 - **Don't** let anything read as built for one vertical (no diesel/auto-parts or any single trade as the running example). A publisher and a parts distributor must feel equally at home.
-- **Don't** re-skin a control in feature code — a background fill paired with a foreground text color, or hand-built `hover:` / `focus:` / `disabled:` states, means you've rebuilt a `<Button>` / `<Input>` / `<Badge>`. Use the variant, or add one to `@sparx/ui`.
+- **Don't** re-skin a control in feature code — a background fill paired with a foreground text color, or hand-built `hover:` / `focus:` / `disabled:` states, means you've rebuilt a `<Button>` / `<Input>` / `<Badge>`. Use the `@wizeworks/silicaui-react` primitive / its variant (add one to `@sparx/ui` only for a genuine composition).
 - **Don't** use a colored `border-left` / `border-right` greater than 1px as an accent stripe — colored side-stripes stay banned. A module card carries its hue as a subtle background **tint** (`variant="module"`), not a stripe; there are no sanctioned colored card stripes anymore.
-- **Don't** hardcode a color in a component; every value references a token in `tokens.css`.
+- **Don't** hardcode a color in a component; every color value references a `--color-*` token in `@sparx/brand/theme.css`.
 - **Don't** use font weights 600 or 700, and don't use `clamp()` fluid type in the dashboard.
 - **Don't** put white text on warm fills (amber, SEO yellow, warning) — it fails AA.
 - **Don't** nest cards, and don't reach for a modal as the first thought — exhaust inline / progressive alternatives first.

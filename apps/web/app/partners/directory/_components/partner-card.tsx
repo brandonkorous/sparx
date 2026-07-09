@@ -4,7 +4,7 @@
 // location or Remote, a short bio, specialty tags, and a "Visit website" CTA when
 // the partner lists a URL. Certified partners carry the platform-indigo badge.
 
-import { Badge } from '@sparx/ui';
+import { Badge } from '@wizeworks/silicaui-react';
 import { partnerLocation, TIER_META, type PartnerCard as Card } from '@/lib/partners';
 
 const SANS = 'var(--font-sans)';
@@ -38,8 +38,8 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
         flexDirection: 'column',
         gap: '14px',
         width: '100%',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
       }}
@@ -56,7 +56,13 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
           {tier.label}
         </Badge>
         {location ? (
-          <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: SANS,
+              fontSize: '13px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {location}
           </span>
         ) : null}
@@ -70,7 +76,7 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
           fontSize: '19px',
           letterSpacing: '-0.015em',
           lineHeight: '25px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {partner.displayName}
@@ -83,7 +89,7 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
             fontFamily: SANS,
             fontSize: '14px',
             lineHeight: '22px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -104,8 +110,8 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
                 fontSize: '12px',
                 padding: '3px 9px',
                 borderRadius: '9999px',
-                backgroundColor: 'var(--color-bg-subtle)',
-                color: 'var(--color-text-secondary)',
+                backgroundColor: 'var(--color-base-200)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {specialtyLabel(t)}
@@ -125,7 +131,7 @@ export function PartnerDirectoryCard({ partner }: { partner: Card }) {
             fontFamily: SANS,
             fontSize: '14px',
             fontWeight: 500,
-            color: 'var(--sparx-primary)',
+            color: 'var(--color-primary)',
             textDecoration: 'none',
           }}
         >

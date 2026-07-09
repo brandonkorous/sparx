@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, ExternalLink } from 'lucide-react';
 
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { QuoteRespondEditor, type MarkupRuleSummary } from './_components/quote-respond-editor';
@@ -109,7 +109,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
             href={`/api/b2b/quotes/${id}/pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-sm hover:text-[var(--module-active)] hover:underline"
+            className="hover:text-module flex items-center gap-1 text-sm hover:underline"
           >
             <ExternalLink className="h-3.5 w-3.5" /> View PDF
           </a>
@@ -125,7 +125,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
               <CardTitle>Account</CardTitle>
               <Link
                 href={`/b2b/accounts/${quote.b2bAccount.id}`}
-                className="font-medium hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module font-medium hover:underline"
               >
                 {quote.b2bAccount.companyName}
               </Link>
@@ -242,7 +242,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
               <p className="text-base-content/70 text-sm">Shipping</p>
               <p className="text-sm">{fmt(quote.shippingTotal)}</p>
             </div>
-            <div className="flex flex-row justify-between border-t border-[var(--color-border-default)] pt-2">
+            <div className="border-base-300 flex flex-row justify-between border-t pt-2">
               <p className="font-semibold">Total</p>
               <p className="font-semibold">{fmt(quote.total)}</p>
             </div>

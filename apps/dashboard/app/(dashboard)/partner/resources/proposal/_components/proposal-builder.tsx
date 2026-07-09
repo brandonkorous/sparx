@@ -1,7 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Label,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { MODULE_GUIDES } from '../../_lib/content';
 
@@ -47,26 +56,26 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
         <CardBody>
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="prop-client">Client name</Label>
-                <Input
+              <Field>
+                <FieldLabel>Client name</FieldLabel>
+                <FieldControl
                   id="prop-client"
                   value={client}
                   onChange={(e) => setClient(e.target.value)}
                   placeholder="e.g. Riverside Bakery"
                   maxLength={160}
                 />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="prop-by">Prepared by</Label>
-                <Input
+              </Field>
+              <Field>
+                <FieldLabel>Prepared by</FieldLabel>
+                <FieldControl
                   id="prop-by"
                   value={preparedBy}
                   onChange={(e) => setPreparedBy(e.target.value)}
                   placeholder="Your practice name"
                   maxLength={160}
                 />
-              </div>
+              </Field>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -75,7 +84,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                 {MODULE_GUIDES.map((g) => (
                   <div
                     key={g.module}
-                    className="flex items-start gap-3 rounded-lg border border-[var(--color-border-default)] p-3"
+                    className="border-base-300 flex items-start gap-3 rounded-lg border p-3"
                   >
                     <Checkbox
                       id={`prop-mod-${g.module}`}
@@ -94,28 +103,28 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 sm:max-w-xs">
-              <Label htmlFor="prop-monthly">Estimated monthly (USD)</Label>
-              <Input
+            <Field className="sm:max-w-xs">
+              <FieldLabel>Estimated monthly (USD)</FieldLabel>
+              <FieldControl
                 id="prop-monthly"
                 inputMode="decimal"
                 value={monthly}
                 onChange={(e) => setMonthly(e.target.value)}
                 placeholder="149"
               />
-            </div>
+            </Field>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="prop-scope">Scope &amp; notes (optional)</Label>
-              <Textarea
+            <Field>
+              <FieldLabel>Scope &amp; notes (optional)</FieldLabel>
+              <FieldControl
                 id="prop-scope"
                 value={scope}
                 onChange={(e) => setScope(e.target.value)}
                 placeholder="What you’ll deliver, timeline, anything specific to this client…"
-                rows={4}
                 maxLength={2000}
+                render={<Textarea rows={4} />}
               />
-            </div>
+            </Field>
           </div>
         </CardBody>
       </Card>
@@ -141,7 +150,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                     <li key={g.module} className="flex items-start gap-3">
                       <span
                         aria-hidden
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                        className="bg-module mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
                       />
                       <p className="text-sm">
                         <span className="font-medium">{g.label}</span> — {g.blurb}

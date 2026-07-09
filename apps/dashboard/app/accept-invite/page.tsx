@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { getInvitationDetail, getSession, type InvitationDetail } from '@sparx/auth';
 import { AuthScreen } from '../(auth)/_components/auth-screen';
 import { roleLabel } from '../(dashboard)/settings/team/_lib/roles';

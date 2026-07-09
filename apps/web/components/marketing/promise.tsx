@@ -43,7 +43,7 @@ export function Promise() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
@@ -60,7 +60,7 @@ export function Promise() {
                 fontFamily: 'var(--font-sans)',
                 fontSize: '18px',
                 lineHeight: '30px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '640px',
                 paddingTop: '8px',
                 margin: 0,
@@ -80,8 +80,7 @@ export function Promise() {
                   flexDirection: 'column',
                   padding: '32px 28px',
                   gap: '20px',
-                  backgroundColor:
-                    'invert' in s && s.invert ? '#0A0A0A' : 'var(--color-bg-surface)',
+                  backgroundColor: 'invert' in s && s.invert ? '#0A0A0A' : 'var(--color-base-100)',
                 }}
               >
                 <div
@@ -91,7 +90,7 @@ export function Promise() {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '12px',
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     }}
                   >
                     {s.time}
@@ -104,8 +103,8 @@ export function Promise() {
                       letterSpacing: '0.05em',
                       color:
                         'invert' in s && s.invert
-                          ? 'var(--sparx-primary)'
-                          : 'var(--color-text-primary)',
+                          ? 'var(--color-primary)'
+                          : 'var(--color-base-content)',
                       textTransform: 'uppercase',
                     }}
                   >
@@ -119,7 +118,7 @@ export function Promise() {
                     fontSize: '20px',
                     letterSpacing: '-0.015em',
                     lineHeight: '26px',
-                    color: 'invert' in s && s.invert ? '#FFFFFF' : 'var(--color-text-primary)',
+                    color: 'invert' in s && s.invert ? '#FFFFFF' : 'var(--color-base-content)',
                   }}
                 >
                   {s.title}
@@ -130,7 +129,10 @@ export function Promise() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
                     lineHeight: '20px',
-                    color: 'invert' in s && s.invert ? '#A1A1AA' : 'var(--color-text-secondary)',
+                    color:
+                      'invert' in s && s.invert
+                        ? '#A1A1AA'
+                        : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {s.body}

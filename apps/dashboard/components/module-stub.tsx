@@ -1,4 +1,4 @@
-import { Badge, Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 import { Sparkles } from 'lucide-react';
 
 export interface ModuleStubProps {

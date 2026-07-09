@@ -82,7 +82,7 @@ export function DetailPageShell({
   const fullBleed = isFullBleedDetail(typeId);
   const body = (
     <Stack gap={0} className={cn(fullBleed && 'h-full')}>
-      <div className="flex h-[52px] shrink-0 items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2">
+      <div className="border-base-300 bg-base-100 flex h-[52px] shrink-0 items-center gap-2 border-b px-2">
         {listHref && <DetailBackLink href={listHref} label={listLabel ?? ''} />}
         <div className="flex-1" />
         <DetailHeaderSlotTarget className="flex items-center gap-2" />

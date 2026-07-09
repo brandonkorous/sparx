@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Label, NativeSelect } from 'silicaui-react';
+import { Field, FieldLabel, NativeSelect } from '@wizeworks/silicaui-react';
 
 import type { SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
@@ -25,15 +25,15 @@ export function ResourcePicker({
   }
 
   return (
-    <div className="max-w-sm">
-      <Label htmlFor="avail-resource">Resource</Label>
-      <NativeSelect id="avail-resource" value={selectedId} onChange={(e) => select(e.target.value)}>
+    <Field className="max-w-sm">
+      <FieldLabel>Resource</FieldLabel>
+      <NativeSelect value={selectedId} onChange={(e) => select(e.target.value)}>
         {resources.map((r) => (
           <option key={r.id} value={r.id}>
             {r.name} · {RESOURCE_KIND_LABEL[r.kind]}
           </option>
         ))}
       </NativeSelect>
-    </div>
+    </Field>
   );
 }

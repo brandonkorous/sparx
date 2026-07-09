@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Input } from 'silicaui-react';
+import { Button, Input } from '@wizeworks/silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 
@@ -87,7 +87,7 @@ export function VariantPicker({ variant, onResolve, onClear, defaultSku }: Varia
           {busy ? 'Finding…' : 'Find'}
         </Button>
       </div>
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
     </div>
   );
 }

@@ -2,7 +2,13 @@
 
 import * as React from 'react';
 import { Check, Copy } from 'lucide-react';
-import { Button, Label, toast, type ButtonProps } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import {
+  Button,
+  Field as SilicaField,
+  FieldLabel,
+  type ButtonProps,
+} from '@wizeworks/silicaui-react';
 
 /**
  * Shared client building blocks for the tools — a copy-to-clipboard button, a
@@ -83,10 +89,17 @@ export interface FieldProps {
   children: React.ReactNode;
 }
 
-/** Vertical labeled field: label row, control, optional hint. */
+/**
+ * Vertical labeled field: label row, control, optional hint. Rendered through
+ * silica's `Field`/`FieldLabel` for consistent look + a11y (`required` draws the
+ * asterisk). The control is passed as `children` — the tools hand it heterogeneous
+ * inputs (silica `Input`/`Textarea`, `ColorPicker`, `FileUpload`, sliders, canvas-
+ * wired controls), so we don't force a `FieldControl` here; the bespoke inline
+ * layout (label row + adornment + hint) is preserved.
+ */
 export function Field({ label, htmlFor, hint, required, adornment, children }: FieldProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', minWidth: 0 }}>
+    <SilicaField style={{ display: 'flex', flexDirection: 'column', gap: '7px', minWidth: 0 }}>
       {label || adornment ? (
         <div
           style={{
@@ -97,9 +110,9 @@ export function Field({ label, htmlFor, hint, required, adornment, children }: F
           }}
         >
           {label ? (
-            <Label htmlFor={htmlFor} required={required}>
+            <FieldLabel htmlFor={htmlFor} required={required}>
               {label}
-            </Label>
+            </FieldLabel>
           ) : (
             <span />
           )}
@@ -108,7 +121,7 @@ export function Field({ label, htmlFor, hint, required, adornment, children }: F
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {adornment}
@@ -123,13 +136,13 @@ export function Field({ label, htmlFor, hint, required, adornment, children }: F
             fontFamily: 'var(--font-sans)',
             fontSize: '12.5px',
             lineHeight: '18px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {hint}
         </span>
       ) : null}
-    </div>
+    </SilicaField>
   );
 }
 
@@ -150,8 +163,8 @@ export function Panel({ title, action, children, style }: PanelProps) {
         flexDirection: 'column',
         gap: '18px',
         padding: '22px',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
         ...style,
       }}
@@ -171,7 +184,7 @@ export function Panel({ title, action, children, style }: PanelProps) {
               fontWeight: 500,
               fontSize: '14px',
               letterSpacing: '-0.01em',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
               margin: 0,
             }}
           >

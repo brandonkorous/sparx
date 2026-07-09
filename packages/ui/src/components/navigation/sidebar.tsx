@@ -14,7 +14,7 @@ export const Sidebar = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLEl
     <aside
       ref={ref}
       className={cn(
-        'flex h-full w-56 shrink-0 flex-col gap-1 border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-3',
+        'flex h-full w-56 shrink-0 flex-col gap-1 border-r border-[var(--color-base-300)] bg-[var(--color-base-100)] p-3',
         className
       )}
       {...props}
@@ -54,7 +54,7 @@ export const SidebarSectionLabel = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'px-2 pb-1 text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase',
+      'text-base-content/50 px-2 pb-1 text-xs font-medium tracking-wider uppercase',
       className
     )}
     {...props}
@@ -64,7 +64,7 @@ SidebarSectionLabel.displayName = 'SidebarSectionLabel';
 
 export const SidebarFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('mt-auto border-t border-[var(--color-border-default)] pt-2', className)}
+    className={cn('mt-auto border-t border-[var(--color-base-300)] pt-2', className)}
     {...props}
   />
 );
@@ -74,15 +74,14 @@ const sidebarItemVariants = cva(
   [
     'group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium',
     'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
     'disabled:pointer-events-none disabled:opacity-40',
   ],
   {
     variants: {
       active: {
-        false:
-          'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]',
-        true: 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]',
+        false: 'text-base-content/70 hover:text-base-content hover:bg-[var(--color-base-200)]',
+        true: 'bg-module bg-soft text-module',
       },
     },
     defaultVariants: { active: false },
@@ -136,8 +135,8 @@ export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>
         className={cn(
           'inline-flex h-4 w-4 shrink-0 items-center justify-center',
           moduleIcon || active
-            ? 'text-[var(--module-active)]'
-            : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
+            ? 'text-module'
+            : 'text-base-content/50 group-hover:text-base-content/70'
         )}
       >
         {icon}

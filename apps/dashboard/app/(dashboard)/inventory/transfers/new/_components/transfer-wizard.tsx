@@ -25,11 +25,13 @@ import {
   Card,
   CardBody,
   EmptyState,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -248,46 +250,53 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap items-end gap-3">
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-                    <Label htmlFor="tw-from">From</Label>
-                    <NativeSelect
-                      id="tw-from"
+                  <Field className="min-w-[12rem] flex-1">
+                    <FieldLabel>From</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {warehouses.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.name} ({w.code})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
                       value={fromId}
                       onChange={(e) => setFromId(e.target.value)}
-                    >
-                      {warehouses.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.name} ({w.code})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <ArrowRight className="mb-2 h-5 w-5 shrink-0 text-[var(--color-text-muted)]" />
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-                    <Label htmlFor="tw-to">To</Label>
-                    <NativeSelect id="tw-to" value={toId} onChange={(e) => setToId(e.target.value)}>
-                      {warehouses.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.name} ({w.code})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
+                    />
+                  </Field>
+                  <ArrowRight className="text-base-content/60 mb-2 h-5 w-5 shrink-0" />
+                  <Field className="min-w-[12rem] flex-1">
+                    <FieldLabel>To</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          {warehouses.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.name} ({w.code})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                      value={toId}
+                      onChange={(e) => setToId(e.target.value)}
+                    />
+                  </Field>
                 </div>
                 {sameWarehouse && (
-                  <p className="text-xs text-[var(--color-warning-text)]">
+                  <FieldStatus status="warning" attached={false}>
                     Source and destination must be different warehouses.
-                  </p>
+                  </FieldStatus>
                 )}
-                <div>
-                  <Label htmlFor="tw-note">Note</Label>
-                  <Textarea
-                    id="tw-note"
-                    rows={2}
+                <Field>
+                  <FieldLabel>Note</FieldLabel>
+                  <FieldControl
+                    render={<Textarea rows={2} />}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -312,18 +321,15 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                     {lines.map((l) => (
                       <div
                         key={l.variantId}
-                        className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                        className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
                       >
                         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                           <p className="text-sm font-medium">{l.title ?? l.sku}</p>
                           <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
                         </div>
-                        <div className="flex w-[6rem] flex-col gap-0">
-                          <Label htmlFor={`tw-qty-${l.variantId}`} className="sr-only">
-                            Quantity
-                          </Label>
-                          <Input
-                            id={`tw-qty-${l.variantId}`}
+                        <Field className="w-[6rem]">
+                          <FieldLabel className="sr-only">Quantity</FieldLabel>
+                          <FieldControl
                             type="number"
                             min={1}
                             value={l.quantity}
@@ -335,7 +341,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                               )
                             }
                           />
-                        </div>
+                        </Field>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -354,9 +360,9 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
           </Card>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>
@@ -401,11 +407,10 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (line: PickedLine) => void; dis
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
-        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-          <Label htmlFor="transfer-add-sku">Variant SKU</Label>
-          <Input
-            id="transfer-add-sku"
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
+        <Field className="min-w-[12rem] flex-1">
+          <FieldLabel>Variant SKU</FieldLabel>
+          <FieldControl
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
@@ -416,15 +421,15 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (line: PickedLine) => void; dis
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </div>
+        </Field>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
       </div>
       {error && (
-        <p className="text-danger text-sm" role="alert">
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {error}
-        </p>
+        </FieldStatus>
       )}
     </div>
   );

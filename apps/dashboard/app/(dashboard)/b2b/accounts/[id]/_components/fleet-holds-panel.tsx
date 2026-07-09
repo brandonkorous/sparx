@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Input, Table } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import {
   checkAvailabilityAction,
@@ -103,16 +111,17 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
   return (
     <div className="flex flex-col gap-4">
       {/* Create form */}
-      <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+      <div className="border-base-300 bg-base-200 flex flex-col gap-3 rounded border p-3">
         <div className="flex flex-row flex-wrap items-end gap-2">
-          <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-            <p className="text-base-content/70 text-xs">SKU</p>
-            <Input
+          <Field className="min-w-[12rem] flex-1">
+            <FieldLabel>SKU</FieldLabel>
+            <FieldControl
+              name="sku"
               value={sku}
               onChange={(e) => setSku(e.target.value)}
               placeholder="e.g. INJ-67C"
             />
-          </div>
+          </Field>
           <Button variant="outline" size="sm" onClick={check} disabled={pending || !sku.trim()}>
             Check availability
           </Button>
@@ -128,30 +137,36 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
                 ? ` (limits ${avail.minOrderQty ?? 1}–${avail.maxOrderQty ?? '∞'})`
                 : ''}
             </p>
-            <div className="flex w-24 flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Qty</p>
-              <Input
+            <Field className="w-24">
+              <FieldLabel>Qty</FieldLabel>
+              <FieldControl
+                name="quantity"
                 type="number"
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
-            </div>
-            <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Work order</p>
-              <Input
+            </Field>
+            <Field className="min-w-[10rem] flex-1">
+              <FieldLabel>Work order</FieldLabel>
+              <FieldControl
+                name="workOrderRef"
                 value={workOrderRef}
                 onChange={(e) => setWorkOrderRef(e.target.value)}
                 placeholder="e.g. WO-1042"
               />
-            </div>
+            </Field>
             <Button color="module" size="sm" onClick={place} disabled={pending}>
               {pending ? 'Placing…' : 'Place hold'}
             </Button>
           </div>
         ) : null}
 
-        {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+        {error ? (
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {error}
+          </FieldStatus>
+        ) : null}
       </div>
 
       {/* Holds list */}

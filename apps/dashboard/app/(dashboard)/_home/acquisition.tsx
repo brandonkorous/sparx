@@ -1,4 +1,4 @@
-import { Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 import { BarList, ModuleProvider } from '@sparx/ui';
 
 import { CardLink, SampleBadge } from '../_components/overview-bits';
@@ -76,9 +76,7 @@ export function TopPagesCard({ pages, isSample }: { pages: SiteTopPage[]; isSamp
               {pages.map((p) => (
                 <tr key={p.path}>
                   <td>
-                    <span className="font-mono text-xs text-[var(--module-active-text)]">
-                      {p.path}
-                    </span>
+                    <span className="text-module font-mono text-xs">{p.path}</span>
                   </td>
                   <td className="text-right tabular-nums">{fmtNumber(p.views)}</td>
                   <td className="text-right tabular-nums">{fmtNumber(p.visitors)}</td>

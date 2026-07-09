@@ -20,9 +20,14 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Input,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
   Label,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
 import { CalendarClock, History, Trash2 } from 'lucide-react';
@@ -78,6 +83,11 @@ export function EditPageForm({
   const [title, setTitle] = React.useState(page.title);
   const [slug, setSlug] = React.useState(page.slug);
   const [seo, setSeo] = React.useState<SeoFields>(page.seo);
+
+  const v = useFieldValidation(
+    { title, slug },
+    { title: rule.required('Title is required.'), slug: rule.required('Slug is required.') }
+  );
   const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
   // Schedule dialog (kept in this file so it shares the edit form's local state
@@ -113,6 +123,7 @@ export function EditPageForm({
     e.preventDefault();
     setError(null);
     setMessage(null);
+    if (!v.validate()) return;
     const formData = new FormData(e.currentTarget);
     formData.set('content', JSON.stringify(doc));
     formData.set('seoTitle', seo.title);
@@ -275,27 +286,25 @@ export function EditPageForm({
               Title, slug, and the body block editor. Edits are saved when you click Save changes.
             </p>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
+              <Field {...v.field('title')}>
+                <FieldLabel required>Title</FieldLabel>
+                <FieldControl
                   name="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  required
+                  {...v.control('title')}
                 />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  id="slug"
+              </Field>
+              <Field {...v.field('slug')}>
+                <FieldLabel required>Slug</FieldLabel>
+                <FieldControl
                   name="slug"
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  required
+                  {...v.control('slug')}
                 />
-                <p className="text-base-content/70 text-xs">/{slug} is your site path.</p>
-              </div>
+                <FieldDescription>/{slug} is your site path.</FieldDescription>
+              </Field>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="entry-body-editor">Body</Label>
                 <ContentBlockEditor
@@ -333,14 +342,14 @@ export function EditPageForm({
           <CardBody>
             <div className="flex flex-col gap-2">
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
               {message && (
-                <p className="text-success text-sm" aria-live="polite">
+                <FieldStatus status="success" attached={false} aria-live="polite">
                   {message}
-                </p>
+                </FieldStatus>
               )}
             </div>
           </CardBody>
@@ -372,30 +381,25 @@ export function EditPageForm({
             </DialogDescription>
           </div>
           <div className="px-6 py-4">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="schedule-at">
-                When{' '}
-                <span className="text-error" aria-hidden="true">
-                  *
-                </span>
-              </Label>
+            <Field className="gap-3">
+              <FieldLabel required>When</FieldLabel>
               <DatePicker
                 id="schedule-at"
                 value={scheduleAt ?? null}
                 onValueChange={(d) => setScheduleAt(d ?? undefined)}
               />
               {scheduleAt && (
-                <p className="text-base-content/70 text-xs" aria-live="polite">
+                <FieldDescription aria-live="polite">
                   Will publish at <strong>{scheduleAt.toLocaleString()}</strong>
                   {' · '}UTC <code>{scheduleAt.toISOString()}</code>
-                </p>
+                </FieldDescription>
               )}
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
-            </div>
+            </Field>
           </div>
           <div className="flex justify-end gap-2 px-6 pb-6">
             <Button type="button" variant="ghost" onClick={() => setScheduleOpen(false)}>

@@ -4,7 +4,7 @@
 // chip), not a control variant.
 
 import Link from 'next/link';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import type { MarketplaceCategory } from '../_registry';
 

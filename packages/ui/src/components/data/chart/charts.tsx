@@ -89,7 +89,10 @@ function ChartFrame({
 }
 
 const CHART_MARGIN = { top: 8, right: 8, bottom: 0, left: 0 } as const;
-const TOOLTIP_CURSOR = { stroke: 'var(--color-border-strong)', strokeWidth: 1 } as const;
+const TOOLTIP_CURSOR = {
+  stroke: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
+  strokeWidth: 1,
+} as const;
 
 // ── Line ───────────────────────────────────────────────────
 
@@ -212,7 +215,7 @@ export function BarChart({
         )}
         <Tooltip
           content={<ChartTooltipContent valueFormatter={valueFormatter} />}
-          cursor={{ fill: 'var(--color-bg-subtle)' }}
+          cursor={{ fill: 'var(--color-base-200)' }}
         />
         {legend && <Legend content={<ChartLegendContent />} />}
         {series.map((s, i) => (

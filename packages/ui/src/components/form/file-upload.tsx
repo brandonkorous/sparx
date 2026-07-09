@@ -109,19 +109,19 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             'flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed',
             'px-6 py-8 text-center text-sm',
             'transition-colors duration-150',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
             isDragging
-              ? 'border-[var(--module-active)] bg-[var(--module-active-tint)] text-[var(--module-active-text)]'
-              : 'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]',
+              ? 'border-module bg-module bg-soft text-module'
+              : 'text-base-content/70 border-[var(--color-base-300)] bg-[var(--color-base-200)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
             disabled && 'pointer-events-none opacity-50'
           )}
         >
           <Upload className="h-5 w-5" />
           <p>
-            <span className="font-medium text-[var(--color-text-primary)]">Click to upload</span>
+            <span className="text-base-content font-medium">Click to upload</span>
             {' or drag and drop'}
           </p>
-          {accept && <p className="text-xs text-[var(--color-text-tertiary)]">{accept}</p>}
+          {accept && <p className="text-base-content/50 text-xs">{accept}</p>}
         </div>
 
         <input
@@ -142,13 +142,11 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             {files.map((file, idx) => (
               <li
                 key={`${file.name}-${idx}`}
-                className="flex items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2.5 py-1.5 text-sm"
+                className="flex items-center gap-2 rounded-md border border-[var(--color-base-300)] bg-[var(--color-base-100)] px-2.5 py-1.5 text-sm"
               >
-                <FileIcon className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-                <span className="flex-1 truncate text-[var(--color-text-primary)]">
-                  {file.name}
-                </span>
-                <span className="shrink-0 text-xs text-[var(--color-text-tertiary)]">
+                <FileIcon className="text-base-content/50 h-4 w-4 shrink-0" />
+                <span className="text-base-content flex-1 truncate">{file.name}</span>
+                <span className="text-base-content/50 shrink-0 text-xs">
                   {formatSize(file.size)}
                 </span>
                 <Button

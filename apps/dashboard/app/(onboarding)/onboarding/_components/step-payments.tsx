@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button, FieldStatus } from '@wizeworks/silicaui-react';
 import { CheckCircle, CreditCard, Info } from 'lucide-react';
 import { startStripeConnectAction } from '../_lib/actions';
 import type { WizardResult } from '../_lib/types';
@@ -35,14 +35,14 @@ export function StepPayments({
 
   return (
     <div className="max-w-xl">
-      <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6">
+      <div className="border-base-300 bg-base-100 rounded-xl border p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-bg-subtle)]">
+            <span className="bg-base-200 flex h-11 w-11 items-center justify-center rounded-lg">
               {stripeConnected ? (
-                <CheckCircle className="h-5 w-5 text-[var(--color-success-text)]" />
+                <CheckCircle className="text-success h-5 w-5" />
               ) : (
-                <CreditCard className="h-5 w-5 text-[var(--color-text-secondary)]" />
+                <CreditCard className="text-base-content/70 h-5 w-5" />
               )}
             </span>
             <div>
@@ -74,11 +74,11 @@ export function StepPayments({
           )}
         </div>
 
-        <div className="mt-4 flex items-start gap-2.5 border-t border-[var(--color-border-default)] pt-4">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+        <div className="border-base-300 mt-4 flex items-start gap-2.5 border-t pt-4">
+          <Info className="text-base-content/50 mt-0.5 h-4 w-4 shrink-0" />
           <p className="text-base-content/70 text-xs">
             This is the account that{' '}
-            <span className="font-medium text-[var(--color-text-secondary)]">
+            <span className="text-base-content/70 font-medium">
               receives money from your customers
             </span>{' '}
             — separate from your own sparx subscription, which stays free for 14 days.
@@ -87,9 +87,15 @@ export function StepPayments({
       </div>
 
       {error && (
-        <p className="text-danger mt-4 block text-sm" role="alert" aria-live="polite">
+        <FieldStatus
+          status="error"
+          attached={false}
+          role="alert"
+          aria-live="polite"
+          className="mt-4"
+        >
           {error}
-        </p>
+        </FieldStatus>
       )}
     </div>
   );

@@ -32,7 +32,7 @@ export default async function ChatInboxLayout({
   return (
     <ChatSocketProvider>
       <div className="grid h-[calc(100dvh-4rem)] grid-cols-1 md:grid-cols-[320px_1fr]">
-        <aside className="overflow-hidden border-r border-[var(--color-border)]">
+        <aside className="border-base-300 overflow-hidden border-r">
           <ConversationList initial={conversations} currentUserId={session.user.id} />
         </aside>
         <section className="min-w-0 overflow-hidden">{children}</section>

@@ -1,6 +1,13 @@
 'use client';
 
-import { Button, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import { Plus, Trash2 } from 'lucide-react';
 
 import type { ResourceKind, ResourceRequirement } from '../_lib/types';
@@ -31,23 +38,23 @@ export function RequirementEditor({ value, onChange }: Props) {
     <div className="flex flex-col gap-3">
       <Label>Resource requirements</Label>
       {value.length === 0 ? (
-        <p className="text-sm text-[var(--color-muted-foreground)]">
+        <p className="text-base-content/70 text-sm">
           No explicit roles — a single staff member is assigned automatically.
         </p>
       ) : (
         <div className="flex flex-col gap-2">
           {value.map((req, i) => (
             <div key={i} className="grid grid-cols-[1fr_1fr_5rem_auto] items-end gap-2">
-              <div>
-                <Label className="text-xs">Role</Label>
-                <Input
+              <Field>
+                <FieldLabel className="text-xs">Role</FieldLabel>
+                <FieldControl
                   value={req.role}
                   placeholder="e.g. stylist"
                   onChange={(e) => update(i, { role: e.target.value })}
                 />
-              </div>
-              <div>
-                <Label className="text-xs">Type</Label>
+              </Field>
+              <Field>
+                <FieldLabel className="text-xs">Type</FieldLabel>
                 <NativeSelect
                   value={req.kind}
                   onChange={(e) => update(i, { kind: e.target.value as ResourceKind })}
@@ -58,16 +65,16 @@ export function RequirementEditor({ value, onChange }: Props) {
                     </option>
                   ))}
                 </NativeSelect>
-              </div>
-              <div>
-                <Label className="text-xs">Count</Label>
-                <Input
+              </Field>
+              <Field>
+                <FieldLabel className="text-xs">Count</FieldLabel>
+                <FieldControl
                   type="number"
                   min={1}
                   value={req.count ?? 1}
                   onChange={(e) => update(i, { count: Math.max(1, Number(e.target.value) || 1) })}
                 />
-              </div>
+              </Field>
               <Button
                 type="button"
                 color="danger"

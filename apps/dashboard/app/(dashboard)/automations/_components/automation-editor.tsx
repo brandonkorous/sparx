@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { arrayMove } from '@dnd-kit/sortable';
 import { History, Minus, Plus, Workflow } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { cn, toast, useConfirm } from '@sparx/ui';
 import type { Action, AutomationStatus, ConditionGroup, Trigger } from '@sparx/automation-schemas';
 

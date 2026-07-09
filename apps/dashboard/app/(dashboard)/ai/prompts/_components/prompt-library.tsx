@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { deletePromptAction, installDefaultPromptsAction } from '../actions';
 import {

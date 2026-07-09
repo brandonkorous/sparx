@@ -29,7 +29,7 @@ export function LucideIconLink({ className }: { className?: string }) {
       target="_blank"
       rel="noreferrer"
       className={cn(
-        'inline-flex w-fit items-center gap-1 text-xs text-[var(--module-active)] hover:underline',
+        'text-module inline-flex w-fit items-center gap-1 text-xs hover:underline',
         className
       )}
     >

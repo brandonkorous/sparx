@@ -71,7 +71,7 @@ export function ImageFramingModal({
           <div className="flex flex-col gap-4">
             <div
               ref={boxRef}
-              className="relative aspect-video w-full cursor-crosshair touch-none overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] select-none"
+              className="border-base-300 bg-base-200 relative aspect-video w-full cursor-crosshair touch-none overflow-hidden rounded-md border select-none"
               onPointerDown={(e) => {
                 dragging.current = true;
                 try {
@@ -104,13 +104,13 @@ export function ImageFramingModal({
                 style={{ left: `${focal.x}%`, top: `${focal.y}%` }}
               />
             </div>
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p className="text-base-content/60 text-xs">
               Click or drag on the image to set the focal point — the part kept in view when it’s
               cropped.
             </p>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium text-[var(--color-text-primary)]">Fit</span>
+              <span className="text-base-content text-sm font-medium">Fit</span>
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -134,8 +134,8 @@ export function ImageFramingModal({
             {showZoom ? (
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[var(--color-text-primary)]">Zoom</span>
-                  <span className="text-xs text-[var(--color-text-muted)] tabular-nums">
+                  <span className="text-base-content text-sm font-medium">Zoom</span>
+                  <span className="text-base-content/60 text-xs tabular-nums">
                     {zoom.toFixed(1)}×
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export function ImageFramingModal({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[var(--color-text-muted)]">
+          <p className="text-base-content/60 text-sm">
             Choose an image first, then you can frame it here.
           </p>
         )}

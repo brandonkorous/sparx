@@ -66,7 +66,7 @@ export function GatewayMark({
       className={[
         'inline-flex shrink-0 items-center justify-center',
         CHIP[size],
-        mark.ring ? 'ring-1 ring-[var(--color-border-default)]' : '',
+        mark.ring ? 'ring-base-300 ring-1' : '',
         className ?? '',
       ]
         .filter(Boolean)

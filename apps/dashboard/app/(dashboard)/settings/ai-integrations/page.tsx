@@ -7,7 +7,7 @@
 
 import { KeyRound } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Badge, EmptyState } from 'silicaui-react';
+import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';

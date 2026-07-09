@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import {
   cancelTransferAction,
@@ -89,7 +89,7 @@ export function TransferActionsBar({ id, status }: { id: string; status: string 
             </Button>
           ))}
       </div>
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
     </div>
   );
 }

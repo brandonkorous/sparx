@@ -10,7 +10,7 @@
 import * as React from 'react';
 import { Check, Eye } from 'lucide-react';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { mintProductPreviewUrl } from '../../../product-actions';

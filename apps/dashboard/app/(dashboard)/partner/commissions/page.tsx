@@ -1,5 +1,5 @@
 import { Banknote, Coins, Wallet } from 'lucide-react';
-import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

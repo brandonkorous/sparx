@@ -1,5 +1,5 @@
 import { Building2 } from 'lucide-react';
-import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 import { listMyMemberships, requireSession, type OrgMembership } from '@sparx/auth';
 

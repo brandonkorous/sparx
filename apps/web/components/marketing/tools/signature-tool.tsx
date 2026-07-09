@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Copy, Trash2 } from 'lucide-react';
-import { Button, Input, ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import {
   buildSignatureHtml,
@@ -244,7 +245,7 @@ export function SignatureTool() {
               padding: '24px',
               backgroundColor: '#ffffff',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               overflowX: 'auto',
             }}
             dangerouslySetInnerHTML={{ __html: html }}
@@ -260,7 +261,7 @@ export function SignatureTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

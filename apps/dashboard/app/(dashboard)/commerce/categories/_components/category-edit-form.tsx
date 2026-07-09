@@ -3,7 +3,19 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -13,6 +25,7 @@ import {
   SurfaceSummaryRow,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -69,7 +82,6 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
 
   const [name, setName] = React.useState(category.name);
@@ -78,6 +90,18 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
   const [parentId, setParentId] = React.useState(category.parentId ?? '');
   const [description, setDescription] = React.useState(category.description ?? '');
   const [featured, setFeatured] = React.useState(category.featured);
+
+  // Field validation. `handle` carries no client rule but is validated-tracked so
+  // a server-side handle error maps onto its field; `position` (priority) must be
+  // a non-negative integer.
+  const values = { name, handle, position };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    position: (val) => {
+      const n = Number.parseInt(String(val), 10);
+      return Number.isFinite(n) && n >= 0 ? null : 'Priority must be a non-negative integer.';
+    },
+  });
 
   // Exclude self + descendants so a merchant can't reparent a node under its own
   // subtree (the server enforces cycle prevention too — this keeps the picker
@@ -146,19 +170,11 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
 
   function submit() {
     setError(null);
-    setFieldErrors({});
     setSavedAt(null);
+    if (!v.validate()) return;
 
     const trimmedName = name.trim();
-    if (!trimmedName) {
-      setFieldErrors({ name: 'Name is required.' });
-      return;
-    }
     const parsedPosition = Number.parseInt(position, 10);
-    if (!Number.isFinite(parsedPosition) || parsedPosition < 0) {
-      setFieldErrors({ position: 'Priority must be a non-negative integer.' });
-      return;
-    }
     const trimmedHandle = handle.trim();
     const trimmedDescription = description.trim();
 
@@ -171,11 +187,12 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
       });
       if (!updateResult.ok) {
         if (updateResult.error.code === 'VALIDATION_ERROR' && updateResult.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of updateResult.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
+          v.setServerErrors(
+            Object.fromEntries(updateResult.error.details.map((d) => [d.field, d.message]))
+          );
+        } else {
+          setError(updateResult.error.message);
         }
-        setError(updateResult.error.message);
         return;
       }
 
@@ -255,57 +272,36 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
               <CardBody className="py-6">
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="cat-name">Name</Label>
-                      <Input
-                        id="cat-name"
+                    <Field {...v.field('name')} className="min-w-[12rem] flex-1">
+                      <FieldLabel required>Name</FieldLabel>
+                      <FieldControl
+                        name="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        color={fieldErrors.name ? 'error' : undefined}
-                        aria-invalid={fieldErrors.name ? true : undefined}
-                        aria-describedby={fieldErrors.name ? 'cat-name-error' : undefined}
+                        {...v.control('name')}
                       />
-                      {fieldErrors.name && (
-                        <p id="cat-name-error" className="text-danger text-xs">
-                          {fieldErrors.name}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="cat-handle">Handle</Label>
-                      <Input
-                        id="cat-handle"
+                    </Field>
+                    <Field {...v.field('handle')} className="min-w-[12rem] flex-1">
+                      <FieldLabel>Handle</FieldLabel>
+                      <FieldControl
+                        name="handle"
                         value={handle}
                         onChange={(e) => setHandle(e.target.value)}
-                        color={fieldErrors.handle ? 'error' : undefined}
-                        aria-invalid={fieldErrors.handle ? true : undefined}
-                        aria-describedby={fieldErrors.handle ? 'cat-handle-error' : undefined}
+                        {...v.control('handle')}
                       />
-                      {fieldErrors.handle && (
-                        <p id="cat-handle-error" className="text-danger text-xs">
-                          {fieldErrors.handle}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex w-24 flex-col gap-2">
-                      <Label htmlFor="cat-priority">Priority</Label>
-                      <Input
-                        id="cat-priority"
+                    </Field>
+                    <Field {...v.field('position')} className="w-24">
+                      <FieldLabel>Priority</FieldLabel>
+                      <FieldControl
+                        name="position"
                         type="number"
                         min={0}
                         step={1}
                         value={position}
                         onChange={(e) => setPosition(e.target.value)}
-                        color={fieldErrors.position ? 'error' : undefined}
-                        aria-invalid={fieldErrors.position ? true : undefined}
-                        aria-describedby={fieldErrors.position ? 'cat-priority-error' : undefined}
+                        {...v.control('position')}
                       />
-                      {fieldErrors.position && (
-                        <p id="cat-priority-error" className="text-danger text-xs">
-                          {fieldErrors.position}
-                        </p>
-                      )}
-                    </div>
+                    </Field>
                   </div>
 
                   {/* The handle is the category's URL-safe slug. Categories have no
@@ -320,36 +316,39 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                     </p>
                   )}
 
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="cat-parent">Parent</Label>
-                    <NativeSelect
-                      id="cat-parent"
+                  <Field>
+                    <FieldLabel>Parent</FieldLabel>
+                    <FieldControl
+                      name="parentId"
                       value={parentId}
                       onChange={(e) => setParentId(e.target.value)}
-                    >
-                      <option value="">— Top level —</option>
-                      {parentOptions.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {indent(p.depth)}
-                          {p.name}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                    <p className="text-base-content/70 text-xs">
+                      render={
+                        <NativeSelect>
+                          <option value="">— Top level —</option>
+                          {parentOptions.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {indent(p.depth)}
+                              {p.name}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                    <FieldDescription>
                       Leave top-level for a root category, or nest it under an existing one.
                       Priority orders this category among its siblings — lower numbers sort first
                       (priority 1 is first).
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="cat-description">Description</Label>
-                    <Textarea
-                      id="cat-description"
+                    </FieldDescription>
+                  </Field>
+                  <Field>
+                    <FieldLabel>Description</FieldLabel>
+                    <FieldControl
+                      name="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      rows={3}
+                      render={<Textarea rows={3} />}
                     />
-                  </div>
+                  </Field>
                   <div className="flex flex-col gap-1">
                     <div className="flex flex-row items-center gap-2">
                       <Checkbox
@@ -369,9 +368,15 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
             </Card>
           </form>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

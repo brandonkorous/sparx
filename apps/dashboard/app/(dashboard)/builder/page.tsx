@@ -143,14 +143,14 @@ function SitePreview() {
   return (
     <div
       aria-hidden
-      className="overflow-hidden rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-bg-surface)] shadow-sm"
+      className="border-base-content/30 bg-base-100 overflow-hidden rounded-lg border shadow-sm"
     >
-      <div className="flex items-center gap-1.5 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-2.5 py-2">
-        <span className="h-2 w-2 rounded-full bg-[var(--color-bg-muted)]" />
-        <span className="h-2 w-2 rounded-full bg-[var(--color-bg-muted)]" />
-        <span className="h-2 w-2 rounded-full bg-[var(--color-bg-muted)]" />
-        <span className="ml-2 flex-1 rounded bg-[var(--color-bg-surface)] px-2 py-0.5 font-mono text-[9px]">
-          <span className="text-[var(--color-text-tertiary)]">switchback.coffee</span>
+      <div className="border-base-300 bg-base-200 flex items-center gap-1.5 border-b px-2.5 py-2">
+        <span className="bg-base-300 h-2 w-2 rounded-full" />
+        <span className="bg-base-300 h-2 w-2 rounded-full" />
+        <span className="bg-base-300 h-2 w-2 rounded-full" />
+        <span className="bg-base-100 ml-2 flex-1 rounded px-2 py-0.5 font-mono text-[9px]">
+          <span className="text-base-content/50">switchback.coffee</span>
         </span>
       </div>
       {/* ── tenant storefront brand (intentional warm palette, not sparx tokens) ── */}
@@ -479,13 +479,11 @@ export default async function BuilderOverviewPage() {
               <SitePreview />
 
               <div className="min-w-0">
-                <p className="flex items-center gap-2 text-lg font-medium text-[var(--color-text-primary)]">
+                <p className="text-base-content flex items-center gap-2 text-lg font-medium">
                   <span
                     aria-hidden
                     className={`h-2 w-2 rounded-full ${
-                      status.pagesLive > 0
-                        ? 'bg-[var(--color-success-text)]'
-                        : 'bg-[var(--color-bg-muted)]'
+                      status.pagesLive > 0 ? 'bg-success' : 'bg-base-300'
                     }`}
                   />
                   {status.pagesLive > 0 ? 'Your site is live' : 'Your site isn’t published yet'}
@@ -495,23 +493,19 @@ export default async function BuilderOverviewPage() {
                     href={`https://${siteDomain.host}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--module-active-text)]"
+                    className="text-module mt-2 inline-flex items-center gap-2 text-sm font-medium"
                   >
                     <Lock
                       className={`h-3.5 w-3.5 ${
-                        sslActive
-                          ? 'text-[var(--color-success-text)]'
-                          : 'text-[var(--color-text-tertiary)]'
+                        sslActive ? 'text-success' : 'text-base-content/50'
                       }`}
                     />
                     {siteDomain.host}
                   </a>
                 ) : (
-                  <p className="mt-2 text-sm text-[var(--color-text-tertiary)]">
-                    No domain connected yet
-                  </p>
+                  <p className="text-base-content/50 mt-2 text-sm">No domain connected yet</p>
                 )}
-                <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
+                <p className="text-base-content/70 mt-3 text-sm">
                   {siteDomain
                     ? `${siteDomain.type === 'custom' ? 'Custom domain' : 'sparx domain'} · ${
                         sslActive ? 'SSL active' : 'SSL pending'
@@ -522,7 +516,7 @@ export default async function BuilderOverviewPage() {
                 </p>
                 {status.unpublished > 0 ? (
                   <OverviewRow
-                    className="mt-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-warning-tint)] px-3"
+                    className="border-base-300 bg-warning bg-soft mt-4 rounded-md border px-3"
                     icon={<AlertTriangle className="h-4 w-4" />}
                     tone="warning"
                     title={`${status.unpublished} unpublished change${
@@ -599,7 +593,11 @@ export default async function BuilderOverviewPage() {
                   data={trafficChart}
                   series={[
                     { key: 'visitors', label: 'Visitors', color: 'module' },
-                    { key: 'pageviews', label: 'Pageviews', color: 'var(--module-active-tint)' },
+                    {
+                      key: 'pageviews',
+                      label: 'Pageviews',
+                      color: 'color-mix(in oklch, var(--color-module) 15%, transparent)',
+                    },
                   ]}
                   xKey="label"
                   height={210}
@@ -624,9 +622,9 @@ export default async function BuilderOverviewPage() {
                 <>
                   <BarList items={sourceBars} color="module" />
                   {anLive && anSummary.topReferrerHost ? (
-                    <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                    <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
                       Top referrer ·{' '}
-                      <span className="font-medium text-[var(--color-text-secondary)]">
+                      <span className="text-base-content/70 font-medium">
                         {anSummary.topReferrerHost}
                       </span>{' '}
                       — {fmtNumber(anSummary.topReferrerVisits)} visits
@@ -664,12 +662,8 @@ export default async function BuilderOverviewPage() {
                     {topPages.map((p) => (
                       <TableRow key={p.path}>
                         <TableCell>
-                          <div className="font-medium text-[var(--color-text-primary)]">
-                            {p.page}
-                          </div>
-                          <div className="font-mono text-xs text-[var(--module-active-text)]">
-                            {p.path}
-                          </div>
+                          <div className="text-base-content font-medium">{p.page}</div>
+                          <div className="text-module font-mono text-xs">{p.path}</div>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{p.views}</TableCell>
                         <TableCell className="text-right tabular-nums">{p.visitors}</TableCell>
@@ -857,7 +851,7 @@ export default async function BuilderOverviewPage() {
           <Card variant="default">
             <CardHeader>
               <Stack direction="row" align="center" gap={2}>
-                <LayoutTemplate className="h-5 w-5 text-[var(--module-active)]" />
+                <LayoutTemplate className="text-module h-5 w-5" />
                 <CardTitle>Start from a blueprint</CardTitle>
               </Stack>
               <CardDescription>
@@ -893,7 +887,7 @@ export default async function BuilderOverviewPage() {
                 <Card key={href} variant="default">
                   <CardHeader>
                     <Stack direction="row" align="center" gap={2}>
-                      <Icon className="h-4 w-4 text-[var(--module-active)]" />
+                      <Icon className="text-module h-4 w-4" />
                       <CardTitle>{title}</CardTitle>
                     </Stack>
                     <CardDescription>{description}</CardDescription>

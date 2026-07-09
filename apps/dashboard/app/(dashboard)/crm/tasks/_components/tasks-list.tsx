@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { Check, Calendar } from 'lucide-react';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { completeTaskAction } from '../../activity-task-actions';
 import { TaskRow, type TaskCard } from './task-row';
@@ -53,7 +53,7 @@ function TaskCompleteCell({ task }: { task: TaskCard }) {
     return (
       <div
         // eslint-disable-next-line no-restricted-syntax -- completion indicator icon container, not a reimplemented control
-        className="flex h-5 w-5 items-center justify-center rounded-md bg-[var(--color-success-500)] text-white"
+        className="bg-success flex h-5 w-5 items-center justify-center rounded-md text-white"
       >
         <Check className="h-3 w-3" />
       </div>
@@ -65,7 +65,7 @@ function TaskCompleteCell({ task }: { task: TaskCard }) {
       onClick={complete}
       disabled={pending}
       aria-label="Complete task"
-      className="flex h-5 w-5 items-center justify-center rounded-md border border-[var(--color-border-default)] hover:border-[var(--module-active)] disabled:opacity-50"
+      className="border-base-300 hover:border-module flex h-5 w-5 items-center justify-center rounded-md border disabled:opacity-50"
     >
       {pending && <Check className="h-3 w-3 animate-pulse" />}
     </button>
@@ -85,7 +85,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       {t.customerId && (
         <Link
           href={`/crm/customers/${t.customerId}`}
-          className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--module-active)] hover:underline"
+          className="text-base-content/50 hover:text-module text-xs hover:underline"
         >
           Customer
         </Link>
@@ -93,7 +93,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       {t.dealId && (
         <Link
           href={`/crm/deals/${t.dealId}`}
-          className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--module-active)] hover:underline"
+          className="text-base-content/50 hover:text-module text-xs hover:underline"
         >
           Deal
         </Link>
@@ -105,7 +105,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
   const dueCell = (t: TaskCard) =>
     t.dueAt ? (
       <div className="flex flex-row items-center gap-1">
-        <Calendar className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+        <Calendar className="text-base-content/50 h-3.5 w-3.5" />
         <p className="text-base-content/70 text-xs">
           {new Date(t.dueAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
         </p>
@@ -126,7 +126,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       cell: (t) => (
         <p
           className={`text-sm font-medium ${
-            t.status === 'open' ? '' : 'text-[var(--color-text-tertiary)] line-through'
+            t.status === 'open' ? '' : 'text-base-content/50 line-through'
           }`}
         >
           {t.title}

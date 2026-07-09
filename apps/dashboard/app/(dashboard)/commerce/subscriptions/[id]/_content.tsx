@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -177,7 +177,7 @@ export async function SubscriptionDetailContent({ id }: Props) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded border border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex flex-col gap-1 rounded border p-3">
       <p className="text-base-content/70 text-xs">{label}</p>
       <p className="text-base font-medium">{value}</p>
     </div>

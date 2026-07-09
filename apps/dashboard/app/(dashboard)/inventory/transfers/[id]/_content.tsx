@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeftRight, ArrowRight } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -43,7 +43,7 @@ export async function InventoryTransferDetailContent({ id }: { id: string }) {
             <p className="text-base-content/70 text-sm">
               {warehouseLabel(transfer.fromWarehouseName, transfer.fromWarehouseCode)}
             </p>
-            <ArrowRight className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
+            <ArrowRight className="text-base-content/60 h-3.5 w-3.5" />
             <p className="text-base-content/70 text-sm">
               {warehouseLabel(transfer.toWarehouseName, transfer.toWarehouseCode)}
             </p>

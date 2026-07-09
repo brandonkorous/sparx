@@ -181,7 +181,7 @@ function ViewHtmlDialog({
               </Button>
             </div>
           ) : (
-            <span className="text-xs text-[var(--color-text-tertiary)]">Whole page</span>
+            <span className="text-base-content/50 text-xs">Whole page</span>
           )}
           <Button
             size="sm"
@@ -314,14 +314,14 @@ function ImportHtmlDialog({
 function ImportReportPanel({ report }: { report: ImportReport }) {
   const clean = !reportHasChanges(report);
   return (
-    <div className="mt-3 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 text-xs">
-      <p className="font-medium text-[var(--color-text-primary)]">{summarizeReport(report)}</p>
+    <div className="border-base-300 bg-base-200 mt-3 rounded-md border p-3 text-xs">
+      <p className="text-base-content font-medium">{summarizeReport(report)}</p>
       {clean ? (
-        <p className="mt-1 text-[var(--color-text-secondary)]">
+        <p className="text-base-content/70 mt-1">
           Everything passed validation — nothing was dropped.
         </p>
       ) : (
-        <ul className="mt-2 flex flex-col gap-1 text-[var(--color-text-secondary)]">
+        <ul className="text-base-content/70 mt-2 flex flex-col gap-1">
           {report.droppedTags.map((d) => (
             <li key={`tag-${d.tag}`}>
               Dropped {d.count}× unsupported tag <code>&lt;{d.tag}&gt;</code>

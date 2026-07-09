@@ -16,13 +16,13 @@ export function MonogramSection() {
     <Section id="monogram" surface="page" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline="The monogram mark"
           lede="When the full wordmark won’t fit, the “sx” monogram stands in. The “s” adopts the current text color so it flips between light and dark surfaces; the “x” stays sparx Indigo, carrying the same brand moment as the wordmark."
         />
 
         <div className="mkt-grid-2-1">
-          <Tile label="On light" background="var(--color-bg-surface)" ink="#18181B" border />
+          <Tile label="On light" background="var(--color-base-100)" ink="#18181B" border />
           <Tile label="On dark" background="#0A0A0A" ink="#FAFAFA" />
         </div>
 
@@ -30,7 +30,7 @@ export function MonogramSection() {
           <Panel title="Anatomy">
             <dl style={{ margin: 0, display: 'flex', flexDirection: 'column' }}>
               <Row label="The “s”" value="currentColor" />
-              <Row label="The “x”" value="--sparx-primary" />
+              <Row label="The “x”" value="--color-primary" />
               <Row label="Source" value="sparx-mark.svg" />
             </dl>
             <p style={{ ...note, margin: 0 }}>
@@ -61,10 +61,10 @@ export function MonogramSection() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '14px',
                     lineHeight: '21px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
-                  <span aria-hidden style={{ color: 'var(--sparx-primary)' }}>
+                  <span aria-hidden style={{ color: 'var(--color-primary)' }}>
                     →
                   </span>
                   <span>{u}</span>
@@ -88,7 +88,7 @@ export function MonogramSection() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: '8px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   <SparxMark size={s} />
@@ -96,7 +96,7 @@ export function MonogramSection() {
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '11px',
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     }}
                   >
                     {s}px
@@ -132,7 +132,7 @@ function Tile({
           padding: 'clamp(40px, 7vw, 72px)',
           background,
           color: ink,
-          border: border ? '1px solid var(--color-border-default)' : 'none',
+          border: border ? '1px solid var(--color-base-300)' : 'none',
           borderRadius: 'var(--radius-xl)',
         }}
       >
@@ -142,7 +142,7 @@ function Tile({
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '13px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         {label}
@@ -159,8 +159,8 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
         flexDirection: 'column',
         gap: '20px',
         padding: '28px',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
       }}
     >
@@ -169,7 +169,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '15px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >
@@ -189,14 +189,14 @@ function Row({ label, value }: { label: string; value: string }) {
         justifyContent: 'space-between',
         gap: '16px',
         padding: '13px 0',
-        borderTop: '1px solid var(--color-border-default)',
+        borderTop: '1px solid var(--color-base-300)',
       }}
     >
       <dt
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {label}
@@ -212,14 +212,14 @@ const note: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '13.5px',
   lineHeight: '21px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
 };
 
 const code: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: '12.5px',
-  color: 'var(--color-text-primary)',
-  backgroundColor: 'var(--color-bg-subtle)',
+  color: 'var(--color-base-content)',
+  backgroundColor: 'var(--color-base-200)',
   padding: '1px 5px',
   borderRadius: 'var(--radius-sm)',
 };

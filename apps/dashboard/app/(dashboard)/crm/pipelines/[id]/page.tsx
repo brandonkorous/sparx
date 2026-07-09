@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { KanbanSquare, List, BarChart3, Plus } from 'lucide-react';
 
-import { Badge, Button, Tabs, TabsList, TabsTab } from 'silicaui-react';
+import { Badge, Button, Tabs, TabsList, TabsTab } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';

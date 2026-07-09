@@ -10,9 +10,10 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Input,
-  Label,
-} from 'silicaui-react';
+  Field,
+  FieldControl,
+  FieldLabel,
+} from '@wizeworks/silicaui-react';
 
 import { cancelBroadcastAction, scheduleBroadcastAction, sendBroadcastAction } from '../actions';
 import type { BroadcastRow } from '../../_lib/types';
@@ -83,16 +84,16 @@ export function BroadcastActions({ broadcast }: { broadcast: BroadcastRow }) {
                 Pick when this broadcast should send. Recipients are resolved at send time.
               </DialogDescription>
             </div>
-            <div className="flex flex-col gap-2 py-2">
-              <Label htmlFor="broadcast-when">Send at</Label>
-              <Input
-                id="broadcast-when"
+            <Field className="py-2">
+              <FieldLabel required>Send at</FieldLabel>
+              <FieldControl
+                name="broadcast-when"
                 type="datetime-local"
                 value={when}
                 onChange={(e) => setWhen(e.target.value)}
                 disabled={pending}
               />
-            </div>
+            </Field>
             <div className="mt-4 flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setScheduleOpen(false)} disabled={pending}>
                 Cancel

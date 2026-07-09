@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionColumn, type SelectionCard } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -74,8 +74,7 @@ export function DealsList({ deals, view }: DealsListProps) {
   const columns: SelectionColumn<DealRow>[] = [
     {
       header: 'Deal',
-      cell: (d) =>
-        dealLink(d, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (d) => dealLink(d, 'text-sm font-medium hover:text-module hover:underline'),
     },
     {
       header: 'Pipeline',
@@ -97,8 +96,7 @@ export function DealsList({ deals, view }: DealsListProps) {
   ];
 
   const card: SelectionCard<DealRow> = {
-    title: (d) =>
-      dealLink(d, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (d) => dealLink(d, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (d) => <p className="text-base-content/70 text-xs">{d.pipelineName}</p>,
     badge: stageBadge,
     body: (d) => (

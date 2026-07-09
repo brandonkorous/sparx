@@ -6,7 +6,7 @@
 // controlled); hidden when there's a single page.
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Pagination } from 'silicaui-react';
+import { Pagination } from '@wizeworks/silicaui-react';
 
 export function MarketPager({
   basePath,

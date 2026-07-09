@@ -8,7 +8,13 @@
 // omits it when there's a single site, where the concept is moot).
 
 import * as React from 'react';
-import { Label, NativeSelect } from 'silicaui-react';
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { updateCustomerAction } from '../../customer-actions';
 
@@ -46,10 +52,9 @@ export function CustomerSiteSelect({ customerId, value, sites }: CustomerSiteSel
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor="customer-site">Site</Label>
+    <Field>
+      <FieldLabel>Site</FieldLabel>
       <NativeSelect
-        id="customer-site"
         value={current}
         disabled={saving}
         onChange={(e) => void handleChange(e.target.value)}
@@ -61,16 +66,16 @@ export function CustomerSiteSelect({ customerId, value, sites }: CustomerSiteSel
           </option>
         ))}
       </NativeSelect>
-      <p className="text-base-content/70 text-xs">
+      <FieldDescription>
         {current
           ? 'Belongs to this site (also shown under “All sites”).'
           : 'Global — visible from every site.'}
-      </p>
+      </FieldDescription>
       {error && (
-        <p className="text-danger text-xs" role="alert">
+        <FieldStatus status="error" attached={false} role="alert">
           {error}
-        </p>
+        </FieldStatus>
       )}
-    </div>
+    </Field>
   );
 }

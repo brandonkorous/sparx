@@ -9,12 +9,15 @@ import {
   Card,
   CardBody,
   Checkbox,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { Combobox, type ComboboxOption, MultiCombobox } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { Property } from '@/lib/sites';
 import { SiteScopeField } from '../../../../_components/site-scope-field';
@@ -75,7 +78,6 @@ export function ProductEditForm({
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
@@ -98,6 +100,14 @@ export function ProductEditForm({
   const [form, setForm] = React.useState<FormState>(initial);
   const [baseline, setBaseline] = React.useState<FormState>(initial);
   const [scopeBaseline, setScopeBaseline] = React.useState<string[]>(initialPropertyIds);
+
+  const v = useFieldValidation(
+    { title: form.title, handle: form.handle, tags: form.tags },
+    {
+      title: rule.required('Title is required.'),
+      handle: rule.required('Handle is required.'),
+    }
+  );
 
   const dirty = React.useMemo(() => {
     const fieldsDirty = (Object.keys(form) as (keyof FormState)[]).some((k) => {
@@ -124,8 +134,9 @@ export function ProductEditForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setFieldErrors({});
     setSavedAt(null);
+
+    if (!v.validate()) return;
 
     const input = {
       title: form.title.trim(),
@@ -147,9 +158,13 @@ export function ProductEditForm({
       const result = await updateProductAction(product.id, input);
       if (!result.ok) {
         if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of result.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
+          const known = new Set(['title', 'handle', 'tags']);
+          const map: Record<string, string> = {};
+          for (const d of result.error.details) {
+            const root = d.field.split('.')[0]!;
+            if (known.has(root) && !(root in map)) map[root] = d.message;
+          }
+          if (Object.keys(map).length > 0) v.setServerErrors(map);
         }
         setError(result.error.message);
         return;
@@ -169,33 +184,33 @@ export function ProductEditForm({
             <h2 className="text-xl font-semibold">Basics</h2>
             <p className="opacity-70">Title, handle, description.</p>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
+              <Field {...v.field('title')}>
+                <FieldLabel required>Title</FieldLabel>
+                <FieldControl
                   id="title"
                   value={form.title}
                   onChange={(e) => set('title', e.target.value)}
+                  {...v.control('title')}
                 />
-                <FieldError msg={fieldErrors.title} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="handle">Handle</Label>
-                <Input
+              </Field>
+              <Field {...v.field('handle')}>
+                <FieldLabel required>Handle</FieldLabel>
+                <FieldControl
                   id="handle"
                   value={form.handle}
                   onChange={(e) => set('handle', e.target.value)}
+                  {...v.control('handle')}
                 />
-                <FieldError msg={fieldErrors.handle} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
+              </Field>
+              <Field>
+                <FieldLabel>Description</FieldLabel>
+                <FieldControl
                   id="description"
-                  rows={6}
+                  render={<Textarea rows={6} />}
                   value={form.description}
                   onChange={(e) => set('description', e.target.value)}
                 />
-              </div>
+              </Field>
             </div>
           </CardBody>
         </Card>
@@ -217,11 +232,11 @@ export function ProductEditForm({
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-4">
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <Label htmlFor="productType">Product type</Label>
+                  <FieldLabel htmlFor="productType">Product type</FieldLabel>
                   <Combobox
                     id="productType"
                     value={form.productType}
-                    onChange={(v) => set('productType', v)}
+                    onChange={(val) => set('productType', val)}
                     options={toOptions(facets.productTypes)}
                     placeholder="Choose or add a type"
                     searchPlaceholder="Search or add a type…"
@@ -230,11 +245,11 @@ export function ProductEditForm({
                   />
                 </div>
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <Label htmlFor="vendor">Vendor</Label>
+                  <FieldLabel htmlFor="vendor">Vendor</FieldLabel>
                   <Combobox
                     id="vendor"
                     value={form.vendor}
-                    onChange={(v) => set('vendor', v)}
+                    onChange={(val) => set('vendor', val)}
                     options={toOptions(facets.vendors)}
                     placeholder="Choose or add a vendor"
                     searchPlaceholder="Search or add a vendor…"
@@ -244,11 +259,11 @@ export function ProductEditForm({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="tags">Tags</Label>
+                <FieldLabel htmlFor="tags">Tags</FieldLabel>
                 <MultiCombobox
                   id="tags"
                   value={form.tags}
-                  onChange={(v) => set('tags', v)}
+                  onChange={(val) => set('tags', val)}
                   options={toOptions(facets.tags)}
                   max={50}
                   placeholder="Add a tag"
@@ -259,14 +274,18 @@ export function ProductEditForm({
                 <p className="text-base-content/70 text-xs">
                   Pick from existing tags or type a new one. Up to 50.
                 </p>
-                <FieldError msg={fieldErrors['tags.0'] ?? fieldErrors.tags} />
+                {v.visibleError('tags') && (
+                  <FieldStatus status="error" attached={false}>
+                    {v.visibleError('tags')}
+                  </FieldStatus>
+                )}
               </div>
               <div className="flex max-w-xs flex-col gap-2">
-                <Label htmlFor="taxClass">Tax class</Label>
+                <FieldLabel htmlFor="taxClass">Tax class</FieldLabel>
                 <Combobox
                   id="taxClass"
                   value={form.taxClass}
-                  onChange={(v) => set('taxClass', v)}
+                  onChange={(val) => set('taxClass', val)}
                   options={toOptions(facets.taxClasses)}
                   placeholder="Standard (default)"
                   searchPlaceholder="Search or add a tax class…"
@@ -287,7 +306,7 @@ export function ProductEditForm({
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-4">
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <Label htmlFor="fulfillmentType">Fulfillment</Label>
+                  <FieldLabel htmlFor="fulfillmentType">Fulfillment</FieldLabel>
                   <NativeSelect
                     id="fulfillmentType"
                     value={form.fulfillmentType}
@@ -302,7 +321,7 @@ export function ProductEditForm({
                   </NativeSelect>
                 </div>
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <Label htmlFor="hazmatClass">Hazmat class</Label>
+                  <FieldLabel htmlFor="hazmatClass">Hazmat class</FieldLabel>
                   <NativeSelect
                     id="hazmatClass"
                     value={form.hazmatClass}
@@ -327,7 +346,7 @@ export function ProductEditForm({
                   checked={form.requiresShipping}
                   onChange={(e) => set('requiresShipping', e.target.checked)}
                 />
-                <Label htmlFor="requiresShipping">Requires shipping</Label>
+                <FieldLabel htmlFor="requiresShipping">Requires shipping</FieldLabel>
               </div>
             </div>
           </CardBody>
@@ -341,14 +360,20 @@ export function ProductEditForm({
           The button is portaled out of this <form>, so it re-associates by id.
           Identity/lifecycle stay in the header; this carries only Save + result. */}
       <DetailFooterSlot>
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
+        <div className="border-base-300 bg-base-100 flex flex-wrap items-center justify-end gap-3 border-t px-6 py-3">
           {error && (
-            <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mr-auto"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
           {savedAt !== null && !dirty && (
-            <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+            <div className="text-success flex flex-row items-center gap-1">
               <Check className="h-4 w-4" />
               <p className="text-success text-sm">Saved</p>
             </div>
@@ -366,9 +391,4 @@ export function ProductEditForm({
       </DetailFooterSlot>
     </form>
   );
-}
-
-function FieldError({ msg }: { msg: string | undefined }) {
-  if (!msg) return null;
-  return <p className="text-danger text-xs">{msg}</p>;
 }

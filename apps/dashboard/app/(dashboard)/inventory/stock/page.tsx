@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Boxes } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -200,7 +200,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
                           <td>
                             <Link
                               href={`/commerce/products/${row.productId}`}
-                              className="hover:text-[var(--module-active)]"
+                              className="hover:text-module"
                             >
                               {row.title}
                             </Link>
@@ -211,7 +211,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
                             </Badge>
                           </td>
                           <td>
-                            <p className="text-base text-[var(--color-warning)]">{row.available}</p>
+                            <p className="text-warning text-base">{row.available}</p>
                           </td>
                           <td>{row.reorderPoint}</td>
                           <td>{row.reorderQuantity ?? '—'}</td>

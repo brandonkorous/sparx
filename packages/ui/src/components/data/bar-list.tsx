@@ -61,10 +61,10 @@ export const BarList = React.forwardRef<HTMLDivElement, BarListProps>(
               key={item.key ?? i}
               className="grid grid-cols-[6.5rem_1fr_auto] items-center gap-3 text-sm"
             >
-              <span className="truncate text-[var(--color-text-secondary)]">{item.label}</span>
+              <span className="text-base-content/70 truncate">{item.label}</span>
               <Progress value={item.value} max={ceiling} color={item.color ?? color} />
               {showValue && (
-                <span className="text-right font-medium text-[var(--color-text-primary)] tabular-nums">
+                <span className="text-base-content text-right font-medium tabular-nums">
                   {display}
                 </span>
               )}

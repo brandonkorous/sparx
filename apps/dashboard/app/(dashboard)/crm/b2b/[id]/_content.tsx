@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Building2, AlertTriangle, Globe } from 'lucide-react';
 
 import { Stat, statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -64,7 +64,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
                 href={account.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module flex items-center gap-1 text-sm hover:underline"
               >
                 <Globe className="h-3.5 w-3.5" /> Website
               </a>
@@ -101,17 +101,17 @@ export async function B2bAccountDetailContent({ id }: Props) {
         <CardBody>
           <CardTitle>Credit utilization</CardTitle>
           <div className="flex flex-col gap-2">
-            <div className="h-3 rounded-full bg-[var(--color-surface-subtle)]">
+            <div className="bg-base-200 h-3 rounded-full">
               <div
                 className="h-full rounded-full"
                 style={{
                   width: `${Math.min(100, utilization).toFixed(1)}%`,
                   backgroundColor:
                     utilization >= 90
-                      ? 'var(--color-danger-500)'
+                      ? 'var(--color-danger)'
                       : utilization >= 75
-                        ? 'var(--color-warning-500)'
-                        : 'var(--module-active)',
+                        ? 'var(--color-warning)'
+                        : 'var(--color-module)',
                 }}
               />
             </div>
@@ -119,8 +119,8 @@ export async function B2bAccountDetailContent({ id }: Props) {
               <p className="text-base-content/70 text-sm">{utilization.toFixed(1)}% used</p>
               {utilization >= 75 && (
                 <div className="flex flex-row items-center gap-1">
-                  <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                  <p className="text-sm text-[var(--color-warning-500)]">Near credit limit</p>
+                  <AlertTriangle className="text-warning h-3.5 w-3.5" />
+                  <p className="text-warning text-sm">Near credit limit</p>
                 </div>
               )}
             </div>
@@ -136,7 +136,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
               {profiles.map((p: unknown, idx: number) => (
                 <div
                   key={idx}
-                  className="flex flex-row gap-3 rounded-md border border-[var(--color-border-default)] p-3"
+                  className="border-base-300 flex flex-row gap-3 rounded-md border p-3"
                 >
                   <Badge color="neutral" variant="soft" size="sm">
                     {(p as { year?: number }).year ?? '—'}

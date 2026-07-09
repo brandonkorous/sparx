@@ -58,7 +58,7 @@ export function DeveloperSection() {
               API-first means
               <br />
               the UI is one consumer
-              <Spark color="var(--sparx-primary-subtle)" />
+              <Spark color="color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))" />
             </>
           }
           lede={
@@ -130,7 +130,7 @@ function CodeCard() {
         flex: 1,
         backgroundColor: '#0A0A0A',
         border: '1px solid #2A2A2A',
-        borderTop: '3px solid var(--sparx-primary)',
+        borderTop: '3px solid var(--color-primary)',
         borderRadius: '12px',
         overflow: 'hidden',
       }}
@@ -155,7 +155,7 @@ function CodeTabs() {
       <span
         style={{
           padding: '14px 16px',
-          borderBottom: '1px solid var(--sparx-primary)',
+          borderBottom: '1px solid var(--color-primary)',
           fontFamily: 'var(--font-mono)',
           fontWeight: 500,
           fontSize: '12px',

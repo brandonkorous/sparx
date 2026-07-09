@@ -1,64 +1,100 @@
 'use client';
 
+import * as React from 'react';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
 import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  ModuleProvider,
-  SurfaceFrame,
-  SurfaceStep,
-  type SurfaceStepDef,
-} from '@sparx/ui';
-import { Card, CardBody, CardTitle, Input, Select, Textarea } from 'silicaui-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 import { createPricingTier } from '../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 
 // Pricing-tier create on the standard form surface (docs/86 F layout). Create-only
 // — tiers are read-only reference data in the list, so this drives just
-// page / overlay. Validation stays on react-hook-form + zod; the frame's primary
-// button submits the form by id (Enter-to-save works), Cancel is frame-owned.
-
-const TierSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(127),
-  description: z.string().max(2000).optional(),
-  discountType: z.enum(['percentage', 'fixed']),
-  discountValue: z.number().min(0),
-  productScope: z.enum(['all', 'collections', 'products']),
-  minOrderCents: z.number().int().min(0),
-});
-
-type TierFormValues = z.infer<typeof TierSchema>;
+// page / overlay. Validation runs on the shared `useFieldValidation` engine (the
+// platform-wide Field/FieldStatus system) — no more react-hook-form. The frame's
+// primary button submits the form by id (Enter-to-save works), Cancel is
+// frame-owned.
 
 type Presentation = 'page' | 'overlay';
 
+type DiscountType = 'percentage' | 'fixed';
+type ProductScope = 'all' | 'collections' | 'products';
+
+const DISCOUNT_TYPE_ITEMS: Record<string, string> = {
+  percentage: '% off list price',
+  fixed: '$ fixed amount off',
+};
+const PRODUCT_SCOPE_ITEMS: Record<string, string> = {
+  all: 'All products',
+  collections: 'Selected collections',
+  products: 'Selected products',
+};
+
 const FORM_ID = 'b2b-tier-create-form';
 const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
+
+// A non-negative number rule (value held as string state from the input).
+const nonNegativeNumber =
+  (message: string) =>
+  (value: unknown): string | null => {
+    const s = typeof value === 'string' ? value.trim() : '';
+    if (s === '') return message;
+    const n = Number(s);
+    return Number.isFinite(n) && n >= 0 ? null : message;
+  };
+
+// Local max-length rule. `@sparx/forms` ships `minLength` but not `maxLength`;
+// flagged upstream — inline here until a shared builder lands.
+const maxLength =
+  (max: number, message: string) =>
+  (value: unknown): string | null =>
+    typeof value === 'string' && value.length > max ? message : null;
 
 export function TierCreateForm({ presentation }: { presentation: Presentation }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [pending, startTransition] = React.useTransition();
+  const [formError, setFormError] = React.useState<string | null>(null);
 
-  const form = useForm<TierFormValues>({
-    resolver: zodResolver(TierSchema),
-    defaultValues: {
-      name: '',
-      discountType: 'percentage',
-      discountValue: 0,
-      productScope: 'all',
-      minOrderCents: 0,
-    },
+  const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [discountType, setDiscountType] = React.useState<DiscountType>('percentage');
+  const [discountValue, setDiscountValue] = React.useState('0');
+  const [productScope, setProductScope] = React.useState<ProductScope>('all');
+  const [minOrderCents, setMinOrderCents] = React.useState('0');
+
+  const values = { name, description, discountValue, minOrderCents };
+  const v = useFieldValidation(values, {
+    name: rules(
+      rule.required('Name is required.'),
+      maxLength(127, 'Keep the name under 128 characters.')
+    ),
+    description: maxLength(2000, 'Keep the description under 2000 characters.'),
+    discountValue: nonNegativeNumber('Enter a discount amount of 0 or more.'),
+    minOrderCents: nonNegativeNumber('Enter a minimum of 0 or more.'),
   });
 
-  const guardLeave = useUnsavedGuard(form.formState.isDirty, {
+  const dirty =
+    name.trim() !== '' ||
+    description.trim() !== '' ||
+    discountType !== 'percentage' ||
+    discountValue !== '0' ||
+    productScope !== 'all' ||
+    minOrderCents !== '0';
+  const guardLeave = useUnsavedGuard(dirty, {
     kind: 'create',
     noun: 'pricing tier',
   });
@@ -79,14 +115,33 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  async function onSubmit(values: TierFormValues) {
-    const { error } = await createPricingTier(values);
-    if (error) {
-      form.setError('root', { message: error });
-      return;
-    }
-    close();
-    router.refresh();
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormError(null);
+    if (!v.validate()) return;
+
+    const payload = {
+      name: name.trim(),
+      description: description.trim() || undefined,
+      discountType,
+      discountValue: Number(discountValue),
+      productScope,
+      minOrderCents: Math.round(Number(minOrderCents)),
+    };
+
+    startTransition(async () => {
+      const { error } = await createPricingTier(payload);
+      if (error) {
+        if (/name/i.test(error)) {
+          v.setServerErrors({ name: error });
+        } else {
+          setFormError(error);
+        }
+        return;
+      }
+      close();
+      router.refresh();
+    });
   }
 
   return (
@@ -107,129 +162,90 @@ export function TierCreateForm({ presentation }: { presentation: Presentation })
           actions={{
             nextForm: FORM_ID,
             nextLabel: 'Create tier',
-            nextLoading: form.formState.isSubmitting,
-            nextDisabled: form.formState.isSubmitting,
+            nextLoading: pending,
+            nextDisabled: pending,
           }}
         >
           <Card>
             <CardBody>
               <CardTitle>Tier details</CardTitle>
-              <Form {...form}>
-                <form id={FORM_ID} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
+              <form id={FORM_ID} onSubmit={onSubmit} noValidate className="space-y-4">
+                <Field {...v.field('name')}>
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
                     name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <Input placeholder="e.g. Wholesale Tier 1" {...field} />
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="e.g. Wholesale Tier 1"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    {...v.control('name')}
                   />
+                </Field>
 
-                  <FormField
-                    control={form.control}
+                <Field {...v.field('description')}>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
                     name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <Textarea
-                          placeholder="Optional description for staff"
-                          rows={2}
-                          {...field}
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    {...v.control('description')}
+                    render={<Textarea rows={2} placeholder="Optional description for staff" />}
                   />
+                </Field>
 
-                  <div className="flex flex-row gap-3">
-                    <FormField
-                      control={form.control}
-                      name="discountType"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>Discount type</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            items={{
-                              percentage: '% off list price',
-                              fixed: '$ fixed amount off',
-                            }}
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                <div className="flex flex-row gap-3">
+                  <Field className="flex-1">
+                    <FieldLabel>Discount type</FieldLabel>
+                    <Select
+                      value={discountType}
+                      onValueChange={(val) => setDiscountType(val as DiscountType)}
+                      items={DISCOUNT_TYPE_ITEMS}
                     />
+                  </Field>
 
-                    <FormField
-                      control={form.control}
+                  <Field {...v.field('discountValue')} className="flex-1">
+                    <FieldLabel required>Value</FieldLabel>
+                    <FieldControl
                       name="discountValue"
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>Value</FormLabel>
-                          <Input
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            placeholder="0"
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      placeholder="0"
+                      value={discountValue}
+                      onChange={(e) => setDiscountValue(e.target.value)}
+                      {...v.control('discountValue')}
                     />
-                  </div>
+                  </Field>
+                </div>
 
-                  <FormField
-                    control={form.control}
-                    name="productScope"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Product scope</FormLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                          items={{
-                            all: 'All products',
-                            collections: 'Selected collections',
-                            products: 'Selected products',
-                          }}
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                <Field className="w-full">
+                  <FieldLabel>Product scope</FieldLabel>
+                  <Select
+                    value={productScope}
+                    onValueChange={(val) => setProductScope(val as ProductScope)}
+                    items={PRODUCT_SCOPE_ITEMS}
                   />
+                </Field>
 
-                  <FormField
-                    control={form.control}
+                <Field {...v.field('minOrderCents')}>
+                  <FieldLabel required>Minimum order (cents)</FieldLabel>
+                  <FieldControl
                     name="minOrderCents"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Minimum order (cents)</FormLabel>
-                        <Input
-                          type="number"
-                          min={0}
-                          step={1}
-                          placeholder="0 (no minimum)"
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    type="number"
+                    min={0}
+                    step={1}
+                    placeholder="0 (no minimum)"
+                    value={minOrderCents}
+                    onChange={(e) => setMinOrderCents(e.target.value)}
+                    {...v.control('minOrderCents')}
                   />
+                </Field>
 
-                  {form.formState.errors.root && (
-                    <p className="text-danger text-sm" role="alert" aria-live="polite">
-                      {form.formState.errors.root.message}
-                    </p>
-                  )}
-                </form>
-              </Form>
+                {formError && (
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                    {formError}
+                  </FieldStatus>
+                )}
+              </form>
             </CardBody>
           </Card>
         </SurfaceStep>

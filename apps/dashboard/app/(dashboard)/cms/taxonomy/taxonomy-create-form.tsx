@@ -4,7 +4,17 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTaxonomy } from './actions';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
@@ -42,6 +52,15 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
   const [name, setName] = React.useState('');
   const [pluralName, setPluralName] = React.useState('');
   const [hierarchical, setHierarchical] = React.useState(false);
+
+  const v = useFieldValidation(
+    { key, name, plural_name: pluralName },
+    {
+      key: rule.required('Key is required.'),
+      name: rule.required('Name is required.'),
+      plural_name: rule.required('Plural is required.'),
+    }
+  );
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -90,13 +109,10 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
 
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     const trimmedKey = key.trim();
     const trimmedName = name.trim();
     const trimmedPlural = pluralName.trim();
-    if (!trimmedKey || !trimmedName || !trimmedPlural) {
-      setError('Key, name, and plural are required.');
-      return;
-    }
     // <Checkbox> writes to React state, not native FormData. Build the payload
     // explicitly with the same keys the server action reads.
     const data = new FormData();
@@ -139,48 +155,36 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="tax-key">
-                      Key{' '}
-                      <span className="text-error" aria-hidden="true">
-                        *
-                      </span>
-                    </Label>
-                    <Input
-                      id="tax-key"
+                  <Field {...v.field('key')} className="flex-1">
+                    <FieldLabel required>Key</FieldLabel>
+                    <FieldControl
+                      name="key"
                       value={key}
                       onChange={(e) => setKey(e.target.value)}
+                      {...v.control('key')}
                       placeholder="blog_category"
                     />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="tax-name">
-                      Name{' '}
-                      <span className="text-error" aria-hidden="true">
-                        *
-                      </span>
-                    </Label>
-                    <Input
-                      id="tax-name"
+                  </Field>
+                  <Field {...v.field('name')} className="flex-1">
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
+                      name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
+                      {...v.control('name')}
                       placeholder="Category"
                     />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="tax-plural">
-                      Plural{' '}
-                      <span className="text-error" aria-hidden="true">
-                        *
-                      </span>
-                    </Label>
-                    <Input
-                      id="tax-plural"
+                  </Field>
+                  <Field {...v.field('plural_name')} className="flex-1">
+                    <FieldLabel required>Plural</FieldLabel>
+                    <FieldControl
+                      name="plural_name"
                       value={pluralName}
                       onChange={(e) => setPluralName(e.target.value)}
+                      {...v.control('plural_name')}
                       placeholder="Categories"
                     />
-                  </div>
+                  </Field>
                 </div>
                 <div className="flex flex-row items-center gap-2">
                   <Checkbox
@@ -194,9 +198,15 @@ export function TaxonomyCreateForm({ surface }: TaxonomyCreateFormProps) {
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

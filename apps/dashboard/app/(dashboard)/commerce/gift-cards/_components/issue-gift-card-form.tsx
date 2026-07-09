@@ -3,8 +3,16 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import { issueGiftCardAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -43,6 +51,25 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
   const [message, setMessage] = React.useState('');
   const [customCode, setCustomCode] = React.useState('');
 
+  // Field validation. Amount is money → must be a positive number; recipient
+  // email is optional but must be well-formed when provided.
+  const values = { amount, recipientEmail };
+  const v = useFieldValidation(values, {
+    amount: (val) => {
+      const n = Number(String(val).trim());
+      if (!Number.isFinite(n)) return 'Enter an amount.';
+      if (n <= 0) return 'Amount must be greater than 0.';
+      return null;
+    },
+    // Optional — only enforce shape when the merchant actually enters an address.
+    recipientEmail: (val) => {
+      const s = String(val).trim();
+      return s === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)
+        ? null
+        : 'Enter a valid email address.';
+    },
+  });
+
   // Unsaved-changes guard. A create form starts empty (bar default amount/currency),
   // so "dirty" is "the user has changed anything" — guard a Cancel / Close / Switch
   // / backdrop so typed work isn't silently dropped.
@@ -80,13 +107,9 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
   function submit() {
     setError(null);
     setIssuedCode(null);
+    if (!v.validate()) return;
 
     const dollars = Number(amount.trim());
-    if (!Number.isFinite(dollars) || dollars <= 0) {
-      setError('Amount must be positive');
-      return;
-    }
-
     const input: Record<string, unknown> = {
       initialBalanceCents: Math.round(dollars * 100),
       currency: (currency.trim() || 'USD').toUpperCase(),
@@ -144,72 +167,83 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex w-[8rem] flex-col gap-2">
-                    <Label htmlFor="gc-amount">Amount ($)</Label>
-                    <Input
-                      id="gc-amount"
+                  <Field {...v.field('amount')} className="w-[8rem]">
+                    <FieldLabel required>Amount ($)</FieldLabel>
+                    <FieldControl
+                      name="amount"
+                      type="number"
+                      min="0"
+                      step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
+                      {...v.control('amount')}
                     />
-                  </div>
-                  <div className="flex w-[6rem] flex-col gap-2">
-                    <Label htmlFor="gc-currency">Currency</Label>
-                    <Input
-                      id="gc-currency"
+                  </Field>
+                  <Field className="w-[6rem]">
+                    <FieldLabel>Currency</FieldLabel>
+                    <FieldControl
+                      name="currency"
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
                       maxLength={3}
                     />
-                  </div>
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="gc-recipient-email">Recipient email</Label>
-                    <Input
-                      id="gc-recipient-email"
+                  </Field>
+                  <Field {...v.field('recipientEmail')} className="min-w-[12rem] flex-1">
+                    <FieldLabel>Recipient email</FieldLabel>
+                    <FieldControl
+                      name="recipientEmail"
                       type="email"
                       value={recipientEmail}
                       onChange={(e) => setRecipientEmail(e.target.value)}
+                      {...v.control('recipientEmail')}
                     />
-                  </div>
-                  <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="gc-recipient-name">Recipient name</Label>
-                    <Input
-                      id="gc-recipient-name"
+                  </Field>
+                  <Field className="min-w-[12rem] flex-1">
+                    <FieldLabel>Recipient name</FieldLabel>
+                    <FieldControl
+                      name="recipientName"
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="gc-message">Message (optional)</Label>
-                  <Input
-                    id="gc-message"
+                <Field>
+                  <FieldLabel>Message (optional)</FieldLabel>
+                  <FieldControl
+                    name="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Happy birthday!"
                   />
-                </div>
-                <div className="flex w-[16rem] flex-col gap-2">
-                  <Label htmlFor="gc-custom-code">Custom code (optional)</Label>
-                  <Input
-                    id="gc-custom-code"
+                </Field>
+                <Field className="w-[16rem]">
+                  <FieldLabel>Custom code (optional)</FieldLabel>
+                  <FieldControl
+                    name="customCode"
                     value={customCode}
                     onChange={(e) => setCustomCode(e.target.value)}
                     placeholder="auto-generated when empty"
                     pattern="[A-Za-z0-9-]+"
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {issuedCode && (
-            <p className="mt-4 text-sm text-[var(--color-success)]" aria-live="polite">
+            <FieldStatus status="success" attached={false} aria-live="polite" className="mt-4">
               Issued <span className="font-mono">{issuedCode}</span>
-            </p>
+            </FieldStatus>
           )}
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

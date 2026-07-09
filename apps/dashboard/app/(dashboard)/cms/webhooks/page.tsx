@@ -11,7 +11,7 @@
 // what they're for, and how to manage them via the API.
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { Webhook } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';

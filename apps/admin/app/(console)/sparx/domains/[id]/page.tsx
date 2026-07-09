@@ -17,7 +17,7 @@ import {
 } from './_components/domain-detail-sections';
 
 const backLink = (
-  <Link href="/sparx/domains" className="text-sm text-[var(--color-text-muted)] hover:underline">
+  <Link href="/sparx/domains" className="text-base-content/60 text-sm hover:underline">
     ← All domains
   </Link>
 );

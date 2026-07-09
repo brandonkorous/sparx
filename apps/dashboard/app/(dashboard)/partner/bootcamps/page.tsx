@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { GraduationCap, Plus } from 'lucide-react';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

@@ -10,10 +10,13 @@ import {
   Card,
   CardBody,
   Checkbox,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import {
@@ -210,14 +213,14 @@ export function BulkPricingTool({
   return (
     <div className="flex flex-col gap-5">
       {notice && (
-        <p className="text-success text-sm" role="status">
+        <FieldStatus status="success" attached={false} role="status">
           {notice}
-        </p>
+        </FieldStatus>
       )}
       {error && (
-        <p className="text-danger text-sm" role="alert">
+        <FieldStatus status="error" attached={false} role="alert">
           {error}
-        </p>
+        </FieldStatus>
       )}
 
       <Card>
@@ -225,7 +228,8 @@ export function BulkPricingTool({
           <h3 className="text-xl font-semibold">Choose a rule &amp; scope</h3>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row flex-wrap items-end gap-3">
-              <Field label="Markup rule" className="min-w-[14rem] flex-1">
+              <Field className="min-w-[14rem] flex-1">
+                <FieldLabel>Markup rule</FieldLabel>
                 <NativeSelect value={ruleId} onChange={(e) => setRuleId(e.target.value)}>
                   {rules.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -234,7 +238,8 @@ export function BulkPricingTool({
                   ))}
                 </NativeSelect>
               </Field>
-              <Field label="Apply to" className="min-w-[12rem] flex-1">
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Apply to</FieldLabel>
                 <NativeSelect
                   value={scopeMode}
                   onChange={(e) => setScopeMode(e.target.value as ScopeMode)}
@@ -260,11 +265,9 @@ export function BulkPricingTool({
             )}
 
             {(scopeMode === 'product_type' || scopeMode === 'vendor') && (
-              <Field
-                label={scopeMode === 'vendor' ? 'Vendor' : 'Product type'}
-                className="max-w-sm"
-              >
-                <Input
+              <Field className="max-w-sm">
+                <FieldLabel>{scopeMode === 'vendor' ? 'Vendor' : 'Product type'}</FieldLabel>
+                <FieldControl
                   value={scopeText}
                   onChange={(e) => setScopeText(e.target.value)}
                   placeholder={scopeMode === 'vendor' ? 'Bosch' : 'Injectors'}
@@ -414,7 +417,7 @@ function CollectionPicker({
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   }
   return (
-    <div className="flex max-h-48 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex max-h-48 flex-col gap-1 overflow-auto rounded border p-3">
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
@@ -475,10 +478,11 @@ function ProductPicker({
 
   return (
     <div className="flex flex-col gap-3">
-      <Field label="Find products" className="max-w-md">
+      <Field className="max-w-md">
+        <FieldLabel>Find products</FieldLabel>
         <div className="flex flex-row items-center gap-2">
           <Search className="h-4 w-4 text-[var(--color-fg-muted)]" />
-          <Input
+          <FieldControl
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the catalog by name…"
@@ -487,7 +491,7 @@ function ProductPicker({
       </Field>
 
       {query.trim().length >= 2 && (
-        <div className="flex max-h-56 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-2">
+        <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-auto rounded border p-2">
           {searching && <p className="text-base-content/70 px-1 py-1 text-sm">Searching…</p>}
           {!searching && results.length === 0 && (
             <p className="text-base-content/70 px-1 py-1 text-sm">No matches.</p>
@@ -495,7 +499,7 @@ function ProductPicker({
           {results.map((p) => (
             <div
               key={p.id}
-              className="flex flex-row items-center justify-between gap-2 rounded px-1 py-1 hover:bg-[var(--color-bg-subtle)]"
+              className="hover:bg-base-200 flex flex-row items-center justify-between gap-2 rounded px-1 py-1"
             >
               <span className="text-sm">{p.title}</span>
               <Button
@@ -533,23 +537,6 @@ function ProductPicker({
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function Field({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
-      <span className="text-base-content/70 text-xs font-medium">{label}</span>
-      {children}
     </div>
   );
 }

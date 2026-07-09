@@ -6,7 +6,7 @@
 // defensive so a malformed legacy row degrades to a raw view instead of throwing.
 
 import * as React from 'react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   Action as ActionSchema,
   ConditionGroup as ConditionGroupSchema,
@@ -241,33 +241,29 @@ export function ConditionGroupView({
 }) {
   if (group.conditions.length === 0) {
     return nested ? (
-      <span className="text-sm text-[var(--color-text-tertiary)]">(empty group)</span>
+      <span className="text-base-content/50 text-sm">(empty group)</span>
     ) : (
-      <p className="text-sm text-[var(--color-text-tertiary)]">
-        No conditions — runs on every trigger.
-      </p>
+      <p className="text-base-content/50 text-sm">No conditions — runs on every trigger.</p>
     );
   }
   const joiner = group.logic;
   return (
     <ul
       className={
-        nested
-          ? 'flex flex-col gap-1 border-l-2 border-[var(--color-border-default)] pl-3'
-          : 'flex flex-col gap-1'
+        nested ? 'border-base-300 flex flex-col gap-1 border-l-2 pl-3' : 'flex flex-col gap-1'
       }
     >
       {group.conditions.map((node, i) => (
         <li key={i} className="flex items-start gap-2 text-sm">
           {i > 0 && (
-            <span className="mt-0.5 text-xs font-medium tracking-wide text-[var(--color-text-tertiary)] uppercase">
+            <span className="text-base-content/50 mt-0.5 text-xs font-medium tracking-wide uppercase">
               {joiner}
             </span>
           )}
           {isConditionGroup(node) ? (
             <ConditionGroupView group={node} nested />
           ) : (
-            <code className="rounded bg-[var(--color-bg-subtle)] px-1.5 py-0.5 font-mono text-xs">
+            <code className="bg-base-200 rounded px-1.5 py-0.5 font-mono text-xs">
               {conditionToText(node as Condition)}
             </code>
           )}
@@ -302,18 +298,18 @@ export function actionSummaryText(action: Action): string {
 
 export function ActionListView({ actions }: { actions: readonly Action[] }) {
   if (actions.length === 0) {
-    return <p className="text-sm text-[var(--color-text-tertiary)]">No actions.</p>;
+    return <p className="text-base-content/50 text-sm">No actions.</p>;
   }
   return (
     <ol className="flex flex-col gap-2">
       {actions.map((a, i) => (
         <li key={i} className="flex items-start gap-3 text-sm">
-          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-xs font-medium">
+          <span className="bg-base-200 mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-medium">
             {i + 1}
           </span>
           <div className="flex flex-col gap-0.5">
             <span className="font-medium">{actionSummaryText(a)}</span>
-            <span className="font-mono text-xs text-[var(--color-text-tertiary)]">{a.type}</span>
+            <span className="text-base-content/50 font-mono text-xs">{a.type}</span>
           </div>
         </li>
       ))}

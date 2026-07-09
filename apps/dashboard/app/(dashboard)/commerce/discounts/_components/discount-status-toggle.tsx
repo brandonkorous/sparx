@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import {
   activateDiscountAction,
@@ -69,7 +69,7 @@ export function DiscountStatusToggle({
 
   return (
     <div className="flex flex-row items-center gap-1">
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
       {status === 'draft' && (
         <Button size="sm" variant="ghost" disabled={pending} onClick={activate}>
           Activate

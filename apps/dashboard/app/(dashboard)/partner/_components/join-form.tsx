@@ -2,7 +2,20 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardBody, Input, Label, NativeSelect, Radio } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Radio,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { PARTNER_KINDS } from '../_lib/kinds';
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
 import { applyForPartnerAction } from '../actions';
@@ -22,13 +35,15 @@ export function JoinForm() {
   const [kind, setKind] = React.useState('freelance');
   const [error, setError] = React.useState<string | null>(null);
 
+  const v = useFieldValidation(
+    { displayName },
+    { displayName: rule.required('Enter the name your practice goes by.') }
+  );
+
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     const trimmed = displayName.trim();
-    if (!trimmed) {
-      setError('Enter the name your practice goes by.');
-      return;
-    }
     startTransition(async () => {
       const result = await applyForPartnerAction({ displayName: trimmed, requestedTier, kind });
       if (!result.ok) {
@@ -50,35 +65,39 @@ export function JoinForm() {
           }}
         >
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="partner-name">Practice name</Label>
-              <Input
+            <Field {...v.field('displayName')}>
+              <FieldLabel required>Practice name</FieldLabel>
+              <FieldControl
                 id="partner-name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="e.g. Northwind Studio"
                 maxLength={255}
+                {...v.control('displayName')}
               />
-              <p className="text-base-content/70 text-xs">
+              <FieldDescription>
                 How you’ll appear in the public partner directory. You can refine your full listing
                 later.
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="partner-kind">What best describes you?</Label>
-              <NativeSelect
+            <Field>
+              <FieldLabel>What best describes you?</FieldLabel>
+              <FieldControl
                 id="partner-kind"
                 value={kind}
                 onChange={(e) => setKind(e.target.value)}
-              >
-                {PARTNER_KINDS.map((k) => (
-                  <option key={k.value} value={k.value}>
-                    {k.label}
-                  </option>
-                ))}
-              </NativeSelect>
-            </div>
+                render={
+                  <NativeSelect>
+                    {PARTNER_KINDS.map((k) => (
+                      <option key={k.value} value={k.value}>
+                        {k.label}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                }
+              />
+            </Field>
 
             <div className="flex flex-col gap-2">
               <Label>Tier you’re applying for</Label>
@@ -88,7 +107,7 @@ export function JoinForm() {
                   return (
                     <div
                       key={t}
-                      className="flex items-start gap-3 rounded-lg border border-[var(--color-border-default)] p-3"
+                      className="border-base-300 flex items-start gap-3 rounded-lg border p-3"
                     >
                       <Radio
                         name="requested-tier"
@@ -119,9 +138,9 @@ export function JoinForm() {
             </p>
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
 
             <div>

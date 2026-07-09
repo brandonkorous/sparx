@@ -101,10 +101,10 @@ export function ThemeShowcase({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold text-[var(--color-text-primary)]">Preview</span>
+        <span className="text-base-content text-sm font-semibold">Preview</span>
         <div className="flex items-center gap-2">
           {onModeChange ? (
-            <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
+            <div className="border-base-300 flex rounded-md border p-0.5">
               {(['light', 'dark'] as const).map((m) => (
                 <Button
                   key={m}
@@ -125,7 +125,7 @@ export function ThemeShowcase({
       {/* The compiled theme, scoped to this subtree only. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-default)] shadow-sm">
+      <div className="border-base-300 overflow-hidden rounded-[var(--radius-lg)] border shadow-sm">
         <div id="st-theme-preview" data-theme={mode}>
           {/* Storefront header chrome */}
           <header className="sfx-header">

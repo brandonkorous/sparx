@@ -19,11 +19,16 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Input,
   Label,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, toast } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createFitmentDomainAction } from '../../fitment-actions';
 
@@ -69,6 +74,16 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
 
   const effectiveSlug = slugEdited ? slug : slugify(name);
 
+  // Field validation. Name + slug are both required; the dimension list is
+  // checked separately (a repeater, not a single Field).
+  const v = useFieldValidation(
+    { name, slug: effectiveSlug },
+    {
+      name: rule.required('Name is required.'),
+      slug: rule.required('Slug is required.'),
+    }
+  );
+
   function reset(): void {
     setName('');
     setSlug('');
@@ -98,11 +113,9 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
     e.preventDefault();
     setError(null);
 
+    if (!v.validate()) return;
+
     const filled = dimensions.filter((d) => d.label.trim());
-    if (!name.trim() || !effectiveSlug) {
-      setError('Name and slug are required.');
-      return;
-    }
     if (filled.length === 0 || !filled.some((d) => d.kind === 'level')) {
       setError('Add at least one level dimension (a tier in the tree).');
       return;
@@ -153,28 +166,28 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
           <form onSubmit={onSubmit} noValidate>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-3">
-                <div className="flex min-w-[200px] flex-1 flex-col gap-1">
-                  <Label htmlFor="nd-name">Name</Label>
-                  <Input
-                    id="nd-name"
+                <Field {...v.field('name')} className="min-w-[200px] flex-1">
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="What you're matching against"
-                    required
+                    {...v.control('name')}
                   />
-                </div>
-                <div className="flex min-w-[160px] flex-1 flex-col gap-1">
-                  <Label htmlFor="nd-slug">Slug</Label>
-                  <Input
-                    id="nd-slug"
+                </Field>
+                <Field {...v.field('slug')} className="min-w-[160px] flex-1">
+                  <FieldLabel required>Slug</FieldLabel>
+                  <FieldControl
+                    name="slug"
                     value={effectiveSlug}
                     onChange={(e) => {
                       setSlug(slugify(e.target.value));
                       setSlugEdited(true);
                     }}
-                    required
+                    {...v.control('slug')}
                   />
-                </div>
+                </Field>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -253,9 +266,9 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
               </div>
 
               {error && (
-                <p className="text-danger text-sm" role="alert">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
             <div className="mt-6 flex flex-row justify-end gap-2">

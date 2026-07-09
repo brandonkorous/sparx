@@ -57,7 +57,7 @@ export function UserMenu({ user, displayName }: { user: UserMenuUser; displayNam
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label={`Account menu for ${displayName}`}
-        className="flex items-center justify-center rounded-full focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none"
+        className="focus-visible:ring-primary flex items-center justify-center rounded-full focus-visible:ring-2 focus-visible:outline-none"
       >
         <Avatar size="sm" alt={displayName} />
       </DropdownMenuTrigger>
@@ -87,10 +87,7 @@ export function UserMenu({ user, displayName }: { user: UserMenuUser; displayNam
           <MessageSquarePlus className="h-4 w-4" />
           Your feedback
           {unreadCount > 0 && (
-            <span
-              className="ml-auto h-2 w-2 rounded-full bg-[var(--color-text-link)]"
-              aria-hidden
-            />
+            <span className="bg-primary ml-auto h-2 w-2 rounded-full" aria-hidden />
           )}
         </DropdownMenuItem>
         <DropdownMenuSeparator />

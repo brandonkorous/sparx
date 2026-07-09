@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { EARLY_HREF, SALES_HREF, signupHref } from './cta';
@@ -56,16 +56,16 @@ export function FinalCta() {
               alignItems: 'flex-start',
             }}
           >
-            <Button asChild size="xl" variant="solid">
-              <a href={signupHref('final')}>Start your site →</a>
+            <Button size="xl" variant="solid" render={<a href={signupHref('final')} />}>
+              Start your site →
             </Button>
             <Button
-              asChild
               size="xl"
               variant="outline"
               style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
+              render={<a href={SALES_HREF} />}
             >
-              <a href={SALES_HREF}>Book a 20-min call</a>
+              Book a 20-min call
             </Button>
             <span
               style={{

@@ -21,8 +21,8 @@
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "silicaui": "catalog:",
-    "silicaui-react": "catalog:"
+    "@wizeworks/silicaui": "catalog:",
+    "@wizeworks/silicaui-react": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0",

@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import type { StoryState } from '../_lib/story-state';
 import type { StoryExample } from '../_lib/story-examples';
 import { StoryCanvas, type StoryDispatch } from './story-canvas';

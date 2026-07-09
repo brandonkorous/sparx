@@ -1,7 +1,13 @@
 import { CreditCard } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Alert, AlertContent, AlertDescription, AlertTitle, Badge } from 'silicaui-react';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 

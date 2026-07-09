@@ -71,7 +71,7 @@ export function Pager({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-between gap-3 px-1 text-xs text-[var(--color-text-secondary)]',
+        'text-base-content/70 flex flex-wrap items-center justify-between gap-3 px-1 text-xs',
         className
       )}
     >
@@ -117,11 +117,7 @@ export function Pager({
                 {item}
               </PagerButton>
             ) : (
-              <span
-                key={item}
-                aria-hidden
-                className="px-1 text-[var(--color-text-tertiary)] select-none"
-              >
+              <span key={item} aria-hidden className="text-base-content/50 px-1 select-none">
                 …
               </span>
             )
@@ -150,11 +146,11 @@ function PagerButton({ active, className, children, ...props }: PagerButtonProps
       type="button"
       className={cn(
         'inline-flex h-7 min-w-7 items-center justify-center rounded-md border px-2 tabular-nums transition-colors',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-40',
         active
-          ? 'border-[var(--module-active)] bg-[var(--module-active-tint)] font-medium text-[var(--module-active)]'
-          : 'border-[var(--color-border-default)] hover:bg-[var(--color-bg-subtle)] disabled:hover:bg-transparent',
+          ? 'border-module bg-module bg-soft text-module font-medium'
+          : 'border-[var(--color-base-300)] hover:bg-[var(--color-base-200)] disabled:hover:bg-transparent',
         className
       )}
       {...props}

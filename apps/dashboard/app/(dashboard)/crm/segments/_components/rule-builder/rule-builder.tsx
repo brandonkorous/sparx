@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import { Code2 } from 'lucide-react';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { RuleNode } from './rule-node';
 import { type Rule, emptyGroup } from './types';
@@ -41,7 +41,7 @@ export function RuleBuilder({ value, onChange }: Props) {
         </Button>
       </div>
       {showJson && (
-        <pre className="overflow-auto rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3 font-mono text-xs">
+        <pre className="border-base-300 bg-base-200 overflow-auto rounded-md border p-3 font-mono text-xs">
           {JSON.stringify(value, null, 2)}
         </pre>
       )}

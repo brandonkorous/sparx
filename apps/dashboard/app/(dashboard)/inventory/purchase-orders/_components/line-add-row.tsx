@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { Button, Input, Label } from 'silicaui-react';
+import { Button, Field, FieldControl, FieldLabel, FieldStatus } from '@wizeworks/silicaui-react';
 
 import { lookupVariantBySkuAction } from '../../_lib/supplier-actions';
 
@@ -45,6 +45,10 @@ export function LineAddRow({
       setError('Enter a quantity of 1 or more.');
       return;
     }
+    if (costStr && (!Number.isFinite(Number(costStr)) || Number(costStr) < 0)) {
+      setError('Unit cost cannot be negative.');
+      return;
+    }
 
     setBusy(true);
     void (async () => {
@@ -70,16 +74,26 @@ export function LineAddRow({
   return (
     <div className="flex flex-col gap-2">
       <form ref={formRef} onSubmit={onSubmit}>
-        <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+        <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
           <AddField label="Variant SKU" name="sku" placeholder="e.g. FUEL-FILTER-1" grow />
-          <AddField label="Qty" name="quantity" type="number" placeholder="1" />
-          <AddField label="Unit cost ($)" name="unitCost" type="number" placeholder="default" />
+          <AddField label="Qty" name="quantity" type="number" min={1} placeholder="1" />
+          <AddField
+            label="Unit cost ($)"
+            name="unitCost"
+            type="number"
+            min={0}
+            placeholder="default"
+          />
           <Button color="module" type="submit" disabled={busy || disabled}>
             {busy ? 'Adding…' : 'Add line'}
           </Button>
         </div>
       </form>
-      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+      {error && (
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+          {error}
+        </FieldStatus>
+      )}
     </div>
   );
 }
@@ -88,20 +102,28 @@ function AddField({
   label,
   name,
   type,
+  min,
   placeholder,
   grow,
 }: {
   label: string;
   name: string;
   type?: string;
+  min?: number;
   placeholder?: string;
   grow?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-1 ${grow ? 'min-w-[12rem] flex-1' : 'min-w-[7rem]'}`}>
-      <Label htmlFor={`po-add-${name}`}>{label}</Label>
-      <Input id={`po-add-${name}`} name={name} type={type} placeholder={placeholder} />
-    </div>
+    <Field className={grow ? 'min-w-[12rem] flex-1' : 'min-w-[7rem]'}>
+      <FieldLabel>{label}</FieldLabel>
+      <FieldControl
+        id={`po-add-${name}`}
+        name={name}
+        type={type}
+        min={min}
+        placeholder={placeholder}
+      />
+    </Field>
   );
 }
 

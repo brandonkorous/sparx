@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
-import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

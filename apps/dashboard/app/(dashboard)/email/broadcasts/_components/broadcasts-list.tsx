@@ -10,7 +10,7 @@ import {
   type SelectionCard,
   type SelectionColumn,
 } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { bulkCancelBroadcastsAction } from '../actions';
 import type { BroadcastRow } from '../../_lib/types';
@@ -68,7 +68,7 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
       header: 'Name',
       cell: (b) => (
         <div className="flex flex-col gap-1">
-          {nameLink(b, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+          {nameLink(b, 'text-sm font-medium hover:text-module hover:underline')}
           <p className="text-base-content/70 truncate text-xs">{b.subject}</p>
         </div>
       ),
@@ -93,8 +93,7 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
   ];
 
   const card: SelectionCard<BroadcastRow> = {
-    title: (b) =>
-      nameLink(b, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (b) => nameLink(b, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (b) => <p className="text-base-content/70 truncate text-xs">{b.subject}</p>,
     badge: statusBadge,
     body: (b) => (

@@ -12,7 +12,7 @@
 import Link from 'next/link';
 import { Heart, ShoppingBag, Store, Tag } from 'lucide-react';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { Wordmark } from '@/components/sparx-brand';
 import { SearchAutocomplete } from '@/components/search-autocomplete';

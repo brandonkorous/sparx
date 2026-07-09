@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { RefreshCw } from 'lucide-react';
 import { syncSupplier } from '../../../_lib/actions';
 
@@ -37,7 +37,7 @@ export function SyncButton({ supplierId }: Props) {
       >
         {pending ? 'Syncing…' : 'Sync now'}
       </Button>
-      {syncError && <p className="text-right text-xs text-[var(--color-danger)]">{syncError}</p>}
+      {syncError && <p className="text-danger text-right text-xs">{syncError}</p>}
     </div>
   );
 }

@@ -3,7 +3,14 @@
 import * as React from 'react';
 import { Plus, Trash } from 'lucide-react';
 
-import { Button, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { setProductOptionsAction } from '../../../variant-actions';
 
@@ -153,7 +160,7 @@ export function OptionsEditor({
         </div>
 
         {drafts.length === 0 && (
-          <div className="flex flex-col items-center gap-2 rounded border border-dashed border-[var(--color-border-default)] p-6 text-center">
+          <div className="border-base-300 flex flex-col items-center gap-2 rounded border border-dashed p-6 text-center">
             <p className="text-base-content/70 text-sm">
               No options yet — single-SKU products work too.
             </p>
@@ -164,34 +171,38 @@ export function OptionsEditor({
           {drafts.map((opt, oi) => (
             <div
               key={opt.localKey}
-              className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] p-3"
+              className="border-base-300 flex flex-col gap-3 rounded border p-3"
             >
               <div className="flex flex-row items-end gap-3">
                 <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor={`opt-${opt.localKey}-name`}>Name</Label>
-                  <Input
-                    id={`opt-${opt.localKey}-name`}
-                    value={opt.name}
-                    onChange={(e) => patchOption(oi, { name: e.target.value })}
-                    placeholder="Color"
-                  />
+                  <Field>
+                    <FieldLabel>Name</FieldLabel>
+                    <FieldControl
+                      id={`opt-${opt.localKey}-name`}
+                      value={opt.name}
+                      onChange={(e) => patchOption(oi, { name: e.target.value })}
+                      placeholder="Color"
+                    />
+                  </Field>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor={`opt-${opt.localKey}-display`}>Display</Label>
-                  <NativeSelect
-                    id={`opt-${opt.localKey}-display`}
-                    className="w-auto"
-                    value={opt.displayType}
-                    onChange={(e) =>
-                      patchOption(oi, { displayType: e.target.value as DisplayType })
-                    }
-                  >
-                    <option value="dropdown">Dropdown</option>
-                    <option value="swatch">Color swatch</option>
-                    <option value="image_swatch">Image swatch</option>
-                    <option value="radio">Radio</option>
-                    <option value="segmented">Segmented</option>
-                  </NativeSelect>
+                  <Field>
+                    <FieldLabel>Display</FieldLabel>
+                    <NativeSelect
+                      id={`opt-${opt.localKey}-display`}
+                      className="w-auto"
+                      value={opt.displayType}
+                      onChange={(e) =>
+                        patchOption(oi, { displayType: e.target.value as DisplayType })
+                      }
+                    >
+                      <option value="dropdown">Dropdown</option>
+                      <option value="swatch">Color swatch</option>
+                      <option value="image_swatch">Image swatch</option>
+                      <option value="radio">Radio</option>
+                      <option value="segmented">Segmented</option>
+                    </NativeSelect>
+                  </Field>
                 </div>
                 <Button
                   type="button"
@@ -209,7 +220,7 @@ export function OptionsEditor({
                 <p className="text-base-content/70 text-xs">Values</p>
                 {opt.values.map((val, vi) => (
                   <div key={val.localKey} className="flex flex-row items-center gap-2">
-                    <Input
+                    <FieldControl
                       value={val.value}
                       onChange={(e) => patchValue(oi, vi, { value: e.target.value })}
                       placeholder="Red"
@@ -217,7 +228,7 @@ export function OptionsEditor({
                       aria-label={`Value ${vi + 1}`}
                     />
                     {(opt.displayType === 'swatch' || opt.displayType === 'image_swatch') && (
-                      <Input
+                      <FieldControl
                         value={val.swatchHex}
                         onChange={(e) => patchValue(oi, vi, { swatchHex: e.target.value })}
                         placeholder="#FF0000"
@@ -262,9 +273,9 @@ export function OptionsEditor({
         </div>
 
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
 
         <div className="flex flex-row justify-end gap-2">

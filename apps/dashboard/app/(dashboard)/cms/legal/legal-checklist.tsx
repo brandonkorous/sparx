@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { Check, FileText, Plus } from 'lucide-react';
 import { createLegalPage, addLegalPlacement, acknowledgeLegalPage } from './actions';
 
@@ -77,7 +77,7 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
           <Card key={item.legalKind}>
             <CardBody className="flex flex-wrap items-center justify-between gap-3 py-4">
               <div className="flex min-w-0 items-center gap-3">
-                <FileText className="size-4 shrink-0 text-[var(--color-text-tertiary)]" />
+                <FileText className="text-base-content/50 size-4 shrink-0" />
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-medium">{item.title}</p>

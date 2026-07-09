@@ -11,7 +11,20 @@ import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } f
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { toast, useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import {
   archiveWorkflowAction,
@@ -39,6 +52,8 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
   const [name, setName] = React.useState(workflow.name);
   const [isDefault, setIsDefault] = React.useState(workflow.isDefault);
   const headerDirty = name !== workflow.name || isDefault !== workflow.isDefault;
+
+  const v = useFieldValidation({ name }, { name: rule.required('A workflow name is required.') });
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const dndId = React.useId();
@@ -68,10 +83,7 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
   }
 
   function saveHeader() {
-    if (!name.trim()) {
-      toast.error('A workflow name is required.');
-      return;
-    }
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await updateWorkflowAction(workflow.id, {
         name: name.trim(),
@@ -112,14 +124,19 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
         <CardBody>
           <CardTitle>Workflow</CardTitle>
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="wf-name">Name</Label>
-              <Input id="wf-name" value={name} onChange={(e) => setName(e.target.value)} />
-              <p className="text-base-content/70 text-xs">
+            <Field {...v.field('name')}>
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
+                name="wf-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
+              />
+              <FieldDescription>
                 Slug <code className="font-mono">{workflow.slug}</code> is the stable identifier and
                 can’t change.
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
             <div className="flex flex-row items-center gap-2">
               <Checkbox
                 color="module"
@@ -184,7 +201,7 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
             </DndContext>
           )}
 
-          <div className="mt-4 border-t border-[var(--color-border-default)] pt-4">
+          <div className="border-base-300 mt-4 border-t pt-4">
             <AddStageForm
               workflowId={workflow.id}
               nextSortOrder={stages.length}

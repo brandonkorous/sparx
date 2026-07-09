@@ -20,7 +20,7 @@ const ROLES: Role[] = [
           fontSize: 'clamp(34px, 5vw, 52px)',
           letterSpacing: '-0.025em',
           lineHeight: 1.05,
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         Everything, ignited.
@@ -39,7 +39,7 @@ const ROLES: Role[] = [
           fontSize: '24px',
           letterSpacing: '0',
           lineHeight: 1.25,
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         Activate only what you need
@@ -57,7 +57,7 @@ const ROLES: Role[] = [
           fontWeight: 400,
           fontSize: '17px',
           lineHeight: 1.6,
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
@@ -77,7 +77,7 @@ const ROLES: Role[] = [
           fontSize: '11px',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         Badge · metadata
@@ -93,7 +93,7 @@ export function TypeSection() {
     <Section id="type" surface="page" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
-          accent="var(--module-cms)"
+          accent="var(--color-module-cms)"
           headline="Geist, doing the heavy lifting"
           lede="Geist is Vercel’s open-source interface typeface — geometric precision with editorial warmth. Hierarchy comes from size and spacing, never from heavy weights."
         />
@@ -108,7 +108,7 @@ export function TypeSection() {
                 justifyContent: 'space-between',
                 gap: '24px',
                 padding: '28px 0',
-                borderTop: i === 0 ? 'none' : '1px solid var(--color-border-default)',
+                borderTop: i === 0 ? 'none' : '1px solid var(--color-base-300)',
               }}
             >
               <div
@@ -124,7 +124,7 @@ export function TypeSection() {
                   style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {r.role}
@@ -141,9 +141,9 @@ export function TypeSection() {
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '12px',
-                        color: 'var(--color-text-secondary)',
+                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                         padding: '4px 9px',
-                        border: '1px solid var(--color-border-default)',
+                        border: '1px solid var(--color-base-300)',
                         borderRadius: 'var(--radius-md)',
                       }}
                     >
@@ -156,7 +156,7 @@ export function TypeSection() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
                     lineHeight: '20px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {r.use}
@@ -192,8 +192,8 @@ function Note({ title, children }: { title: string; children: React.ReactNode })
         flexDirection: 'column',
         gap: '12px',
         padding: '24px',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-xl)',
       }}
     >
@@ -202,7 +202,7 @@ function Note({ title, children }: { title: string; children: React.ReactNode })
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '15px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >
@@ -213,7 +213,7 @@ function Note({ title, children }: { title: string; children: React.ReactNode })
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {children}

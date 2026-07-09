@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Clock, Undo2 } from 'lucide-react';
-import { Button, Card, CardBody, Loading } from 'silicaui-react';
+import { Button, Card, CardBody, Loading } from '@wizeworks/silicaui-react';
 
 import { revertBulkPriceAction } from '../../product-actions';
 import type { ReversibleOp } from '../_lib/bulk-price-types';
@@ -57,15 +57,15 @@ export function BulkPriceRevertBanner({ op }: { op: ReversibleOp }) {
       <CardBody>
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 flex-row items-center gap-2">
-            <Clock className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
+            <Clock className="text-module h-4 w-4 shrink-0" />
             <p className="min-w-0 text-sm">
               <span className="font-medium">{op.label}</span> — {op.productCount} product
               {op.productCount === 1 ? '' : 's'}, {op.variantCount} variant
               {op.variantCount === 1 ? '' : 's'}.{' '}
-              <span className="text-[var(--color-text-secondary)] tabular-nums">
+              <span className="text-base-content/70 tabular-nums">
                 Undo available for {countdown}
               </span>
-              {error ? <span className="text-[var(--color-danger)]"> · {error}</span> : null}
+              {error ? <span className="text-danger"> · {error}</span> : null}
             </p>
           </div>
           <Button

@@ -295,8 +295,8 @@ export function ImportDialog({
               className={cn(
                 'flex min-h-[160px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-6 transition-colors',
                 dragOver
-                  ? 'border-[var(--module-active)] bg-[var(--module-active-tint)]'
-                  : 'border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]'
+                  ? 'border-module bg-module bg-soft'
+                  : 'border-[var(--color-base-300)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]'
               )}
               onDragOver={(e) => {
                 e.preventDefault();
@@ -313,7 +313,7 @@ export function ImportDialog({
               }}
               aria-label={`Upload ${onParseXlsx ? 'CSV or Excel' : 'CSV'} file`}
             >
-              <Upload className="h-8 w-8 text-[var(--color-text-muted)]" />
+              <Upload className="text-base-content/60 h-8 w-8" />
               <Stack gap={1} className="text-center">
                 <Text size="sm" className="font-medium">
                   Drop a {onParseXlsx ? 'CSV or Excel' : 'CSV'} file here, or click to browse
@@ -337,7 +337,7 @@ export function ImportDialog({
 
             {fileName && (
               <Stack direction="row" align="center" gap={2}>
-                <FileText className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
+                <FileText className="text-base-content/60 h-4 w-4 shrink-0" />
                 <Text size="sm" className="truncate font-medium">
                   {fileName}
                 </Text>
@@ -350,7 +350,7 @@ export function ImportDialog({
             )}
 
             {headerErrors.length > 0 && (
-              <Stack gap={1} className="rounded-md bg-[var(--color-danger-tint)] p-3">
+              <Stack gap={1} className="bg-danger bg-soft rounded-md p-3">
                 {headerErrors.map((e) => (
                   <Stack key={e} direction="row" align="start" gap={2}>
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
@@ -422,23 +422,18 @@ export function ImportDialog({
                 : 'Only new records will be created. Existing records that match will be skipped.'}
             </Text>
 
-            <div className="overflow-x-auto rounded-lg border border-[var(--color-border-default)]">
+            <div className="overflow-x-auto rounded-lg border border-[var(--color-base-300)]">
               <table className="w-full text-xs">
-                <thead className="bg-[var(--color-bg-subtle)]">
+                <thead className="bg-[var(--color-base-200)]">
                   <tr>
-                    <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
-                      #
-                    </th>
+                    <th className="text-base-content/60 px-3 py-2 text-left font-medium">#</th>
                     {previewHeaders.map((h) => (
-                      <th
-                        key={h}
-                        className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]"
-                      >
+                      <th key={h} className="text-base-content/60 px-3 py-2 text-left font-medium">
                         {h}
                       </th>
                     ))}
                     {headers.length > 8 && (
-                      <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                      <th className="text-base-content/60 px-3 py-2 text-left font-medium">
                         +{headers.length - 8} more
                       </th>
                     )}
@@ -446,11 +441,11 @@ export function ImportDialog({
                 </thead>
                 <tbody>
                   {previewRows.map((row, i) => (
-                    <tr key={i} className="border-t border-[var(--color-border-default)]">
-                      <td className="px-3 py-1.5 text-[var(--color-text-muted)]">{i + 1}</td>
+                    <tr key={i} className="border-t border-[var(--color-base-300)]">
+                      <td className="text-base-content/60 px-3 py-1.5">{i + 1}</td>
                       {previewHeaders.map((h) => (
                         <td key={h} className="max-w-[120px] truncate px-3 py-1.5" title={row[h]}>
-                          {row[h] ?? <span className="text-[var(--color-text-muted)]">—</span>}
+                          {row[h] ?? <span className="text-base-content/60">—</span>}
                         </td>
                       ))}
                       {headers.length > 8 && <td />}
@@ -471,7 +466,7 @@ export function ImportDialog({
                 direction="row"
                 align="start"
                 gap={2}
-                className="rounded-md bg-[var(--color-danger-tint)] p-3"
+                className="bg-danger bg-soft rounded-md p-3"
               >
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
                 <Text size="sm" variant="danger">
@@ -485,7 +480,7 @@ export function ImportDialog({
         {/* ── Phase: progress ── */}
         {phase === 'progress' && (
           <Stack gap={6} className="mt-4 items-center py-8">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--color-border-default)] border-t-[var(--module-active)]" />
+            <div className="border-t-module h-12 w-12 animate-spin rounded-full border-4 border-[var(--color-base-300)]" />
             <Stack gap={2} className="w-full max-w-xs text-center">
               <Text size="sm" className="font-medium">
                 Importing {rows.length} rows…
@@ -547,17 +542,17 @@ export function ImportDialog({
                 <Text size="sm" className="font-medium">
                   Errors
                 </Text>
-                <div className="max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border-default)]">
+                <div className="max-h-48 overflow-y-auto rounded-lg border border-[var(--color-base-300)]">
                   <table className="w-full text-xs">
-                    <thead className="bg-[var(--color-bg-subtle)]">
+                    <thead className="bg-[var(--color-base-200)]">
                       <tr>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
                           Row
                         </th>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
                           Key
                         </th>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
                           Error
                         </th>
                       </tr>
@@ -566,10 +561,7 @@ export function ImportDialog({
                       {result.rows
                         .filter((r) => r.status === 'error')
                         .map((r) => (
-                          <tr
-                            key={r.rowIndex}
-                            className="border-t border-[var(--color-border-default)]"
-                          >
+                          <tr key={r.rowIndex} className="border-t border-[var(--color-base-300)]">
                             <td className="px-3 py-1.5 tabular-nums">{r.rowIndex + 1}</td>
                             <td className="max-w-[100px] truncate px-3 py-1.5">
                               {r.naturalKey ?? '—'}

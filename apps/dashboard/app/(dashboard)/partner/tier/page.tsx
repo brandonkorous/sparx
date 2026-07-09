@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { Award, Check } from 'lucide-react';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader, statusLabel, statusTone } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -65,11 +65,11 @@ export default async function PartnerTierPage() {
                           </Badge>
                         ) : null}
                       </div>
-                      <p className="text-sm text-[var(--module-active-text)]">{meta.commission}</p>
+                      <p className="text-module text-sm">{meta.commission}</p>
                       <ul className="flex flex-col gap-2">
                         {meta.unlocks.map((u) => (
                           <li key={u} className="flex items-start gap-2">
-                            <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                            <Check className="text-module mt-0.5 h-4 w-4 shrink-0" />
                             <p className="text-sm">{u}</p>
                           </li>
                         ))}

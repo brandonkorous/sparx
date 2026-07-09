@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import { Button, Card, CardBody } from 'silicaui-react';
+import { Button, Card, CardBody, FieldStatus } from '@wizeworks/silicaui-react';
 import { ModuleProvider } from '@sparx/ui';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
@@ -94,8 +94,8 @@ export function ProductSeoForm({
             <h2 className="text-xl font-semibold">Search engine listing</h2>
             <p className="opacity-70">What this product looks like in Google / Bing results.</p>
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
-                <p className="text-sm text-[var(--color-info)]">{previewTitle}</p>
+              <div className="border-base-300 bg-base-200 flex flex-col gap-1 rounded-md border p-3">
+                <p className="text-info text-sm">{previewTitle}</p>
                 <p className="text-base-content/70 text-xs">storefront.example/products/{handle}</p>
                 <p className="text-xs">{previewDescription || '(set a description to preview)'}</p>
               </div>
@@ -109,21 +109,27 @@ export function ProductSeoForm({
                 seoDescription={seoDescriptionValue}
                 onSeoTitleChange={setSeoTitle}
                 onSeoDescriptionChange={setSeoDescription}
-                className="border-t border-[var(--color-border-default)] pt-4"
+                className="border-base-300 border-t pt-4"
               />
             </div>
           </CardBody>
         </Card>
 
         <DetailFooterSlot>
-          <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
+          <div className="border-base-300 bg-base-100 flex flex-wrap items-center justify-end gap-3 border-t px-6 py-3">
             {error && (
-              <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
+              <FieldStatus
+                status="error"
+                attached={false}
+                role="alert"
+                aria-live="polite"
+                className="mr-auto"
+              >
                 {error}
-              </p>
+              </FieldStatus>
             )}
             {savedAt !== null && !dirty && (
-              <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+              <div className="text-success flex flex-row items-center gap-1">
                 <Check className="h-4 w-4" />
                 <p className="text-success text-sm">Saved</p>
               </div>

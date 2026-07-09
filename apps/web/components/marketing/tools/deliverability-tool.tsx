@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, X, AlertTriangle, Search } from 'lucide-react';
-import { Button, Input, NativeSelect, Badge, Spinner } from '@sparx/ui';
+import { Button, Input, NativeSelect, Badge, Loading } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { lookupTxt, cleanDomain } from './lib/dns';
 
@@ -48,7 +48,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
         gap: '8px',
         padding: '14px',
         borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
       }}
     >
       <div
@@ -64,7 +64,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '14px',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {full}
@@ -79,7 +79,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '11.5px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             wordBreak: 'break-all',
           }}
         >
@@ -91,7 +91,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '12.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           No {label} record published — generate one on the left.
@@ -102,7 +102,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '12.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {result.error}
@@ -179,7 +179,7 @@ export function DeliverabilityTool() {
               onClick={check}
               disabled={loading || !domain.trim()}
             >
-              {loading ? <Spinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+              {loading ? <Loading className="h-4 w-4" /> : <Search className="h-4 w-4" />}
               Check records
             </Button>
           </div>
@@ -250,7 +250,7 @@ export function DeliverabilityTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               Enter a domain and check to see its live SPF, DKIM, and DMARC records.
@@ -261,7 +261,7 @@ export function DeliverabilityTool() {
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
               lineHeight: '19px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >
@@ -282,7 +282,7 @@ function RecordOut({ host, record }: { host: string; record: string }) {
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         Add a TXT record — host <code style={{ fontFamily: 'var(--font-mono)' }}>{host}</code>:

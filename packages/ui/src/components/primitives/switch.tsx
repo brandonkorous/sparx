@@ -3,7 +3,7 @@
 import * as React from 'react';
 import * as SwitchPrimitive from '@radix-ui/react-switch';
 import { cn } from '../../utils/cn';
-import { colorClass, type ColorKey } from '../_recipes/variants';
+import { colorVars, type ColorKey } from '../_recipes/variants';
 
 const SIZES = {
   sm: { track: 'h-4 w-7', thumb: 'h-3 w-3', on: 'data-[state=checked]:translate-x-3' },
@@ -22,20 +22,21 @@ export interface SwitchProps extends Omit<
 }
 
 export const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitive.Root>, SwitchProps>(
-  ({ className, color = 'module', size = 'md', ...props }, ref) => {
+  ({ className, color = 'module', size = 'md', style, ...props }, ref) => {
     const s = SIZES[size];
+    const { sel } = colorVars(color);
     return (
       <SwitchPrimitive.Root
         ref={ref}
+        style={{ ['--sx-sel']: sel, ...style } as React.CSSProperties}
         className={cn(
-          colorClass(color),
           'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent',
           s.track,
           'transition-colors duration-150',
-          'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
+          'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          'data-[state=unchecked]:bg-[var(--color-bg-muted)]',
-          'data-[state=checked]:bg-[var(--c-bg)]',
+          'data-[state=unchecked]:bg-[var(--color-base-300)]',
+          'data-[state=checked]:bg-[var(--sx-sel)]',
           className
         )}
         {...props}

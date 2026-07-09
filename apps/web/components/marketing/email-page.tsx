@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
 import { EmailHero, EmailPipeline } from './email-sections';
 import { EmailKinds, EmailDeliverability } from './email-deliverability';
@@ -185,7 +185,7 @@ function EmailPricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(E.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',
         }}
@@ -198,13 +198,17 @@ function EmailPricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $29
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -214,7 +218,7 @@ function EmailPricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

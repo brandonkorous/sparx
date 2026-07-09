@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { formatDate, formatMoney, purchaseOrderStatus, type PurchaseOrderRow } from './types';
@@ -21,7 +21,7 @@ export function PurchaseOrdersList({ rows, view }: PurchaseOrdersListProps) {
   const numberLink = (po: PurchaseOrderRow) => (
     <Link
       href={`/inventory/purchase-orders/${po.id}`}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
+      className="hover:text-module font-mono text-xs"
     >
       {po.number}
     </Link>

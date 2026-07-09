@@ -6,7 +6,7 @@
 // appended state resets correctly.
 
 import * as React from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import type { BootcampCard } from '@/lib/bootcamp';
 import { BootcampDirectoryCard } from './bootcamp-card';
 import { loadMoreBootcamps } from './actions';

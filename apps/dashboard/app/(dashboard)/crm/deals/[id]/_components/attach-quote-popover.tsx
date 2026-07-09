@@ -6,7 +6,14 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Link2, Plus, Unlink } from 'lucide-react';
 
-import { Badge, Button, Input, Popover, PopoverContent, PopoverTrigger } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@wizeworks/silicaui-react';
 import { toast, statusLabel, statusTone } from '@sparx/ui';
 
 import { attachQuoteToDealAction, detachQuoteFromDealAction } from '../../../deal-actions';
@@ -75,10 +82,10 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
                     type="button"
                     onClick={() => attach(q.id)}
                     disabled={pending}
-                    className="flex items-center justify-between rounded-md p-2 text-left hover:bg-[var(--module-active-soft)] disabled:opacity-50"
+                    className="hover:bg-module/10 flex items-center justify-between rounded-md p-2 text-left disabled:opacity-50"
                   >
                     <div className="flex flex-row items-center gap-2">
-                      <Link2 className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+                      <Link2 className="text-base-content/50 h-3.5 w-3.5" />
                       <p className="text-sm font-medium">{q.quoteNumber}</p>
                       <Badge color={statusTone(q.status)} variant="soft" size="sm">
                         {statusLabel(q.status)}

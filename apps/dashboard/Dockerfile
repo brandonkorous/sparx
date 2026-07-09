@@ -33,6 +33,9 @@ COPY packages/legal-templates/package.json packages/legal-templates/
 COPY packages/db/package.json packages/db/
 COPY packages/email/package.json packages/email/
 COPY packages/events/package.json packages/events/
+# @sparx/forms — the client form-validation engine behind silica's FieldStatus
+# treatment (dep-free beyond a react peer). Consumed across the auth + form surfaces.
+COPY packages/forms/package.json packages/forms/
 COPY packages/crm/package.json packages/crm/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
 COPY packages/partner-schemas/package.json packages/partner-schemas/
@@ -94,6 +97,7 @@ COPY packages/legal-templates packages/legal-templates
 COPY packages/db packages/db
 COPY packages/email packages/email
 COPY packages/events packages/events
+COPY packages/forms packages/forms
 COPY packages/crm packages/crm
 COPY packages/crm-schemas packages/crm-schemas
 COPY packages/partner-schemas packages/partner-schemas

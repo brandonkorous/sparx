@@ -18,7 +18,7 @@
 
 import * as React from 'react';
 import { cn, toast } from '@sparx/ui';
-import { Badge, Switch } from 'silicaui-react';
+import { Badge, Switch } from '@wizeworks/silicaui-react';
 import { ChevronDown } from 'lucide-react';
 import type { ModuleSlug } from '@sparx/auth';
 
@@ -171,7 +171,7 @@ function ModuleRow({
   onExpand: () => void;
 }) {
   return (
-    <div className={cn(!isLast && 'border-b border-[var(--color-border-default)]')}>
+    <div className={cn(!isLast && 'border-base-300 border-b')}>
       <div className="flex items-center gap-4 py-3.5">
         <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: m.colorVar }} />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -185,7 +185,7 @@ function ModuleRow({
               <p className="font-medium">{m.name}</p>
               <ChevronDown
                 className={cn(
-                  'h-4 w-4 text-[var(--color-text-tertiary)] transition-transform duration-200',
+                  'text-base-content/50 h-4 w-4 transition-transform duration-200',
                   open && 'rotate-180'
                 )}
               />
@@ -207,10 +207,10 @@ function ModuleRow({
           className={cn(
             'w-16 shrink-0 text-right text-sm',
             lock === 'included'
-              ? 'font-medium text-[var(--color-success-text)]'
+              ? 'text-success font-medium'
               : on
-                ? 'font-medium text-[var(--color-text-primary)]'
-                : 'text-[var(--color-text-tertiary)]'
+                ? 'text-base-content font-medium'
+                : 'text-base-content/50'
           )}
         >
           {lock === 'included' ? 'Included' : `+ $${m.price}`}
@@ -246,10 +246,8 @@ function ModuleRow({
           </ul>
           <p className="text-base-content/70 text-xs">
             Replaces {m.replaces} — about{' '}
-            <span className="font-medium text-[var(--color-text-secondary)]">
-              ${m.elsewhere}/mo
-            </span>{' '}
-            bought separately.
+            <span className="text-base-content/70 font-medium">${m.elsewhere}/mo</span> bought
+            separately.
           </p>
         </div>
       )}

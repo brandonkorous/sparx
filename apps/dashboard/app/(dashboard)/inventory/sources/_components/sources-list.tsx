@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { SourceActions } from './source-actions';
@@ -71,10 +71,7 @@ export function SourcesList({ sources, view }: SourcesListProps) {
   );
 
   const nameLink = (s: InventorySource) => (
-    <Link
-      href={`/inventory/sources/${s.id}`}
-      className="text-sm font-medium hover:text-[var(--module-active)]"
-    >
+    <Link href={`/inventory/sources/${s.id}`} className="hover:text-module text-sm font-medium">
       {s.name}
     </Link>
   );

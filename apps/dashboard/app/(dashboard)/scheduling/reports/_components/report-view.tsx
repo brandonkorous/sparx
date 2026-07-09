@@ -5,7 +5,7 @@
 // window; range presets refetch via the report action.
 
 import { useState } from 'react';
-import { Button, Card } from 'silicaui-react';
+import { Button, Card } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import type { SchedulingReport } from '../../_lib/types';
@@ -23,13 +23,17 @@ const OUTCOMES: { key: keyof SchedulingReport['totals']; label: string; color: s
   { key: 'confirmed', label: 'Confirmed', color: 'var(--color-info)' },
   { key: 'requested', label: 'Requested', color: 'var(--color-warning)' },
   { key: 'cancelled', label: 'Cancelled', color: 'var(--color-danger)' },
-  { key: 'noShow', label: 'No-show', color: 'var(--color-muted-foreground)' },
+  {
+    key: 'noShow',
+    label: 'No-show',
+    color: 'color-mix(in oklch, var(--color-base-content) 60%, transparent)',
+  },
 ];
 
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
     <Card className="p-4">
-      <p className="text-xs text-[var(--color-muted-foreground)]">{label}</p>
+      <p className="text-base-content/70 text-xs">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
     </Card>
   );
@@ -54,7 +58,7 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
 
   if (!report) {
     return (
-      <p className="text-sm text-[var(--color-muted-foreground)]">
+      <p className="text-base-content/70 text-sm">
         Reports aren&rsquo;t available yet — once bookings come in they&rsquo;ll show here.
       </p>
     );
@@ -94,8 +98,8 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
         <div className="flex flex-col gap-2">
           {OUTCOMES.map((o) => (
             <div key={o.key} className="flex items-center gap-3">
-              <span className="w-20 text-xs text-[var(--color-muted-foreground)]">{o.label}</span>
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--color-bg-muted)]">
+              <span className="text-base-content/70 w-20 text-xs">{o.label}</span>
+              <div className="bg-base-300 h-2 flex-1 overflow-hidden rounded-full">
                 <div
                   className="h-full rounded-full"
                   style={{ width: `${(t[o.key] / maxOutcome) * 100}%`, background: o.color }}
@@ -110,13 +114,13 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
       <Card className="p-4">
         <p className="mb-3 text-sm font-medium">Busiest services</p>
         {report.topServices.length === 0 ? (
-          <p className="text-xs text-[var(--color-muted-foreground)]">No bookings in this range.</p>
+          <p className="text-base-content/70 text-xs">No bookings in this range.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {report.topServices.map((s) => (
               <li key={s.serviceId} className="flex items-center justify-between text-sm">
                 <span>{s.name}</span>
-                <span className="text-[var(--color-muted-foreground)] tabular-nums">{s.count}</span>
+                <span className="text-base-content/70 tabular-nums">{s.count}</span>
               </li>
             ))}
           </ul>

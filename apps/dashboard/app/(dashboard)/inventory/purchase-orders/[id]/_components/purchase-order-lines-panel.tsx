@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardBody, Input } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, Input } from '@wizeworks/silicaui-react';
 
 import {
   addPurchaseOrderLineAction,
@@ -90,7 +90,7 @@ export function PurchaseOrderLinesPanel({
 
           {editable && <LineAddRow onAdd={onAdd} />}
 
-          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
 
           <div className="ml-auto flex min-w-[16rem] flex-col gap-1">
             <Row label="Subtotal" value={formatMoney(summary.subtotalCents, summary.currency)} />
@@ -152,7 +152,7 @@ function EditableLineRow({
   }
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
         <p className="text-sm font-medium">
           {line.productTitle ?? line.description ?? line.variantSku ?? line.variantId.slice(0, 8)}
@@ -185,7 +185,7 @@ function EditableLineRow({
       <Button variant="ghost" size="sm" onClick={remove} disabled={busy}>
         Remove
       </Button>
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
     </div>
   );
 }
@@ -193,7 +193,7 @@ function EditableLineRow({
 function ReadOnlyLineRow({ line, currency }: { line: PurchaseOrderLineRow; currency: string }) {
   const fullyReceived = line.quantityReceived >= line.quantityOrdered;
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
         <p className="text-sm font-medium">
           {line.productTitle ?? line.description ?? line.variantSku ?? line.variantId.slice(0, 8)}

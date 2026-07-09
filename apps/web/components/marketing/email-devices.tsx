@@ -51,8 +51,8 @@ export function EmailBroadcast() {
                   alignItems: 'center',
                   gap: '8px',
                   padding: '7px 13px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   borderRadius: '9999px',
                 }}
               >
@@ -61,7 +61,7 @@ export function EmailBroadcast() {
                   style={{
                     fontFamily: MONO,
                     fontSize: '12px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {c}
@@ -93,8 +93,8 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -106,7 +106,7 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '11px',
           padding: '20px 22px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <Dot color={E.color} size={9} />
@@ -115,7 +115,11 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
             {email.broadcastSubject}
           </span>
           <span
-            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+            style={{
+              fontFamily: MONO,
+              fontSize: '11.5px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
           >
             from {email.sender} · sent · just now
           </span>
@@ -141,16 +145,16 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '8px',
           padding: '14px 22px',
-          backgroundColor: 'var(--color-bg-page)',
-          borderBottom: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          borderBottom: '1px solid var(--color-base-300)',
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         <Dot color={CRM.color} size={7} />
         Segment:{' '}
-        <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+        <strong style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
           {email.segment}
         </strong>{' '}
         · {email.recipients} recipients
@@ -172,7 +176,7 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
               style={{
                 fontFamily: MONO,
                 fontSize: '10.5px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: '3px',
               }}
             >
@@ -226,8 +230,8 @@ export function EmailAutomations() {
           display: 'flex',
           flexDirection: 'column',
           gap: '1px',
-          backgroundColor: 'var(--color-border-default)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-300)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           overflow: 'hidden',
         }}
@@ -246,7 +250,7 @@ export function EmailAutomations() {
                 style={{
                   display: 'block',
                   fontSize: '12.5px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   marginTop: '3px',
                 }}
               >
@@ -261,8 +265,10 @@ export function EmailAutomations() {
                 fontSize: '11px',
                 padding: '4px 11px',
                 borderRadius: '9999px',
-                color: r.on ? E.text : 'var(--color-text-tertiary)',
-                backgroundColor: r.on ? E.tint : 'var(--color-bg-subtle)',
+                color: r.on
+                  ? E.text
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                backgroundColor: r.on ? E.tint : 'var(--color-base-200)',
               }}
             >
               {r.on ? 'Active' : 'Optional'}
@@ -318,8 +324,8 @@ export function EmailCapabilities() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '172px',
             }}
@@ -354,7 +360,7 @@ export function EmailCapabilities() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {c.body}

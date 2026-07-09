@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -160,8 +160,8 @@ function CmsCapabilities() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '172px',
             }}
@@ -196,7 +196,7 @@ function CmsCapabilities() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {c.body}
@@ -260,7 +260,7 @@ function CmsStandalone() {
               gap: '16px',
               padding: '32px',
               backgroundColor: moduleTint(w.dot),
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
@@ -292,7 +292,7 @@ function CmsStandalone() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {w.body}
@@ -308,7 +308,7 @@ function CmsStandalone() {
                       fontFamily: SANS,
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {p}
@@ -320,7 +320,7 @@ function CmsStandalone() {
               style={{
                 fontFamily: MONO,
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: 'auto',
                 paddingTop: '4px',
               }}
@@ -417,7 +417,7 @@ function CmsPricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(M.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',
         }}
@@ -430,13 +430,17 @@ function CmsPricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $49
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -446,7 +450,7 @@ function CmsPricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

@@ -6,18 +6,19 @@ import { cn } from '../../utils/cn';
 
 const textareaVariants = cva(
   [
-    'flex w-full rounded-md border bg-[var(--color-bg-surface)] px-3 py-2',
-    'text-sm text-[var(--color-text-primary)]',
-    'placeholder:text-[var(--color-text-tertiary)]',
+    'flex w-full rounded-md border bg-[var(--color-base-100)] px-3 py-2',
+    'text-base-content text-sm',
+    'placeholder:text-base-content/50',
     'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-50',
     'resize-y',
   ],
   {
     variants: {
       variant: {
-        default: 'border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]',
+        default:
+          'border-[var(--color-base-300)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
         error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
         success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
       },

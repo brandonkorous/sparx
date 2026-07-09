@@ -1,7 +1,7 @@
 import { RefreshCw } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 

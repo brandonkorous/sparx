@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { Button, Input, Textarea, NativeSelect } from '@sparx/ui';
+import { Button, Input, Textarea, NativeSelect } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 
 type SchemaType = 'LocalBusiness' | 'Product' | 'Article' | 'FAQPage';
@@ -253,7 +253,7 @@ export function StructuredDataTool() {
                     gap: '8px',
                     padding: '12px',
                     borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border-default)',
+                    border: '1px solid var(--color-base-300)',
                   }}
                 >
                   <Input
@@ -321,7 +321,7 @@ export function StructuredDataTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

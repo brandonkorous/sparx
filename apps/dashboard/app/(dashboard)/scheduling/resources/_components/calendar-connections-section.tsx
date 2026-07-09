@@ -7,7 +7,7 @@
 // source of truth (the DB no-overlap constraint, §8.4).
 
 import { useEffect, useState } from 'react';
-import { Badge, Button, Input } from 'silicaui-react';
+import { Badge, Button, Field, FieldControl } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { RefreshCw, Trash2 } from 'lucide-react';
 
@@ -108,11 +108,11 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
     <div className="flex flex-col gap-3">
       <OAuthConnectForm resourceId={resourceId} />
 
-      <hr className="border-[var(--color-border)]" />
+      <hr className="border-base-300" />
 
       <div>
         <p className="text-sm font-medium">Block times from a calendar link</p>
-        <p className="text-xs text-[var(--color-muted-foreground)]">
+        <p className="text-base-content/70 text-xs">
           Paste a read-only iCal/ICS link (Google/Outlook/Apple &ldquo;secret address&rdquo;).
           Events there will block this resource&rsquo;s sparx availability. Imports refresh
           periodically and can lag a few hours.
@@ -120,12 +120,14 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
       </div>
 
       <div className="flex items-center gap-2">
-        <Input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://calendar.google.com/…/basic.ics"
-          aria-label="iCal feed URL"
-        />
+        <Field className="flex-1">
+          <FieldControl
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://calendar.google.com/…/basic.ics"
+            aria-label="iCal feed URL"
+          />
+        </Field>
         <Button
           type="button"
           color="module"
@@ -137,20 +139,20 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
         </Button>
       </div>
 
-      <hr className="border-[var(--color-border)]" />
+      <hr className="border-base-300" />
 
       <CaldavConnectForm resourceId={resourceId} onConnected={refresh} />
 
       {connections === null ? (
-        <p className="text-xs text-[var(--color-muted-foreground)]">Loading…</p>
+        <p className="text-base-content/70 text-xs">Loading…</p>
       ) : connections.length === 0 ? (
-        <p className="text-xs text-[var(--color-muted-foreground)]">No calendars connected yet.</p>
+        <p className="text-base-content/70 text-xs">No calendars connected yet.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {connections.map((c) => (
             <li
               key={c.id}
-              className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2"
+              className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -168,7 +170,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
                     {c.status}
                   </Badge>
                 </div>
-                <div className="text-xs text-[var(--color-muted-foreground)]">
+                <div className="text-base-content/70 text-xs">
                   Synced {relTime(c.lastSyncedAt)}
                   {c.lastError ? ` · ${c.lastError}` : ''}
                 </div>
@@ -191,7 +193,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
                   shape="square"
                   size="sm"
                   aria-label="Remove"
-                  className="text-[var(--color-danger)]"
+                  className="text-danger"
                   disabled={busyId === c.id}
                   onClick={() => void remove(c)}
                 >

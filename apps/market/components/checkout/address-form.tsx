@@ -4,7 +4,7 @@
 // Address on every change. Mirrors apps/site's address form, using silicaui
 // Input + NativeSelect.
 
-import { Input, NativeSelect } from 'silicaui-react';
+import { Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import { Field, FieldGrid } from '@/components/checkout/ui';
 import type { Address } from '@/lib/checkout-client';

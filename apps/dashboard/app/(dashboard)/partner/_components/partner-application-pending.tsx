@@ -1,5 +1,5 @@
 import { Clock, Handshake } from 'lucide-react';
-import { Card, CardBody, EmptyState } from 'silicaui-react';
+import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 // Shown at /partner when the tenant has submitted a partner application that's

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
 
-import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
+import { Button, Dialog, DialogContent, DialogTitle, Textarea } from '@wizeworks/silicaui-react';
 
 import { denyReturnAction, markReturnReceivedAction } from '../../../return-actions';
 

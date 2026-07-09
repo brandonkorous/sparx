@@ -15,18 +15,19 @@ export const SelectValue = SelectPrimitive.Value;
 
 const selectTriggerVariants = cva(
   [
-    'flex w-full items-center justify-between rounded-md border bg-[var(--color-bg-surface)]',
-    'text-sm text-[var(--color-text-primary)]',
-    'placeholder:text-[var(--color-text-tertiary)]',
+    'flex w-full items-center justify-between rounded-md border bg-[var(--color-base-100)]',
+    'text-base-content text-sm',
+    'placeholder:text-base-content/50',
     'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-50',
     '[&>span]:line-clamp-1',
   ],
   {
     variants: {
       variant: {
-        default: 'border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]',
+        default:
+          'border-[var(--color-base-300)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
         error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
         success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
       },
@@ -100,7 +101,7 @@ export const SelectContent = React.forwardRef<
       position={position}
       className={cn(
         'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md',
-        'border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md',
+        'border border-[var(--color-base-300)] bg-[var(--color-base-100)] shadow-md',
         'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
         position === 'popper' && 'data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
@@ -131,7 +132,7 @@ export const SelectLabel = React.forwardRef<
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      'px-2 py-1.5 text-xs font-medium tracking-wide text-[var(--color-text-tertiary)] uppercase',
+      'text-base-content/50 px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
       className
     )}
     {...props}
@@ -147,8 +148,8 @@ export const SelectItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none select-none',
-      'text-[var(--color-text-primary)]',
-      'focus:bg-[var(--color-bg-subtle)]',
+      'text-base-content',
+      'focus:bg-[var(--color-base-200)]',
       'data-[disabled]:pointer-events-none data-[disabled]:opacity-40',
       className
     )}
@@ -170,7 +171,7 @@ export const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-[var(--color-border-default)]', className)}
+    className={cn('-mx-1 my-1 h-px bg-[var(--color-base-300)]', className)}
     {...props}
   />
 ));

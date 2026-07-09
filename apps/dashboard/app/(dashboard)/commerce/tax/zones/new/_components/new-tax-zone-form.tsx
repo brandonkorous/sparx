@@ -3,9 +3,19 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTaxZoneAction } from '../../../../tax-actions';
 import { useUnsavedGuard } from '../../../../../_components/unsaved-guard';
@@ -44,6 +54,11 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
   const [region, setRegion] = React.useState('');
   const [nexusType, setNexusType] = React.useState<(typeof NEXUS)[number]>('physical');
   const [registrationNumber, setRegistrationNumber] = React.useState('');
+
+  const values = { country, region, nexusType, registrationNumber };
+  const v = useFieldValidation(values, {
+    country: rule.required('Country is required.'),
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -97,6 +112,7 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
 
   function submit() {
     setError(null);
+    if (!v.validate()) return;
     const trimmedCountry = country.toUpperCase().trim();
     const trimmedRegion = region.toUpperCase().trim();
     const trimmedReg = registrationNumber.trim();
@@ -110,7 +126,12 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
         isActive: true,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        const known = (result.error.details ?? []).filter((d) => d.field in values);
+        if (known.length) {
+          v.setServerErrors(Object.fromEntries(known.map((d) => [d.field, d.message])));
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       onCreated(result.data.id);
@@ -143,28 +164,29 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex w-24 flex-col gap-1">
-                    <Label htmlFor="country">Country *</Label>
-                    <Input
-                      id="country"
+                  <Field {...v.field('country')} className="w-24">
+                    <FieldLabel required>Country</FieldLabel>
+                    <FieldControl
+                      name="country"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
                       maxLength={2}
                       placeholder="US"
+                      {...v.control('country')}
                     />
-                  </div>
-                  <div className="flex w-32 flex-col gap-1">
-                    <Label htmlFor="region">Region</Label>
-                    <Input
-                      id="region"
+                  </Field>
+                  <Field className="w-32">
+                    <FieldLabel>Region</FieldLabel>
+                    <FieldControl
+                      name="region"
                       value={region}
                       onChange={(e) => setRegion(e.target.value)}
                       maxLength={6}
                       placeholder="US-CA"
                     />
-                  </div>
-                  <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                    <Label htmlFor="nexusType">Nexus *</Label>
+                  </Field>
+                  <Field className="min-w-[10rem] flex-1">
+                    <FieldLabel required>Nexus</FieldLabel>
                     <NativeSelect
                       id="nexusType"
                       value={nexusType}
@@ -176,27 +198,31 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="registrationNumber">Registration number</Label>
-                  <Input
-                    id="registrationNumber"
+                <Field>
+                  <FieldLabel>Registration number</FieldLabel>
+                  <FieldControl
+                    name="registrationNumber"
                     value={registrationNumber}
                     onChange={(e) => setRegistrationNumber(e.target.value)}
                     maxLength={63}
                   />
-                  <p className="text-base-content/70 text-xs">
-                    Sales-tax permit, VAT ID, or equivalent.
-                  </p>
-                </div>
+                  <FieldDescription>Sales-tax permit, VAT ID, or equivalent.</FieldDescription>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

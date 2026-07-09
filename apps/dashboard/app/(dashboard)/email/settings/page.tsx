@@ -1,5 +1,5 @@
 import { Settings as SettingsIcon } from 'lucide-react';
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EmailShell } from '../_components/email-shell';

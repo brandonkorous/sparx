@@ -3,7 +3,9 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Textarea } from 'silicaui-react';
+import { Button, Field, FieldControl, Textarea } from '@wizeworks/silicaui-react';
+
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { respondToReviewAction } from '../../../review-actions';
 
@@ -19,20 +21,20 @@ export function RespondForm({
   const router = useRouter();
   const [response, setResponse] = React.useState(initial ?? '');
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [saved, setSaved] = React.useState(false);
 
+  const v = useFieldValidation(
+    { response },
+    { response: rule.required('Response cannot be empty.') }
+  );
+
   function onSave() {
-    if (!response.trim()) {
-      setError('Response cannot be empty.');
-      return;
-    }
-    setError(null);
+    if (!v.validate()) return;
     setSaved(false);
     startTransition(async () => {
       const result = await respondToReviewAction({ reviewId, response: response.trim() });
       if (!result.ok) {
-        setError(result.error.message);
+        v.setServerErrors({ response: result.error.message });
         return;
       }
       setSaved(true);
@@ -42,12 +44,15 @@ export function RespondForm({
 
   return (
     <div className="flex flex-col gap-3">
-      <Textarea
-        value={response}
-        onChange={(e) => setResponse(e.target.value)}
-        rows={5}
-        placeholder="Thanks for the feedback — we'll send out a replacement set right away."
-      />
+      <Field {...v.field('response')}>
+        <FieldControl
+          render={<Textarea rows={5} />}
+          value={response}
+          onChange={(e) => setResponse(e.target.value)}
+          placeholder="Thanks for the feedback — we'll send out a replacement set right away."
+          {...v.control('response')}
+        />
+      </Field>
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-col gap-0">
           {respondedAt && (
@@ -55,12 +60,7 @@ export function RespondForm({
               Last response: {new Date(respondedAt).toLocaleString()}
             </p>
           )}
-          {error && (
-            <p className="text-danger text-xs" role="alert" aria-live="polite">
-              {error}
-            </p>
-          )}
-          {saved && !error && (
+          {saved && (
             <p className="text-success text-xs" role="status" aria-live="polite">
               Saved
             </p>

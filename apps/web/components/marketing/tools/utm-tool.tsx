@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Bookmark, Download, Trash2 } from 'lucide-react';
-import { Button, Input, Switch, toast } from '@sparx/ui';
+import { toast } from '@sparx/ui';
+import { Button, Input, Switch } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { renderQrCanvas, renderQrSvg, type QrStyle } from './lib/qr';
 import { useLocalStorageState } from './lib/use-local-storage';
@@ -266,7 +267,7 @@ export function UtmTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               Add a URL and at least a source, medium, or campaign to build your link.
@@ -308,7 +309,7 @@ export function UtmTool() {
                     gap: '10px',
                     padding: '8px 10px',
                     borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border-default)',
+                    border: '1px solid var(--color-base-300)',
                   }}
                 >
                   <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
@@ -316,7 +317,7 @@ export function UtmTool() {
                       style={{
                         fontFamily: 'var(--font-sans)',
                         fontSize: '13px',
-                        color: 'var(--color-text-primary)',
+                        color: 'var(--color-base-content)',
                       }}
                     >
                       {link.campaign}
@@ -325,7 +326,7 @@ export function UtmTool() {
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '11px',
-                        color: 'var(--color-text-tertiary)',
+                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',

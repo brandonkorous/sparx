@@ -57,10 +57,10 @@ export function CrmOneRecord() {
                   alignItems: 'center',
                   gap: '11px',
                   padding: '13px 20px',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+                  borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
                   fontFamily: SANS,
                   fontSize: '13.5px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 <Dot color={row.module === 'warn' ? '#B45309' : hue(row.module)} size={8} />
@@ -137,7 +137,7 @@ export function CrmOneRecord() {
                     alignItems: 'center',
                     gap: '11px',
                     padding: '10px 0',
-                    borderTop: '1px solid var(--color-bg-subtle)',
+                    borderTop: '1px solid var(--color-base-200)',
                     fontFamily: SANS,
                     fontSize: '13.5px',
                   }}
@@ -181,9 +181,9 @@ function Panel({
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
-        borderTop: accent ? `3px solid ${M.color}` : '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
+        borderTop: accent ? `3px solid ${M.color}` : '1px solid var(--color-base-300)',
         borderRadius: '16px',
         overflow: 'hidden',
         height: '100%',
@@ -195,12 +195,12 @@ function Panel({
           alignItems: 'center',
           gap: '9px',
           padding: '15px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
           fontFamily: MONO,
           fontSize: '11px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         <Dot color={headerDot} size={8} />

@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 import { Code } from '@sparx/ui';
-import { Badge, Button, Input, Label, Select } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Select,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { sendTestEmail, type DevLastSend, type TestSendResult } from './actions';
 
 export interface TestSendFormProps {
@@ -10,15 +19,22 @@ export interface TestSendFormProps {
 }
 
 export function TestSendForm({ devLastSend }: TestSendFormProps) {
+  const [to, setTo] = React.useState('dev@example.test');
   const [template, setTemplate] = React.useState<'welcome-merchant' | 'password-reset'>(
     'welcome-merchant'
   );
   const [result, setResult] = React.useState<TestSendResult | null>(null);
   const [pending, startTransition] = React.useTransition();
 
+  const v = useFieldValidation(
+    { to },
+    { to: rules(rule.required('Enter a recipient address.'), rule.email()) }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setResult(null);
+    if (!v.validate()) return;
     const formData = new FormData(e.currentTarget);
     formData.set('template', template);
 
@@ -32,22 +48,28 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
     <div className="flex flex-col gap-4">
       <form onSubmit={onSubmit} noValidate>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="to">Recipient</Label>
-            <Input id="to" name="to" type="email" defaultValue="dev@example.test" required />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="template">Template</Label>
+          <Field {...v.field('to')}>
+            <FieldLabel required>Recipient</FieldLabel>
+            <FieldControl
+              name="to"
+              type="email"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              {...v.control('to')}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Template</FieldLabel>
             <Select
               id="template"
               value={template}
-              onValueChange={(v) => setTemplate(v as 'welcome-merchant' | 'password-reset')}
+              onValueChange={(val) => setTemplate(val as 'welcome-merchant' | 'password-reset')}
               items={{
                 'welcome-merchant': 'Welcome (tenant)',
                 'password-reset': 'Password reset',
               }}
             />
-          </div>
+          </Field>
           <div className="flex flex-row gap-2">
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Send test
@@ -72,9 +94,9 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
       )}
 
       {result && !result.ok && (
-        <p className="text-danger text-sm" role="alert" aria-live="polite">
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {result.error ?? 'Send failed.'}
-        </p>
+        </FieldStatus>
       )}
 
       {devLastSend.enabled && devLastSend.send && (

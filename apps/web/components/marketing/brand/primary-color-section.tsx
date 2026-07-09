@@ -6,29 +6,21 @@ const RAMP = [
     name: 'Primary',
     value: '#6366F1',
     hex: '#6366F1',
-    token: '--sparx-primary',
+    token: '--color-primary',
     note: 'Buttons, links, active states, the “x”.',
   },
   {
-    name: 'Hover',
-    value: '#4F46E5',
-    hex: '#4F46E5',
-    token: '--sparx-primary-hover',
-    note: 'Pressed and hover states.',
-  },
-  {
-    name: 'Subtle',
+    name: 'Primary · dark',
     value: '#818CF8',
     hex: '#818CF8',
-    token: '--sparx-primary-subtle',
-    note: 'Dark-mode variant of the primary.',
+    token: '--color-primary',
+    note: 'The very same token, resolved in dark mode.',
   },
   {
-    name: 'Tint',
-    value: '#EEF2FF',
-    hex: '#EEF2FF',
-    token: '--sparx-primary-tint',
-    note: 'Background washes and chips.',
+    name: 'Soft tint',
+    value: 'color-mix(in oklab, #6366F1 15%, #ffffff)',
+    hex: 'bg-primary bg-soft',
+    note: 'Background washes and chips — a theme-aware computed mix, never a baked hex.',
   },
 ] as const;
 
@@ -37,7 +29,7 @@ export function PrimaryColorSection() {
     <Section id="color" surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline="sparx Indigo"
           lede="One brand color carries the platform. It is the “x” in the wordmark, the foundation module’s identity, and the default accent on every sparx surface — the spark, made into a hex."
         />
@@ -67,7 +59,7 @@ export function PrimaryColorSection() {
           </span>
           <div className="mkt-cluster" style={{ gap: '10px' }}>
             <CopyValue value="#6366F1" tone="strong" />
-            <CopyValue value="--sparx-primary" />
+            <CopyValue value="--color-primary" />
             <span
               style={{
                 fontFamily: 'var(--font-sans)',

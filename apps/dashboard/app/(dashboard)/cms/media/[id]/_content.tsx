@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { AssetEditForm } from './edit-form';
 
@@ -120,7 +120,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
                 {asset.variants.map((v) => (
                   <div
                     key={v.id}
-                    className="flex flex-row items-center gap-3 rounded-md bg-[var(--color-bg-subtle)] px-3 py-2 text-sm"
+                    className="bg-base-200 flex flex-row items-center gap-3 rounded-md px-3 py-2 text-sm"
                   >
                     <Badge color="neutral" variant="soft" size="sm">
                       {v.format.toUpperCase()}

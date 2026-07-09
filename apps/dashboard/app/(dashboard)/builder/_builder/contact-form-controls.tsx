@@ -48,13 +48,13 @@ export function RecipientsEditor({
           {recipients.map((email) => (
             <span
               key={email}
-              className="inline-flex items-center gap-1 rounded-full bg-[var(--color-bg-subtle)] py-0.5 pr-1 pl-2.5 text-sm"
+              className="bg-base-200 inline-flex items-center gap-1 rounded-full py-0.5 pr-1 pl-2.5 text-sm"
             >
               <span className="break-all">{email}</span>
               <button
                 type="button"
                 aria-label={`Remove ${email}`}
-                className="rounded-full p-0.5 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+                className="text-base-content/50 hover:text-base-content rounded-full p-0.5"
                 onClick={() => onChange(recipients.filter((r) => r !== email))}
               >
                 <X className="h-3 w-3" />
@@ -115,7 +115,7 @@ export function CrmActivatePrompt({ canActivate }: { canActivate: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-md bg-[var(--color-bg-subtle)] p-3">
+    <div className="bg-base-200 flex flex-col gap-2 rounded-md p-3">
       <Text size="sm" variant="muted">
         Adding people to your contacts needs the CRM turned on. It&apos;s free to switch on, and the
         leads you&apos;ve already collected are imported automatically.

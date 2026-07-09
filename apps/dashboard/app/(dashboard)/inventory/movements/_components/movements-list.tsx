@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import {
@@ -29,7 +29,7 @@ export function MovementsList({ rows, view }: MovementsListProps) {
     <div className="flex min-w-0 flex-col gap-0">
       <Link
         href={`/inventory/movements?variant_id=${m.variantId}${m.variantSku ? `&sku=${encodeURIComponent(m.variantSku)}` : ''}`}
-        className="truncate text-sm font-medium hover:text-[var(--module-active)]"
+        className="hover:text-module truncate text-sm font-medium"
       >
         {m.productTitle ?? m.variantSku ?? m.variantId.slice(0, 8)}
       </Link>
@@ -47,9 +47,9 @@ export function MovementsList({ rows, view }: MovementsListProps) {
     <p
       className={
         m.delta > 0
-          ? 'text-sm font-medium text-[var(--color-success)]'
+          ? 'text-success text-sm font-medium'
           : m.delta < 0
-            ? 'text-sm font-medium text-[var(--color-danger)]'
+            ? 'text-danger text-sm font-medium'
             : 'text-sm font-medium'
       }
     >

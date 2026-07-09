@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HeartCrack, Loader2 } from 'lucide-react';
-import { Button, EmptyState } from 'silicaui-react';
+import { Button, EmptyState } from '@wizeworks/silicaui-react';
 
 import { ProductCard, type ProductCardData } from '@/components/product-card';
 import { CardGrid, Container } from '@/components/ui/layout';

@@ -22,7 +22,7 @@ import { sslLabel, sslTone, verificationMethodLabel } from '@/lib/domains';
 // ledger, a live DNS diagnostic, and purchase history. All read-only; the only
 // action (force re-verify) lives in the page header.
 
-const rowClass = 'border-b border-[var(--color-border-default)] pb-2 last:border-0';
+const rowClass = 'border-b border-base-300 pb-2 last:border-0';
 
 function Fact({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -49,7 +49,7 @@ export function RoutingCard({ domain }: { domain: OperatorDomainDetail }) {
             value={
               <Link
                 href={`/sparx/tenants/${domain.tenant.id}`}
-                className="font-medium text-[var(--module-active-text)] hover:underline"
+                className="text-module font-medium hover:underline"
               >
                 {domain.tenant.name}
               </Link>

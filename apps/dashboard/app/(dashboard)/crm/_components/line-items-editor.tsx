@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
-import { Button, Input, Label } from 'silicaui-react';
+import { Button, Field, FieldControl, FieldLabel } from '@wizeworks/silicaui-react';
 
 export interface LineItem {
   sku: string;
@@ -69,27 +69,27 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
   return (
     <div className="flex flex-col gap-3">
       {items.map((item, idx) => (
-        <div key={idx} className="rounded-md border border-[var(--color-border-default)] p-3">
+        <div key={idx} className="border-base-300 rounded-md border p-3">
           <div className="flex flex-col gap-3">
             <div className="flex flex-row gap-3">
-              <div className="flex w-32 flex-col gap-1">
-                <Label htmlFor={`sku-${idx}`}>SKU</Label>
-                <Input
-                  id={`sku-${idx}`}
+              <Field className="w-32">
+                <FieldLabel>SKU</FieldLabel>
+                <FieldControl
+                  name={`sku-${idx}`}
                   value={item.sku}
                   onChange={(e) => updateItem(idx, { sku: e.target.value })}
                   required
                 />
-              </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <Label htmlFor={`name-${idx}`}>Name</Label>
-                <Input
-                  id={`name-${idx}`}
+              </Field>
+              <Field className="flex-1">
+                <FieldLabel>Name</FieldLabel>
+                <FieldControl
+                  name={`name-${idx}`}
                   value={item.name}
                   onChange={(e) => updateItem(idx, { name: e.target.value })}
                   required
                 />
-              </div>
+              </Field>
               <Button
                 type="button"
                 variant="ghost"
@@ -102,10 +102,10 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
               </Button>
             </div>
             <div className="flex flex-row gap-3">
-              <div className="flex w-24 flex-col gap-1">
-                <Label htmlFor={`qty-${idx}`}>Qty</Label>
-                <Input
-                  id={`qty-${idx}`}
+              <Field className="w-24">
+                <FieldLabel>Qty</FieldLabel>
+                <FieldControl
+                  name={`qty-${idx}`}
                   type="number"
                   min="1"
                   step="1"
@@ -114,11 +114,11 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { quantity: Math.max(1, Number(e.target.value) || 1) })
                   }
                 />
-              </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <Label htmlFor={`price-${idx}`}>Unit price</Label>
-                <Input
-                  id={`price-${idx}`}
+              </Field>
+              <Field className="flex-1">
+                <FieldLabel>Unit price</FieldLabel>
+                <FieldControl
+                  name={`price-${idx}`}
                   type="number"
                   min="0"
                   step="0.01"
@@ -127,11 +127,11 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { unitPrice: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <Label htmlFor={`tax-${idx}`}>Tax</Label>
-                <Input
-                  id={`tax-${idx}`}
+              </Field>
+              <Field className="flex-1">
+                <FieldLabel>Tax</FieldLabel>
+                <FieldControl
+                  name={`tax-${idx}`}
                   type="number"
                   min="0"
                   step="0.01"
@@ -140,11 +140,11 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { taxAmount: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <Label htmlFor={`disc-${idx}`}>Discount</Label>
-                <Input
-                  id={`disc-${idx}`}
+              </Field>
+              <Field className="flex-1">
+                <FieldLabel>Discount</FieldLabel>
+                <FieldControl
+                  name={`disc-${idx}`}
                   type="number"
                   min="0"
                   step="0.01"
@@ -153,16 +153,16 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
                     updateItem(idx, { discountAmount: Math.max(0, Number(e.target.value) || 0) })
                   }
                 />
-              </div>
-              <div className="flex w-28 flex-col gap-1">
-                <Label>Line total</Label>
-                <div className="flex h-9 items-center justify-end rounded-md border border-transparent bg-[var(--color-surface-subtle)] px-3 text-sm tabular-nums">
+              </Field>
+              <Field className="w-28">
+                <FieldLabel>Line total</FieldLabel>
+                <div className="bg-base-200 flex h-9 items-center justify-end rounded-md border border-transparent px-3 text-sm tabular-nums">
                   $
                   {(item.quantity * item.unitPrice - item.discountAmount + item.taxAmount).toFixed(
                     2
                   )}
                 </div>
-              </div>
+              </Field>
             </div>
           </div>
         </div>

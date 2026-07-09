@@ -2,7 +2,19 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Card, CardBody, Input, Label, NativeSelect, Radio, Switch } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Radio,
+  Switch,
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   RichTextEditor,
@@ -15,6 +27,7 @@ import {
   statusTone,
   type SurfaceStepDef,
 } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 import type { PartnerTier } from '@sparx/partner-schemas';
 
 import { fmtMoneyCents } from '../../../_components/overview-bits';
@@ -57,7 +70,6 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
 
   const [title, setTitle] = React.useState(bootcamp?.title ?? '');
@@ -77,6 +89,13 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
     bootcamp?.registrationMode ?? 'internal'
   );
   const [regUrl, setRegUrl] = React.useState(bootcamp?.registrationUrl ?? '');
+
+  // Client rule: a title is required. The server may additionally reject the
+  // external registration URL, which maps back onto that field.
+  const v = useFieldValidation(
+    { title, registrationUrl: regUrl },
+    { title: rule.required('A title is required.') }
+  );
 
   const snapshot = JSON.stringify({
     title,
@@ -134,18 +153,14 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
     if (result.fieldErrors?.length) {
       const fe: Record<string, string> = {};
       for (const f of result.fieldErrors) fe[f.field] = f.message;
-      setFieldErrors(fe);
+      v.setServerErrors(fe);
     }
     setError(result.error ?? 'Something went wrong.');
   }
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-    if (!title.trim()) {
-      setFieldErrors({ title: 'A title is required.' });
-      return;
-    }
+    if (!v.validate()) return;
     if (!startsAt || !endsAt) {
       setError('Set both a start and end date/time.');
       return;
@@ -212,20 +227,17 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
             <Card>
               <CardBody>
                 <div className="flex flex-col gap-5">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="bc-title">Title</Label>
-                    <Input
+                  <Field {...v.field('title')}>
+                    <FieldLabel required>Title</FieldLabel>
+                    <FieldControl
                       id="bc-title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      color={fieldErrors.title ? 'error' : undefined}
                       maxLength={255}
                       placeholder="Launch your store on Sparx in a weekend"
+                      {...v.control('title')}
                     />
-                    {fieldErrors.title && (
-                      <p className="text-danger text-xs">{fieldErrors.title}</p>
-                    )}
-                  </div>
+                  </Field>
 
                   <div className="flex flex-col gap-2">
                     <Label>Description</Label>
@@ -238,23 +250,26 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                   </div>
 
                   <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-format">Format</Label>
-                      <NativeSelect
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Format</FieldLabel>
+                      <FieldControl
                         id="bc-format"
                         value={format}
                         onChange={(e) => setFormat(e.target.value as Bootcamp['format'])}
-                      >
-                        {FORMATS.map((f) => (
-                          <option key={f.value} value={f.value}>
-                            {f.label}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </div>
-                    <div className="flex min-w-[8rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-price">Price (USD)</Label>
-                      <Input
+                        render={
+                          <NativeSelect>
+                            {FORMATS.map((f) => (
+                              <option key={f.value} value={f.value}>
+                                {f.label}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                    <Field className="min-w-[8rem] flex-1">
+                      <FieldLabel>Price (USD)</FieldLabel>
+                      <FieldControl
                         id="bc-price"
                         type="number"
                         min={0}
@@ -262,7 +277,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   </div>
                   <p className="text-base-content/70 text-xs">
                     Collecting payment for a bootcamp is your responsibility — Sparx lists it and
@@ -270,49 +285,53 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                   </p>
 
                   <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-starts">Starts</Label>
-                      <Input
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Starts</FieldLabel>
+                      <FieldControl
                         id="bc-starts"
                         type="datetime-local"
                         value={startsAt}
                         onChange={(e) => setStartsAt(e.target.value)}
                       />
-                    </div>
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-ends">Ends</Label>
-                      <Input
+                    </Field>
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Ends</FieldLabel>
+                      <FieldControl
                         id="bc-ends"
                         type="datetime-local"
                         value={endsAt}
                         onChange={(e) => setEndsAt(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   </div>
 
                   <div className="flex flex-row flex-wrap gap-3">
-                    <div className="flex min-w-[10rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-city">City</Label>
-                      <Input id="bc-city" value={city} onChange={(e) => setCity(e.target.value)} />
-                    </div>
-                    <div className="flex min-w-[10rem] flex-1 flex-col gap-2">
-                      <Label htmlFor="bc-region">State / region</Label>
-                      <Input
+                    <Field className="min-w-[10rem] flex-1">
+                      <FieldLabel>City</FieldLabel>
+                      <FieldControl
+                        id="bc-city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="min-w-[10rem] flex-1">
+                      <FieldLabel>State / region</FieldLabel>
+                      <FieldControl
                         id="bc-region"
                         value={region}
                         onChange={(e) => setRegion(e.target.value)}
                       />
-                    </div>
-                    <div className="flex w-24 flex-col gap-2">
-                      <Label htmlFor="bc-country">Country</Label>
-                      <Input
+                    </Field>
+                    <Field className="w-24">
+                      <FieldLabel>Country</FieldLabel>
+                      <FieldControl
                         id="bc-country"
                         value={country}
                         onChange={(e) => setCountry(e.target.value.toUpperCase())}
                         maxLength={2}
                         className="uppercase"
                       />
-                    </div>
+                    </Field>
                   </div>
 
                   <div className="flex flex-row items-center justify-between gap-3">
@@ -330,9 +349,9 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                     />
                   </div>
                   {limited && (
-                    <div className="flex max-w-[12rem] flex-col gap-2">
-                      <Label htmlFor="bc-seats">Total seats</Label>
-                      <Input
+                    <Field className="max-w-[12rem]">
+                      <FieldLabel>Total seats</FieldLabel>
+                      <FieldControl
                         id="bc-seats"
                         type="number"
                         min={1}
@@ -340,7 +359,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                         value={seats}
                         onChange={(e) => setSeats(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   )}
 
                   <div className="flex flex-col gap-2">
@@ -363,19 +382,16 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                     </div>
                   </div>
                   {regMode === 'external' && (
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor="bc-regurl">Registration URL</Label>
-                      <Input
+                    <Field {...v.field('registrationUrl')}>
+                      <FieldLabel>Registration URL</FieldLabel>
+                      <FieldControl
                         id="bc-regurl"
                         value={regUrl}
                         onChange={(e) => setRegUrl(e.target.value)}
                         placeholder="https://…"
-                        color={fieldErrors.registrationUrl ? 'error' : undefined}
+                        {...v.control('registrationUrl')}
                       />
-                      {fieldErrors.registrationUrl && (
-                        <p className="text-danger text-xs">{fieldErrors.registrationUrl}</p>
-                      )}
-                    </div>
+                    </Field>
                   )}
 
                   {partnerTier !== 'certified' && (
@@ -389,9 +405,15 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
             </Card>
           </form>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>
@@ -413,7 +435,7 @@ function RegOption({
   onSelect: () => void;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex items-start gap-3 rounded-lg border p-3">
       <Radio
         name="bc-regmode"
         id={`reg-${value}`}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { ChevronRight } from 'lucide-react';
 import type { Vendor } from './supplier-form';
 
@@ -21,7 +21,7 @@ export function VendorPicker({ vendors, onSelect }: Props) {
           key={v.slug}
           type="button"
           onClick={() => onSelect(v)}
-          className="group flex items-center gap-4 rounded-lg border border-[var(--color-border)] p-4 text-left transition-colors hover:border-[var(--color-module)] hover:bg-[var(--color-muted)]"
+          className="group border-base-300 hover:border-module hover:bg-base-200 flex items-center gap-4 rounded-lg border p-4 text-left transition-colors"
         >
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className="flex flex-row flex-wrap items-center gap-2">
@@ -39,9 +39,9 @@ export function VendorPicker({ vendors, onSelect }: Props) {
                 {v.connectionMethod === 'api' ? 'Automated' : 'Manual'}
               </Badge>
             </div>
-            <p className="text-sm text-[var(--color-muted-foreground)]">{v.tagline}</p>
+            <p className="text-base-content/70 text-sm">{v.tagline}</p>
           </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-[var(--color-muted-foreground)] transition-transform group-hover:translate-x-0.5" />
+          <ChevronRight className="text-base-content/70 h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" />
         </button>
       ))}
     </div>

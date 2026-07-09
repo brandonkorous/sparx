@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Handshake, Lock } from 'lucide-react';
-import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 // Shown when the tenant IS a Sparx partner but the current user's role can't

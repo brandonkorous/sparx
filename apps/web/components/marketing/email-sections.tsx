@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -74,7 +74,7 @@ export function EmailHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '560px',
                 margin: '28px 0 0',
               }}
@@ -103,8 +103,8 @@ export function EmailHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -113,7 +113,7 @@ export function EmailHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -155,8 +155,8 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -168,8 +168,8 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '7px',
           padding: '12px 18px',
-          backgroundColor: 'var(--color-bg-page)',
-          borderBottom: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         {[0, 1, 2].map((i) => (
@@ -183,7 +183,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             marginLeft: '8px',
             fontFamily: MONO,
             fontSize: '11.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           inbox · {name}
@@ -195,7 +195,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '11px',
           padding: '18px 22px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span
@@ -221,7 +221,13 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '14.5px' }}>
             {email.transactional.subject}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '12px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {email.sender} · to you · just now
           </span>
         </span>
@@ -233,7 +239,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             alignItems: 'center',
             gap: '9px',
             paddingBottom: '16px',
-            borderBottom: '1px solid var(--color-bg-subtle)',
+            borderBottom: '1px solid var(--color-base-200)',
           }}
         >
           <span
@@ -252,7 +258,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontSize: '14px',
             lineHeight: '23px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             margin: '16px 0 0',
           }}
         >
@@ -263,7 +269,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontSize: '14px',
             lineHeight: '23px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             margin: '10px 0 0',
           }}
         >
@@ -289,7 +295,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
         }}
       >
         {[
@@ -301,7 +307,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             key={l}
             style={{
               padding: '13px 18px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
             }}
           >
             <div
@@ -310,7 +316,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
                 fontWeight: 500,
                 fontSize: '17px',
                 letterSpacing: '-0.01em',
-                color: i === 2 ? E.text : 'var(--color-text-primary)',
+                color: i === 2 ? E.text : 'var(--color-base-content)',
               }}
             >
               {v}
@@ -319,7 +325,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
               style={{
                 fontFamily: MONO,
                 fontSize: '10.5px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: '2px',
               }}
             >
@@ -365,7 +371,7 @@ export function EmailPipeline() {
       />
       <div
         className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-bg-surface)' }}
+        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
       >
         {stages.map((s) => (
           <div key={s.n} className="mkt-stage" style={{ padding: '28px 24px' }}>
@@ -391,7 +397,7 @@ export function EmailPipeline() {
                 fontFamily: SANS,
                 fontSize: '13px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}

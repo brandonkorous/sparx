@@ -10,7 +10,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { bulkCancelOrdersAction } from '../../order-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -107,8 +107,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
   const columns: SelectionColumn<OrderRow>[] = [
     {
       header: 'Order #',
-      cell: (o) =>
-        orderLink(o, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (o) => orderLink(o, 'text-sm font-medium hover:text-module hover:underline'),
     },
     { header: 'Status', cell: statusBadge },
     { header: 'Payment', cell: paymentBadge },
@@ -129,11 +128,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
   ];
 
   const card: SelectionCard<OrderRow> = {
-    title: (o) =>
-      orderLink(
-        o,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (o) => orderLink(o, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (o) => paymentBadge(o),
     badge: statusBadge,
     body: (o) => (

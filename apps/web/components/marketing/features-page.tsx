@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   CAPABILITY_AREAS,
   STATUS_META,
@@ -38,11 +38,15 @@ export function FeaturesPage() {
 
       <Section padding="lg">
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               {counts.modules} modules.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>Activate any combination</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                Activate any combination
+              </span>
             </>
           }
           lede={
@@ -61,11 +65,15 @@ export function FeaturesPage() {
 
       <Section surface="surface" padding="lg">
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               The platform underneath.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>Included with every plan</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                Included with every plan
+              </span>
             </>
           }
           lede={
@@ -104,14 +112,16 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <div style={{ maxWidth: '1100px' }}>
           <Display as="h1" size={96} lineHeight={90}>
             You don&apos;t buy modules.{' '}
-            <span style={{ color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+            >
               You get everything inside them
               <Spark />
             </span>
@@ -128,7 +138,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
               fontWeight: 400,
               fontSize: 'clamp(16px, 1.6vw, 20px)',
               lineHeight: 1.55,
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '620px',
               margin: 0,
             }}
@@ -151,7 +161,11 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
               </a>
             </div>
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               No credit card · Live in five minutes
             </span>
@@ -165,7 +179,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
             justifyContent: 'space-between',
             paddingTop: '32px',
             marginTop: '8px',
-            borderTop: '1px solid var(--color-border-default)',
+            borderTop: '1px solid var(--color-base-300)',
             gap: '32px 56px',
           }}
         >
@@ -177,14 +191,14 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
                   fontWeight: 500,
                   fontSize: '26px',
                   letterSpacing: '-0.02em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span
                     style={{
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       fontWeight: 400,
                       fontSize: '16px',
                     }}
@@ -195,7 +209,11 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
               <span
-                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+                style={{
+                  fontFamily: SANS,
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                }}
               >
                 {m.s}
               </span>
@@ -217,7 +235,11 @@ function StatusLegend() {
         <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
           <Dot color={STATUS_META[s].color} size={8} />
           <span
-            style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+            style={{
+              fontFamily: SANS,
+              fontSize: '13px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
           >
             {STATUS_META[s].label}
           </span>
@@ -240,9 +262,9 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
         // area hue (a color key, not the retired 3px stripe) — softer than a
         // lead card's 12% since these are large, stacked surfaces.
         backgroundColor: `color-mix(in oklab, ${area.accent} 8%, ${
-          surface ? 'var(--color-bg-page)' : 'var(--color-bg-surface)'
+          surface ? 'var(--color-base-200)' : 'var(--color-base-100)'
         })`,
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '12px',
         padding: '28px',
         scrollMarginTop: '88px',
@@ -260,7 +282,7 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
                 fontWeight: 500,
                 fontSize: '20px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {area.name}
@@ -272,7 +294,7 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '21px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {area.summary}
@@ -285,12 +307,16 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
               gap: '6px',
               fontFamily: MONO,
               fontSize: '12px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
-            <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{total}</span>
+            <span style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>{total}</span>
             capabilities
-            <span style={{ color: 'var(--color-text-tertiary)' }}>· {liveN} live</span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+            >
+              · {liveN} live
+            </span>
           </div>
         </div>
 
@@ -324,12 +350,14 @@ function CapabilityChip({ cap }: { cap: Capability }) {
         gap: '8px',
         padding: '7px 13px',
         borderRadius: '9999px',
-        border: '1px solid var(--color-border-default)',
-        backgroundColor: 'var(--color-bg-page)',
+        border: '1px solid var(--color-base-300)',
+        backgroundColor: 'var(--color-base-200)',
         fontFamily: SANS,
         fontSize: '13px',
         fontWeight: 400,
-        color: muted ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
+        color: muted
+          ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+          : 'var(--color-base-content)',
       }}
       title={meta.label}
     >
@@ -348,8 +376,8 @@ function FeaturesCta(): ReactNode {
         paddingBottom: 'var(--section-py-xl)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
-        borderTop: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderTop: '1px solid var(--color-base-300)',
         textAlign: 'center',
       }}
     >
@@ -364,7 +392,7 @@ function FeaturesCta(): ReactNode {
             fontFamily: SANS,
             fontSize: '18px',
             lineHeight: '30px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '580px',
           }}
         >
@@ -386,7 +414,7 @@ function FeaturesCta(): ReactNode {
             marginTop: '22px',
             fontFamily: MONO,
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           No credit card · Cancel anytime · Your data, always exportable

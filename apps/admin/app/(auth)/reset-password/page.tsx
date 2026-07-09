@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Button, PasswordInput, Label, Stack, Text } from '@sparx/ui';
+import { Button, Stack, Text } from '@sparx/ui';
+import {
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  PasswordInput,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { resetPassword } from '@sparx/operator-auth/client';
 import { AuthShell } from '../_components/auth-shell';
 
@@ -23,6 +31,16 @@ function ResetPasswordForm() {
   const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
+  const v = useFieldValidation(
+    { password },
+    {
+      password: rules(
+        rule.required('Enter a new password.'),
+        rule.minLength(12, 'Use at least 12 characters.')
+      ),
+    }
+  );
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!token) {
@@ -30,6 +48,7 @@ function ResetPasswordForm() {
       return;
     }
     setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
     const result = await resetPassword({ newPassword: password, token });
     if (result.error) {
@@ -46,22 +65,22 @@ function ResetPasswordForm() {
       {token ? (
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>
-            <Stack gap={2}>
-              <Label htmlFor="password">New password</Label>
-              <PasswordInput
-                id="password"
+            <Field {...v.field('password')}>
+              <FieldLabel required>New password</FieldLabel>
+              <FieldControl
                 name="password"
                 autoComplete="new-password"
-                required
                 minLength={12}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                {...v.control('password')}
+                render={<PasswordInput />}
               />
-            </Stack>
+            </Field>
             {error ? (
-              <Text size="sm" variant="danger" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </Text>
+              </FieldStatus>
             ) : null}
             <Button type="submit" disabled={submitting} loading={submitting}>
               Set password

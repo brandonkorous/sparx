@@ -9,7 +9,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { bulkDeleteB2bAccountsAction, bulkSetB2bStatusAction } from '../../b2b-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -90,9 +90,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     return (
       <div className="flex flex-row items-center justify-end gap-1">
         <span className="tabular-nums">${used.toLocaleString()}</span>
-        {utilization >= 0.85 && (
-          <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-        )}
+        {utilization >= 0.85 && <AlertTriangle className="text-warning h-3.5 w-3.5" />}
       </div>
     );
   };
@@ -100,8 +98,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   const columns: SelectionColumn<B2bAccountRow>[] = [
     {
       header: 'Company',
-      cell: (a) =>
-        companyLink(a, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (a) => companyLink(a, 'text-sm font-medium hover:text-module hover:underline'),
     },
     { header: 'Status', cell: statusBadge },
     {
@@ -121,11 +118,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
   ];
 
   const card: SelectionCard<B2bAccountRow> = {
-    title: (a) =>
-      companyLink(
-        a,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (a) => companyLink(a, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (a) => (
       <p className="text-base-content/70 text-xs">{a.pricingTier ?? 'No pricing tier'}</p>
     ),

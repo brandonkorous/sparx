@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, Check } from 'lucide-react';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { ONE_PAGER } from '../_lib/content';
@@ -16,7 +16,7 @@ export default function PartnerOnePagerPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="text-base-content/70 hover:text-base-content text-sm"
           >
             ← Resources
           </Link>
@@ -40,7 +40,7 @@ export default function PartnerOnePagerPage() {
                   <ul className="flex flex-col gap-1.5">
                     {ONE_PAGER.modules.map((m) => (
                       <li key={m} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                        <Check className="text-module mt-0.5 h-4 w-4 shrink-0" />
                         <p className="text-sm">{m}</p>
                       </li>
                     ))}
@@ -59,7 +59,7 @@ export default function PartnerOnePagerPage() {
                       <li key={b} className="flex items-start gap-2">
                         <span
                           aria-hidden
-                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                          className="bg-module mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
                         />
                         <p className="text-base-content/70 text-sm">{b}</p>
                       </li>

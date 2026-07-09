@@ -15,7 +15,7 @@ import {
 
 import { requireSession } from '@sparx/auth';
 import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { AR_STATUS_VARIANT, formatMoney } from './_components/format';
@@ -367,23 +367,23 @@ export default async function InvoicingPage() {
             <p className="text-[1.65rem] leading-none font-medium">
               {fmtMoney(outstanding, currency)}
             </p>
-            <p className="mt-1.5 mb-4 text-sm text-[var(--color-text-tertiary)]">
+            <p className="text-base-content/50 mt-1.5 mb-4 text-sm">
               Outstanding across{' '}
-              <span className="text-[var(--color-text-secondary)]">
+              <span className="text-base-content/70">
                 {aging ? `${fmtNumber(aging.totalCount)} open documents` : 'your open documents'}
               </span>
             </p>
             {agingItems.length > 0 ? (
               <BarList items={agingItems} />
             ) : (
-              <p className="py-6 text-center text-sm text-[var(--color-text-tertiary)]">
+              <p className="text-base-content/50 py-6 text-center text-sm">
                 Nothing outstanding — every document is paid or has no balance.
               </p>
             )}
-            <div className="mt-4 flex items-center gap-2 border-t border-[var(--color-border-default)] pt-3">
-              <AlertTriangle aria-hidden className="h-4 w-4 text-[var(--color-danger-text)]" />
-              <span className="text-xs text-[var(--color-text-tertiary)]">
-                <span className="font-medium text-[var(--color-danger-text)]">
+            <div className="border-base-300 mt-4 flex items-center gap-2 border-t pt-3">
+              <AlertTriangle aria-hidden className="text-danger h-4 w-4" />
+              <span className="text-base-content/50 text-xs">
+                <span className="text-danger font-medium">
                   {fmtMoney(overdue, currency)} past due
                 </span>{' '}
                 across {fmtNumber(overdueCount)} document
@@ -404,17 +404,21 @@ export default async function InvoicingPage() {
                   data={collectedPoints}
                   series={[
                     { key: 'collected', label: 'Collected', color: 'module' },
-                    { key: 'billed', label: 'Billed', color: 'var(--module-active-tint)' },
+                    {
+                      key: 'billed',
+                      label: 'Billed',
+                      color: 'color-mix(in oklch, var(--color-module) 15%, transparent)',
+                    },
                   ]}
                   xKey="label"
                   height={210}
                   valueFormat={{ kind: 'currency', currency }}
                   ariaLabel="Collected vs. billed, last 12 weeks"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {collectedFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -454,7 +458,7 @@ export default async function InvoicingPage() {
                 <tbody>
                   {documents.map((d) => (
                     <tr key={d.id}>
-                      <td className="font-mono text-xs text-[var(--module-active-text)]">
+                      <td className="text-module font-mono text-xs">
                         <Link href={`/invoicing/documents/${d.id}`} className="hover:underline">
                           {d.number ?? 'Draft'}
                         </Link>
@@ -471,7 +475,7 @@ export default async function InvoicingPage() {
                           {d.status}
                         </Badge>
                       </td>
-                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
+                      <td className="text-base-content/50 text-right tabular-nums">
                         {new Date(d.updatedAt).toLocaleDateString()}
                       </td>
                     </tr>
@@ -500,13 +504,13 @@ export default async function InvoicingPage() {
             <p className="text-[1.65rem] leading-none font-medium">
               {collections ? fmtMoneyCents(collections.collectedThisMonthCents, currency) : '—'}
             </p>
-            <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
+            <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
               Collected this month
               {collectedTrend != null ? (
                 <>
                   {' '}
                   ·{' '}
-                  <span className="text-[var(--color-text-secondary)]">
+                  <span className="text-base-content/70">
                     {collectedTrend >= 0 ? '+' : ''}
                     {fmtPercentRatio(collectedTrend)} vs. last
                   </span>

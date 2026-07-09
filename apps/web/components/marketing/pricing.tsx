@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, getModuleColor } from './primitives';
 import { MODULES, MODULES_ALL_ON_TOTAL } from './modules-catalog';
 
@@ -13,8 +13,8 @@ const chip = {
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '16px 18px',
-  backgroundColor: 'var(--color-bg-surface)',
-  border: '1px solid var(--color-border-default)',
+  backgroundColor: 'var(--color-base-100)',
+  border: '1px solid var(--color-base-300)',
   borderRadius: '10px',
 } as const;
 
@@ -24,7 +24,7 @@ export function Pricing() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
           headline="Pay for what you use"
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           lede="Per-module pricing from $10/mo — switch on only what you need, all on one invoice. Start with a 14-day free trial, no card required."
         />
 
@@ -46,7 +46,7 @@ export function Pricing() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '15px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {m.label}
@@ -56,11 +56,17 @@ export function Pricing() {
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '14px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {`$${m.price}`}
-                <span style={{ color: 'var(--color-text-tertiary)' }}>/mo</span>
+                <span
+                  style={{
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                  }}
+                >
+                  /mo
+                </span>
               </span>
             </div>
           ))}
@@ -74,11 +80,11 @@ export function Pricing() {
               fontFamily: 'var(--font-sans)',
               fontSize: '15px',
               lineHeight: '24px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             All {MODULES.length} modules run{' '}
-            <strong style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+            <strong style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
               ${MODULES_ALL_ON_TOTAL}/mo
             </strong>{' '}
             — about $41,000 a year less than the same stack bought as separate tools, with Invoicing

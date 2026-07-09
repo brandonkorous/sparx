@@ -1,7 +1,7 @@
 'use client';
 
 import { Building2, Trash2 } from 'lucide-react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   type BulkAction,
   SelectionList,
@@ -67,7 +67,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
             href={`/crm/customers/${c.id}`}
             entityType="customer"
             entityId={c.id}
-            className="text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--module-active)] hover:underline"
+            className="text-base-content hover:text-module text-sm font-medium hover:underline"
           >
             {customerDisplayName(c)}
           </EntityRowLink>
@@ -85,7 +85,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
       cell: (c) =>
         c.company ? (
           <div className="flex flex-row items-center gap-1">
-            <Building2 className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+            <Building2 className="text-base-content/50 h-3.5 w-3.5" />
             <p className="text-sm">{c.company}</p>
           </div>
         ) : (
@@ -120,7 +120,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
         href={`/crm/customers/${c.id}`}
         entityType="customer"
         entityId={c.id}
-        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module truncate text-sm font-medium hover:underline"
       >
         {customerDisplayName(c)}
       </EntityRowLink>
@@ -128,7 +128,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
     subtitle: (c) =>
       c.company ? (
         <div className="flex min-w-0 flex-row items-center gap-1">
-          <Building2 className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-tertiary)]" />
+          <Building2 className="text-base-content/50 h-3.5 w-3.5 shrink-0" />
           <p className="text-base-content/70 truncate text-xs">{c.company}</p>
         </div>
       ) : c.email ? (

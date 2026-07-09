@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 
-import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -77,7 +77,7 @@ export async function PipelineList({ pipelineId }: PipelineListProps) {
                   <td>
                     <Link
                       href={`/crm/deals/${d.id}`}
-                      className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                      className="hover:text-module text-sm font-medium hover:underline"
                     >
                       {d.title}
                     </Link>

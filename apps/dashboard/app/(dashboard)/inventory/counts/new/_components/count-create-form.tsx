@@ -11,12 +11,15 @@ import {
   CardBody,
   CardTitle,
   EmptyState,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import { createInventoryCountAction } from '../../../_lib/count-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
@@ -43,10 +46,18 @@ interface PickedVariant {
 // snapshots every level), set the approval threshold, and — for a cycle — add the
 // variants by SKU. Counts have no @detail drawer (the count detail is where
 // quantities are entered, a full-page surface), so on success we navigate there.
-// Fields stay an uncontrolled native form, so the frame primary bridges to it via
-// requestSubmit().
 
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+// Optional non-negative approval threshold in dollars.
+const thresholdRule = (value: unknown): string | null => {
+  const s = String(value ?? '').trim();
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter an amount.';
+  if (n < 0) return 'Amount cannot be negative.';
+  return null;
+};
 
 interface CountCreateFormProps {
   surface: 'page' | 'overlay';
@@ -62,23 +73,21 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
   const [type, setType] = React.useState<'cycle' | 'full'>('cycle');
   const [variants, setVariants] = React.useState<PickedVariant[]>([]);
 
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [fieldsDirty, setFieldsDirty] = React.useState(false);
-  const recomputeDirty = React.useCallback(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const get = (k: string) => {
-      const v = data.get(k);
-      return typeof v === 'string' ? v.trim() : '';
-    };
-    setFieldsDirty(get('threshold') !== '' || get('note') !== '');
-  }, []);
-  const dirty = variants.length > 0 || type !== 'cycle' || fieldsDirty;
+  const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
+  const [threshold, setThreshold] = React.useState('');
+  const [note, setNote] = React.useState('');
+
+  const values = { threshold };
+  const v = useFieldValidation(values, { threshold: thresholdRule });
+
+  const dirty =
+    variants.length > 0 || type !== 'cycle' || threshold.trim() !== '' || note.trim() !== '';
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'count' });
 
-  function addVariant(v: PickedVariant) {
-    setVariants((prev) => (prev.some((p) => p.variantId === v.variantId) ? prev : [...prev, v]));
+  function addVariant(picked: PickedVariant) {
+    setVariants((prev) =>
+      prev.some((p) => p.variantId === picked.variantId) ? prev : [...prev, picked]
+    );
   }
   function removeVariant(variantId: string) {
     setVariants((prev) => prev.filter((p) => p.variantId !== variantId));
@@ -100,22 +109,20 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const warehouseId = str(form.get('warehouseId'));
     if (!warehouseId) {
       setError('Choose a warehouse.');
       return;
     }
-    const threshold = str(form.get('threshold'));
+    if (!v.validate()) return;
+    const thresholdTrim = threshold.trim();
     const input = {
       warehouseId,
       type,
-      ...(threshold ? { approvalThresholdCents: Math.round(Number(threshold) * 100) } : {}),
-      ...nonEmpty('note', form),
-      ...(type === 'cycle' ? { variantIds: variants.map((v) => v.variantId) } : {}),
+      ...(thresholdTrim ? { approvalThresholdCents: Math.round(Number(thresholdTrim) * 100) } : {}),
+      ...(note.trim() ? { note: note.trim() } : {}),
+      ...(type === 'cycle' ? { variantIds: variants.map((item) => item.variantId) } : {}),
     };
 
     startTransition(async () => {
@@ -171,94 +178,102 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
               'Reconcile stock against a physical count. A cycle count covers the SKUs you pick; a full count snapshots every level in the warehouse.',
           }}
           actions={{
-            onNext: () => formRef.current?.requestSubmit(),
+            onNext: submit,
             nextLabel: 'Start count',
             nextLoading: pending,
             nextDisabled: pending,
           }}
         >
-          <form
-            ref={formRef}
-            onSubmit={onSubmit}
-            onInput={recomputeDirty}
-            onChange={recomputeDirty}
-            className="contents"
-          >
-            <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Count details</CardTitle>
+                  <p className="opacity-70">
+                    A count is scoped to one warehouse. Choose how much to count and the variance
+                    value above which a manager must approve before it posts.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <Field className="min-w-[14rem] flex-1">
+                      <FieldLabel>Warehouse</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect>
+                            {warehouses.map((w) => (
+                              <option key={w.id} value={w.id}>
+                                {w.name} ({w.code})
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                        value={warehouseId}
+                        onChange={(e) => setWarehouseId(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Type</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect>
+                            <option value="cycle">Cycle — chosen SKUs</option>
+                            <option value="full">Full — every level in the warehouse</option>
+                          </NativeSelect>
+                        }
+                        value={type}
+                        onChange={(e) => setType(e.target.value === 'full' ? 'full' : 'cycle')}
+                      />
+                    </Field>
+                    <Field className="min-w-[10rem]" {...v.field('threshold')}>
+                      <FieldLabel>Approval over ($)</FieldLabel>
+                      <FieldControl
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={threshold}
+                        onChange={(e) => setThreshold(e.target.value)}
+                        placeholder="50.00"
+                        {...v.control('threshold')}
+                      />
+                    </Field>
+                  </div>
+                  <Field>
+                    <FieldLabel>Note</FieldLabel>
+                    <FieldControl
+                      render={<Textarea rows={2} />}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                    />
+                  </Field>
+
+                  {error && (
+                    <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                      {error}
+                    </FieldStatus>
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+
+            {type === 'cycle' ? (
+              <CyclePicker
+                variants={variants}
+                onAdd={addVariant}
+                onRemove={removeVariant}
+                busy={pending}
+              />
+            ) : (
               <Card>
                 <CardBody>
-                  <div className="flex flex-col gap-1">
-                    <CardTitle>Count details</CardTitle>
-                    <p className="opacity-70">
-                      A count is scoped to one warehouse. Choose how much to count and the variance
-                      value above which a manager must approve before it posts.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-row flex-wrap gap-3">
-                      <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-                        <Label htmlFor="warehouseId">Warehouse</Label>
-                        <NativeSelect
-                          id="warehouseId"
-                          name="warehouseId"
-                          defaultValue={warehouses[0]?.id}
-                        >
-                          {warehouses.map((w) => (
-                            <option key={w.id} value={w.id}>
-                              {w.name} ({w.code})
-                            </option>
-                          ))}
-                        </NativeSelect>
-                      </div>
-                      <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-                        <Label htmlFor="type">Type</Label>
-                        <NativeSelect
-                          id="type"
-                          value={type}
-                          onChange={(e) => setType(e.target.value === 'full' ? 'full' : 'cycle')}
-                        >
-                          <option value="cycle">Cycle — chosen SKUs</option>
-                          <option value="full">Full — every level in the warehouse</option>
-                        </NativeSelect>
-                      </div>
-                      <div className="flex min-w-[10rem] flex-col gap-1">
-                        <Label htmlFor="threshold">Approval over ($)</Label>
-                        <Input id="threshold" name="threshold" type="number" placeholder="50.00" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <Label htmlFor="note">Note</Label>
-                      <Textarea id="note" name="note" rows={2} />
-                    </div>
-
-                    {error && (
-                      <p className="text-danger text-sm" role="alert" aria-live="polite">
-                        {error}
-                      </p>
-                    )}
-                  </div>
+                  <p className="text-base-content/70 py-2 text-sm">
+                    A full count snapshots every active level in the warehouse — you&apos;ll enter a
+                    counted quantity for each on the next screen.
+                  </p>
                 </CardBody>
               </Card>
-
-              {type === 'cycle' ? (
-                <CyclePicker
-                  variants={variants}
-                  onAdd={addVariant}
-                  onRemove={removeVariant}
-                  busy={pending}
-                />
-              ) : (
-                <Card>
-                  <CardBody>
-                    <p className="text-base-content/70 py-2 text-sm">
-                      A full count snapshots every active level in the warehouse — you&apos;ll enter
-                      a counted quantity for each on the next screen.
-                    </p>
-                  </CardBody>
-                </Card>
-              )}
-            </div>
-          </form>
+            )}
+          </div>
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>
@@ -295,7 +310,7 @@ function CyclePicker({
               {variants.map((v) => (
                 <div
                   key={v.variantId}
-                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
                 >
                   <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                     <p className="text-sm font-medium">{v.title ?? v.sku}</p>
@@ -352,11 +367,10 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (v: PickedVariant) => void; dis
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
-        <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-          <Label htmlFor="count-add-sku">Variant SKU</Label>
-          <Input
-            id="count-add-sku"
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
+        <Field className="min-w-[12rem] flex-1">
+          <FieldLabel>Variant SKU</FieldLabel>
+          <FieldControl
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
@@ -367,21 +381,16 @@ function SkuAddRow({ onAdd, disabled }: { onAdd: (v: PickedVariant) => void; dis
             }}
             placeholder="e.g. FUEL-FILTER-1"
           />
-        </div>
+        </Field>
         <Button color="module" type="button" onClick={add} disabled={busy || disabled}>
           {busy ? 'Adding…' : 'Add item'}
         </Button>
       </div>
-      {error && <p className="text-danger text-sm">{error}</p>}
+      {error && (
+        <FieldStatus status="error" attached={false}>
+          {error}
+        </FieldStatus>
+      )}
     </div>
   );
-}
-
-function nonEmpty(name: string, form: FormData): Record<string, string> {
-  const value = str(form.get(name));
-  return value ? { [name]: value } : {};
-}
-
-function str(value: FormDataEntryValue | null): string {
-  return typeof value === 'string' ? value.trim() : '';
 }

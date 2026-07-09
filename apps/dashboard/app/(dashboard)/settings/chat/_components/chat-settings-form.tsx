@@ -7,7 +7,17 @@
 
 import { useState, useTransition } from 'react';
 import { useConfirm } from '@sparx/ui';
-import { Button, Card, CardBody, CardTitle, Input, Switch, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Switch,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { Trash2 } from 'lucide-react';
 
 import {
@@ -81,7 +91,7 @@ export function ChatSettingsForm({
             <label htmlFor="chat-ai-enabled" className="flex items-center justify-between gap-4">
               <span>
                 <span className="block text-sm font-medium">AI first responses</span>
-                <span className="block text-xs text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70 block text-xs">
                   Let AI answer common questions and escalate when unsure.
                 </span>
               </span>
@@ -94,7 +104,7 @@ export function ChatSettingsForm({
             <label htmlFor="chat-collect-email" className="flex items-center justify-between gap-4">
               <span>
                 <span className="block text-sm font-medium">Pre-chat form</span>
-                <span className="block text-xs text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70 block text-xs">
                   Ask anonymous visitors for a name and email before chatting.
                 </span>
               </span>
@@ -104,28 +114,31 @@ export function ChatSettingsForm({
                 onCheckedChange={(v) => patch('collectEmail', v)}
               />
             </label>
-            <div>
-              <span className="mb-1 block text-sm font-medium">Greeting</span>
-              <Input value={config.greeting} onChange={(e) => patch('greeting', e.target.value)} />
-            </div>
-            <div>
-              <span className="mb-1 block text-sm font-medium">Away message</span>
-              <Textarea
-                rows={2}
+            <Field>
+              <FieldLabel>Greeting</FieldLabel>
+              <FieldControl
+                value={config.greeting}
+                onChange={(e) => patch('greeting', e.target.value)}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Away message</FieldLabel>
+              <FieldControl
+                render={<Textarea rows={2} />}
                 value={config.awayMessage}
                 onChange={(e) => patch('awayMessage', e.target.value)}
               />
-            </div>
+            </Field>
             <div className="flex gap-4">
-              <div>
-                <span className="mb-1 block text-sm font-medium">Accent color</span>
-                <Input
+              <Field>
+                <FieldLabel>Accent color</FieldLabel>
+                <FieldControl
                   type="text"
                   placeholder="#6366F1"
                   value={config.primaryColor ?? ''}
                   onChange={(e) => patch('primaryColor', e.target.value || null)}
                 />
-              </div>
+              </Field>
               <div>
                 <span className="mb-1 block text-sm font-medium">Position</span>
                 <div className="flex gap-2">
@@ -149,7 +162,7 @@ export function ChatSettingsForm({
                 {saving ? 'Saving…' : 'Save settings'}
               </Button>
               {savedAt ? (
-                <span className="text-xs text-[var(--color-text-secondary)]">Saved {savedAt}</span>
+                <span className="text-base-content/70 text-xs">Saved {savedAt}</span>
               ) : null}
             </div>
           </div>
@@ -161,23 +174,19 @@ export function ChatSettingsForm({
           <CardTitle>Quick replies</CardTitle>
           <div className="flex flex-col gap-4">
             {replies.length === 0 ? (
-              <p className="text-sm text-[var(--color-text-secondary)]">No quick replies yet.</p>
+              <p className="text-base-content/70 text-sm">No quick replies yet.</p>
             ) : (
-              <ul className="divide-y divide-[var(--color-border)]">
+              <ul className="divide-base-300 divide-y">
                 {replies.map((r) => (
                   <li key={r.id} className="flex items-start justify-between gap-3 py-2">
                     <div className="min-w-0">
                       <div className="text-sm font-medium">
                         {r.title}
                         {r.shortcut ? (
-                          <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
-                            /{r.shortcut}
-                          </span>
+                          <span className="text-base-content/70 ml-2 text-xs">/{r.shortcut}</span>
                         ) : null}
                       </div>
-                      <div className="truncate text-xs text-[var(--color-text-secondary)]">
-                        {r.body}
-                      </div>
+                      <div className="text-base-content/70 truncate text-xs">{r.body}</div>
                     </div>
                     <Button
                       type="button"
@@ -194,23 +203,31 @@ export function ChatSettingsForm({
               </ul>
             )}
             <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-              <Input
-                placeholder="Title"
-                value={qrTitle}
-                onChange={(e) => setQrTitle(e.target.value)}
-              />
-              <Input
-                placeholder="Shortcut (e.g. hi)"
-                value={qrShortcut}
-                onChange={(e) => setQrShortcut(e.target.value)}
-              />
-              <Textarea
-                className="sm:col-span-2"
-                rows={2}
-                placeholder="Reply text…"
-                value={qrBody}
-                onChange={(e) => setQrBody(e.target.value)}
-              />
+              <Field>
+                <FieldLabel>Title</FieldLabel>
+                <FieldControl
+                  placeholder="Title"
+                  value={qrTitle}
+                  onChange={(e) => setQrTitle(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <FieldLabel>Shortcut</FieldLabel>
+                <FieldControl
+                  placeholder="Shortcut (e.g. hi)"
+                  value={qrShortcut}
+                  onChange={(e) => setQrShortcut(e.target.value)}
+                />
+              </Field>
+              <Field className="sm:col-span-2">
+                <FieldLabel>Reply text</FieldLabel>
+                <FieldControl
+                  render={<Textarea rows={2} />}
+                  placeholder="Reply text…"
+                  value={qrBody}
+                  onChange={(e) => setQrBody(e.target.value)}
+                />
+              </Field>
               <Button
                 color="module"
                 variant="soft"

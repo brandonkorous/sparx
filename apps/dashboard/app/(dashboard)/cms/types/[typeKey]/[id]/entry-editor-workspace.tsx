@@ -16,7 +16,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { cn, useMediaQuery } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Columns2,
   Eye,
@@ -76,7 +76,7 @@ function Segmented<T extends string>({
     <div
       role="group"
       aria-label={ariaLabel}
-      className="inline-flex gap-0.5 rounded-md bg-[var(--color-bg-subtle)] p-0.5"
+      className="bg-base-200 inline-flex gap-0.5 rounded-md p-0.5"
     >
       {options.map((o) => (
         <button
@@ -88,8 +88,8 @@ function Segmented<T extends string>({
           className={cn(
             'inline-flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-3 text-[13px] font-medium transition-colors',
             value === o.value
-              ? 'bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-sm'
-              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+              ? 'bg-base-100 text-base-content shadow-sm'
+              : 'text-base-content/70 hover:text-base-content'
           )}
         >
           {o.icon}
@@ -207,7 +207,7 @@ export function EntryEditorWorkspace({ form, preview, statusInHeader }: EntryEdi
 
   const previewPane = (
     <div className={cn('min-h-0 min-w-0 flex-1', effectiveView === 'form' && 'hidden')}>
-      <div className="h-full overflow-hidden rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+      <div className="border-base-300 bg-base-200 h-full overflow-hidden rounded-lg border">
         <EmbeddedRecordPreview
           tree={preview.tree}
           chrome={preview.chrome}
@@ -238,7 +238,7 @@ export function EntryEditorWorkspace({ form, preview, statusInHeader }: EntryEdi
             §2.8): view + device + layout controls on the left; the entry's status +
             publish actions on the right — the form PORTALS its status bar into the
             slot below. Wraps on narrow viewports. */}
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2">
+        <div className="border-base-300 bg-base-100 flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border px-3 py-2">
           <div className="flex flex-wrap items-center gap-2">
             <Segmented
               value={effectiveView}

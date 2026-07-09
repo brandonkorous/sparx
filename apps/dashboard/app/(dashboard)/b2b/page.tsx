@@ -16,7 +16,7 @@ import {
 
 import { requireSession } from '@sparx/auth';
 import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -341,21 +341,18 @@ export default async function B2bPage() {
                 <p className="text-[1.65rem] leading-none font-medium">
                   {fmtMoneyCents(summary.invoices.outstandingCents)}
                 </p>
-                <p className="mt-1.5 mb-4 text-sm text-[var(--color-text-tertiary)]">
+                <p className="text-base-content/50 mt-1.5 mb-4 text-sm">
                   Outstanding across{' '}
-                  <span className="text-[var(--color-text-secondary)]">
+                  <span className="text-base-content/70">
                     {fmtNumber(summary.invoices.outstandingCount)} invoices
                   </span>
                 </p>
                 <BarList items={agingItems} />
                 {summary.invoices.overdueCount > 0 ? (
-                  <div className="mt-4 flex items-center gap-2 border-t border-[var(--color-border-default)] pt-3">
-                    <AlertTriangle
-                      aria-hidden
-                      className="h-4 w-4 text-[var(--color-danger-text)]"
-                    />
-                    <span className="text-xs text-[var(--color-text-tertiary)]">
-                      <span className="font-medium text-[var(--color-danger-text)]">
+                  <div className="border-base-300 mt-4 flex items-center gap-2 border-t pt-3">
+                    <AlertTriangle aria-hidden className="text-danger h-4 w-4" />
+                    <span className="text-base-content/50 text-xs">
+                      <span className="text-danger font-medium">
                         {fmtNumber(summary.invoices.overdueCount)} past due
                       </span>{' '}
                       · oldest {fmtNumber(summary.invoices.oldestOverdueDays)} days
@@ -388,7 +385,7 @@ export default async function B2bPage() {
                   valueFormat="currency"
                   ariaLabel="Wholesale revenue, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {[
                     ['Orders · 30d', ts ? fmtNumber(ts.totals.ordersCount) : '—'],
                     ['AOV', aov30 > 0 ? fmtMoneyCents(aov30) : '—'],
@@ -398,7 +395,7 @@ export default async function B2bPage() {
                     ],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -437,17 +434,11 @@ export default async function B2bPage() {
                 <tbody>
                   {quoteRows.map((q) => (
                     <tr key={q.key}>
-                      <td className="font-mono text-xs text-[var(--module-active-text)]">
-                        {q.label}
-                      </td>
+                      <td className="text-module font-mono text-xs">{q.label}</td>
                       <td className="font-medium">{q.account}</td>
                       <td className="text-right tabular-nums">{q.value}</td>
-                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                        {q.sent}
-                      </td>
-                      <td className="text-right text-[var(--color-text-tertiary)] tabular-nums">
-                        {q.expires}
-                      </td>
+                      <td className="text-base-content/50 text-right tabular-nums">{q.sent}</td>
+                      <td className="text-base-content/50 text-right tabular-nums">{q.expires}</td>
                       <td>
                         <Badge color={q.tone} variant="soft">
                           {q.status}

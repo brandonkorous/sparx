@@ -6,7 +6,7 @@
 // No client state, so this stays a plain component.
 
 import Link from 'next/link';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 export function IntegrationCardActions({
   providerSlug,

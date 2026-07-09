@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { ArrowRight, Check, Circle } from 'lucide-react';
 import { dismissOnboarding } from './actions';
 import type { OnboardingProgress } from './onboarding';
@@ -46,10 +46,10 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
                 <span
                   aria-hidden
                   // eslint-disable-next-line no-restricted-syntax -- step indicator icon container, not a reimplemented control
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]"
+                  className="bg-base-200 text-base-content/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                 >
                   {step.done ? (
-                    <Check className="h-4 w-4 text-[var(--color-success-text)]" />
+                    <Check className="text-success h-4 w-4" />
                   ) : (
                     <Circle className="h-4 w-4" />
                   )}
@@ -109,10 +109,10 @@ function ProgressBar({ value }: { value: number }) {
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-bg-subtle)]"
+      className="bg-base-200 h-2 w-full overflow-hidden rounded-full"
     >
       <div
-        className="h-full bg-[var(--color-primary)] transition-[width] duration-300"
+        className="bg-primary h-full transition-[width] duration-300"
         style={{ width: `${pct}%` }}
       />
     </div>

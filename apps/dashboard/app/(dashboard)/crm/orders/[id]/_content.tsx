@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Package, CreditCard, Truck } from 'lucide-react';
 
 import { Stat, statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -103,7 +103,7 @@ export async function OrderDetailContent({ id }: Props) {
           {customer && (
             <Link
               href={`/crm/customers/${customer.id}`}
-              className="text-sm hover:text-[var(--module-active)] hover:underline"
+              className="hover:text-module text-sm hover:underline"
             >
               {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
                 (customer.company ?? customer.email)}

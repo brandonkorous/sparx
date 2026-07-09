@@ -6,7 +6,7 @@
 // parent activates the gateway and closes (docs/86 frame pattern: status in the header).
 
 import * as React from 'react';
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from 'silicaui-react';
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@wizeworks/silicaui-react';
 
 import type { GatewayDescriptor, MaskedGatewayCredential } from '../actions';
 import { GatewayCredentialForm } from './gateway-credential-form';

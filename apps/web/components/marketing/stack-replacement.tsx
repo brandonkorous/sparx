@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, Spark } from './primitives';
 import { Reveal } from './reveal';
 
@@ -93,7 +93,7 @@ const LABEL: React.CSSProperties = {
   fontSize: '11px',
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
 };
 const MONO: React.CSSProperties = { fontFamily: 'var(--font-mono)', fontSize: '13px' };
 
@@ -133,8 +133,8 @@ function SwapLedger() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -143,8 +143,8 @@ function SwapLedger() {
         className="mkt-swap-row mkt-swap-head"
         style={{
           padding: '13px 24px',
-          backgroundColor: 'var(--color-bg-subtle)',
-          borderBottom: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span style={LABEL}>Your stack today</span>
@@ -156,17 +156,22 @@ function SwapLedger() {
         <SwapRow key={row.today} row={row} isLast={i === SWAP.length - 1} />
       ))}
 
-      <div className="mkt-swap-row" style={{ borderTop: '2px solid var(--color-border-strong)' }}>
+      <div
+        className="mkt-swap-row"
+        style={{
+          borderTop: '2px solid color-mix(in oklab, var(--color-base-content) 30%, transparent)',
+        }}
+      >
         <div className="mkt-swap-cell">
-          <span style={{ ...LABEL, color: 'var(--color-text-primary)' }}>Total today</span>
+          <span style={{ ...LABEL, color: 'var(--color-base-content)' }}>Total today</span>
           <span style={{ ...MONO, fontSize: '15px', color: 'var(--color-danger)' }}>
             {fmt(beforeTotal)}/mo
           </span>
         </div>
         <Arrow />
         <div className="mkt-swap-cell">
-          <span style={{ ...LABEL, color: 'var(--color-text-primary)' }}>One bill</span>
-          <span style={{ ...MONO, fontSize: '15px', color: 'var(--sparx-primary)' }}>
+          <span style={{ ...LABEL, color: 'var(--color-base-content)' }}>One bill</span>
+          <span style={{ ...MONO, fontSize: '15px', color: 'var(--color-primary)' }}>
             {fmt(afterTotal)}/mo
           </span>
         </div>
@@ -180,7 +185,7 @@ function SwapLedger() {
           justifyContent: 'space-between',
           gap: '6px 24px',
           padding: '20px 24px',
-          backgroundColor: 'var(--color-success-tint)',
+          backgroundColor: 'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
         }}
       >
         <span
@@ -198,7 +203,7 @@ function SwapLedger() {
           style={{
             fontFamily: 'var(--font-sans)',
             fontSize: '14px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           Pay only for the modules you switch on
@@ -214,18 +219,18 @@ function LedgerActions() {
       style={{ display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'flex-start' }}
     >
       <div className="mkt-cluster" style={{ gap: '12px' }}>
-        <Button asChild size="lg" color="primary" variant="solid">
-          <a href={SIGNUP}>Start my site free →</a>
+        <Button size="lg" color="primary" variant="solid" render={<a href={SIGNUP} />}>
+          Start my site free →
         </Button>
-        <Button asChild size="lg" variant="outline">
-          <a href="/pricing">See the full price list</a>
+        <Button size="lg" variant="outline" render={<a href="/pricing" />}>
+          See the full price list
         </Button>
       </div>
       <span
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         No card · cancel anytime · switch a module off and its bill stops
@@ -247,7 +252,7 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '14px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {row.today}
@@ -256,7 +261,7 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {row.todayNote}
@@ -266,7 +271,9 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
           style={{
             ...MONO,
             flexShrink: 0,
-            color: row.todayPrice ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
+            color: row.todayPrice
+              ? 'color-mix(in oklab, var(--color-base-content) 70%, transparent)'
+              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           {row.todayPrice ? `${fmt(row.todayPrice)}/mo` : '—'}
@@ -283,7 +290,7 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
             viewBox="0 0 24 24"
             fill="none"
             aria-hidden
-            style={{ flexShrink: 0, color: 'var(--sparx-primary)' }}
+            style={{ flexShrink: 0, color: 'var(--color-primary)' }}
           >
             <path d="M5 12L10 17L19 7" stroke="currentColor" strokeWidth={2.6} />
           </svg>
@@ -293,7 +300,7 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '14px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             Built in
@@ -303,7 +310,9 @@ function SwapRow({ row, isLast }: { row: Swap; isLast: boolean }) {
           style={{
             ...MONO,
             flexShrink: 0,
-            color: row.modulePrice ? 'var(--color-text-secondary)' : 'var(--color-success)',
+            color: row.modulePrice
+              ? 'color-mix(in oklab, var(--color-base-content) 70%, transparent)'
+              : 'var(--color-success)',
           }}
         >
           {row.modulePrice ? `+${fmt(row.modulePrice)}/mo` : '$0'}

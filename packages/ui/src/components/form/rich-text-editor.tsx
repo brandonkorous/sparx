@@ -56,11 +56,11 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
       className={cn(
         'inline-flex h-7 w-7 items-center justify-center rounded-md',
         'transition-colors duration-150',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         'disabled:pointer-events-none disabled:opacity-40',
         active
-          ? 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]'
-          : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]'
+          ? 'bg-module bg-soft text-module'
+          : 'text-base-content/70 hover:text-base-content hover:bg-[var(--color-base-200)]'
       )}
     >
       {children}
@@ -69,7 +69,7 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
 }
 
 function ToolDivider() {
-  return <span aria-hidden className="mx-1 h-4 w-px bg-[var(--color-border-default)]" />;
+  return <span aria-hidden className="mx-1 h-4 w-px bg-[var(--color-base-300)]" />;
 }
 
 export function RichTextEditor({
@@ -90,7 +90,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-[var(--sparx-primary)] underline underline-offset-2',
+          class: 'text-[var(--color-primary)] underline underline-offset-2',
         },
       }),
       Placeholder.configure({ placeholder }),
@@ -105,15 +105,15 @@ export function RichTextEditor({
       attributes: {
         'aria-label': ariaLabel,
         class: cn(
-          'min-h-[8rem] w-full px-3 py-2 text-sm text-[var(--color-text-primary)]',
+          'text-base-content min-h-[8rem] w-full px-3 py-2 text-sm',
           'focus:outline-none',
-          'prose-headings:font-medium prose-headings:text-[var(--color-text-primary)]',
+          'prose-headings:font-medium prose-headings:text-base-content',
           '[&_h2]:mt-4 [&_h3]:mt-3 [&_p]:my-2',
           '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
           '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
-          '[&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--color-border-default)] [&_blockquote]:pl-3 [&_blockquote]:text-[var(--color-text-secondary)]',
-          '[&_code]:rounded [&_code]:bg-[var(--color-bg-subtle)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
-          '[&_pre]:my-2 [&_pre]:rounded-md [&_pre]:bg-[var(--color-bg-subtle)] [&_pre]:p-3 [&_pre]:text-xs'
+          '[&_blockquote]:text-base-content/70 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--color-base-300)] [&_blockquote]:pl-3',
+          '[&_code]:rounded [&_code]:bg-[var(--color-base-200)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
+          '[&_pre]:my-2 [&_pre]:rounded-md [&_pre]:bg-[var(--color-base-200)] [&_pre]:p-3 [&_pre]:text-xs'
         ),
       },
     },
@@ -144,9 +144,9 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        'rounded-md border bg-[var(--color-bg-surface)]',
-        'border-[var(--color-border-default)] focus-within:border-[var(--color-border-focus)]',
-        'focus-within:ring-2 focus-within:ring-[var(--color-border-focus)] focus-within:ring-offset-2',
+        'rounded-md border bg-[var(--color-base-100)]',
+        'border-[var(--color-base-300)] focus-within:border-[var(--color-primary)]',
+        'focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-2',
         'transition-colors duration-150',
         disabled && 'cursor-not-allowed opacity-50',
         className
@@ -155,7 +155,7 @@ export function RichTextEditor({
       <div
         role="toolbar"
         aria-label="Formatting"
-        className="flex flex-wrap items-center gap-0.5 border-b border-[var(--color-border-default)] p-1"
+        className="flex flex-wrap items-center gap-0.5 border-b border-[var(--color-base-300)] p-1"
       >
         <ToolButton
           label="Bold"

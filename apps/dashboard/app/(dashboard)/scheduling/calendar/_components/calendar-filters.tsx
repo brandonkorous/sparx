@@ -6,7 +6,7 @@
 // current week (`from`) is preserved so filtering doesn't jump you to today.
 
 import { useRouter } from 'next/navigation';
-import { NativeSelect } from 'silicaui-react';
+import { NativeSelect } from '@wizeworks/silicaui-react';
 
 export interface CalendarResource {
   id: string;

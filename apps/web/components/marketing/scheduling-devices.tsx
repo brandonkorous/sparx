@@ -43,7 +43,7 @@ export function SchedulingNoOverlap() {
           fontFamily: MONO,
           fontSize: '12px',
           lineHeight: '20px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           maxWidth: '760px',
         }}
       >
@@ -69,7 +69,7 @@ function ResourceLane() {
         flex: 1,
         minWidth: 0,
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -77,7 +77,7 @@ function ResourceLane() {
       <div
         style={{
           padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
           fontFamily: MONO,
           fontSize: '11px',
           letterSpacing: '0.05em',
@@ -105,7 +105,7 @@ function ResourceLane() {
                 style={{
                   fontFamily: MONO,
                   fontSize: '12px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   width: '44px',
                   flexShrink: 0,
                 }}
@@ -138,11 +138,12 @@ function ResourceLane() {
                     flex: 1,
                     minWidth: 0,
                     padding: '10px 14px',
-                    border: '1px dashed var(--color-border-strong)',
+                    border:
+                      '1px dashed color-mix(in oklab, var(--color-base-content) 30%, transparent)',
                     borderRadius: '10px',
                     fontFamily: MONO,
                     fontSize: '11.5px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   buffer · held by service settings
@@ -156,7 +157,7 @@ function ResourceLane() {
                     borderRadius: '10px',
                     fontFamily: MONO,
                     fontSize: '11.5px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   open
@@ -288,7 +289,7 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
         flex: 1,
         minWidth: 0,
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
         display: 'flex',
@@ -304,7 +305,7 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
             display: 'block',
             fontFamily: MONO,
             fontSize: '11.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             marginTop: '4px',
           }}
         >
@@ -320,8 +321,8 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
                 height: 18,
                 borderRadius: '9999px',
                 flexShrink: 0,
-                backgroundColor: step.done ? M.color : 'var(--color-bg-subtle)',
-                border: step.done ? 'none' : '1px solid var(--color-border-default)',
+                backgroundColor: step.done ? M.color : 'var(--color-base-200)',
+                border: step.done ? 'none' : '1px solid var(--color-base-300)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -336,7 +337,9 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
                   fontFamily: SANS,
                   fontSize: '14px',
                   fontWeight: 500,
-                  color: step.done ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                  color: step.done
+                    ? 'var(--color-base-content)'
+                    : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {step.label}
@@ -345,7 +348,7 @@ function ReminderTimeline({ scene: s }: { scene: SchedulingScene }) {
                 style={{
                   fontFamily: MONO,
                   fontSize: '11px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {step.meta}
@@ -365,8 +368,8 @@ function WaitlistCard({ scene: s }: { scene: SchedulingScene }) {
       style={{
         flex: 1,
         minWidth: 0,
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
         height: '100%',
@@ -378,14 +381,20 @@ function WaitlistCard({ scene: s }: { scene: SchedulingScene }) {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
           Waitlist · {s.service}
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           {s.slot}
         </span>
       </div>
@@ -403,7 +412,11 @@ function WaitlistCard({ scene: s }: { scene: SchedulingScene }) {
         >
           <Dot color={M.color} size={6} />
           <span
-            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+            style={{
+              fontFamily: MONO,
+              fontSize: '11.5px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
           >
             auto-promote · offer held for a window, then rolls on
           </span>
@@ -421,9 +434,17 @@ function WaitlistRow({
   state: 'cancelled' | 'offered' | 'waiting';
 }) {
   const styleByState = {
-    cancelled: { color: 'var(--color-text-tertiary)', label: 'cancelled', strike: true },
+    cancelled: {
+      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+      label: 'cancelled',
+      strike: true,
+    },
     offered: { color: M.text, label: 'offered → promoted', strike: false },
-    waiting: { color: 'var(--color-text-secondary)', label: 'waiting', strike: false },
+    waiting: {
+      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+      label: 'waiting',
+      strike: false,
+    },
   }[state];
   return (
     <div
@@ -432,7 +453,7 @@ function WaitlistRow({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '11px 0',
-        borderBottom: '1px solid var(--color-bg-subtle)',
+        borderBottom: '1px solid var(--color-base-200)',
       }}
     >
       <span
@@ -446,7 +467,14 @@ function WaitlistRow({
           textDecoration: styleByState.strike ? 'line-through' : 'none',
         }}
       >
-        <Dot color={state === 'offered' ? M.color : 'var(--color-text-tertiary)'} size={7} />
+        <Dot
+          color={
+            state === 'offered'
+              ? M.color
+              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+          }
+          size={7}
+        />
         {name}
       </span>
       <span

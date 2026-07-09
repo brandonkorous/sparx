@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { SupplierActions } from './supplier-actions';
 import type { SiteOption, Vendor, VendorCredentialField } from './supplier-form';
@@ -88,9 +88,7 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
     { header: 'Supplier', cell: (s) => nameLink(s, 'text-sm font-medium hover:underline') },
     {
       header: 'Type',
-      cell: (s) => (
-        <p className="text-sm text-[var(--color-muted-foreground)]">{vendorLabel(s.type)}</p>
-      ),
+      cell: (s) => <p className="text-base-content/70 text-sm">{vendorLabel(s.type)}</p>,
     },
     { header: 'Status', cell: statusBadge },
     ...(showSites
@@ -99,9 +97,7 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
             header: 'Sites',
             id: 'sites',
             cell: (s: Supplier) => (
-              <p className="text-sm text-[var(--color-muted-foreground)]">
-                {formatSiteScope(s.siteScope)}
-              </p>
+              <p className="text-base-content/70 text-sm">{formatSiteScope(s.siteScope)}</p>
             ),
           } satisfies SelectionColumn<Supplier>,
         ]
@@ -109,15 +105,13 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
     {
       header: 'Pricing rule',
       cell: (s) => (
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          {formatPricingRule(s.pricingRule)}
-        </p>
+        <p className="text-base-content/70 text-sm">{formatPricingRule(s.pricingRule)}</p>
       ),
     },
     {
       header: 'Last synced',
       cell: (s) => (
-        <p className="text-sm text-[var(--color-muted-foreground)]">
+        <p className="text-base-content/70 text-sm">
           {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
         </p>
       ),
@@ -127,25 +121,19 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
 
   const card: SelectionCard<Supplier> = {
     title: (s) => nameLink(s, 'truncate text-sm font-medium hover:underline'),
-    subtitle: (s) => (
-      <p className="text-xs text-[var(--color-muted-foreground)]">{vendorLabel(s.type)}</p>
-    ),
+    subtitle: (s) => <p className="text-base-content/70 text-xs">{vendorLabel(s.type)}</p>,
     badge: statusBadge,
     body: (s) => (
       <>
         {showSites ? (
           <div className="flex flex-row items-center justify-between gap-2">
-            <p className="text-sm text-[var(--color-muted-foreground)]">Sites</p>
-            <p className="text-sm text-[var(--color-muted-foreground)]">
-              {formatSiteScope(s.siteScope)}
-            </p>
+            <p className="text-base-content/70 text-sm">Sites</p>
+            <p className="text-base-content/70 text-sm">{formatSiteScope(s.siteScope)}</p>
           </div>
         ) : null}
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            {formatPricingRule(s.pricingRule)}
-          </p>
-          <p className="text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-base-content/70 text-sm">{formatPricingRule(s.pricingRule)}</p>
+          <p className="text-base-content/70 text-xs">
             {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
           </p>
         </div>

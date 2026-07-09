@@ -150,7 +150,7 @@ export function SidebarAppShell({
     <div className="flex h-screen overflow-hidden">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-[var(--color-bg-surface)] focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-[var(--color-text-primary)] focus:shadow-md focus:ring-2 focus:ring-[var(--color-border-focus)] focus:outline-none"
+        className="focus:text-base-content sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-[var(--color-base-100)] focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none"
       >
         Skip to content
       </a>
@@ -160,7 +160,7 @@ export function SidebarAppShell({
           <nav
             aria-label={mobileNavLabel}
             className={cn(
-              'flex h-full shrink-0 flex-col gap-1 border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-2 transition-[width] duration-150 ease-out',
+              'flex h-full shrink-0 flex-col gap-1 border-r border-[var(--color-base-300)] bg-[var(--color-base-100)] py-2 transition-[width] duration-150 ease-out',
               railExpanded.value ? 'w-52 items-stretch px-2' : 'w-14 items-center'
             )}
           >
@@ -174,7 +174,7 @@ export function SidebarAppShell({
             <PanelCollapsedContext.Provider value={panelCollapsed.value}>
               <div
                 className={cn(
-                  'flex h-full shrink-0 flex-col border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)] transition-[width] duration-150 ease-out',
+                  'flex h-full shrink-0 flex-col border-r border-[var(--color-base-300)] bg-[var(--color-base-100)] transition-[width] duration-150 ease-out',
                   panelCollapsed.value ? 'w-14' : 'w-60'
                 )}
               >
@@ -200,7 +200,7 @@ export function SidebarAppShell({
       </Drawer>
 
       <main className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--color-base-300)] bg-[var(--color-base-100)] px-4">
           <Button
             variant="ghost"
             size="sm"
@@ -236,7 +236,7 @@ export function SidebarAppShell({
             <aside
               aria-label={detailMobileLabel}
               style={{ flexBasis: `${detailWidth.value}%` }}
-              className="min-w-0 overflow-y-auto border-l border-[var(--color-border-default)] bg-[var(--color-bg-surface)]"
+              className="min-w-0 overflow-y-auto border-l border-[var(--color-base-300)] bg-[var(--color-base-100)]"
             >
               {detail}
             </aside>
@@ -315,7 +315,7 @@ function RailToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () =>
       aria-label={expanded ? 'Collapse navigation' : 'Expand navigation'}
       aria-expanded={expanded}
       className={cn(
-        'flex h-8 items-center rounded-md text-sm font-medium text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'text-base-content/50 hover:text-base-content flex h-8 items-center rounded-md text-sm font-medium transition-colors hover:bg-[var(--color-base-200)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         expanded ? 'w-full justify-start gap-2 px-2' : 'w-8 justify-center'
       )}
     >
@@ -373,7 +373,7 @@ function PanelToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle: ()
       aria-label={collapsed ? 'Show panel' : 'Hide panel'}
       aria-expanded={!collapsed}
       className={cn(
-        'flex h-9 shrink-0 items-center border-t border-[var(--color-border-default)] text-sm font-medium text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        'text-base-content/50 hover:text-base-content flex h-9 shrink-0 items-center border-t border-[var(--color-base-300)] text-sm font-medium transition-colors hover:bg-[var(--color-base-200)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         collapsed ? 'justify-center' : 'w-full justify-start gap-2 px-3'
       )}
     >
@@ -480,7 +480,7 @@ function DetailDragHandle({ width }: { width: DetailWidthState }) {
       aria-valuenow={width.value}
       onMouseDown={onMouseDown}
       onKeyDown={onKeyDown}
-      className="group relative w-1 shrink-0 cursor-col-resize bg-transparent hover:bg-[var(--color-border-default)] focus-visible:bg-[var(--color-border-focus)] focus-visible:outline-none"
+      className="group relative w-1 shrink-0 cursor-col-resize bg-transparent hover:bg-[var(--color-base-300)] focus-visible:bg-[var(--color-primary)] focus-visible:outline-none"
     >
       <div className="absolute inset-y-0 -right-1 -left-1" />
     </div>

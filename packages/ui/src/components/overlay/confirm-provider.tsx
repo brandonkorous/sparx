@@ -23,9 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './alert-dialog';
-import { buttonVariants } from '../primitives/button';
-import { colorClass } from '../_recipes/variants';
-import { cn } from '../../utils/cn';
+import { buttonClasses } from '../primitives/button';
 
 export interface ConfirmOptions {
   title: string;
@@ -69,7 +67,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
   );
 
   const tone = pending?.options.tone ?? 'danger';
-  const actionClass = cn(colorClass(tone), buttonVariants({ variant: 'solid', size: 'md' }));
+  const actionClass = buttonClasses({ color: tone, variant: 'solid', size: 'md' });
 
   return (
     <ConfirmContext.Provider value={confirm}>

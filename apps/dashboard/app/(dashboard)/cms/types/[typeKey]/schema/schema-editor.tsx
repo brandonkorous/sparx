@@ -9,10 +9,14 @@ import {
   CardActions,
   CardBody,
   Checkbox,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Label,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { Save, Trash2 } from 'lucide-react';
 import { deleteContentType, updateContentType } from '../../actions';
 
@@ -36,9 +40,19 @@ export function SchemaEditor({
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+  const [name, setName] = React.useState(initial.name);
+  const [pluralName, setPluralName] = React.useState(initial.pluralName);
   const [schemaText, setSchemaText] = React.useState(initial.schemaText);
   const [isSingleton, setIsSingleton] = React.useState(initial.isSingleton);
   const [hint, setHint] = React.useState<string | null>(null);
+
+  const v = useFieldValidation(
+    { name, plural_name: pluralName },
+    {
+      name: rule.required('Name is required.'),
+      plural_name: rule.required('Plural is required.'),
+    }
+  );
 
   React.useEffect(() => {
     try {
@@ -61,6 +75,7 @@ export function SchemaEditor({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const data = new FormData(e.currentTarget);
     data.set('schema', schemaText);
     // <Checkbox> writes to React state, not native FormData — inject value
@@ -113,50 +128,42 @@ export function SchemaEditor({
             <p className="opacity-70">The key is immutable. Name and labels can change freely.</p>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row gap-3">
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="name">
-                    Name{' '}
-                    <span className="text-error" aria-hidden="true">
-                      *
-                    </span>
-                  </Label>
-                  <Input id="name" name="name" defaultValue={initial.name} required aria-required />
-                </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="plural_name">
-                    Plural{' '}
-                    <span className="text-error" aria-hidden="true">
-                      *
-                    </span>
-                  </Label>
-                  <Input
-                    id="plural_name"
-                    name="plural_name"
-                    defaultValue={initial.pluralName}
-                    required
-                    aria-required
+                <Field {...v.field('name')} className="flex-1">
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    {...v.control('name')}
                   />
-                </div>
+                </Field>
+                <Field {...v.field('plural_name')} className="flex-1">
+                  <FieldLabel required>Plural</FieldLabel>
+                  <FieldControl
+                    name="plural_name"
+                    value={pluralName}
+                    onChange={(e) => setPluralName(e.target.value)}
+                    {...v.control('plural_name')}
+                  />
+                </Field>
               </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
+              <Field>
+                <FieldLabel>Description</FieldLabel>
+                <FieldControl
                   name="description"
                   defaultValue={initial.description}
-                  rows={2}
+                  render={<Textarea rows={2} />}
                 />
-              </div>
+              </Field>
               <div className="flex flex-row gap-3">
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="url_pattern">URL pattern</Label>
-                  <Input
-                    id="url_pattern"
+                <Field className="flex-1">
+                  <FieldLabel>URL pattern</FieldLabel>
+                  <FieldControl
                     name="url_pattern"
                     defaultValue={initial.urlPattern}
                     placeholder="/case-studies/{slug}"
                   />
-                </div>
+                </Field>
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="is_singleton">Singleton</Label>
                   <div className="flex flex-row items-center gap-2">
@@ -180,7 +187,7 @@ export function SchemaEditor({
               Same FieldDef union the platform validators use. Saving an invalid schema gets
               rejected with the validation error.
             </p>
-            <div className="flex flex-col gap-2">
+            <Field>
               <Textarea
                 value={schemaText}
                 onChange={(e) => setSchemaText(e.target.value)}
@@ -188,17 +195,17 @@ export function SchemaEditor({
                 className="font-mono text-xs"
                 aria-label="Schema JSON"
               />
-              {hint && (
-                <p
-                  className={`text-xs ${
-                    hint.startsWith('Looks good') ? 'text-base-content/70' : 'text-danger'
-                  }`}
-                  aria-live="polite"
-                >
-                  {hint}
-                </p>
-              )}
-            </div>
+              {hint &&
+                (hint.startsWith('Looks good') ? (
+                  <FieldStatus status="success" attached={false} aria-live="polite">
+                    {hint}
+                  </FieldStatus>
+                ) : (
+                  <FieldStatus status="error" attached={false} aria-live="polite">
+                    {hint}
+                  </FieldStatus>
+                ))}
+            </Field>
             <CardActions>
               <div className="flex flex-row items-center gap-3">
                 <Button
@@ -220,9 +227,9 @@ export function SchemaEditor({
                   Delete type
                 </Button>
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardActions>

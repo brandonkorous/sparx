@@ -34,10 +34,10 @@ export function SubmissionSidebar({
           <Stack gap={3}>
             {submission.email ? (
               <Stack direction="row" align="center" gap={2}>
-                <Mail className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+                <Mail className="text-base-content/50 h-4 w-4 shrink-0" />
                 <a
                   href={`mailto:${submission.email}`}
-                  className="break-all text-[var(--module-active)] hover:underline"
+                  className="text-module break-all hover:underline"
                 >
                   {submission.email}
                 </a>
@@ -49,11 +49,8 @@ export function SubmissionSidebar({
             )}
             {submission.phone ? (
               <Stack direction="row" align="center" gap={2}>
-                <Phone className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-                <a
-                  href={`tel:${submission.phone}`}
-                  className="text-[var(--module-active)] hover:underline"
-                >
+                <Phone className="text-base-content/50 h-4 w-4 shrink-0" />
+                <a href={`tel:${submission.phone}`} className="text-module hover:underline">
                   {submission.phone}
                 </a>
               </Stack>
@@ -132,7 +129,7 @@ export function SubmissionAttachments({ submission }: { submission: FormSubmissi
           {submission.attachments.map((att, i) => (
             <div
               key={`${att.filename}-${i}`}
-              className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-border-default)] px-3 py-2"
+              className="border-base-300 flex items-center justify-between gap-3 rounded-[var(--radius-md)] border px-3 py-2"
             >
               <Stack gap={0} className="min-w-0">
                 <Text size="sm" className="truncate font-medium">
@@ -175,7 +172,7 @@ export function DetailRow({
         {label}
       </Text>
       <Stack direction="row" align="center" gap={2}>
-        {icon ? <span className="text-[var(--color-text-tertiary)]">{icon}</span> : null}
+        {icon ? <span className="text-base-content/50">{icon}</span> : null}
         <Text size="sm" className="break-words">
           {value}
         </Text>

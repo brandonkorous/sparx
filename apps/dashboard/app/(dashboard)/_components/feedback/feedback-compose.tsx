@@ -140,7 +140,7 @@ export function FeedbackCompose({
       />
 
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-[var(--color-text-tertiary)]">
+        <p className="text-base-content/50 text-xs">
           Replies arrive by email and in your feedback history.
         </p>
         <Button type="submit" color="primary" loading={mutation.isPending} disabled={!body.trim()}>
@@ -171,19 +171,19 @@ function ContextChip({
     ['Version', context.appVersion],
   ];
   return (
-    <div className="rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2">
+    <div className="border-base-300 bg-base-200 rounded-md border px-3 py-2">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={expanded}
         className="flex w-full items-center justify-between gap-2 text-left"
       >
-        <span className="flex items-center gap-1.5 text-xs text-[var(--color-text-secondary)]">
+        <span className="text-base-content/70 flex items-center gap-1.5 text-xs">
           <MessageSquare className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">Sending from: {summary || context.route}</span>
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-[var(--color-text-tertiary)] transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`text-base-content/50 h-4 w-4 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
         />
       </button>
       {expanded && (
@@ -192,8 +192,8 @@ function ContextChip({
             .filter(([, v]) => v)
             .map(([k, v]) => (
               <React.Fragment key={k}>
-                <dt className="text-[var(--color-text-tertiary)]">{k}</dt>
-                <dd className="truncate text-[var(--color-text-secondary)]">{v}</dd>
+                <dt className="text-base-content/50">{k}</dt>
+                <dd className="text-base-content/70 truncate">{v}</dd>
               </React.Fragment>
             ))}
         </dl>

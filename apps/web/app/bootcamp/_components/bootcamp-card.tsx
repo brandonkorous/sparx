@@ -4,7 +4,7 @@
 // pill, seats-remaining when capped, title, dates + location, and the host
 // partner with their tier badge. Accent = the sparx primary brand color.
 
-import { Badge } from '@sparx/ui';
+import { Badge } from '@wizeworks/silicaui-react';
 import { TIER_META } from '@/lib/partners';
 import {
   bootcampDates,
@@ -31,8 +31,8 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
         flexDirection: 'column',
         gap: '14px',
         width: '100%',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
         textDecoration: 'none',
@@ -53,8 +53,8 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
             fontSize: '11px',
             padding: '4px 10px',
             borderRadius: '9999px',
-            backgroundColor: 'var(--sparx-primary-tint)',
-            color: 'var(--sparx-primary-hover)',
+            backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
+            color: 'var(--color-primary)',
           }}
         >
           {FORMAT_LABEL[bootcamp.format]}
@@ -64,13 +64,21 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
             style={{
               fontFamily: SANS,
               fontSize: '12px',
-              color: seats.full ? 'var(--color-warning-text)' : 'var(--color-text-tertiary)',
+              color: seats.full
+                ? 'var(--color-warning)'
+                : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {seats.text}
           </span>
         ) : (
-          <span style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: SANS,
+              fontSize: '12px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {price}
           </span>
         )}
@@ -84,7 +92,7 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
           fontSize: '19px',
           letterSpacing: '-0.015em',
           lineHeight: '25px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {bootcamp.title}
@@ -97,7 +105,7 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
           gap: '5px',
           fontFamily: SANS,
           fontSize: '13.5px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         <span>{bootcampDates(bootcamp)}</span>
@@ -111,10 +119,10 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
           gap: '8px',
           marginTop: 'auto',
           paddingTop: '14px',
-          borderTop: '1px solid var(--color-border-default)',
+          borderTop: '1px solid var(--color-base-300)',
           fontFamily: SANS,
           fontSize: '13px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         <Badge color={tier.color} variant="soft" size="sm">

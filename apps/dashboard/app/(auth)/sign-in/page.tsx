@@ -3,11 +3,18 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Input, Label } from 'silicaui-react';
-import { PasswordInput } from '@sparx/ui';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  PasswordInput,
+} from '@wizeworks/silicaui-react';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
 import { SocialAuthSection } from '../_components/social-auth';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 /** Only allow same-origin relative paths as a post-login destination — never a
  *  protocol-relative (`//host`) or absolute URL, which would be an open
@@ -37,9 +44,18 @@ function SignInForm() {
   const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
+  const v = useFieldValidation(
+    { email, password },
+    {
+      email: rules(rule.required('Enter your email.'), rule.email()),
+      password: rule.required('Enter your password.'),
+    }
+  );
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     setSubmitting(true);
 
     const result = await authClient.signIn.email({ email, password });
@@ -74,39 +90,38 @@ function SignInForm() {
 
         <form onSubmit={onSubmit} noValidate>
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
+            <Field {...v.field('email')}>
+              <FieldLabel required>Email</FieldLabel>
+              <FieldControl
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                {...v.control('email')}
               />
-            </div>
-            <div className="flex flex-col gap-2">
+            </Field>
+            <Field {...v.field('password')}>
               <div className="flex flex-row items-center justify-between gap-4">
-                <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password">
-                  <p className="text-base-content/70 text-xs">Forgot password?</p>
+                <FieldLabel required>Password</FieldLabel>
+                <Link href="/forgot-password" className="text-base-content/70 text-xs">
+                  Forgot password?
                 </Link>
               </div>
-              <PasswordInput
-                id="password"
+              <FieldControl
                 name="password"
                 autoComplete="current-password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                {...v.control('password')}
+                render={<PasswordInput />}
               />
-            </div>
+            </Field>
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
 
             <Button type="submit" disabled={submitting} loading={submitting}>

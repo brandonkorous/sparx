@@ -9,7 +9,7 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast, useConfirm } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Check, Link2, Plug, RefreshCw } from 'lucide-react';
 
 import {
@@ -128,9 +128,7 @@ export function SearchConsoleControl({
 
   if (!configured) {
     return (
-      <span className="text-xs text-[var(--color-text-tertiary)]">
-        Search Console connection coming soon
-      </span>
+      <span className="text-base-content/50 text-xs">Search Console connection coming soon</span>
     );
   }
 
@@ -172,7 +170,7 @@ export function SearchConsoleControl({
             {pending === 'sites' ? 'Loading…' : 'Choose a site'}
           </Button>
         ) : sites.length === 0 ? (
-          <span className="text-xs text-[var(--color-text-tertiary)]">
+          <span className="text-base-content/50 text-xs">
             No verified sites on this Google account.
           </span>
         ) : (
@@ -198,10 +196,7 @@ export function SearchConsoleControl({
   return (
     <div className="flex items-center gap-2">
       {status === 'error' && connection?.lastError ? (
-        <span
-          className="max-w-[14rem] truncate text-xs text-[var(--color-danger-text)]"
-          title={connection.lastError}
-        >
+        <span className="text-danger max-w-[14rem] truncate text-xs" title={connection.lastError}>
           {connection.lastError}
         </span>
       ) : null}

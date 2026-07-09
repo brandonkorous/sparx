@@ -4,7 +4,7 @@
 // team for changes; the Stripe portal door stays open for invoices + payment method.
 
 import { Building2 } from 'lucide-react';
-import { Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { ManageBillingButton } from './manage-billing-button';
 

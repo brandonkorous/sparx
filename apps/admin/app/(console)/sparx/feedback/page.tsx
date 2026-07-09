@@ -157,7 +157,7 @@ function Pager({
   if (pages <= 1) return null;
   const from = (page - 1) * perPage + 1;
   const to = Math.min(page * perPage, total);
-  const linkClass = 'text-sm font-medium text-[var(--module-active-text)] hover:underline';
+  const linkClass = 'text-sm font-medium text-module hover:underline';
   return (
     <Stack direction="row" align="center" justify="between">
       <Text size="sm" variant="muted">

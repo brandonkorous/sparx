@@ -70,7 +70,7 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
                     <label
                       key={meta.scope}
                       htmlFor={id}
-                      className="flex cursor-pointer items-start gap-3 rounded-md border border-[var(--color-border)] p-3"
+                      className="border-base-300 flex cursor-pointer items-start gap-3 rounded-md border p-3"
                     >
                       <Checkbox
                         id={id}

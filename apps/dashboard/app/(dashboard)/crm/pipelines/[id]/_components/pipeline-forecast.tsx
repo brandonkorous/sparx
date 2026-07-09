@@ -2,7 +2,7 @@
 // month, computed by dealService.forecast (which the MCP get_forecast tool
 // also wraps, so REST/UI/AI all see identical numbers).
 
-import { Badge, Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 import { Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -72,9 +72,9 @@ export async function PipelineForecast({ pipelineId }: PipelineForecastProps) {
                   </div>
                   <p className="text-sm tabular-nums">${b.weightedValue.toLocaleString()}</p>
                 </div>
-                <div className="h-2 rounded-full bg-[var(--color-surface-subtle)]">
+                <div className="bg-base-200 h-2 rounded-full">
                   <div
-                    className="h-full rounded-full bg-[var(--module-active)]"
+                    className="bg-module h-full rounded-full"
                     style={{
                       width: `${maxBucket > 0 ? (b.weightedValue / maxBucket) * 100 : 0}%`,
                     }}

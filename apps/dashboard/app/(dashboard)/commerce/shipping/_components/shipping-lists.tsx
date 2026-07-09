@@ -1,7 +1,7 @@
 'use client';
 
 import { Globe2, Layers, Plus } from 'lucide-react';
-import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
@@ -194,7 +194,7 @@ const zoneName = (z: ShippingZoneRow) => (
     href={`/commerce/shipping/zones/${z.id}`}
     entityType="shipping-zone"
     entityId={z.id}
-    className="font-medium hover:text-[var(--module-active)]"
+    className="hover:text-module font-medium"
   >
     {z.name}
   </EntityRowLink>
@@ -243,7 +243,7 @@ const profileName = (p: ShippingProfileRow) => (
     href={`/commerce/shipping/profiles/${p.id}`}
     entityType="shipping-profile"
     entityId={p.id}
-    className="font-medium hover:text-[var(--module-active)]"
+    className="hover:text-module font-medium"
   >
     {p.name}
   </EntityRowLink>

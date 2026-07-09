@@ -5,7 +5,7 @@
 // card renders blueprints, themes, components, and integrations alike.
 
 import Link from 'next/link';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import type { MarketplaceListing } from '../_types';
 
 import { ListingCardActions } from './listing-card-actions';
@@ -61,7 +61,7 @@ export function ListingCard({
           <img
             src={preview}
             alt={`${item.name} preview`}
-            className="aspect-[16/10] w-full border-b border-[var(--color-border)] object-cover object-top"
+            className="border-base-300 aspect-[16/10] w-full border-b object-cover object-top"
           />
         </Link>
       ) : null}

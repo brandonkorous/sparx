@@ -27,7 +27,7 @@ import {
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -52,7 +52,13 @@ const TWO_COL = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.9fr_1fr]';
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
 
 // Teal donut palette (CMS module color + tints) for the by-type split.
-const TYPE_COLORS = ['module', 'var(--module-active-tint)', '#99ddd5', '#5eccc0', '#d6f5f0'];
+const TYPE_COLORS = [
+  'module',
+  'color-mix(in oklch, var(--color-module) 15%, transparent)',
+  '#99ddd5',
+  '#5eccc0',
+  '#d6f5f0',
+];
 
 const STATUS_VERB: Record<string, string> = {
   draft: 'saved a draft of',
@@ -342,14 +348,14 @@ export default async function CmsPage() {
                   valueFormat="number"
                   ariaLabel="Entries published per day, last 14 days"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {[
                     ['Published · 14d', cadence ? fmtNumber(cadence.totals.publishedCount) : '—'],
                     ['Busiest day', cadence ? `${fmtNumber(busiest)} posts` : '—'],
                     ['Scheduled ahead', summary ? fmtNumber(summary.scheduledUpcoming) : '—'],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -375,12 +381,10 @@ export default async function CmsPage() {
                   ariaLabel="Entries by content type"
                 />
                 {topType ? (
-                  <div className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                  <div className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
                     Most content ·{' '}
-                    <span className="font-medium text-[var(--color-text-secondary)]">
-                      {topType.name}
-                    </span>{' '}
-                    — {fmtNumber(topType.count)} entries
+                    <span className="text-base-content/70 font-medium">{topType.name}</span> —{' '}
+                    {fmtNumber(topType.count)} entries
                   </div>
                 ) : null}
               </>
@@ -417,7 +421,7 @@ export default async function CmsPage() {
                       <td className="font-medium">
                         <Link
                           href={`/cms/content/${c.id}`}
-                          className="hover:text-[var(--module-active)] hover:underline"
+                          className="hover:text-module hover:underline"
                         >
                           {c.title}
                         </Link>
@@ -427,7 +431,7 @@ export default async function CmsPage() {
                           {c.typeName}
                         </Badge>
                       </td>
-                      <td className="text-right text-[var(--color-text-secondary)] tabular-nums">
+                      <td className="text-base-content/70 text-right tabular-nums">
                         {shortDate(c.publishedAt)}
                       </td>
                     </tr>
@@ -481,7 +485,7 @@ export default async function CmsPage() {
           description="Your most-viewed published content · last 30 days"
           right={
             contentViewsTotal != null ? (
-              <span className="text-xs text-[var(--color-text-tertiary)]">
+              <span className="text-base-content/50 text-xs">
                 {fmtNumber(contentViewsTotal)} total views
               </span>
             ) : undefined
@@ -508,9 +512,7 @@ export default async function CmsPage() {
                       </Badge>
                     </td>
                     <td className="text-right tabular-nums">{c.views}</td>
-                    <td className="text-right text-[var(--color-text-secondary)] tabular-nums">
-                      {c.visitors}
-                    </td>
+                    <td className="text-base-content/70 text-right tabular-nums">{c.visitors}</td>
                   </tr>
                 ))}
               </tbody>
@@ -554,7 +556,7 @@ export default async function CmsPage() {
                   <TimelineItem key={a.id} showConnector={i < recent.activity.length - 1}>
                     <TimelineTitle>
                       <span className="font-medium">{a.author ?? 'Someone'}</span>{' '}
-                      <span className="font-normal text-[var(--color-text-secondary)]">
+                      <span className="text-base-content/70 font-normal">
                         {STATUS_VERB[a.status] ?? 'updated'}
                       </span>{' '}
                       <span className="font-medium">{a.title}</span>

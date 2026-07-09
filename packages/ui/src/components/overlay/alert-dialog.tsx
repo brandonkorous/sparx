@@ -3,8 +3,7 @@
 import * as React from 'react';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { cn } from '../../utils/cn';
-import { buttonVariants } from '../primitives/button';
-import { colorClass } from '../_recipes/variants';
+import { buttonClasses } from '../primitives/button';
 
 // AlertDialog is for destructive confirms — no close button, no outside-click dismiss.
 // Always pair an explicit Cancel + Action via AlertDialogCancel / AlertDialogAction.
@@ -40,7 +39,7 @@ export const AlertDialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
-        'w-full max-w-md rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6 shadow-md',
+        'w-full max-w-md rounded-lg border border-[var(--color-base-300)] bg-[var(--color-base-100)] p-6 shadow-md',
         'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
         className
@@ -79,7 +78,7 @@ export const AlertDialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Title
     ref={ref}
-    className={cn('text-lg leading-tight font-medium text-[var(--color-text-primary)]', className)}
+    className={cn('text-base-content text-lg leading-tight font-medium', className)}
     {...props}
   />
 ));
@@ -91,7 +90,7 @@ export const AlertDialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-[var(--color-text-secondary)]', className)}
+    className={cn('text-base-content/70 text-sm', className)}
     {...props}
   />
 ));
@@ -103,11 +102,7 @@ export const AlertDialogAction = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(
-      colorClass('danger'),
-      buttonVariants({ variant: 'solid', size: 'md' }),
-      className
-    )}
+    className={cn(buttonClasses({ color: 'danger', variant: 'solid', size: 'md' }), className)}
     {...props}
   />
 ));
@@ -119,11 +114,7 @@ export const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    className={cn(
-      colorClass('neutral'),
-      buttonVariants({ variant: 'outline', size: 'md' }),
-      className
-    )}
+    className={cn(buttonClasses({ color: 'neutral', variant: 'outline', size: 'md' }), className)}
     {...props}
   />
 ));

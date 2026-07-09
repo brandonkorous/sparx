@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   SelectionList,
   type BulkAction,
@@ -85,7 +85,7 @@ export function QaList({ rows, view }: QaListProps) {
     q.productTitle ? (
       <Link
         href={`/commerce/products/${q.productId}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {q.productTitle}
       </Link>
@@ -94,7 +94,7 @@ export function QaList({ rows, view }: QaListProps) {
     );
 
   const columns: SelectionColumn<DisplayRow>[] = [
-    { header: 'Question', cell: (q) => questionLink(q, 'hover:text-[var(--module-active)]') },
+    { header: 'Question', cell: (q) => questionLink(q, 'hover:text-module') },
     { header: 'Product', cell: productCell },
     { header: 'Author', cell: (q) => <>{q.authorLabel}</> },
     { header: 'Answers', cell: (q) => <>{q.answerCount ?? '—'}</> },
@@ -103,7 +103,7 @@ export function QaList({ rows, view }: QaListProps) {
   ];
 
   const card: SelectionCard<DisplayRow> = {
-    title: (q) => questionLink(q, 'truncate hover:text-[var(--module-active)]'),
+    title: (q) => questionLink(q, 'truncate hover:text-module'),
     subtitle: (q) => (
       <p className="text-base-content/70 text-xs">{q.productTitle ?? 'Deleted product'}</p>
     ),

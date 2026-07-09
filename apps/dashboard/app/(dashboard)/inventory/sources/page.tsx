@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { Database } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';

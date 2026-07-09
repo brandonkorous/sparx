@@ -40,7 +40,7 @@ function contentsHint(item: MarketplaceListing): string | null {
 }
 
 export function ListingCard({ item }: { item: MarketplaceListing }) {
-  const accent = item.accent ?? getCategory(item.category)?.accent ?? 'var(--sparx-primary)';
+  const accent = item.accent ?? getCategory(item.category)?.accent ?? 'var(--color-primary)';
   const tag = listingTag(item);
   const hint = contentsHint(item);
   const preview = item.media.find((m) => m.kind === 'image')?.url ?? item.media[0]?.url;
@@ -52,8 +52,8 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '8px',
         overflow: 'hidden',
         textDecoration: 'none',
@@ -65,8 +65,8 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
         style={{
           aspectRatio: '16 / 10',
           width: '100%',
-          backgroundColor: 'var(--color-bg-page)',
-          borderBottom: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-200)',
+          borderBottom: '1px solid var(--color-base-300)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -124,7 +124,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
             fontSize: '18px',
             letterSpacing: '-0.015em',
             lineHeight: '24px',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
             margin: 0,
           }}
         >
@@ -137,7 +137,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
               fontFamily: 'var(--font-sans)',
               fontSize: '14px',
               lineHeight: '21px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               paddingTop: '6px',
               margin: 0,
             }}
@@ -151,7 +151,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '12px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               paddingTop: '12px',
               margin: 0,
             }}
@@ -177,7 +177,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
               gap: '6px',
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {item.publisher.displayName}
@@ -188,7 +188,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '13px',
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-base-content)',
             }}
           >
             {priceLabel(item.price)}

@@ -9,11 +9,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
   Label,
   Loading,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { CheckCircle2, Globe, Lock } from 'lucide-react';
 import type { Property } from '@/lib/sites';
 import { purchaseDomain, type DomainSuggestion, type PurchaseResult } from './actions';
@@ -108,13 +111,46 @@ export function PurchaseDialog({
   const [activeStep, setActiveStep] = React.useState(0);
   const [result, setResult] = React.useState<PurchaseResult | null>(null);
 
+  const EMPTY_CONTACT = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'US',
+  };
+  const [contact, setContact] = React.useState(EMPTY_CONTACT);
+  const set = (key: keyof typeof EMPTY_CONTACT) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setContact((c) => ({ ...c, [key]: e.target.value }));
+
+  const v = useFieldValidation(contact, {
+    firstName: rule.required('Enter a first name.'),
+    lastName: rule.required('Enter a last name.'),
+    email: rules(rule.required('Enter an email.'), rule.email()),
+    phone: rule.required('Enter a phone number.'),
+    address1: rule.required('Enter a street address.'),
+    city: rule.required('Enter a city.'),
+    state: rule.required('Enter a state or region.'),
+    postalCode: rule.required('Enter a postal code.'),
+    country: rules(
+      rule.required('Enter a country code.'),
+      rule.minLength(2, 'Use the 2-letter country code.')
+    ),
+  });
+
   // Reset state when dialog opens with a new suggestion
   React.useEffect(() => {
     if (open) {
       setStep('form');
       setActiveStep(0);
       setResult(null);
+      setContact(EMPTY_CONTACT);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, suggestion?.domain]);
 
   // Animate through progress steps during purchase
@@ -129,6 +165,7 @@ export function PurchaseDialog({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!v.validate()) return;
 
     // Select mode (onboarding): capture the choice and hand it back — no charge,
     // no registration. The purchase happens later, at the Launch step.
@@ -170,7 +207,7 @@ export function PurchaseDialog({
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <div>
           <DialogTitle className="flex items-center gap-2">
-            <Globe className="size-5 text-[var(--color-primary)]" />
+            <Globe className="text-primary size-5" />
             {step === 'success'
               ? 'Domain registered!'
               : `${mode === 'select' ? 'Add' : 'Purchase'} ${suggestion?.domain ?? ''}`}
@@ -181,7 +218,7 @@ export function PurchaseDialog({
         {step === 'success' && result && (
           <div className="px-6 pb-2">
             <div className="flex flex-col items-center gap-4 py-6 text-center">
-              <CheckCircle2 className="size-12 text-[var(--color-success-text)]" />
+              <CheckCircle2 className="text-success size-12" />
               <div>
                 <p className="text-lg font-medium">{result.domain.host}</p>
                 <p className="text-base-content/70 mt-1 text-sm">
@@ -207,13 +244,13 @@ export function PurchaseDialog({
                 const current = i === activeStep;
                 return (
                   <div key={label} className="flex items-center gap-3">
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)]">
+                    <span className="border-base-300 flex size-7 shrink-0 items-center justify-center rounded-full border">
                       {done ? (
-                        <CheckCircle2 className="size-4 text-[var(--color-success-text)]" />
+                        <CheckCircle2 className="text-success size-4" />
                       ) : current ? (
                         <Loading className="size-4" />
                       ) : (
-                        <span className="size-2 rounded-full bg-[var(--border)]" />
+                        <span className="bg-base-300 size-2 rounded-full" />
                       )}
                     </span>
                     <p
@@ -241,7 +278,7 @@ export function PurchaseDialog({
             <div className="px-6 pb-2">
               <div className="flex flex-col gap-6">
                 {/* Pricing summary */}
-                <div className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
+                <div className="border-base-300 bg-base-200 flex items-center justify-between rounded-lg border px-4 py-3">
                   <div className="flex flex-col gap-1">
                     <p className="font-medium">{suggestion.domain}</p>
                     <p className="text-base-content/70 text-sm">
@@ -317,79 +354,122 @@ export function PurchaseDialog({
                   </p>
                   <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label htmlFor="pd-first">First name</Label>
-                        <Input id="pd-first" name="firstName" placeholder="Jane" required />
-                      </div>
-                      <div>
-                        <Label htmlFor="pd-last">Last name</Label>
-                        <Input id="pd-last" name="lastName" placeholder="Smith" required />
-                      </div>
+                      <Field {...v.field('firstName')}>
+                        <FieldLabel required>First name</FieldLabel>
+                        <FieldControl
+                          name="firstName"
+                          placeholder="Jane"
+                          value={contact.firstName}
+                          onChange={set('firstName')}
+                          {...v.control('firstName')}
+                        />
+                      </Field>
+                      <Field {...v.field('lastName')}>
+                        <FieldLabel required>Last name</FieldLabel>
+                        <FieldControl
+                          name="lastName"
+                          placeholder="Smith"
+                          value={contact.lastName}
+                          onChange={set('lastName')}
+                          {...v.control('lastName')}
+                        />
+                      </Field>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label htmlFor="pd-email">Email</Label>
-                        <Input
-                          id="pd-email"
+                      <Field {...v.field('email')}>
+                        <FieldLabel required>Email</FieldLabel>
+                        <FieldControl
                           name="email"
                           type="email"
                           placeholder="jane@example.com"
-                          required
+                          value={contact.email}
+                          onChange={set('email')}
+                          {...v.control('email')}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="pd-phone">Phone</Label>
-                        <Input
-                          id="pd-phone"
+                      </Field>
+                      <Field {...v.field('phone')}>
+                        <FieldLabel required>Phone</FieldLabel>
+                        <FieldControl
                           name="phone"
                           type="tel"
                           placeholder="+1 555 000 0000"
-                          required
+                          value={contact.phone}
+                          onChange={set('phone')}
+                          {...v.control('phone')}
                         />
-                      </div>
+                      </Field>
                     </div>
-                    <div>
-                      <Label htmlFor="pd-addr1">Address</Label>
-                      <Input id="pd-addr1" name="address1" placeholder="123 Main St" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="pd-addr2">Address line 2 (optional)</Label>
-                      <Input id="pd-addr2" name="address2" placeholder="Suite 400" />
-                    </div>
+                    <Field {...v.field('address1')}>
+                      <FieldLabel required>Address</FieldLabel>
+                      <FieldControl
+                        name="address1"
+                        placeholder="123 Main St"
+                        value={contact.address1}
+                        onChange={set('address1')}
+                        {...v.control('address1')}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Address line 2 (optional)</FieldLabel>
+                      <FieldControl
+                        name="address2"
+                        placeholder="Suite 400"
+                        value={contact.address2}
+                        onChange={set('address2')}
+                      />
+                    </Field>
                     <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <Label htmlFor="pd-city">City</Label>
-                        <Input id="pd-city" name="city" placeholder="Anytown" required />
-                      </div>
-                      <div>
-                        <Label htmlFor="pd-state">State / region</Label>
-                        <Input id="pd-state" name="state" placeholder="CA" required />
-                      </div>
-                      <div>
-                        <Label htmlFor="pd-zip">Postal code</Label>
-                        <Input id="pd-zip" name="postalCode" placeholder="90210" required />
-                      </div>
+                      <Field {...v.field('city')}>
+                        <FieldLabel required>City</FieldLabel>
+                        <FieldControl
+                          name="city"
+                          placeholder="Anytown"
+                          value={contact.city}
+                          onChange={set('city')}
+                          {...v.control('city')}
+                        />
+                      </Field>
+                      <Field {...v.field('state')}>
+                        <FieldLabel required>State / region</FieldLabel>
+                        <FieldControl
+                          name="state"
+                          placeholder="CA"
+                          value={contact.state}
+                          onChange={set('state')}
+                          {...v.control('state')}
+                        />
+                      </Field>
+                      <Field {...v.field('postalCode')}>
+                        <FieldLabel required>Postal code</FieldLabel>
+                        <FieldControl
+                          name="postalCode"
+                          placeholder="90210"
+                          value={contact.postalCode}
+                          onChange={set('postalCode')}
+                          {...v.control('postalCode')}
+                        />
+                      </Field>
                     </div>
-                    <div>
-                      <Label htmlFor="pd-country">Country (2-letter code)</Label>
-                      <Input
-                        id="pd-country"
+                    <Field {...v.field('country')}>
+                      <FieldLabel required>Country (2-letter code)</FieldLabel>
+                      <FieldControl
                         name="country"
                         placeholder="US"
                         maxLength={2}
                         className="uppercase"
-                        defaultValue="US"
-                        required
+                        value={contact.country}
+                        onChange={set('country')}
+                        {...v.control('country')}
                       />
-                    </div>
+                    </Field>
                   </div>
                 </div>
 
                 {/* Payment notice — mode-aware. Select mode (onboarding) charges
                     at Launch, not now; purchase mode (Settings) charges on submit. */}
-                <div className="rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
+                <div className="border-base-300 bg-base-200 rounded-lg border px-4 py-3">
                   <p className="text-base-content/70 text-sm">
-                    <strong className="font-medium text-[var(--color-text)]">Billing:</strong>{' '}
+                    <strong className="text-base-content font-medium">Billing:</strong>{' '}
                     {mode === 'select' ? (
                       <>
                         You won&apos;t be charged now. This domain is registered and billed (

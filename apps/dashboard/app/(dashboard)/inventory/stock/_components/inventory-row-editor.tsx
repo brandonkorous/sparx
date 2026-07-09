@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Input } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 
 import { adjustInventoryAction, setReorderPolicyAction } from '../../_lib/inventory-actions';
 
@@ -50,25 +58,58 @@ export function InventoryRowControls({
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
+  const [delta, setDelta] = React.useState('0');
+  const [reason, setReason] = React.useState('manual');
+  const [note, setNote] = React.useState('');
+  const [reorderPoint, setReorderPoint] = React.useState(row.reorderPoint?.toString() ?? '0');
+  const [reorderQuantity, setReorderQuantity] = React.useState(
+    row.reorderQuantity?.toString() ?? ''
+  );
+  const [leadTimeDays, setLeadTimeDays] = React.useState(row.leadTimeDays?.toString() ?? '');
+
+  const adjustV = useFieldValidation(
+    { delta },
+    {
+      delta: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n === 0) return 'Delta must be a non-zero number.';
+        return null;
+      },
+    }
+  );
+
+  const reorderV = useFieldValidation(
+    { reorderPoint, reorderQuantity, leadTimeDays },
+    {
+      reorderPoint: (val) => {
+        const n = Number(String(val).trim());
+        return Number.isFinite(n) && n >= 0 ? null : 'Reorder point must be 0 or higher.';
+      },
+      reorderQuantity: (val) => {
+        const n = Number(String(val).trim());
+        return Number.isFinite(n) && n > 0 ? null : 'Reorder quantity must be positive.';
+      },
+      leadTimeDays: (val) => {
+        const s = String(val).trim();
+        if (s === '') return null;
+        const n = Number(s);
+        return Number.isFinite(n) && n >= 0 ? null : 'Lead time must be 0 or higher.';
+      },
+    }
+  );
+
   function onAdjust(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const deltaStr = stringOr(form.get('delta'), '');
-    const delta = Number(deltaStr);
-    if (!Number.isFinite(delta) || delta === 0) {
-      setError('Delta must be a non-zero number');
-      return;
-    }
-    const reason = stringOr(form.get('reason'), 'manual');
-    const note = stringOr(form.get('note'), '');
+    if (!adjustV.validate()) return;
     startTransition(async () => {
       const result = await adjustInventoryAction({
         variantId: row.variantId,
         warehouseId,
-        delta,
+        delta: Number(delta.trim()),
         reason,
-        ...(note ? { note } : {}),
+        ...(note.trim() ? { note: note.trim() } : {}),
       });
       if (!result.ok) {
         setError(result.error.message);
@@ -82,28 +123,15 @@ export function InventoryRowControls({
   function onSetReorder(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const reorderPoint = Number(stringOr(form.get('reorderPoint'), '0'));
-    const reorderQuantity = Number(stringOr(form.get('reorderQuantity'), '0'));
-    const leadTimeDaysStr = stringOr(form.get('leadTimeDays'), '');
-    if (!Number.isFinite(reorderPoint) || reorderPoint < 0) {
-      setError('Reorder point must be 0 or higher');
-      return;
-    }
-    if (!Number.isFinite(reorderQuantity) || reorderQuantity <= 0) {
-      setError('Reorder quantity must be positive');
-      return;
-    }
+    if (!reorderV.validate()) return;
     const input: Record<string, unknown> = {
       variantId: row.variantId,
       warehouseId,
-      reorderPoint,
-      reorderQuantity,
+      reorderPoint: Number(reorderPoint.trim()),
+      reorderQuantity: Number(reorderQuantity.trim()),
     };
-    if (leadTimeDaysStr) {
-      const days = Number(leadTimeDaysStr);
-      if (Number.isFinite(days) && days >= 0) input.leadTimeDays = days;
-    }
+    const leadTrim = leadTimeDays.trim();
+    if (leadTrim) input.leadTimeDays = Number(leadTrim);
     startTransition(async () => {
       const result = await setReorderPolicyAction(input);
       if (!result.ok) {
@@ -135,30 +163,41 @@ export function InventoryRowControls({
       </div>
 
       {mode === 'adjust' && (
-        <form onSubmit={onAdjust} className="rounded bg-[var(--color-bg-subtle)] p-3">
+        <form onSubmit={onAdjust} className="bg-base-200 rounded p-3">
           <div className="flex flex-row flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Delta (±)</p>
-              <Input name="delta" defaultValue="0" className="w-[6rem]" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Reason</p>
-              <select
-                name="reason"
-                defaultValue="manual"
-                className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-              >
-                {REASONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Note (optional)</p>
-              <Input name="note" placeholder="e.g. damaged in transit, recount after audit" />
-            </div>
+            <Field className="w-[6rem]" {...adjustV.field('delta')}>
+              <FieldLabel>Delta (±)</FieldLabel>
+              <FieldControl
+                type="number"
+                value={delta}
+                onChange={(e) => setDelta(e.target.value)}
+                {...adjustV.control('delta')}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Reason</FieldLabel>
+              <FieldControl
+                render={
+                  <NativeSelect>
+                    {REASONS.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                }
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </Field>
+            <Field className="min-w-[14rem] flex-1">
+              <FieldLabel>Note (optional)</FieldLabel>
+              <FieldControl
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="e.g. damaged in transit, recount after audit"
+              />
+            </Field>
             <div className="flex flex-row gap-2">
               <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                 Cancel
@@ -168,37 +207,53 @@ export function InventoryRowControls({
               </Button>
             </div>
           </div>
-          {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
+          {error && (
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-2"
+            >
+              {error}
+            </FieldStatus>
+          )}
         </form>
       )}
 
       {mode === 'reorder' && (
-        <form onSubmit={onSetReorder} className="rounded bg-[var(--color-bg-subtle)] p-3">
+        <form onSubmit={onSetReorder} className="bg-base-200 rounded p-3">
           <div className="flex flex-row flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Reorder point</p>
-              <Input
-                name="reorderPoint"
-                defaultValue={row.reorderPoint?.toString() ?? '0'}
-                className="w-[6rem]"
+            <Field className="w-[6rem]" {...reorderV.field('reorderPoint')}>
+              <FieldLabel>Reorder point</FieldLabel>
+              <FieldControl
+                type="number"
+                min={0}
+                value={reorderPoint}
+                onChange={(e) => setReorderPoint(e.target.value)}
+                {...reorderV.control('reorderPoint')}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Reorder qty</p>
-              <Input
-                name="reorderQuantity"
-                defaultValue={row.reorderQuantity?.toString() ?? ''}
-                className="w-[6rem]"
+            </Field>
+            <Field className="w-[6rem]" {...reorderV.field('reorderQuantity')}>
+              <FieldLabel>Reorder qty</FieldLabel>
+              <FieldControl
+                type="number"
+                min={0}
+                value={reorderQuantity}
+                onChange={(e) => setReorderQuantity(e.target.value)}
+                {...reorderV.control('reorderQuantity')}
               />
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-xs">Lead time (days)</p>
-              <Input
-                name="leadTimeDays"
-                defaultValue={row.leadTimeDays?.toString() ?? ''}
-                className="w-[8rem]"
+            </Field>
+            <Field className="w-[8rem]" {...reorderV.field('leadTimeDays')}>
+              <FieldLabel>Lead time (days)</FieldLabel>
+              <FieldControl
+                type="number"
+                min={0}
+                value={leadTimeDays}
+                onChange={(e) => setLeadTimeDays(e.target.value)}
+                {...reorderV.control('leadTimeDays')}
               />
-            </div>
+            </Field>
             <div className="flex flex-row gap-2">
               <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                 Cancel
@@ -208,13 +263,19 @@ export function InventoryRowControls({
               </Button>
             </div>
           </div>
-          {error && <p className="mt-2 text-xs text-[var(--color-danger)]">{error}</p>}
+          {error && (
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-2"
+            >
+              {error}
+            </FieldStatus>
+          )}
         </form>
       )}
     </div>
   );
-}
-
-function stringOr(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

@@ -5,7 +5,7 @@
 // invoicing is BUNDLED_FREE with B2B, this endpoint answers for any B2B tenant
 // with no standalone purchase. Presentational only — the page fetches the report.
 
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 
 export interface AgingBucket {
   key: string;
@@ -45,13 +45,13 @@ export function ArAgingSummary({ aging }: { aging: AgingReport }) {
               return (
                 <div
                   key={b.key}
-                  className="flex flex-col gap-0.5 rounded-lg border border-[var(--color-border-default)] p-3"
+                  className="border-base-300 flex flex-col gap-0.5 rounded-lg border p-3"
                 >
                   <p className="text-base-content/70 text-xs">{b.label}</p>
                   <p
                     className={
                       pastDue
-                        ? 'text-lg font-medium text-[var(--color-danger)] tabular-nums'
+                        ? 'text-danger text-lg font-medium tabular-nums'
                         : 'text-lg font-medium tabular-nums'
                     }
                   >

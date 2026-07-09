@@ -4,7 +4,15 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { createSourceLinkAction, removeSourceLinkAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
@@ -81,7 +89,7 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
   }
 
   return (
-    <div className="flex flex-row items-center justify-between gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row items-center justify-between gap-3 rounded border px-3 py-2">
       <div className="flex min-w-0 flex-row flex-wrap items-center gap-3">
         <p className="font-mono text-sm">{externalRef(link.externalSku, link.externalLocation)}</p>
         {link.isStale ? (
@@ -111,7 +119,7 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
             buffer {link.safetyBuffer}
           </Badge>
         ) : null}
-        {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
+        {error ? <p className="text-danger text-xs">{error}</p> : null}
         <Button variant="ghost" size="sm" onClick={remove} disabled={pending}>
           <Trash2 className="size-4" />
         </Button>
@@ -171,7 +179,7 @@ function AddMappingForm({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex flex-col gap-3 rounded border border-dashed p-3">
       <div className="flex flex-row flex-wrap items-end gap-3">
         <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
           <Label htmlFor="map-external-sku">External SKU</Label>
@@ -222,7 +230,7 @@ function AddMappingForm({
           {pending ? 'Adding…' : 'Add mapping'}
         </Button>
       </div>
-      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+      {error ? <p className="text-danger text-sm">{error}</p> : null}
     </div>
   );
 }

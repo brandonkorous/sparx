@@ -13,9 +13,11 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  Label,
+  Field,
+  FieldLabel,
+  FieldStatus,
   Select,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { bulkSetProductMarketStateAction } from '../../product-actions';
@@ -72,18 +74,20 @@ export function BulkMarketListModal({ open, onOpenChange, productIds, onListed }
           </DialogDescription>
         </div>
         <div className="flex flex-col gap-2 px-6 py-2">
-          <Label htmlFor="bulk-market-category">Category</Label>
-          <Select
-            id="bulk-market-category"
-            value={category}
-            onValueChange={(v) => setCategory(v as string)}
-            disabled={busy}
-            items={Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name]))}
-          />
+          <Field>
+            <FieldLabel htmlFor="bulk-market-category">Category</FieldLabel>
+            <Select
+              id="bulk-market-category"
+              value={category}
+              onValueChange={(v) => setCategory(v as string)}
+              disabled={busy}
+              items={Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name]))}
+            />
+          </Field>
           {error && (
-            <p className="text-danger text-sm" role="alert" aria-live="polite">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
         <div className="mt-4 flex justify-end gap-2">

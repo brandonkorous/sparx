@@ -64,9 +64,7 @@ export function StarButton({ favorites }: StarButtonProps) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button variant="ghost" size="sm" aria-label={nextLabel} onClick={handleClick}>
-          <Star
-            className={`h-4 w-4 ${isFavorited ? 'fill-current text-[var(--module-active,var(--color-text-primary))]' : ''}`}
-          />
+          <Star className={`h-4 w-4 ${isFavorited ? 'text-module fill-current' : ''}`} />
         </Button>
       </TooltipTrigger>
       <TooltipContent>{nextLabel}</TooltipContent>

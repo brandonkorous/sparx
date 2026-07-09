@@ -10,7 +10,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Button, Card, CardBody } from 'silicaui-react';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { MODULE_GUIDES } from './_lib/content';
@@ -95,7 +95,7 @@ export default function PartnerResourcesPage() {
               <CardBody>
                 <div className="flex flex-row flex-wrap items-center justify-between gap-4">
                   <div className="flex min-w-0 flex-row items-start gap-3">
-                    <span className="text-[var(--module-active)]">
+                    <span className="text-module">
                       <GraduationCap className="h-5 w-5" />
                     </span>
                     <div className="flex min-w-0 flex-col gap-1">
@@ -149,7 +149,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
     <Card>
       <CardBody>
         <div className="flex flex-col gap-3">
-          <span className="text-[var(--module-active)]">
+          <span className="text-module">
             <Icon className="h-5 w-5" />
           </span>
           <div className="flex flex-col gap-1">

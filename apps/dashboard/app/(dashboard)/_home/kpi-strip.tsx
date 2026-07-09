@@ -13,7 +13,7 @@ function KpiTile({ kpi }: { kpi: Kpi }) {
     <ModuleProvider module={kpi.module}>
       <Link
         href={kpi.href}
-        className="block rounded-lg transition-shadow hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--module-active)]"
+        className="focus-visible:outline-module block rounded-lg transition-shadow hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         <Stat
           label={kpi.label}

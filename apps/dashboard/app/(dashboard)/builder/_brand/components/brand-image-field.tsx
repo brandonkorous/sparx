@@ -77,11 +77,11 @@ export function BrandImageField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium text-[var(--color-text-primary)]">{label}</span>
+      <span className="text-base-content text-sm font-medium">{label}</span>
       <div className="flex items-center gap-3">
         <div
-          className={`flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border border-[var(--color-border-default)] ${
-            dark ? 'bg-[#0b0b0f]' : 'bg-[var(--color-bg-subtle)]'
+          className={`border-base-300 flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border ${
+            dark ? 'bg-[#0b0b0f]' : 'bg-base-200'
           }`}
         >
           {previewUrl && !imgFailed ? (
@@ -93,7 +93,7 @@ export function BrandImageField({
               onError={() => setImgFailed(true)}
             />
           ) : (
-            <ImageIcon className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+            <ImageIcon className="text-base-content/50 h-5 w-5" />
           )}
         </div>
         <div className="flex flex-col gap-1.5">
@@ -131,9 +131,9 @@ export function BrandImageField({
             ) : null}
           </div>
           {error ? (
-            <span className="text-xs text-[var(--color-danger-text)]">{error}</span>
+            <span className="text-danger text-xs">{error}</span>
           ) : help ? (
-            <span className="text-xs text-[var(--color-text-muted)]">{help}</span>
+            <span className="text-base-content/60 text-xs">{help}</span>
           ) : null}
         </div>
       </div>

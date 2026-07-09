@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { ArrowRight, Check, X, Clock, Send } from 'lucide-react';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import {

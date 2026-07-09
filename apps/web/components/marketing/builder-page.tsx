@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -60,7 +60,7 @@ function BuilderHero() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -84,7 +84,7 @@ function BuilderHero() {
               fontWeight: 400,
               fontSize: 'clamp(16px, 1.6vw, 20px)',
               lineHeight: 1.55,
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '640px',
               margin: 0,
             }}
@@ -116,14 +116,18 @@ function BuilderHero() {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '7px 13px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '9999px',
               }}
             >
               <Dot color={B.color} size={6} />
               <span
-                style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-secondary)' }}
+                style={{
+                  fontFamily: MONO,
+                  fontSize: '12px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                }}
               >
                 {c}
               </span>
@@ -177,8 +181,8 @@ function TheArc() {
               flexDirection: 'column',
               gap: '18px',
               padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
             }}
           >
@@ -201,7 +205,7 @@ function TheArc() {
                   fontWeight: 500,
                   fontSize: '24px',
                   letterSpacing: '-0.02em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {c.title}
@@ -213,7 +217,7 @@ function TheArc() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {c.body}
@@ -229,7 +233,7 @@ function TheArc() {
                       fontFamily: SANS,
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {p}
@@ -284,14 +288,18 @@ function HowItWorks() {
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '210px',
             }}
           >
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {s.n}
             </span>
@@ -302,7 +310,7 @@ function HowItWorks() {
                 fontWeight: 500,
                 fontSize: '20px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {s.title}
@@ -313,7 +321,7 @@ function HowItWorks() {
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '23px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -369,8 +377,8 @@ function Capabilities() {
               flexDirection: 'column',
               gap: '14px',
               padding: '28px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '180px',
             }}
@@ -395,7 +403,7 @@ function Capabilities() {
                 fontWeight: 500,
                 fontSize: '18px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {c.title}
@@ -406,7 +414,7 @@ function Capabilities() {
                 fontFamily: SANS,
                 fontSize: '14px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {c.body}
@@ -458,8 +466,8 @@ function CodeOptional() {
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 24px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '200px',
             }}
@@ -482,7 +490,7 @@ function CodeOptional() {
                 fontWeight: 500,
                 fontSize: '18px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {r.title}
@@ -493,7 +501,7 @@ function CodeOptional() {
                 fontFamily: SANS,
                 fontSize: '14px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {r.body}
@@ -653,8 +661,8 @@ function WhatYouCanBuild() {
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 26px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '200px',
             }}
@@ -666,7 +674,7 @@ function WhatYouCanBuild() {
                 fontWeight: 500,
                 fontSize: '17px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {u.title}
@@ -678,13 +686,17 @@ function WhatYouCanBuild() {
                 fontFamily: SANS,
                 fontSize: '14px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {u.body}
             </p>
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {u.runs}
             </span>
@@ -706,7 +718,7 @@ function BuilderPricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(B.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',
         }}
@@ -719,13 +731,17 @@ function BuilderPricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $10
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -735,7 +751,7 @@ function BuilderPricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

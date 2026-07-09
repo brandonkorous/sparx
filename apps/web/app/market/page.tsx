@@ -5,7 +5,7 @@
 // acquisition funnel.
 
 import type { Metadata } from 'next';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
@@ -42,12 +42,18 @@ export default async function MarketplaceHomePage() {
           }}
         >
           <SectionHeader
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             headlineSize={88}
             headline={
               <>
                 Everything to launch{' '}
-                <span style={{ color: 'var(--color-text-tertiary)' }}>in one place</span>
+                <span
+                  style={{
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                  }}
+                >
+                  in one place
+                </span>
               </>
             }
             lede={
@@ -75,7 +81,7 @@ export default async function MarketplaceHomePage() {
       <Section id="categories" surface="surface" padding="lg">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           <SectionHeader
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             headlineSize={48}
             headline="Browse by category"
             lede="Each category grows on its own — install a blueprint today; themes, components, and integrations are landing next."
@@ -106,7 +112,7 @@ export default async function MarketplaceHomePage() {
                   fontFamily: 'var(--font-sans)',
                   fontWeight: 500,
                   fontSize: '14px',
-                  color: 'var(--sparx-primary)',
+                  color: 'var(--color-primary)',
                   textDecoration: 'none',
                 }}
               >
@@ -133,7 +139,7 @@ export default async function MarketplaceHomePage() {
         >
           <SectionHeader
             invert
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             headlineSize={56}
             headline={
               <>

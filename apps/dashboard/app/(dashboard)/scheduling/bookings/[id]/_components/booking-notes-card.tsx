@@ -8,7 +8,16 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardBody, CardTitle, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { updateBookingAction } from '../../../_lib/actions';
@@ -53,26 +62,29 @@ export function BookingNotesCard({
       <CardBody>
         <CardTitle>Notes</CardTitle>
         <div className="flex flex-col gap-4">
-          <div>
-            <Label htmlFor="bk-note">Customer note</Label>
-            <Textarea
-              id="bk-note"
+          <Field>
+            <FieldLabel>Customer note</FieldLabel>
+            <FieldControl
               value={noteValue}
               onChange={(e) => setNoteValue(e.target.value)}
-              rows={2}
-              placeholder="Visible to the customer on confirmations and reminders."
+              render={
+                <Textarea
+                  rows={2}
+                  placeholder="Visible to the customer on confirmations and reminders."
+                />
+              }
             />
-          </div>
-          <div>
-            <Label htmlFor="bk-staff-note">Staff note</Label>
-            <Textarea
-              id="bk-staff-note"
+          </Field>
+          <Field>
+            <FieldLabel>Staff note</FieldLabel>
+            <FieldControl
               value={staffValue}
               onChange={(e) => setStaffValue(e.target.value)}
-              rows={3}
-              placeholder="Internal only — never shown to the customer."
+              render={
+                <Textarea rows={3} placeholder="Internal only — never shown to the customer." />
+              }
             />
-          </div>
+          </Field>
           <div className="flex flex-row justify-end">
             <Button
               type="button"

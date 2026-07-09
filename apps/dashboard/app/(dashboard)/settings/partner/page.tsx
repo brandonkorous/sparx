@@ -1,5 +1,5 @@
 import { ArrowUpRight, Handshake } from 'lucide-react';
-import { Avatar, Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Avatar, Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 import { listOrgMembers, requireSession } from '@sparx/auth';
 

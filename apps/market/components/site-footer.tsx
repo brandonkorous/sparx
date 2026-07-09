@@ -5,7 +5,7 @@
 
 import Link from 'next/link';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { Wordmark } from '@/components/sparx-brand';
 import { Container } from '@/components/ui/layout';

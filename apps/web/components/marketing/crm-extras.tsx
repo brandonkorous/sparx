@@ -108,7 +108,7 @@ function AutoCell({
       className={then ? 'mkt-auto-then' : undefined}
       style={{
         padding: '20px 24px',
-        backgroundColor: then ? 'var(--color-bg-page)' : 'var(--color-bg-surface)',
+        backgroundColor: then ? 'var(--color-base-200)' : 'var(--color-base-100)',
       }}
     >
       <div
@@ -117,7 +117,7 @@ function AutoCell({
           fontSize: '10.5px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
         }}
       >
         {label}
@@ -187,8 +187,8 @@ export function CrmCapabilities() {
                 flexDirection: 'column',
                 gap: '12px',
                 padding: '26px',
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '12px',
                 minHeight: '172px',
               }}
@@ -223,7 +223,7 @@ export function CrmCapabilities() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   lineHeight: '21px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {c.body}

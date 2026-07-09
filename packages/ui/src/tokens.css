@@ -10,54 +10,16 @@
    to data-[state=open|closed] changes. Tailwind v4 compatible. */
 @import 'tw-animate-css';
 
-/* ── SPARX BRAND ──────────────────────────────────────────── */
+/* The brand, per-module hues, neutral ramp, and semantic palette now live in
+   @sparx/brand/theme.css — the silicaui token source of truth, imported before
+   this file. tokens.css keeps ONLY the non-color design tokens (chart palette,
+   type, spacing, radius, shadow, motion) plus the component CSS at the bottom.
+   The active-module color is `--color-module`, set by <ModuleProvider>. */
 :root {
-  --sparx-primary: #6366f1;
-  --sparx-primary-content: #eef2ff;
-  --sparx-primary-hover: #4f46e5;
-  --sparx-primary-subtle: #818cf8;
-  --sparx-primary-tint: #eef2ff;
-
-  /* Brand SECONDARY — a deep pink that complements the indigo primary. This is a
-     BRAND accent for marketing bands/sparks (e.g. the .mkt-secondary panel), the
-     warm counterweight to the cool primary. Deliberately NOT the AI module pink
-     (#ec4899, brighter) so it reads as brand, not "the AI section", and NOT the
-     neutral slate `--color-secondary` UI token that paints secondary buttons —
-     that stays slate so this never repaints dashboard chrome. Constant across
-     themes, like --sparx-primary. */
-  --sparx-secondary: #db2777;
-  --sparx-secondary-content: #ffffff;
-
-  /* ── MODULE COLORS ─────────────────────────────────────── */
-  --module-builder: #6366f1;
-  --module-commerce: #f97316;
-  --module-cms: #14b8a6;
-  --module-crm: #06b6d4;
-  --module-email: #0ea5e9;
-  --module-b2b: #475569;
-  --module-invoicing: #65a30d;
-  --module-ai: #ec4899;
-  --module-dropship: #10b981;
-  --module-inventory: #f59e0b;
-  --module-chat: #8b5cf6;
-  --module-scheduling: #f43f5e;
-  --module-automations: #d946ef;
-  --module-seo: #eab308;
-  /* Finance is a platform surface (always-on, not billed) but owns a hue so its
-     hub pops and finance signals read as finance wherever they appear. Money
-     green, kept distinct from the emerald success token (#10b981). */
-  --module-finance: #16a34a;
-
-  /* Active module — set by ModuleProvider, read by components */
-  --module-active: var(--sparx-primary);
-  --module-active-tint: var(--sparx-primary-tint);
-  --module-active-text: #4338ca; /* legacy: ink-style dark text on tint */
-  --module-active-content: #ffffff; /* text/icon on the solid module fill */
-
   /* ── CHART PALETTE ─────────────────────────────────────────
      A categorical series palette for multi-series charts. Drawn from the
      module hues so charts read as part of the brand. A single "hero" series
-     should use var(--module-active) instead, so it adopts the active module's
+     should use var(--color-module) instead, so it adopts the active module's
      color. Consumed by @sparx/ui chart primitives; tenant themes may
      override. */
   --chart-1: #6366f1;
@@ -66,77 +28,6 @@
   --chart-4: #06b6d4;
   --chart-5: #ec4899;
   --chart-6: #10b981;
-
-  /* ── NEUTRALS — LIGHT MODE ─────────────────────────────── */
-  --color-bg-page: #fafafa;
-  --color-bg-surface: #ffffff;
-  --color-bg-elevated: #ffffff;
-  --color-bg-subtle: #f4f4f5;
-  --color-bg-muted: #e4e4e7;
-
-  /* Elevation scale. surface-100 is the topmost content surface (the lightest,
-     easiest reading layer); each step DOWN goes deeper and darker, so
-     surface-300 is the page base. At a section seam the darker/deeper tier
-     "wraps" the lighter one to read as physical depth. */
-  --color-surface-100: #fbfbfd;
-  --color-surface-200: #f4f5f8;
-  --color-surface-300: #eaecf1;
-
-  /* Inverse/accent surface — the OPPOSITE of the page, for cinematic high-
-     contrast sections (hero, video, final CTA). Charcoal in light mode; it
-     FLIPS to a light surface in dark mode so the accent still pops instead of
-     vanishing into the dark page. Pair with the -text / -muted foregrounds. */
-  --color-surface-opposite: #0d0d10;
-  --color-surface-opposite-text: #ffffff;
-  --color-surface-opposite-muted: #a1a1aa;
-
-  --color-border-default: #e5e5e5;
-  --color-border-strong: #d4d4d8;
-  --color-border-focus: #6366f1;
-
-  --color-text-primary: #0a0a0a;
-  --color-text-secondary: #52525b;
-  --color-text-tertiary: #a1a1aa;
-  --color-text-muted: #71717a;
-  --color-text-disabled: #d4d4d8;
-  --color-text-inverse: #ffffff;
-
-  /* ── SEMANTIC PALETTE (Token Model v2 — docs/35 §3) ──────────
-     Each color is a base (hex, tenant/theme-overridable) + a `-content`
-     pair (text/icon shown on the SOLID fill). The hover / tint / ink shades
-     the variant treatments need are DERIVED in the .sx-c-* role classes
-     below via color-mix — so a single base hex yields a coherent set and a
-     custom theme color only needs to override the base.
-     ──────────────────────────────────────────────────────────── */
-  --color-primary: var(--sparx-primary);
-  --color-primary-content: var(--sparx-primary-content);
-
-  --color-secondary: var(--sparx-secondary);
-  --color-secondary-content: var(--sparx-secondary-content);
-
-  --color-accent: #8b5cf6;
-  --color-accent-content: #ffffff;
-
-  --color-neutral: #1f2937;
-  --color-neutral-content: #ffffff;
-
-  --color-info: #0ea5e9;
-  --color-info-content: #ffffff;
-
-  --color-success: #10b981;
-  --color-success-content: #ffffff;
-  --color-success-tint: #ecfdf5; /* legacy curated tint — kept for direct users */
-  --color-success-text: #065f46; /* legacy alias (see role ink below) */
-
-  --color-warning: #f59e0b;
-  --color-warning-content: #422006; /* dark text — white fails AA on amber */
-  --color-warning-tint: #fffbeb;
-  --color-warning-text: #92400e;
-
-  --color-danger: #ef4444;
-  --color-danger-content: #ffffff;
-  --color-danger-tint: #fef2f2;
-  --color-danger-text: #991b1b;
 
   /* ── TYPOGRAPHY ─────────────────────────────────────────── */
   --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
@@ -218,274 +109,18 @@
   --display-hero-leading: clamp(48px, 10vw, 104px);
 }
 
-/* ── DARK MODE ───────────────────────────────────────────── */
+/* ── DARK MODE — chart palette only ──────────────────────────
+   Neutrals, text, borders, and the semantic + module palette are all defined
+   (light AND dark) in @sparx/brand/theme.css. Only the categorical chart
+   palette — which lives here alongside the other non-color tokens — needs a
+   dark lift for legibility. */
 [data-theme='dark'] {
-  --color-bg-page: #0f0f0f;
-  --color-bg-surface: #1a1a1a;
-  --color-bg-elevated: #222222;
-  --color-bg-subtle: #1f1f1f;
-  --color-bg-muted: #2a2a2a;
-
-  /* Elevation scale (dark). Same semantics, inverted lightness: surface-100 is
-     the topmost content surface (here the LIGHTEST dark-gray, so it lifts toward
-     the light catching a raised surface); surface-300 is the page base (the
-     darkest). Deeper = darker in both themes; content always reads on top. */
-  --color-surface-100: #24252c;
-  --color-surface-200: #17181d;
-  --color-surface-300: #0d0d10;
-
-  /* Inverse/accent surface (dark mode) — flips to a light surface so it still
-     reads as the high-contrast accent against the dark page. */
-  --color-surface-opposite: #eaecf1;
-  --color-surface-opposite-text: #16161a;
-  --color-surface-opposite-muted: #52525b;
-
-  --color-border-default: #2a2a2a;
-  --color-border-strong: #3f3f46;
-  --color-border-focus: #818cf8;
-
-  --color-text-primary: #f0f0f0;
-  --color-text-secondary: #a1a1aa;
-  /* #52525b (the light-mode secondary, mirrored here) is nearly invisible on the
-     dark surface — lift tertiary to a legible faint gray that still sits below
-     muted/secondary in the ramp. */
-  --color-text-tertiary: #71717a;
-  --color-text-muted: #8a8a93;
-  --color-text-disabled: #3f3f46;
-  --color-text-inverse: #0a0a0a;
-
-  /* Chart palette — lifted for legibility on dark surfaces */
   --chart-1: #818cf8;
   --chart-2: #2dd4bf;
   --chart-3: #fb923c;
   --chart-4: #22d3ee;
   --chart-5: #f472b6;
   --chart-6: #34d399;
-
-  --sparx-primary-tint: #1e1b4b;
-
-  /* Default module ink outside any ModuleProvider — derived so it stays legible
-     on the dark surface (the light :root #4338ca would not). Inside a provider,
-     the [data-module] rules below override this with the per-module dark ink. */
-  --module-active-text: color-mix(in oklab, var(--module-active) 60%, var(--color-text-primary));
-
-  /* Neutral fill inverts in dark mode — a light surface with dark content,
-     so a `color="neutral"` solid button stays high-contrast. */
-  --color-neutral: #e5e7eb;
-  --color-neutral-content: #1f2937;
-}
-
-/* ── MODULE ACTIVE TINT / INK — theme-aware selection ────────────
-   ModuleProvider emits per-module LIGHT values (hand-picked) alongside DARK
-   derivations (the module color mixed into the surface, and lifted toward the
-   text color). The bare --module-active-tint / --module-active-text that the
-   whole UI consumes are SELECTED here by theme on [data-module], so every
-   module-tinted chip, nav highlight, and module-ink label adapts to dark mode
-   from one place: light stays exactly the hand-picked hexes, dark never renders
-   a fixed light hex on a dark surface. Nested providers each carry their own
-   light/dark pair, so the selection is correct per-subtree. */
-[data-module] {
-  --module-active-tint: var(--module-active-tint-light);
-  --module-active-text: var(--module-active-text-light);
-}
-[data-theme='dark'] [data-module] {
-  --module-active-tint: var(--module-active-tint-dark);
-  --module-active-text: var(--module-active-text-dark);
-}
-
-/* ── COLOR ROLE VARIABLES (docs/35 §4) ───────────────────────────
-   Each .sx-c-{color} class maps the four role variables the variant
-   treatments consume. `variant` (solid/soft/outline/…) is authored ONCE
-   against these role vars (in the components), so color × variant composes
-   with no cartesian product and no codegen.
-
-   Derivation (color-mix in OKLCH):
-     --c-ink   = base mixed 60% toward --color-text-primary. Because
-                 text-primary FLIPS with light/dark mode, the soft/ghost/
-                 outline text reads correctly in BOTH modes from one rule.
-     --c-hover = base nudged 86% toward text-primary (darken in light,
-                 lighten in dark) for solid hover.
-     --c-tint  = base at 14% over transparent — adapts to any surface.
-
-   A runtime custom theme color works by either overriding --color-<name>
-   (re-skins an existing slot) or by the theme layer emitting one extra
-   .sx-c-<name> rule shaped like these. No component rebuild (docs/35 §4.2).
-   ──────────────────────────────────────────────────────────────── */
-.sx-c-primary {
-  --c-bg: var(--color-primary);
-  --c-fg: var(--color-primary-content);
-  --c-ink: color-mix(in oklch, var(--color-primary) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-primary) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-primary) 14%, transparent);
-}
-.sx-c-secondary {
-  --c-bg: var(--color-secondary);
-  --c-fg: var(--color-secondary-content);
-  --c-ink: color-mix(in oklch, var(--color-secondary) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-secondary) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-secondary) 14%, transparent);
-}
-.sx-c-accent {
-  --c-bg: var(--color-accent);
-  --c-fg: var(--color-accent-content);
-  --c-ink: color-mix(in oklch, var(--color-accent) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-accent) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-accent) 14%, transparent);
-}
-.sx-c-neutral {
-  --c-bg: var(--color-neutral);
-  --c-fg: var(--color-neutral-content);
-  --c-ink: var(--color-text-primary);
-  --c-hover: color-mix(in oklch, var(--color-neutral) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-neutral) 14%, transparent);
-}
-.sx-c-info {
-  --c-bg: var(--color-info);
-  --c-fg: var(--color-info-content);
-  --c-ink: color-mix(in oklch, var(--color-info) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-info) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-info) 14%, transparent);
-}
-.sx-c-success {
-  --c-bg: var(--color-success);
-  --c-fg: var(--color-success-content);
-  --c-ink: color-mix(in oklch, var(--color-success) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-success) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-success) 14%, transparent);
-}
-.sx-c-warning {
-  --c-bg: var(--color-warning);
-  --c-fg: var(--color-warning-content);
-  --c-ink: color-mix(in oklch, var(--color-warning) 52%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-warning) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-warning) 16%, transparent);
-}
-.sx-c-danger {
-  --c-bg: var(--color-danger);
-  --c-fg: var(--color-danger-content);
-  --c-ink: color-mix(in oklch, var(--color-danger) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--color-danger) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--color-danger) 14%, transparent);
-}
-/* `module` tracks the ModuleProvider's active color rather than a fixed slot. */
-.sx-c-module {
-  --c-bg: var(--module-active);
-  --c-fg: var(--module-active-content);
-  --c-ink: color-mix(in oklch, var(--module-active) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-active) 86%, var(--color-text-primary));
-  --c-tint: var(--module-active-tint);
-}
-
-/* Named module colors — each per-module brand color is addressable directly as
-   a `color` slot (e.g. <Badge color="commerce">), independent of the active
-   ModuleProvider. Same derivation shape as the semantic palette. */
-.sx-c-builder {
-  --c-bg: var(--module-builder);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-builder) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-builder) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-builder) 14%, transparent);
-}
-.sx-c-commerce {
-  --c-bg: var(--module-commerce);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-commerce) 56%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-commerce) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-commerce) 14%, transparent);
-}
-.sx-c-cms {
-  --c-bg: var(--module-cms);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-cms) 56%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-cms) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-cms) 14%, transparent);
-}
-.sx-c-crm {
-  --c-bg: var(--module-crm);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-crm) 56%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-crm) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-crm) 14%, transparent);
-}
-.sx-c-email {
-  --c-bg: var(--module-email);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-email) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-email) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-email) 14%, transparent);
-}
-.sx-c-b2b {
-  --c-bg: var(--module-b2b);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-b2b) 60%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-b2b) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-b2b) 14%, transparent);
-}
-.sx-c-invoicing {
-  --c-bg: var(--module-invoicing);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-invoicing) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-invoicing) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-invoicing) 14%, transparent);
-}
-.sx-c-ai {
-  --c-bg: var(--module-ai);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-ai) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-ai) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-ai) 14%, transparent);
-}
-.sx-c-dropship {
-  --c-bg: var(--module-dropship);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-dropship) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-dropship) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-dropship) 14%, transparent);
-}
-.sx-c-chat {
-  --c-bg: var(--module-chat);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-chat) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-chat) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-chat) 14%, transparent);
-}
-.sx-c-scheduling {
-  --c-bg: var(--module-scheduling);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-scheduling) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-scheduling) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-scheduling) 14%, transparent);
-}
-.sx-c-automations {
-  --c-bg: var(--module-automations);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-automations) 58%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-automations) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-automations) 14%, transparent);
-}
-/* Inventory amber + SEO yellow share the warning hue's legibility profile:
-   dark on-fill ink (white fails AA) and a lower ink mix so soft/outline text
-   stays dark and readable. */
-.sx-c-inventory {
-  --c-bg: var(--module-inventory);
-  --c-fg: #422006;
-  --c-ink: color-mix(in oklch, var(--module-inventory) 52%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-inventory) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-inventory) 16%, transparent);
-}
-.sx-c-seo {
-  --c-bg: var(--module-seo);
-  --c-fg: #422006;
-  --c-ink: color-mix(in oklch, var(--module-seo) 52%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-seo) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-seo) 16%, transparent);
-}
-.sx-c-finance {
-  --c-bg: var(--module-finance);
-  --c-fg: #ffffff;
-  --c-ink: color-mix(in oklch, var(--module-finance) 56%, var(--color-text-primary));
-  --c-hover: color-mix(in oklch, var(--module-finance) 86%, var(--color-text-primary));
-  --c-tint: color-mix(in oklch, var(--module-finance) 14%, transparent);
 }
 
 /* Indeterminate <Progress> — a sliding pill that loops when no value is set. */
@@ -508,7 +143,7 @@
    so progress moves through the brand palette. Two scopes, one principle —
    "show the current scope's identity":
      • platform → the full module spectrum (identity = every module at once)
-     • a module → a light→base→deep sweep of --module-active
+     • a module → a light→base→deep sweep of --color-module
    The bar is anchored at the viewport's left edge, so its growing width uncovers
    more of the 100vw-wide gradient. Token-driven; tenant theme overrides flow
    through. Layout (fixed / top / width / opacity) is owned by the component. */
@@ -521,23 +156,23 @@
      colors, so the bar reads the same in light and dark mode. */
   background-image: linear-gradient(
     90deg,
-    color-mix(in oklch, var(--module-active) 72%, #ffffff) 0%,
-    var(--module-active) 50%,
-    color-mix(in oklch, var(--module-active) 84%, #000000) 100%
+    color-mix(in oklch, var(--color-module) 72%, #ffffff) 0%,
+    var(--color-module) 50%,
+    color-mix(in oklch, var(--color-module) 84%, #000000) 100%
   );
 }
 .sx-topbar--spectrum .sx-topbar__bar {
   background-image: linear-gradient(
     90deg,
-    var(--module-builder) 0%,
-    var(--module-crm) 13%,
-    var(--module-cms) 26%,
-    var(--module-dropship) 39%,
-    var(--module-seo) 52%,
-    var(--module-inventory) 64%,
-    var(--module-commerce) 76%,
-    var(--module-ai) 88%,
-    var(--module-chat) 100%
+    var(--color-module-builder) 0%,
+    var(--color-module-crm) 13%,
+    var(--color-module-cms) 26%,
+    var(--color-module-dropship) 39%,
+    var(--color-module-seo) 52%,
+    var(--color-module-inventory) 64%,
+    var(--color-module-commerce) 76%,
+    var(--color-module-ai) 88%,
+    var(--color-module-chat) 100%
   );
 }
 
@@ -545,14 +180,14 @@
 .sx-topbar__peg {
   border-radius: var(--radius-full);
   box-shadow:
-    0 0 10px 1px var(--module-active),
-    0 0 6px 0 var(--module-active);
+    0 0 10px 1px var(--color-module),
+    0 0 6px 0 var(--color-module);
   transform: rotate(2.5deg) translateY(-1px);
 }
 .sx-topbar--spectrum .sx-topbar__peg {
   box-shadow:
-    0 0 10px 1px var(--module-chat),
-    0 0 6px 0 var(--module-ai);
+    0 0 10px 1px var(--color-module-chat),
+    0 0 6px 0 var(--color-module-ai);
 }
 
 @media (prefers-reduced-motion: reduce) {

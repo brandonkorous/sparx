@@ -1,7 +1,7 @@
 'use client';
 
 import { Code } from '@sparx/ui';
-import { Badge, Table } from 'silicaui-react';
+import { Badge, Table } from '@wizeworks/silicaui-react';
 
 import { CopyButton } from './copy-button';
 import type { DnsRecord } from '../../_lib/types';

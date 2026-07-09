@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { Package } from 'lucide-react';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';

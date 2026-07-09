@@ -3,8 +3,21 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -48,13 +61,19 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const [name, setName] = React.useState('');
   const [handle, setHandle] = React.useState('');
   const [parentId, setParentId] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [featured, setFeatured] = React.useState(false);
+
+  // Field validation. `handle` carries no client rule but is validated-tracked so
+  // a server-side handle error maps onto its field.
+  const values = { name, handle };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -102,11 +121,7 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-    if (!name.trim()) {
-      setFieldErrors({ name: 'Name is required.' });
-      return;
-    }
+    if (!v.validate()) return;
     const payload = {
       name: name.trim(),
       ...(handle.trim() ? { handle: handle.trim() } : {}),
@@ -118,11 +133,12 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
       const result = await createCategoryAction(payload);
       if (!result.ok) {
         if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of result.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
+          v.setServerErrors(
+            Object.fromEntries(result.error.details.map((d) => [d.field, d.message]))
+          );
+        } else {
+          setError(result.error.message);
         }
-        setError(result.error.message);
         return;
       }
       afterCreate();
@@ -159,57 +175,58 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
                   auto-derived from the name if you leave it blank. You can change it later.
                 </p>
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="cat-name">Name</Label>
-                    <Input
-                      id="cat-name"
+                  <Field {...v.field('name')} className="flex-1">
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
+                      name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Engine parts"
+                      {...v.control('name')}
                     />
-                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="cat-handle">Handle (optional)</Label>
-                    <Input
-                      id="cat-handle"
+                  </Field>
+                  <Field {...v.field('handle')} className="flex-1">
+                    <FieldLabel>Handle (optional)</FieldLabel>
+                    <FieldControl
+                      name="handle"
                       value={handle}
                       onChange={(e) => setHandle(e.target.value)}
                       placeholder="auto-derived from name"
+                      {...v.control('handle')}
                     />
-                    {fieldErrors.handle && (
-                      <p className="text-danger text-xs">{fieldErrors.handle}</p>
-                    )}
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="cat-parent">Parent</Label>
-                  <NativeSelect
-                    id="cat-parent"
+                <Field>
+                  <FieldLabel>Parent</FieldLabel>
+                  <FieldControl
+                    name="parentId"
                     value={parentId}
                     onChange={(e) => setParentId(e.target.value)}
-                  >
-                    <option value="">— Top level —</option>
-                    {parents.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {indent(p.depth)}
-                        {p.name}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                  <p className="text-base-content/70 text-xs">
+                    render={
+                      <NativeSelect>
+                        <option value="">— Top level —</option>
+                        {parents.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {indent(p.depth)}
+                            {p.name}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    }
+                  />
+                  <FieldDescription>
                     Leave top-level for a root category, or nest it under an existing one.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="cat-description">Description</Label>
-                  <Textarea
-                    id="cat-description"
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
+                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
+                    render={<Textarea rows={3} />}
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     id="cat-featured"
@@ -223,9 +240,15 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

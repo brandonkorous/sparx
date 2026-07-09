@@ -9,7 +9,16 @@
 // the drawer + refreshes — `onSaved` is the hook.
 
 import * as React from 'react';
-import { Button, Input, Label, Select } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Select,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { updatePayoutAccountAction } from '../actions';
 import type { MarketPayoutAccount } from '../_types';
@@ -57,9 +66,26 @@ export function PayoutAccountForm({
   const accountValid = form.accountNumber.length >= 4 && form.accountNumber.length <= 17;
   const canSubmit = form.accountHolderName.trim().length > 0 && routingValid && accountValid;
 
+  const v = useFieldValidation(
+    {
+      accountHolderName: form.accountHolderName,
+      routingNumber: form.routingNumber,
+      accountNumber: form.accountNumber,
+    },
+    {
+      accountHolderName: rule.required('Enter the account holder name.'),
+      routingNumber: (val) =>
+        String(val).length === 9 ? null : 'Enter the 9-digit routing number.',
+      accountNumber: (val) => {
+        const len = String(val).length;
+        return len >= 4 && len <= 17 ? null : 'Enter the account number (4–17 digits).';
+      },
+    }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!v.validate()) return;
     setError(null);
     startTransition(async () => {
       const res = await updatePayoutAccountAction({
@@ -83,78 +109,78 @@ export function PayoutAccountForm({
   return (
     <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="payout-holder">Account holder name</Label>
-          <Input
-            id="payout-holder"
+        <Field {...v.field('accountHolderName')}>
+          <FieldLabel required>Account holder name</FieldLabel>
+          <FieldControl
+            name="payout-holder"
             value={form.accountHolderName}
             maxLength={255}
             autoComplete="off"
             placeholder="Name on the bank account"
             onChange={(e) => set('accountHolderName', e.target.value)}
+            {...v.control('accountHolderName')}
           />
-        </div>
+        </Field>
 
         <div className="flex flex-wrap gap-4">
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="payout-bank">Bank name</Label>
-            <Input
-              id="payout-bank"
+          <Field className="min-w-[14rem] flex-1">
+            <FieldLabel>Bank name</FieldLabel>
+            <FieldControl
+              name="payout-bank"
               value={form.bankName}
               maxLength={255}
               autoComplete="off"
               placeholder="Optional"
               onChange={(e) => set('bankName', e.target.value)}
             />
-          </div>
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="payout-type">Account type</Label>
+          </Field>
+          <Field className="min-w-[14rem] flex-1">
+            <FieldLabel>Account type</FieldLabel>
             <Select
-              id="payout-type"
               value={form.accountType}
-              onValueChange={(v) => set('accountType', v as 'checking' | 'savings')}
+              onValueChange={(val) => set('accountType', val as 'checking' | 'savings')}
               items={{ checking: 'Checking', savings: 'Savings' }}
             />
-          </div>
+          </Field>
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="payout-routing">Routing number</Label>
-            <Input
-              id="payout-routing"
+          <Field {...v.field('routingNumber')} className="min-w-[14rem] flex-1">
+            <FieldLabel required>Routing number</FieldLabel>
+            <FieldControl
+              name="payout-routing"
               value={form.routingNumber}
               inputMode="numeric"
               autoComplete="off"
               placeholder="9 digits"
-              color={form.routingNumber.length > 0 && !routingValid ? 'error' : undefined}
               onChange={(e) => set('routingNumber', e.target.value.replace(DIGITS, '').slice(0, 9))}
+              {...v.control('routingNumber')}
             />
-            <p className="text-base-content/70 text-xs">The 9-digit ABA number from your bank.</p>
-          </div>
-          <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-            <Label htmlFor="payout-account">Account number</Label>
-            <Input
-              id="payout-account"
+            <FieldDescription>The 9-digit ABA number from your bank.</FieldDescription>
+          </Field>
+          <Field {...v.field('accountNumber')} className="min-w-[14rem] flex-1">
+            <FieldLabel required>Account number</FieldLabel>
+            <FieldControl
+              name="payout-account"
               value={form.accountNumber}
               inputMode="numeric"
               autoComplete="off"
               placeholder="4–17 digits"
-              color={form.accountNumber.length > 0 && !accountValid ? 'error' : undefined}
               onChange={(e) =>
                 set('accountNumber', e.target.value.replace(DIGITS, '').slice(0, 17))
               }
+              {...v.control('accountNumber')}
             />
-            <p className="text-base-content/70 text-xs">
+            <FieldDescription>
               We store only the last 4 digits in the clear; the rest is encrypted.
-            </p>
-          </div>
+            </FieldDescription>
+          </Field>
         </div>
 
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
 
         <Button

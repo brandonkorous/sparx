@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { Printer } from 'lucide-react';
 
 // A print / save-as-PDF trigger for the presentable resources (pitch, one-pager,

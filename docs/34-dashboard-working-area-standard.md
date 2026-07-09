@@ -1,12 +1,14 @@
 # sparx Platform — Dashboard Working-Area Standard
 
-**Version:** 1.8.2
+**Version:** 1.8.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-29
+**Last Updated:** 2026-07-08
 
+> **1.8.3 (2026-07-08):** Reconciled to the **silicaui** migration — the module accent token is now `--color-module` (set by `ModuleProvider`), replacing `--module-active`; the module tint is `bg-module bg-soft` (a theme-aware `color-mix`), not a baked tint over `--color-bg-surface`; the module palette lives in `@sparx/brand/theme.css` as `--color-module-<name>`. No archetype/layout changes.
+>
 > **1.8.2 (2026-06-29):** **Create/edit forms, wizard steps, and editable detail panels use neutral `<Card variant="default">` field cards — not the module tint.** A single-module working surface gains nothing from the tint (it differentiates nothing there); identity rides the frame chrome + `color="module"` Save button + the faint `SurfaceFrame` summary rail (now at the same 12% as a module card). The module tint stays for cross-module overview/dashboard surfaces; a read-only detail/transaction view may keep one tinted KPI accent card.
 >
-> **1.8.1 (2026-06-29):** **`Card variant="module"` now tints the whole card background** (a subtle `--module-active` tint over `--color-bg-surface`, theme-aware) instead of drawing a 3px top stripe (§10). On dense cross-module pages, tint only **one card per module hue** — the section's primary card — and leave the rest plain; `OverviewCard` gained a `plain` prop that renders `variant="default"`.
+> **1.8.1 (2026-06-29):** **`Card variant="module"` now tints the whole card background** (`bg-module bg-soft` — a subtle theme-aware `color-mix` set by the surrounding `ModuleProvider`) instead of drawing a 3px top stripe (§10). On dense cross-module pages, tint only **one card per module hue** — the section's primary card — and leave the rest plain; `OverviewCard` gained a `plain` prop that renders `variant="default"`.
 >
 > **1.8 (2026-06-25):** **Complex tabbed records carry a context rail** (§4 Archetype 3, §5). A record spanning many panels (product, and in time customer / B2B) renders a full-height **context rail** beside its tabs — a non-editable summary of its vitals (price, variant/media counts, inventory totals, reach) built on the `SurfaceSummary` primitives, mirroring the create wizard's draft summary. The body renders full-bleed (a two-pane) so the rail **fills its column edge-to-edge** and the Save **floors** below the scroll instead of overlapping it. Full mechanics in [docs/86](86-surface-frame-pattern.md) §5.2.
 >
@@ -20,7 +22,7 @@
 >
 > **1.3 (2026-05-31):** Post-rollout review feedback. Content width gains a third tier — **Full** (§3) for canvas/builder workspaces (Site Builder editor, the pipeline Kanban board) where the work surface itself wants the whole viewport. The drawer/modal detail view now adopts the record's **module color** (the `@detail` slot wraps content in the owning `ModuleProvider` — previously it inherited the `:root` indigo). Commerce primary CTAs corrected to `color="module"`. Next: the list **filter/search toolbar** redesign (§7) and a `defaultListView` (table/cards) preference mirroring `defaultDetailView`.
 >
-> **1.2 (2026-05-31):** Rollout landed (§17). `PageHeader` / `FilterBar` / `FormActionBar` built; in-content section tabs (cms/crm/email) and the in-content "← Back to X" links removed platform-wide (the breadcrumb owns up-nav). **Trend charts** added to @sparx/ui (`LineChart`/`BarChart`/`AreaChart`/`Sparkline`, token + `--module-active` themed, `--chart-1..6` palette) and onto the overviews (sample-labeled until reporting timeseries exists). **Landings converted to overview dashboards** — CRM list → `/crm/customers`, CMS Pages list → `/cms/pages`, each with a new `/{module}` overview; Email/Commerce already overview-shaped.
+> **1.2 (2026-05-31):** Rollout landed (§17). `PageHeader` / `FilterBar` / `FormActionBar` built; in-content section tabs (cms/crm/email) and the in-content "← Back to X" links removed platform-wide (the breadcrumb owns up-nav). **Trend charts** added to @sparx/ui (`LineChart`/`BarChart`/`AreaChart`/`Sparkline`, token + `--color-module` themed, `--chart-1..6` palette) and onto the overviews (sample-labeled until reporting timeseries exists). **Landings converted to overview dashboards** — CRM list → `/crm/customers`, CMS Pages list → `/cms/pages`, each with a new `/{module}` overview; Email/Commerce already overview-shaped.
 >
 > **1.1 (2026-05-31):** Locked intra-module navigation as a **rail + contextual sidebar** (§11) — module sections move out of in-content tab strips and card-grid-as-nav into the shell's contextual panel; in-content tabs are now reserved for record facets only. Shell-side detail in [doc 24](24-dashboard-shell.md) §5.
 
@@ -34,7 +36,7 @@ Today that working area is improvised per page. A live audit of 19 representativ
 
 **In scope:** page header, content width, list/table rendering, empty states, stat cards, section/nav-card grids, in-content tabs, forms and their save affordance, module-overview composition, the module-preview ("coming online") template, and the placement of primary/secondary actions.
 
-**Out of scope:** the sidebar, breadcrumb, `…` menu, theme, ⌘K — all owned by [doc 24](24-dashboard-shell.md). The component primitives themselves (CVA pattern, token rules, "Tailwind never in feature code") are owned by [doc 23](23-frontend-component-architecture.md); this doc composes them, it does not redefine them.
+**Out of scope:** the sidebar, breadcrumb, `…` menu, theme, ⌘K — all owned by [doc 24](24-dashboard-shell.md). The component primitives themselves (the silicaui primitives, the four-axis `color × variant × size × shape` system, token rules) are owned by [doc 23](23-frontend-component-architecture.md); this doc composes them, it does not redefine them.
 
 ---
 
@@ -42,7 +44,7 @@ Today that working area is improvised per page. A live audit of 19 representativ
 
 1. **Archetype, not improvisation.** Every working-area page is exactly one of six archetypes (§4). The archetype dictates the layout; pages do not invent their own.
 2. **Compose primitives, never restyle them.** The building blocks live in `@sparx/ui` (`Container`, `Card`, `Stat`, `DataTable`, `EmptyState`, `Tabs`, `Grid`, `Stack`, `Form`). Feature code arranges them; it never reaches for raw Tailwind or one-off colors. (Per [doc 23](23-frontend-component-architecture.md) §1.)
-3. **The module color is automatic — let it be.** Every surface is wrapped in `<ModuleProvider>`, which sets `--module-active`. Primary actions, card tints, tab underlines, and stat icons all read that variable. A page should never hardcode indigo (or any hue) — if it looks indigo on a Commerce page, the primary action is missing `color="module"`. This holds in the drawer/modal too: the `@detail` slot renders outside the module layout, so it wraps content in the record's owning `ModuleProvider` (keyed by entity type) — never assume the route's layout supplies the color.
+3. **The module color is automatic — let it be.** Every surface is wrapped in `<ModuleProvider>`, which sets `--color-module`. Primary actions (`color="module"`), card tints (`bg-module bg-soft`), tab underlines, and stat icons all read that variable. A page should never hardcode indigo (or any hue) — if it looks indigo on a Commerce page, the primary action is missing `color="module"`. This holds in the drawer/modal too: the `@detail` slot renders outside the module layout, so it wraps content in the record's owning `ModuleProvider` (keyed by entity type) — never assume the route's layout supplies the color.
 4. **One primary action per header, top-right.** Actions live in the page header, right-aligned. Never below the header, never duplicated into the body, never a second competing primary.
 5. **The breadcrumb is the back button.** The shell breadcrumb already provides up-navigation. The working area carries no in-content "← Back to X" link.
 6. **Section navigation belongs to the shell, not the content.** Switching between a module's sections is the contextual sidebar's job (§11), not in-content tabs or a card grid. The working area is for _content_; in-content tabs are reserved for the facets of a single record (§11.1).
@@ -94,11 +96,11 @@ subtitle paragraph (muted, one or two sentences)
 
 | Slot         | Rule                                                                                                                                                                                                           |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Icon**     | The module's `lucide` icon, in `--module-active`. Present on every module-scoped page; omitted only on the platform-level `/` Home and `/settings` index.                                                      |
+| **Icon**     | The module's `lucide` icon, in `--color-module`. Present on every module-scoped page; omitted only on the platform-level `/` Home and `/settings` index.                                                      |
 | **Title**    | `<Heading level={1}>`. The page/entity name.                                                                                                                                                                   |
 | **Badge**    | Optional. A single inline pill for a **count** ("12 products") or **status** ("Active", "Module preview"). Uses `Badge`; never colored eyebrow text, never free-floating. At most one.                         |
 | **Subtitle** | Optional `<Text variant="muted">`, ≤ 2 sentences. One consistent style — not sometimes a long paragraph, sometimes a meta string. Tenant ids / "last 30 days" framing belongs in body stats, not the subtitle. |
-| **Actions**  | Right-aligned. **Exactly one** primary (`Button variant="module"`); zero or more secondaries (`variant="outline"`/`"ghost"`). Empty when the archetype's actions live elsewhere (forms, previews).             |
+| **Actions**  | Right-aligned. **Exactly one** primary (`Button color="module"`); zero or more secondaries (`variant="outline"`/`"ghost"`). Empty when the archetype's actions live elsewhere (forms, previews).             |
 
 **Forbidden:** primary actions placed below the header or left-aligned (seen on Discounts, Segments); a second `Create` button duplicated into an empty state; the in-content "← Back to X" link (seen on every `/new` and the product detail) — delete it, the breadcrumb owns up-nav.
 
@@ -110,8 +112,8 @@ A **complex tabbed record** (a product, and in time customer / B2B) also carries
 
 ## 6. Actions & Module Color
 
-- **Primary action** = `Button variant="module"`. It reads `--module-active`, so it is orange on Commerce, cyan on CRM, teal on CMS, blue on Email — automatically. The audit found Commerce's Discounts "Create discount" and Site-Settings "Save settings" rendering **indigo** (the default), and the Commerce settings page showing orange channel pills next to an indigo save button. **Cause:** those buttons use the default variant instead of `variant="module"`. **Fix:** one prop.
-- **Module color reference** (`packages/ui/src/tokens.css`): Site `#6366F1`, Commerce `#F97316`, CMS `#14B8A6`, CRM `#06B6D4`, Email `#0EA5E9`, B2B `#475569`, Dropship `#10B981`, AI `#EC4899`. Never hardcode these — reference `--module-active` via the component variant.
+- **Primary action** = `Button color="module"`. It reads `--color-module`, so it is orange on Commerce, cyan on CRM, teal on CMS, blue on Email — automatically. The audit found Commerce's Discounts "Create discount" and Site-Settings "Save settings" rendering **indigo** (the default), and the Commerce settings page showing orange channel pills next to an indigo save button. **Cause:** those buttons use the default color instead of `color="module"`. **Fix:** one prop.
+- **Module color reference** (`@sparx/brand/theme.css`, as `--color-module-<name>`): Site `#6366F1`, Commerce `#F97316`, CMS `#14B8A6`, CRM `#06B6D4`, Email `#0EA5E9`, B2B `#475569`, Dropship `#10B981`, AI `#EC4899`. Never hardcode these — reference `--color-module` (via `color="module"` under the surrounding `ModuleProvider`).
 - **Secondary actions**: `variant="outline"` (e.g. Record-Detail "Unpublish", "Archive"). **Tertiary/utility** (Recompute, Show archived): `variant="ghost"` or a plain link, grouped with the primary in the header action slot, never as a separate left-aligned row.
 
 ---
@@ -157,8 +159,8 @@ The audit found three treatments (an inline icon-left card on Home; a bare gray 
 
 - Centered: icon-in-circle, title, **one-line** description, **one** action.
 - Rendered **directly** in the content region (or as the `DataTable` zero-row fallback) — **never** double-nested (module Card → gray box → content).
-- The action is `Button variant="module"`. It must **not** duplicate the header's primary action — if the header already has "Create discount", the empty state either has no button or a clearly distinct affordance (e.g. "Import"). A list whose header carries the create action shows a buttonless empty state.
-- The bare-gray-box-with-no-CTA (Orders) gains a CTA; the indigo CTA (Discounts) becomes `variant="module"`.
+- The action is `Button color="module"`. It must **not** duplicate the header's primary action — if the header already has "Create discount", the empty state either has no button or a clearly distinct affordance (e.g. "Import"). A list whose header carries the create action shows a buttonless empty state.
+- The bare-gray-box-with-no-CTA (Orders) gains a CTA; the indigo CTA (Discounts) becomes `color="module"`.
 
 **Toolbar visibility is data-independent (locked 1.5).** The audit found the same emptiness producing different chrome — some empty lists kept their `ListToolbar`, others dropped it. The rule: a list page renders `ListToolbar` **iff it has at least one control** (search, filters, sort, or view toggle), and when it does, the toolbar renders **unconditionally — above the empty/results branch, visible even at zero records.** Lists with no controls render no toolbar (an empty toolbar is worse than none). The empty state is the _body_ below the toolbar, not a replacement for it. (This supersedes the earlier "hide when filtered to zero" idea — the toolbar stays put; only the body swaps to `EmptyState`.)
 
@@ -178,7 +180,7 @@ Three KPI surfaces today (4 bordered cards on Home; 4 gray cards 2×2 on Commerc
 
 Five variants in the audit (Home "Active modules", Commerce "Manage", Email "Surfaces", Settings, B2B "What ships") differing on columns, tint treatment, and whether the whole card or a button navigates. One pattern:
 
-- `Card variant="module"` (a subtle `--module-active` tint over the surface — `color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`, theme-aware, `card.tsx`) in a responsive `Grid` (3-col wide → 1-col mobile).
+- `Card variant="module"` (`bg-module bg-soft` — a subtle theme-aware `color-mix` tint set by the enclosing `ModuleProvider`, `card.tsx`) in a responsive `Grid` (3-col wide → 1-col mobile).
 - Card content: icon + title + one-line description + optional status/"Soon" badge.
 - **On a dense cross-module page, tint only ONE card per module hue** — the section's "primary" card — and leave every other card plain (neutral), so the tint stays a signal, not a wash. `OverviewCard` takes a `plain` prop that renders `variant="default"` for the non-primary cards.
 - **Whole card is the link.** No "Open" button/link in the corner (drop the Settings "Open" and Email "Open X" buttons); a disabled/"Soon" card is non-interactive with a muted badge.
@@ -190,7 +192,7 @@ Five variants in the audit (Home "Active modules", Commerce "Manage", Email "Sur
 
 The audit found a module's child sections navigated three different ways: an in-content **tab strip** (CMS 8, CRM 9, Email 7 tabs), a **card grid** used as the only nav (Commerce "Manage", 10 cards), and per-row/per-card **buttons** ("Open"/"Edit"). A horizontal tab strip breaks down past ~5–6 items — which is exactly why Commerce abandoned tabs for cards. None of these is the answer.
 
-**Decision (locked):** intra-module navigation is a **rail + contextual panel**, owned by the shell ([doc 24](24-dashboard-shell.md) §5). The primary sidebar is a thin **icon rail** (Search/⌘K, Home, ★ Favorites, ⏱ Recents, module icons with the active one in `--module-active`, Settings pinned bottom). Beside it sits a **contextual panel** whose contents follow context: **inside a module → that module's sections** (from the manifest), **at platform level (Home / Settings) → Favorites + Recents**. A vertical list scales to 10+ sections where tabs cannot, and it collapses on mobile into the breadcrumb bottom-sheet's "\<Module\> pages" group that [doc 24](24-dashboard-shell.md) §4.2.1 already defines — so desktop and mobile become the same model.
+**Decision (locked):** intra-module navigation is a **rail + contextual panel**, owned by the shell ([doc 24](24-dashboard-shell.md) §5). The primary sidebar is a thin **icon rail** (Search/⌘K, Home, ★ Favorites, ⏱ Recents, module icons with the active one in `--color-module`, Settings pinned bottom). Beside it sits a **contextual panel** whose contents follow context: **inside a module → that module's sections** (from the manifest), **at platform level (Home / Settings) → Favorites + Recents**. A vertical list scales to 10+ sections where tabs cannot, and it collapses on mobile into the breadcrumb bottom-sheet's "\<Module\> pages" group that [doc 24](24-dashboard-shell.md) §4.2.1 already defines — so desktop and mobile become the same model.
 
 **Consequences for the working area:**
 
@@ -200,7 +202,7 @@ The audit found a module's child sections navigated three different ways: an in-
 
 ### 11.1 Tabs survive — but only for record facets
 
-In-content tabs (`Tabs variant="default"`, underline in `--module-active`, `tabs.tsx:55`) remain the right tool for the **facets of a single record** — a product's Overview / Variants / Media / Pricing / Inventory / Fitment / SEO. These are sub-views of _one entity_, not module navigation, so they belong in the working area, not the sidebar.
+In-content tabs (`Tabs variant="default"`, underline in `--color-module`, `tabs.tsx:55`) remain the right tool for the **facets of a single record** — a product's Overview / Variants / Media / Pricing / Inventory / Fitment / SEO. These are sub-views of _one entity_, not module navigation, so they belong in the working area, not the sidebar.
 
 - Use `variant="default"`.
 - **Drop the redundant "active" text label** — the underline already communicates selection.
@@ -234,10 +236,10 @@ Container size="md"
   PageHeader (title + subtitle; NO back link)        ← breadcrumb owns up-nav
   Card  (one, or one per logical section)
     Form fields (FormItem / FormLabel / FormControl / FormDescription / FormMessage)
-  FormActionBar  →  [Cancel (ghost)]  [Save (variant="module")]   (right-aligned)
+  FormActionBar  →  [Cancel (ghost)]  [Save (color="module")]   (right-aligned)
 ```
 
-- **Action bar** (to build as a small `FormActionBar`, or a consistent `CardFooter` composition): right-aligned, `Cancel` ghost + primary `Save`/`Create X` in `variant="module"`. One placement everywhere — not "sometimes in the card footer, sometimes who-knows-where."
+- **Action bar** (to build as a small `FormActionBar`, or a consistent `CardFooter` composition): right-aligned, `Cancel` ghost + primary `Save`/`Create X` in `color="module"`. One placement everywhere — not "sometimes in the card footer, sometimes who-knows-where."
 - **Required fields** marked with a red asterisk via `FormLabel` (the CMS form already does this; make it universal).
 - **Help text** via `FormDescription` (muted, below the field) — one style; no orange help text on one page and gray on another.
 - **No in-content back link.** Delete the centered "← Back to products / pipelines / pages" links.
@@ -288,10 +290,10 @@ The not-yet-built modules (B2B, AI, Dropship) already share one template via `ap
 | **`PageHeader`**            | ✅ built | `packages/ui/src/components/layout/page-header.tsx` — the §5 anatomy                                                                                  |
 | **`FilterBar`**             | ✅ built | `packages/ui/src/components/data/filter-bar.tsx` — the §7.1 toolbar                                                                                   |
 | **`FormActionBar`**         | ✅ built | `packages/ui/src/components/form/form-action-bar.tsx` — the §13 bar                                                                                   |
-| **Trend charts**            | ✅ built | `packages/ui/src/components/data/chart/*` — `LineChart`/`BarChart`/`AreaChart`/`Sparkline` (Recharts, encapsulated; token + `--module-active` themed) |
+| **Trend charts**            | ✅ built | `packages/ui/src/components/data/chart/*` — `LineChart`/`BarChart`/`AreaChart`/`Sparkline` (Recharts, encapsulated; token + `--color-module` themed) |
 | **`OverviewChartCard`**     | ✅ built | `apps/dashboard/.../_components/overview-charts.tsx` — overview chart wrapper + the `SAMPLE_*` datasets (sample-labeled until live timeseries)        |
 
-The three layout primitives (built 2026-05-31 — pure layout containers; actions/filters are slots, decoupled from the Button API) + the chart components + targeted prop fixes (mostly `variant="module"`) cover the standard. No primitive needs restyling. **Charts need a real data source:** today only point-in-time `/v1/{module}/reports/*` summaries exist — no timeseries endpoints — so the trend cards render `SAMPLE_*` data behind a "Sample data" badge until `*-timeseries` endpoints land.
+The three layout primitives (built 2026-05-31 — pure layout containers; actions/filters are slots, decoupled from the Button API) + the chart components + targeted prop fixes (mostly `color="module"`) cover the standard. No primitive needs restyling. **Charts need a real data source:** today only point-in-time `/v1/{module}/reports/*` summaries exist — no timeseries endpoints — so the trend cards render `SAMPLE_*` data behind a "Sample data" badge until `*-timeseries` endpoints land.
 
 ---
 
@@ -325,14 +327,14 @@ The three layout primitives (built 2026-05-31 — pure layout containers; action
 
 1. **Build the three new primitives** (`PageHeader`, `FilterBar`, `FormActionBar`) in `@sparx/ui` with the specs above. Ship behind nothing — they're additive.
 2. **Sweep by archetype, not by module** — fix all Forms, then all Lists, then all Overviews. Same-archetype pages share the same diff, so batching by archetype is faster and keeps the standard honest.
-3. **Quick wins first:** the Commerce `variant="module"` button fixes (§6) and the back-link deletions (§5/§13) are one-line changes with immediate visible payoff — do them in the first pass.
+3. **Quick wins first:** the Commerce `color="module"` button fixes (§6) and the back-link deletions (§5/§13) are one-line changes with immediate visible payoff — do them in the first pass.
 4. Each archetype's compliance is verifiable live with the same Playwright capture used for the audit; re-shoot the working area and diff against this doc.
 
 ---
 
 ## 18. Related
 
-- [23-frontend-component-architecture.md](23-frontend-component-architecture.md) — the primitives, CVA pattern, token rules this doc composes.
+- [23-frontend-component-architecture.md](23-frontend-component-architecture.md) — the silicaui primitives, the four-axis variant system, token rules this doc composes.
 - [24-dashboard-shell.md](24-dashboard-shell.md) — the chrome around the working area.
 - [18-frontend-architecture.md](18-frontend-architecture.md) — app-level architecture.
 - [sparx-brand-guide.md](sparx-brand-guide.md) — module colors, the wordmark, the module tint.

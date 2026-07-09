@@ -10,8 +10,9 @@ import * as React from 'react';
  * that affordance — a copyable mono chip (`CopyValue`) and a color tile that
  * stacks the live swatch over its copyable hex + token (`Swatch`).
  *
- * Bespoke chrome on the marketing surface — inline styles reference tokens from
- * packages/ui/src/tokens.css (docs/23 §1). The copy interaction is the only
+ * Bespoke chrome on the marketing surface — inline styles reference silica/brand
+ * tokens (colors from @sparx/brand/theme.css; type/radius/motion from
+ * packages/ui/src/tokens.css, docs/23 §1). The copy interaction is the only
  * reason these live outside the server-rendered sections.
  */
 
@@ -67,9 +68,12 @@ export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
         fontFamily: 'var(--font-mono)',
         fontSize: '12px',
         lineHeight: 1,
-        color: tone === 'strong' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-        backgroundColor: hover ? 'var(--color-bg-subtle)' : 'transparent',
-        border: '1px solid var(--color-border-default)',
+        color:
+          tone === 'strong'
+            ? 'var(--color-base-content)'
+            : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+        backgroundColor: hover ? 'var(--color-base-200)' : 'transparent',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-md)',
         cursor: 'pointer',
         transition: 'background-color var(--transition-fast), color var(--transition-fast)',
@@ -78,7 +82,11 @@ export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
       <span>{value}</span>
       <span
         aria-hidden
-        style={{ color: copied ? 'var(--color-success)' : 'var(--color-text-tertiary)' }}
+        style={{
+          color: copied
+            ? 'var(--color-success)'
+            : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+        }}
       >
         {copied ? '✓' : '⧉'}
       </span>
@@ -123,7 +131,7 @@ export function Swatch({ name, value, hex, token, note, height = 88 }: SwatchPro
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,
             fontSize: '14px',
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-base-content)',
           }}
         >
           {name}
@@ -138,7 +146,7 @@ export function Swatch({ name, value, hex, token, note, height = 88 }: SwatchPro
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
               lineHeight: '18px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             }}
           >
             {note}

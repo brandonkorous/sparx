@@ -12,7 +12,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Alert, Button } from 'silicaui-react';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 import { formatCents } from '@/lib/format';
 import {

@@ -2,7 +2,15 @@
 
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { Button, Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Label,
+} from '@wizeworks/silicaui-react';
 
 import type { PromptVariable } from './prompt-types';
 
@@ -45,39 +53,33 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
             <Card key={index} className="bg-base-200">
               <CardBody className="p-3">
                 <div className="flex flex-row flex-wrap items-start gap-2">
-                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
-                    <Label htmlFor={`var-key-${index}`} className="text-base-content/50">
-                      Key
-                    </Label>
-                    <Input
+                  <Field className="min-w-[8rem] flex-1">
+                    <FieldLabel className="text-base-content/50">Key</FieldLabel>
+                    <FieldControl
                       id={`var-key-${index}`}
                       value={variable.key}
                       onChange={(e) => update(index, { key: e.target.value })}
                       placeholder="customer_name"
                     />
-                  </div>
-                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
-                    <Label htmlFor={`var-label-${index}`} className="text-base-content/50">
-                      Label
-                    </Label>
-                    <Input
+                  </Field>
+                  <Field className="min-w-[8rem] flex-1">
+                    <FieldLabel className="text-base-content/50">Label</FieldLabel>
+                    <FieldControl
                       id={`var-label-${index}`}
                       value={variable.label}
                       onChange={(e) => update(index, { label: e.target.value })}
                       placeholder="Customer name"
                     />
-                  </div>
-                  <div className="flex min-w-[8rem] flex-1 flex-col gap-1">
-                    <Label htmlFor={`var-example-${index}`} className="text-base-content/50">
-                      Example (optional)
-                    </Label>
-                    <Input
+                  </Field>
+                  <Field className="min-w-[8rem] flex-1">
+                    <FieldLabel className="text-base-content/50">Example (optional)</FieldLabel>
+                    <FieldControl
                       id={`var-example-${index}`}
                       value={variable.example ?? ''}
                       onChange={(e) => update(index, { example: e.target.value })}
                       placeholder="Jordan"
                     />
-                  </div>
+                  </Field>
                   <Button
                     type="button"
                     variant="ghost"

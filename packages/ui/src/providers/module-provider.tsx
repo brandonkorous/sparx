@@ -97,28 +97,18 @@ export function ModuleProvider({ module, children, className, style }: ModulePro
   const cssVars = React.useMemo(
     () =>
       ({
-        '--module-active': colors.color,
-        '--module-active-content': colors.content,
-        // silicaui module-color bridge. silica generates `.btn-module` /
-        // `.badge-module` / `.bg-module`/… from the registered `module` color
-        // (see the dashboard globals.css @plugin colors list), reading this pair.
-        // Pointing them at the active module's hue lets every migrated
-        // `color="module"` component resolve to the wrapping module through
-        // silica's standard color machinery — the same value the legacy
-        // `--module-active` above carries for un-migrated @sparx/ui components.
+        // The active-module bridge. silicaui generates `.btn-module` /
+        // `.badge-module` / `.bg-module` / `.text-module` / … from the registered
+        // `module` color (see each app's globals.css @plugin colors list),
+        // reading this pair — so every `color="module"` component and the
+        // `bg-module bg-soft` tint resolve to the wrapping module's hue through
+        // silica's standard color machinery. The soft tint + module ink are
+        // derived by silicaui from this one color (no hand-picked per-theme tint
+        // tokens anymore) and adapt to dark mode automatically. Outside any
+        // provider, `--color-module` falls back to the brand default (= primary)
+        // in @sparx/brand/theme.css.
         '--color-module': colors.color,
         '--color-module-content': colors.content,
-        // Theme-aware tint + ink. We emit the hand-picked LIGHT values plus a
-        // DARK derivation (module color mixed into the surface / lifted toward
-        // the text color); tokens.css selects between them by theme on
-        // [data-module]. This keeps light mode exactly as designed while
-        // preventing a fixed light hex from rendering on a dark surface — the
-        // whole UI consumes the resolved --module-active-tint / -text, so every
-        // module-tinted chip, nav highlight, and ink label adapts at once.
-        '--module-active-tint-light': colors.tint,
-        '--module-active-tint-dark': `color-mix(in oklab, ${colors.color} 14%, var(--color-bg-surface))`,
-        '--module-active-text-light': colors.text,
-        '--module-active-text-dark': `color-mix(in oklab, ${colors.color} 60%, var(--color-text-primary))`,
       }) as React.CSSProperties,
     [colors]
   );

@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardBody, NativeSelect } from 'silicaui-react';
+import { Card, CardBody, Field, FieldStatus, NativeSelect } from '@wizeworks/silicaui-react';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
 import { setEntryTemplate } from '../../actions';
@@ -57,7 +57,7 @@ export function EntryTemplatePicker({
           Which builder template renders this {typeName.toLowerCase()} on your site. Leave it on the
           default unless this one needs a different layout.
         </p>
-        <div className="flex flex-col gap-2">
+        <Field>
           <NativeSelect
             value={value}
             aria-label="Page template"
@@ -76,11 +76,11 @@ export function EntryTemplatePicker({
             ))}
           </NativeSelect>
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert">
               {error}
-            </p>
+            </FieldStatus>
           )}
-        </div>
+        </Field>
       </CardBody>
     </Card>
   );

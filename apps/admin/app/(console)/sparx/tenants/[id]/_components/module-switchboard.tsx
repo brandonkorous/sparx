@@ -170,15 +170,10 @@ function ModuleRow({
 
   return (
     <ModuleProvider module={moduleColor(m.key)}>
-      <div
-        className={cn(
-          'flex items-center gap-4 py-3',
-          !isLast && 'border-b border-[var(--color-border-default)]'
-        )}
-      >
+      <div className={cn('flex items-center gap-4 py-3', !isLast && 'border-base-300 border-b')}>
         <span
           className="h-2.5 w-2.5 shrink-0 rounded-full"
-          style={{ background: 'var(--module-active)' }}
+          style={{ background: 'var(--color-module)' }}
           aria-hidden="true"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -198,10 +193,10 @@ function ModuleRow({
           className={cn(
             'w-20 shrink-0 text-right text-sm',
             lock === 'included'
-              ? 'font-medium text-[var(--color-success-text)]'
+              ? 'text-success font-medium'
               : on
-                ? 'font-medium text-[var(--color-text-primary)]'
-                : 'text-[var(--color-text-tertiary)]'
+                ? 'text-base-content font-medium'
+                : 'text-base-content/50'
           )}
         >
           {priceLabel}

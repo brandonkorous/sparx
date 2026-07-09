@@ -3,22 +3,22 @@ packages:
   - 'packages/*'
   - 'services/*'
 
-# Single source of truth for the silicaui family versions. Consuming apps
-# reference these as "catalog:" in their package.json (e.g. "silicaui": "catalog:")
-# so a version bump happens in one place, not across market/dashboard/site/web.
-# These are the RELEASED pins used when installing from the registry — LOCAL
-# builder-migration testing overrides them to the local checkout via the
-# `pnpm.overrides` link: block in the root package.json (uncommitted). Keep these
-# in sync with what actually ships when a family package is published.
+# Single source of truth for the @wizeworks/silicaui family versions. Consuming
+# apps reference these as "catalog:" in their package.json (e.g.
+# "@wizeworks/silicaui": "catalog:") so a version bump happens in one place, not
+# across market/dashboard/site/web. The family is scoped under @wizeworks/* and
+# published to the registry — these pins install straight from it (the earlier
+# local `pnpm.overrides` link block has been removed). Bump here when a new
+# version ships; keep every entry on the same version so the family stays unified.
 catalog:
-  silicaui: ^1.1.1
-  silicaui-react: ^1.1.1
-  silicaui-html: ^1.1.1
-  silicaui-behaviors: ^1.1.1
-  silicaui-mcp: ^1.1.1
-  silicaui-editor: ^1.1.1
-  silicaui-dnd: ^1.1.1
-  silicaui-panels: ^1.1.1
-  silicaui-charts: ^1.1.1
-  silicaui-table: ^1.1.1
-  silicaui-builder: ^1.1.1 # published as of v1.1.1 (the family ships unified)
+  '@wizeworks/silicaui': ^0.8.0
+  '@wizeworks/silicaui-react': ^0.8.0
+  '@wizeworks/silicaui-html': ^0.8.0
+  '@wizeworks/silicaui-behaviors': ^0.8.0
+  '@wizeworks/silicaui-mcp': ^0.8.0
+  '@wizeworks/silicaui-editor': ^0.8.0
+  '@wizeworks/silicaui-dnd': ^0.8.0
+  '@wizeworks/silicaui-panels': ^0.8.0
+  '@wizeworks/silicaui-charts': ^0.8.0
+  '@wizeworks/silicaui-table': ^0.8.0
+  '@wizeworks/silicaui-builder': ^0.8.0

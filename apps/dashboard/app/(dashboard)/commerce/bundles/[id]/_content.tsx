@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Package2 } from 'lucide-react';
 
 import { statusLabel } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 

@@ -17,7 +17,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { Upload } from 'lucide-react';
 import { initUpload, completeUpload } from './actions';
 

@@ -23,7 +23,7 @@ export function InvoicePreview({
     <div
       style={{
         backgroundColor: '#ffffff',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: 'var(--radius-lg)',
         padding: '28px',
         fontFamily: 'Arial, Helvetica, sans-serif',

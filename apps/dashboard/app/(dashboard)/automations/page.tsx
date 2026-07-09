@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import { Badge, Button, Card, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { ActionQueue, ActionTile, AreaChart, DonutChart, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -97,7 +97,7 @@ function triggerGroup(triggerType: string): string {
 // so the by-trigger split stays on-brand without hardcoding the hex.
 const DONUT_COLORS = [
   'module',
-  'var(--module-active-tint)',
+  'color-mix(in oklch, var(--color-module) 15%, transparent)',
   '#f0abfc',
   '#f5d0fe',
   '#fbcfe8',
@@ -286,8 +286,8 @@ export default async function AutomationsPage() {
           right={<CardLink href="/automations?status=error">All issues</CardLink>}
         >
           {attention.length === 0 ? (
-            <div className="flex items-center gap-3 py-2 text-sm text-[var(--color-text-secondary)]">
-              <ShieldCheck className="h-4 w-4 text-[var(--color-success-text)]" />
+            <div className="text-base-content/70 flex items-center gap-3 py-2 text-sm">
+              <ShieldCheck className="text-success h-4 w-4" />
               Everything is running clean — no failed or paused automations.
             </div>
           ) : (
@@ -427,12 +427,12 @@ export default async function AutomationsPage() {
                       <td>
                         <Link
                           href={`/automations/${a.id}`}
-                          className="font-medium hover:text-[var(--module-active)] hover:underline"
+                          className="hover:text-module font-medium hover:underline"
                         >
                           {a.name}
                         </Link>
                       </td>
-                      <td className="text-[var(--color-text-secondary)]">
+                      <td className="text-base-content/70">
                         {summarizeTrigger(a.triggerType, a.triggerConfig)}
                       </td>
                       <td className="text-right tabular-nums">{fmtNumber(a.runCount)}</td>

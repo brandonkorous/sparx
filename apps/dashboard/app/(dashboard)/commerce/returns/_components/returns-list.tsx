@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
 
@@ -70,7 +70,7 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
       href={`/commerce/returns/${r.id}`}
       entityType="return"
       entityId={r.id}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
+      className="hover:text-module font-mono text-xs"
     >
       {r.id.slice(0, 8)}
     </EntityRowLink>

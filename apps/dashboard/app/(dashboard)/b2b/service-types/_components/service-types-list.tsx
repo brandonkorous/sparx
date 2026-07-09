@@ -1,7 +1,7 @@
 'use client';
 
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { ServiceTypeActions } from './service-type-actions';
 

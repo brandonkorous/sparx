@@ -20,7 +20,17 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Badge, Card, CardBody, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import {
   ModuleProvider,
   SurfaceFrame,
@@ -289,10 +299,9 @@ function QuoteWizardInner({
               </p>
               <div className="flex flex-col gap-4">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <Label htmlFor="qw-customer">Customer</Label>
+                  <Field>
+                    <FieldLabel>Customer</FieldLabel>
                     <NativeSelect
-                      id="qw-customer"
                       value={customerId}
                       onChange={(e) => setCustomerId(e.target.value)}
                     >
@@ -303,11 +312,10 @@ function QuoteWizardInner({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
-                  <div>
-                    <Label htmlFor="qw-b2b">B2B account</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel>B2B account</FieldLabel>
                     <NativeSelect
-                      id="qw-b2b"
                       value={b2bAccountId}
                       onChange={(e) => setB2bAccountId(e.target.value)}
                     >
@@ -318,18 +326,18 @@ function QuoteWizardInner({
                         </option>
                       ))}
                     </NativeSelect>
-                  </div>
+                  </Field>
                 </div>
-                <div className="max-w-[8rem]">
-                  <Label htmlFor="qw-currency">Currency</Label>
-                  <Input
-                    id="qw-currency"
+                <Field className="max-w-[8rem]">
+                  <FieldLabel>Currency</FieldLabel>
+                  <FieldControl
+                    name="qw-currency"
                     value={currency}
                     maxLength={3}
                     className="uppercase"
                     onChange={(e) => setCurrency(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -353,10 +361,10 @@ function QuoteWizardInner({
                 Shipping, payment terms, and an expiry — all optional.
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
-                <div>
-                  <Label htmlFor="qw-shipping">Shipping</Label>
-                  <Input
-                    id="qw-shipping"
+                <Field>
+                  <FieldLabel>Shipping</FieldLabel>
+                  <FieldControl
+                    name="qw-shipping"
                     type="number"
                     min="0"
                     step="0.01"
@@ -364,11 +372,10 @@ function QuoteWizardInner({
                     onChange={(e) => setShipping(e.target.value)}
                     placeholder="0.00"
                   />
-                </div>
-                <div>
-                  <Label htmlFor="qw-terms">Payment terms</Label>
+                </Field>
+                <Field>
+                  <FieldLabel>Payment terms</FieldLabel>
                   <NativeSelect
-                    id="qw-terms"
                     value={paymentTerms}
                     onChange={(e) => setPaymentTerms(e.target.value as QuoteTerms)}
                   >
@@ -379,16 +386,16 @@ function QuoteWizardInner({
                     <option value="net60">Net 60</option>
                     <option value="net90">Net 90</option>
                   </NativeSelect>
-                </div>
-                <div>
-                  <Label htmlFor="qw-valid">Valid until</Label>
-                  <Input
-                    id="qw-valid"
+                </Field>
+                <Field>
+                  <FieldLabel>Valid until</FieldLabel>
+                  <FieldControl
+                    name="qw-valid"
                     type="date"
                     value={validUntil}
                     onChange={(e) => setValidUntil(e.target.value)}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
@@ -398,34 +405,37 @@ function QuoteWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Notes</h3>
               <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="qw-cust-note">Customer-facing note</Label>
-                  <Textarea
-                    id="qw-cust-note"
-                    rows={3}
+                <Field>
+                  <FieldLabel>Customer-facing note</FieldLabel>
+                  <FieldControl
+                    name="qw-cust-note"
                     value={customerNote}
                     onChange={(e) => setCustomerNote(e.target.value)}
-                    placeholder="Shown on the quote — terms, scope, anything the customer should see."
+                    render={
+                      <Textarea
+                        rows={3}
+                        placeholder="Shown on the quote — terms, scope, anything the customer should see."
+                      />
+                    }
                   />
-                </div>
-                <div>
-                  <Label htmlFor="qw-int-note">Internal note</Label>
-                  <Textarea
-                    id="qw-int-note"
-                    rows={3}
+                </Field>
+                <Field>
+                  <FieldLabel>Internal note</FieldLabel>
+                  <FieldControl
+                    name="qw-int-note"
                     value={internalNote}
                     onChange={(e) => setInternalNote(e.target.value)}
-                    placeholder="Only your team sees this."
+                    render={<Textarea rows={3} placeholder="Only your team sees this." />}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
         </div>
       </SurfaceStep>

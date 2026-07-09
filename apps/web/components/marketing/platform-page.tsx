@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -80,14 +80,16 @@ function PlatformHero() {
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
+        backgroundColor: 'var(--color-base-200)',
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <div style={{ maxWidth: '1100px' }}>
           <Display as="h1" size={104} lineHeight={96}>
             One platform for{' '}
-            <span style={{ color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+            >
               content and commerce
               <Spark />
             </span>
@@ -104,7 +106,7 @@ function PlatformHero() {
               fontWeight: 400,
               fontSize: 'clamp(16px, 1.6vw, 20px)',
               lineHeight: 1.55,
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               maxWidth: '600px',
               margin: 0,
             }}
@@ -133,7 +135,11 @@ function PlatformHero() {
               </Button>
             </div>
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               No credit card · Live in five minutes
             </span>
@@ -146,7 +152,7 @@ function PlatformHero() {
             justifyContent: 'space-between',
             paddingTop: '32px',
             marginTop: '8px',
-            borderTop: '1px solid var(--color-border-default)',
+            borderTop: '1px solid var(--color-base-300)',
             gap: '32px 56px',
           }}
         >
@@ -158,14 +164,14 @@ function PlatformHero() {
                   fontWeight: 500,
                   fontSize: '26px',
                   letterSpacing: '-0.02em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span
                     style={{
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       fontWeight: 400,
                       fontSize: '16px',
                     }}
@@ -176,7 +182,11 @@ function PlatformHero() {
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
               <span
-                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+                style={{
+                  fontFamily: SANS,
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                }}
               >
                 {m.s}
               </span>
@@ -206,7 +216,7 @@ function OneSystem() {
     <Section surface="surface" padding="lg">
       <div style={{ maxWidth: '720px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={<>Not integrations. One system</>}
           lede={
             <>
@@ -244,13 +254,13 @@ function OneSystem() {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '9px 15px',
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '9999px',
                 fontFamily: SANS,
                 fontSize: '13px',
                 fontWeight: 500,
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               <Dot color={getModuleColor(c.module).color} size={8} />
@@ -273,8 +283,8 @@ function OneSystem() {
             <path d="M420 0 V22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
             <path d="M540 0 V14 Q540 22 490 22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
             <path d="M700 0 V14 Q700 22 650 22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M380 22 V44" stroke="var(--sparx-primary)" strokeWidth={2} />
-            <circle cx="380" cy="22" r="3.5" fill="var(--sparx-primary)" />
+            <path d="M380 22 V44" stroke="var(--color-primary)" strokeWidth={2} />
+            <circle cx="380" cy="22" r="3.5" fill="var(--color-primary)" />
           </svg>
         </div>
 
@@ -286,7 +296,7 @@ function OneSystem() {
             borderRadius: '14px',
             padding: '22px 28px',
             backgroundColor: '#0A0A0A',
-            borderTop: '3px solid var(--sparx-primary)',
+            borderTop: '3px solid var(--color-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -326,8 +336,8 @@ function OneSystem() {
             marginTop: '14px',
             borderRadius: '14px',
             padding: '22px 28px',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -341,7 +351,7 @@ function OneSystem() {
                 fontFamily: SANS,
                 fontWeight: 500,
                 fontSize: '18px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               One surface — API-first &amp; MCP-native
@@ -351,7 +361,7 @@ function OneSystem() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 marginTop: '4px',
               }}
             >
@@ -368,9 +378,9 @@ function OneSystem() {
                   fontSize: '11px',
                   padding: '4px 10px',
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-page)',
-                  border: '1px solid var(--color-border-default)',
-                  color: 'var(--color-text-secondary)',
+                  backgroundColor: 'var(--color-base-200)',
+                  border: '1px solid var(--color-base-300)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {t}
@@ -386,11 +396,11 @@ function OneSystem() {
             fontFamily: SANS,
             fontSize: '15px',
             lineHeight: '24px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '620px',
           }}
         >
-          <b style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+          <b style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
             Turn a module off and it stops billing
           </b>{' '}
           — no migration, no exports, no goodbyes. The data stays where it was; it just goes quiet.
@@ -465,7 +475,7 @@ function OneRecord() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={<>A customer is one customer</>}
         lede={
           <>
@@ -480,8 +490,8 @@ function OneRecord() {
         style={{
           marginTop: '56px',
           maxWidth: '760px',
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '16px',
           overflow: 'hidden',
           boxShadow: '0 18px 50px rgba(15, 23, 42, 0.06)',
@@ -502,7 +512,7 @@ function OneRecord() {
               width: 46,
               height: 46,
               borderRadius: 9999,
-              backgroundColor: 'var(--sparx-primary)',
+              backgroundColor: 'var(--color-primary)',
               color: '#fff',
               display: 'inline-flex',
               alignItems: 'center',
@@ -522,7 +532,7 @@ function OneRecord() {
                 fontWeight: 500,
                 fontSize: '17px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               Ranchero Trucking Co.
@@ -531,7 +541,7 @@ function OneRecord() {
               style={{
                 fontFamily: MONO,
                 fontSize: '12.5px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: '2px',
               }}
             >
@@ -542,9 +552,9 @@ function OneRecord() {
             style={{
               fontFamily: MONO,
               fontSize: '11px',
-              color: 'var(--color-text-secondary)',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               padding: '5px 11px',
               borderRadius: '9999px',
               whiteSpace: 'nowrap',
@@ -575,14 +585,14 @@ function OneRecord() {
                     fontSize: '11px',
                     letterSpacing: '0.05em',
                     textTransform: 'uppercase',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {f.label}
                 </span>
               </div>
               <div
-                style={{ fontFamily: SANS, fontSize: '15px', color: 'var(--color-text-primary)' }}
+                style={{ fontFamily: SANS, fontSize: '15px', color: 'var(--color-base-content)' }}
               >
                 {f.val}
               </div>
@@ -590,7 +600,7 @@ function OneRecord() {
                 style={{
                   fontFamily: SANS,
                   fontSize: '13px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   marginTop: '3px',
                 }}
               >
@@ -612,7 +622,11 @@ function OneRecord() {
             }}
           />
           <span
-            style={{ fontFamily: SANS, fontSize: '13.5px', color: 'var(--color-text-secondary)' }}
+            style={{
+              fontFamily: SANS,
+              fontSize: '13.5px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
           >
             One profile, written by four modules — no integration, no copy, no drift.
           </span>
@@ -654,7 +668,7 @@ function FourCommitments() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={<>Four commitments that hold across every module</>}
       />
       <div className="mkt-grid-4-2-1" style={{ marginTop: '56px' }}>
@@ -666,8 +680,8 @@ function FourCommitments() {
               flexDirection: 'column',
               gap: '12px',
               padding: '30px 26px 34px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '240px',
             }}
@@ -676,7 +690,11 @@ function FourCommitments() {
               style={{ width: 28, height: 3, borderRadius: 9999, backgroundColor: it.accent }}
             />
             <span
-              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {it.n}
             </span>
@@ -687,7 +705,7 @@ function FourCommitments() {
                 fontWeight: 500,
                 fontSize: '20px',
                 letterSpacing: '-0.02em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {it.title}
@@ -698,7 +716,7 @@ function FourCommitments() {
                 fontFamily: SANS,
                 fontSize: '14px',
                 lineHeight: '22px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {it.body}
@@ -753,7 +771,7 @@ function GrowsWithYou() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={<>Start with one. Add the rest, no replatform</>}
         lede={
           <>
@@ -790,7 +808,7 @@ function GrowsWithYou() {
                   fontSize: '11px',
                   letterSpacing: '0.04em',
                   textTransform: 'uppercase',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {s.when}
@@ -803,7 +821,7 @@ function GrowsWithYou() {
                 fontWeight: 500,
                 fontSize: '16px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               {s.title}
@@ -814,7 +832,7 @@ function GrowsWithYou() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -832,9 +850,9 @@ function GrowsWithYou() {
                     fontWeight: 500,
                     padding: '4px 10px',
                     borderRadius: '9999px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
-                    color: 'var(--color-text-primary)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   <Dot color={MODS[t.module].color} size={6} />
@@ -947,11 +965,15 @@ function ModulesStrip() {
   return (
     <Section id="modules" surface="surface" padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={
           <>
             Twelve modules.{' '}
-            <span style={{ color: 'var(--color-text-tertiary)' }}>Mix any combination</span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+            >
+              Mix any combination
+            </span>
           </>
         }
       />
@@ -969,8 +991,8 @@ function ModulesStrip() {
                 padding: '22px',
                 // Module menu: each tile wears a soft 8% wash of its module hue
                 // (a color legend, like modules-grid) — not the retired stripe.
-                backgroundColor: `color-mix(in oklab, ${c.color} 8%, var(--color-bg-surface))`,
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: `color-mix(in oklab, ${c.color} 8%, var(--color-base-100))`,
+                border: '1px solid var(--color-base-300)',
                 borderRadius: '10px',
                 minHeight: '142px',
                 textDecoration: 'none',
@@ -1002,7 +1024,7 @@ function ModulesStrip() {
                   style={{
                     fontFamily: MONO,
                     fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {m.price}
@@ -1015,7 +1037,7 @@ function ModulesStrip() {
                   fontWeight: 500,
                   fontSize: '16px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {m.title}
@@ -1026,7 +1048,7 @@ function ModulesStrip() {
                   fontFamily: SANS,
                   fontSize: '13.5px',
                   lineHeight: '20px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {m.body}
@@ -1044,7 +1066,7 @@ function ModulesStrip() {
           style={{
             fontFamily: SANS,
             fontSize: '14px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '520px',
             margin: 0,
           }}
@@ -1202,7 +1224,7 @@ function ApiSurface() {
               alignSelf: 'flex-start',
               backgroundColor: '#0F0F0F',
               border: '1px solid #2A2A2A',
-              borderTop: '3px solid var(--sparx-primary)',
+              borderTop: '3px solid var(--color-primary)',
               borderRadius: '12px',
               overflow: 'hidden',
             }}
@@ -1334,7 +1356,7 @@ function Foundations() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={<>Enterprise foundations, on by default</>}
       />
       <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '32px 56px' }}>
@@ -1350,10 +1372,10 @@ function Foundations() {
                 fontWeight: 500,
                 fontSize: '18px',
                 letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
-              <Dot color="var(--sparx-primary)" size={9} />
+              <Dot color="var(--color-primary)" size={9} />
               {it.title}
             </h3>
             <p
@@ -1362,7 +1384,7 @@ function Foundations() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {it.body}
@@ -1400,7 +1422,7 @@ function PricingTeaser() {
               fontFamily: SANS,
               fontSize: '16px',
               lineHeight: '25px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Start with one module from $10/mo. Add the next when you need it. No bundles, no seat
@@ -1421,15 +1443,19 @@ function PricingTeaser() {
             <div
               key={t.name}
               style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: `1px solid ${t.highlight ? 'var(--sparx-primary)' : 'var(--color-border-default)'}`,
+                backgroundColor: 'var(--color-base-200)',
+                border: `1px solid ${t.highlight ? 'var(--color-primary)' : 'var(--color-base-300)'}`,
                 borderRadius: '12px',
                 padding: '22px 26px',
                 minWidth: '150px',
               }}
             >
               <div
-                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+                style={{
+                  fontFamily: SANS,
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                }}
               >
                 {t.name}
               </div>
@@ -1440,12 +1466,16 @@ function PricingTeaser() {
                   fontWeight: 500,
                   fontSize: '34px',
                   letterSpacing: '-0.03em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {t.price}
                 <span
-                  style={{ fontSize: '15px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}
+                  style={{
+                    fontSize: '15px',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                    fontWeight: 400,
+                  }}
                 >
                   /mo
                 </span>
@@ -1455,7 +1485,7 @@ function PricingTeaser() {
                   marginTop: '6px',
                   fontFamily: SANS,
                   fontSize: '12px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {t.note}
@@ -1477,8 +1507,8 @@ function PlatformCta() {
         paddingBottom: 'var(--section-py-xl)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-bg-page)',
-        borderTop: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-200)',
+        borderTop: '1px solid var(--color-base-300)',
         textAlign: 'center',
       }}
     >
@@ -1495,7 +1525,7 @@ function PlatformCta() {
             fontFamily: SANS,
             fontSize: '18px',
             lineHeight: '30px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             maxWidth: '560px',
           }}
         >
@@ -1515,7 +1545,7 @@ function PlatformCta() {
             marginTop: '22px',
             fontFamily: MONO,
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           No credit card · Cancel anytime · Your data, always exportable

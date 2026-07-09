@@ -7,13 +7,15 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
   NativeSelect,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type {
   AssignmentStrategy,
@@ -92,6 +94,8 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
   const [policyId, setPolicyId] = useState(service?.policyId ?? '');
   const [policies, setPolicies] = useState<BookingPolicy[]>([]);
 
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
+
   // Load policies for the picker — attaching one opts the service into deposits,
   // cancellation fees, and reminders (docs/79 §9).
   useEffect(() => {
@@ -168,10 +172,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
   }
 
   async function submit() {
-    if (!name.trim()) {
-      toast.error('Name is required');
-      return;
-    }
+    if (!v.validate()) return;
     setSaving(true);
     const body = {
       name: name.trim(),
@@ -225,22 +226,21 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
           <CardBody className="py-6">
             <CardTitle>Basics</CardTitle>
             <div className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="svc-name">Name</Label>
-                <Input
-                  id="svc-name"
+              <Field {...v.field('name')}>
+                <FieldLabel required>Name</FieldLabel>
+                <FieldControl
+                  name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Haircut, Yoga class, Dinner table"
-                  required
+                  {...v.control('name')}
                 />
-              </div>
+              </Field>
 
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="svc-type">Booking type</Label>
+                <Field>
+                  <FieldLabel>Booking type</FieldLabel>
                   <NativeSelect
-                    id="svc-type"
                     value={bookingType}
                     onChange={(e) => setBookingType(e.target.value as BookingType)}
                   >
@@ -250,11 +250,10 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
-                <div>
-                  <Label htmlFor="svc-strategy">Assignment</Label>
+                </Field>
+                <Field>
+                  <FieldLabel>Assignment</FieldLabel>
                   <NativeSelect
-                    id="svc-strategy"
                     value={strategy}
                     onChange={(e) => setStrategy(e.target.value as AssignmentStrategy)}
                   >
@@ -264,18 +263,18 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
+                </Field>
               </div>
 
-              <div>
-                <Label htmlFor="svc-desc">Description</Label>
-                <Textarea
-                  id="svc-desc"
+              <Field>
+                <FieldLabel>Description</FieldLabel>
+                <FieldControl
+                  name="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={2}
+                  render={<Textarea rows={2} />}
                 />
-              </div>
+              </Field>
 
               <div className="grid grid-cols-3 gap-3">
                 <NumberField
@@ -299,17 +298,16 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <Label htmlFor="svc-price">Price ($)</Label>
-                  <Input
-                    id="svc-price"
+                <Field>
+                  <FieldLabel>Price ($)</FieldLabel>
+                  <FieldControl
                     type="number"
                     min={0}
                     step="0.01"
                     value={priceDollars}
                     onChange={(e) => setPriceDollars(Number(e.target.value) || 0)}
                   />
-                </div>
+                </Field>
                 <NumberField
                   label={bookingType === 'class' ? 'Capacity (seats)' : 'Capacity'}
                   value={capacity}
@@ -339,13 +337,9 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                 />
               </div>
 
-              <div>
-                <Label htmlFor="svc-policy">Booking policy</Label>
-                <NativeSelect
-                  id="svc-policy"
-                  value={policyId}
-                  onChange={(e) => setPolicyId(e.target.value)}
-                >
+              <Field>
+                <FieldLabel>Booking policy</FieldLabel>
+                <NativeSelect value={policyId} onChange={(e) => setPolicyId(e.target.value)}>
                   <option value="">No policy</option>
                   {policies.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -353,7 +347,7 @@ export function ServiceForm({ presentation, service, open, onOpenChange }: Servi
                     </option>
                   ))}
                 </NativeSelect>
-              </div>
+              </Field>
             </div>
           </CardBody>
         </Card>
@@ -437,15 +431,15 @@ function NumberField({
   onChange: (n: number) => void;
 }) {
   return (
-    <div>
-      <Label>{label}</Label>
-      <Input
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+      <FieldControl
         type="number"
         min={min}
         value={value}
         onChange={(e) => onChange(Math.max(min, Number(e.target.value) || min))}
       />
-    </div>
+    </Field>
   );
 }
 

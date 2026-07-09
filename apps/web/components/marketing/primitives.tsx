@@ -16,18 +16,18 @@ import { SparxMark } from '@sparx/ui';
 // marketing bundle must not import the server-coupled @sparx/ui shell graph.
 // `color` is the shared token; `tint`/`text` are the light-mode chip values.
 const MODULE_COLORS = {
-  builder: { color: 'var(--module-builder)', tint: '#EEF2FF', text: '#4338CA' },
-  commerce: { color: 'var(--module-commerce)', tint: '#FFF7ED', text: '#C2410C' },
-  cms: { color: 'var(--module-cms)', tint: '#F0FDFA', text: '#0F766E' },
-  crm: { color: 'var(--module-crm)', tint: '#ECFEFF', text: '#0E7490' },
-  invoicing: { color: 'var(--module-invoicing)', tint: '#F7FEE7', text: '#3F6212' },
-  email: { color: 'var(--module-email)', tint: '#F0F9FF', text: '#0369A1' },
-  b2b: { color: 'var(--module-b2b)', tint: '#F1F5F9', text: '#334155' },
-  dropship: { color: 'var(--module-dropship)', tint: '#ECFDF5', text: '#065F46' },
-  inventory: { color: 'var(--module-inventory)', tint: '#FFFBEB', text: '#B45309' },
-  chat: { color: 'var(--module-chat)', tint: '#F5F3FF', text: '#6D28D9' },
-  scheduling: { color: 'var(--module-scheduling)', tint: '#FFF1F2', text: '#BE123C' },
-  ai: { color: 'var(--module-ai)', tint: '#FDF2F8', text: '#9D174D' },
+  builder: { color: 'var(--color-module-builder)', tint: '#EEF2FF', text: '#4338CA' },
+  commerce: { color: 'var(--color-module-commerce)', tint: '#FFF7ED', text: '#C2410C' },
+  cms: { color: 'var(--color-module-cms)', tint: '#F0FDFA', text: '#0F766E' },
+  crm: { color: 'var(--color-module-crm)', tint: '#ECFEFF', text: '#0E7490' },
+  invoicing: { color: 'var(--color-module-invoicing)', tint: '#F7FEE7', text: '#3F6212' },
+  email: { color: 'var(--color-module-email)', tint: '#F0F9FF', text: '#0369A1' },
+  b2b: { color: 'var(--color-module-b2b)', tint: '#F1F5F9', text: '#334155' },
+  dropship: { color: 'var(--color-module-dropship)', tint: '#ECFDF5', text: '#065F46' },
+  inventory: { color: 'var(--color-module-inventory)', tint: '#FFFBEB', text: '#B45309' },
+  chat: { color: 'var(--color-module-chat)', tint: '#F5F3FF', text: '#6D28D9' },
+  scheduling: { color: 'var(--color-module-scheduling)', tint: '#FFF1F2', text: '#BE123C' },
+  ai: { color: 'var(--color-module-ai)', tint: '#FDF2F8', text: '#9D174D' },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;
@@ -43,7 +43,7 @@ export function getModuleColor(module: MarketingModule) {
  * (never a fixed light hex).
  *
  * This is a HAND-MIRROR of @sparx/ui's `<Card variant="module">` recipe
- * (`color-mix(in oklab, var(--module-active) 12%, var(--color-bg-surface))`),
+ * (`color-mix(in oklab, var(--color-module) 12%, var(--color-base-100))`),
  * kept in sync by hand for the same reason MODULE_COLORS is: the marketing
  * bundle must not import the server-coupled @sparx/ui shell graph
  * (ModuleProvider). A marketing lead card and a dashboard module card therefore
@@ -56,7 +56,7 @@ export function getModuleColor(module: MarketingModule) {
  * softer 8% wash for that density.
  */
 export function moduleTint(color: string) {
-  return `color-mix(in oklab, ${color} 12%, var(--color-bg-surface))`;
+  return `color-mix(in oklab, ${color} 12%, var(--color-base-100))`;
 }
 
 /**
@@ -70,7 +70,7 @@ export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: bo
         fontWeight: 700,
         fontSize: `${size}px`,
         letterSpacing: '-0.03em',
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-base-content)',
         display: 'inline-flex',
         alignItems: 'center',
         gap: icon ? Math.round(size * 0.28) : 0,
@@ -79,7 +79,7 @@ export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: bo
     >
       {icon ? <SparxMark size={Math.round(size * 1.18)} /> : null}
       <span>
-        spar<span style={{ color: 'var(--sparx-primary)' }}>x</span>
+        spar<span style={{ color: 'var(--color-primary)' }}>x</span>
       </span>
     </span>
   );
@@ -97,7 +97,7 @@ export function Eyebrow({ children, color }: { children: React.ReactNode; color?
         fontWeight: 500,
         fontSize: '11px',
         letterSpacing: '0.08em',
-        color: color ?? 'var(--color-text-secondary)',
+        color: color ?? 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         textTransform: 'uppercase',
       }}
     >
@@ -139,7 +139,7 @@ export function Display({
         fontSize,
         letterSpacing: size > 80 ? '-0.035em' : '-0.025em',
         lineHeight: lh,
-        color: color ?? 'var(--color-text-primary)',
+        color: color ?? 'var(--color-base-content)',
         margin: 0,
       }}
     >
@@ -152,7 +152,7 @@ export function Display({
  * Indigo dot used as a bullet/decorative accent (eyebrow row, hero strip).
  */
 export function Dot({
-  color = 'var(--sparx-primary)',
+  color = 'var(--color-primary)',
   size = 6,
 }: {
   color?: string;
@@ -234,9 +234,9 @@ export function Section({
 }) {
   const surfaceBg =
     surface === 'page'
-      ? 'var(--color-bg-page)'
+      ? 'var(--color-base-200)'
       : surface === 'surface'
-        ? 'var(--color-bg-surface)'
+        ? 'var(--color-base-100)'
         : '#0A0A0A';
   const py =
     padding === 'md'
@@ -256,7 +256,7 @@ export function Section({
         paddingRight: 'var(--gutter-page)',
         borderTop:
           surface === 'surface'
-            ? '1px solid var(--color-border-default)'
+            ? '1px solid var(--color-base-300)'
             : surface === 'dark'
               ? '1px solid #1A1A1A'
               : undefined,
@@ -308,8 +308,10 @@ export function SectionHeader({
    *  section) where the default gray loses contrast against bright frames. */
   ledeColor?: string;
 }) {
-  const textPrimary = invert ? '#FFFFFF' : 'var(--color-text-primary)';
-  const textSecondary = ledeColor ?? (invert ? '#A1A1AA' : 'var(--color-text-secondary)');
+  const textPrimary = invert ? '#FFFFFF' : 'var(--color-base-content)';
+  const textSecondary =
+    ledeColor ??
+    (invert ? '#A1A1AA' : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)');
   return (
     <div
       style={{
@@ -393,6 +395,6 @@ export function EyebrowBadge({
  * Indigo period — the recurring "spark" brand moment from the design.
  * Used at the end of display headlines: "ignited." "live." etc.
  */
-export function Spark({ color = 'var(--sparx-primary)' }: { color?: string }) {
+export function Spark({ color = 'var(--color-primary)' }: { color?: string }) {
   return <span style={{ color }}>.</span>;
 }

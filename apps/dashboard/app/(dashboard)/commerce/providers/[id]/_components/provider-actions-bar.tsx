@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Power, Trash2 } from 'lucide-react';
 
 import { useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import {
   setProviderEnabledAction,

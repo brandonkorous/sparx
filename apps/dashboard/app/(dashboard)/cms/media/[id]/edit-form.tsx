@@ -8,7 +8,14 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useConfirm } from '@sparx/ui';
-import { Button, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { Trash2 } from 'lucide-react';
 import { deleteAsset, patchAsset } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -114,7 +121,7 @@ export function AssetEditForm({
               setFocal({ x: 0.5, y: 0.5 });
             }
           }}
-          className="relative w-full cursor-crosshair overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]"
+          className="border-base-300 bg-base-200 relative w-full cursor-crosshair overflow-hidden rounded-md border"
           style={{ aspectRatio: '16 / 9' }}
         >
           <img
@@ -128,7 +135,7 @@ export function AssetEditForm({
             style={{
               left: `${focal.x * 100}%`,
               top: `${focal.y * 100}%`,
-              backgroundColor: 'var(--module-active)',
+              backgroundColor: 'var(--color-module)',
             }}
             aria-hidden
           />
@@ -141,27 +148,27 @@ export function AssetEditForm({
 
       <form onSubmit={onSubmit} noValidate>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="alt-text">Alt text</Label>
-            <Input
-              id="alt-text"
+          <Field>
+            <FieldLabel>Alt text</FieldLabel>
+            <FieldControl
+              name="alt-text"
               value={altText}
               onChange={(e) => setAltText(e.target.value)}
               maxLength={500}
               placeholder="Describe the image for screen readers and SEO."
             />
-          </div>
+          </Field>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="caption">Caption (optional)</Label>
-            <Textarea
-              id="caption"
+          <Field>
+            <FieldLabel>Caption (optional)</FieldLabel>
+            <FieldControl
+              name="caption"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              rows={2}
               maxLength={2000}
+              render={<Textarea rows={2} />}
             />
-          </div>
+          </Field>
 
           {isImage && (
             <p className="text-base-content/70 text-xs">
@@ -170,14 +177,14 @@ export function AssetEditForm({
           )}
 
           {error && (
-            <p className="text-danger text-sm" role="alert" aria-live="polite">
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
               {error}
-            </p>
+            </FieldStatus>
           )}
           {message && (
-            <p className="text-success text-sm" aria-live="polite">
+            <FieldStatus status="success" attached={false} aria-live="polite">
               {message}
-            </p>
+            </FieldStatus>
           )}
 
           <div className="flex flex-row gap-2">

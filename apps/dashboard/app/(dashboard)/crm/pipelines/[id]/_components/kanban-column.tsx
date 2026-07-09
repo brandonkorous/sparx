@@ -5,7 +5,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { KanbanCard } from './kanban-card';
 import { type KanbanDeal, type KanbanStage, stageColor } from './kanban-types';
@@ -22,8 +22,8 @@ export function KanbanColumn({ stage, deals }: KanbanColumnProps) {
   return (
     <div
       ref={setNodeRef}
-      className={`w-72 shrink-0 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-subtle)] p-3 transition-colors ${
-        isOver ? 'border-[var(--module-active)] bg-[var(--module-active-soft)]' : ''
+      className={`border-base-300 bg-base-200 w-72 shrink-0 rounded-lg border p-3 transition-colors ${
+        isOver ? 'border-module bg-module/10' : ''
       }`}
     >
       <div className="flex flex-col gap-3">

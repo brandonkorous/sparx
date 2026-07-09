@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Download } from 'lucide-react';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { exportReportCsv } from '../_lib/report-actions';
 import type { ReportKind } from './types';
@@ -44,7 +44,7 @@ export function ExportCsvButton({
 
   return (
     <span className="inline-flex items-center gap-2">
-      {error ? <p className="text-xs text-[var(--color-danger)]">{error}</p> : null}
+      {error ? <p className="text-danger text-xs">{error}</p> : null}
       <Button
         variant="outline"
         size="sm"

@@ -12,11 +12,16 @@ import {
   Card,
   CardBody,
   Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Input,
   NativeSelect,
   Switch,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule as fieldRule, useFieldValidation } from '@sparx/forms';
 
 import {
   applyMarkupRuleAction,
@@ -160,8 +165,9 @@ function MatrixBandsEditor({
       <div className="flex flex-col gap-2">
         {rows.map((r, i) => (
           <div key={i} className="flex flex-row flex-wrap items-end gap-2">
-            <Field label="Cost ≥ ($)" className="w-28">
-              <Input
+            <Field className="w-28">
+              <FieldLabel>Cost ≥ ($)</FieldLabel>
+              <FieldControl
                 type="number"
                 inputMode="decimal"
                 step="any"
@@ -169,8 +175,9 @@ function MatrixBandsEditor({
                 onChange={(e) => patch(i, { minStr: e.target.value })}
               />
             </Field>
-            <Field label="Cost < ($)" className="w-28">
-              <Input
+            <Field className="w-28">
+              <FieldLabel>Cost &lt; ($)</FieldLabel>
+              <FieldControl
                 type="number"
                 inputMode="decimal"
                 step="any"
@@ -179,19 +186,24 @@ function MatrixBandsEditor({
                 placeholder="∞"
               />
             </Field>
-            <Field label="Method" className="w-40">
-              <NativeSelect
+            <Field className="w-40">
+              <FieldLabel>Method</FieldLabel>
+              <FieldControl
+                render={
+                  <NativeSelect>
+                    <option value="percentage">Percentage</option>
+                    <option value="multiplier">Multiplier</option>
+                    <option value="flat">Flat</option>
+                    <option value="margin_target">Target margin</option>
+                  </NativeSelect>
+                }
                 value={r.method}
                 onChange={(e) => patch(i, { method: e.target.value as BandMethod })}
-              >
-                <option value="percentage">Percentage</option>
-                <option value="multiplier">Multiplier</option>
-                <option value="flat">Flat</option>
-                <option value="margin_target">Target margin</option>
-              </NativeSelect>
+              />
             </Field>
-            <Field label={BAND_UNIT[r.method]} className="w-28">
-              <Input
+            <Field className="w-28">
+              <FieldLabel>{BAND_UNIT[r.method]}</FieldLabel>
+              <FieldControl
                 type="number"
                 inputMode="decimal"
                 step="any"
@@ -548,6 +560,18 @@ function RuleForm({
           ? '× multiplier'
           : '$ flat';
 
+  const values = { name, valueStr };
+  const v = useFieldValidation(values, {
+    name: fieldRule.required('Name is required.'),
+    // Value is a per-method display number; only required when the method isn't a
+    // cost-band matrix (the matrix edits its bands separately, so this field is hidden).
+    valueStr: (val) => {
+      if (isMatrix) return null;
+      const n = Number(String(val).trim());
+      return Number.isFinite(n) ? null : 'Enter a valid number.';
+    },
+  });
+
   // Live readout against a sample cost (docs/48 §2 binding rule: show both).
   const preview = React.useMemo(() => {
     const sampleCents = Math.round((Number(sampleDollars) || 0) * 100);
@@ -594,6 +618,7 @@ function RuleForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
 
     let value: number | null = null;
     let matrixBands: MatrixBand[] | null = null;
@@ -683,45 +708,60 @@ function RuleForm({
         </h3>
         <form onSubmit={onSubmit}>
           <div className="flex flex-col gap-4">
-            <Field label="Name">
-              <Input
+            <Field {...v.field('name')}>
+              <FieldLabel>Name</FieldLabel>
+              <FieldControl
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Standard parts +40%"
                 required
+                {...v.control('name')}
               />
             </Field>
 
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Method" className="min-w-[12rem] flex-1">
-                <NativeSelect value={method} onChange={(e) => setMethod(e.target.value as never)}>
-                  <option value="percentage">Percentage over cost</option>
-                  <option value="multiplier">Multiplier (keystone)</option>
-                  <option value="flat">Flat markup</option>
-                  <option value="margin_target">Target margin</option>
-                  <option value="matrix">Cost-band matrix</option>
-                </NativeSelect>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Method</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="percentage">Percentage over cost</option>
+                      <option value="multiplier">Multiplier (keystone)</option>
+                      <option value="flat">Flat markup</option>
+                      <option value="margin_target">Target margin</option>
+                      <option value="matrix">Cost-band matrix</option>
+                    </NativeSelect>
+                  }
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value as never)}
+                />
               </Field>
               {!isMatrix && (
-                <Field label={`Value (${valueUnit})`} className="min-w-[10rem] flex-1">
-                  <Input
+                <Field {...v.field('valueStr')} className="min-w-[10rem] flex-1">
+                  <FieldLabel>{`Value (${valueUnit})`}</FieldLabel>
+                  <FieldControl
                     type="number"
                     inputMode="decimal"
                     step="any"
                     value={valueStr}
                     onChange={(e) => setValueStr(e.target.value)}
                     placeholder={method === 'multiplier' ? '2.5' : method === 'flat' ? '15' : '40'}
+                    {...v.control('valueStr')}
                   />
                 </Field>
               )}
-              <Field label="Cost basis" className="min-w-[10rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Cost basis</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="variant_cost">Variant cost</option>
+                      <option value="supplier_cost">Supplier (dropship) cost</option>
+                    </NativeSelect>
+                  }
                   value={costBasis}
                   onChange={(e) => setCostBasis(e.target.value as never)}
-                >
-                  <option value="variant_cost">Variant cost</option>
-                  <option value="supplier_cost">Supplier (dropship) cost</option>
-                </NativeSelect>
+                />
               </Field>
             </div>
 
@@ -729,7 +769,7 @@ function RuleForm({
 
             {/* Live readout — works for every method incl. matrix */}
             {
-              <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+              <div className="border-base-300 bg-base-200 flex flex-row flex-wrap items-center gap-3 rounded border p-3">
                 <div className="flex flex-row items-center gap-2">
                   <p className="text-base-content/70 text-sm">If cost is</p>
                   <Input
@@ -757,44 +797,57 @@ function RuleForm({
 
             {/* Guards */}
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Rounding" className="min-w-[9rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[9rem] flex-1">
+                <FieldLabel>Rounding</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="none">None</option>
+                      <option value="nearest">Nearest</option>
+                      <option value="charm">Charm ending</option>
+                    </NativeSelect>
+                  }
                   value={roundStrategy}
                   onChange={(e) => setRoundStrategy(e.target.value as never)}
-                >
-                  <option value="none">None</option>
-                  <option value="nearest">Nearest</option>
-                  <option value="charm">Charm ending</option>
-                </NativeSelect>
+                />
               </Field>
               {roundStrategy === 'nearest' && (
-                <Field label="Round to" className="min-w-[8rem] flex-1">
-                  <NativeSelect
+                <Field className="min-w-[8rem] flex-1">
+                  <FieldLabel>Round to</FieldLabel>
+                  <FieldControl
+                    render={
+                      <NativeSelect>
+                        <option value="5">$0.05</option>
+                        <option value="10">$0.10</option>
+                        <option value="50">$0.50</option>
+                        <option value="100">$1.00</option>
+                      </NativeSelect>
+                    }
                     value={roundPrecision}
                     onChange={(e) => setRoundPrecision(e.target.value)}
-                  >
-                    <option value="5">$0.05</option>
-                    <option value="10">$0.10</option>
-                    <option value="50">$0.50</option>
-                    <option value="100">$1.00</option>
-                  </NativeSelect>
+                  />
                 </Field>
               )}
               {roundStrategy === 'charm' && (
-                <Field label="Ends in" className="min-w-[8rem] flex-1">
-                  <NativeSelect
+                <Field className="min-w-[8rem] flex-1">
+                  <FieldLabel>Ends in</FieldLabel>
+                  <FieldControl
+                    render={
+                      <NativeSelect>
+                        <option value="99">.99</option>
+                        <option value="95">.95</option>
+                        <option value="50">.50</option>
+                        <option value="0">.00</option>
+                      </NativeSelect>
+                    }
                     value={roundEnding}
                     onChange={(e) => setRoundEnding(e.target.value)}
-                  >
-                    <option value="99">.99</option>
-                    <option value="95">.95</option>
-                    <option value="50">.50</option>
-                    <option value="0">.00</option>
-                  </NativeSelect>
+                  />
                 </Field>
               )}
-              <Field label="Floor profit ($)" className="min-w-[8rem] flex-1">
-                <Input
+              <Field className="min-w-[8rem] flex-1">
+                <FieldLabel>Floor profit ($)</FieldLabel>
+                <FieldControl
                   type="number"
                   inputMode="decimal"
                   step="any"
@@ -803,8 +856,9 @@ function RuleForm({
                   placeholder="optional"
                 />
               </Field>
-              <Field label="Floor margin (%)" className="min-w-[8rem] flex-1">
-                <Input
+              <Field className="min-w-[8rem] flex-1">
+                <FieldLabel>Floor margin (%)</FieldLabel>
+                <FieldControl
                   type="number"
                   inputMode="decimal"
                   step="any"
@@ -816,19 +870,24 @@ function RuleForm({
             </div>
 
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Ceiling" className="min-w-[9rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[9rem] flex-1">
+                <FieldLabel>Ceiling</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="none">None</option>
+                      <option value="compare_at">Compare-at price</option>
+                      <option value="fixed">Fixed amount</option>
+                    </NativeSelect>
+                  }
                   value={ceilingSrc}
                   onChange={(e) => setCeilingSrc(e.target.value as never)}
-                >
-                  <option value="none">None</option>
-                  <option value="compare_at">Compare-at price</option>
-                  <option value="fixed">Fixed amount</option>
-                </NativeSelect>
+                />
               </Field>
               {ceilingSrc === 'fixed' && (
-                <Field label="Ceiling ($)" className="min-w-[8rem] flex-1">
-                  <Input
+                <Field className="min-w-[8rem] flex-1">
+                  <FieldLabel>Ceiling ($)</FieldLabel>
+                  <FieldControl
                     type="number"
                     inputMode="decimal"
                     step="any"
@@ -837,38 +896,47 @@ function RuleForm({
                   />
                 </Field>
               )}
-              <Field label="Applies to" className="min-w-[9rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[9rem] flex-1">
+                <FieldLabel>Applies to</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="catalog">Catalog price</option>
+                      <option value="document">Invoice/quote lines</option>
+                      <option value="both">Both</option>
+                    </NativeSelect>
+                  }
                   value={appliesTo}
                   onChange={(e) => setAppliesTo(e.target.value as never)}
-                >
-                  <option value="catalog">Catalog price</option>
-                  <option value="document">Invoice/quote lines</option>
-                  <option value="both">Both</option>
-                </NativeSelect>
+                />
               </Field>
             </div>
 
             {/* Cost-driven recompute (docs/48 §8) — only meaningful for catalog rules. */}
             {appliesTo !== 'document' && (
-              <div className="flex flex-col gap-2 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
+              <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border p-3">
                 <p className="text-base-content/70 text-xs font-medium">
                   When a bound variant’s cost changes
                 </p>
                 <div className="flex flex-row flex-wrap items-end gap-3">
-                  <Field label="Recompute" className="min-w-[14rem] flex-1">
-                    <NativeSelect
+                  <Field className="min-w-[14rem] flex-1">
+                    <FieldLabel>Recompute</FieldLabel>
+                    <FieldControl
+                      render={
+                        <NativeSelect>
+                          <option value="auto">Auto-apply within tolerance</option>
+                          <option value="review">Always queue for review</option>
+                          <option value="off">Don’t recompute</option>
+                        </NativeSelect>
+                      }
                       value={recomputeMode}
                       onChange={(e) => setRecomputeMode(e.target.value as never)}
-                    >
-                      <option value="auto">Auto-apply within tolerance</option>
-                      <option value="review">Always queue for review</option>
-                      <option value="off">Don’t recompute</option>
-                    </NativeSelect>
+                    />
                   </Field>
                   {recomputeMode === 'auto' && (
-                    <Field label="Tolerance (± % price change)" className="min-w-[10rem] flex-1">
-                      <Input
+                    <Field className="min-w-[10rem] flex-1">
+                      <FieldLabel>Tolerance (± % price change)</FieldLabel>
+                      <FieldControl
                         type="number"
                         inputMode="decimal"
                         step="any"
@@ -890,23 +958,25 @@ function RuleForm({
             )}
 
             <div className="flex flex-row flex-wrap items-end gap-3">
-              <Field label="Scope" className="min-w-[10rem] flex-1">
-                <NativeSelect
+              <Field className="min-w-[10rem] flex-1">
+                <FieldLabel>Scope</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect>
+                      <option value="all">All products</option>
+                      <option value="collection">By collection</option>
+                      <option value="product_type">By product type</option>
+                      <option value="vendor">By vendor</option>
+                    </NativeSelect>
+                  }
                   value={scopeType}
                   onChange={(e) => setScopeType(e.target.value as never)}
-                >
-                  <option value="all">All products</option>
-                  <option value="collection">By collection</option>
-                  <option value="product_type">By product type</option>
-                  <option value="vendor">By vendor</option>
-                </NativeSelect>
+                />
               </Field>
               {(scopeType === 'product_type' || scopeType === 'vendor') && (
-                <Field
-                  label={scopeType === 'vendor' ? 'Vendor' : 'Product type'}
-                  className="min-w-[12rem] flex-1"
-                >
-                  <Input
+                <Field className="min-w-[12rem] flex-1">
+                  <FieldLabel>{scopeType === 'vendor' ? 'Vendor' : 'Product type'}</FieldLabel>
+                  <FieldControl
                     value={scopeValue}
                     onChange={(e) => setScopeValue(e.target.value)}
                     placeholder={scopeType === 'vendor' ? 'Bosch' : 'Injectors'}
@@ -936,9 +1006,9 @@ function RuleForm({
             </p>
 
             {error && (
-              <p className="text-danger text-sm" role="alert">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
 
             <div className="flex flex-row justify-end gap-2">
@@ -976,7 +1046,7 @@ function CollectionPicker({
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   }
   return (
-    <div className="flex max-h-48 flex-col gap-1 overflow-auto rounded border border-[var(--color-border-default)] p-3">
+    <div className="border-base-300 flex max-h-48 flex-col gap-1 overflow-auto rounded border p-3">
       {collections.map((c) => (
         <label key={c.id} className="flex cursor-pointer items-center gap-2">
           <Checkbox
@@ -988,23 +1058,6 @@ function CollectionPicker({
           <p className="text-sm">{c.name}</p>
         </label>
       ))}
-    </div>
-  );
-}
-
-function Field({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`flex flex-col gap-1 ${className ?? ''}`}>
-      <p className="text-base-content/70 text-xs font-medium">{label}</p>
-      {children}
     </div>
   );
 }

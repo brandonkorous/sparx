@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
@@ -81,10 +81,7 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => void remove(svc)}
-                      className="text-[var(--color-danger)]"
-                    >
+                    <DropdownMenuItem onClick={() => void remove(svc)} className="text-danger">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
                     </DropdownMenuItem>

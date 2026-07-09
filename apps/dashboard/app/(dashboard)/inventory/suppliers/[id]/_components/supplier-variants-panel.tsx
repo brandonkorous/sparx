@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardBody, Checkbox, Input, Label } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, Checkbox, Input, Label } from '@wizeworks/silicaui-react';
 
 import {
   lookupVariantBySkuAction,
@@ -108,7 +108,7 @@ export function SupplierVariantsPanel({
               {links.map((l) => (
                 <div
                   key={l.id}
-                  className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
                 >
                   <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                     <div className="flex flex-row items-center gap-2">
@@ -144,7 +144,7 @@ export function SupplierVariantsPanel({
           )}
 
           <form ref={formRef} onSubmit={onAdd}>
-            <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+            <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
               <AddField label="Variant SKU" name="sku" required placeholder="e.g. FUEL-FILTER-1" />
               <AddField label="Their part #" name="supplierSku" placeholder="optional" />
               <AddField label="Cost ($)" name="unitCost" type="number" placeholder="0.00" />
@@ -159,7 +159,7 @@ export function SupplierVariantsPanel({
             </div>
           </form>
 
-          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
         </div>
       </CardBody>
     </Card>

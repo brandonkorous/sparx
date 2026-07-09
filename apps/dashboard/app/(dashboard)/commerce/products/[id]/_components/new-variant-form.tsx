@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 
-import { Button, Checkbox, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createVariantAction } from '../../../variant-actions';
 
@@ -23,7 +32,13 @@ interface Props {
 export function NewVariantForm({ productId, options, onCreated, onCancel }: Props) {
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
+  const [optionsError, setOptionsError] = React.useState<string | null>(null);
+
+  const [sku, setSku] = React.useState('');
+  const [priceCents, setPriceCents] = React.useState('');
+  const [barcode, setBarcode] = React.useState('');
+  const [inventoryPolicy, setInventoryPolicy] = React.useState('deny');
+  const [isDefault, setIsDefault] = React.useState(false);
 
   // One <NativeSelect> per option; tracks the currently picked value id.
   const [picked, setPicked] = React.useState<Record<string, string>>(() => {
@@ -34,43 +49,46 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
     return initial;
   });
 
+  const v = useFieldValidation(
+    { sku, priceCents },
+    {
+      sku: rule.required('SKU is required.'),
+      priceCents: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Price is required.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a whole number of cents.';
+        if (n < 0) return 'Price cannot be negative.';
+        if (!Number.isInteger(n)) return 'Enter a whole number of cents.';
+        return null;
+      },
+    }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setFieldErrors({});
+    setOptionsError(null);
 
-    const form = new FormData(e.currentTarget);
-    const sku = stringField(form.get('sku')).trim();
-    const priceCentsRaw = stringField(form.get('priceCents')).trim();
-    const priceCents = Number.parseInt(priceCentsRaw, 10);
-    const inventoryPolicy = stringField(form.get('inventoryPolicy'), 'deny');
-    const isDefault = form.get('isDefault') === 'on';
-    const barcode = stringField(form.get('barcode')).trim();
+    if (!v.validate()) return;
 
-    if (!sku) {
-      setFieldErrors({ sku: 'SKU is required.' });
-      return;
-    }
-    if (!Number.isFinite(priceCents) || priceCents < 0) {
-      setFieldErrors({ priceCents: 'Price (cents) must be a non-negative integer.' });
-      return;
-    }
     if (options.length > 0) {
       const missing = options.filter((o) => !picked[o.id]);
       if (missing.length > 0) {
-        setFieldErrors({
-          options: `Pick a value for: ${missing.map((o) => o.name).join(', ')}`,
-        });
+        setOptionsError(`Pick a value for: ${missing.map((o) => o.name).join(', ')}`);
         return;
       }
     }
 
+    const price = Number.parseInt(priceCents, 10);
+    const trimmedBarcode = barcode.trim();
+
     const payload = {
-      sku,
-      priceCents,
+      sku: sku.trim(),
+      priceCents: price,
       inventoryPolicy,
       isDefault,
-      ...(barcode && barcode.length > 0 ? { barcode } : {}),
+      ...(trimmedBarcode.length > 0 ? { barcode: trimmedBarcode } : {}),
       optionValueIds: options.map((o) => picked[o.id]!).filter(Boolean),
     };
 
@@ -78,9 +96,11 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
       const result = await createVariantAction(productId, payload);
       if (!result.ok) {
         if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of result.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
+          const known = new Set(['sku', 'priceCents']);
+          const map = Object.fromEntries(
+            result.error.details.filter((d) => known.has(d.field)).map((d) => [d.field, d.message])
+          );
+          if (Object.keys(map).length > 0) v.setServerErrors(map);
         }
         setError(result.error.message);
         return;
@@ -104,8 +124,8 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
         {options.length > 0 && (
           <div className="flex flex-col gap-3">
             {options.map((o) => (
-              <div key={o.id} className="flex flex-col gap-2">
-                <Label htmlFor={`pick-${o.id}`}>{o.name}</Label>
+              <Field key={o.id}>
+                <FieldLabel>{o.name}</FieldLabel>
                 <NativeSelect
                   id={`pick-${o.id}`}
                   value={picked[o.id] ?? ''}
@@ -117,60 +137,89 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
                     </option>
                   ))}
                 </NativeSelect>
-              </div>
+              </Field>
             ))}
-            {fieldErrors.options && <p className="text-danger text-xs">{fieldErrors.options}</p>}
+            {optionsError && (
+              <FieldStatus status="error" attached={false}>
+                {optionsError}
+              </FieldStatus>
+            )}
           </div>
         )}
 
         <div className="flex flex-row gap-3">
           <div className="flex flex-1 flex-col gap-2">
-            <Label htmlFor="sku">SKU</Label>
-            <Input id="sku" name="sku" required placeholder="TS-RED-S" />
-            {fieldErrors.sku && <p className="text-danger text-xs">{fieldErrors.sku}</p>}
+            <Field {...v.field('sku')}>
+              <FieldLabel required>SKU</FieldLabel>
+              <FieldControl
+                id="sku"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                placeholder="TS-RED-S"
+                {...v.control('sku')}
+              />
+            </Field>
           </div>
           <div className="flex w-40 flex-col gap-2">
-            <Label htmlFor="priceCents">Price (cents)</Label>
-            <Input
-              id="priceCents"
-              name="priceCents"
-              type="number"
-              inputMode="numeric"
-              min={0}
-              step={1}
-              required
-              placeholder="1999"
-            />
-            {fieldErrors.priceCents && (
-              <p className="text-danger text-xs">{fieldErrors.priceCents}</p>
-            )}
+            <Field {...v.field('priceCents')}>
+              <FieldLabel required>Price (cents)</FieldLabel>
+              <FieldControl
+                id="priceCents"
+                type="number"
+                inputMode="numeric"
+                min="0"
+                step="1"
+                value={priceCents}
+                onChange={(e) => setPriceCents(e.target.value)}
+                placeholder="1999"
+                {...v.control('priceCents')}
+              />
+            </Field>
           </div>
         </div>
 
         <div className="flex flex-row gap-3">
           <div className="flex flex-1 flex-col gap-2">
-            <Label htmlFor="barcode">Barcode (optional)</Label>
-            <Input id="barcode" name="barcode" placeholder="UPC / EAN / GTIN" />
+            <Field>
+              <FieldLabel>Barcode (optional)</FieldLabel>
+              <FieldControl
+                id="barcode"
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                placeholder="UPC / EAN / GTIN"
+              />
+            </Field>
           </div>
           <div className="flex flex-1 flex-col gap-2">
-            <Label htmlFor="inventoryPolicy">Inventory policy</Label>
-            <NativeSelect id="inventoryPolicy" name="inventoryPolicy" defaultValue="deny">
-              <option value="deny">Deny when out</option>
-              <option value="continue">Continue selling</option>
-              <option value="preorder">Preorder</option>
-            </NativeSelect>
+            <Field>
+              <FieldLabel>Inventory policy</FieldLabel>
+              <NativeSelect
+                id="inventoryPolicy"
+                value={inventoryPolicy}
+                onChange={(e) => setInventoryPolicy(e.target.value)}
+              >
+                <option value="deny">Deny when out</option>
+                <option value="continue">Continue selling</option>
+                <option value="preorder">Preorder</option>
+              </NativeSelect>
+            </Field>
           </div>
         </div>
 
         <div className="flex flex-row items-center gap-2">
-          <Checkbox color="module" id="isDefault" name="isDefault" />
-          <Label htmlFor="isDefault">Make this the default variant</Label>
+          <Checkbox
+            color="module"
+            id="isDefault"
+            checked={isDefault}
+            onChange={(e) => setIsDefault(e.target.checked)}
+          />
+          <FieldLabel htmlFor="isDefault">Make this the default variant</FieldLabel>
         </div>
 
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
 
         <div className="flex flex-row justify-end gap-2">
@@ -184,12 +233,4 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
       </div>
     </form>
   );
-}
-
-// FormData.get() returns string | File | null. We only ever submit text
-// fields here, but the union forces a guard before .trim() — otherwise
-// typescript-eslint's no-base-to-string flags it. This helper centralizes
-// the narrowing.
-function stringField(value: FormDataEntryValue | null, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback;
 }

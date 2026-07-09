@@ -60,10 +60,8 @@ export function storyTotals(story: StoryState): { total: number; elsewhere: numb
 
 function Section({ label, children }: { label: string; children: ReactNode }): ReactNode {
   return (
-    <div className="border-t border-[var(--color-border-default)] px-6 py-4">
-      <div className="mb-2 text-[11px] font-medium tracking-wide text-[var(--color-text-tertiary)]">
-        {label}
-      </div>
+    <div className="border-base-300 border-t px-6 py-4">
+      <div className="text-base-content/50 mb-2 text-[11px] font-medium tracking-wide">{label}</div>
       {children}
     </div>
   );
@@ -93,13 +91,11 @@ export function StoryExtras({
       <Section label="Your starting point">
         {blueprint ? (
           <div>
-            <div className="text-sm font-medium text-[var(--color-text-primary)]">
-              {blueprint.name}
-            </div>
-            <div className="text-[13px] text-[var(--color-text-tertiary)]">{blueprint.summary}</div>
+            <div className="text-base-content text-sm font-medium">{blueprint.name}</div>
+            <div className="text-base-content/50 text-[13px]">{blueprint.summary}</div>
           </div>
         ) : (
-          <div className="text-[13px] text-[var(--color-text-tertiary)]">
+          <div className="text-base-content/50 text-[13px]">
             A blank Builder site — yours to design from scratch.
           </div>
         )}
@@ -107,10 +103,8 @@ export function StoryExtras({
 
       <Section label="Your web address">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-sm font-medium text-[var(--color-text-primary)]">
-            {slug}.sparx.zone
-          </span>
-          <span className="ml-auto inline-flex items-center gap-1 text-xs text-[var(--color-success-text)]">
+          <span className="text-base-content font-mono text-sm font-medium">{slug}.sparx.zone</span>
+          <span className="text-success ml-auto inline-flex items-center gap-1 text-xs">
             <Check className="h-3 w-3" /> free
           </span>
         </div>
@@ -124,10 +118,13 @@ export function StoryExtras({
                   className="rounded-full border px-2.5 py-0.5 text-[11.5px] font-medium"
                   style={
                     active
-                      ? { borderColor: 'var(--module-commerce)', color: 'var(--module-commerce)' }
+                      ? {
+                          borderColor: 'var(--color-module-commerce)',
+                          color: 'var(--color-module-commerce)',
+                        }
                       : {
-                          borderColor: 'var(--color-border-default)',
-                          color: 'var(--color-text-tertiary)',
+                          borderColor: 'var(--color-base-300)',
+                          color: 'color-mix(in oklch, var(--color-base-content) 50%, transparent)',
                         }
                   }
                 >
@@ -141,9 +138,9 @@ export function StoryExtras({
 
       {selling && (
         <Section label="Getting paid">
-          <div className="text-[13px] text-[var(--color-text-tertiary)]">
-            Connect <span className="font-medium text-[var(--color-text-secondary)]">Stripe</span>{' '}
-            to take payments — the next beat after you build.
+          <div className="text-base-content/50 text-[13px]">
+            Connect <span className="text-base-content/70 font-medium">Stripe</span> to take
+            payments — the next beat after you build.
           </div>
         </Section>
       )}

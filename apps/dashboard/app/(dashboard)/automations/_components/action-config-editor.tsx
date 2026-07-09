@@ -18,7 +18,7 @@
 // the flow canvas).
 
 import * as React from 'react';
-import { Button, Input, Select, Textarea } from 'silicaui-react';
+import { Button, Input, Select, Textarea } from '@wizeworks/silicaui-react';
 import { Code2, SlidersHorizontal, Trash2 } from 'lucide-react';
 import type { Action } from '@sparx/automation-schemas';
 
@@ -86,7 +86,7 @@ function JsonField({
         onChange={(e) => handle(e.target.value)}
         className="font-mono text-xs"
       />
-      {error && <span className="text-xs text-[var(--color-danger)]">{error}</span>}
+      {error && <span className="text-danger text-xs">{error}</span>}
     </div>
   );
 }

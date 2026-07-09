@@ -3,7 +3,17 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 
 import { createPage } from '../actions';
@@ -38,6 +48,8 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
   const [title, setTitle] = React.useState('');
   const [slug, setSlug] = React.useState('');
   const [doc, setDoc] = React.useState<CmsDoc>(EMPTY_DOC);
+
+  const v = useFieldValidation({ title }, { title: rule.required('Title is required.') });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -88,10 +100,7 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
 
   function submit() {
     setError(null);
-    if (!title.trim()) {
-      setError('Title is required.');
-      return;
-    }
+    if (!v.validate()) return;
     const formData = new FormData();
     formData.set('title', title);
     formData.set('slug', slug);
@@ -132,32 +141,25 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="title">
-                    Title{' '}
-                    <span className="text-error" aria-hidden="true">
-                      *
-                    </span>
-                  </Label>
-                  <Input
-                    id="title"
+                <Field {...v.field('title')}>
+                  <FieldLabel required>Title</FieldLabel>
+                  <FieldControl
+                    name="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    aria-required
+                    {...v.control('title')}
                   />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="slug">Slug (optional)</Label>
-                  <Input
-                    id="slug"
+                </Field>
+                <Field>
+                  <FieldLabel>Slug (optional)</FieldLabel>
+                  <FieldControl
+                    name="slug"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="auto-derived from title"
                   />
-                  <p className="text-base-content/70 text-xs">
-                    Lowercase letters, numbers, and dashes only.
-                  </p>
-                </div>
+                  <FieldDescription>Lowercase letters, numbers, and dashes only.</FieldDescription>
+                </Field>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="page-body-editor">Content (optional)</Label>
                   <ContentBlockEditor
@@ -172,9 +174,15 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

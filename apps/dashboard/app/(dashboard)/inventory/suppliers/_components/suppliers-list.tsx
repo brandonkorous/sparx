@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { SelectionList, type SelectionCard, type SelectionColumn, statusLabel } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 // Client wrapper for the suppliers list. SelectionList takes render functions
 // (columns/card) which can't cross the server→client boundary, so the server
@@ -35,16 +35,13 @@ interface SuppliersListProps {
 
 export function SuppliersList({ rows, view }: SuppliersListProps) {
   const codeLink = (s: SupplierRow) => (
-    <Link
-      href={`/inventory/suppliers/${s.id}`}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
-    >
+    <Link href={`/inventory/suppliers/${s.id}`} className="hover:text-module font-mono text-xs">
       {s.code}
     </Link>
   );
 
   const nameLink = (s: SupplierRow) => (
-    <Link href={`/inventory/suppliers/${s.id}`} className="hover:text-[var(--module-active)]">
+    <Link href={`/inventory/suppliers/${s.id}`} className="hover:text-module">
       {s.name}
     </Link>
   );

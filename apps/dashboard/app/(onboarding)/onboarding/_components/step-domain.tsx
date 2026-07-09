@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, Input, Loading } from 'silicaui-react';
+import { Badge, Button, FieldStatus, Input, Loading } from '@wizeworks/silicaui-react';
 import { cn } from '@sparx/ui';
 import { Check, Clock, Globe, Search, X } from 'lucide-react';
 import type { Property } from '@/lib/sites';
@@ -89,9 +89,9 @@ export function StepDomain({
     <div className="max-w-xl">
       {/* A domain is already chosen — billed at Launch, not now. Let them drop it. */}
       {selectedHost && (
-        <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-[var(--module-active)] bg-[var(--module-active-tint)] px-4 py-3.5">
+        <div className="border-module bg-module bg-soft mb-4 flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5">
           <div className="flex min-w-0 items-center gap-2.5">
-            <Globe className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
+            <Globe className="text-module h-4 w-4 shrink-0" />
             <div className="min-w-0">
               <p className="truncate font-medium">{selectedHost}</p>
               <p className="text-base-content/70 text-xs">
@@ -112,7 +112,7 @@ export function StepDomain({
       )}
 
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
+        <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -160,9 +160,15 @@ export function StepDomain({
       )}
 
       {!searching && error && (
-        <p className="text-danger mt-4 block text-sm" role="alert" aria-live="polite">
+        <FieldStatus
+          status="error"
+          attached={false}
+          role="alert"
+          aria-live="polite"
+          className="mt-4"
+        >
           {error}
-        </p>
+        </FieldStatus>
       )}
 
       {!searching && !error && query.trim() && suggestions.length === 0 && (
@@ -173,7 +179,7 @@ export function StepDomain({
 
       {/* Paid-add-on disclosure — distinct copy for "checkout open" vs "soon". */}
       {purchaseEnabled ? (
-        <div className="mt-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
+        <div className="border-base-300 bg-base-100 mt-4 rounded-xl border px-4 py-3.5">
           <p className="text-base-content/70 text-xs">
             A custom domain is a paid registration — you&apos;ll be charged when you publish at the
             Launch step, not now. It&apos;s the one optional add-on with a cost; signing up and your
@@ -181,25 +187,23 @@ export function StepDomain({
           </p>
         </div>
       ) : (
-        <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
-          <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+        <div className="border-base-300 bg-base-100 mt-4 flex items-start gap-2.5 rounded-xl border px-4 py-3.5">
+          <Clock className="text-base-content/50 mt-0.5 h-4 w-4 shrink-0" />
           <p className="text-base-content/70 text-xs">
             Custom domains are a paid registration and{' '}
-            <span className="font-medium text-[var(--color-text-secondary)]">
-              checkout opens soon
-            </span>
-            . For now, launch on your free address — or connect a domain you already own from
-            Settings. You&apos;re never charged to sign up.
+            <span className="text-base-content/70 font-medium">checkout opens soon</span>. For now,
+            launch on your free address — or connect a domain you already own from Settings.
+            You&apos;re never charged to sign up.
           </p>
         </div>
       )}
 
       {/* Free-address note — "Continue" (in the setup card) keeps this address. */}
-      <div className="mt-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
+      <div className="border-base-content/30 bg-base-200 mt-3 rounded-xl border border-dashed px-4 py-3.5">
         <p className="text-sm font-medium">Happy on the free address?</p>
         <p className="text-base-content/70 text-xs">
           Your site is live at{' '}
-          <span className="font-medium text-[var(--color-text-secondary)]">
+          <span className="text-base-content/70 font-medium">
             {slug}.{SITE_ZONE}
           </span>{' '}
           — just hit Continue. You can add a domain anytime from Settings.
@@ -241,16 +245,16 @@ function DomainRow({
       className={cn(
         'flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5',
         featured
-          ? 'border-[var(--module-active)] bg-[var(--module-active-tint)] ring-1 ring-[var(--module-active)]'
-          : 'border-[var(--color-border-default)] bg-[var(--color-bg-surface)]'
+          ? 'border-module bg-module bg-soft ring-module ring-1'
+          : 'border-base-300 bg-base-100'
       )}
     >
       <div className="min-w-0">
         <p className="truncate font-medium">{suggestion.domain}</p>
         {suggestion.available ? (
           <span className="mt-0.5 flex items-center gap-1.5">
-            <Check className="h-3 w-3 text-[var(--color-success-text)]" />
-            <p className="text-xs text-[var(--color-success-text)]">
+            <Check className="text-success h-3 w-3" />
+            <p className="text-success text-xs">
               {featured ? 'Available · best match' : 'Available'}
             </p>
           </span>
@@ -264,7 +268,7 @@ function DomainRow({
         <div className="flex shrink-0 items-center gap-3">
           <div className="text-right">
             <p className="text-base-content/70 text-sm">
-              <span className="font-medium text-[var(--color-text-primary)]">
+              <span className="text-base-content font-medium">
                 ${(suggestion.displayPrice / 100).toFixed(2)}
               </span>
               /yr
@@ -300,7 +304,7 @@ function DomainRow({
 // so a near-miss look-alike below is never mistaken for "your domain is available."
 function ExactTakenRow({ domain }: { domain: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
+    <div className="border-base-300 bg-base-200 flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5">
       <div className="min-w-0">
         <p className="truncate font-medium">{domain}</p>
         <p className="text-base-content/70 mt-0.5 text-xs">

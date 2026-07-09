@@ -25,7 +25,7 @@ import {
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState } from 'silicaui-react';
+import { Badge, Button, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -88,8 +88,8 @@ interface ActivityEntry {
 // Donut color cycle for the live top-tools split (rose family + neutral).
 const TOOL_DONUT_COLORS = [
   'module',
-  'var(--module-active-tint)',
-  'var(--color-bg-muted)',
+  'color-mix(in oklch, var(--color-module) 15%, transparent)',
+  'var(--color-base-300)',
   '#fda4af',
 ];
 
@@ -387,7 +387,7 @@ export default async function AiPage() {
             {CONNECT_STEPS.map((step, i) => (
               <div key={step.title} className="flex flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
-                  <span className="text-module flex h-6 w-6 items-center justify-center rounded-full bg-[var(--module-active-tint)] text-xs font-semibold">
+                  <span className="text-module bg-module bg-soft flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">
                     {i + 1}
                   </span>
                   <p className="text-sm font-medium">{step.title}</p>

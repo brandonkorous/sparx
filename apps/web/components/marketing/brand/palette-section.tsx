@@ -29,90 +29,62 @@ const SEMANTIC = [
 const LIGHT = [
   {
     name: 'Page',
-    value: '#FAFAFA',
-    hex: '#FAFAFA',
-    token: '--color-bg-page',
-    note: 'Page background.',
+    value: '#F4F4F5',
+    hex: '#F4F4F5',
+    token: '--color-base-200',
+    note: 'Page ground.',
   },
   {
     name: 'Surface',
     value: '#FFFFFF',
     hex: '#FFFFFF',
-    token: '--color-bg-surface',
+    token: '--color-base-100',
     note: 'Cards and panels.',
   },
   {
     name: 'Border',
-    value: '#E5E5E5',
-    hex: '#E5E5E5',
-    token: '--color-border-default',
+    value: '#E4E4E7',
+    hex: '#E4E4E7',
+    token: '--color-base-300',
     note: 'Hairlines and dividers.',
   },
   {
     name: 'Text',
     value: '#0A0A0A',
     hex: '#0A0A0A',
-    token: '--color-text-primary',
+    token: '--color-base-content',
     note: 'Body text.',
-  },
-  {
-    name: 'Secondary',
-    value: '#52525B',
-    hex: '#52525B',
-    token: '--color-text-secondary',
-    note: 'Supporting text.',
-  },
-  {
-    name: 'Tertiary',
-    value: '#A1A1AA',
-    hex: '#A1A1AA',
-    token: '--color-text-tertiary',
-    note: 'Hints, placeholders.',
   },
 ] as const;
 
 const DARK = [
   {
     name: 'Page',
-    value: '#0F0F0F',
-    hex: '#0F0F0F',
-    token: '--color-bg-page',
-    note: 'Page background.',
+    value: '#1F1F1F',
+    hex: '#1F1F1F',
+    token: '--color-base-200',
+    note: 'Page ground.',
   },
   {
     name: 'Surface',
     value: '#1A1A1A',
     hex: '#1A1A1A',
-    token: '--color-bg-surface',
+    token: '--color-base-100',
     note: 'Cards and panels.',
   },
   {
     name: 'Border',
     value: '#2A2A2A',
     hex: '#2A2A2A',
-    token: '--color-border-default',
+    token: '--color-base-300',
     note: 'Hairlines and dividers.',
   },
   {
     name: 'Text',
     value: '#F0F0F0',
     hex: '#F0F0F0',
-    token: '--color-text-primary',
+    token: '--color-base-content',
     note: 'Body text.',
-  },
-  {
-    name: 'Secondary',
-    value: '#A1A1AA',
-    hex: '#A1A1AA',
-    token: '--color-text-secondary',
-    note: 'Supporting text.',
-  },
-  {
-    name: 'Tertiary',
-    value: '#52525B',
-    hex: '#52525B',
-    token: '--color-text-tertiary',
-    note: 'Hints, placeholders.',
   },
 ] as const;
 
@@ -123,7 +95,7 @@ export function PaletteSection() {
         <SectionHeader
           accent="var(--color-success)"
           headline="Semantic & neutral palette"
-          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are near-white and near-black, never the real thing — both light and dark are first-class."
+          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Supporting and hint text aren’t separate colors; they’re that same ink dialed back to 70% and 50% (text-base-content/70 and /50)."
         />
 
         <Group title="Semantic — reserved, never decorative">
@@ -153,7 +125,7 @@ export function PaletteSection() {
               fontFamily: 'var(--font-sans)',
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}
@@ -175,7 +147,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '15px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           margin: 0,
         }}
       >

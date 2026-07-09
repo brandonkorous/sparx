@@ -4,7 +4,16 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardActions, CardBody, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 
 import { createGoodsReceiptAction } from '../../../../_lib/goods-receipt-actions';
 import { formatMoney, type PurchaseOrderLineRow } from '../../../_components/types';
@@ -69,6 +78,12 @@ export function ReceiveForm({
     const form = new FormData(e.currentTarget);
     const receivedDate = str(form.get('receivedAt'));
 
+    // A negative qty or cost is nonsensical for a receipt; block before posting.
+    if (rows.some((r) => Number(r.qty) < 0 || Number(r.cost) < 0)) {
+      setError('Quantities and costs cannot be negative.');
+      return;
+    }
+
     const receiptLines = rows
       .filter((r) => Number(r.qty) > 0)
       .map((r) => ({
@@ -113,9 +128,18 @@ export function ReceiveForm({
             </p>
           </div>
           <div className="flex flex-row flex-wrap gap-3">
-            <Field label="Received date" name="receivedAt" type="date" defaultValue={today} />
-            <Field label="Reference" name="reference" placeholder="packing slip / carrier" />
-            <Field label="Note" name="note" placeholder="optional" />
+            <Field className="min-w-[10rem] flex-1">
+              <FieldLabel>Received date</FieldLabel>
+              <FieldControl name="receivedAt" type="date" defaultValue={today} />
+            </Field>
+            <Field className="min-w-[10rem] flex-1">
+              <FieldLabel>Reference</FieldLabel>
+              <FieldControl name="reference" placeholder="packing slip / carrier" />
+            </Field>
+            <Field className="min-w-[10rem] flex-1">
+              <FieldLabel>Note</FieldLabel>
+              <FieldControl name="note" placeholder="optional" />
+            </Field>
           </div>
         </CardBody>
       </Card>
@@ -133,7 +157,7 @@ export function ReceiveForm({
             {rows.map((r) => (
               <div
                 key={r.lineId}
-                className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2"
+                className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2"
               >
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{r.label}</p>
@@ -172,7 +196,11 @@ export function ReceiveForm({
         </CardBody>
         <CardActions>
           <div className="flex w-full flex-row items-center gap-3">
-            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {error && (
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {error}
+              </FieldStatus>
+            )}
             <div className="ml-auto flex flex-row gap-2">
               <Button
                 type="button"
@@ -206,42 +234,15 @@ function MiniField({
   text?: boolean;
 }) {
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
-      <Label htmlFor={`f-${label}`}>{label}</Label>
-      <Input
-        id={`f-${label}`}
+    <Field className={className}>
+      <FieldLabel>{label}</FieldLabel>
+      <FieldControl
         type={text ? 'text' : 'number'}
+        min={text ? undefined : 0}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-    </div>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type,
-  defaultValue,
-  placeholder,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  defaultValue?: string;
-  placeholder?: string;
-}) {
-  return (
-    <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-      <Label htmlFor={name}>{label}</Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-      />
-    </div>
+    </Field>
   );
 }
 

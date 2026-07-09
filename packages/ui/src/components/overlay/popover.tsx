@@ -20,8 +20,8 @@ export const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         'z-50 w-72 rounded-md p-4 outline-none',
-        'border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md',
-        'text-sm text-[var(--color-text-primary)]',
+        'border border-[var(--color-base-300)] bg-[var(--color-base-100)] shadow-md',
+        'text-base-content text-sm',
         'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
         'data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1',

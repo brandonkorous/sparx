@@ -174,14 +174,9 @@ function ButtonMatrixSection() {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr>
-              <th className="p-3 text-left text-xs font-medium text-[var(--color-text-tertiary)]">
-                color
-              </th>
+              <th className="text-base-content/50 p-3 text-left text-xs font-medium">color</th>
               {TREATMENTS.map((t) => (
-                <th
-                  key={t}
-                  className="p-3 text-left text-xs font-medium text-[var(--color-text-tertiary)]"
-                >
+                <th key={t} className="text-base-content/50 p-3 text-left text-xs font-medium">
                   {t}
                 </th>
               ))}
@@ -189,8 +184,8 @@ function ButtonMatrixSection() {
           </thead>
           <tbody>
             {ALL_COLOR_KEYS.map((color) => (
-              <tr key={color} className="border-t border-[var(--color-border-default)]">
-                <td className="p-3 text-xs text-[var(--color-text-secondary)]">{color}</td>
+              <tr key={color} className="border-base-300 border-t">
+                <td className="text-base-content/70 p-3 text-xs">{color}</td>
                 {TREATMENTS.map((variant) => (
                   <td key={variant} className="p-2">
                     <Button color={color} variant={variant} size="sm">
@@ -314,14 +309,9 @@ function ChipMatrixSection() {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="p-3 text-left text-xs font-medium text-[var(--color-text-tertiary)]">
-                  color
-                </th>
+                <th className="text-base-content/50 p-3 text-left text-xs font-medium">color</th>
                 {CHIP_TREATMENTS.map((t) => (
-                  <th
-                    key={t}
-                    className="p-3 text-left text-xs font-medium text-[var(--color-text-tertiary)]"
-                  >
+                  <th key={t} className="text-base-content/50 p-3 text-left text-xs font-medium">
                     {t}
                   </th>
                 ))}
@@ -329,8 +319,8 @@ function ChipMatrixSection() {
             </thead>
             <tbody>
               {COLOR_KEYS.map((color) => (
-                <tr key={color} className="border-t border-[var(--color-border-default)]">
-                  <td className="p-3 text-xs text-[var(--color-text-secondary)]">{color}</td>
+                <tr key={color} className="border-base-300 border-t">
+                  <td className="text-base-content/70 p-3 text-xs">{color}</td>
                   {CHIP_TREATMENTS.map((variant) => (
                     <td key={variant} className="p-2">
                       <Badge color={color} variant={variant}>

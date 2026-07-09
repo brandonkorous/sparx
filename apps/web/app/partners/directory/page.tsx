@@ -5,7 +5,7 @@
 // helpful empty state while the endpoint stands up.
 
 import type { Metadata } from 'next';
-import { Button, Input } from '@sparx/ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { SectionHeader } from '@/components/marketing/primitives';
@@ -55,7 +55,7 @@ export default async function PartnerDirectoryPage({
           paddingBottom: 'var(--section-py-lg)',
           paddingLeft: 'var(--gutter-page)',
           paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-bg-page)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
@@ -66,14 +66,14 @@ export default async function PartnerDirectoryPage({
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   textDecoration: 'none',
                 }}
               >
                 ← Partner program
               </a>
               <SectionHeader
-                accent="var(--sparx-primary)"
+                accent="var(--color-primary)"
                 headlineSize={56}
                 headline="Find a sparx partner"
                 lede="Consultants, agencies, and developers who build and manage businesses on sparx. Certified partners first."
@@ -115,11 +115,11 @@ export default async function PartnerDirectoryPage({
 
             <div
               style={{
-                borderTop: '1px solid var(--color-border-default)',
+                borderTop: '1px solid var(--color-base-300)',
                 paddingTop: '20px',
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {showing > 0
@@ -165,7 +165,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '17px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           margin: 0,
           maxWidth: '420px',
         }}

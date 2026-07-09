@@ -6,7 +6,19 @@
 import * as React from 'react';
 import { Archive } from 'lucide-react';
 
-import { Button, Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 export interface PipelineHeader {
   id: string;
@@ -33,21 +45,28 @@ export function PipelineHeaderCard({
   const [isDefault, setIsDefault] = React.useState(pipeline.isDefault);
   const dirty = name !== pipeline.name || isDefault !== pipeline.isDefault;
 
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
+
   return (
     <Card>
       <CardBody>
         <CardTitle>Header</CardTitle>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row gap-4">
-            <div className="flex flex-1 flex-col gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="flex w-64 flex-col gap-2">
-              <Label>Slug</Label>
-              <Input value={pipeline.slug} disabled />
-              <p className="text-base-content/70 text-xs">Slug is immutable to keep URLs stable.</p>
-            </div>
+            <Field {...v.field('name')} className="flex-1">
+              <FieldLabel required>Name</FieldLabel>
+              <FieldControl
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
+              />
+            </Field>
+            <Field className="w-64">
+              <FieldLabel>Slug</FieldLabel>
+              <FieldControl name="slug" value={pipeline.slug} disabled />
+              <FieldDescription>Slug is immutable to keep URLs stable.</FieldDescription>
+            </Field>
           </div>
           <div className="flex flex-row items-center gap-2">
             <Checkbox
@@ -63,7 +82,10 @@ export function PipelineHeaderCard({
               color="module"
               size="sm"
               disabled={!dirty || pending}
-              onClick={() => onSave({ name, isDefault })}
+              onClick={() => {
+                if (!v.validate()) return;
+                onSave({ name, isDefault });
+              }}
             >
               Save header
             </Button>

@@ -31,8 +31,17 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { Badge, Button, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Input,
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { FitmentDimension, FitmentDomainRow, FitmentNodeRow } from '../../fitment-actions';
 import {
@@ -102,7 +111,7 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
   }
 
   return (
-    <div className="flex flex-col gap-0 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+    <div className="border-base-300 bg-base-200 flex flex-col gap-0 rounded border">
       <div className="flex flex-row items-center gap-2 p-3">
         <Button
           shape="square"
@@ -113,7 +122,7 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
         >
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
-        <Boxes className="h-4 w-4 text-[var(--color-text-muted)]" />
+        <Boxes className="text-base-content/60 h-4 w-4" />
         <div className="flex flex-1 flex-col gap-0">
           <p className="text-sm font-medium">{domain.displayName}</p>
           <p className="text-base-content/70 text-xs">
@@ -276,7 +285,7 @@ function NodeRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex flex-col gap-0 border-b border-[var(--color-border-default)] last:border-b-0"
+      className="border-base-300 flex flex-col gap-0 border-b last:border-b-0"
     >
       {editing ? (
         <RenameForm
@@ -293,7 +302,7 @@ function NodeRow({
           {...attributes}
           {...listeners}
         >
-          <GripVertical className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <GripVertical className="text-base-content/50 h-4 w-4 shrink-0" />
           {hasChildren ? (
             <Button
               shape="square"
@@ -370,15 +379,20 @@ function RenameForm({
     nameInputRef.current?.select();
   }, []);
 
+  const v = useFieldValidation(
+    { name, slug },
+    {
+      name: rule.required('Name is required.'),
+      slug: rule.required('Slug is required.'),
+    }
+  );
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const nextName = name.trim();
     const nextSlug = slug.trim().toLowerCase();
-    if (!nextName || !nextSlug) {
-      setError('Name and slug are required.');
-      return;
-    }
     startTransition(async () => {
       const res = await updateFitmentNodeAction(node.id, { name: nextName, slug: nextSlug });
       if (!res.ok) {
@@ -392,25 +406,26 @@ function RenameForm({
   return (
     <form onSubmit={onSubmit} noValidate className="py-2">
       <div className="flex flex-row flex-wrap items-end gap-2">
-        <div className="flex min-w-[180px] flex-1 flex-col gap-1">
-          <Label htmlFor={`rename-name-${node.id}`}>Name</Label>
-          <Input
-            id={`rename-name-${node.id}`}
-            ref={nameInputRef}
+        <Field {...v.field('name')} className="min-w-[180px] flex-1">
+          <FieldLabel required>Name</FieldLabel>
+          <FieldControl
+            name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            size="sm"
+            {...v.control('name')}
+            render={<Input ref={nameInputRef} size="sm" />}
           />
-        </div>
-        <div className="flex min-w-[140px] flex-1 flex-col gap-1">
-          <Label htmlFor={`rename-slug-${node.id}`}>Slug</Label>
-          <Input
-            id={`rename-slug-${node.id}`}
+        </Field>
+        <Field {...v.field('slug')} className="min-w-[140px] flex-1">
+          <FieldLabel required>Slug</FieldLabel>
+          <FieldControl
+            name="slug"
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            size="sm"
+            {...v.control('slug')}
+            render={<Input size="sm" />}
           />
-        </div>
+        </Field>
         <Button
           shape="square"
           type="submit"
@@ -436,9 +451,15 @@ function RenameForm({
         </Button>
       </div>
       {error && (
-        <p className="text-danger mt-2 text-xs" role="alert">
+        <FieldStatus
+          status="error"
+          attached={false}
+          role="alert"
+          aria-live="polite"
+          className="mt-2"
+        >
           {error}
-        </p>
+        </FieldStatus>
       )}
     </form>
   );
@@ -467,18 +488,18 @@ function AddNodeForm({
     if (open) nameInputRef.current?.focus();
   }, [open]);
 
+  // Name is required; the slug auto-derives from the name when left blank.
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     const nextName = name.trim();
     const nextSlug = (slug.trim() || nextName)
       .trim()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-');
-    if (!nextName || !nextSlug) {
-      setError('Name is required.');
-      return;
-    }
     startTransition(async () => {
       const res = await createFitmentNodeAction({
         domainId,
@@ -501,7 +522,7 @@ function AddNodeForm({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded border border-dashed border-[var(--color-border-default)] p-2">
+    <div className="border-base-300 flex flex-col gap-2 rounded border border-dashed p-2">
       <div className="flex flex-row items-center justify-between">
         <p className="text-base-content/70 text-xs">Add a {label.toLowerCase()}</p>
         <Button
@@ -518,34 +539,40 @@ function AddNodeForm({
       {open && (
         <form onSubmit={onSubmit} noValidate>
           <div className="flex flex-row flex-wrap items-end gap-2">
-            <div className="flex min-w-[180px] flex-1 flex-col gap-1">
-              <Label htmlFor={`add-name-${parentId ?? domainId}`}>{label} name</Label>
-              <Input
-                id={`add-name-${parentId ?? domainId}`}
-                ref={nameInputRef}
+            <Field {...v.field('name')} className="min-w-[180px] flex-1">
+              <FieldLabel required>{label} name</FieldLabel>
+              <FieldControl
+                name="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                size="sm"
+                {...v.control('name')}
+                render={<Input ref={nameInputRef} size="sm" />}
               />
-            </div>
-            <div className="flex min-w-[140px] flex-1 flex-col gap-1">
-              <Label htmlFor={`add-slug-${parentId ?? domainId}`}>Slug (optional)</Label>
-              <Input
-                id={`add-slug-${parentId ?? domainId}`}
+            </Field>
+            <Field className="min-w-[140px] flex-1">
+              <FieldLabel>Slug (optional)</FieldLabel>
+              <FieldControl
+                name="slug"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                size="sm"
                 placeholder="auto from name"
+                render={<Input size="sm" />}
               />
-            </div>
+            </Field>
             <Button type="submit" color="module" disabled={pending} loading={pending}>
               Add
             </Button>
           </div>
           {error && (
-            <p className="text-danger mt-2 text-xs" role="alert">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-2"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </form>
       )}

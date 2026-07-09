@@ -59,7 +59,7 @@ function VendorPicker() {
     <div
       style={{
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -67,7 +67,7 @@ function VendorPicker() {
       <div
         style={{
           padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
           fontFamily: MONO,
           fontSize: '11px',
           letterSpacing: '0.05em',
@@ -85,7 +85,7 @@ function VendorPicker() {
             alignItems: 'center',
             gap: '12px',
             padding: '14px 20px',
-            borderTop: i === 0 ? 'none' : '1px solid var(--color-bg-subtle)',
+            borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
             backgroundColor: i === 0 ? M.tint : 'transparent',
           }}
         >
@@ -94,7 +94,7 @@ function VendorPicker() {
               width: 34,
               height: 34,
               borderRadius: '8px',
-              backgroundColor: i === 0 ? 'var(--color-bg-surface)' : 'var(--color-bg-subtle)',
+              backgroundColor: i === 0 ? 'var(--color-base-100)' : 'var(--color-base-200)',
               flexShrink: 0,
               display: 'flex',
               alignItems: 'center',
@@ -102,14 +102,25 @@ function VendorPicker() {
               boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
             }}
           >
-            <Dot color={i === 0 ? M.color : 'var(--color-text-tertiary)'} size={8} />
+            <Dot
+              color={
+                i === 0
+                  ? M.color
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
+              }
+              size={8}
+            />
           </span>
           <span style={{ minWidth: 0 }}>
             <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
               {v.name}
             </span>
             <span
-              style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: MONO,
+                fontSize: '11px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {v.tag}
             </span>
@@ -121,7 +132,10 @@ function VendorPicker() {
               fontSize: '10.5px',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: v.mode === 'API' ? M.text : 'var(--color-text-tertiary)',
+              color:
+                v.mode === 'API'
+                  ? M.text
+                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               flexShrink: 0,
             }}
           >
@@ -146,8 +160,8 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -158,7 +172,7 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '13px',
           padding: '18px 22px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span
@@ -166,7 +180,7 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
             width: 40,
             height: 40,
             borderRadius: '9px',
-            backgroundColor: 'var(--color-bg-subtle)',
+            backgroundColor: 'var(--color-base-200)',
             flexShrink: 0,
             boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
           }}
@@ -176,7 +190,11 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
             {d.pricing.item}
           </span>
           <span
-            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+            style={{
+              fontFamily: MONO,
+              fontSize: '11.5px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
           >
             {d.pricing.sku} · imported draft
           </span>
@@ -210,17 +228,25 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
               fontFamily: SANS,
               fontSize: '13.5px',
               padding: '11px 0',
-              borderBottom: '1px solid var(--color-bg-subtle)',
+              borderBottom: '1px solid var(--color-base-200)',
             }}
           >
-            <span style={{ color: 'var(--color-text-secondary)' }}>{l}</span>
+            <span
+              style={{ color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }}
+            >
+              {l}
+            </span>
             <span style={{ fontWeight: 500 }}>{v}</span>
           </div>
         ))}
         <div style={{ display: 'flex', alignItems: 'center', gap: '9px', paddingTop: '14px' }}>
           <Dot color={M.color} size={6} />
           <span
-            style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}
+            style={{
+              fontFamily: MONO,
+              fontSize: '11.5px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
           >
             review &amp; publish — price tracks the supplier&rsquo;s cost
           </span>
@@ -242,17 +268,17 @@ export function DropshipMargin() {
       <div
         style={{
           marginTop: '52px',
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           overflow: 'hidden',
-          backgroundColor: 'var(--color-bg-surface)',
+          backgroundColor: 'var(--color-base-100)',
         }}
       >
         <div
           className="mkt-margin-head"
           style={{
-            borderBottom: '1px solid var(--color-border-default)',
-            backgroundColor: 'var(--color-bg-page)',
+            borderBottom: '1px solid var(--color-base-300)',
+            backgroundColor: 'var(--color-base-200)',
           }}
         >
           {['Imported product', 'Pricing rule', 'Your price', 'Margin'].map((h) => (
@@ -263,7 +289,7 @@ export function DropshipMargin() {
                 fontSize: '10.5px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {h}
@@ -293,7 +319,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
             width: 34,
             height: 34,
             borderRadius: '8px',
-            backgroundColor: 'var(--color-bg-subtle)',
+            backgroundColor: 'var(--color-base-200)',
             flexShrink: 0,
             boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
           }}
@@ -302,14 +328,24 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
           <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
             {d.pricing.item}
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             {d.supplier} · cost {d.pricing.cost}
           </span>
         </span>
       </span>
       <span
         className="mkt-margin-cell"
-        style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+        style={{
+          fontFamily: SANS,
+          fontSize: '13px',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+        }}
       >
         {d.rule}
       </span>
@@ -319,7 +355,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
           fontFamily: SANS,
           fontSize: '15px',
           fontWeight: 500,
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {d.pricing.sell}
@@ -332,7 +368,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
           style={{
             fontFamily: MONO,
             fontSize: '11px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             marginLeft: '8px',
           }}
         >

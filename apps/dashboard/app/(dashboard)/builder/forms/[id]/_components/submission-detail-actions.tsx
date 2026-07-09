@@ -179,7 +179,7 @@ function MoreActionsMenu({
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={onDelete} className="text-[var(--color-danger)]">
+        <DropdownMenuItem onSelect={onDelete} className="text-danger">
           <Trash2 className="mr-2 h-4 w-4" />
           Delete
         </DropdownMenuItem>

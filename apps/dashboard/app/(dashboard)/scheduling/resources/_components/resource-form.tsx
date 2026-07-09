@@ -7,13 +7,15 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
   NativeSelect,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { ResourceKind, SchedulingResource } from '../../_lib/types';
 import { RESOURCE_KIND_LABEL } from '../../_lib/format';
@@ -56,6 +58,8 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
   const [isActive, setIsActive] = useState(resource?.isActive ?? true);
 
   const isTable = kind === 'table';
+
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
 
   const snapshot = () =>
     JSON.stringify({
@@ -112,10 +116,7 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
   }
 
   async function submit() {
-    if (!name.trim()) {
-      toast.error('Name is required');
-      return;
-    }
+    if (!v.validate()) return;
     setSaving(true);
     const tags = skillTags
       .split(',')
@@ -168,20 +169,19 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
           <CardTitle>Resource details</CardTitle>
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="res-name">Name</Label>
-                <Input
-                  id="res-name"
+              <Field {...v.field('name')}>
+                <FieldLabel required>Name</FieldLabel>
+                <FieldControl
+                  name="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Alex Rivera, Table 4, Bay 2"
-                  required
+                  {...v.control('name')}
                 />
-              </div>
-              <div>
-                <Label htmlFor="res-kind">Type</Label>
+              </Field>
+              <Field>
+                <FieldLabel>Type</FieldLabel>
                 <NativeSelect
-                  id="res-kind"
                   value={kind}
                   onChange={(e) => setKind(e.target.value as ResourceKind)}
                 >
@@ -191,86 +191,79 @@ export function ResourceForm({ presentation, resource, open, onOpenChange }: Res
                     </option>
                   ))}
                 </NativeSelect>
-              </div>
+              </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="res-tz">Time zone</Label>
-                <Input
-                  id="res-tz"
+              <Field>
+                <FieldLabel>Time zone</FieldLabel>
+                <FieldControl
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
                   placeholder="e.g. America/New_York"
                 />
-              </div>
-              <div>
-                <Label htmlFor="res-color">Accent color</Label>
-                <Input
-                  id="res-color"
+              </Field>
+              <Field>
+                <FieldLabel>Accent color</FieldLabel>
+                <FieldControl
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
                   placeholder="#6366F1"
                 />
-              </div>
+              </Field>
             </div>
 
             <div className={`grid gap-3 ${isTable ? 'grid-cols-3' : 'grid-cols-1'}`}>
-              <div>
-                <Label htmlFor="res-cap">{exclusive ? 'Seats / capacity' : 'Pooled units'}</Label>
-                <Input
-                  id="res-cap"
+              <Field>
+                <FieldLabel>{exclusive ? 'Seats / capacity' : 'Pooled units'}</FieldLabel>
+                <FieldControl
                   type="number"
                   min={1}
                   value={capacity}
                   onChange={(e) => setCapacity(Math.max(1, Number(e.target.value) || 1))}
                 />
-              </div>
+              </Field>
               {isTable ? (
                 <>
-                  <div>
-                    <Label htmlFor="res-min">Min party</Label>
-                    <Input
-                      id="res-min"
+                  <Field>
+                    <FieldLabel>Min party</FieldLabel>
+                    <FieldControl
                       type="number"
                       min={0}
                       value={capacityMin}
                       onChange={(e) => setCapacityMin(Math.max(0, Number(e.target.value) || 0))}
                     />
-                  </div>
-                  <div>
-                    <Label htmlFor="res-max">Max party</Label>
-                    <Input
-                      id="res-max"
+                  </Field>
+                  <Field>
+                    <FieldLabel>Max party</FieldLabel>
+                    <FieldControl
                       type="number"
                       min={0}
                       value={capacityMax}
                       onChange={(e) => setCapacityMax(Math.max(0, Number(e.target.value) || 0))}
                     />
-                  </div>
+                  </Field>
                 </>
               ) : null}
             </div>
 
-            <div>
-              <Label htmlFor="res-skills">Skills / tags</Label>
-              <Input
-                id="res-skills"
+            <Field>
+              <FieldLabel>Skills / tags</FieldLabel>
+              <FieldControl
                 value={skillTags}
                 onChange={(e) => setSkillTags(e.target.value)}
                 placeholder="comma-separated, e.g. color, balayage"
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="res-desc">Description</Label>
-              <Textarea
-                id="res-desc"
+            <Field>
+              <FieldLabel>Description</FieldLabel>
+              <FieldControl
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={2}
+                render={<Textarea rows={2} />}
               />
-            </div>
+            </Field>
 
             <div className="flex flex-col gap-2">
               <ToggleRow

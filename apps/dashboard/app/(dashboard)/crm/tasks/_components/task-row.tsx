@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Check, Calendar } from 'lucide-react';
 
 import { toast } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { completeTaskAction } from '../../activity-task-actions';
 
@@ -59,9 +59,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
   return (
     <div
       className={`flex flex-row items-center gap-3 rounded-md border p-3 ${
-        overdue
-          ? 'border-[var(--color-danger-500)] bg-[var(--color-danger-soft)]'
-          : 'border-[var(--color-border-default)]'
+        overdue ? 'border-danger bg-danger/10' : 'border-base-300'
       }`}
     >
       {isOpen && (
@@ -70,7 +68,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
           onClick={complete}
           disabled={pending}
           aria-label="Complete task"
-          className="flex h-5 w-5 items-center justify-center rounded-md border border-[var(--color-border-default)] hover:border-[var(--module-active)] disabled:opacity-50"
+          className="border-base-300 hover:border-module flex h-5 w-5 items-center justify-center rounded-md border disabled:opacity-50"
         >
           {pending && <Check className="h-3 w-3 animate-pulse" />}
         </button>
@@ -78,17 +76,13 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
       {!isOpen && (
         <div
           // eslint-disable-next-line no-restricted-syntax -- completion indicator icon container, not a reimplemented control
-          className="flex h-5 w-5 items-center justify-center rounded-md bg-[var(--color-success-500)] text-white"
+          className="bg-success flex h-5 w-5 items-center justify-center rounded-md text-white"
         >
           <Check className="h-3 w-3" />
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p
-          className={`text-sm font-medium ${
-            isOpen ? '' : 'text-[var(--color-text-tertiary)] line-through'
-          }`}
-        >
+        <p className={`text-sm font-medium ${isOpen ? '' : 'text-base-content/50 line-through'}`}>
           {task.title}
         </p>
         <div className="flex flex-row flex-wrap items-center gap-2">
@@ -98,7 +92,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
           {task.customerId && (
             <Link
               href={`/crm/customers/${task.customerId}`}
-              className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--module-active)] hover:underline"
+              className="text-base-content/50 hover:text-module text-xs hover:underline"
             >
               Customer
             </Link>
@@ -106,7 +100,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
           {task.dealId && (
             <Link
               href={`/crm/deals/${task.dealId}`}
-              className="text-xs text-[var(--color-text-tertiary)] hover:text-[var(--module-active)] hover:underline"
+              className="text-base-content/50 hover:text-module text-xs hover:underline"
             >
               Deal
             </Link>
@@ -115,7 +109,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
       </div>
       {dueText && (
         <div className="flex flex-row items-center gap-1">
-          <Calendar className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+          <Calendar className="text-base-content/50 h-3.5 w-3.5" />
           <p className="text-base-content/70 text-xs">{dueText}</p>
         </div>
       )}

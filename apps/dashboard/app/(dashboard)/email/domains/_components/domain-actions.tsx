@@ -3,7 +3,7 @@
 import { useTransition } from 'react';
 import { RefreshCw, Star, Trash2 } from 'lucide-react';
 import { toast, useConfirm } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { removeDomainAction, setDefaultDomainAction, verifyDomainAction } from '../actions';
 import type { SendingDomainRow } from '../../_lib/types';

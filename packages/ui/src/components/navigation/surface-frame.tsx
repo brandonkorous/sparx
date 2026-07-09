@@ -138,7 +138,7 @@ const SurfaceContext = React.createContext<SurfaceContextValue>({ variant: 'page
 // form the field cards go neutral, so this rail is the single module cue; it uses
 // the standard 12% card-tint level (matching Card variant="module") so the lone
 // tinted element reads consistently with module tints elsewhere.
-const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--module-active)_12%,var(--color-bg-surface))]';
+const SUMMARY_BG = 'bg-[color-mix(in_oklab,var(--color-module)_12%,var(--color-base-100))]';
 
 // ── Rail (immersive `page` variant) ────────────────────────────────────────────
 // RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail
@@ -223,7 +223,7 @@ function Rail({
                         status === 'upcoming' && 'border-white/30 text-white/55',
                         status === 'done' && 'border-transparent bg-white/20 text-white',
                         status === 'current' &&
-                          'border-white bg-white text-[color-mix(in_oklab,var(--module-active)_70%,#000)] ring-4 ring-white/15'
+                          'border-white bg-white text-[color-mix(in_oklab,var(--color-module)_70%,#000)] ring-4 ring-white/15'
                       )}
                     >
                       {status === 'done' ? <Check className="h-4 w-4" /> : idx + 1}
@@ -327,9 +327,9 @@ interface TopStepperProps {
 
 function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperProps) {
   return (
-    <div className="shrink-0 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-4">
+    <div className="shrink-0 border-b border-[var(--color-base-300)] bg-[var(--color-base-100)] px-6 py-4">
       {/* Narrow viewports collapse to a single line (top-2 rule). */}
-      <p className="hidden text-center text-xs font-medium text-[var(--color-text-secondary)] max-[680px]:block">
+      <p className="text-base-content/70 hidden text-center text-xs font-medium max-[680px]:block">
         Step {current + 1} of {steps.length}
         {steps[current]?.label ? ` · ${steps[current]?.label}` : ''}
       </p>
@@ -347,9 +347,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                   aria-hidden
                   className={cn(
                     'absolute top-[13px] right-1/2 left-[-50%] h-0.5',
-                    idx <= current
-                      ? 'bg-[var(--module-active)]'
-                      : 'bg-[var(--color-border-default)]'
+                    idx <= current ? 'bg-module' : 'bg-[var(--color-base-300)]'
                   )}
                 />
               )}
@@ -368,11 +366,11 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                   className={cn(
                     'flex h-7 w-7 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors duration-200',
                     status === 'upcoming' &&
-                      'border-[var(--color-border-strong)] bg-[var(--color-bg-surface)] text-[var(--color-text-muted)]',
+                      'text-base-content/60 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)] bg-[var(--color-base-100)]',
                     status === 'done' &&
-                      'border-transparent bg-[var(--module-active)] text-[var(--module-active-content)]',
+                      'bg-module border-transparent text-[var(--color-module-content)]',
                     status === 'current' &&
-                      'border-transparent bg-[var(--module-active)] text-[var(--module-active-content)] ring-4 ring-[var(--module-active-tint)]'
+                      'bg-module ring-module/20 border-transparent text-[var(--color-module-content)] ring-4'
                   )}
                 >
                   {status === 'done' ? <Check className="h-3.5 w-3.5" /> : idx + 1}
@@ -380,9 +378,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                 <span
                   className={cn(
                     'max-w-[14ch] text-center text-[11px] leading-tight font-medium transition-colors duration-200',
-                    status === 'upcoming'
-                      ? 'text-[var(--color-text-muted)]'
-                      : 'text-[var(--color-text-primary)]'
+                    status === 'upcoming' ? 'text-base-content/60' : 'text-base-content'
                   )}
                 >
                   {step.label}
@@ -407,16 +403,14 @@ function SurfaceTopHeader({
 }) {
   if (!title && !footer) return null;
   return (
-    <div className="flex shrink-0 items-center gap-3 border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-3">
+    <div className="flex shrink-0 items-center gap-3 border-b border-[var(--color-base-300)] bg-[var(--color-base-100)] px-6 py-3">
       {title && (
-        <div className="min-w-0 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+        <div className="text-base-content min-w-0 truncate text-sm font-semibold tracking-tight">
           {title}
         </div>
       )}
       <div className="flex-1" />
-      {footer && (
-        <div className="shrink-0 text-[0.8rem] text-[var(--color-text-muted)]">{footer}</div>
-      )}
+      {footer && <div className="text-base-content/60 shrink-0 text-[0.8rem]">{footer}</div>}
     </div>
   );
 }
@@ -448,7 +442,7 @@ function TopStepperFrame({
 }) {
   return (
     <div
-      className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-bg-page)]', className)}
+      className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-base-200)]', className)}
     >
       <SurfaceTopHeader title={title} footer={footer} />
       <TopStepper
@@ -458,7 +452,7 @@ function TopStepperFrame({
         canSelectStep={canSelectStep}
       />
       {context && (
-        <p className="shrink-0 border-b border-[var(--color-border-default)] bg-[var(--color-bg-page)] px-6 py-2 text-center text-xs text-[var(--color-text-muted)]">
+        <p className="text-base-content/60 shrink-0 border-b border-[var(--color-base-300)] bg-[var(--color-base-200)] px-6 py-2 text-center text-xs">
           {context}
         </p>
       )}
@@ -487,9 +481,7 @@ function MiniProgress({
   className?: string;
 }) {
   return (
-    <div
-      className={cn('flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]', className)}
-    >
+    <div className={cn('text-base-content/60 flex items-center gap-1.5 text-xs', className)}>
       <span className="flex items-center gap-1" aria-hidden>
         {steps.map((step, idx) => (
           <span
@@ -497,15 +489,13 @@ function MiniProgress({
             className={cn(
               'h-1 w-8 rounded-full transition-colors duration-200',
               idx <= current
-                ? 'bg-[var(--module-active)]'
-                : 'bg-[color-mix(in_oklab,var(--color-text-primary)_12%,transparent)]'
+                ? 'bg-module'
+                : 'bg-[color-mix(in_oklab,var(--color-base-content)_12%,transparent)]'
             )}
           />
         ))}
       </span>
-      <span className="ml-1.5 font-medium text-[var(--color-text-primary)]">
-        {steps[current]?.label}
-      </span>
+      <span className="text-base-content ml-1.5 font-medium">{steps[current]?.label}</span>
       <span>
         · step {current + 1} of {steps.length}
       </span>
@@ -530,7 +520,7 @@ export function SurfaceSummary({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <p className="mb-4 text-[1.0625rem] leading-tight font-medium tracking-tight text-[var(--color-text-primary)]">
+      <p className="text-base-content mb-4 text-[1.0625rem] leading-tight font-medium tracking-tight">
         {title}
       </p>
       <div className="flex flex-col">{children}</div>
@@ -553,15 +543,15 @@ export function SurfaceSummaryRow({
     <div className="flex items-baseline justify-between gap-3 py-2">
       <span
         className={cn(
-          'text-sm text-[var(--color-text-muted)]',
-          strong && 'text-[0.9375rem] font-semibold text-[var(--color-text-primary)]'
+          'text-base-content/60 text-sm',
+          strong && 'text-base-content text-[0.9375rem] font-semibold'
         )}
       >
         {label}
       </span>
       <span
         className={cn(
-          'text-sm text-[var(--color-text-primary)] tabular-nums',
+          'text-base-content text-sm tabular-nums',
           strong && 'text-[0.9375rem] font-semibold'
         )}
       >
@@ -572,7 +562,7 @@ export function SurfaceSummaryRow({
 }
 
 export function SurfaceSummaryDivider() {
-  return <div className="my-1.5 border-t border-[var(--color-border-default)]" />;
+  return <div className="my-1.5 border-t border-[var(--color-base-300)]" />;
 }
 
 // The shared F frame. `showHeader` adds the title strip (embedded full page);
@@ -606,13 +596,13 @@ function FSurfaceFrame({
   const inner = (
     <div
       className={cn(
-        '@container flex h-full min-h-0 flex-col overflow-hidden bg-[var(--color-bg-surface)]',
+        '@container flex h-full min-h-0 flex-col overflow-hidden bg-[var(--color-base-100)]',
         // Embedded (full page) is a CONTAINED, centered sheet — never edge-to-edge.
         // Capped in width with the page showing on either side; the inline (drawer/
         // modal) host already bounds the frame, so it fills its host instead.
         variant === 'embedded' &&
           cn(
-            'mx-auto w-full border-x border-[var(--color-border-default)]',
+            'mx-auto w-full border-x border-[var(--color-base-300)]',
             // With a summary the sheet is wide (room for form + the right column);
             // without one it's a tight, centered form sheet so the fields don't
             // float in a huge gutter.
@@ -622,9 +612,9 @@ function FSurfaceFrame({
       )}
     >
       {showHeader && (title != null || headerActions != null) && (
-        <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[var(--color-border-default)] px-7 max-[680px]:px-5">
+        <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[var(--color-base-300)] px-7 max-[680px]:px-5">
           {title && (
-            <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
+            <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
               {title}
             </span>
           )}
@@ -644,7 +634,7 @@ function FSurfaceFrame({
             step) hides MiniProgress — there's no journey to show. */}
         <div className="flex min-h-0 flex-col">
           {steps.length > 1 && (
-            <div className="shrink-0 bg-[var(--color-bg-subtle)] px-7 pt-4 pb-1 max-[680px]:px-5">
+            <div className="shrink-0 bg-[var(--color-base-200)] px-7 pt-4 pb-1 max-[680px]:px-5">
               <MiniProgress steps={steps} current={current} />
             </div>
           )}
@@ -655,7 +645,7 @@ function FSurfaceFrame({
         {hasSummary && (
           <aside
             className={cn(
-              'hidden min-h-0 flex-col overflow-y-auto border-l border-[var(--color-border-default)] px-6 py-6 @[720px]:flex',
+              'hidden min-h-0 flex-col overflow-y-auto border-l border-[var(--color-base-300)] px-6 py-6 @[720px]:flex',
               SUMMARY_BG
             )}
           >
@@ -668,7 +658,7 @@ function FSurfaceFrame({
   return (
     <SurfaceContext.Provider value={{ variant, onCancel, cancelLabel, summary }}>
       {variant === 'embedded' ? (
-        <div className="h-full overflow-hidden bg-[var(--color-bg-page)]">{inner}</div>
+        <div className="h-full overflow-hidden bg-[var(--color-base-200)]">{inner}</div>
       ) : (
         inner
       )}
@@ -736,7 +726,7 @@ export function SurfaceFrame({
               className={cn(
                 'fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
                 'h-[min(680px,88vh)] w-[min(920px,94vw)] overflow-hidden',
-                'rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] shadow-md',
+                'rounded-2xl border border-[var(--color-base-300)] bg-[var(--color-base-100)] shadow-md',
                 'max-[940px]:h-screen max-[940px]:w-screen max-[940px]:max-w-none max-[940px]:rounded-none',
                 'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
                 'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -796,7 +786,7 @@ export function SurfaceFrame({
     <SurfaceContext.Provider value={{ variant: 'page' }}>
       <div
         className={cn(
-          'grid h-screen grid-cols-[340px_1fr] overflow-hidden bg-[var(--color-bg-page)]',
+          'grid h-screen grid-cols-[340px_1fr] overflow-hidden bg-[var(--color-base-200)]',
           'max-[940px]:grid-cols-1 max-[940px]:grid-rows-[auto_1fr]',
           className
         )}
@@ -979,7 +969,7 @@ export function SurfaceStep({
             module-striped step card pops against it (DESIGN.md tonal layering),
             instead of white-on-white. The chrome rails — stepper/header above and
             the action toolbar below — stay on surface, framing this band. */}
-        <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--color-bg-subtle)]">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--color-base-200)]">
           {/* F variants left-align the column under the header (px-7); the modal /
               page variants keep it centered. Centering an F body would drift it
               right of the flush-left header on a wide (no-summary) sheet. */}
@@ -996,7 +986,7 @@ export function SurfaceStep({
             {isF && summary && (
               <div
                 className={cn(
-                  'mt-6 rounded-xl border border-[var(--color-border-default)] px-5 py-4 @[720px]:hidden',
+                  'mt-6 rounded-xl border border-[var(--color-base-300)] px-5 py-4 @[720px]:hidden',
                   SUMMARY_BG
                 )}
               >
@@ -1006,7 +996,7 @@ export function SurfaceStep({
           </div>
         </div>
         {(actions != null || (isF && onCancel != null)) && (
-          <div className="shrink-0 border-t border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+          <div className="shrink-0 border-t border-[var(--color-base-300)] bg-[var(--color-base-100)]">
             <div className={cn('w-full px-7 py-4 max-[680px]:px-5', colWidth, !isF && 'mx-auto')}>
               <ActionRow
                 actions={actions}

@@ -4,7 +4,14 @@
 // RFC 5545 RRULE the API expands into child bookings. Kept presentation-only —
 // the booking form owns the on/off toggle and submit.
 
-import { Button, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 export type RecurrenceFrequency = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 export type RecurrenceEnd =
@@ -68,12 +75,11 @@ export function RecurrenceFields({
     });
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-[var(--color-border)] p-3">
+    <div className="border-base-300 flex flex-col gap-3 rounded-md border p-3">
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="rec-freq">Repeat</Label>
+        <Field>
+          <FieldLabel>Repeat</FieldLabel>
           <NativeSelect
-            id="rec-freq"
             value={value.frequency}
             onChange={(e) => set({ frequency: e.target.value as RecurrenceFrequency })}
           >
@@ -81,23 +87,20 @@ export function RecurrenceFields({
             <option value="WEEKLY">Weekly</option>
             <option value="MONTHLY">Monthly</option>
           </NativeSelect>
-        </div>
-        <div>
-          <Label htmlFor="rec-interval">Every</Label>
+        </Field>
+        <Field>
+          <FieldLabel>Every</FieldLabel>
           <div className="flex items-center gap-2">
-            <Input
-              id="rec-interval"
+            <FieldControl
               type="number"
               min={1}
               className="max-w-[5rem]"
               value={value.interval}
               onChange={(e) => set({ interval: Math.max(1, Number(e.target.value) || 1) })}
             />
-            <span className="text-sm text-[var(--color-muted-foreground)]">
-              {UNIT[value.frequency]}
-            </span>
+            <span className="text-base-content/70 text-sm">{UNIT[value.frequency]}</span>
           </div>
-        </div>
+        </Field>
       </div>
 
       {value.frequency === 'WEEKLY' ? (
@@ -119,17 +122,16 @@ export function RecurrenceFields({
               </Button>
             ))}
           </div>
-          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-base-content/70 mt-1 text-xs">
             Leave blank to repeat on the start day each week.
           </p>
         </div>
       ) : null}
 
-      <div>
-        <Label htmlFor="rec-end">Ends</Label>
+      <Field>
+        <FieldLabel>Ends</FieldLabel>
         <div className="flex flex-wrap items-center gap-2">
           <NativeSelect
-            id="rec-end"
             className="max-w-[10rem]"
             value={value.end.type}
             onChange={(e) => {
@@ -145,7 +147,7 @@ export function RecurrenceFields({
           </NativeSelect>
           {value.end.type === 'after' ? (
             <div className="flex items-center gap-2">
-              <Input
+              <FieldControl
                 type="number"
                 min={1}
                 max={365}
@@ -155,11 +157,11 @@ export function RecurrenceFields({
                   set({ end: { type: 'after', count: Math.max(1, Number(e.target.value) || 1) } })
                 }
               />
-              <span className="text-sm text-[var(--color-muted-foreground)]">occurrences</span>
+              <span className="text-base-content/70 text-sm">occurrences</span>
             </div>
           ) : null}
           {value.end.type === 'on' ? (
-            <Input
+            <FieldControl
               type="date"
               className="max-w-[12rem]"
               value={value.end.date}
@@ -167,7 +169,7 @@ export function RecurrenceFields({
             />
           ) : null}
         </div>
-      </div>
+      </Field>
     </div>
   );
 }

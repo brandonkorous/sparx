@@ -1,7 +1,15 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardBody, Input, Label, Radio } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Label,
+  Radio,
+} from '@wizeworks/silicaui-react';
 import type { PartnerTier } from '@sparx/partner-schemas';
 
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
@@ -56,9 +64,9 @@ export function EarningsCalculator() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="calc-clients">Clients you’ll bring in a year</Label>
-              <Input
+            <Field>
+              <FieldLabel>Clients you’ll bring in a year</FieldLabel>
+              <FieldControl
                 id="calc-clients"
                 type="number"
                 inputMode="numeric"
@@ -67,10 +75,10 @@ export function EarningsCalculator() {
                 value={clients}
                 onChange={(e) => setClients(clampInt(e.target.value, 1, 500, 1))}
               />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="calc-monthly">Their average monthly Sparx bill</Label>
-              <Input
+            </Field>
+            <Field>
+              <FieldLabel>Their average monthly Sparx bill</FieldLabel>
+              <FieldControl
                 id="calc-monthly"
                 type="number"
                 inputMode="numeric"
@@ -79,7 +87,7 @@ export function EarningsCalculator() {
                 value={monthly}
                 onChange={(e) => setMonthly(clampInt(e.target.value, 0, 100000, 0))}
               />
-            </div>
+            </Field>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -88,7 +96,7 @@ export function EarningsCalculator() {
               {TIER_ORDER.map((t) => (
                 <div
                   key={t}
-                  className="flex items-center gap-2 rounded-lg border border-[var(--color-border-default)] p-3"
+                  className="border-base-300 flex items-center gap-2 rounded-lg border p-3"
                 >
                   <Radio
                     name="calc-tier"
@@ -104,7 +112,7 @@ export function EarningsCalculator() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 border-t border-[var(--color-border-default)] pt-5 sm:grid-cols-3">
+          <div className="border-base-300 grid grid-cols-1 gap-4 border-t pt-5 sm:grid-cols-3">
             <Figure label="First-payment commissions" value={usd.format(firstPayment)} />
             <Figure
               label="Ongoing, per month"
@@ -139,10 +147,10 @@ function Figure({
       <span
         className={
           emphasis
-            ? 'text-[2rem] leading-none font-medium text-[var(--module-active)]'
+            ? 'text-module text-[2rem] leading-none font-medium'
             : muted
-              ? 'text-[1.65rem] leading-none font-medium text-[var(--color-text-tertiary)]'
-              : 'text-[1.65rem] leading-none font-medium text-[var(--color-text-primary)]'
+              ? 'text-base-content/50 text-[1.65rem] leading-none font-medium'
+              : 'text-base-content text-[1.65rem] leading-none font-medium'
         }
       >
         {value}

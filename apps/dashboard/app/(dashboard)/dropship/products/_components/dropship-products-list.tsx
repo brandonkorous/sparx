@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, RefreshCw } from 'lucide-react';
 import { SelectionList, type SelectionCard, type SelectionColumn, toast } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { resyncSupplierProduct } from '../../suppliers/_lib/catalog-actions';
 
@@ -69,17 +69,17 @@ function productCell(p: DropshipProduct) {
         <img
           src={p.images[0]}
           alt={p.title}
-          className="h-9 w-9 flex-shrink-0 rounded bg-[var(--color-muted)] object-cover"
+          className="bg-base-200 h-9 w-9 flex-shrink-0 rounded object-cover"
         />
       ) : (
-        <div className="h-9 w-9 flex-shrink-0 rounded bg-[var(--color-muted)]" />
+        <div className="bg-base-200 h-9 w-9 flex-shrink-0 rounded" />
       )}
       <div className="flex flex-col gap-0">
         <p className="line-clamp-1 text-base font-medium">{p.title}</p>
         {p.links[0] && (
           <Link
             href={`/commerce/products/${p.links[0].productId}`}
-            className="text-xs text-[var(--color-muted-foreground)] hover:underline"
+            className="text-base-content/70 text-xs hover:underline"
           >
             View in catalog →
           </Link>
@@ -90,11 +90,7 @@ function productCell(p: DropshipProduct) {
 }
 
 function supplierIdCell(p: DropshipProduct) {
-  return (
-    <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
-      {p.supplierProductId}
-    </span>
-  );
+  return <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>;
 }
 
 function costCell(p: DropshipProduct) {
@@ -103,16 +99,14 @@ function costCell(p: DropshipProduct) {
 
 function msrpCell(p: DropshipProduct) {
   return (
-    <span className="text-[var(--color-muted-foreground)]">
-      {p.msrpCents ? formatCents(p.msrpCents) : '—'}
-    </span>
+    <span className="text-base-content/70">{p.msrpCents ? formatCents(p.msrpCents) : '—'}</span>
   );
 }
 
 function marginCell(p: DropshipProduct) {
   const margin = calcMarginPct(p.costPriceCents, p.msrpCents);
   if (margin === null) {
-    return <p className="text-sm text-[var(--color-muted-foreground)]">—</p>;
+    return <p className="text-base-content/70 text-sm">—</p>;
   }
   return (
     <Badge
@@ -202,14 +196,12 @@ function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
       p.links[0] ? (
         <Link
           href={`/commerce/products/${p.links[0].productId}`}
-          className="text-xs text-[var(--color-muted-foreground)] hover:underline"
+          className="text-base-content/70 text-xs hover:underline"
         >
           View in catalog →
         </Link>
       ) : (
-        <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
-          {p.supplierProductId}
-        </span>
+        <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>
       ),
     badge: statusCell,
     body: (p) => (
@@ -219,12 +211,10 @@ function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
           {marginCell(p)}
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-xs text-[var(--color-muted-foreground)]">
+          <p className="text-base-content/70 text-xs">
             MSRP {p.msrpCents ? formatCents(p.msrpCents) : '—'}
           </p>
-          <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
-            {p.supplierProductId}
-          </span>
+          <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>
         </div>
         <div className="flex flex-row justify-end">
           <ResyncButton supplierId={supplierId} productId={p.id} />
@@ -246,7 +236,7 @@ export function DropshipProductsList({ groups, view }: DropshipProductsListProps
             </Badge>
             <Link
               href={`/dropship/suppliers/${supplier.id}/catalog`}
-              className="ml-auto flex items-center gap-1 text-xs text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]"
+              className="text-base-content/70 hover:text-base-content ml-auto flex items-center gap-1 text-xs"
             >
               Browse catalog <ExternalLink className="h-3 w-3" />
             </Link>

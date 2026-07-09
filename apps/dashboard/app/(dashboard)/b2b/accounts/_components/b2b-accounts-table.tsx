@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge, Table } from 'silicaui-react';
+import { Badge, Table } from '@wizeworks/silicaui-react';
 import type { B2bAccountRow } from '../page';
 
 const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
@@ -45,18 +45,14 @@ export function B2bAccountsTable({ accounts }: Props) {
         {accounts.map((a) => {
           const utilPct = a.creditUtilizationPct;
           const utilizationColor =
-            utilPct >= 90
-              ? 'text-[var(--color-danger-600)]'
-              : utilPct >= 75
-                ? 'text-[var(--color-warning-600)]'
-                : '';
+            utilPct >= 90 ? 'text-danger' : utilPct >= 75 ? 'text-warning' : '';
 
           return (
-            <tr key={a.id} className="hover:bg-[var(--color-surface-subtle)]">
+            <tr key={a.id} className="hover:bg-base-200">
               <td>
                 <Link
                   href={`/b2b/accounts/${a.id}`}
-                  className="font-medium hover:text-[var(--module-active)] hover:underline"
+                  className="hover:text-module font-medium hover:underline"
                 >
                   {a.companyName}
                 </Link>

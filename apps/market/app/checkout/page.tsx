@@ -15,7 +15,7 @@ import {
   AlertDescription,
   Button,
   EmptyState,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 
 import { CheckoutFlow } from '@/components/checkout/checkout-flow';
 import { Container } from '@/components/ui/layout';

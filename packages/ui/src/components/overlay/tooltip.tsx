@@ -37,7 +37,7 @@ export const TooltipContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         'z-50 max-w-xs rounded-md px-2.5 py-1.5 text-xs',
-        'bg-[var(--color-text-primary)] text-[var(--color-text-inverse)]',
+        'text-base-100 bg-[var(--color-base-content)]',
         'shadow-md',
         'animate-in fade-in-0 zoom-in-95',
         'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',

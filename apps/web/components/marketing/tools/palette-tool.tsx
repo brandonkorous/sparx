@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { ColorPicker, Input, NativeSelect, Slider, Button } from '@sparx/ui';
+import { ColorPicker } from '@sparx/ui';
+import { Input, NativeSelect, Range, Button } from '@wizeworks/silicaui-react';
 import { Shuffle, Lock, LockOpen } from 'lucide-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, useCopy } from './ui-kit';
 import { serializeBrandPalette } from '@sparx/site-themes/brand-palette';
@@ -83,9 +84,9 @@ export function PaletteTool() {
               adornment={String(p.accentCount)}
               hint="One to four colors generated alongside your primary."
             >
-              <Slider
+              <Range
                 value={[p.accentCount]}
-                onValueChange={(vals) => p.setAccentCount(vals[0] ?? 1)}
+                onValueChange={(vals) => p.setAccentCount((vals as number[])[0] ?? 1)}
                 min={1}
                 max={4}
                 step={1}
@@ -169,14 +170,14 @@ export function PaletteTool() {
 const hintStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '13px',
-  color: 'var(--color-text-tertiary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
   margin: 0,
 };
 
 const metaStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
   fontSize: '12px',
-  color: 'var(--color-text-tertiary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
 };
 
 const kbdStyle: React.CSSProperties = {
@@ -184,9 +185,9 @@ const kbdStyle: React.CSSProperties = {
   fontSize: '11px',
   padding: '2px 6px',
   borderRadius: '4px',
-  border: '1px solid var(--color-border-default)',
-  backgroundColor: 'var(--color-bg-surface)',
-  color: 'var(--color-text-secondary)',
+  border: '1px solid var(--color-base-300)',
+  backgroundColor: 'var(--color-base-100)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
 };
 
 const SWATCH_ROLE: React.CSSProperties = {
@@ -233,7 +234,7 @@ function PaletteSwatches({
         height: 'clamp(220px, 34vw, 320px)',
         borderRadius: 'var(--radius-lg)',
         overflow: 'hidden',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
       }}
     >
       {colors.map((c, i) => {
@@ -312,7 +313,7 @@ function ScaleSwatches({ hex }: { hex: string }) {
         flexDirection: 'column',
         borderRadius: 'var(--radius-lg)',
         overflow: 'hidden',
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
       }}
     >
       {scale.map((swatch) => {
@@ -364,7 +365,7 @@ function ExportBlock({
           fontFamily: 'var(--font-sans)',
           fontSize: '13px',
           fontWeight: 500,
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         {title}

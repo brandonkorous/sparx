@@ -1,9 +1,11 @@
 # sparx Platform — Dashboard Shell
 
-**Version:** 1.5
+**Version:** 1.5.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-07-08
 
+> **1.5.1 (2026-07-08):** Reconciled to the **silicaui** migration — the shell is rebuilt as `SidebarAppShell` + `BrandRail` on silicaui's `Sidebar` primitive; the module accent token is now `--color-module` (set by `ModuleProvider`), replacing `--module-active`; color tokens live in `@sparx/brand/theme.css`. No layout/behavior changes.
+>
 > **1.5 (2026-06-06):** §5 refinement. The contextual panel no longer mirrors the rail at the platform level — outside a module it shows **nothing and the column collapses** (the rail already lists every module + Home/Templates/SEO/Settings). The one exception is **Settings**, which is not a module but has sub-pages: the panel borrows the section slot to navigate them (Overview + groups, under a neutral "platform" provider; not-yet-built groups render disabled). The settings list has a single source of truth shared with the settings landing page.
 >
 > **1.3 (2026-05-31):** Implementation refinements to §5. The rail is **collapsible** (persisted icon-only ↔ icon+label toggle), and **Favorites + Recents live in the rail** (inline groups), not the panel — so the contextual panel is purely the current module's sections, and at platform level shows a labeled directory of the enabled modules.
@@ -28,7 +30,7 @@ Related: [18-frontend-architecture.md](18-frontend-architecture.md), [23-fronten
 2. **Manifests, not props.** Modules contribute to the shell by exporting a static `ModuleManifest`. The shell composes manifests; it does not enumerate modules.
 3. **Generic over specific.** Favorites, recents, and ⌘K target _generic locations and actions_ ("Create order", "All open orders") — not specific instances ("Order #1234"). Entity-instance pinning is explicitly out of scope.
 4. **Server is source of truth for cross-device state.** Favorites and recents live in Postgres, keyed on `tenant_membership_id`. Theme is device-local.
-5. **Module color shifts automatically.** When the shell renders a module's surface, it wraps the content in `<ModuleProvider module="commerce">`. All header chrome that references `--module-active` picks up the active module's accent color.
+5. **Module color shifts automatically.** When the shell renders a module's surface, it wraps the content in `<ModuleProvider module="commerce">`, which sets `--color-module` (and `--color-module-content`) on the subtree. All header chrome that references `--color-module` (or `color="module"` / `text-module` / `bg-module bg-soft`) picks up the active module's accent color.
 6. **API-first.** Favorites, recents, and the entity registry all have REST endpoints. The dashboard is one consumer; MCP is another; future mobile is a third.
 
 ---
@@ -169,7 +171,7 @@ media-query resolve.
 
 ### 4.3 Module Color Cue
 
-The Module segment in the breadcrumb renders with the module accent color (`--module-active`, set by the surrounding `<ModuleProvider>`). This is the _only_ segment that colors; tenant and section segments stay neutral. Rationale: one color cue is informative; three is noisy.
+The Module segment in the breadcrumb renders with the module accent color (`--color-module`, set by the surrounding `<ModuleProvider>`). This is the _only_ segment that colors; tenant and section segments stay neutral. Rationale: one color cue is informative; three is noisy.
 
 ### 4.4 Responsive Collapse
 
@@ -240,7 +242,7 @@ Supported affordances:
 
 ### 5.1 Layout — rail + contextual panel
 
-The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module, or in Settings). When there's no section context the panel **collapses** and the rail stands alone — one mechanism, present when it has something to say, scaling to modules with 10+ sections where a horizontal tab strip cannot.
+The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module, or in Settings). When there's no section context the panel **collapses** and the rail stands alone — one mechanism, present when it has something to say, scaling to modules with 10+ sections where a horizontal tab strip cannot. It is implemented as the `SidebarAppShell` + `BrandRail` compositions in `@sparx/ui`, built on silicaui's `Sidebar` primitive.
 
 ```
 ┌────┬───────────────────────┐
@@ -249,7 +251,7 @@ The sidebar is two columns: a constant **icon rail** and a **contextual panel** 
 │ ★  │  Pricing              │  ← contextual panel:
 │ ⏱  │  Discounts            │     the active module's sections
 │────│  Subscriptions        │     (from its manifest), active one
-│ ▣  │  Shipping             │     highlighted in --module-active
+│ ▣  │  Shipping             │     highlighted in --color-module
 │ ▣▸ │  Returns & RMA        │
 │ ▣  │  Reviews & Q&A        │
 │ ▣  │  Providers            │
@@ -261,7 +263,7 @@ The sidebar is two columns: a constant **icon rail** and a **contextual panel** 
   rail        contextual panel
 ```
 
-**The rail** (top → bottom): brand mark, Search (⌘K), Home, a divider, then a scrollable middle holding one icon per **enabled** module (active module tinted `--module-active`) followed by the **★ Favorites** and **⏱ Recents** groups, and Settings pinned at the bottom. The rail is the home for the cross-module shortcuts — they ride here so the contextual panel stays purely about the current module. The rail never changes between routes.
+**The rail** (top → bottom): brand mark, Search (⌘K), Home, a divider, then a scrollable middle holding one icon per **enabled** module (active module tinted `--color-module`) followed by the **★ Favorites** and **⏱ Recents** groups, and Settings pinned at the bottom. The rail is the home for the cross-module shortcuts — they ride here so the contextual panel stays purely about the current module. The rail never changes between routes.
 
 The rail is **collapsible**: a persisted toggle at its foot (`sparx:rail-expanded`, published via `useRailExpanded()`) widens it from icon-only (`w-14`) to icon + label (`w-52`). Collapsed, Favorites/Recents render as their item icons under a quiet ★/⏱ group marker (hover gives the label); expanded, each group gains a text heading and every tile a label. Empty groups are omitted.
 
@@ -358,8 +360,8 @@ Deferred to Phase 2. Until MCP-integrated answering is ready, the combobox is a 
 | Modes          | `light` (default), `dark`                                                                                                          |
 | Storage        | `localStorage['sparx:theme']`                                                                                                      |
 | Initial seed   | First login on a device: server preference (`user.preferred_theme`). Subsequent loads: device value.                               |
-| Implementation | Toggles `data-theme="dark"` on `<html>`; CSS custom properties in `packages/ui/src/tokens.css` are scoped on `[data-theme="dark"]` |
-| Module colors  | Light/dark token pairs already defined; module accent shifts intensity, not hue                                                    |
+| Implementation | Toggles `data-theme="dark"` on `<html>`; color custom properties in `@sparx/brand/theme.css` are scoped on `:root[data-theme="dark"]` (defined once — non-color tokens stay in `packages/ui/src/tokens.css`) |
+| Module colors  | `--color-module-<name>` light/dark pairs defined in `@sparx/brand/theme.css`; module accent shifts intensity, not hue                                                    |
 
 No system-pref auto-follow. Rationale: explicit, predictable, and avoids the "phone-in-sun unreadable dark theme" failure mode that motivated per-device persistence.
 

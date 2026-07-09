@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { DownloadCloud, Check, RefreshCw } from 'lucide-react';
 import { importSupplierProduct, resyncSupplierProduct } from '../../../_lib/catalog-actions';
 
@@ -24,7 +24,7 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
   if (done) {
     return (
       <div className="flex items-center gap-3">
-        <span className="flex items-center gap-1 text-sm text-[var(--color-success)]">
+        <span className="text-success flex items-center gap-1 text-sm">
           <Check className="h-4 w-4" /> Imported
         </span>
         <Button

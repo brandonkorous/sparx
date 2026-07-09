@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { revokeApiKeyAction } from '../actions';
 import { RevokeButton } from './revoke-button';
@@ -64,7 +64,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
       cell: (k) => (
         <div className="flex min-w-0 flex-col gap-1">
           <p className="truncate text-sm font-medium">{k.name}</p>
-          <code className="text-xs text-[var(--color-text-muted)]">{k.keyPrefix}…</code>
+          <code className="text-base-content/60 text-xs">{k.keyPrefix}…</code>
         </div>
       ),
     },
@@ -102,7 +102,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
               <div className="flex flex-row items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="truncate font-medium">{k.name}</p>
-                  <code className="text-xs text-[var(--color-text-muted)]">{k.keyPrefix}…</code>
+                  <code className="text-base-content/60 text-xs">{k.keyPrefix}…</code>
                 </div>
                 <Badge color={s.color} variant="soft">
                   {s.label}

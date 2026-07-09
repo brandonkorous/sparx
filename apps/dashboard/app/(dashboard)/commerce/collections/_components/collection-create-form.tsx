@@ -11,7 +11,20 @@ import {
   SurfaceStep,
   type SurfaceStepDef,
 } from '@sparx/ui';
-import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createCollectionAction } from '../../collection-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -43,7 +56,6 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const [name, setName] = React.useState('');
   const [handle, setHandle] = React.useState('');
@@ -52,6 +64,18 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
   const [type, setType] = React.useState<'manual' | 'rules'>('manual');
   const [match, setMatch] = React.useState('all');
   const [seedTag, setSeedTag] = React.useState('');
+
+  // Field validation drives silica's FieldStatus treatment. `handle` carries no
+  // client rule but is validated-tracked so a server-side handle error maps onto
+  // its field; `seedTag` is required only when the collection is rules-driven.
+  const values = { name, handle, seedTag, type };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    seedTag: (val, all) =>
+      all.type === 'rules' && String(val).trim().length === 0
+        ? 'Provide at least one tag to seed the rule.'
+        : null,
+  });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -109,17 +133,7 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
 
   function submit() {
     setError(null);
-    setFieldErrors({});
-
-    if (!name.trim()) {
-      setFieldErrors({ name: 'Name is required.' });
-      return;
-    }
-
-    if (type === 'rules' && !seedTag.trim()) {
-      setFieldErrors({ seedTag: 'Provide at least one tag to seed the rule.' });
-      return;
-    }
+    if (!v.validate()) return;
 
     const payload: Record<string, unknown> = {
       name: name.trim(),
@@ -140,11 +154,12 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
       const result = await createCollectionAction(payload);
       if (!result.ok) {
         if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of result.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
+          v.setServerErrors(
+            Object.fromEntries(result.error.details.map((d) => [d.field, d.message]))
+          );
+        } else {
+          setError(result.error.message);
         }
-        setError(result.error.message);
         return;
       }
       onCreated(result.data.id);
@@ -177,38 +192,36 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap gap-3">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="col-name">Name</Label>
-                    <Input
-                      id="col-name"
+                  <Field {...v.field('name')} className="flex-1">
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
+                      name="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Featured, New for Spring, Best sellers…"
+                      {...v.control('name')}
                     />
-                    {fieldErrors.name && <p className="text-danger text-xs">{fieldErrors.name}</p>}
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2">
-                    <Label htmlFor="col-handle">Handle (optional)</Label>
-                    <Input
-                      id="col-handle"
+                  </Field>
+                  <Field {...v.field('handle')} className="flex-1">
+                    <FieldLabel>Handle (optional)</FieldLabel>
+                    <FieldControl
+                      name="handle"
                       value={handle}
                       onChange={(e) => setHandle(e.target.value)}
                       placeholder="auto-derived from the name"
+                      {...v.control('handle')}
                     />
-                    {fieldErrors.handle && (
-                      <p className="text-danger text-xs">{fieldErrors.handle}</p>
-                    )}
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="col-description">Description</Label>
-                  <Textarea
-                    id="col-description"
+                <Field>
+                  <FieldLabel>Description</FieldLabel>
+                  <FieldControl
+                    name="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
+                    render={<Textarea rows={3} />}
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     id="col-featured"
@@ -221,7 +234,7 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                 <div className="flex flex-col gap-3">
                   <RadioGroup
                     value={type}
-                    onValueChange={(v) => setType(v as 'manual' | 'rules')}
+                    onValueChange={(val) => setType(val as 'manual' | 'rules')}
                     className="gap-3"
                   >
                     <div className="flex flex-row items-center gap-2">
@@ -244,34 +257,35 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                     </div>
                   </RadioGroup>
                   {type === 'rules' && (
-                    <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3">
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="col-match">Match mode</Label>
-                        <NativeSelect
-                          id="col-match"
+                    <div className="border-base-300 bg-base-200 flex flex-col gap-3 rounded border p-3">
+                      <Field>
+                        <FieldLabel>Match mode</FieldLabel>
+                        <FieldControl
+                          name="match"
                           value={match}
                           onChange={(e) => setMatch(e.target.value)}
-                        >
-                          <option value="all">Match all (AND)</option>
-                          <option value="any">Match any (OR)</option>
-                        </NativeSelect>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor="col-seed-tag">Seed predicate — tag equals</Label>
-                        <Input
-                          id="col-seed-tag"
+                          render={
+                            <NativeSelect>
+                              <option value="all">Match all (AND)</option>
+                              <option value="any">Match any (OR)</option>
+                            </NativeSelect>
+                          }
+                        />
+                      </Field>
+                      <Field {...v.field('seedTag')}>
+                        <FieldLabel required>Seed predicate — tag equals</FieldLabel>
+                        <FieldControl
+                          name="seedTag"
                           value={seedTag}
                           onChange={(e) => setSeedTag(e.target.value)}
                           placeholder="bestseller"
+                          {...v.control('seedTag')}
                         />
-                        <p className="text-base-content/70 text-xs">
+                        <FieldDescription>
                           Phase 1.3 seeds a single tag predicate. The full rule editor lands on the
                           detail page in Phase 1.5 (vendor / product_type / price / fitment).
-                        </p>
-                        {fieldErrors.seedTag && (
-                          <p className="text-danger text-xs">{fieldErrors.seedTag}</p>
-                        )}
-                      </div>
+                        </FieldDescription>
+                      </Field>
                     </div>
                   )}
                 </div>
@@ -279,9 +293,15 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

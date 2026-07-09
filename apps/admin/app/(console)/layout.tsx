@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 // no operator session — so every route under (console) is gated. Capability
 // gating is per-surface (requireCapability) in the individual pages; the nav also
 // hides sections the operator can't enter. The whole console wears the neutral
-// `platform` hue so `--module-active` resolves for chrome (the active nav
+// `platform` hue so the active-module color resolves for chrome (the active nav
 // underline); a tenant's own module signals use nested ModuleProviders.
 export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
   const operator = await requireOperator();

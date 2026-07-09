@@ -2,7 +2,7 @@
 // engagement tiles + recent activity, from /v1/email/analytics/overview.
 
 import { Badge, type BadgeProps, statusLabel } from '@sparx/ui';
-import { Card, CardBody, CardTitle, Table } from 'silicaui-react';
+import { Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-react';
 
 import type { OverviewResult } from '../_lib/types';
 

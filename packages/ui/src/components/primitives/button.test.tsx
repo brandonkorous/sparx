@@ -13,13 +13,13 @@ describe('Button', () => {
   it('applies the primary variant by default', () => {
     render(<Button>Save</Button>);
     const btn = screen.getByRole('button', { name: 'Save' });
-    expect(btn.className).toMatch(/sx-c-primary/);
+    expect(btn.className).toMatch(/btn-primary/);
   });
 
   it('switches to the module color on demand', () => {
     render(<Button color="module">Configure</Button>);
     const btn = screen.getByRole('button', { name: 'Configure' });
-    expect(btn.className).toMatch(/sx-c-module/);
+    expect(btn.className).toMatch(/btn-module/);
   });
 
   it('renders a spinner and is aria-busy when loading', () => {

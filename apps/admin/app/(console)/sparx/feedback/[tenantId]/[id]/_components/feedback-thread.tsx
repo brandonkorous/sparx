@@ -45,13 +45,7 @@ function Bubble({
 }) {
   const isStaff = kind === 'staff';
   return (
-    <div
-      className={
-        isStaff
-          ? 'border-l-2 border-[var(--module-active)] pl-4'
-          : 'border-l-2 border-[var(--color-border-default)] pl-4'
-      }
-    >
+    <div className={isStaff ? 'border-module border-l-2 pl-4' : 'border-base-300 border-l-2 pl-4'}>
       <Stack gap={1}>
         <Stack direction="row" align="center" gap={2} className="flex-wrap">
           <Text size="sm" className="font-medium">

@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { Ban, Check, CheckCheck, LogIn, MoreHorizontal, Users, UserX } from 'lucide-react';
 
@@ -143,7 +143,7 @@ export function BookingActions({
           <UserX className="mr-2 h-4 w-4" />
           No-show
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void cancel()} className="text-[var(--color-danger)]">
+        <DropdownMenuItem onClick={() => void cancel()} className="text-danger">
           <Ban className="mr-2 h-4 w-4" />
           Cancel
         </DropdownMenuItem>

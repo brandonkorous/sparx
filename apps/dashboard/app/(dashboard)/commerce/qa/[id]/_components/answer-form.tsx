@@ -3,7 +3,9 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Textarea } from 'silicaui-react';
+import { Button, Field, FieldControl, Textarea } from '@wizeworks/silicaui-react';
+
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { submitOfficialAnswerAction } from '../../../review-actions';
 
@@ -11,14 +13,11 @@ export function AnswerForm({ questionId }: { questionId: string }) {
   const router = useRouter();
   const [body, setBody] = React.useState('');
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
+
+  const v = useFieldValidation({ body }, { body: rule.required('Answer cannot be empty.') });
 
   function onSubmit() {
-    if (!body.trim()) {
-      setError('Answer cannot be empty.');
-      return;
-    }
-    setError(null);
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await submitOfficialAnswerAction({
         questionId,
@@ -26,7 +25,7 @@ export function AnswerForm({ questionId }: { questionId: string }) {
         isOfficial: true,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        v.setServerErrors({ body: result.error.message });
         return;
       }
       setBody('');
@@ -36,19 +35,17 @@ export function AnswerForm({ questionId }: { questionId: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <Textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        rows={4}
-        placeholder="Post an official answer as staff. The storefront pins official answers to the top."
-      />
-      <div className="flex flex-row items-center justify-between gap-2">
-        {error && (
-          <p className="text-danger text-xs" role="alert" aria-live="polite">
-            {error}
-          </p>
-        )}
-        <Button color="module" disabled={pending} onClick={onSubmit} className="ml-auto">
+      <Field {...v.field('body')}>
+        <FieldControl
+          render={<Textarea rows={4} />}
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          placeholder="Post an official answer as staff. The storefront pins official answers to the top."
+          {...v.control('body')}
+        />
+      </Field>
+      <div className="flex flex-row items-center justify-end gap-2">
+        <Button color="module" disabled={pending} onClick={onSubmit}>
           Post staff answer
         </Button>
       </div>

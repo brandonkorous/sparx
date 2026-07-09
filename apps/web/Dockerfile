@@ -21,6 +21,8 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/web/package.json apps/web/
 COPY packages/ui/package.json packages/ui/
 COPY packages/brand/package.json packages/brand/
+# @sparx/forms — client form-validation engine behind silica's FieldStatus (react peer only).
+COPY packages/forms/package.json packages/forms/
 COPY packages/web-chrome/package.json packages/web-chrome/
 COPY packages/legal/package.json packages/legal/
 COPY packages/attribution/package.json packages/attribution/
@@ -33,6 +35,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 COPY packages/ui packages/ui
 COPY packages/brand packages/brand
+COPY packages/forms packages/forms
 COPY packages/web-chrome packages/web-chrome
 COPY packages/legal packages/legal
 COPY packages/attribution packages/attribution

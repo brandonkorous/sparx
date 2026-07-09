@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -145,7 +145,7 @@ function CommerceHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '560px',
                 margin: '28px 0 0',
               }}
@@ -174,8 +174,8 @@ function CommerceHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -184,7 +184,7 @@ function CommerceHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -225,8 +225,8 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -238,7 +238,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -249,7 +249,11 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
             </span>
             <br />
             <span
-              style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {customer.name} · just now
             </span>
@@ -280,7 +284,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
             alignItems: 'center',
             gap: '13px',
             padding: '13px 20px',
-            borderBottom: '1px solid var(--color-bg-subtle)',
+            borderBottom: '1px solid var(--color-base-200)',
           }}
         >
           <span
@@ -288,7 +292,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
               width: 38,
               height: 38,
               borderRadius: '8px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               flexShrink: 0,
               boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
             }}
@@ -297,7 +301,11 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
             <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{it.name}</span>
             <br />
             <span
-              style={{ fontFamily: SANS, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '12px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               {it.sku} · qty {it.qty}
             </span>
@@ -307,7 +315,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
               marginLeft: 'auto',
               fontFamily: SANS,
               fontSize: '14px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {it.price}
@@ -327,7 +335,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
               justifyContent: 'space-between',
               fontFamily: SANS,
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               padding: '4px 0',
             }}
           >
@@ -342,7 +350,7 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
             alignItems: 'baseline',
             marginTop: '8px',
             paddingTop: '12px',
-            borderTop: '1px solid var(--color-border-default)',
+            borderTop: '1px solid var(--color-base-300)',
           }}
         >
           <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>Total</span>
@@ -364,12 +372,18 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '9px',
           padding: '13px 20px',
-          borderTop: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderTop: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <Dot color={C.color} size={6} />
-        <span style={{ fontFamily: MONO, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            fontFamily: MONO,
+            fontSize: '11.5px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
+        >
           paid with {order.paidWith} · inventory decremented
         </span>
       </div>
@@ -397,7 +411,7 @@ function PaymentsRail() {
         style={{
           marginTop: '48px',
           gap: 0,
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           overflow: 'hidden',
         }}
@@ -410,8 +424,8 @@ function PaymentsRail() {
               flexDirection: 'column',
               gap: '8px',
               padding: '28px 26px',
-              backgroundColor: 'var(--color-bg-surface)',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-300)',
             }}
           >
             <span
@@ -443,7 +457,7 @@ function PaymentsRail() {
                 fontFamily: SANS,
                 fontSize: '13px',
                 lineHeight: '20px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {m.ds}
@@ -457,7 +471,7 @@ function PaymentsRail() {
           fontFamily: SANS,
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           maxWidth: '720px',
         }}
       >
@@ -497,7 +511,7 @@ function FeeLadder() {
       when: 'At $299+ / mo of modules',
       pct: '0%',
       pctSize: 76,
-      pctColor: 'var(--color-text-primary)',
+      pctColor: 'var(--color-base-content)',
       barW: '12%',
       barColor: '#0A0A0A',
       body: 'Once your active modules total $299 a month or more, the per-transaction fee disappears entirely.',
@@ -518,8 +532,8 @@ function FeeLadder() {
               display: 'flex',
               flexDirection: 'column',
               gap: '14px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
               padding: '26px 26px 28px',
             }}
@@ -530,7 +544,7 @@ function FeeLadder() {
                 fontSize: '12px',
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {r.when}
@@ -562,7 +576,7 @@ function FeeLadder() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {r.body}
@@ -576,7 +590,7 @@ function FeeLadder() {
           fontFamily: SANS,
           fontSize: '14px',
           lineHeight: '22px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           maxWidth: '680px',
         }}
       >
@@ -635,8 +649,8 @@ function Operations() {
               flexDirection: 'column',
               gap: '12px',
               padding: '26px',
-              backgroundColor: 'var(--color-bg-page)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '178px',
             }}
@@ -671,7 +685,7 @@ function Operations() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {o.body}
@@ -734,8 +748,8 @@ function HeadlessOrHosted() {
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(C.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(C.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
@@ -767,7 +781,7 @@ function HeadlessOrHosted() {
                 fontFamily: SANS,
                 fontSize: '15px',
                 lineHeight: '24px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {w.body}
@@ -783,7 +797,7 @@ function HeadlessOrHosted() {
                       fontFamily: SANS,
                       fontSize: '14.5px',
                       lineHeight: '23px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {p}
@@ -795,7 +809,7 @@ function HeadlessOrHosted() {
               style={{
                 fontFamily: MONO,
                 fontSize: '12px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 marginTop: 'auto',
                 paddingTop: '4px',
               }}
@@ -891,7 +905,7 @@ function CommercePricing() {
           justifyContent: 'space-between',
           padding: '40px',
           backgroundColor: moduleTint(C.color),
-          border: '1px solid var(--color-border-default)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',
         }}
@@ -904,13 +918,17 @@ function CommercePricing() {
                 fontWeight: 500,
                 fontSize: '56px',
                 letterSpacing: '-0.025em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               $49
             </span>
             <span
-              style={{ fontFamily: SANS, fontSize: '16px', color: 'var(--color-text-tertiary)' }}
+              style={{
+                fontFamily: SANS,
+                fontSize: '16px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
             >
               /mo
             </span>
@@ -920,7 +938,7 @@ function CommercePricing() {
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '22px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               margin: 0,
               maxWidth: '640px',
             }}

@@ -12,7 +12,7 @@
 
 import Link from 'next/link';
 import { Star, Archive } from 'lucide-react';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -65,7 +65,7 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
       cell: (s) => (
         <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-2">
-            {nameLink(s, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline')}
+            {nameLink(s, 'text-sm font-medium hover:text-module hover:underline')}
             {badges(s)}
           </div>
           <p className="text-base-content/70 text-xs">
@@ -101,18 +101,14 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
   ];
 
   const card: SelectionCard<SegmentListRow> = {
-    title: (s) =>
-      nameLink(s, 'text-base font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (s) => nameLink(s, 'text-base font-medium hover:text-module hover:underline'),
     render: (s) => (
       <Card>
         <CardBody>
           <div className="flex flex-row flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <div className="flex flex-row flex-wrap items-center gap-2">
-                {nameLink(
-                  s,
-                  'text-base font-medium hover:text-[var(--module-active)] hover:underline'
-                )}
+                {nameLink(s, 'text-base font-medium hover:text-module hover:underline')}
                 {badges(s)}
               </div>
               {s.description && (

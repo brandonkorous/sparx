@@ -11,7 +11,7 @@ import {
   toast,
   type BadgeProps,
 } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { removeSuppressionAction } from '../actions';
 import type { SuppressionRow } from '../../_lib/types';

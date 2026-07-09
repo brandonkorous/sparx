@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { ArrowRight, CheckCircle2, ExternalLink } from 'lucide-react';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import {

@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { Circle } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { colorClass, type ColorKey } from '../_recipes/variants';
+import { colorVars, type ColorKey } from '../_recipes/variants';
 
 const SIZES = {
   sm: { box: 'h-3.5 w-3.5', dot: 'h-1.5 w-1.5' },
@@ -29,25 +29,26 @@ export interface RadioGroupItemProps extends Omit<
   size?: keyof typeof SIZES;
 }
 
-// Selected state reads --c-bg from the `.sx-c-{color}` role class (default
-// primary — matches the prior --sparx-primary behaviour).
+// Radix control — the selected ring + dot are driven off a per-instance
+// `--sx-sel` custom property set to the silicaui color token (default primary).
 export const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   RadioGroupItemProps
->(({ className, color = 'primary', size = 'md', ...props }, ref) => {
+>(({ className, color = 'primary', size = 'md', style, ...props }, ref) => {
   const s = SIZES[size];
+  const { sel } = colorVars(color);
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
+      style={{ ['--sx-sel']: sel, ...style } as React.CSSProperties}
       className={cn(
-        colorClass(color),
         'aspect-square rounded-full border',
         s.box,
-        'border-[var(--color-border-strong)] bg-[var(--color-bg-surface)]',
+        'border-[var(--color-base-300)] bg-[var(--color-base-100)]',
         'transition-colors duration-150',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
+        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        'data-[state=checked]:border-[var(--c-bg)] data-[state=checked]:text-[var(--c-bg)]',
+        'data-[state=checked]:border-[var(--sx-sel)] data-[state=checked]:text-[var(--sx-sel)]',
         className
       )}
       {...props}

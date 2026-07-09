@@ -7,7 +7,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 
@@ -67,7 +67,7 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
   const columns: SelectionColumn<SubscriptionSummary>[] = [
     {
       header: 'ID',
-      cell: (s) => idLink(s, 'font-mono text-xs hover:text-[var(--module-active)]'),
+      cell: (s) => idLink(s, 'font-mono text-xs hover:text-module'),
     },
     {
       header: 'Customer',
@@ -89,7 +89,7 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
   ];
 
   const card: SelectionCard<SubscriptionSummary> = {
-    title: (s) => idLink(s, 'truncate font-mono text-sm hover:text-[var(--module-active)]'),
+    title: (s) => idLink(s, 'truncate font-mono text-sm hover:text-module'),
     subtitle: (s) => (
       <p className={`text-xs text-base-content/70${s.customerName ? '' : 'font-mono'}`}>
         {s.customerName ?? s.customerId.slice(0, 8)}

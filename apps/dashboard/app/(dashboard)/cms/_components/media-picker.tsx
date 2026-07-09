@@ -12,7 +12,7 @@
 // 2 follow-up flagged in the comment below.
 
 import * as React from 'react';
-import { Button, Dialog, DialogContent, DialogTitle, Input } from 'silicaui-react';
+import { Button, Dialog, DialogContent, DialogTitle, Input } from '@wizeworks/silicaui-react';
 import { ImageIcon, Search } from 'lucide-react';
 
 import { listMediaAssetsAction } from './cms-actions';
@@ -67,7 +67,7 @@ function AssetThumb({ src, alt }: { src: string | null; alt: string }) {
   if (!src || failed) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
+        <ImageIcon className="text-base-content/50 h-6 w-6" />
       </div>
     );
   }
@@ -144,7 +144,7 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
         <div className="px-6 py-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-row items-center gap-2">
-              <Search className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+              <Search className="text-base-content/50 h-4 w-4" />
               <Input
                 placeholder="Filter by filename or alt text"
                 value={q}
@@ -172,7 +172,7 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                         assetId: a.id,
                       })
                     }
-                    className="group relative aspect-square overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] focus:ring-2 focus:ring-[var(--color-border-focus)] focus:outline-none"
+                    className="group border-base-300 bg-base-200 focus:ring-primary relative aspect-square overflow-hidden rounded-md border focus:ring-2 focus:outline-none"
                     aria-label={`Pick ${a.original_filename}`}
                   >
                     <AssetThumb src={thumb} alt={a.alt_text ?? a.original_filename} />

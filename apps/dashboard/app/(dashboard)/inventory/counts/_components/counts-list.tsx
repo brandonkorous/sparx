@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import {
@@ -24,10 +24,7 @@ interface CountsListProps {
 
 export function CountsList({ rows, view }: CountsListProps) {
   const numberLink = (c: InventoryCountRow) => (
-    <Link
-      href={`/inventory/counts/${c.id}`}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
-    >
+    <Link href={`/inventory/counts/${c.id}`} className="hover:text-module font-mono text-xs">
       {c.number}
     </Link>
   );

@@ -4,8 +4,18 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Eye } from 'lucide-react';
 
-import { Button, Card, CardBody, CardTitle, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule as fieldRule, useFieldValidation } from '@sparx/forms';
 
 import { createSegmentAction, previewSegmentCountAction } from '../../segment-actions';
 import { type Rule, RuleBuilder, defaultRule } from './rule-builder';
@@ -52,6 +62,14 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
     total: number;
   } | null>(null);
   const [previewing, setPreviewing] = React.useState(false);
+
+  const v = useFieldValidation(
+    { name, slug },
+    {
+      name: fieldRule.required('Name is required.'),
+      slug: fieldRule.required('Slug is required.'),
+    }
+  );
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
@@ -121,10 +139,7 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
 
   function submit() {
     setError(null);
-    if (!name.trim() || !slug.trim()) {
-      setError('Name and slug are required.');
-      return;
-    }
+    if (!v.validate()) return;
     const input = {
       name: name.trim(),
       slug: slug.trim(),
@@ -169,34 +184,36 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                 <CardTitle>Details</CardTitle>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-row flex-wrap gap-4">
-                    <div className="flex flex-1 flex-col gap-2">
-                      <Label htmlFor="seg-name">Name</Label>
-                      <Input
-                        id="seg-name"
+                    <Field {...v.field('name')} className="flex-1">
+                      <FieldLabel required>Name</FieldLabel>
+                      <FieldControl
+                        name="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        {...v.control('name')}
                         placeholder="High-value customers"
                       />
-                    </div>
-                    <div className="flex flex-1 flex-col gap-2">
-                      <Label htmlFor="seg-slug">Slug</Label>
-                      <Input
-                        id="seg-slug"
+                    </Field>
+                    <Field {...v.field('slug')} className="flex-1">
+                      <FieldLabel required>Slug</FieldLabel>
+                      <FieldControl
+                        name="slug"
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
+                        {...v.control('slug')}
                         placeholder="high-value-customers"
                         pattern="^[a-z][a-z0-9-]*$"
                       />
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="seg-description">Description</Label>
-                    <Input
-                      id="seg-description"
+                  <Field>
+                    <FieldLabel>Description</FieldLabel>
+                    <FieldControl
+                      name="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
-                  </div>
+                  </Field>
                 </div>
               </CardBody>
             </Card>
@@ -220,7 +237,7 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                 <div className="flex flex-col gap-3">
                   <RuleBuilder value={rule} onChange={setRule} />
                   {preview && (
-                    <div className="flex flex-row items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--module-active-soft)] p-3">
+                    <div className="border-base-300 bg-module/10 flex flex-row items-center gap-2 rounded-md border p-3">
                       <p className="text-sm">
                         <span className="font-medium tabular-nums">{preview.matches}</span> of{' '}
                         <span className="tabular-nums">{preview.sampled}</span> sampled match
@@ -235,9 +252,15 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
             </Card>
           </div>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

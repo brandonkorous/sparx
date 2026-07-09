@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge, Code, SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { DnsRecordsTable } from './dns-records-table';
 import { DomainActions } from './domain-actions';

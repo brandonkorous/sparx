@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { BarChart3 } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 export const metadata: Metadata = { title: 'Profitability — Dropship' };
 
@@ -85,7 +85,7 @@ function SummaryCard({
   return (
     <Card>
       <CardBody className="p-5">
-        <p className="mb-1 text-xs font-medium text-[var(--color-muted-foreground)]">{label}</p>
+        <p className="text-base-content/70 mb-1 text-xs font-medium">{label}</p>
         <p className={`text-2xl font-semibold tracking-tight ${valueClass ?? ''}`}>
           {prefix}
           {value}
@@ -122,7 +122,7 @@ export default async function DropshipAnalyticsPage() {
           <SummaryCard
             label="Profit"
             value={formatCents(Math.abs(summary.profitCents))}
-            valueClass={isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}
+            valueClass={isLoss ? 'text-danger' : 'text-success'}
             prefix={isLoss ? '−' : '+'}
           />
           <SummaryCard
@@ -130,10 +130,10 @@ export default async function DropshipAnalyticsPage() {
             value={`${summary.marginPct}%`}
             valueClass={
               summary.marginPct >= 20
-                ? 'text-[var(--color-success)]'
+                ? 'text-success'
                 : summary.marginPct >= 0
-                  ? 'text-[var(--color-warning)]'
-                  : 'text-[var(--color-danger)]'
+                  ? 'text-warning'
+                  : 'text-danger'
             }
           />
         </div>
@@ -143,9 +143,7 @@ export default async function DropshipAnalyticsPage() {
           <div>
             <p className="mb-4 text-lg font-semibold">By supplier</p>
             {summary.bySupplier.length === 0 ? (
-              <p className="text-[var(--color-muted-foreground)]">
-                No fulfilled dropship orders yet.
-              </p>
+              <p className="text-base-content/70">No fulfilled dropship orders yet.</p>
             ) : (
               <Table>
                 <thead>
@@ -173,13 +171,7 @@ export default async function DropshipAnalyticsPage() {
                       <td className="text-right">{formatCents(row.revenueCents)}</td>
                       <td className="text-right">{formatCents(row.costCents)}</td>
                       <td className="text-right">
-                        <span
-                          className={
-                            row.profitCents >= 0
-                              ? 'text-[var(--color-success)]'
-                              : 'text-[var(--color-danger)]'
-                          }
-                        >
+                        <span className={row.profitCents >= 0 ? 'text-success' : 'text-danger'}>
                           {row.profitCents < 0 ? '−' : '+'}
                           {formatCents(Math.abs(row.profitCents))}
                         </span>
@@ -200,7 +192,7 @@ export default async function DropshipAnalyticsPage() {
           <div>
             <p className="mb-4 text-lg font-semibold">Recent orders</p>
             {orders.length === 0 ? (
-              <p className="text-[var(--color-muted-foreground)]">No orders yet.</p>
+              <p className="text-base-content/70">No orders yet.</p>
             ) : (
               <>
                 <Table>
@@ -234,13 +226,7 @@ export default async function DropshipAnalyticsPage() {
                         <td className="text-right">{formatCents(row.revenueCents)}</td>
                         <td className="text-right">{formatCents(row.costCents)}</td>
                         <td className="text-right">
-                          <span
-                            className={
-                              row.profitCents >= 0
-                                ? 'text-[var(--color-success)]'
-                                : 'text-[var(--color-danger)]'
-                            }
-                          >
+                          <span className={row.profitCents >= 0 ? 'text-success' : 'text-danger'}>
                             {row.profitCents < 0 ? '−' : '+'}
                             {formatCents(Math.abs(row.profitCents))}
                           </span>
@@ -251,7 +237,7 @@ export default async function DropshipAnalyticsPage() {
                           </Badge>
                         </td>
                         <td>
-                          <p className="text-sm text-[var(--color-muted-foreground)]">
+                          <p className="text-base-content/70 text-sm">
                             {new Date(row.createdAt).toLocaleDateString()}
                           </p>
                         </td>
@@ -260,7 +246,7 @@ export default async function DropshipAnalyticsPage() {
                   </tbody>
                 </Table>
                 {totalOrderCount > 50 && (
-                  <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
+                  <p className="text-base-content/70 mt-3 text-sm">
                     Showing 50 of {totalOrderCount} orders.
                   </p>
                 )}

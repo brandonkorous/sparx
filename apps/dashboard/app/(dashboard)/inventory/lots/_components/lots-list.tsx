@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { daysUntil, formatDate, hazmatLabel, recallBadge, type LotRow } from './types';
 
@@ -20,10 +20,7 @@ export function LotsList({ rows, view }: LotsListProps) {
   const nowMs = Date.now();
 
   const lotLink = (l: LotRow) => (
-    <Link
-      href={`/inventory/lots/${l.id}`}
-      className="font-mono text-xs hover:text-[var(--module-active)]"
-    >
+    <Link href={`/inventory/lots/${l.id}`} className="hover:text-module font-mono text-xs">
       {l.lotNumber}
     </Link>
   );
@@ -45,9 +42,7 @@ export function LotsList({ rows, view }: LotsListProps) {
       <div className="flex flex-col gap-0">
         <p className="text-sm">{formatDate(l.expiresAt)}</p>
         {days !== null ? (
-          <p
-            className={`text-xs ${days < 0 ? 'text-[var(--color-danger)]' : 'text-[var(--color-text-muted)]'}`}
-          >
+          <p className={`text-xs ${days < 0 ? 'text-danger' : 'text-base-content/60'}`}>
             {days < 0 ? `expired ${-days}d ago` : `${days}d left`}
           </p>
         ) : null}

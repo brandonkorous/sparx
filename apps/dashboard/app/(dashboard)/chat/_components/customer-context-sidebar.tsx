@@ -1,7 +1,7 @@
 // Live Chat inbox — CRM customer context (docs/69 A-5).
 // Presentational; data is fetched server-side and passed in.
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import type { CustomerContextDto } from '../_lib/types';
 
@@ -15,22 +15,18 @@ export function CustomerContextSidebar({
   context: CustomerContextDto;
 }): React.JSX.Element {
   return (
-    <aside className="hidden h-full overflow-y-auto border-l border-[var(--color-border)] p-4 lg:block">
-      <h2 className="text-xs font-semibold tracking-wide text-[var(--color-text-secondary)] uppercase">
+    <aside className="border-base-300 hidden h-full overflow-y-auto border-l p-4 lg:block">
+      <h2 className="text-base-content/70 text-xs font-semibold tracking-wide uppercase">
         Customer
       </h2>
       <div className="mt-2">
-        <div className="text-sm font-medium text-[var(--color-text-primary)]">
+        <div className="text-base-content text-sm font-medium">
           {context.name ?? 'Anonymous visitor'}
         </div>
-        {context.email ? (
-          <div className="text-xs text-[var(--color-text-secondary)]">{context.email}</div>
-        ) : null}
-        {context.phone ? (
-          <div className="text-xs text-[var(--color-text-secondary)]">{context.phone}</div>
-        ) : null}
+        {context.email ? <div className="text-base-content/70 text-xs">{context.email}</div> : null}
+        {context.phone ? <div className="text-base-content/70 text-xs">{context.phone}</div> : null}
         {context.company ? (
-          <div className="text-xs text-[var(--color-text-secondary)]">{context.company}</div>
+          <div className="text-base-content/70 text-xs">{context.company}</div>
         ) : null}
         {context.linked && context.type ? (
           <div className="mt-2">
@@ -44,26 +40,26 @@ export function CustomerContextSidebar({
       {context.linked ? (
         <>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-[var(--color-border)] p-2">
-              <div className="text-xs text-[var(--color-text-secondary)]">Lifetime</div>
+            <div className="border-base-300 rounded-lg border p-2">
+              <div className="text-base-content/70 text-xs">Lifetime</div>
               <div className="text-sm font-semibold">{money(context.lifetimeValue)}</div>
             </div>
-            <div className="rounded-lg border border-[var(--color-border)] p-2">
-              <div className="text-xs text-[var(--color-text-secondary)]">Orders</div>
+            <div className="border-base-300 rounded-lg border p-2">
+              <div className="text-base-content/70 text-xs">Orders</div>
               <div className="text-sm font-semibold">{context.orderCount}</div>
             </div>
           </div>
 
           {context.recentOrders.length > 0 ? (
             <div className="mt-4">
-              <h3 className="text-xs font-semibold tracking-wide text-[var(--color-text-secondary)] uppercase">
+              <h3 className="text-base-content/70 text-xs font-semibold tracking-wide uppercase">
                 Recent orders
               </h3>
               <ul className="mt-2 space-y-1">
                 {context.recentOrders.map((o) => (
                   <li key={o.id} className="flex items-center justify-between text-xs">
                     <span className="font-medium">{o.orderNumber}</span>
-                    <span className="text-[var(--color-text-secondary)]">{money(o.total)}</span>
+                    <span className="text-base-content/70">{money(o.total)}</span>
                   </li>
                 ))}
               </ul>
@@ -71,9 +67,7 @@ export function CustomerContextSidebar({
           ) : null}
         </>
       ) : (
-        <p className="mt-4 text-xs text-[var(--color-text-secondary)]">
-          Not linked to a CRM customer yet.
-        </p>
+        <p className="text-base-content/70 mt-4 text-xs">Not linked to a CRM customer yet.</p>
       )}
     </aside>
   );

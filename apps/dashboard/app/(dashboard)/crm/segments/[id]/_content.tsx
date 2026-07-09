@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star, Archive, Users, Code2 } from 'lucide-react';
 
-import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { Stat, statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -72,7 +72,7 @@ export async function SegmentDetailContent({ id }: Props) {
                 <Archive className="h-3 w-3" /> Archived
               </Badge>
             )}
-            <code className="text-xs text-[var(--color-text-tertiary)]">{segment.slug}</code>
+            <code className="text-base-content/50 text-xs">{segment.slug}</code>
           </div>
           <RecomputeButton segmentId={segment.id} />
         </div>
@@ -106,7 +106,7 @@ export async function SegmentDetailContent({ id }: Props) {
               <Code2 className="h-4 w-4" /> Rule
             </div>
           </CardTitle>
-          <pre className="overflow-x-auto rounded-md bg-[var(--color-surface-subtle)] p-3 text-xs">
+          <pre className="bg-base-200 overflow-x-auto rounded-md p-3 text-xs">
             {JSON.stringify(segment.rules, null, 2)}
           </pre>
           <p className="text-base-content/70 mt-2 text-xs">
@@ -152,7 +152,7 @@ export async function SegmentDetailContent({ id }: Props) {
                     <td>
                       <Link
                         href={`/crm/customers/${m.customerId}`}
-                        className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                        className="hover:text-module text-sm font-medium hover:underline"
                       >
                         {customerLabel(m.customer)}
                       </Link>

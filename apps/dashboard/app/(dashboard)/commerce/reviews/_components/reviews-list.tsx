@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Check, Flag, Star, Trash2, X } from 'lucide-react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   type BulkAction,
   type SelectionCard,
@@ -97,8 +97,8 @@ function Stars({ value }: { value: number }) {
           key={i}
           className={
             i <= value
-              ? 'h-3.5 w-3.5 fill-[var(--module-active)] text-[var(--module-active)]'
-              : 'h-3.5 w-3.5 text-[var(--color-text-muted)]'
+              ? 'text-module h-3.5 w-3.5 fill-[var(--color-module)]'
+              : 'text-base-content/60 h-3.5 w-3.5'
           }
         />
       ))}
@@ -159,7 +159,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
     r.productTitle ? (
       <Link
         href={`/commerce/products/${r.productId}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {r.productTitle}
       </Link>
@@ -169,7 +169,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
 
   const columns: SelectionColumn<ReviewListRow>[] = [
     { header: 'Rating', cell: (r) => <Stars value={r.rating} /> },
-    { header: 'Review', cell: (r) => titleLink(r, 'hover:text-[var(--module-active)]') },
+    { header: 'Review', cell: (r) => titleLink(r, 'hover:text-module') },
     { header: 'Product', cell: productCell },
     { header: 'Author', cell: (r) => authorLabel(r) },
     { header: 'Status', cell: (r) => <StatusBadge status={r.status} /> },
@@ -182,7 +182,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
   ];
 
   const card: SelectionCard<ReviewListRow> = {
-    title: (r) => titleLink(r, 'truncate hover:text-[var(--module-active)]'),
+    title: (r) => titleLink(r, 'truncate hover:text-module'),
     subtitle: (r) => (
       <div className="flex flex-row items-center gap-2">
         <Stars value={r.rating} />

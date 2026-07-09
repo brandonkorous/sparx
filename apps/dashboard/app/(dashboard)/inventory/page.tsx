@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, EmptyState, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
 import {
   ActionQueue,
   ActionTile,
@@ -324,7 +324,7 @@ export default async function InventoryPage() {
                   valueFormat={{ kind: 'currency', currency }}
                   ariaLabel="Inventory value at cost over time"
                 />
-                <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {[
                     ['SKUs', summary ? fmtNumber(summary.stockStatus.skuCount) : '—'],
                     ['Units', summary ? fmtNumber(summary.valuation.totalUnits) : '—'],
@@ -335,7 +335,7 @@ export default async function InventoryPage() {
                     ],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
+                      <div className="text-base-content/50 text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -406,7 +406,7 @@ export default async function InventoryPage() {
                 {summary.lowOrOut.map((r) => (
                   <tr key={`${r.variantId}-${r.location}`}>
                     <td className="font-medium">{r.title}</td>
-                    <td className="text-[var(--color-text-tertiary)]">{r.location}</td>
+                    <td className="text-base-content/50">{r.location}</td>
                     <td className="text-right tabular-nums">{fmtNumber(r.onHand)}</td>
                     <td className="text-right tabular-nums">{fmtNumber(r.available)}</td>
                     <td>
@@ -450,9 +450,9 @@ export default async function InventoryPage() {
                   color="module"
                   valueFormat="number"
                 />
-                <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
+                <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
                   Total on hand ·{' '}
-                  <span className="font-medium text-[var(--color-text-secondary)]">
+                  <span className="text-base-content/70 font-medium">
                     {summary ? fmtNumber(summary.valuation.totalUnits) : '—'} units
                   </span>{' '}
                   across {fmtNumber(locationCount)} locations
@@ -474,7 +474,7 @@ export default async function InventoryPage() {
                   <TimelineItem key={a.id} showConnector={i < activity.length - 1}>
                     <TimelineTitle>
                       {a.title} —{' '}
-                      <span className="font-normal text-[var(--color-text-secondary)]">
+                      <span className="text-base-content/70 font-normal">
                         {signed(a.delta)} · {REASON_LABELS[a.reason] ?? a.reason} at {a.location}
                       </span>
                     </TimelineTitle>

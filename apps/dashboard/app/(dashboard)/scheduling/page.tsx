@@ -12,7 +12,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ActionQueue, ActionTile, BarList, PageHeader, Stat } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
@@ -238,7 +238,7 @@ export default async function SchedulingOverviewPage() {
                 <div className="flex flex-col gap-4">
                   {[...groups.entries()].map(([key, dayEvents]) => (
                     <div key={key}>
-                      <p className="mb-1 text-xs font-medium text-[var(--color-text-tertiary)]">
+                      <p className="text-base-content/50 mb-1 text-xs font-medium">
                         {dayHeading(dayEvents[0]!.startAt)}
                       </p>
                       {dayEvents.map((e) => (
@@ -247,16 +247,16 @@ export default async function SchedulingOverviewPage() {
                           href={`/scheduling/bookings/${e.id}`}
                           entityType="booking"
                           entityId={e.id}
-                          className="-mx-2 flex items-center gap-3 rounded-md border-b border-[var(--color-border-default)] px-2 py-2.5 transition-colors last:border-b-0 hover:bg-[var(--color-bg-subtle)]"
+                          className="border-base-300 hover:bg-base-200 -mx-2 flex items-center gap-3 rounded-md border-b px-2 py-2.5 transition-colors last:border-b-0"
                         >
-                          <span className="w-16 shrink-0 text-sm font-medium text-[var(--color-text-secondary)] tabular-nums">
+                          <span className="text-base-content/70 w-16 shrink-0 text-sm font-medium tabular-nums">
                             {formatTime(e.startAt)}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="block truncate text-sm font-medium text-[var(--color-text-primary)]">
+                            <span className="text-base-content block truncate text-sm font-medium">
                               {e.serviceName}
                             </span>
-                            <span className="block truncate text-xs text-[var(--color-text-tertiary)]">
+                            <span className="text-base-content/50 block truncate text-xs">
                               {eventMeta(e)}
                             </span>
                           </span>

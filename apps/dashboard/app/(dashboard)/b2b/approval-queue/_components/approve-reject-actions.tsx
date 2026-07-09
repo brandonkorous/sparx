@@ -3,7 +3,17 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle } from 'lucide-react';
-import { Button, Dialog, DialogContent, DialogTitle, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { approveOrder, rejectOrder } from '../_lib/actions';
 
 interface Props {
@@ -90,17 +100,20 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
                 ? 'The order will be placed and the buyer notified.'
                 : 'The order will be cancelled and the buyer notified.'}
             </p>
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium">Reason (optional)</p>
-              <Textarea
-                placeholder="Add a note for the buyer…"
-                rows={3}
+            <Field>
+              <FieldLabel>Reason (optional)</FieldLabel>
+              <FieldControl
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 disabled={submitting}
+                render={<Textarea placeholder="Add a note for the buyer…" rows={3} />}
               />
-            </div>
-            {error && <p className="text-danger text-sm">{error}</p>}
+            </Field>
+            {error && (
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {error}
+              </FieldStatus>
+            )}
           </div>
 
           <div className="mt-4 flex justify-end gap-2">

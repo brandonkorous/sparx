@@ -76,10 +76,7 @@ function Stat({
   flag?: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      className="block rounded-lg transition-colors hover:bg-[var(--color-surface-200)]"
-    >
+    <Link href={href} className="hover:bg-base-200 block rounded-lg transition-colors">
       <Card>
         <Stack gap={1}>
           <Stack direction="row" align="center" justify="between">
@@ -152,8 +149,8 @@ export function FilterTabs({
           className={cn(
             'border-b-2 pb-1 text-sm font-medium transition-colors',
             tab.isActive
-              ? 'border-[var(--module-active)] text-[var(--color-text-primary)]'
-              : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+              ? 'border-module text-base-content'
+              : 'text-base-content/60 hover:text-base-content border-transparent'
           )}
         >
           {tab.label}
@@ -178,7 +175,7 @@ export function Pager({
   if (total <= limit) return null;
   const from = offset + 1;
   const to = Math.min(offset + limit, total);
-  const linkClass = 'text-sm font-medium text-[var(--module-active-text)] hover:underline';
+  const linkClass = 'text-sm font-medium text-module hover:underline';
   const prevOffset = Math.max(0, offset - limit);
   return (
     <Stack direction="row" align="center" justify="between">

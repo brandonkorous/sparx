@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
 import { marketCategoryLabel, MARKET_CATEGORIES } from '@sparx/commerce-schemas';
-import { Badge, Button, EmptyState, Select, Table } from 'silicaui-react';
+import { Badge, Button, EmptyState, Select, Table } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import { setProductListedAction } from '../actions';
@@ -71,7 +71,7 @@ function ProductRow({ product }: { product: MarketListedProduct }) {
         <div className="flex flex-col gap-1">
           <Link
             href={`/commerce/products/${product.productId}`}
-            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+            className="hover:text-module text-sm font-medium hover:underline"
           >
             {product.title}
           </Link>

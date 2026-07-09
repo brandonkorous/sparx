@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Users } from 'lucide-react';
-import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

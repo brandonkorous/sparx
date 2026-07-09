@@ -15,7 +15,7 @@ import {
   type SelectionColumn,
   SelectionList,
 } from '@sparx/ui';
-import { Badge, Button, Card, EmptyState } from 'silicaui-react';
+import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { ArrowRight, Plus, Trash2, Waypoints } from 'lucide-react';
 import { deleteRedirect } from './actions';
 import { EntityCreateButton } from '../../_components/entity-create-button';
@@ -97,7 +97,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
       header: 'To',
       cell: (r) => (
         <div className="flex min-w-0 flex-row items-center gap-2">
-          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
           <p className="truncate font-mono text-sm">{r.to_path}</p>
         </div>
       ),
@@ -127,7 +127,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
     body: (r) => (
       <div className="flex flex-col gap-2">
         <div className="flex min-w-0 flex-row items-center gap-2">
-          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
           <p className="truncate font-mono text-sm">{r.to_path}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">

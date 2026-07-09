@@ -18,11 +18,14 @@ import {
   CardActions,
   CardBody,
   EmptyState,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Select,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { ListTree, Plus, Trash2 } from 'lucide-react';
 import { createTerm, deleteTerm } from '../actions';
 
@@ -48,7 +51,12 @@ export function TermsManager({
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [parentId, setParentId] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [slug, setSlug] = React.useState('');
+  const [description, setDescription] = React.useState('');
   const [pendingDelete, setPendingDelete] = React.useState<Term | null>(null);
+
+  const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
 
   // Resolve a term's `parent_term_id` to the parent's name (all terms are in
   // scope here) so the tree reads as names, not raw ids.
@@ -58,18 +66,22 @@ export function TermsManager({
     e.preventDefault();
     setError(null);
     setMessage(null);
-    const form = e.currentTarget;
-    const data = new FormData(form);
+    if (!v.validate()) return;
+    const data = new FormData();
+    data.set('name', name.trim());
+    if (slug.trim()) data.set('slug', slug.trim());
+    data.set('description', description);
     // Select writes to React state, not FormData.
     if (parentId) data.set('parent_term_id', parentId);
-    else data.delete('parent_term_id');
     startTransition(async () => {
       const result = await createTerm(taxonomyKey, data);
       if (!result.ok) {
         setError(result.error ?? 'Could not create term.');
         return;
       }
-      form.reset();
+      setName('');
+      setSlug('');
+      setDescription('');
       setParentId('');
       setMessage('Term created.');
       router.refresh();
@@ -109,39 +121,48 @@ export function TermsManager({
           <form onSubmit={onCreate}>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row gap-3">
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="name">
-                    Name{' '}
-                    <span className="text-error" aria-hidden="true">
-                      *
-                    </span>
-                  </Label>
-                  <Input id="name" name="name" required aria-required />
-                </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="slug">Slug (optional)</Label>
-                  <Input id="slug" name="slug" />
-                </div>
+                <Field {...v.field('name')} className="flex-1">
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    {...v.control('name')}
+                  />
+                </Field>
+                <Field className="flex-1">
+                  <FieldLabel>Slug (optional)</FieldLabel>
+                  <FieldControl
+                    name="slug"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                  />
+                </Field>
                 {hierarchical && (
-                  <div className="flex flex-1 flex-col gap-1">
-                    <Label htmlFor="parent_term_id">Parent</Label>
+                  <Field className="flex-1">
+                    <FieldLabel>Parent</FieldLabel>
                     <Select
                       id="parent_term_id"
                       aria-label="Parent term"
                       value={parentId || 'top'}
-                      onValueChange={(v) => setParentId(v === 'top' ? '' : (v as string))}
+                      onValueChange={(val) => setParentId(val === 'top' ? '' : (val as string))}
                       items={{
                         top: '— (top level)',
                         ...Object.fromEntries(terms.map((t) => [t.id, t.name])),
                       }}
                     />
-                  </div>
+                  </Field>
                 )}
               </div>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" rows={2} />
-              </div>
+              <Field>
+                <FieldLabel>Description</FieldLabel>
+                <FieldControl
+                  name="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  render={<Textarea rows={2} />}
+                />
+              </Field>
             </div>
             <CardActions>
               <div className="flex flex-row items-center gap-3">
@@ -155,14 +176,14 @@ export function TermsManager({
                   Add term
                 </Button>
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
                 {message && (
-                  <p className="text-success text-sm" aria-live="polite">
+                  <FieldStatus status="success" attached={false} aria-live="polite">
                     {message}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardActions>
@@ -184,7 +205,7 @@ export function TermsManager({
               {terms.map((t) => (
                 <div
                   key={t.id}
-                  className="flex flex-row items-center justify-between gap-4 rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row items-center justify-between gap-4 rounded-md border px-3 py-2"
                 >
                   <div className="flex flex-col gap-0">
                     <p className="text-sm">{t.name}</p>

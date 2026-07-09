@@ -9,7 +9,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { Copy, Pencil, Trash2 } from 'lucide-react';
 import type { AutomationDto } from '../_lib/types';

@@ -3,7 +3,7 @@
 
 export default function ChatInboxIndexPage(): React.JSX.Element {
   return (
-    <div className="flex h-full items-center justify-center p-8 text-center text-sm text-[var(--color-text-secondary)]">
+    <div className="text-base-content/70 flex h-full items-center justify-center p-8 text-center text-sm">
       Select a conversation from the list to start replying.
     </div>
   );

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { ModuleProvider, TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -367,7 +367,7 @@ export async function ProductDetailContent({ id }: Props) {
           Commerce orange. Responsive: two panes on a wide host (modal / full page),
           collapsing to one (the summary stacks under the tabs) on a narrow drawer. */}
       <ModuleProvider module="commerce" className="@container flex h-full min-h-0">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--color-bg-subtle)]">
+        <div className="bg-base-200 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
           <div className="p-6">
             <GuardedTabs defaultValue="overview">
               <TabsList>
@@ -484,7 +484,7 @@ export async function ProductDetailContent({ id }: Props) {
             {/* Narrow host: the aside is hidden, so the summary stacks here under
                 the tabs as a tinted card. */}
             <div className="mt-6 @[820px]:hidden">
-              <div className="rounded-lg border border-[var(--color-border-default)] bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))] p-5">
+              <div className="border-base-300 rounded-lg border bg-[color-mix(in_oklab,var(--color-module)_6%,var(--color-base-100))] p-5">
                 <ProductSummaryRail {...railProps} />
               </div>
             </div>
@@ -493,7 +493,7 @@ export async function ProductDetailContent({ id }: Props) {
 
         {/* Wide host: full-height summary aside, edge-to-edge with a left border —
             the identical treatment to the wizard's draft-summary column. */}
-        <aside className="hidden w-[300px] shrink-0 overflow-y-auto border-l border-[var(--color-border-default)] bg-[color-mix(in_oklab,var(--module-active)_6%,var(--color-bg-surface))] px-6 py-6 @[820px]:block">
+        <aside className="border-base-300 hidden w-[300px] shrink-0 overflow-y-auto border-l bg-[color-mix(in_oklab,var(--color-module)_6%,var(--color-base-100))] px-6 py-6 @[820px]:block">
           <ProductSummaryRail {...railProps} />
         </aside>
       </ModuleProvider>

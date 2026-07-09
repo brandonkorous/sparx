@@ -15,19 +15,16 @@ export const Toaster = (
     toastOptions={{
       classNames: {
         toast:
-          'group rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] shadow-md',
+          'group rounded-md border border-[var(--color-base-300)] bg-[var(--color-base-100)] text-base-content shadow-md',
         title: 'text-sm font-medium',
-        description: 'text-xs text-[var(--color-text-secondary)]',
+        description: 'text-xs text-base-content/70',
         actionButton:
-          'rounded-md bg-[var(--sparx-primary)] px-2 py-1 text-xs font-medium text-white hover:bg-[var(--sparx-primary-hover)]',
+          'rounded-md bg-[var(--color-primary)] px-2 py-1 text-xs font-medium text-white hover:bg-[var(--color-primary)]',
         cancelButton:
-          'rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 py-1 text-xs text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]',
-        success:
-          'border-[var(--color-success)] text-[var(--color-success-text)] bg-[var(--color-success-tint)]',
-        error:
-          'border-[var(--color-danger)] text-[var(--color-danger-text)] bg-[var(--color-danger-tint)]',
-        warning:
-          'border-[var(--color-warning)] text-[var(--color-warning-text)] bg-[var(--color-warning-tint)]',
+          'rounded-md border border-[var(--color-base-300)] bg-[var(--color-base-100)] px-2 py-1 text-xs text-base-content/70 hover:bg-[var(--color-base-200)]',
+        success: 'border-[var(--color-success)] text-success bg-success bg-soft',
+        error: 'border-[var(--color-danger)] text-danger bg-danger bg-soft',
+        warning: 'border-[var(--color-warning)] text-warning bg-warning bg-soft',
       },
     }}
     {...props}

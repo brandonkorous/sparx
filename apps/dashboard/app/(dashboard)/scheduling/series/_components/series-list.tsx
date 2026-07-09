@@ -14,7 +14,7 @@ import {
   DialogTitle,
   Loading,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { CalendarRange, MoreHorizontal, XCircle } from 'lucide-react';
 
@@ -117,7 +117,7 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
           {series.map((s) => (
             <tr key={s.id}>
               <td className="font-medium">{s.serviceName ?? 'Service'}</td>
-              <td className="text-[var(--color-muted-foreground)]">{describeRrule(s.rrule)}</td>
+              <td className="text-base-content/70">{describeRrule(s.rrule)}</td>
               <td>
                 <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft">
                   {s.status}
@@ -141,14 +141,14 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
                       <>
                         <DropdownMenuItem
                           onClick={() => void cancel(s, 'future')}
-                          className="text-[var(--color-danger)]"
+                          className="text-danger"
                         >
                           <XCircle className="mr-2 h-4 w-4" />
                           Cancel future occurrences
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => void cancel(s, 'all')}
-                          className="text-[var(--color-danger)]"
+                          className="text-danger"
                         >
                           <XCircle className="mr-2 h-4 w-4" />
                           Cancel entire series
@@ -169,12 +169,12 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
             <DialogTitle>{detail ? (detail.serviceName ?? 'Series') : 'Loading…'}</DialogTitle>
           </div>
           {loadingDetail ? (
-            <div className="flex items-center gap-2 px-1 py-6 text-sm text-[var(--color-muted-foreground)]">
+            <div className="text-base-content/70 flex items-center gap-2 px-1 py-6 text-sm">
               <Loading size="sm" /> Loading occurrences…
             </div>
           ) : detail ? (
             <div className="max-h-[60vh] overflow-y-auto px-1 py-2">
-              <p className="mb-3 text-sm text-[var(--color-muted-foreground)]">
+              <p className="text-base-content/70 mb-3 text-sm">
                 {describeRrule(detail.rrule)} · {detail.bookings.length} occurrence
                 {detail.bookings.length === 1 ? '' : 's'}
               </p>
@@ -182,7 +182,7 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
                 {detail.bookings.map((b) => (
                   <li
                     key={b.id}
-                    className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm"
+                    className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm"
                   >
                     <span>{formatDateTime(b.startAt)}</span>
                     <Badge color={STATUS_COLOR[b.status] ?? 'neutral'} variant="soft">

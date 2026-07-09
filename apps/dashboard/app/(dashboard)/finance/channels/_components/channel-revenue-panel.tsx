@@ -7,7 +7,7 @@
 // share of total.
 
 import Link from 'next/link';
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import type { ChannelRevenueReport, ChannelTopProduct } from '../_types';
 

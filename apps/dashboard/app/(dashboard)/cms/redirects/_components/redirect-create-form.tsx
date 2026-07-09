@@ -4,7 +4,16 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Input, Label, Select } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Select,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createRedirect } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -40,6 +49,14 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
   const [toPath, setToPath] = React.useState('');
   const [statusCode, setStatusCode] = React.useState('301');
 
+  const v = useFieldValidation(
+    { from_path: fromPath, to_path: toPath },
+    {
+      from_path: rule.required('Enter the path to redirect from.'),
+      to_path: rule.required('Enter the path to redirect to.'),
+    }
+  );
+
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
   // "the user has entered anything" — guard a Cancel / Close / Switch / backdrop
   // so typed work isn't silently dropped.
@@ -71,10 +88,7 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
   function submit() {
     setError(null);
     setMessage(null);
-    if (!fromPath.trim() || !toPath.trim()) {
-      setError('Both From and To paths are required.');
-      return;
-    }
+    if (!v.validate()) return;
     // The <Select> writes to React state, not native FormData — build the body
     // with the SAME keys the action expects.
     const data = new FormData();
@@ -120,33 +134,33 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-row flex-wrap items-end gap-3">
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="from_path">From</Label>
-                  <Input
-                    id="from_path"
+                <Field {...v.field('from_path')} className="flex-1">
+                  <FieldLabel required>From</FieldLabel>
+                  <FieldControl
                     name="from_path"
                     value={fromPath}
                     onChange={(e) => setFromPath(e.target.value)}
+                    {...v.control('from_path')}
                     placeholder="/old-path"
                   />
-                </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <Label htmlFor="to_path">To</Label>
-                  <Input
-                    id="to_path"
+                </Field>
+                <Field {...v.field('to_path')} className="flex-1">
+                  <FieldLabel required>To</FieldLabel>
+                  <FieldControl
                     name="to_path"
                     value={toPath}
                     onChange={(e) => setToPath(e.target.value)}
+                    {...v.control('to_path')}
                     placeholder="/new-path"
                   />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label htmlFor="status_code">Status</Label>
+                </Field>
+                <Field>
+                  <FieldLabel>Status</FieldLabel>
                   <Select
                     id="status_code"
                     aria-label="HTTP status code"
                     value={statusCode}
-                    onValueChange={(v) => setStatusCode(v as string)}
+                    onValueChange={(val) => setStatusCode(val as string)}
                     items={{
                       '301': '301 Permanent',
                       '302': '302 Found',
@@ -154,19 +168,25 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
                       '308': '308 Permanent (keep method)',
                     }}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="text-danger mt-4 text-sm" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              className="mt-4"
+              role="alert"
+              aria-live="polite"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
           {message && (
-            <p className="text-success mt-4 text-sm" aria-live="polite">
+            <FieldStatus status="success" attached={false} className="mt-4" aria-live="polite">
               {message}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

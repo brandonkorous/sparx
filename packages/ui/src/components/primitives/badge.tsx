@@ -1,38 +1,35 @@
 import * as React from 'react';
-import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
-import { chipTreatmentVariants, colorClass, type ColorKey } from '../_recipes/variants';
+import { type ColorKey } from '../_recipes/variants';
 
-// Badge — status pill on the shared color × variant × size axes (docs/35).
-// Default `neutral / soft` matches the old `default` variant.
+// Badge — status pill on the shared color × variant × size axes (docs/35),
+// composed from silicaui's `.badge` component classes. Default `neutral / soft`.
 
-const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-full font-medium whitespace-nowrap',
-  {
-    variants: {
-      variant: chipTreatmentVariants,
-      size: {
-        sm: 'px-1.5 py-0.5 text-[0.625rem]',
-        md: 'px-2 py-0.5 text-xs',
-        lg: 'px-2.5 py-1 text-sm',
-      },
-    },
-    defaultVariants: { variant: 'soft', size: 'md' },
-  }
-);
+const BADGE_VARIANT = {
+  solid: '',
+  soft: 'badge-soft',
+  outline: 'badge-outline',
+  dashed: 'badge-dash',
+} as const;
 
-export interface BadgeProps
-  extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>, VariantProps<typeof badgeVariants> {
+const BADGE_SIZE = { sm: 'badge-sm', md: 'badge-md', lg: 'badge-lg' } as const;
+
+export type BadgeVariant = keyof typeof BADGE_VARIANT;
+export type BadgeSize = keyof typeof BADGE_SIZE;
+
+export interface BadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'> {
   /** Semantic color slot (known slots autocomplete; any string accepted for
    *  runtime custom theme colors). Defaults to `neutral`. */
   color?: ColorKey | (string & {});
+  variant?: BadgeVariant;
+  size?: BadgeSize;
 }
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, color = 'neutral', variant, size, ...props }, ref) => (
+  ({ className, color = 'neutral', variant = 'soft', size = 'md', ...props }, ref) => (
     <span
       ref={ref}
-      className={cn(colorClass(color), badgeVariants({ variant, size }), className)}
+      className={cn('badge', `badge-${color}`, BADGE_VARIANT[variant], BADGE_SIZE[size], className)}
       {...props}
     />
   )
@@ -185,5 +182,3 @@ export function statusLabel(status: string): string {
   const s = status.trim().replace(/[_-]+/g, ' ');
   return s.length > 0 ? s[0]!.toUpperCase() + s.slice(1) : s;
 }
-
-export { badgeVariants };

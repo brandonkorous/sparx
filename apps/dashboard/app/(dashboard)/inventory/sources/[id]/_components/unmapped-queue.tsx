@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardBody, EmptyState, Label, NativeSelect } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  EmptyState,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { mapUnmappedSkuAction, ignoreUnmappedSkuAction } from '../../../_lib/sync-actions';
 import { VariantPicker, type PickedVariant } from './variant-picker';
@@ -123,7 +131,7 @@ function UnmappedRow({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded border border-[var(--color-border-default)] px-3 py-3">
+    <div className="border-base-300 flex flex-col gap-3 rounded border px-3 py-3">
       <div className="flex flex-row flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0">
           <p className="font-mono text-sm font-medium">
@@ -153,7 +161,7 @@ function UnmappedRow({
       </div>
 
       {mapping ? (
-        <div className="flex flex-col gap-3 border-t border-[var(--color-border-default)] pt-3">
+        <div className="border-base-300 flex flex-col gap-3 border-t pt-3">
           <div className="flex flex-row flex-wrap items-end gap-4">
             <div className="flex min-w-[16rem] flex-1 flex-col gap-1">
               <Label>Map to item</Label>
@@ -198,7 +206,7 @@ function UnmappedRow({
         </div>
       ) : null}
 
-      {error ? <p className="text-sm text-[var(--color-danger)]">{error}</p> : null}
+      {error ? <p className="text-danger text-sm">{error}</p> : null}
     </div>
   );
 }

@@ -12,12 +12,12 @@ describe('Stat', () => {
   it('applies success token for upward delta', () => {
     render(<Stat label="Orders" value="42" delta={{ value: '+12%', trend: 'up' }} />);
     const delta = screen.getByText('+12%');
-    expect(delta.className).toMatch(/text-\[var\(--color-success-text\)\]/);
+    expect(delta.className).toMatch(/text-success/);
   });
 
   it('applies danger token for downward delta', () => {
     render(<Stat label="Refunds" value="3" delta={{ value: '-1', trend: 'down' }} />);
     const delta = screen.getByText('-1');
-    expect(delta.className).toMatch(/text-\[var\(--color-danger-text\)\]/);
+    expect(delta.className).toMatch(/text-danger/);
   });
 });

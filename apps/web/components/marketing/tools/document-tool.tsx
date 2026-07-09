@@ -2,16 +2,8 @@
 
 import * as React from 'react';
 import { Download, Trash2 } from 'lucide-react';
-import {
-  Button,
-  Input,
-  Textarea,
-  NativeSelect,
-  ColorPicker,
-  FileUpload,
-  Spinner,
-  toast,
-} from '@sparx/ui';
+import { ColorPicker, FileUpload, toast } from '@sparx/ui';
+import { Button, Input, Textarea, NativeSelect, Loading } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 import { InvoiceItems } from './invoice-items';
 import { InvoicePreview } from './invoice-preview';
@@ -259,7 +251,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
               onClick={download}
               disabled={busy}
             >
-              {busy ? <Spinner className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+              {busy ? <Loading className="h-4 w-4" /> : <Download className="h-4 w-4" />}
               Download PDF
             </Button>
           }
@@ -269,7 +261,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

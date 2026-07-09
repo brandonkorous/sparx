@@ -4,7 +4,19 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import { Button, Card, CardBody, Checkbox, Input, Label, Textarea } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Label,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
@@ -67,6 +79,13 @@ export function CollectionMetaForm(props: Props) {
   const [form, setForm] = React.useState<MetaState>(initial);
   const [baseline, setBaseline] = React.useState<MetaState>(initial);
 
+  // Field validation. `handle` carries no client rule but is validated-tracked so
+  // a server-side handle error maps onto its field.
+  const values = { name: form.name, handle: form.handle };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+  });
+
   const dirty = React.useMemo(
     () => (Object.keys(form) as (keyof MetaState)[]).some((k) => form[k] !== baseline[k]),
     [form, baseline]
@@ -85,6 +104,7 @@ export function CollectionMetaForm(props: Props) {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await updateCollectionAction(collectionId, {
         name: form.name.trim(),
@@ -95,7 +115,13 @@ export function CollectionMetaForm(props: Props) {
         seoDescription: form.seoDescription.trim() || null,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
+          v.setServerErrors(
+            Object.fromEntries(result.error.details.map((d) => [d.field, d.message]))
+          );
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       setBaseline(form);
@@ -117,33 +143,34 @@ export function CollectionMetaForm(props: Props) {
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-4">
-              <div className="flex flex-1 flex-col gap-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
+              <Field {...v.field('name')} className="flex-1">
+                <FieldLabel required>Name</FieldLabel>
+                <FieldControl
+                  name="name"
                   value={form.name}
                   onChange={(e) => set('name', e.target.value)}
-                  required
+                  {...v.control('name')}
                 />
-              </div>
-              <div className="flex flex-1 flex-col gap-2">
-                <Label htmlFor="handle">Handle</Label>
-                <Input
-                  id="handle"
+              </Field>
+              <Field {...v.field('handle')} className="flex-1">
+                <FieldLabel>Handle</FieldLabel>
+                <FieldControl
+                  name="handle"
                   value={form.handle}
                   onChange={(e) => set('handle', e.target.value)}
+                  {...v.control('handle')}
                 />
-              </div>
+              </Field>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                rows={4}
+            <Field>
+              <FieldLabel>Description</FieldLabel>
+              <FieldControl
+                name="description"
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}
+                render={<Textarea rows={4} />}
               />
-            </div>
+            </Field>
             <div className="flex flex-col gap-1">
               <div className="flex flex-row items-center gap-2">
                 <Checkbox
@@ -166,20 +193,20 @@ export function CollectionMetaForm(props: Props) {
               descriptionSource={form.description}
               seoTitle={form.seoTitle}
               seoDescription={form.seoDescription}
-              onSeoTitleChange={(v) => set('seoTitle', v)}
-              onSeoDescriptionChange={(v) => set('seoDescription', v)}
-              className="border-t border-[var(--color-border-default)] pt-4"
+              onSeoTitleChange={(val) => set('seoTitle', val)}
+              onSeoDescriptionChange={(val) => set('seoDescription', val)}
+              className="border-base-300 border-t pt-4"
             />
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
 
             <div className="flex flex-row items-center justify-end gap-2">
               {savedAt !== null && !dirty && (
-                <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+                <div className="text-success flex flex-row items-center gap-1">
                   <Check className="h-4 w-4" />
                   <p className="text-success text-sm">Saved</p>
                 </div>

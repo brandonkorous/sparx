@@ -65,7 +65,7 @@ export default async function PartnerDetailPage({
   }
 
   const backLink = (
-    <Link href="/sparx/partners" className="text-sm text-[var(--color-text-muted)] hover:underline">
+    <Link href="/sparx/partners" className="text-base-content/60 text-sm hover:underline">
       ← All partners
     </Link>
   );
@@ -105,7 +105,7 @@ export default async function PartnerDetailPage({
         {detail.bio ? <Text size="sm">{detail.bio}</Text> : null}
         <Link
           href={`/sparx/tenants/${tenantId}`}
-          className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+          className="text-module text-sm font-medium hover:underline"
         >
           View this partner’s tenant account →
         </Link>

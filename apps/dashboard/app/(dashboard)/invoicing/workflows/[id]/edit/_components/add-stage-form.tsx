@@ -8,12 +8,20 @@ import * as React from 'react';
 import { Plus } from 'lucide-react';
 
 import { toast } from '@sparx/ui';
-import { Button, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Input,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createWorkflowStageAction } from '../../../../workflow-actions';
 
 const SELECT_CLASS =
-  'flex h-9 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
+  'flex h-9 rounded-md border border-base-300 bg-base-100 px-3 py-2 text-sm text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 type StageType = 'draft' | 'open' | 'committed' | 'final' | 'paid' | 'void';
 
@@ -44,6 +52,8 @@ export function AddStageForm({
   const [snapshotOnEnter, setSnapshotOnEnter] = React.useState(false);
   const [locksEditing, setLocksEditing] = React.useState(false);
 
+  const v = useFieldValidation({ name }, { name: rule.required('A stage name is required.') });
+
   function reset() {
     setName('');
     setCustomerLabel('');
@@ -55,11 +65,8 @@ export function AddStageForm({
   }
 
   function add() {
+    if (!v.validate()) return;
     const label = customerLabel.trim() || name.trim();
-    if (!name.trim()) {
-      toast.error('A stage name is required.');
-      return;
-    }
     startTransition(async () => {
       const result = await createWorkflowStageAction(workflowId, {
         name: name.trim(),
@@ -84,26 +91,27 @@ export function AddStageForm({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-row flex-wrap items-end gap-2">
-        <div className="flex flex-1 flex-col gap-1">
-          <Label htmlFor="new-stage-name">New stage name</Label>
-          <Input
-            id="new-stage-name"
+        <Field {...v.field('name')} className="flex-1">
+          <FieldLabel required>New stage name</FieldLabel>
+          <FieldControl
+            name="new-stage-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Estimate"
+            {...v.control('name')}
           />
-        </div>
-        <div className="flex flex-1 flex-col gap-1">
-          <Label htmlFor="new-stage-label">Customer label</Label>
-          <Input
-            id="new-stage-label"
+        </Field>
+        <Field className="flex-1">
+          <FieldLabel>Customer label</FieldLabel>
+          <FieldControl
+            name="new-stage-label"
             value={customerLabel}
             onChange={(e) => setCustomerLabel(e.target.value)}
             placeholder="Defaults to the name"
           />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="new-stage-type">Type</Label>
+        </Field>
+        <Field>
+          <FieldLabel>Type</FieldLabel>
           <select
             id="new-stage-type"
             value={stageType}
@@ -116,11 +124,11 @@ export function AddStageForm({
               </option>
             ))}
           </select>
-        </div>
+        </Field>
         <Button
           color="module"
           size="sm"
-          disabled={pending || !name.trim()}
+          disabled={pending}
           onClick={add}
           iconStart={<Plus className="h-3.5 w-3.5" />}
         >
@@ -129,7 +137,7 @@ export function AddStageForm({
       </div>
 
       <div className="flex flex-row flex-wrap items-center gap-4 px-1">
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={numberOnEnter}
@@ -147,7 +155,7 @@ export function AddStageForm({
             aria-label="Number prefix"
           />
         )}
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
@@ -155,7 +163,7 @@ export function AddStageForm({
           />
           Freeze a snapshot
         </label>
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={locksEditing}

@@ -8,8 +8,12 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { performAppointmentAction } from '../_lib/actions';
 
 interface AppointmentRow {
@@ -126,20 +130,23 @@ export function AppointmentActions({ appointment }: Props) {
 
           {action === 'cancel' && (
             <div className="flex flex-col gap-2 px-6 pb-2">
-              <p className="text-sm font-medium">Reason (optional)</p>
-              <Textarea
-                placeholder="Add a reason for the customer…"
-                rows={3}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                disabled={submitting}
-              />
+              <Field>
+                <FieldLabel>Reason (optional)</FieldLabel>
+                <FieldControl
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  disabled={submitting}
+                  render={<Textarea placeholder="Add a reason for the customer…" rows={3} />}
+                />
+              </Field>
             </div>
           )}
 
           {error && (
             <div className="flex flex-col gap-4 px-6 pb-2">
-              <p className="text-danger text-sm">{error}</p>
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {error}
+              </FieldStatus>
             </div>
           )}
 

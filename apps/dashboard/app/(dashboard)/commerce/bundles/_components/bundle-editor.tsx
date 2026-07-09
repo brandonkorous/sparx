@@ -12,11 +12,16 @@ import {
   CardBody,
   CardTitle,
   Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
   Input,
-  Label,
   NativeSelect,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -97,6 +102,26 @@ export function BundleEditor({
   >(initialInventoryMode);
   const [components, setComponents] = React.useState<ComponentDraft[]>(initialComponents);
   const [variantPick, setVariantPick] = React.useState<string>('');
+
+  // Field validation. Fixed price / percent-off only apply in their pricing mode;
+  // the wrapper product is required when creating (edit keeps its existing wrapper).
+  const fieldValues = { bundleProductId, fixedPriceDollars, percentOff };
+  const fields = useFieldValidation(fieldValues, {
+    bundleProductId: (val) =>
+      !isEdit && String(val).trim() === '' ? 'Pick a wrapper product.' : null,
+    fixedPriceDollars: (val) => {
+      if (pricingMode !== 'fixed') return null;
+      const n = Number(String(val).trim());
+      return Number.isFinite(n) && n > 0 ? null : 'Fixed price must be greater than 0.';
+    },
+    percentOff: (val) => {
+      if (pricingMode !== 'percent_off_sum') return null;
+      const n = Number(String(val).trim());
+      return Number.isFinite(n) && n > 0 && n < 100
+        ? null
+        : 'Percent off must be between 0 and 100.';
+    },
+  });
 
   const variantById = React.useMemo(() => new Map(variants.map((v) => [v.id, v])), [variants]);
   const sumOfComponentsCents = components.reduce((acc, c) => {
@@ -189,31 +214,19 @@ export function BundleEditor({
   function submit() {
     setError(null);
 
-    if (!bundleProductId && !isEdit) {
-      setError('Pick a wrapper product');
-      return;
-    }
     if (components.length === 0) {
       setError('Add at least one component');
       return;
     }
+    if (!fields.validate()) return;
+
     let fixedPriceCents: number | undefined;
     if (pricingMode === 'fixed') {
-      const dollars = Number(fixedPriceDollars);
-      if (!Number.isFinite(dollars) || dollars <= 0) {
-        setError('Fixed price must be a positive amount');
-        return;
-      }
-      fixedPriceCents = Math.round(dollars * 100);
+      fixedPriceCents = Math.round(Number(fixedPriceDollars) * 100);
     }
     let percentOffSum: number | undefined;
     if (pricingMode === 'percent_off_sum') {
-      const p = Number(percentOff);
-      if (!Number.isFinite(p) || p <= 0 || p >= 100) {
-        setError('Percent off must be between 0 and 100');
-        return;
-      }
-      percentOffSum = p;
+      percentOffSum = Number(percentOff);
     }
 
     const payload = {
@@ -266,7 +279,7 @@ export function BundleEditor({
             <select
               value={variantPick}
               onChange={(e) => setVariantPick(e.target.value)}
-              className="h-9 max-w-[20rem] rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
+              className="border-base-300 bg-base-100 h-9 max-w-[20rem] rounded border px-3 text-sm"
             >
               <option value="">— pick variant —</option>
               {variants.map((v) => (
@@ -388,75 +401,85 @@ export function BundleEditor({
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-row flex-wrap gap-4">
-            <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-              <Label htmlFor="pricingMode">Pricing mode</Label>
-              <select
-                id="pricingMode"
-                value={pricingMode}
-                onChange={(e) =>
-                  setPricingMode(
-                    e.target.value as 'sum_of_components' | 'fixed' | 'percent_off_sum'
-                  )
+            <Field className="min-w-[12rem] flex-1">
+              <FieldLabel>Pricing mode</FieldLabel>
+              <FieldControl
+                render={
+                  <NativeSelect
+                    value={pricingMode}
+                    onChange={(e) =>
+                      setPricingMode(
+                        e.target.value as 'sum_of_components' | 'fixed' | 'percent_off_sum'
+                      )
+                    }
+                  >
+                    <option value="sum_of_components">Sum of components</option>
+                    <option value="fixed">Fixed price</option>
+                    <option value="percent_off_sum">Percent off sum</option>
+                  </NativeSelect>
                 }
-                className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-              >
-                <option value="sum_of_components">Sum of components</option>
-                <option value="fixed">Fixed price</option>
-                <option value="percent_off_sum">Percent off sum</option>
-              </select>
-            </div>
+              />
+            </Field>
             {pricingMode === 'fixed' && (
-              <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                <Label htmlFor="fixedPrice">Fixed price (USD)</Label>
-                <Input
-                  id="fixedPrice"
+              <Field {...fields.field('fixedPriceDollars')} className="min-w-[10rem] flex-1">
+                <FieldLabel>Fixed price (USD)</FieldLabel>
+                <FieldControl
+                  name="fixedPriceDollars"
                   type="number"
                   step="0.01"
                   min="0.01"
                   value={fixedPriceDollars}
                   onChange={(e) => setFixedPriceDollars(e.target.value)}
+                  {...fields.control('fixedPriceDollars')}
                 />
-              </div>
+              </Field>
             )}
             {pricingMode === 'percent_off_sum' && (
-              <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                <Label htmlFor="percentOff">Percent off sum</Label>
-                <Input
-                  id="percentOff"
+              <Field {...fields.field('percentOff')} className="min-w-[10rem] flex-1">
+                <FieldLabel>Percent off sum</FieldLabel>
+                <FieldControl
+                  name="percentOff"
                   type="number"
                   step="1"
                   min="1"
                   max="99"
                   value={percentOff}
                   onChange={(e) => setPercentOff(e.target.value)}
+                  {...fields.control('percentOff')}
                 />
-              </div>
+              </Field>
             )}
-            <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-              <Label htmlFor="inventoryMode">Inventory mode</Label>
-              <select
-                id="inventoryMode"
-                value={inventoryMode}
-                onChange={(e) =>
-                  setInventoryMode(
-                    e.target.value as 'decrement_components' | 'decrement_bundle_sku'
-                  )
+            <Field className="min-w-[12rem] flex-1">
+              <FieldLabel>Inventory mode</FieldLabel>
+              <FieldControl
+                render={
+                  <NativeSelect
+                    value={inventoryMode}
+                    onChange={(e) =>
+                      setInventoryMode(
+                        e.target.value as 'decrement_components' | 'decrement_bundle_sku'
+                      )
+                    }
+                  >
+                    <option value="decrement_components">Decrement components</option>
+                    <option value="decrement_bundle_sku">Decrement bundle SKU</option>
+                  </NativeSelect>
                 }
-                className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-              >
-                <option value="decrement_components">Decrement components</option>
-                <option value="decrement_bundle_sku">Decrement bundle SKU</option>
-              </select>
-              <p className="text-base-content/70 text-xs">
+              />
+              <FieldDescription>
                 Choose &ldquo;bundle SKU&rdquo; when the wrapper product itself carries assembled
                 stock.
-              </p>
-            </div>
+              </FieldDescription>
+            </Field>
           </div>
 
           {componentsSection}
 
-          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && (
+            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+              {error}
+            </FieldStatus>
+          )}
 
           <div className="flex flex-row justify-end gap-2">
             <Button color="module" type="submit" disabled={pending}>
@@ -504,85 +527,100 @@ export function BundleEditor({
                   </p>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="bundleProductId">Bundle wrapper product *</Label>
-                    <NativeSelect
-                      id="bundleProductId"
+                  <Field {...fields.field('bundleProductId')}>
+                    <FieldLabel required>Bundle wrapper product</FieldLabel>
+                    <FieldControl
+                      name="bundleProductId"
                       value={bundleProductId}
                       onChange={(e) => setBundleProductId(e.target.value)}
-                    >
-                      <option value="">— select a product —</option>
-                      {products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.title} ({p.status})
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
+                      {...fields.control('bundleProductId')}
+                      render={
+                        <NativeSelect>
+                          <option value="">— select a product —</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.title} ({p.status})
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
 
                   <div className="flex flex-row flex-wrap gap-4">
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-                      <Label htmlFor="pricingMode">Pricing mode</Label>
-                      <NativeSelect
-                        id="pricingMode"
-                        value={pricingMode}
-                        onChange={(e) =>
-                          setPricingMode(
-                            e.target.value as 'sum_of_components' | 'fixed' | 'percent_off_sum'
-                          )
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Pricing mode</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            value={pricingMode}
+                            onChange={(e) =>
+                              setPricingMode(
+                                e.target.value as 'sum_of_components' | 'fixed' | 'percent_off_sum'
+                              )
+                            }
+                          >
+                            <option value="sum_of_components">Sum of components</option>
+                            <option value="fixed">Fixed price</option>
+                            <option value="percent_off_sum">Percent off sum</option>
+                          </NativeSelect>
                         }
-                      >
-                        <option value="sum_of_components">Sum of components</option>
-                        <option value="fixed">Fixed price</option>
-                        <option value="percent_off_sum">Percent off sum</option>
-                      </NativeSelect>
-                    </div>
+                      />
+                    </Field>
                     {pricingMode === 'fixed' && (
-                      <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                        <Label htmlFor="fixedPrice">Fixed price (USD)</Label>
-                        <Input
-                          id="fixedPrice"
+                      <Field
+                        {...fields.field('fixedPriceDollars')}
+                        className="min-w-[10rem] flex-1"
+                      >
+                        <FieldLabel>Fixed price (USD)</FieldLabel>
+                        <FieldControl
+                          name="fixedPriceDollars"
                           type="number"
                           step="0.01"
                           min="0.01"
                           value={fixedPriceDollars}
                           onChange={(e) => setFixedPriceDollars(e.target.value)}
+                          {...fields.control('fixedPriceDollars')}
                         />
-                      </div>
+                      </Field>
                     )}
                     {pricingMode === 'percent_off_sum' && (
-                      <div className="flex min-w-[10rem] flex-1 flex-col gap-1">
-                        <Label htmlFor="percentOff">Percent off sum</Label>
-                        <Input
-                          id="percentOff"
+                      <Field {...fields.field('percentOff')} className="min-w-[10rem] flex-1">
+                        <FieldLabel>Percent off sum</FieldLabel>
+                        <FieldControl
+                          name="percentOff"
                           type="number"
                           step="1"
                           min="1"
                           max="99"
                           value={percentOff}
                           onChange={(e) => setPercentOff(e.target.value)}
+                          {...fields.control('percentOff')}
                         />
-                      </div>
+                      </Field>
                     )}
-                    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-                      <Label htmlFor="inventoryMode">Inventory mode</Label>
-                      <NativeSelect
-                        id="inventoryMode"
-                        value={inventoryMode}
-                        onChange={(e) =>
-                          setInventoryMode(
-                            e.target.value as 'decrement_components' | 'decrement_bundle_sku'
-                          )
+                    <Field className="min-w-[12rem] flex-1">
+                      <FieldLabel>Inventory mode</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            value={inventoryMode}
+                            onChange={(e) =>
+                              setInventoryMode(
+                                e.target.value as 'decrement_components' | 'decrement_bundle_sku'
+                              )
+                            }
+                          >
+                            <option value="decrement_components">Decrement components</option>
+                            <option value="decrement_bundle_sku">Decrement bundle SKU</option>
+                          </NativeSelect>
                         }
-                      >
-                        <option value="decrement_components">Decrement components</option>
-                        <option value="decrement_bundle_sku">Decrement bundle SKU</option>
-                      </NativeSelect>
-                      <p className="text-base-content/70 text-xs">
+                      />
+                      <FieldDescription>
                         Choose &ldquo;bundle SKU&rdquo; when the wrapper product itself carries
                         assembled stock.
-                      </p>
-                    </div>
+                      </FieldDescription>
+                    </Field>
                   </div>
                 </div>
               </CardBody>
@@ -593,7 +631,17 @@ export function BundleEditor({
             </Card>
           </div>
 
-          {error && <p className="mt-4 text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && (
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
+              {error}
+            </FieldStatus>
+          )}
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>

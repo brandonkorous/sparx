@@ -13,18 +13,18 @@ import { PricingSwitchboard } from './pricing-switchboard';
  */
 
 const MOD: Record<string, string> = {
-  builder: 'var(--module-builder)',
-  commerce: 'var(--module-commerce)',
-  cms: 'var(--module-cms)',
-  crm: 'var(--module-crm)',
-  invoicing: 'var(--module-invoicing)',
-  email: 'var(--module-email)',
-  b2b: 'var(--module-b2b)',
-  ai: 'var(--module-ai)',
-  dropship: 'var(--module-dropship)',
-  inventory: 'var(--module-inventory)',
-  chat: 'var(--module-chat)',
-  scheduling: 'var(--module-scheduling)',
+  builder: 'var(--color-module-builder)',
+  commerce: 'var(--color-module-commerce)',
+  cms: 'var(--color-module-cms)',
+  crm: 'var(--color-module-crm)',
+  invoicing: 'var(--color-module-invoicing)',
+  email: 'var(--color-module-email)',
+  b2b: 'var(--color-module-b2b)',
+  ai: 'var(--color-module-ai)',
+  dropship: 'var(--color-module-dropship)',
+  inventory: 'var(--color-module-inventory)',
+  chat: 'var(--color-module-chat)',
+  scheduling: 'var(--color-module-scheduling)',
 };
 
 export function PricingPage() {
@@ -124,15 +124,15 @@ function AlwaysIncluded() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <SectionHeader
           headline="Every plan ships with the platform"
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all twelve."
         />
         <div
           className="mkt-grid-4-2-1"
           style={{
             gap: '1px',
-            backgroundColor: 'var(--color-border-default)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-300)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
           }}
@@ -141,7 +141,7 @@ function AlwaysIncluded() {
             <div
               key={it.title}
               style={{
-                backgroundColor: 'var(--color-bg-surface)',
+                backgroundColor: 'var(--color-base-100)',
                 padding: '26px 24px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -170,7 +170,7 @@ function AlwaysIncluded() {
                   fontWeight: 500,
                   fontSize: '15px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {it.title}
@@ -181,7 +181,7 @@ function AlwaysIncluded() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
                   lineHeight: '19px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {it.body}
@@ -291,7 +291,7 @@ function CostSavings() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <SectionHeader
           headline="What the same stack costs in pieces"
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           lede="Each module replaces a tool you'd otherwise pay for on its own. Here's the real, published 2026 price of each — and what you keep by running them as one platform on one bill."
         />
 
@@ -299,8 +299,8 @@ function CostSavings() {
           className="mkt-grid-3-2-1"
           style={{
             gap: '1px',
-            backgroundColor: 'var(--color-border-default)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-300)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
           }}
@@ -309,7 +309,7 @@ function CostSavings() {
             <div
               key={s.value}
               style={{
-                backgroundColor: 'var(--color-bg-surface)',
+                backgroundColor: 'var(--color-base-100)',
                 padding: '28px 26px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -323,12 +323,17 @@ function CostSavings() {
                   fontSize: '42px',
                   lineHeight: 1,
                   letterSpacing: '-0.03em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {s.value}
                 {s.suffix ? (
-                  <span style={{ fontSize: '22px', color: 'var(--color-text-tertiary)' }}>
+                  <span
+                    style={{
+                      fontSize: '22px',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                    }}
+                  >
                     {s.suffix}
                   </span>
                 ) : null}
@@ -338,7 +343,7 @@ function CostSavings() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
                   lineHeight: '21px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {s.label}
@@ -350,17 +355,17 @@ function CostSavings() {
         {/* Ledger */}
         <div
           style={{
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: 'var(--color-base-100)',
           }}
         >
           <div
             className="mkt-ledger-head"
             style={{
-              backgroundColor: 'var(--color-bg-page)',
-              borderBottom: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-base-200)',
+              borderBottom: '1px solid var(--color-base-300)',
             }}
           >
             <LedgerLabel>sparx module</LedgerLabel>
@@ -394,7 +399,7 @@ function CostSavings() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '15px',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   {row.name}
@@ -417,7 +422,7 @@ function CostSavings() {
                 aria-hidden
                 style={{
                   textAlign: 'center',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
@@ -428,7 +433,7 @@ function CostSavings() {
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   minWidth: 0,
                 }}
               >
@@ -440,7 +445,7 @@ function CostSavings() {
                   textAlign: 'right',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '14px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {row.amt}
@@ -456,14 +461,14 @@ function CostSavings() {
               key={sc.title}
               style={{
                 border: sc.featured
-                  ? '1px solid var(--sparx-primary)'
-                  : '1px solid var(--color-border-default)',
+                  ? '1px solid var(--color-primary)'
+                  : '1px solid var(--color-base-300)',
                 borderRadius: '14px',
                 padding: '24px 26px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '14px',
-                backgroundColor: 'var(--color-bg-surface)',
+                backgroundColor: 'var(--color-base-100)',
                 boxShadow: sc.featured ? '0 12px 32px rgba(99, 102, 241, 0.1)' : undefined,
               }}
             >
@@ -473,7 +478,7 @@ function CostSavings() {
                   fontWeight: 500,
                   fontSize: '16px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {sc.title}
@@ -482,7 +487,7 @@ function CostSavings() {
                     display: 'block',
                     fontWeight: 400,
                     fontSize: '13px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     marginTop: '4px',
                   }}
                 >
@@ -498,7 +503,8 @@ function CostSavings() {
                   gap: '9px',
                   marginTop: '2px',
                   padding: '11px 13px',
-                  backgroundColor: 'var(--color-success-tint)',
+                  backgroundColor:
+                    'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
                   borderRadius: '9px',
                   fontFamily: 'var(--font-sans)',
                   fontWeight: 500,
@@ -520,7 +526,7 @@ function CostSavings() {
             fontFamily: 'var(--font-sans)',
             fontSize: '12.5px',
             lineHeight: '20px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans
@@ -544,7 +550,7 @@ function LedgerLabel({ children, align }: { children: React.ReactNode; align?: '
         fontSize: '11px',
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
-        color: 'var(--color-text-secondary)',
+        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         textAlign: align,
       }}
     >
@@ -570,7 +576,7 @@ function ScenarioLine({
         style={{
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {k}
@@ -581,10 +587,10 @@ function ScenarioLine({
           fontSize: '15px',
           fontWeight: sparx ? 500 : 400,
           color: strike
-            ? 'var(--color-text-tertiary)'
+            ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
             : sparx
               ? '#4338CA'
-              : 'var(--color-text-primary)',
+              : 'var(--color-base-content)',
           textDecoration: strike ? 'line-through' : undefined,
         }}
       >
@@ -771,15 +777,15 @@ function FeatureTable() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         <SectionHeader
           headline="Every feature, by module"
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           lede="The complete list — what each module includes and what it replaces. Open any module below; the platform underneath comes with every plan."
         />
         <div
           style={{
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
-            backgroundColor: 'var(--color-bg-surface)',
+            backgroundColor: 'var(--color-base-100)',
           }}
         >
           {FEATURES.map((m, i) => (
@@ -804,7 +810,7 @@ function FeatureTable() {
                     fontWeight: 500,
                     fontSize: '16px',
                     letterSpacing: '-0.01em',
-                    color: 'var(--color-text-primary)',
+                    color: 'var(--color-base-content)',
                   }}
                 >
                   <span
@@ -825,7 +831,7 @@ function FeatureTable() {
                     width: '76px',
                     fontFamily: 'var(--font-mono)',
                     fontSize: '13px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {m.price}
@@ -838,7 +844,7 @@ function FeatureTable() {
                     fontFamily: 'var(--font-sans)',
                     fontSize: '13px',
                     lineHeight: '18px',
-                    color: 'var(--color-text-tertiary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
                   {m.repl}
@@ -850,7 +856,7 @@ function FeatureTable() {
                     fontFamily: 'var(--font-mono)',
                     fontSize: '11px',
                     letterSpacing: '0.02em',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {m.feats.length} features
@@ -918,7 +924,7 @@ function BillingPrinciples() {
   return (
     <Section surface="page" padding="xl">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
-        <SectionHeader headline="Pricing without the asterisks" accent="var(--sparx-primary)" />
+        <SectionHeader headline="Pricing without the asterisks" accent="var(--color-primary)" />
         <div className="mkt-grid-3-2-1" style={{ gap: '40px 48px' }}>
           {PRINCIPLES.map((p) => (
             <div key={p.title}>
@@ -932,7 +938,7 @@ function BillingPrinciples() {
                   fontWeight: 500,
                   fontSize: '17px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 <span
@@ -940,7 +946,7 @@ function BillingPrinciples() {
                     width: 8,
                     height: 8,
                     borderRadius: 9999,
-                    backgroundColor: 'var(--sparx-primary)',
+                    backgroundColor: 'var(--color-primary)',
                     flexShrink: 0,
                   }}
                 />
@@ -952,7 +958,7 @@ function BillingPrinciples() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '14px',
                   lineHeight: '22px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {p.body}
@@ -1090,13 +1096,13 @@ function Faq() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <SectionHeader headline="Questions about the bill" accent="var(--sparx-primary)" />
-        <div style={{ maxWidth: '820px', borderTop: '1px solid var(--color-border-default)' }}>
+        <SectionHeader headline="Questions about the bill" accent="var(--color-primary)" />
+        <div style={{ maxWidth: '820px', borderTop: '1px solid var(--color-base-300)' }}>
           {FAQS.map((f) => (
             <details
               key={f.q}
               className="mkt-faq-item"
-              style={{ borderBottom: '1px solid var(--color-border-default)' }}
+              style={{ borderBottom: '1px solid var(--color-base-300)' }}
             >
               <summary
                 className="mkt-summary"
@@ -1110,11 +1116,16 @@ function Faq() {
                   fontWeight: 500,
                   fontSize: '17px',
                   letterSpacing: '-0.01em',
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-base-content)',
                 }}
               >
                 {f.q}
-                <span className="mkt-faq-icon" style={{ color: 'var(--color-text-tertiary)' }}>
+                <span
+                  className="mkt-faq-icon"
+                  style={{
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                  }}
+                >
                   <svg
                     width={18}
                     height={18}
@@ -1138,7 +1149,7 @@ function Faq() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '15px',
                   lineHeight: '24px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {f.a}
@@ -1159,7 +1170,7 @@ function FinalCta() {
       surface="page"
       padding="xl"
       style={{
-        borderTop: '1px solid var(--color-border-default)',
+        borderTop: '1px solid var(--color-base-300)',
         textAlign: 'center',
       }}
     >
@@ -1172,7 +1183,7 @@ function FinalCta() {
             fontFamily: 'var(--font-sans)',
             fontSize: '18px',
             lineHeight: '28px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           Flip on the modules you need to see your exact price, then start a 14-day free trial of
@@ -1191,7 +1202,7 @@ function FinalCta() {
             marginTop: '22px',
             fontFamily: 'var(--font-mono)',
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           14-day free trial · No card to start · Cancel anytime
@@ -1212,7 +1223,7 @@ function SectionHeaderCentered() {
         lineHeight: 1.02,
         letterSpacing: '-0.03em',
         maxWidth: '15ch',
-        color: 'var(--color-text-primary)',
+        color: 'var(--color-base-content)',
       }}
     >
       Your plan&apos;s already built
@@ -1246,11 +1257,11 @@ function CtaLink({
     cursor: 'pointer',
   };
   const tones: Record<string, React.CSSProperties> = {
-    primary: { backgroundColor: 'var(--sparx-primary)', color: '#fff' },
+    primary: { backgroundColor: 'var(--color-primary)', color: '#fff' },
     ghost: {
       backgroundColor: 'transparent',
-      color: 'var(--color-text-primary)',
-      borderColor: 'var(--color-border-default)',
+      color: 'var(--color-base-content)',
+      borderColor: 'var(--color-base-300)',
     },
     onDark: { backgroundColor: '#fff', color: '#0A0A0A' },
     outlineDark: { backgroundColor: 'transparent', color: '#fff', borderColor: '#2F2F2F' },

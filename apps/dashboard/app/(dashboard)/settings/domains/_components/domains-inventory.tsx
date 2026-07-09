@@ -34,9 +34,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Input,
-  Label,
-} from 'silicaui-react';
+  Field,
+  FieldControl,
+  FieldLabel,
+} from '@wizeworks/silicaui-react';
 
 import type { Domain, Property } from '@/lib/sites';
 import {
@@ -197,7 +198,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
       items.push(
         <DropdownMenuItem
           key="disconnect"
-          className="text-[var(--color-danger-text)]"
+          className="text-danger"
           onClick={() => void onDisconnect(d)}
         >
           <Trash2 className="h-4 w-4" /> Disconnect
@@ -222,7 +223,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
 
   const hostCell = (d: Domain) => (
     <div className="flex min-w-0 flex-row items-center gap-2">
-      <Globe className="h-4 w-4 shrink-0 text-[var(--color-text-secondary)]" />
+      <Globe className="text-base-content/70 h-4 w-4 shrink-0" />
       <div className="flex min-w-0 flex-col gap-1">
         <div className="flex flex-row flex-wrap items-center gap-2">
           <p className="truncate text-sm font-medium">{d.host}</p>
@@ -300,8 +301,8 @@ export function DomainsInventory({ domains, properties, view }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {transferResult && (
-        <div className="flex items-start gap-3 rounded-lg border border-[var(--color-warning-border)] bg-[var(--color-warning-subtle)] p-4">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-[var(--color-warning-text)]" />
+        <div className="border-warning bg-warning/10 flex items-start gap-3 rounded-lg border p-4">
+          <AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" />
           <div className="flex flex-col gap-1">
             <p className="font-medium">Transfer auth code for {transferResult.host}</p>
             <p className="text-base-content/70 text-sm">
@@ -384,18 +385,16 @@ function RenewDialog({
         </div>
         <div className="px-6 pb-2">
           <div className="flex flex-col gap-3">
-            <div>
-              <Label htmlFor="renew-years">Years</Label>
-              <Input
-                id="renew-years"
+            <Field className="w-28">
+              <FieldLabel>Years</FieldLabel>
+              <FieldControl
                 type="number"
                 min={1}
                 max={10}
                 value={years}
                 onChange={(e) => setYears(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
-                className="w-28"
               />
-            </div>
+            </Field>
             {total && <p className="text-base-content/70 text-sm">Total: {total}</p>}
           </div>
         </div>
@@ -443,13 +442,13 @@ function DnsDialog({
             </p>
             {inst && (
               <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                <span className="text-[var(--color-text-secondary)]">CNAME</span>
+                <span className="text-base-content/70">CNAME</span>
                 <Code>
                   {inst.cname.name} → {inst.cname.value}
                 </Code>
                 {inst.txt && (
                   <>
-                    <span className="text-[var(--color-text-secondary)]">TXT</span>
+                    <span className="text-base-content/70">TXT</span>
                     <Code>
                       {inst.txt.name} = {inst.txt.value}
                     </Code>

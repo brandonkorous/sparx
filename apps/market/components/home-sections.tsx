@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, PackageCheck, RotateCcw, ShieldCheck, Store } from 'lucide-react';
-import { Card } from 'silicaui-react';
+import { Card } from '@wizeworks/silicaui-react';
 
 import { CategoryIcon } from '@/components/category-icon';
 import { ProductCard } from '@/components/product-card';

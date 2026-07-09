@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   SelectionList,
   type SelectionCard,
@@ -39,7 +39,7 @@ interface ConfiguratorListProps {
 
 export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
   const productLink = (t: ConfigurationTemplateRow) => (
-    <Link href={`/commerce/products/${t.productId}`} className="hover:text-[var(--module-active)]">
+    <Link href={`/commerce/products/${t.productId}`} className="hover:text-module">
       {t.productTitle}
     </Link>
   );
@@ -49,7 +49,7 @@ export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
       href={`/commerce/configurator/${t.id}`}
       entityType="configurator-template"
       entityId={t.id}
-      className={className ?? 'hover:text-[var(--module-active)]'}
+      className={className ?? 'hover:text-module'}
     >
       {t.name}
     </EntityRowLink>
@@ -71,7 +71,7 @@ export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
   ];
 
   const card: SelectionCard<ConfigurationTemplateRow> = {
-    title: (t) => templateLink(t, 'truncate hover:text-[var(--module-active)]'),
+    title: (t) => templateLink(t, 'truncate hover:text-module'),
     subtitle: (t) => <span className="text-base-content/70 text-xs">{productLink(t)}</span>,
     badge: statusBadge,
     body: (t) => (

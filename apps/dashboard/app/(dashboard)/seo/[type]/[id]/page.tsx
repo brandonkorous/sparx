@@ -6,7 +6,7 @@
 import { notFound } from 'next/navigation';
 
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import type { EntityType } from '@sparx/seo-audit';
 
 import { ENTITY_LABEL } from '@/components/seo/types';

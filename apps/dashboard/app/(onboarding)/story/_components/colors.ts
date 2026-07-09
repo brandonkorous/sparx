@@ -5,13 +5,13 @@ import type { CSSProperties } from 'react';
 // `--module-<key>` token, so a clause chip wears its module's hue and stays
 // theme-aware without wrapping each inline word in a ModuleProvider.
 
-export const moduleVar = (key: string): string => `var(--module-${key})`;
+export const moduleVar = (key: string): string => `var(--color-module-${key})`;
 
 export const tintStyle = (key: string): CSSProperties => ({
-  background: `color-mix(in oklch, var(--module-${key}) 14%, transparent)`,
-  color: `color-mix(in oklch, var(--module-${key}) 58%, var(--color-text-primary))`,
+  background: `color-mix(in oklch, var(--color-module-${key}) 14%, transparent)`,
+  color: `color-mix(in oklch, var(--color-module-${key}) 58%, var(--color-base-content))`,
 });
 
 export const dotStyle = (key: string): CSSProperties => ({
-  background: `var(--module-${key})`,
+  background: `var(--color-module-${key})`,
 });

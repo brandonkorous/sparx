@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Check, Handshake } from 'lucide-react';
-import { Card, CardBody } from 'silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { TIER_ORDER, TIERS } from '../_lib/tiers';
@@ -91,9 +91,7 @@ function Hero() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {HERO_STATS.map((s) => (
               <div key={s.label} className="flex flex-col gap-1">
-                <span className="text-[2rem] leading-none font-medium text-[var(--module-active-text)]">
-                  {s.value}
-                </span>
+                <span className="text-module text-[2rem] leading-none font-medium">{s.value}</span>
                 <p className="text-base-content/70 text-sm">{s.label}</p>
               </div>
             ))}
@@ -113,7 +111,7 @@ function HowItWorks() {
           <Card key={s.n}>
             <CardBody>
               <div className="flex flex-col gap-2">
-                <span className="font-mono text-sm text-[var(--module-active)]">{s.n}</span>
+                <span className="text-module font-mono text-sm">{s.n}</span>
                 <p className="text-base font-medium">{s.t}</p>
                 <p className="text-base-content/70 text-sm">{s.d}</p>
               </div>
@@ -138,13 +136,13 @@ function TierLadder() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <p className="text-lg font-medium">{meta.label}</p>
-                    <p className="text-sm text-[var(--module-active-text)]">{meta.commission}</p>
+                    <p className="text-module text-sm">{meta.commission}</p>
                     <p className="text-base-content/70 text-sm">{meta.tagline}</p>
                   </div>
                   <ul className="flex flex-col gap-2">
                     {meta.unlocks.map((u) => (
                       <li key={u} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--module-active)]" />
+                        <Check className="text-module mt-0.5 h-4 w-4 shrink-0" />
                         <p className="text-sm">{u}</p>
                       </li>
                     ))}

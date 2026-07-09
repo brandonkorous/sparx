@@ -23,14 +23,9 @@ export const TimelineItem = React.forwardRef<HTMLLIElement, TimelineItemProps>(
   ({ className, marker, showConnector = true, children, ...props }, ref) => (
     <li ref={ref} className={cn('relative flex gap-3', className)} {...props}>
       <div className="flex flex-col items-center">
-        {marker ?? (
-          <span
-            aria-hidden
-            className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[var(--module-active)]"
-          />
-        )}
+        {marker ?? <span aria-hidden className="bg-module mt-1.5 h-2 w-2 shrink-0 rounded-full" />}
         {showConnector && (
-          <span aria-hidden className="mt-1 w-px flex-1 bg-[var(--color-border-default)]" />
+          <span aria-hidden className="mt-1 w-px flex-1 bg-[var(--color-base-300)]" />
         )}
       </div>
       <div className="flex-1 pb-2">{children}</div>
@@ -43,7 +38,7 @@ export const TimelineTitle = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn('text-sm font-medium text-[var(--color-text-primary)]', className)} {...props} />
+  <p className={cn('text-base-content text-sm font-medium', className)} {...props} />
 );
 TimelineTitle.displayName = 'TimelineTitle';
 
@@ -51,7 +46,7 @@ export const TimelineDescription = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn('mt-0.5 text-xs text-[var(--color-text-secondary)]', className)} {...props} />
+  <p className={cn('text-base-content/70 mt-0.5 text-xs', className)} {...props} />
 );
 TimelineDescription.displayName = 'TimelineDescription';
 
@@ -59,6 +54,6 @@ export const TimelineTime = ({
   className,
   ...props
 }: React.TimeHTMLAttributes<HTMLTimeElement>) => (
-  <time className={cn('text-xs text-[var(--color-text-tertiary)]', className)} {...props} />
+  <time className={cn('text-base-content/50 text-xs', className)} {...props} />
 );
 TimelineTime.displayName = 'TimelineTime';

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   SelectionList,
   type SelectionColumn,
@@ -55,8 +55,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
   const columns: SelectionColumn<QuoteRow>[] = [
     {
       header: 'Quote #',
-      cell: (q) =>
-        quoteLink(q, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (q) => quoteLink(q, 'text-sm font-medium hover:text-module hover:underline'),
     },
     { header: 'Status', cell: statusBadge },
     { header: 'Total', align: 'right', cell: totalText },
@@ -77,11 +76,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
   ];
 
   const card: SelectionCard<QuoteRow> = {
-    title: (q) =>
-      quoteLink(
-        q,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (q) => quoteLink(q, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (q) => (
       <p className="text-base-content/70 text-xs">
         {q.validUntil ? `Valid until ${new Date(q.validUntil).toLocaleDateString()}` : 'No expiry'}

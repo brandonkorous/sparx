@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import {
   SelectionList,
   statusLabel,
@@ -39,10 +39,7 @@ function statusBadge(b: Bootcamp) {
 
 function titleLink(b: Bootcamp) {
   return (
-    <Link
-      href={`/partner/bootcamps/${b.id}`}
-      className="font-medium hover:text-[var(--module-active)]"
-    >
+    <Link href={`/partner/bootcamps/${b.id}`} className="hover:text-module font-medium">
       {b.title}
     </Link>
   );

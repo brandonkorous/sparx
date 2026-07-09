@@ -18,22 +18,20 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       ref={ref}
       className={cn(
         'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed',
-        'border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]',
+        'border-[var(--color-base-300)] bg-[var(--color-base-200)]',
         'px-6 py-10 text-center',
         className
       )}
       {...props}
     >
       {icon && (
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)]">
+        <div className="text-base-content/50 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-base-100)]">
           {icon}
         </div>
       )}
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-medium text-[var(--color-text-primary)]">{title}</p>
-        {description && (
-          <p className="max-w-sm text-xs text-[var(--color-text-secondary)]">{description}</p>
-        )}
+        <p className="text-base-content text-sm font-medium">{title}</p>
+        {description && <p className="text-base-content/70 max-w-sm text-xs">{description}</p>}
       </div>
       {action && <div className="mt-2 flex items-center gap-2">{action}</div>}
     </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 // Client wrapper for the B2B invoices list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
@@ -51,7 +51,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     inv.account ? (
       <Link
         href={`/b2b/accounts/${inv.account.id}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {inv.account.companyName}
       </Link>
@@ -68,8 +68,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
   const columns: SelectionColumn<InvoiceRow>[] = [
     {
       header: 'Invoice #',
-      cell: (inv) =>
-        invoiceLink(inv, 'font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (inv) => invoiceLink(inv, 'font-medium hover:text-module hover:underline'),
     },
     { header: 'Account', cell: accountCell },
     { header: 'Status', cell: statusBadge },
@@ -80,7 +79,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     {
       header: 'Due',
       cell: (inv) => (
-        <p className={`text-sm ${inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}`}>
+        <p className={`text-sm ${inv.status === 'overdue' ? 'text-danger' : ''}`}>
           {new Date(inv.dueAt).toLocaleDateString()}
         </p>
       ),
@@ -104,13 +103,12 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
   ];
 
   const card: SelectionCard<InvoiceRow> = {
-    title: (inv) =>
-      invoiceLink(inv, 'truncate font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (inv) => invoiceLink(inv, 'truncate font-medium hover:text-module hover:underline'),
     subtitle: (inv) =>
       inv.account ? (
         <Link
           href={`/b2b/accounts/${inv.account.id}`}
-          className="truncate text-xs text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+          className="text-base-content/70 hover:text-module truncate text-xs hover:underline"
         >
           {inv.account.companyName}
         </Link>
@@ -124,7 +122,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
           <p className="text-base-content/70 text-xs">Due</p>
-          <p className={`text-sm ${inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}`}>
+          <p className={`text-sm ${inv.status === 'overdue' ? 'text-danger' : ''}`}>
             {new Date(inv.dueAt).toLocaleDateString()}
             {inv.overdueDays > 0 ? ` · ${inv.overdueDays}d overdue` : ''}
           </p>

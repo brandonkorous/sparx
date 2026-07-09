@@ -127,15 +127,12 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
                 <Stack gap={3}>
                   <Stack direction="row" align="start" justify="between" gap={2}>
                     <Stack direction="row" align="center" gap={2} className="min-w-0">
-                      <EntryIcon
-                        entry={entry}
-                        className="h-5 w-5 shrink-0 text-[var(--module-active)]"
-                      />
+                      <EntryIcon entry={entry} className="text-module h-5 w-5 shrink-0" />
                       <EntityRowLink
                         href={`/builder/components/${entry.id}`}
                         entityType="builder-component"
                         entityId={entry.id}
-                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                        className="hover:text-module truncate text-sm font-medium hover:underline"
                       >
                         {entry.label}
                       </EntityRowLink>
@@ -186,17 +183,14 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
                     <TableRow key={`${entry.provenance}:${entry.id}`}>
                       <TableCell>
                         <Stack direction="row" align="center" gap={3} className="min-w-0">
-                          <EntryIcon
-                            entry={entry}
-                            className="h-4 w-4 shrink-0 text-[var(--module-active)]"
-                          />
+                          <EntryIcon entry={entry} className="text-module h-4 w-4 shrink-0" />
                           <Stack gap={1} className="min-w-0">
                             <Stack direction="row" align="center" gap={2}>
                               <EntityRowLink
                                 href={`/builder/components/${entry.id}`}
                                 entityType="builder-component"
                                 entityId={entry.id}
-                                className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                                className="hover:text-module text-sm font-medium hover:underline"
                               >
                                 {entry.label}
                               </EntityRowLink>

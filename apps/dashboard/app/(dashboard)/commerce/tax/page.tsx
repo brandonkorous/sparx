@@ -1,6 +1,6 @@
 import { FileBadge, Globe2, Plus, Receipt } from 'lucide-react';
 
-import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { PageHeader } from '@sparx/ui';
 

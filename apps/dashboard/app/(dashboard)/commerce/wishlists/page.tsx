@@ -1,7 +1,7 @@
 import { Heart } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, CardBody, EmptyState, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, X, Minus, Search } from 'lucide-react';
-import { Button, Input, Badge, Spinner } from '@sparx/ui';
+import { Button, Input, Badge, Loading } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 
 const TLDS = ['com', 'co', 'io', 'app', 'dev', 'net', 'org', 'ai', 'xyz', 'store'];
@@ -99,7 +99,7 @@ export function DomainTool() {
               onClick={check}
               disabled={loading || !base || selected.size === 0}
             >
-              {loading ? <Spinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+              {loading ? <Loading className="h-4 w-4" /> : <Search className="h-4 w-4" />}
               Check availability
             </Button>
           </div>
@@ -122,20 +122,20 @@ export function DomainTool() {
                       gap: '12px',
                       padding: '12px 14px',
                       borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--color-border-default)',
+                      border: '1px solid var(--color-base-300)',
                     }}
                   >
                     <span
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '14px',
-                        color: 'var(--color-text-primary)',
+                        color: 'var(--color-base-content)',
                       }}
                     >
                       {domain}
                     </span>
                     {!r ? (
-                      <Spinner className="h-4 w-4" />
+                      <Loading className="h-4 w-4" />
                     ) : r.available === true ? (
                       <Badge color="success" variant="soft" size="sm">
                         <Check className="h-3.5 w-3.5" />
@@ -161,7 +161,7 @@ export function DomainTool() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               Enter a name and pick the extensions to check across them at once.
@@ -171,7 +171,7 @@ export function DomainTool() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               margin: 0,
             }}
           >

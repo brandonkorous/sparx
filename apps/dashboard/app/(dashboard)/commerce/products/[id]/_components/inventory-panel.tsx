@@ -11,11 +11,15 @@ import {
   Card,
   CardBody,
   EmptyState,
-  Input,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
   Table,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider } from '@sparx/ui';
+import { useFieldValidation } from '@sparx/forms';
 
 import {
   adjustInventoryAction,
@@ -121,7 +125,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
               <tbody>
                 {variantsWithLevels.map((v) => (
                   <React.Fragment key={v.variantId}>
-                    <tr className="bg-[var(--color-bg-subtle)] hover:bg-[var(--color-bg-subtle)]">
+                    <tr className="bg-base-200 hover:bg-base-200">
                       <td colSpan={COL_COUNT}>
                         <div className="flex flex-row flex-wrap items-center gap-2">
                           <span className="font-mono text-sm font-medium">{v.sku}</span>
@@ -170,24 +174,65 @@ function VariantInventoryRow({
   const reorderPoint = level?.reorderPoint ?? null;
   const belowReorder = reorderPoint !== null && available <= reorderPoint;
 
+  // Adjust form state.
+  const [delta, setDelta] = React.useState('0');
+  const [reason, setReason] = React.useState('manual');
+  const [note, setNote] = React.useState('');
+  const vAdjust = useFieldValidation(
+    { delta },
+    {
+      delta: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter a number.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n === 0) return 'Delta must be non-zero.';
+        return null;
+      },
+    }
+  );
+
+  // Reorder policy form state.
+  const [reorderPointInput, setReorderPointInput] = React.useState(
+    level?.reorderPoint?.toString() ?? '0'
+  );
+  const [reorderQuantity, setReorderQuantity] = React.useState(
+    level?.reorderQuantity?.toString() ?? ''
+  );
+  const vReorder = useFieldValidation(
+    { reorderPoint: reorderPointInput, reorderQuantity },
+    {
+      reorderPoint: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter a number.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n < 0) return 'Reorder point must be 0 or higher.';
+        return null;
+      },
+      reorderQuantity: (val) => {
+        const s = String(val ?? '').trim();
+        if (s === '') return 'Enter a number.';
+        const n = Number(s);
+        if (!Number.isFinite(n)) return 'Enter a number.';
+        if (n <= 0) return 'Reorder quantity must be positive.';
+        return null;
+      },
+    }
+  );
+
   function onAdjust(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const delta = Number(stringOr(form.get('delta'), '0'));
-    if (!Number.isFinite(delta) || delta === 0) {
-      setError('Delta must be non-zero');
-      return;
-    }
-    const reason = stringOr(form.get('reason'), 'manual');
-    const note = stringOr(form.get('note'), '');
+    if (!vAdjust.validate()) return;
+    const trimmedNote = note.trim();
     startTransition(async () => {
       const result = await adjustInventoryAction({
         variantId,
         warehouseId: warehouse.id,
-        delta,
+        delta: Number(delta),
         reason,
-        ...(note ? { note } : {}),
+        ...(trimmedNote ? { note: trimmedNote } : {}),
       });
       if (!result.ok) {
         setError(result.error.message);
@@ -201,23 +246,13 @@ function VariantInventoryRow({
   function onSetReorder(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const point = Number(stringOr(form.get('reorderPoint'), '0'));
-    const quantity = Number(stringOr(form.get('reorderQuantity'), '0'));
-    if (!Number.isFinite(point) || point < 0) {
-      setError('Reorder point must be 0 or higher');
-      return;
-    }
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-      setError('Reorder quantity must be positive');
-      return;
-    }
+    if (!vReorder.validate()) return;
     startTransition(async () => {
       const result = await setReorderPolicyAction({
         variantId,
         warehouseId: warehouse.id,
-        reorderPoint: point,
-        reorderQuantity: quantity,
+        reorderPoint: Number(reorderPointInput),
+        reorderQuantity: Number(reorderQuantity),
       });
       if (!result.ok) {
         setError(result.error.message);
@@ -276,27 +311,43 @@ function VariantInventoryRow({
       </tr>
       {mode === 'adjust' && (
         <tr>
-          <td colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
+          <td colSpan={COL_COUNT} className="bg-base-200">
             <form onSubmit={onAdjust}>
               <div className="flex flex-row flex-wrap items-end gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="text-base-content/70 text-xs">Delta (±)</span>
-                  <Input name="delta" defaultValue="0" className="w-[6rem]" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-base-content/70 text-xs">Reason</span>
-                  <NativeSelect name="reason" defaultValue="manual" size="sm" className="w-[10rem]">
+                <Field {...vAdjust.field('delta')} className="w-[6rem]">
+                  <FieldLabel>Delta (±)</FieldLabel>
+                  <FieldControl
+                    name="delta"
+                    type="number"
+                    value={delta}
+                    onChange={(e) => setDelta(e.target.value)}
+                    {...vAdjust.control('delta')}
+                  />
+                </Field>
+                <Field className="w-[10rem]">
+                  <FieldLabel>Reason</FieldLabel>
+                  <NativeSelect
+                    name="reason"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    size="sm"
+                  >
                     {REASONS.map((r) => (
                       <option key={r} value={r}>
                         {r}
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
-                <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-                  <span className="text-base-content/70 text-xs">Note</span>
-                  <Input name="note" placeholder="optional" />
-                </div>
+                </Field>
+                <Field className="min-w-[14rem] flex-1">
+                  <FieldLabel>Note</FieldLabel>
+                  <FieldControl
+                    name="note"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="optional"
+                  />
+                </Field>
                 <div className="flex flex-row gap-2">
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
@@ -312,32 +363,42 @@ function VariantInventoryRow({
                   </Button>
                 </div>
               </div>
-              {error && <p className="text-danger mt-2 text-xs">{error}</p>}
+              {error && (
+                <FieldStatus status="error" attached={false} className="mt-2">
+                  {error}
+                </FieldStatus>
+              )}
             </form>
           </td>
         </tr>
       )}
       {mode === 'reorder' && (
         <tr>
-          <td colSpan={COL_COUNT} className="bg-[var(--color-bg-subtle)]">
+          <td colSpan={COL_COUNT} className="bg-base-200">
             <form onSubmit={onSetReorder}>
               <div className="flex flex-row flex-wrap items-end gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="text-base-content/70 text-xs">Reorder point</span>
-                  <Input
+                <Field {...vReorder.field('reorderPoint')} className="w-[6rem]">
+                  <FieldLabel>Reorder point</FieldLabel>
+                  <FieldControl
                     name="reorderPoint"
-                    defaultValue={reorderPoint?.toString() ?? '0'}
-                    className="w-[6rem]"
+                    type="number"
+                    min="0"
+                    value={reorderPointInput}
+                    onChange={(e) => setReorderPointInput(e.target.value)}
+                    {...vReorder.control('reorderPoint')}
                   />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-base-content/70 text-xs">Reorder qty</span>
-                  <Input
+                </Field>
+                <Field {...vReorder.field('reorderQuantity')} className="w-[6rem]">
+                  <FieldLabel>Reorder qty</FieldLabel>
+                  <FieldControl
                     name="reorderQuantity"
-                    defaultValue={level?.reorderQuantity?.toString() ?? ''}
-                    className="w-[6rem]"
+                    type="number"
+                    min="1"
+                    value={reorderQuantity}
+                    onChange={(e) => setReorderQuantity(e.target.value)}
+                    {...vReorder.control('reorderQuantity')}
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row gap-2">
                   <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
                     Cancel
@@ -353,15 +414,15 @@ function VariantInventoryRow({
                   </Button>
                 </div>
               </div>
-              {error && <p className="text-danger mt-2 text-xs">{error}</p>}
+              {error && (
+                <FieldStatus status="error" attached={false} className="mt-2">
+                  {error}
+                </FieldStatus>
+              )}
             </form>
           </td>
         </tr>
       )}
     </>
   );
-}
-
-function stringOr(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

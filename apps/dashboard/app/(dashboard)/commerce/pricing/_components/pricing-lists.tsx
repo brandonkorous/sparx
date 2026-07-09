@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import {
   SelectionList,
   type SelectionCard,
@@ -158,7 +158,7 @@ const priceListName = (list: PriceListRow) => (
     href={`/commerce/pricing/${list.id}`}
     entityType="price-list"
     entityId={list.id}
-    className="hover:text-[var(--module-active)]"
+    className="hover:text-module"
   >
     {list.name}
   </EntityRowLink>

@@ -13,7 +13,17 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2 } from 'lucide-react';
 
 import { toast, useConfirm } from '@sparx/ui';
-import { Badge, Button, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Input,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { deleteWorkflowStageAction, updateWorkflowStageAction } from '../../../../workflow-actions';
 
@@ -31,7 +41,7 @@ export interface StageRow {
 }
 
 const SELECT_CLASS =
-  'flex h-9 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
+  'flex h-9 rounded-md border border-base-300 bg-base-100 px-3 py-2 text-sm text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 const STAGE_TYPES: { value: StageRow['stageType']; label: string }[] = [
   { value: 'draft', label: 'Draft — being built' },
@@ -67,6 +77,14 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
   const [color, setColor] = React.useState<string | null>(stage.color);
   const [pending, startTransition] = React.useTransition();
 
+  const v = useFieldValidation(
+    { name, customerLabel },
+    {
+      name: rule.required('An internal name is required.'),
+      customerLabel: rule.required('A customer label is required.'),
+    }
+  );
+
   const dirty =
     name !== stage.name ||
     customerLabel !== stage.customerLabel ||
@@ -78,10 +96,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
     color !== stage.color;
 
   function save() {
-    if (!name.trim() || !customerLabel.trim()) {
-      toast.error('Name and customer label are required.');
-      return;
-    }
+    if (!v.validate()) return;
     startTransition(async () => {
       const result = await updateWorkflowStageAction(workflowId, stage.id, {
         name: name.trim(),
@@ -122,35 +137,39 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="rounded-md border border-[var(--color-border-default)] p-3"
-    >
+    <div ref={setNodeRef} style={style} className="border-base-300 rounded-md border p-3">
       <div className="flex flex-row items-center gap-3">
         <button
           type="button"
           {...attributes}
           {...listeners}
-          className="cursor-grab text-[var(--color-text-tertiary)] hover:text-[var(--module-active)]"
+          className="text-base-content/50 hover:text-module cursor-grab"
           aria-label="Drag to reorder"
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <div className="flex-1">
-          <Label className="text-xs">Internal name</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Estimate" />
-        </div>
-        <div className="flex-1">
-          <Label className="text-xs">Customer label</Label>
-          <Input
+        <Field {...v.field('name')} className="flex-1">
+          <FieldLabel className="text-xs">Internal name</FieldLabel>
+          <FieldControl
+            name="stage-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Estimate"
+            {...v.control('name')}
+          />
+        </Field>
+        <Field {...v.field('customerLabel')} className="flex-1">
+          <FieldLabel className="text-xs">Customer label</FieldLabel>
+          <FieldControl
+            name="stage-customer-label"
             value={customerLabel}
             onChange={(e) => setCustomerLabel(e.target.value)}
             placeholder="Estimate"
+            {...v.control('customerLabel')}
           />
-        </div>
-        <div>
-          <Label className="text-xs">Type</Label>
+        </Field>
+        <Field>
+          <FieldLabel className="text-xs">Type</FieldLabel>
           <select
             value={stageType}
             onChange={(e) => setStageType(e.target.value as StageRow['stageType'])}
@@ -163,7 +182,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
               </option>
             ))}
           </select>
-        </div>
+        </Field>
         <Button
           type="button"
           variant="ghost"
@@ -178,7 +197,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
       </div>
 
       <div className="mt-3 flex flex-row flex-wrap items-center gap-4 px-1">
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={numberOnEnter}
@@ -199,7 +218,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
             />
           </div>
         )}
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
@@ -207,7 +226,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           />
           Freeze a snapshot
         </label>
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={locksEditing}
@@ -215,7 +234,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           />
           Lock editing
         </label>
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={color !== null}
@@ -229,7 +248,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
             value={color}
             onChange={(e) => setColor(e.target.value)}
             aria-label="Stage color"
-            className="h-7 w-10 cursor-pointer rounded border border-[var(--color-border-default)] bg-transparent"
+            className="border-base-300 h-7 w-10 cursor-pointer rounded border bg-transparent"
           />
         )}
         <div className="ml-auto flex items-center gap-2">

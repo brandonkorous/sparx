@@ -6,7 +6,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  transpilePackages: ['@sparx/ui', '@sparx/chat-widget'],
+  transpilePackages: [
+    '@sparx/ui',
+    '@sparx/brand',
+    '@sparx/forms',
+    '@sparx/chat-widget',
+    '@wizeworks/silicaui-react',
+  ],
   typedRoutes: true,
   // Standalone output for Docker — produces .next/standalone with a minimal
   // node_modules and a server.js entrypoint.

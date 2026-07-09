@@ -24,7 +24,18 @@ import {
   SurfaceStep,
   type SurfaceStepDef,
 } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { CheckCircle2, FileText } from 'lucide-react';
 
@@ -354,11 +365,11 @@ function ContentEntryWizardInner({
                 type="button"
                 disabled={loadingSchema}
                 onClick={() => void selectType(t.key)}
-                className="group rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 text-left transition-colors hover:border-[var(--module-active)] hover:bg-[var(--module-active-tint)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--module-active)] disabled:opacity-50"
+                className="group border-base-300 bg-base-100 hover:border-module hover:bg-module/10 focus-visible:outline-module rounded-lg border p-4 text-left transition-colors focus-visible:outline focus-visible:outline-2 disabled:opacity-50"
               >
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row items-center gap-2">
-                    <FileText className="h-4 w-4 text-[var(--module-active)]" />
+                    <FileText className="text-module h-4 w-4" />
                     <p className="font-medium">{t.name}</p>
                   </div>
                   {t.description && (
@@ -369,9 +380,9 @@ function ContentEntryWizardInner({
             ))}
         </div>
         {error && (
-          <p className="text-danger text-sm" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </div>
     </SurfaceStep>
@@ -393,8 +404,8 @@ function ContentEntryWizardInner({
     >
       <div className="flex flex-col gap-4">
         {typeSchema.schema_json.fields.filter((f) => f.required).length === 0 && (
-          <div className="flex flex-row items-center gap-2 rounded-md bg-[var(--color-success-subtle)] px-3 py-2">
-            <CheckCircle2 className="h-4 w-4 text-[var(--color-success)]" />
+          <div className="bg-success bg-soft flex flex-row items-center gap-2 rounded-md px-3 py-2">
+            <CheckCircle2 className="text-success h-4 w-4" />
             <p className="text-sm">
               This content type has no required fields — continue to publish settings.
             </p>
@@ -409,9 +420,9 @@ function ContentEntryWizardInner({
         />
 
         {Object.keys(fieldErrors).length > 0 && (
-          <p className="text-danger text-sm" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             Please fix the errors above before continuing.
-          </p>
+          </FieldStatus>
         )}
       </div>
     </SurfaceStep>
@@ -444,15 +455,17 @@ function ContentEntryWizardInner({
             <h3 className="text-xl font-semibold">Author</h3>
             {creatingAuthor ? (
               <div className="flex flex-col gap-3">
-                <div>
-                  <Label htmlFor="cw-author-name">Display name</Label>
-                  <Input
-                    id="cw-author-name"
+                <Field
+                  {...(authorError ? { status: 'error' as const, statusMessage: authorError } : {})}
+                >
+                  <FieldLabel required>Display name</FieldLabel>
+                  <FieldControl
+                    name="cw-author-name"
                     value={newAuthorName}
                     onChange={(e) => setNewAuthorName(e.target.value)}
                     placeholder="e.g. Jane Doe"
                   />
-                </div>
+                </Field>
                 <div className="flex flex-row items-center gap-2">
                   <Button
                     type="button"
@@ -479,19 +492,14 @@ function ContentEntryWizardInner({
                     Cancel
                   </Button>
                 </div>
-                {authorError && (
-                  <p className="text-danger text-sm" role="alert">
-                    {authorError}
-                  </p>
-                )}
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 <p className="text-base-content/70 text-sm">
                   Attribute this content to an author, or create one on the fly. Optional.
                 </p>
-                <div>
-                  <Label htmlFor="cw-author">Author</Label>
+                <Field>
+                  <FieldLabel>Author</FieldLabel>
                   <NativeSelect
                     id="cw-author"
                     value={authorId}
@@ -504,10 +512,10 @@ function ContentEntryWizardInner({
                       </option>
                     ))}
                   </NativeSelect>
-                </div>
+                </Field>
                 <button
                   type="button"
-                  className="self-start text-sm text-[var(--module-active)] underline-offset-4 hover:underline"
+                  className="text-module self-start text-sm underline-offset-4 hover:underline"
                   onClick={() => {
                     setCreatingAuthor(true);
                     setAuthorError(null);
@@ -540,9 +548,9 @@ function ContentEntryWizardInner({
         )}
 
         {error && (
-          <p className="text-danger text-sm" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </div>
     </SurfaceStep>
@@ -581,15 +589,15 @@ function ContentEntryWizardInner({
               onChange={(_k, v) => setStatus(v as 'draft' | 'published' | 'scheduled')}
             />
             {status === 'scheduled' && (
-              <div className="mt-4 flex flex-col gap-1">
-                <Label htmlFor="wizard-scheduled-at">Publish on</Label>
-                <Input
-                  id="wizard-scheduled-at"
+              <Field className="mt-4">
+                <FieldLabel>Publish on</FieldLabel>
+                <FieldControl
+                  name="wizard-scheduled-at"
                   type="datetime-local"
                   value={scheduledAt}
                   onChange={(e) => setScheduledAt(e.target.value)}
                 />
-              </div>
+              </Field>
             )}
           </CardBody>
         </Card>
@@ -598,15 +606,15 @@ function ContentEntryWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">URL</h3>
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="wizard-slug">
+              <Field>
+                <FieldLabel>
                   Slug
                   <Badge variant="soft" color="neutral" className="ml-2 font-mono text-xs">
                     {typeSchema.url_pattern.replace('{slug}', slug || '…')}
                   </Badge>
-                </Label>
-                <Input
-                  id="wizard-slug"
+                </FieldLabel>
+                <FieldControl
+                  name="wizard-slug"
                   value={slug}
                   onChange={(e) => {
                     setSlug(e.target.value);
@@ -614,18 +622,16 @@ function ContentEntryWizardInner({
                   }}
                   placeholder="my-entry-slug"
                 />
-                <p className="text-base-content/70 text-xs">
-                  Auto-derived from the title. Edit to customise.
-                </p>
-              </div>
+                <FieldDescription>Auto-derived from the title. Edit to customise.</FieldDescription>
+              </Field>
             </CardBody>
           </Card>
         )}
 
         {error && (
-          <p className="text-danger text-sm" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </div>
     </SurfaceStep>

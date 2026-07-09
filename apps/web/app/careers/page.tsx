@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Button, Card } from '@sparx/ui';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { Nav } from '@/components/marketing/nav';
 import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
@@ -13,14 +13,14 @@ export const metadata: Metadata = {
   alternates: { canonical: '/careers' },
 };
 
-const INDIGO = 'var(--sparx-primary)';
+const INDIGO = 'var(--color-primary)';
 
 const ledeStyle: React.CSSProperties = {
   margin: 0,
   fontFamily: 'var(--font-sans)',
   fontSize: '19px',
   lineHeight: '30px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
   maxWidth: '620px',
 };
 
@@ -29,61 +29,69 @@ const pitchStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '17px',
   lineHeight: '28px',
-  color: 'var(--color-text-secondary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
 };
 
 function RoleCard({ role }: { role: Role }) {
   return (
     <Link href={`/careers/${role.slug}`} className="mkt-role-card">
-      <Card padding="lg" variant="default">
-        <div className="mkt-role-row">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '21px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-text-primary)',
-              }}
-            >
-              {role.title}
-            </h3>
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                gap: '8px 12px',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'var(--color-text-tertiary)',
-              }}
-            >
-              <span>{role.team}</span>
-              <Dot color="var(--color-border-strong)" size={3} />
-              <span>{role.location}</span>
-              <Dot color="var(--color-border-strong)" size={3} />
-              <span>{role.commitment}</span>
+      <Card>
+        <CardBody className="p-8">
+          <div className="mkt-role-row">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
+              <h3
+                style={{
+                  margin: 0,
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 500,
+                  fontSize: '21px',
+                  letterSpacing: '-0.01em',
+                  color: 'var(--color-base-content)',
+                }}
+              >
+                {role.title}
+              </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  gap: '8px 12px',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '13px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                }}
+              >
+                <span>{role.team}</span>
+                <Dot
+                  color="color-mix(in oklab, var(--color-base-content) 30%, transparent)"
+                  size={3}
+                />
+                <span>{role.location}</span>
+                <Dot
+                  color="color-mix(in oklab, var(--color-base-content) 30%, transparent)"
+                  size={3}
+                />
+                <span>{role.commitment}</span>
+              </div>
+              <p
+                style={{
+                  margin: '4px 0 0',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '16px',
+                  lineHeight: '25px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                  maxWidth: '620px',
+                }}
+              >
+                {role.summary}
+              </p>
             </div>
-            <p
-              style={{
-                margin: '4px 0 0',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '16px',
-                lineHeight: '25px',
-                color: 'var(--color-text-secondary)',
-                maxWidth: '620px',
-              }}
-            >
-              {role.summary}
-            </p>
+            <span className="mkt-role-arrow">
+              View role <span aria-hidden>→</span>
+            </span>
           </div>
-          <span className="mkt-role-arrow">
-            View role <span aria-hidden>→</span>
-          </span>
-        </div>
+        </CardBody>
       </Card>
     </Link>
   );
@@ -109,7 +117,7 @@ function StepRow({ index, text }: { index: number; text: string }) {
           fontFamily: 'var(--font-sans)',
           fontSize: '17px',
           lineHeight: '27px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         }}
       >
         {text}
@@ -184,8 +192,8 @@ export default function CareersPage() {
             {OPEN_APPLICATION.summary}
           </p>
           <div style={{ paddingTop: '4px' }}>
-            <Button asChild size="lg">
-              <Link href={`/careers/${OPEN_APPLICATION.slug}`}>{OPEN_APPLICATION.title} →</Link>
+            <Button size="lg" render={<Link href={`/careers/${OPEN_APPLICATION.slug}`} />}>
+              {OPEN_APPLICATION.title} →
             </Button>
           </div>
         </div>
@@ -212,7 +220,7 @@ export default function CareersPage() {
             fontFamily: 'var(--font-sans)',
             fontSize: '14px',
             lineHeight: '23px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             maxWidth: '760px',
           }}
         >

@@ -16,7 +16,7 @@ export default function PartnerPitchPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+            className="text-base-content/70 hover:text-base-content text-sm"
           >
             ← Resources
           </Link>
@@ -37,7 +37,7 @@ export default function PartnerPitchPage() {
                       <li key={p} className="flex items-start gap-2">
                         <span
                           aria-hidden
-                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--module-active)]"
+                          className="bg-module mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
                         />
                         <p className="text-base-content/70 text-sm">{p}</p>
                       </li>

@@ -43,10 +43,9 @@ const RECENTS_LIMIT = 8;
 // scale: h-8 rows, rounded-md, gap-2, text-sm, and the same tint active state.
 // `group` lets the icon adopt SidebarItem's two-tone hover coloring.
 const TILE_BASE =
-  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none';
-const TILE_INACTIVE =
-  'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)]';
-const TILE_ACTIVE = 'bg-[var(--module-active-tint)] text-[var(--module-active-text)]';
+  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none';
+const TILE_INACTIVE = 'text-base-content/70 hover:bg-base-200 hover:text-base-content';
+const TILE_ACTIVE = 'bg-module bg-soft text-module';
 
 function tileClass(active: boolean, expanded: boolean) {
   const shape = expanded ? 'w-full justify-start gap-2 px-2' : 'w-8 justify-center';
@@ -57,9 +56,7 @@ function tileClass(active: boolean, expanded: boolean) {
 // label — module color when active, a quiet tertiary→secondary on hover when not.
 function tileIconClass(active: boolean) {
   return `inline-flex h-4 w-4 shrink-0 items-center justify-center ${
-    active
-      ? 'text-[var(--module-active)]'
-      : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
+    active ? 'text-module' : 'text-base-content/50 group-hover:text-base-content/70'
   }`;
 }
 
@@ -74,8 +71,7 @@ function tileIconClass(active: boolean) {
 // too (fuchsia / yellow) — and Finance now joins them (money green, docs/109). Only
 // the true neutral shortcuts (Home/Search/Marketplace/Settings) keep the neutral
 // tileIconClass since they have no module color.
-const MODULE_TILE_ICON =
-  'inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--module-active)]';
+const MODULE_TILE_ICON = 'inline-flex h-4 w-4 shrink-0 items-center justify-center text-module';
 
 function isActivePath(pathname: string | null, href: string) {
   return pathname === href || (pathname?.startsWith(`${href}/`) ?? false);
@@ -365,10 +361,7 @@ export function RailNav({
 
 function RailDivider({ expanded }: { expanded: boolean }) {
   return (
-    <div
-      aria-hidden
-      className={`my-1 h-px shrink-0 bg-[var(--color-border-default)] ${expanded ? 'w-full' : 'w-7'}`}
-    />
+    <div aria-hidden className={`bg-base-300 my-1 h-px shrink-0 ${expanded ? 'w-full' : 'w-7'}`} />
   );
 }
 
@@ -390,12 +383,12 @@ function RailGroup({ label, groupIcon: GroupIcon, items, pathname, expanded }: R
     // like the module tiles above; expanded, they stretch full-width for labels.
     <div className={`mt-1 flex w-full flex-col gap-1 ${expanded ? '' : 'items-center'}`}>
       {expanded ? (
-        <div className="px-3 pt-2 pb-0.5 text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase">
+        <div className="text-base-content/50 px-3 pt-2 pb-0.5 text-xs font-medium tracking-wider uppercase">
           {label}
         </div>
       ) : (
         <div className="my-0.5 flex justify-center" title={label}>
-          <GroupIcon className="h-3.5 w-3.5 text-[var(--color-text-tertiary)]" />
+          <GroupIcon className="text-base-content/50 h-3.5 w-3.5" />
         </div>
       )}
       {items.map((item) => {

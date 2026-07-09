@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Avatar, Badge, Button, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Avatar, Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 import { ArrowRight, Building2, Check, Mail } from 'lucide-react';
 import type { OrgMembership, PendingInvitation } from '@sparx/auth';
@@ -122,7 +122,7 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
     <Card>
       <CardBody>
         <div className="flex flex-row items-center gap-2">
-          <span aria-hidden className="text-[var(--color-text-secondary)]">
+          <span aria-hidden className="text-base-content/70">
             <Mail className="h-4 w-4" />
           </span>
           <CardTitle>{invitation.orgName}</CardTitle>

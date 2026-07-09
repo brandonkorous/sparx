@@ -9,7 +9,17 @@
 
 import * as React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { Button, Input, Label, Select } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  PasswordInput,
+  Select,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation, type FieldRules } from '@sparx/forms';
 
 import {
   saveGatewayCredentials,
@@ -53,9 +63,22 @@ export function GatewayCredentialForm({
     return (fields[f.key]?.trim().length ?? 0) > 0;
   });
 
+  // A required field needs a value — except a secret already on file, which stays
+  // valid blank (re-entering it REPLACES the stored secret).
+  const fieldRules = React.useMemo<FieldRules<Record<string, string>>>(() => {
+    const r: FieldRules<Record<string, string>> = {};
+    for (const f of descriptor.credentialFields) {
+      if (f.optional) continue;
+      if (f.secret && credential?.hasSecrets === true) continue;
+      r[f.key] = rule.required(`${f.label} is required.`);
+    }
+    return r;
+  }, [descriptor, credential]);
+  const v = useFieldValidation(fields, fieldRules);
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!v.validate()) return;
     setError(null);
     startTransition(async () => {
       const res = await saveGatewayCredentials({ gatewayId: descriptor.id, environment, fields });
@@ -71,35 +94,35 @@ export function GatewayCredentialForm({
     <form id={`gateway-form-${descriptor.id}`} onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-5">
         {descriptor.environments ? (
-          <div className="flex flex-col gap-2">
-            <Label htmlFor={`${descriptor.id}-env`}>Environment</Label>
+          <Field>
+            <FieldLabel>Environment</FieldLabel>
             <Select
-              id={`${descriptor.id}-env`}
               value={environment}
-              onValueChange={(v) => setEnvironment(v as 'sandbox' | 'production')}
+              onValueChange={(val) => setEnvironment(val as 'sandbox' | 'production')}
               items={{ production: 'Production', sandbox: 'Sandbox (testing)' }}
             />
-          </div>
+          </Field>
         ) : null}
 
         {descriptor.credentialFields.map((f) => {
           const onFile = f.secret && credential?.hasSecrets === true;
           return (
-            <div key={f.key} className="flex flex-col gap-2">
-              <Label htmlFor={`${descriptor.id}-${f.key}`}>
+            <Field key={f.key} {...v.field(f.key)}>
+              <FieldLabel required={!f.optional}>
                 {f.label}
                 {f.optional ? <span className="text-base-content/50"> (optional)</span> : null}
-              </Label>
-              <Input
-                id={`${descriptor.id}-${f.key}`}
-                type={f.secret ? 'password' : 'text'}
+              </FieldLabel>
+              <FieldControl
+                name={`${descriptor.id}-${f.key}`}
                 value={fields[f.key] ?? ''}
                 autoComplete="off"
                 placeholder={onFile ? '•••• on file — re-enter to replace' : (f.placeholder ?? '')}
                 onChange={(e) => set(f.key, e.target.value)}
+                {...v.control(f.key)}
+                {...(f.secret ? { render: <PasswordInput /> } : { type: 'text' })}
               />
-              {f.help ? <p className="text-base-content/70 text-xs">{f.help}</p> : null}
-            </div>
+              {f.help ? <FieldDescription>{f.help}</FieldDescription> : null}
+            </Field>
           );
         })}
 
@@ -115,9 +138,9 @@ export function GatewayCredentialForm({
         ) : null}
 
         {error ? (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         ) : null}
 
         <Button

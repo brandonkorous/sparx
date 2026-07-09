@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Label,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 
 import { createSerialUnitAction, updateSerialStatusAction } from '../../../_lib/lot-actions';
 import {
@@ -68,7 +76,7 @@ function SerialRowItem({ lotId, serial: s }: { lotId: string; serial: SerialRow 
   }
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-3 rounded border border-[var(--color-border-default)] px-3 py-2">
+    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
       <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
         <p className="font-mono text-sm font-medium">{s.serial}</p>
         {s.soldOnOrderItemId ? (
@@ -93,7 +101,7 @@ function SerialRowItem({ lotId, serial: s }: { lotId: string; serial: SerialRow 
           ))}
         </NativeSelect>
       </div>
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
     </div>
   );
 }
@@ -143,7 +151,7 @@ function AddSerialRow({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-end gap-3 rounded border border-dashed border-[var(--color-border-default)] p-3">
+      <div className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded border border-dashed p-3">
         <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="add-serial">Add serial number</Label>
           <Input
@@ -177,7 +185,7 @@ function AddSerialRow({
           {busy ? 'Adding…' : 'Add serial'}
         </Button>
       </div>
-      {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
     </div>
   );
 }

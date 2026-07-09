@@ -131,7 +131,7 @@ export function BlueprintsList({ rows, view, canInstall }: BlueprintsListProps) 
           <img
             src={bp.preview}
             alt={`${bp.name} preview`}
-            className="aspect-[16/10] w-full border-b border-[var(--color-border)] object-cover object-top"
+            className="border-base-300 aspect-[16/10] w-full border-b object-cover object-top"
           />
         ) : null}
         <Stack gap={3} className="p-4">

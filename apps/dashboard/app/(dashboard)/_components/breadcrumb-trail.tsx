@@ -437,7 +437,7 @@ function ModuleSplitControl({
     <ModuleProvider module={manifest.id} className="contents">
       <span className="inline-flex min-w-0 items-center">
         <BreadcrumbLink asChild className="truncate">
-          <Link href={manifest.routePrefix} style={{ color: 'var(--module-active-text)' }}>
+          <Link href={manifest.routePrefix} style={{ color: 'var(--color-module)' }}>
             {manifest.label}
           </Link>
         </BreadcrumbLink>
@@ -449,7 +449,7 @@ function ModuleSplitControl({
               size="sm"
               className="ml-0.5"
               aria-label={`Switch module — current: ${manifest.label}`}
-              style={{ color: 'var(--module-active-text)' }}
+              style={{ color: 'var(--color-module)' }}
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </Button>
@@ -464,7 +464,7 @@ function ModuleSplitControl({
                 <DropdownMenuItem key={m.id} asChild>
                   <Link href={m.routePrefix}>
                     <ModuleProvider module={m.id} className="contents">
-                      <Icon className="h-4 w-4" style={{ color: 'var(--module-active-text)' }} />
+                      <Icon className="h-4 w-4" style={{ color: 'var(--color-module)' }} />
                     </ModuleProvider>
                     <span className="min-w-0 flex-1 truncate">{m.label}</span>
                     {active ? <Check className="h-4 w-4 shrink-0" /> : null}
@@ -569,7 +569,7 @@ function MobileSwitcher({
             <span
               aria-hidden
               className="size-2 shrink-0 rounded-full"
-              style={{ backgroundColor: 'var(--module-active)' }}
+              style={{ backgroundColor: 'var(--color-module)' }}
             />
           </ModuleProvider>
         ) : null}
@@ -644,10 +644,7 @@ function MobileSwitcher({
                         active={m.id === manifest?.id}
                         icon={
                           <ModuleProvider module={m.id} className="contents">
-                            <Icon
-                              className="h-4 w-4"
-                              style={{ color: 'var(--module-active-text)' }}
-                            />
+                            <Icon className="h-4 w-4" style={{ color: 'var(--color-module)' }} />
                           </ModuleProvider>
                         }
                       >

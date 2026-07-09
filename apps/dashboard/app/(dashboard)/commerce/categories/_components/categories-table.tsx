@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { ChevronDown, ChevronRight, FolderTree, Star } from 'lucide-react';
 
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -129,7 +129,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
                   onClick={() => toggle(node.id)}
                   aria-label={isOpen ? `Collapse ${node.name}` : `Expand ${node.name}`}
                   aria-expanded={isOpen}
-                  className="shrink-0 rounded-sm text-[var(--color-text-muted)] transition-colors duration-150 hover:text-[var(--color-text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none"
+                  className="text-base-content/60 hover:text-base-content focus-visible:ring-primary shrink-0 rounded-sm transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {isOpen ? (
                     <ChevronDown className="h-4 w-4" />
@@ -146,7 +146,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
                   href={`/commerce/categories/${node.id}`}
                   entityType="category"
                   entityId={node.id}
-                  className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                  className="hover:text-module text-sm font-medium hover:underline"
                 >
                   {node.name}
                 </EntityRowLink>
@@ -187,7 +187,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
         href={`/commerce/categories/${node.id}`}
         entityType="category"
         entityId={node.id}
-        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module truncate text-sm font-medium hover:underline"
       >
         {node.name}
       </EntityRowLink>

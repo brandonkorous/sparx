@@ -4,7 +4,17 @@ import { useCallback, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef, toast } from '@sparx/ui';
-import { Card, CardBody, Label, Select, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { addSuppressionAction, importSuppressionsAction } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -35,6 +45,11 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
   const [pending, startTransition] = useTransition();
   const [value, setValue] = useState('');
   const [scope, setScope] = useState('all');
+
+  const v = useFieldValidation(
+    { emails: value },
+    { emails: rule.required('Enter at least one email address.') }
+  );
 
   function parseEmails(raw: string): string[] {
     return raw
@@ -72,6 +87,7 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
   }, [guardLeave, close]);
 
   function submit() {
+    if (!v.validate()) return;
     const emails = parseEmails(value);
     if (emails.length === 0) {
       toast.error('Enter at least one email address.');
@@ -128,27 +144,32 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="emails">Email addresses</Label>
-                  <Textarea
-                    id="emails"
+                <Field {...v.field('emails')}>
+                  <FieldLabel required>Email addresses</FieldLabel>
+                  <FieldControl
+                    name="emails"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    placeholder="one@example.com, two@example.com — or one per line"
-                    rows={3}
+                    {...v.control('emails')}
                     disabled={pending}
+                    render={
+                      <Textarea
+                        placeholder="one@example.com, two@example.com — or one per line"
+                        rows={3}
+                      />
+                    }
                   />
-                  <p className="text-base-content/70 text-sm">
+                  <FieldDescription>
                     Paste one or many addresses (comma, space, or newline separated).
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="scope">Scope</Label>
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Scope</FieldLabel>
                   <Select
                     id="scope"
                     className="w-48"
                     value={scope}
-                    onValueChange={(v) => setScope(v as string)}
+                    onValueChange={(val) => setScope(val as string)}
                     disabled={pending}
                     items={{
                       all: 'All email',
@@ -156,7 +177,7 @@ export function AddSuppressionForm({ surface }: AddSuppressionFormProps) {
                       transactional: 'Transactional only',
                     }}
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>

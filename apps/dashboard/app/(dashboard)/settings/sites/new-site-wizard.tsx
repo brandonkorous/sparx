@@ -24,7 +24,16 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, cn, type SurfaceStepDef } from '@sparx/ui';
-import { Badge, Button, Input, Label, Switch } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Switch,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-react';
 
 import { createSiteWithBlueprint } from './actions';
@@ -112,6 +121,8 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
   const [result, setResult] = React.useState<Awaited<
     ReturnType<typeof createSiteWithBlueprint>
   > | null>(null);
+
+  const v = useFieldValidation({ name }, { name: rule.required('Give your site a name.') });
 
   const selectedBlueprint =
     choice && choice !== BLANK ? blueprints.find((b) => b.key === choice) : undefined;
@@ -202,12 +213,12 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
           className={cn(
             'group flex min-h-[150px] flex-col items-start gap-2 rounded-xl border p-4 text-left transition-shadow',
             choice === BLANK
-              ? 'border-[var(--module-active)] shadow-md ring-2 ring-[var(--module-active)]'
-              : 'border-dashed border-[var(--color-border-strong)] hover:shadow-md'
+              ? 'border-module ring-module shadow-md ring-2'
+              : 'border-base-content/30 border-dashed hover:shadow-md'
           )}
         >
           <span className="flex items-center gap-2">
-            <PencilRuler className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+            <PencilRuler className="text-base-content/50 h-4 w-4" />
             <p className="font-medium">Blank site</p>
             {choice === BLANK && (
               <Badge color="module" variant="solid" size="sm">
@@ -230,13 +241,13 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
               onClick={() => setChoice(bp.key)}
               aria-pressed={isSelected}
               className={cn(
-                'group flex flex-col overflow-hidden rounded-xl border bg-[var(--color-bg-surface)] text-left transition-shadow',
+                'group bg-base-100 flex flex-col overflow-hidden rounded-xl border text-left transition-shadow',
                 isSelected
-                  ? 'border-[var(--module-active)] shadow-md ring-2 ring-[var(--module-active)]'
-                  : 'border-[var(--color-border-default)] hover:shadow-md'
+                  ? 'border-module ring-module shadow-md ring-2'
+                  : 'border-base-300 hover:shadow-md'
               )}
             >
-              <div className="relative aspect-[16/10] w-full border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+              <div className="border-base-300 bg-base-200 relative aspect-[16/10] w-full border-b">
                 {bp.preview && (
                   <div
                     className="h-full w-full bg-cover bg-top"
@@ -281,19 +292,18 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
       }}
     >
       <div className="flex flex-col gap-5">
-        <div>
-          <Label htmlFor="nsw-name">Site name</Label>
-          <Input
-            id="nsw-name"
+        <Field {...v.field('name')}>
+          <FieldLabel required>Site name</FieldLabel>
+          <FieldControl
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
             placeholder="Wholesale Portal"
+            {...v.control('name')}
           />
-        </div>
-        <div>
-          <Label htmlFor="nsw-slug">URL handle</Label>
-          <Input
-            id="nsw-slug"
+        </Field>
+        <Field>
+          <FieldLabel>URL handle</FieldLabel>
+          <FieldControl
             value={slug}
             onChange={(e) => {
               setSlugTouched(true);
@@ -301,15 +311,15 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
             }}
             placeholder="wholesale"
           />
-          <div className="mt-2 flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <div className="text-base-content/60 mt-2 flex items-center gap-2 text-sm">
             <Globe className="h-4 w-4 shrink-0" />
             <span>
               Live instantly at{' '}
-              <span className="font-medium text-[var(--color-text-primary)]">{predictedHost}</span>.
-              Connect your own domain anytime from the Sites page.
+              <span className="text-base-content font-medium">{predictedHost}</span>. Connect your
+              own domain anytime from the Sites page.
             </span>
           </div>
-        </div>
+        </Field>
       </div>
     </SurfaceStep>
   );
@@ -327,26 +337,24 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
     >
       <div className="flex flex-col gap-4">
         <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-2.5 text-sm">
-          <dt className="text-[var(--color-text-muted)]">Name</dt>
+          <dt className="text-base-content/60">Name</dt>
           <dd className="font-medium">{name.trim() || '—'}</dd>
-          <dt className="text-[var(--color-text-muted)]">Address</dt>
+          <dt className="text-base-content/60">Address</dt>
           <dd className="font-medium">{predictedHost}</dd>
-          <dt className="text-[var(--color-text-muted)]">Starting point</dt>
+          <dt className="text-base-content/60">Starting point</dt>
           <dd className="font-medium">
             {selectedBlueprint ? selectedBlueprint.name : 'Blank site'}
           </dd>
           {selectedBlueprint && (
             <>
-              <dt className="text-[var(--color-text-muted)]">Includes</dt>
-              <dd className="text-[var(--color-text-muted)]">
-                {contentsLine(selectedBlueprint.contents)}
-              </dd>
+              <dt className="text-base-content/60">Includes</dt>
+              <dd className="text-base-content/60">{contentsLine(selectedBlueprint.contents)}</dd>
             </>
           )}
         </dl>
 
         {selectedBlueprint && (
-          <div className="flex items-start justify-between gap-4 rounded-xl border border-[var(--color-border-default)] p-4">
+          <div className="border-base-300 flex items-start justify-between gap-4 rounded-xl border p-4">
             <span className="flex flex-col gap-0.5">
               <p className="text-sm font-medium">Publish immediately</p>
               <p className="text-base-content/70 text-sm">
@@ -363,9 +371,9 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
         )}
 
         {error && (
-          <p className="text-danger text-sm" role="alert">
+          <FieldStatus status="error" attached={false} role="alert">
             {error}
-          </p>
+          </FieldStatus>
         )}
       </div>
     </SurfaceStep>
@@ -409,13 +417,13 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
     >
       <div className="flex flex-col gap-5">
         {result.host && (
-          <div className="flex items-center gap-2 rounded-xl border border-[var(--color-border-default)] p-3 text-sm">
-            <Globe className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <div className="border-base-300 flex items-center gap-2 rounded-xl border p-3 text-sm">
+            <Globe className="text-base-content/50 h-4 w-4 shrink-0" />
             <a
               href={`https://${result.host}`}
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-[var(--module-active)] underline-offset-2 hover:underline"
+              className="text-module font-medium underline-offset-2 hover:underline"
             >
               {result.host}
               <ExternalLink className="ml-1 inline h-3.5 w-3.5" />

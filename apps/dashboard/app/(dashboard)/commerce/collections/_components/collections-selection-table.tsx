@@ -7,7 +7,7 @@ import {
   type SelectionColumn,
   type SelectionCard,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { bulkDeleteCollectionsAction } from '../../collection-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -72,7 +72,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
               href={`/commerce/collections/${c.id}`}
               entityType="collection"
               entityId={c.id}
-              className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+              className="hover:text-module text-sm font-medium hover:underline"
             >
               {c.name}
             </EntityRowLink>
@@ -102,7 +102,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
         href={`/commerce/collections/${c.id}`}
         entityType="collection"
         entityId={c.id}
-        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module truncate text-sm font-medium hover:underline"
       >
         {c.name}
       </EntityRowLink>

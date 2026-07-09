@@ -85,8 +85,8 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
       style={{
         width: '680px',
         maxWidth: 'calc(100vw - 48px)',
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         boxShadow: '0 20px 50px rgba(15, 23, 42, 0.12)',
         overflow: 'hidden',
@@ -108,7 +108,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 padding: '0 10px 6px',
               }}
             >
@@ -143,7 +143,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
                         fontFamily: SANS,
                         fontWeight: 500,
                         fontSize: '14px',
-                        color: 'var(--color-text-primary)',
+                        color: 'var(--color-base-content)',
                       }}
                     >
                       {m.label}
@@ -153,7 +153,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
                         fontFamily: SANS,
                         fontSize: '12.5px',
                         lineHeight: '16px',
-                        color: 'var(--color-text-tertiary)',
+                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       }}
                     >
                       {m.desc}
@@ -173,11 +173,17 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
           justifyContent: 'space-between',
           gap: '16px',
           padding: '14px 24px',
-          borderTop: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderTop: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
-        <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontFamily: SANS,
+            fontSize: '13px',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          }}
+        >
           One platform. Activate only what you need.
         </span>
         <NavigationMenuLink
@@ -186,7 +192,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
             fontFamily: SANS,
             fontWeight: 500,
             fontSize: '13px',
-            color: 'var(--sparx-primary)',
+            color: 'var(--color-primary)',
             textDecoration: 'none',
             whiteSpace: 'nowrap',
           }}

@@ -11,7 +11,7 @@
 // the widget preloads its public config, making the open instant on click.
 
 import { useState } from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import { ChatWidget } from '@sparx/chat-widget';
 
 export interface MarketChatCtaProps {
@@ -38,7 +38,7 @@ export function MarketChatCta({
       <Button
         variant="outline"
         size="lg"
-        shape="block"
+        block
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >

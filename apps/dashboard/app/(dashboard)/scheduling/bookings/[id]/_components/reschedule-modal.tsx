@@ -6,7 +6,16 @@
 // the create form uses to surface slots.
 
 import { useState } from 'react';
-import { Button, Input, Label, Dialog, DialogContent, DialogTitle, Loading } from 'silicaui-react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldLabel,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Loading,
+} from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { loadSlotsAction, rescheduleBookingAction } from '../../../_lib/actions';
@@ -75,15 +84,10 @@ export function RescheduleModal({
         </div>
         <div className="flex flex-col gap-4 px-1 py-2">
           <div className="flex flex-row items-end gap-2">
-            <div className="flex-1">
-              <Label htmlFor="rs-date">New date</Label>
-              <Input
-                id="rs-date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
+            <Field className="flex-1">
+              <FieldLabel>New date</FieldLabel>
+              <FieldControl type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            </Field>
             <Button
               type="button"
               variant="outline"

@@ -3,8 +3,17 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, Input, Label, NativeSelect } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { grantAccountCreditAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -49,6 +58,19 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
   const [currency, setCurrency] = React.useState('USD');
   const [note, setNote] = React.useState('');
 
+  // Field validation. A customer must be chosen and the amount must be a positive
+  // number (money).
+  const values = { customerId, amount };
+  const v = useFieldValidation(values, {
+    customerId: rule.required('Pick a customer.'),
+    amount: (val) => {
+      const n = Number(String(val).trim());
+      if (!Number.isFinite(n)) return 'Enter an amount.';
+      if (n <= 0) return 'Amount must be greater than 0.';
+      return null;
+    },
+  });
+
   // Unsaved-changes guard. A create form starts empty (bar default amount/currency),
   // so "dirty" is "the user has changed anything" — guard a Cancel / Close / Switch
   // / backdrop so typed work isn't silently dropped.
@@ -80,15 +102,9 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
   function submit() {
     setError(null);
     setDone(null);
-    if (!customerId) {
-      setError('Pick a customer');
-      return;
-    }
+    if (!v.validate()) return;
+
     const dollars = Number(amount);
-    if (!Number.isFinite(dollars) || dollars <= 0) {
-      setError('Amount must be positive');
-      return;
-    }
     const trimmedNote = note.trim();
     const input: Record<string, unknown> = {
       customerId,
@@ -139,57 +155,75 @@ export function GrantAccountCreditForm({ surface, customers }: GrantAccountCredi
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row flex-wrap items-end gap-3">
-                  <div className="flex min-w-[18rem] flex-1 flex-col gap-2">
-                    <Label htmlFor="customerId">Customer</Label>
-                    <NativeSelect
-                      id="customerId"
+                  <Field {...v.field('customerId')} className="min-w-[18rem] flex-1">
+                    <FieldLabel required>Customer</FieldLabel>
+                    <FieldControl
+                      name="customerId"
                       value={customerId}
                       onChange={(e) => setCustomerId(e.target.value)}
-                    >
-                      <option value="">— pick —</option>
-                      {customers.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                          {c.email && c.email !== c.name ? ` · ${c.email}` : ''}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  </div>
-                  <div className="flex w-[8rem] flex-col gap-2">
-                    <Label htmlFor="amount">Amount ($)</Label>
-                    <Input id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
-                  </div>
-                  <div className="flex w-[6rem] flex-col gap-2">
-                    <Label htmlFor="currency">Currency</Label>
-                    <Input
-                      id="currency"
+                      {...v.control('customerId')}
+                      render={
+                        <NativeSelect>
+                          <option value="">— pick —</option>
+                          {customers.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                              {c.email && c.email !== c.name ? ` · ${c.email}` : ''}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
+                  <Field {...v.field('amount')} className="w-[8rem]">
+                    <FieldLabel required>Amount ($)</FieldLabel>
+                    <FieldControl
+                      name="amount"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      {...v.control('amount')}
+                    />
+                  </Field>
+                  <Field className="w-[6rem]">
+                    <FieldLabel>Currency</FieldLabel>
+                    <FieldControl
+                      name="currency"
                       value={currency}
                       onChange={(e) => setCurrency(e.target.value)}
                       maxLength={3}
                     />
-                  </div>
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="note">Note (shows in the customer&apos;s ledger)</Label>
-                  <Input
-                    id="note"
+                <Field>
+                  <FieldLabel>Note (shows in the customer&apos;s ledger)</FieldLabel>
+                  <FieldControl
+                    name="note"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="Goodwill credit after shipping delay"
                   />
-                </div>
+                </Field>
               </div>
             </CardBody>
           </Card>
           {error && (
-            <p className="mt-4 text-sm text-[var(--color-danger)]" role="alert" aria-live="polite">
+            <FieldStatus
+              status="error"
+              attached={false}
+              role="alert"
+              aria-live="polite"
+              className="mt-4"
+            >
               {error}
-            </p>
+            </FieldStatus>
           )}
           {done && (
-            <p className="mt-4 text-sm text-[var(--color-success)]" aria-live="polite">
+            <FieldStatus status="success" attached={false} aria-live="polite" className="mt-4">
               Granted — {done}
-            </p>
+            </FieldStatus>
           )}
         </SurfaceStep>
       </SurfaceFrame>

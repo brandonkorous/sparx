@@ -12,7 +12,7 @@ export type BootcampParams = Record<string, string>;
 
 const BASE = '/bootcamp';
 const SANS = 'var(--font-sans)';
-const PRIMARY = 'var(--sparx-primary)';
+const PRIMARY = 'var(--color-primary)';
 
 export interface DatePreset {
   key: string;
@@ -51,20 +51,29 @@ function Chip({
         padding: '5px 12px',
         borderRadius: '9999px',
         border: '1px solid',
-        borderColor: on ? PRIMARY : 'var(--color-border-default)',
+        borderColor: on ? PRIMARY : 'var(--color-base-300)',
         backgroundColor: on
-          ? 'color-mix(in srgb, var(--sparx-primary) 12%, transparent)'
-          : 'var(--color-bg-surface)',
+          ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)'
+          : 'var(--color-base-100)',
         fontFamily: SANS,
         fontSize: '13px',
         fontWeight: on ? 500 : 400,
-        color: on ? 'var(--sparx-primary-hover)' : 'var(--color-text-secondary)',
+        color: on
+          ? 'var(--color-primary)'
+          : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
         textDecoration: 'none',
       }}
     >
       {label}
       {typeof count === 'number' ? (
-        <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{count}</span>
+        <span
+          style={{
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            fontWeight: 400,
+          }}
+        >
+          {count}
+        </span>
       ) : null}
       {on ? <span aria-hidden>×</span> : null}
     </a>
@@ -79,7 +88,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
           fontFamily: SANS,
           fontWeight: 500,
           fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           width: '84px',
         }}
       >
@@ -186,7 +195,7 @@ export function BootcampFacetBar({
             alignSelf: 'flex-start',
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             textDecoration: 'underline',
           }}
         >

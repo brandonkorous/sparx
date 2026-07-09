@@ -92,9 +92,9 @@ export function ColorPicker({
             disabled={disabled}
             aria-label={`${ariaLabel} swatch`}
             className={cn(
-              'h-9 w-9 shrink-0 rounded-md border border-[var(--color-border-default)]',
+              'h-9 w-9 shrink-0 rounded-md border border-[var(--color-base-300)]',
               'transition-colors duration-150',
-              'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none',
+              'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
             style={{ backgroundColor: value ?? 'transparent' }}
@@ -117,10 +117,10 @@ export function ColorPicker({
                   className={cn(
                     'h-6 w-6 rounded border transition-transform duration-100',
                     'hover:scale-110',
-                    'focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+                    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
                     isActive
-                      ? 'border-[var(--module-active)] ring-2 ring-[var(--module-active)]/40'
-                      : 'border-[var(--color-border-default)]'
+                      ? 'border-module ring-module/40 ring-2'
+                      : 'border-[var(--color-base-300)]'
                   )}
                   style={{ backgroundColor: swatch }}
                 />

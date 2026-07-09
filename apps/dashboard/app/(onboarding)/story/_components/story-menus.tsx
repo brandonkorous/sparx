@@ -20,8 +20,8 @@ import { IndustryIcon } from './story-tokens';
 import styles from './story.module.css';
 
 const BADGE_STYLE = {
-  background: 'color-mix(in oklch, var(--module-builder) 14%, transparent)',
-  color: 'color-mix(in oklch, var(--module-builder) 58%, var(--color-text-primary))',
+  background: 'color-mix(in oklch, var(--color-module-builder) 14%, transparent)',
+  color: 'color-mix(in oklch, var(--color-module-builder) 58%, var(--color-base-content))',
 };
 
 function ClauseOption({

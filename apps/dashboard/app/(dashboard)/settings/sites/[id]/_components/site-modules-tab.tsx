@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ModuleProvider, toast, type SparxModule } from '@sparx/ui';
-import { Card, CardBody, Switch } from 'silicaui-react';
+import { Card, CardBody, Switch } from '@wizeworks/silicaui-react';
 
 import { updateModuleScope } from '../../actions';
 
@@ -56,16 +56,13 @@ export function SiteModulesTab({
           You can&apos;t turn on a module that&apos;s off for the whole workspace.
         </p>
       </CardBody>
-      <div className="divide-y divide-[var(--color-border-default)]">
+      <div className="divide-base-300 divide-y">
         {MODULES.map((m) => {
           const enabled = !moduleScope.includes(m.slug);
           return (
             <ModuleProvider key={m.slug} module={m.slug}>
               <div className="flex items-center gap-3 px-4 py-3">
-                <span
-                  aria-hidden
-                  className="size-2.5 shrink-0 rounded-full bg-[var(--module-active)]"
-                />
+                <span aria-hidden className="bg-module size-2.5 shrink-0 rounded-full" />
                 <div className="flex min-w-0 flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{m.label}</p>
                   <p className="text-base-content/70 text-xs">{m.description}</p>

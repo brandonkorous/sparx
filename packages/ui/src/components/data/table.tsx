@@ -20,7 +20,7 @@ export const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn('border-b border-[var(--color-border-default)]', className)}
+    className={cn('border-b border-[var(--color-base-300)]', className)}
     {...props}
   />
 ));
@@ -33,7 +33,7 @@ export const TableBody = React.forwardRef<
   <tbody
     ref={ref}
     className={cn(
-      '[&_tr]:border-b [&_tr]:border-[var(--color-border-default)] [&_tr:last-child]:border-0',
+      '[&_tr]:border-b [&_tr]:border-[var(--color-base-300)] [&_tr:last-child]:border-0',
       className
     )}
     {...props}
@@ -48,7 +48,7 @@ export const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-t border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] font-medium',
+      'border-t border-[var(--color-base-300)] bg-[var(--color-base-200)] font-medium',
       className
     )}
     {...props}
@@ -63,7 +63,7 @@ export const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'transition-colors duration-100 hover:bg-[var(--color-bg-subtle)] data-[state=selected]:bg-[var(--module-active-tint)]',
+      'data-[state=selected]:bg-module/10 transition-colors duration-100 hover:bg-[var(--color-base-200)]',
       className
     )}
     {...props}
@@ -78,7 +78,7 @@ export const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-9 px-3 text-left align-middle text-xs font-medium tracking-wider text-[var(--color-text-tertiary)] uppercase',
+      'text-base-content/50 h-9 px-3 text-left align-middle text-xs font-medium tracking-wider uppercase',
       '[&:has([role=checkbox])]:pr-0',
       className
     )}
@@ -94,7 +94,7 @@ export const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'px-3 py-2.5 align-middle text-[var(--color-text-primary)]',
+      'text-base-content px-3 py-2.5 align-middle',
       '[&:has([role=checkbox])]:pr-0',
       className
     )}
@@ -107,10 +107,6 @@ export const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption
-    ref={ref}
-    className={cn('mt-4 text-sm text-[var(--color-text-secondary)]', className)}
-    {...props}
-  />
+  <caption ref={ref} className={cn('text-base-content/70 mt-4 text-sm', className)} {...props} />
 ));
 TableCaption.displayName = 'TableCaption';

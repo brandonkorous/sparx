@@ -7,7 +7,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, MapPin } from 'lucide-react';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { statusLabel, statusTone } from '@/lib/status';
 import { getOrder } from '@/lib/market';

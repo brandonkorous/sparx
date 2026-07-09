@@ -1,5 +1,5 @@
 import { FileText } from 'lucide-react';
-import { Card, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import { Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider } from '@sparx/ui';
 
 import { Icon } from './icons';
@@ -25,17 +25,13 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
           <div className="flex flex-col gap-0">
             {items.map((it) => (
               <ModuleProvider key={it.key} module={it.module}>
-                <div className="flex items-center gap-3 border-b border-[var(--color-border-default)] py-3 last:border-b-0">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--module-active-tint)] text-[var(--module-active)]">
+                <div className="border-base-300 flex items-center gap-3 border-b py-3 last:border-b-0">
+                  <span className="bg-module bg-soft text-module flex h-8 w-8 shrink-0 items-center justify-center rounded-md">
                     <Icon name={it.module} className="h-4 w-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-medium text-[var(--color-text-primary)]">
-                      {it.title}
-                    </div>
-                    <div className="truncate text-xs text-[var(--color-text-tertiary)]">
-                      {it.meta}
-                    </div>
+                    <div className="text-base-content truncate text-sm font-medium">{it.title}</div>
+                    <div className="text-base-content/50 truncate text-xs">{it.meta}</div>
                   </div>
                   <p className="text-base-content/70 shrink-0 text-xs">{timeAgo(it.at)}</p>
                 </div>

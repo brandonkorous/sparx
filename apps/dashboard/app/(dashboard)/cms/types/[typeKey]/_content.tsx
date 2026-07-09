@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Copy } from 'lucide-react';
-import { Badge, Button, Card, CardBody } from 'silicaui-react';
+import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -90,7 +90,7 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
                 edited directly. Use <strong>Duplicate</strong> above to fork it into a custom type
                 you can tailor.
               </p>
-              <pre className="overflow-auto rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 font-mono text-xs">
+              <pre className="border-base-300 bg-base-200 overflow-auto rounded border p-3 font-mono text-xs">
                 {schemaText}
               </pre>
             </div>

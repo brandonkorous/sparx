@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ImageOff, Loader2, Lock, Minus, Plus, ShoppingBag, Tag, Trash2, X } from 'lucide-react';
-import { Alert, Badge, Button, EmptyState, Input } from 'silicaui-react';
+import { Alert, Badge, Button, EmptyState, Input } from '@wizeworks/silicaui-react';
 
 import { formatCents } from '@/lib/format';
 import { Container } from '@/components/ui/layout';

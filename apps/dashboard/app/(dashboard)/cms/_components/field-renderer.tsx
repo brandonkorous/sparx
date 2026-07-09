@@ -26,7 +26,7 @@ import {
   NativeSelect,
   Switch,
   Textarea,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { ContentBlockEditor } from '@sparx/cms-editor';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { Plus, Trash2 } from 'lucide-react';
@@ -87,7 +87,7 @@ function FieldLabel({ htmlFor, field }: { htmlFor: string; field: FieldDef }) {
     <div className="flex flex-col gap-1">
       <Label htmlFor={htmlFor}>
         {field.label}
-        {field.required ? <span className="ml-1 text-[var(--color-danger-text)]">*</span> : null}
+        {field.required ? <span className="text-danger ml-1">*</span> : null}
       </Label>
       {field.helpText && <p className="text-base-content/70 text-xs">{field.helpText}</p>}
       {isLucideIconField(field.helpText) && <LucideIconLink />}
@@ -435,7 +435,7 @@ function ReferenceFieldR({
           {pickedIds.map((id) => (
             <span
               key={id}
-              className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-2 py-1 text-xs"
+              className="border-base-300 bg-base-200 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
             >
               <code>{id.slice(0, 8)}</code>
               <button
@@ -443,7 +443,7 @@ function ReferenceFieldR({
                 onClick={() => removePick(id)}
                 aria-label={`Remove reference ${id}`}
                 disabled={disabled}
-                className="text-[var(--color-text-tertiary)] hover:text-[var(--color-danger-text)] disabled:opacity-50"
+                className="text-base-content/50 hover:text-danger disabled:opacity-50"
               >
                 <Trash2 className="h-3 w-3" />
               </button>
@@ -545,12 +545,12 @@ function AssetFieldR({
         {refs.map((r) => (
           <div
             key={r.assetId}
-            className="relative h-20 w-20 overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]"
+            className="border-base-300 bg-base-200 relative h-20 w-20 overflow-hidden rounded-md border"
           >
             {r.src ? (
               <img src={r.src} alt={r.alt} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-[var(--color-text-tertiary)]">
+              <div className="text-base-content/50 flex h-full w-full items-center justify-center text-xs">
                 {r.assetId.slice(0, 6)}
               </div>
             )}
@@ -603,7 +603,7 @@ function ObjectFieldR({
     <div className="flex flex-col gap-2">
       <FieldLabel htmlFor={inputId} field={field} />
       {/* variant="default": generic sub-field renderer used across modules, not module-scoped */}
-      <Card className="border-[var(--color-border-default)]">
+      <Card className="border-base-300">
         <CardBody>
           <div className="flex flex-col gap-4">
             {field.fields.map((subField) => (
@@ -668,7 +668,7 @@ function RepeaterFieldR({
         {items.length === 0 && <p className="text-base-content/70 text-sm">No items yet.</p>}
         {items.map((item, index) => (
           // variant="default": generic repeater renderer used across modules, not module-scoped
-          <Card key={index} className="border-[var(--color-border-default)]">
+          <Card key={index} className="border-base-300">
             <CardBody>
               <div className="flex flex-col gap-3">
                 <div className="flex flex-row items-center justify-between gap-4">

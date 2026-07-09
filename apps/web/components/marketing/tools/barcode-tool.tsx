@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Download } from 'lucide-react';
-import { Button, Input, NativeSelect, Switch, Slider, ColorPicker } from '@sparx/ui';
+import { ColorPicker } from '@sparx/ui';
+import { Button, Input, NativeSelect, Switch, Range } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import {
   renderBarcodeCanvas,
@@ -86,9 +87,9 @@ export function BarcodeTool() {
             </Field>
           </div>
           <Field label="Height" adornment={`${height}px`}>
-            <Slider
+            <Range
               value={[height]}
-              onValueChange={(v) => setHeight(v[0] ?? 40)}
+              onValueChange={(v) => setHeight((v as number[])[0] ?? 40)}
               min={40}
               max={160}
               step={5}

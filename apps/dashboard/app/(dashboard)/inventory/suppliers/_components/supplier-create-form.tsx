@@ -3,8 +3,20 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createSupplierAction } from '../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -18,12 +30,25 @@ import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 // Suppliers have no @detail drawer (their detail is a wide full-page surface with
 // per-variant purchasing links), so on success we navigate to the supplier's
 // detail — the natural next step (add cost/part-number links there).
-//
-// The fields stay an uncontrolled native form (read via FormData on submit); the
-// frame's toolbar primary lives outside the <form>, so it bridges to the form via
-// requestSubmit() rather than being a native submit button.
 
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
+
+// Optional-email rule: blank is fine, but a typed value must be a real address.
+const optionalEmail = (value: unknown): string | null => {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (s === '') return null;
+  return rule.email()(s);
+};
+
+// Optional non-negative integer (lead time in days).
+const optionalLeadTime = (value: unknown): string | null => {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a number of days.';
+  if (n < 0) return 'Lead time cannot be negative.';
+  return null;
+};
 
 interface SupplierCreateFormProps {
   surface: 'page' | 'overlay';
@@ -35,42 +60,54 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
-  // The fields are an uncontrolled native form (read via FormData on submit), so
-  // dirtiness is derived from the live form on every input. A create form starts
-  // empty, so "dirty" is "any text field has been entered" OR the Active checkbox
-  // differs from its default (defaultChecked → 'on').
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [dirty, setDirty] = React.useState(false);
-  const recomputeDirty = React.useCallback(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const str = (k: string) => {
-      const v = data.get(k);
-      return typeof v === 'string' ? v.trim() : '';
-    };
-    const next =
-      str('name') !== '' ||
-      str('code') !== '' ||
-      str('contactName') !== '' ||
-      str('email') !== '' ||
-      str('phone') !== '' ||
-      str('website') !== '' ||
-      str('line1') !== '' ||
-      str('line2') !== '' ||
-      str('city') !== '' ||
-      str('region') !== '' ||
-      str('postalCode') !== '' ||
-      str('country') !== '' ||
-      str('paymentTerms') !== '' ||
-      str('leadTimeDays') !== '' ||
-      str('currency') !== '' ||
-      str('notes') !== '' ||
-      data.get('isActive') !== 'on';
-    setDirty(next);
-  }, []);
+  const [name, setName] = React.useState('');
+  const [code, setCode] = React.useState('');
+  const [contactName, setContactName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [phone, setPhone] = React.useState('');
+  const [website, setWebsite] = React.useState('');
+  const [line1, setLine1] = React.useState('');
+  const [line2, setLine2] = React.useState('');
+  const [city, setCity] = React.useState('');
+  const [region, setRegion] = React.useState('');
+  const [postalCode, setPostalCode] = React.useState('');
+  const [country, setCountry] = React.useState('');
+  const [paymentTerms, setPaymentTerms] = React.useState('');
+  const [leadTimeDays, setLeadTimeDays] = React.useState('');
+  const [currency, setCurrency] = React.useState('');
+  const [notes, setNotes] = React.useState('');
+  const [isActive, setIsActive] = React.useState(true);
+
+  const values = { name, code, email, leadTimeDays };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    code: rule.required('Code is required.'),
+    email: optionalEmail,
+    leadTimeDays: optionalLeadTime,
+  });
+
+  // A create form starts empty, so "dirty" is "any field has been entered" OR the
+  // Active toggle differs from its default (checked).
+  const dirty =
+    [
+      name,
+      code,
+      contactName,
+      email,
+      phone,
+      website,
+      line1,
+      line2,
+      city,
+      region,
+      postalCode,
+      country,
+      paymentTerms,
+      leadTimeDays,
+      currency,
+      notes,
+    ].some((s) => s.trim() !== '') || !isActive;
 
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'supplier' });
 
@@ -91,40 +128,43 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
     if (await guardLeave()) close();
   }, [guardLeave, close]);
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function submit() {
     setError(null);
-    setFieldErrors({});
+    if (!v.validate()) return;
 
-    const form = new FormData(e.currentTarget);
-    const lead = nonEmpty(form.get('leadTimeDays'));
+    const opt = (val: string) => (val.trim() ? val.trim() : undefined);
+    const lead = opt(leadTimeDays);
     const input = {
-      name: stringField(form.get('name'), ''),
-      code: stringField(form.get('code'), '').toUpperCase(),
-      contactName: nonEmpty(form.get('contactName')),
-      email: nonEmpty(form.get('email')),
-      phone: nonEmpty(form.get('phone')),
-      website: nonEmpty(form.get('website')),
-      line1: nonEmpty(form.get('line1')),
-      line2: nonEmpty(form.get('line2')),
-      city: nonEmpty(form.get('city')),
-      region: nonEmpty(form.get('region')),
-      postalCode: nonEmpty(form.get('postalCode')),
-      country: nonEmpty(form.get('country'))?.toUpperCase(),
-      paymentTerms: nonEmpty(form.get('paymentTerms')),
+      name: name.trim(),
+      code: code.trim().toUpperCase(),
+      contactName: opt(contactName),
+      email: opt(email),
+      phone: opt(phone),
+      website: opt(website),
+      line1: opt(line1),
+      line2: opt(line2),
+      city: opt(city),
+      region: opt(region),
+      postalCode: opt(postalCode),
+      country: opt(country)?.toUpperCase(),
+      paymentTerms: opt(paymentTerms),
       leadTimeDays: lead !== undefined ? Number(lead) : undefined,
-      currency: stringField(form.get('currency'), 'USD').toUpperCase(),
-      notes: nonEmpty(form.get('notes')),
-      isActive: form.get('isActive') === 'on',
+      currency: (currency.trim() || 'USD').toUpperCase(),
+      notes: opt(notes),
+      isActive,
     };
 
     startTransition(async () => {
       const result = await createSupplierAction(input);
       if (!result.ok) {
         setError(result.error.message);
-        const map: Record<string, string> = {};
-        for (const d of result.error.details ?? []) map[d.field] = d.message;
-        setFieldErrors(map);
+        const map: Partial<Record<keyof typeof values, string>> = {};
+        for (const d of result.error.details ?? []) {
+          if (d.field === 'name' || d.field === 'code' || d.field === 'email') {
+            map[d.field] = d.message;
+          }
+        }
+        v.setServerErrors(map);
         return;
       }
       // No @detail drawer — navigate to the supplier's full-page detail (clears the
@@ -150,166 +190,225 @@ export function SupplierCreateForm({ surface }: SupplierCreateFormProps) {
               'Record a vendor you purchase stock from. Per-variant cost + part numbers are added on the supplier’s page once it exists.',
           }}
           actions={{
-            onNext: () => formRef.current?.requestSubmit(),
+            onNext: submit,
             nextLabel: 'Create supplier',
             nextLoading: pending,
             nextDisabled: pending,
           }}
         >
-          <form
-            ref={formRef}
-            onSubmit={onSubmit}
-            onInput={recomputeDirty}
-            onChange={recomputeDirty}
-            className="contents"
-          >
-            <div className="flex flex-col gap-6">
-              <Card>
-                <CardBody>
-                  <div className="flex flex-col gap-1">
-                    <CardTitle>Basics</CardTitle>
-                    <p className="opacity-70">
-                      Name shows in the dashboard; code is a short unique handle.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <Field label="Name" name="name" required error={fieldErrors.name} />
-                    <Field
-                      label="Code"
-                      name="code"
-                      required
-                      hint="Letters, numbers, hyphen, underscore. Examples: ACME, BOSCH, 3PL-WEST."
-                      pattern="[A-Za-z0-9_-]+"
-                      error={fieldErrors.code}
+          <div className="flex flex-col gap-6">
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Basics</CardTitle>
+                  <p className="opacity-70">
+                    Name shows in the dashboard; code is a short unique handle.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <Field {...v.field('name')}>
+                    <FieldLabel required>Name</FieldLabel>
+                    <FieldControl
+                      name="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      {...v.control('name')}
                     />
-                  </div>
-                </CardBody>
-              </Card>
+                  </Field>
+                  <Field {...v.field('code')}>
+                    <FieldLabel required>Code</FieldLabel>
+                    <FieldControl
+                      name="code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      pattern="[A-Za-z0-9_-]+"
+                      {...v.control('code')}
+                    />
+                    <FieldDescription>
+                      Letters, numbers, hyphen, underscore. Examples: ACME, BOSCH, 3PL-WEST.
+                    </FieldDescription>
+                  </Field>
+                </div>
+              </CardBody>
+            </Card>
 
-              <Card>
-                <CardBody>
-                  <CardTitle>Contact</CardTitle>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-row flex-wrap gap-3">
-                      <Field label="Contact name" name="contactName" />
-                      <Field label="Email" name="email" type="email" error={fieldErrors.email} />
-                    </div>
-                    <div className="flex flex-row flex-wrap gap-3">
-                      <Field label="Phone" name="phone" />
-                      <Field label="Website" name="website" placeholder="https://" />
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-
-              <Card>
-                <CardBody>
-                  <CardTitle>Address</CardTitle>
-                  <div className="flex flex-col gap-4">
-                    <Field label="Line 1" name="line1" />
-                    <Field label="Line 2" name="line2" />
-                    <div className="flex flex-row flex-wrap gap-3">
-                      <Field label="City" name="city" />
-                      <Field label="Region / State" name="region" />
-                      <Field label="Postal code" name="postalCode" />
-                      <Field label="Country" name="country" maxLength={2} placeholder="US" />
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-
-              <Card>
-                <CardBody>
-                  <div className="flex flex-col gap-1">
-                    <CardTitle>Terms</CardTitle>
-                    <p className="opacity-70">
-                      Defaults applied to purchase orders for this supplier; overridable per PO.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-row flex-wrap gap-3">
-                      <Field label="Payment terms" name="paymentTerms" placeholder="net30" />
-                      <Field label="Lead time (days)" name="leadTimeDays" type="number" />
-                      <Field label="Currency" name="currency" maxLength={3} placeholder="USD" />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <Label htmlFor="notes">Notes</Label>
-                      <textarea
-                        id="notes"
-                        name="notes"
-                        rows={3}
-                        className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+            <Card>
+              <CardBody>
+                <CardTitle>Contact</CardTitle>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <Field className="flex-1">
+                      <FieldLabel>Contact name</FieldLabel>
+                      <FieldControl
+                        name="contactName"
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
                       />
-                    </div>
-                    <label className="flex items-center gap-2">
-                      <Checkbox color="module" name="isActive" defaultChecked />
-                      <p className="text-sm">Active</p>
-                    </label>
-
-                    {error && (
-                      <p className="text-danger text-sm" role="alert" aria-live="polite">
-                        {error}
-                      </p>
-                    )}
+                    </Field>
+                    <Field className="flex-1" {...v.field('email')}>
+                      <FieldLabel>Email</FieldLabel>
+                      <FieldControl
+                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        {...v.control('email')}
+                      />
+                    </Field>
                   </div>
-                </CardBody>
-              </Card>
-            </div>
-          </form>
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <Field className="flex-1">
+                      <FieldLabel>Phone</FieldLabel>
+                      <FieldControl
+                        name="phone"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Website</FieldLabel>
+                      <FieldControl
+                        name="website"
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        placeholder="https://"
+                      />
+                    </Field>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardBody>
+                <CardTitle>Address</CardTitle>
+                <div className="flex flex-col gap-4">
+                  <Field className="flex-1">
+                    <FieldLabel>Line 1</FieldLabel>
+                    <FieldControl
+                      name="line1"
+                      value={line1}
+                      onChange={(e) => setLine1(e.target.value)}
+                    />
+                  </Field>
+                  <Field className="flex-1">
+                    <FieldLabel>Line 2</FieldLabel>
+                    <FieldControl
+                      name="line2"
+                      value={line2}
+                      onChange={(e) => setLine2(e.target.value)}
+                    />
+                  </Field>
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <Field className="flex-1">
+                      <FieldLabel>City</FieldLabel>
+                      <FieldControl
+                        name="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Region / State</FieldLabel>
+                      <FieldControl
+                        name="region"
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Postal code</FieldLabel>
+                      <FieldControl
+                        name="postalCode"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Country</FieldLabel>
+                      <FieldControl
+                        name="country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        maxLength={2}
+                        placeholder="US"
+                      />
+                    </Field>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <CardTitle>Terms</CardTitle>
+                  <p className="opacity-70">
+                    Defaults applied to purchase orders for this supplier; overridable per PO.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row flex-wrap gap-3">
+                    <Field className="flex-1">
+                      <FieldLabel>Payment terms</FieldLabel>
+                      <FieldControl
+                        name="paymentTerms"
+                        value={paymentTerms}
+                        onChange={(e) => setPaymentTerms(e.target.value)}
+                        placeholder="net30"
+                      />
+                    </Field>
+                    <Field className="flex-1" {...v.field('leadTimeDays')}>
+                      <FieldLabel>Lead time (days)</FieldLabel>
+                      <FieldControl
+                        name="leadTimeDays"
+                        type="number"
+                        min="0"
+                        value={leadTimeDays}
+                        onChange={(e) => setLeadTimeDays(e.target.value)}
+                        {...v.control('leadTimeDays')}
+                      />
+                    </Field>
+                    <Field className="flex-1">
+                      <FieldLabel>Currency</FieldLabel>
+                      <FieldControl
+                        name="currency"
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                        maxLength={3}
+                        placeholder="USD"
+                      />
+                    </Field>
+                  </div>
+                  <Field>
+                    <FieldLabel>Notes</FieldLabel>
+                    <FieldControl
+                      render={<Textarea rows={3} />}
+                      name="notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                  </Field>
+                  <label className="flex items-center gap-2">
+                    <Checkbox
+                      color="module"
+                      checked={isActive}
+                      onChange={(e) => setIsActive(e.target.checked)}
+                    />
+                    <p className="text-sm">Active</p>
+                  </label>
+
+                  {error && (
+                    <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                      {error}
+                    </FieldStatus>
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+          </div>
         </SurfaceStep>
       </SurfaceFrame>
     </ModuleProvider>
   );
-}
-
-function Field({
-  label,
-  name,
-  required,
-  hint,
-  error,
-  pattern,
-  maxLength,
-  placeholder,
-  type,
-}: {
-  label: string;
-  name: string;
-  required?: boolean;
-  hint?: string;
-  error?: string;
-  pattern?: string;
-  maxLength?: number;
-  placeholder?: string;
-  type?: string;
-}) {
-  return (
-    <div className="flex flex-1 flex-col gap-1">
-      <Label htmlFor={name}>
-        {label}
-        {required && <span className="text-[var(--color-danger)]">*</span>}
-      </Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        pattern={pattern}
-        maxLength={maxLength}
-        placeholder={placeholder}
-      />
-      {hint && <p className="text-base-content/70 text-xs">{hint}</p>}
-      {error && <p className="text-danger text-xs">{error}</p>}
-    </div>
-  );
-}
-
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length === 0 ? undefined : trimmed;
-}
-
-function stringField(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

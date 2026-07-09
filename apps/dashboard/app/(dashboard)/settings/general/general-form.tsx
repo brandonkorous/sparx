@@ -2,7 +2,19 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card, CardActions, CardBody, CardTitle, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { updateGeneralSettings } from './actions';
 
 // Tenant-level account details. Social links are NOT here anymore — they are a
@@ -20,20 +32,36 @@ export interface GeneralFormProps {
 
 export function GeneralForm({ tenant }: GeneralFormProps) {
   const router = useRouter();
+  const [name, setName] = React.useState(tenant.name);
+  const [email, setEmail] = React.useState(tenant.email);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+
+  const v = useFieldValidation(
+    { name, email },
+    {
+      name: rule.required('Enter your business name.'),
+      email: rules(rule.required('Enter a contact email.'), rule.email()),
+    }
+  );
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setMessage(null);
+    if (!v.validate()) return;
     const formData = new FormData(e.currentTarget);
 
     startTransition(async () => {
       const result = await updateGeneralSettings(formData);
       if (!result.ok) {
-        setError(result.error ?? 'Could not save changes.');
+        const msg = result.error ?? 'Could not save changes.';
+        if (/email/i.test(msg)) {
+          v.setServerErrors({ email: msg });
+        } else {
+          setError(msg);
+        }
         return;
       }
       setMessage('Settings saved.');
@@ -51,42 +79,51 @@ export function GeneralForm({ tenant }: GeneralFormProps) {
             site name and social links live in Builder → Brand (each site has its own).
           </p>
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Business name</Label>
-              <Input id="name" name="name" defaultValue={tenant.name} required />
-              <p className="text-base-content/70 text-xs">
+            <Field {...v.field('name')}>
+              <FieldLabel required>Business name</FieldLabel>
+              <FieldControl
+                name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                {...v.control('name')}
+              />
+              <FieldDescription>
                 Your legal or organization name. Used for billing and account notices — never shown
                 to customers.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Contact email</Label>
-              <Input id="email" name="email" type="email" defaultValue={tenant.email} required />
-              <p className="text-base-content/70 text-xs">
-                Receives billing and account notifications.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="slug">Site URL</Label>
-              <Input id="slug" name="slug" defaultValue={tenant.slug} disabled />
-              <p className="text-base-content/70 text-xs">
+              </FieldDescription>
+            </Field>
+            <Field {...v.field('email')}>
+              <FieldLabel required>Contact email</FieldLabel>
+              <FieldControl
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                {...v.control('email')}
+              />
+              <FieldDescription>Receives billing and account notifications.</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Site URL</FieldLabel>
+              <FieldControl name="slug" defaultValue={tenant.slug} disabled />
+              <FieldDescription>
                 The slug your tenant is keyed by. Contact support to change.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="plan">Plan</Label>
-              <Input id="plan" name="plan" defaultValue={tenant.plan} disabled />
-            </div>
+              </FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Plan</FieldLabel>
+              <FieldControl name="plan" defaultValue={tenant.plan} disabled />
+            </Field>
 
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
             {message && (
-              <p className="text-success text-sm" role="status" aria-live="polite">
+              <FieldStatus status="success" attached={false} role="status" aria-live="polite">
                 {message}
-              </p>
+              </FieldStatus>
             )}
           </div>
           <CardActions className="justify-start">

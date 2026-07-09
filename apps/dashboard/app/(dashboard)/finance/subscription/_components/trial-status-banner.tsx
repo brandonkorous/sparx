@@ -5,7 +5,13 @@
 // button. Renders nothing in the steady state (active subscription, trial > 3 days).
 
 import { AlertTriangle, Clock, CreditCard } from 'lucide-react';
-import { Alert, AlertActions, AlertContent, AlertDescription, AlertTitle } from 'silicaui-react';
+import {
+  Alert,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+} from '@wizeworks/silicaui-react';
 
 import type { BillingState } from '../actions';
 import { ManageBillingButton } from './manage-billing-button';

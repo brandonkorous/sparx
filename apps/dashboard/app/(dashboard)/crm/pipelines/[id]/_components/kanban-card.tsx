@@ -13,7 +13,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Calendar } from 'lucide-react';
 
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../../_components/entity-row-link';
 import { type KanbanDeal } from './kanban-types';
@@ -38,8 +38,8 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
       style={style}
       {...listeners}
       {...attributes}
-      className={`rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-base)] p-3 shadow-sm ${
-        dragging ? 'ring-2 ring-[var(--module-active)]' : 'hover:border-[var(--module-active)]'
+      className={`border-base-300 bg-base-100 rounded-md border p-3 shadow-sm ${
+        dragging ? 'ring-2 ring-[var(--color-module)]' : 'hover:border-module'
       }`}
     >
       <div className="flex flex-col gap-2">
@@ -51,7 +51,7 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
               href={`/crm/deals/${deal.id}`}
               entityType="deal"
               entityId={deal.id}
-              className="truncate text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--module-active)] hover:underline"
+              className="text-base-content hover:text-module truncate text-sm font-medium hover:underline"
               onClick={(e) => isDragging && e.preventDefault()}
             >
               {deal.title}

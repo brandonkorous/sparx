@@ -22,8 +22,8 @@ export interface StoryDispatch {
 }
 
 const NEUTRAL_TINT: CSSProperties = {
-  background: 'color-mix(in oklch, var(--color-text-primary) 7%, transparent)',
-  color: 'var(--color-text-muted)',
+  background: 'color-mix(in oklch, var(--color-base-content) 7%, transparent)',
+  color: 'color-mix(in oklch, var(--color-base-content) 60%, transparent)',
 };
 const audienceTint = (a: AudienceKey): CSSProperties => tintStyle(AUDIENCE[a].kind);
 

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input } from 'silicaui-react';
+import { Button, Input } from '@wizeworks/silicaui-react';
 import { Badge, cn } from '@sparx/ui';
 import { Check, Lock, PencilRuler, Search } from 'lucide-react';
 import { MODULE_BY_KEY, TEMPLATE_CAP_KEYS } from '../_lib/modules';
@@ -85,7 +85,7 @@ export function StepBlueprint({
       {/* ── Filter bar ────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[200px] flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
+          <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -110,7 +110,11 @@ export function StepBlueprint({
                   <Badge color={isOn ? k : 'neutral'} variant={isOn ? 'soft' : 'outline'}>
                     <span
                       className="h-2 w-2 rounded-full"
-                      style={{ background: isOn ? mod?.colorVar : 'var(--color-border-strong)' }}
+                      style={{
+                        background: isOn
+                          ? mod?.colorVar
+                          : 'color-mix(in oklch, var(--color-base-content) 30%, transparent)',
+                      }}
                     />
                     {mod?.name ?? k}
                   </Badge>
@@ -122,8 +126,8 @@ export function StepBlueprint({
       </div>
 
       <p className="text-base-content/70 mt-4 mb-3.5 block text-sm">
-        Showing <span className="font-medium text-[var(--color-text-primary)]">{shown.length}</span>{' '}
-        of {blueprints.length} blueprints that fit your modules
+        Showing <span className="text-base-content font-medium">{shown.length}</span> of{' '}
+        {blueprints.length} blueprints that fit your modules
       </p>
 
       {/* ── Gallery ───────────────────────────────────────────────────────── */}
@@ -139,13 +143,13 @@ export function StepBlueprint({
               onClick={() => onSelect(bp.key)}
               aria-pressed={isSelected}
               className={cn(
-                'group flex flex-col overflow-hidden rounded-xl border bg-[var(--color-bg-surface)] text-left transition-shadow',
+                'group bg-base-100 flex flex-col overflow-hidden rounded-xl border text-left transition-shadow',
                 isSelected
-                  ? 'border-[var(--module-active)] shadow-md ring-2 ring-[var(--module-active)]'
-                  : 'border-[var(--color-border-default)] hover:shadow-md'
+                  ? 'border-module ring-module shadow-md ring-2'
+                  : 'border-base-300 hover:shadow-md'
               )}
             >
-              <div className="relative aspect-[16/10] w-full border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+              <div className="border-base-300 bg-base-200 relative aspect-[16/10] w-full border-b">
                 {bp.preview && (
                   <div
                     className="h-full w-full bg-cover bg-top"
@@ -195,14 +199,12 @@ export function StepBlueprint({
 
       {/* ── Locked hint ───────────────────────────────────────────────────── */}
       {hidden.length > 0 && lockedMods.size > 0 && (
-        <div className="mt-6 flex items-center gap-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-[18px] py-4">
-          <Lock className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
+        <div className="border-base-content/30 bg-base-200 mt-6 flex items-center gap-3 rounded-xl border border-dashed px-[18px] py-4">
+          <Lock className="text-base-content/50 h-[18px] w-[18px] shrink-0" />
           <p className="text-base-content/70 text-sm">
-            <span className="font-medium text-[var(--color-text-primary)]">
-              {hidden.length} more
-            </span>{' '}
+            <span className="text-base-content font-medium">{hidden.length} more</span>{' '}
             {hidden.length === 1 ? 'blueprint' : 'blueprints'} unlock with{' '}
-            <span className="font-medium text-[var(--color-text-primary)]">
+            <span className="text-base-content font-medium">
               {[...lockedMods].map((m) => MODULE_BY_KEY[m]?.name ?? m).join(', ')}
             </span>{' '}
             — turn {lockedMods.size === 1 ? 'it' : 'one'} on{' '}
@@ -217,12 +219,12 @@ export function StepBlueprint({
         className={cn(
           'mt-6 flex items-center justify-between gap-4 rounded-xl border px-[18px] py-4',
           selectedKey === 'scratch'
-            ? 'border-[var(--module-active)] bg-[var(--module-active-tint)] ring-1 ring-[var(--module-active)]'
-            : 'border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)]'
+            ? 'border-module bg-module bg-soft ring-module ring-1'
+            : 'border-base-content/30 bg-base-200 border-dashed'
         )}
       >
         <div className="flex items-center gap-3">
-          <PencilRuler className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
+          <PencilRuler className="text-base-content/50 h-[18px] w-[18px] shrink-0" />
           <p className="text-base-content/70 text-sm">
             Prefer a blank canvas? Use sparx headless or design it yourself.
           </p>

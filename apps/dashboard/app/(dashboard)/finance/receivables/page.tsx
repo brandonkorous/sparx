@@ -8,7 +8,7 @@
 import Link from 'next/link';
 import { ArrowRight, Building2, FileText, ReceiptText } from 'lucide-react';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import { Badge, Card, CardBody, CardTitle } from 'silicaui-react';
+import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { requireModuleOrUpsell } from '@/components/module-gate';

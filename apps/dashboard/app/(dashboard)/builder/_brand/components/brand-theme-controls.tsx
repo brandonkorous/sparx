@@ -298,7 +298,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             onChange={(e) => setSiteName(e.target.value)}
             placeholder="Acme Co."
           />
-          <p className="text-xs text-[var(--color-text-muted)]">
+          <p className="text-base-content/60 text-xs">
             The name customers see on this site — its title, header, and emails. Your tenant&apos;s
             legal/billing name lives in Settings → General.
           </p>
@@ -406,7 +406,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
           />
         </div>
         {lowContrast && onPrimaryRatio !== null ? (
-          <p className="text-xs text-[var(--color-warning-text)]">
+          <p className="text-warning text-xs">
             On-primary text is {onPrimaryRating === 'Fail' ? 'hard to read' : 'a little low'} on
             primary ({onPrimaryRatio.toFixed(1)}:1). Aim for 4.5:1 or higher.
           </p>
@@ -549,8 +549,8 @@ function Section({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex flex-col gap-0.5">
-        <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h2>
-        {hint ? <p className="text-xs text-[var(--color-text-muted)]">{hint}</p> : null}
+        <h2 className="text-base-content text-sm font-semibold">{title}</h2>
+        {hint ? <p className="text-base-content/60 text-xs">{hint}</p> : null}
       </div>
       {children}
     </section>
@@ -600,15 +600,13 @@ function ColorSwatch({
             onClick={onClear}
             aria-label={`Discard unsaved ${label} change`}
             title="Discard unsaved change"
-            className="absolute -top-1.5 -right-1.5 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-0.5 shadow-sm"
+            className="border-base-300 bg-base-200 absolute -top-1.5 -right-1.5 rounded-full border p-0.5 shadow-sm"
           >
             <X className="h-2.5 w-2.5" />
           </button>
         ) : null}
       </div>
-      <span className="text-center text-[11px] leading-tight text-[var(--color-text-secondary)]">
-        {label}
-      </span>
+      <span className="text-base-content/70 text-center text-[11px] leading-tight">{label}</span>
     </div>
   );
 }
@@ -637,11 +635,7 @@ function SwatchInput({
     <label
       className={`relative flex h-14 cursor-pointer items-center justify-center overflow-hidden rounded-lg border ${
         wide ? 'w-full min-w-0 flex-1' : 'w-14'
-      } ${
-        warn
-          ? 'border-[var(--color-danger-text)] ring-1 ring-[var(--color-danger-text)]'
-          : 'border-[var(--color-border-default)]'
-      }`}
+      } ${warn ? 'border-danger ring-danger ring-1' : 'border-base-300'}`}
       style={{ backgroundColor: fill }}
     >
       {ink ? (
@@ -696,7 +690,7 @@ function Segmented({
       <div
         role="radiogroup"
         aria-label={label}
-        className="flex flex-wrap gap-1 rounded-md border border-[var(--color-border-default)] p-1"
+        className="border-base-300 flex flex-wrap gap-1 rounded-md border p-1"
       >
         {items.map((o) => {
           const active = value === o.key;
@@ -716,7 +710,7 @@ function Segmented({
           );
         })}
       </div>
-      {help ? <p className="text-xs text-[var(--color-text-muted)]">{help}</p> : null}
+      {help ? <p className="text-base-content/60 text-xs">{help}</p> : null}
     </div>
   );
 }
@@ -768,7 +762,7 @@ function SocialLinksEditor({
   return (
     <div className="flex flex-col gap-2.5">
       {socials.length === 0 ? (
-        <p className="text-xs text-[var(--color-text-muted)]">No links yet.</p>
+        <p className="text-base-content/60 text-xs">No links yet.</p>
       ) : (
         socials.map((row, index) => {
           const known = KNOWN_KEYS.has(row.platform);
@@ -779,7 +773,7 @@ function SocialLinksEditor({
           return (
             <div
               key={index}
-              className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] p-2.5 sm:flex-row sm:items-start"
+              className="border-base-300 flex flex-col gap-2 rounded-md border p-2.5 sm:flex-row sm:items-start"
             >
               <div className="flex flex-col gap-2 sm:w-36">
                 <NativeSelect

@@ -7,7 +7,7 @@
 // island with a fresh initialCursor), so appended state resets correctly.
 
 import * as React from 'react';
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 import type { MarketplaceListing } from '@/lib/marketplace';
 

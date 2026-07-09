@@ -40,7 +40,7 @@ export function TenantsTable({ tenants }: { tenants: OperatorTenantListItem[] })
               <Stack gap={0}>
                 <Link
                   href={`/sparx/tenants/${tenant.id}`}
-                  className="font-medium text-[var(--color-text-primary)] hover:underline"
+                  className="text-base-content font-medium hover:underline"
                 >
                   {tenant.name}
                 </Link>

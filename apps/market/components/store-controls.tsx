@@ -8,7 +8,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Search, X } from 'lucide-react';
-import { Button, Input, NativeSelect } from 'silicaui-react';
+import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import type { MarketSort } from '@/lib/market';
 

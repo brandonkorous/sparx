@@ -20,11 +20,15 @@ export function ModulesGrid() {
     <Section id="modules" surface="surface" padding="lg" className="mkt-stage">
       <Reveal style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         <SectionHeader
-          accent="var(--sparx-primary)"
+          accent="var(--color-primary)"
           headline={
             <>
               {MODULES.length} modules.{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>Switch on what you need</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                Switch on what you need
+              </span>
             </>
           }
           lede={
@@ -55,10 +59,10 @@ export function ModulesGrid() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '15px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
-            <b style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>
+            <b style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
               {counts.live} capabilities
             </b>{' '}
             live across these modules — {counts.building} more in build. Each is a deep product, not
@@ -70,7 +74,7 @@ export function ModulesGrid() {
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '15px',
-              color: 'var(--sparx-primary)',
+              color: 'var(--color-primary)',
               textDecoration: 'none',
               whiteSpace: 'nowrap',
             }}
@@ -88,7 +92,7 @@ function ModuleTile({ module: m }: { module: ModuleEntry }) {
   const tileStyle = {
     // Theme-aware tint: mixes the hue into the live surface token, so it stays a
     // tinted-white card in light mode and a tinted-dark card in dark mode.
-    ['--tile-tint' as string]: `color-mix(in oklab, ${color.color} 8%, var(--color-bg-surface))`,
+    ['--tile-tint' as string]: `color-mix(in oklab, ${color.color} 8%, var(--color-base-100))`,
     ['--tile-accent' as string]: color.color,
   } as React.CSSProperties;
 
@@ -116,7 +120,7 @@ function ModuleTile({ module: m }: { module: ModuleEntry }) {
           fontSize: '19px',
           letterSpacing: '-0.02em',
           lineHeight: '24px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
           paddingTop: '18px',
           margin: 0,
         }}
@@ -129,7 +133,7 @@ function ModuleTile({ module: m }: { module: ModuleEntry }) {
           fontFamily: 'var(--font-sans)',
           fontSize: '14px',
           lineHeight: '21px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           paddingTop: '8px',
           margin: 0,
         }}
@@ -175,11 +179,17 @@ function ModuleTileFooter({
           fontFamily: 'var(--font-sans)',
           fontWeight: 500,
           fontSize: '15px',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         ${m.price}
-        <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400, fontSize: '13px' }}>
+        <span
+          style={{
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            fontWeight: 400,
+            fontSize: '13px',
+          }}
+        >
           /mo
         </span>
       </span>
@@ -191,7 +201,7 @@ function ModuleTileFooter({
             alignItems: 'center',
             gap: '5px',
             padding: '3px 9px',
-            backgroundColor: 'var(--color-success-tint)',
+            backgroundColor: 'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
             borderRadius: '9999px',
             fontFamily: 'var(--font-sans)',
             fontWeight: 500,

@@ -4,7 +4,7 @@
 // (the report mirrors Decimal money columns). Past-due buckets read in danger so the
 // eye lands on what's actually late.
 
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { Stat } from '@sparx/ui';
 
 import { fmtDollars } from '../../_lib/format';

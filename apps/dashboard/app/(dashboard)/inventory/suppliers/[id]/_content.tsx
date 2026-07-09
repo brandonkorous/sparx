@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Truck } from 'lucide-react';
 
-import { Badge, Card, CardBody } from 'silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
@@ -75,7 +75,7 @@ export async function SupplierDetailContent({ id }: { id: string }) {
 
       <p className="text-base-content/70 text-xs">
         Purchase orders for this supplier land in{' '}
-        <Link href="/inventory/suppliers" className="underline hover:text-[var(--module-active)]">
+        <Link href="/inventory/suppliers" className="hover:text-module underline">
           a later step
         </Link>{' '}
         (docs/100 P3b).

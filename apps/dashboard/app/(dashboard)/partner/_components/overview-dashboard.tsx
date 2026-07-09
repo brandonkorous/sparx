@@ -9,7 +9,7 @@ import {
   UserRound,
   Users,
 } from 'lucide-react';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader, Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import {

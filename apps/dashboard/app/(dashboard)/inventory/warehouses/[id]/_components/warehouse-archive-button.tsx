@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { archiveWarehouseAction } from '../../../_lib/inventory-actions';
 
@@ -41,7 +41,7 @@ export function WarehouseArchiveButton({
 
   return (
     <div className="flex items-center gap-2">
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+      {error && <p className="text-danger text-xs">{error}</p>}
       {armed ? (
         <>
           <Button variant="ghost" size="sm" onClick={() => setArmed(false)} disabled={pending}>

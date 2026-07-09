@@ -1,8 +1,8 @@
 # WizeWorks Platform — Frontend Architecture
 
-**Version:** 1.1  
+**Version:** 1.1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-07-08
 
 ---
 
@@ -65,54 +65,57 @@ packages/
 
 ### Design Tokens (CSS Custom Properties)
 
-Defined in `packages/ui/tokens.css`:
+The dashboard runs on **silicaui** (`@wizeworks/silicaui`, a Tailwind v4 plugin) with `@sparx/brand/theme.css` (`packages/brand`) as the single **color** authority. Non-color tokens (type, space, radius, shadow, motion) plus the `--chart-*` palette live in `packages/ui/src/tokens.css`. Each app's `globals.css` registers the palette once — `@plugin '@wizeworks/silicaui' { colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module }` — and the plugin statically emits every color + component utility (`.btn-*`, `.badge-*`, `.alert-*`, `bg-primary`, `bg-soft`, …). `danger` and `module` are sparx's two registered extras.
 
 ```css
+/* @sparx/brand/theme.css — colors (defined once; dark resolves here too) */
 :root {
-  /* Colors */
-  --color-primary: hsl(221, 83%, 53%);
-  --color-primary-hover: hsl(221, 83%, 48%);
-  --color-danger: hsl(0, 84%, 60%);
-  --color-success: hsl(142, 71%, 45%);
-  --color-warning: hsl(38, 92%, 50%);
+  /* Base surface ramp */
+  --color-base-100: #ffffff; /* topmost reading surface */
+  --color-base-200: #f4f4f5; /* page ground */
+  --color-base-300: #e4e4e7; /* deepest / borders */
+  --color-base-content: #1f2937; /* primary text */
 
-  /* Neutral scale */
-  --color-gray-50: hsl(210, 40%, 98%);
-  --color-gray-100: hsl(210, 40%, 96%);
-  --color-gray-900: hsl(222, 47%, 11%);
+  /* Semantic palette (each with a matching -content) */
+  --color-primary: #6366f1; /* indigo */
+  --color-secondary: #db2777;
+  --color-neutral: #1f2937;
+  --color-info: #0ea5e9;
+  --color-success: #10b981;
+  --color-warning: #f59e0b; /* dark ink #422006 */
+  --color-error: #ef4444;
+  --color-danger: #ef4444;
 
-  /* Typography */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-
-  /* Spacing */
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-4: 1rem;
-  --spacing-8: 2rem;
-
-  /* Border radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  /* 18-module palette: one --color-module-<name> (+ -content) per module */
+  --color-module-commerce: #f97316;
+  --color-module-crm: #06b6d4;
+  /* … */
+  --color-module: var(--color-primary); /* default; ModuleProvider overrides */
 }
 
-[data-theme='dark'] {
-  /* Dark mode overrides */
+:root[data-theme='dark'] {
+  --color-primary: #818cf8;
+  --color-secondary: #f472b6;
+  --color-neutral: #e5e7eb;
+  /* base ramp + semantics get their dark values here — defined ONCE,
+     so there are no duplicate :root overrides fighting the dark palette */
 }
 ```
+
+```css
+/* packages/ui/src/tokens.css — non-color tokens only */
+:root {
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-size-base: 1rem; /* 16px floor */
+  --spacing-4: 1rem;
+  --radius-md: 0.375rem;
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  /* + the --chart-1..6 palette and a little component CSS */
+}
+```
+
+Text colors are opacity modifiers off the base ink — `text-base-content` (primary), `text-base-content/70` (secondary), `/60` (muted), `/50` (tertiary), `/40` (disabled) — and borders are `border-base-300` (default) / `border-base-content/30` (strong).
 
 ### Theme Overrides (Tenant Themes)
 
@@ -130,9 +133,11 @@ Tenant themes override the base tokens via CSS custom properties on the `:root` 
 
 ---
 
-## 5. Component Library (`@sparx/ui`)
+## 5. Component Library (silicaui + `@sparx/ui`)
 
-> See [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md) for the authoritative component spec (CVA pattern, ModuleProvider, full inventory). This section is a summary.
+> See [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md) for the authoritative component spec (silicaui primitives, the four-axis variant system, ModuleProvider, full inventory). This section is a summary.
+
+The dashboard's **primitives** are imported directly from `@wizeworks/silicaui-react` (Button, Input, Select, Badge, Card, Table, Tabs, Dialog, Alert, …). `@sparx/ui` survives as the home of the ~25 sparx **compositions** — the shell (`SidebarAppShell`/`BrandRail`, built on silica's `Sidebar` primitive), `ModuleProvider`, `SurfaceFrame`/`SurfaceStep`/`SurfaceSummary`, `ListToolbar`/`FilterBar`/`BulkActionBar`, `ConfirmProvider`, `PageHeader`, `Wordmark`, `toast`/`Toaster`, `statusTone`/`statusLabel`, `cn`, `Stat`, and the chart wrappers — all rebuilt on silicaui primitives.
 
 ### Core Components
 
@@ -156,32 +161,16 @@ Sidebar, Breadcrumb, Tabs, Pagination, Stepper, NavMenu
 
 ### Component Conventions
 
-```typescript
-// All components follow this pattern:
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
-  loading?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-}
+Every color-bearing control is **`color × variant × size × shape`** — four orthogonal axes, never a flat enum. silicaui's Tailwind plugin resolves them: `<Button color variant size>` maps to `btn btn-<color> btn-<variant> btn-<size>`, so there is no hand-rolled CVA recipe in feature code. Feature code composes these primitives and their variants; it never re-skins a control.
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading, children, ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        className={cn(buttonVariants({ variant, size }), props.className)}
-        disabled={loading || props.disabled}
-        {...props}
-      >
-        {loading && <Spinner size="sm" />}
-        {children}
-      </button>
-    )
-  }
-)
+```tsx
+// color × variant × size × shape — resolved by the silicaui plugin
+<Button color="primary" variant="soft" size="md">Save</Button>
+<Button color="module" variant="solid">New product</Button> // module hue via <ModuleProvider>
+<Badge color={statusTone(status)} variant="soft">{statusLabel(status)}</Badge>
 ```
+
+silica variant vocabulary: `solid` (bare `btn`), `soft` (`btn-soft`), `outline` (`btn-outline`), `dashed` → `btn-dash`, `ghost` (`btn-ghost`), `link` (`btn-link`); sizes `xs…xl`; shapes `square` / `circle` / `block` / `wide`. A **tint** is always `<color> + soft` (e.g. `bg-module bg-soft`, `bg-success bg-soft`) — a theme-aware `color-mix`, never a baked tint token. `@sparx/ui`'s `cn` extends tailwind-merge so `bg-<color> bg-soft` survives merging.
 
 ---
 

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ExternalLink, Star } from 'lucide-react';
 import { toast } from '@sparx/ui';
-import { Button, Tooltip } from 'silicaui-react';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 
 import { makeSitePrimary, setActiveSite, type ActionResult } from '../../actions';
 

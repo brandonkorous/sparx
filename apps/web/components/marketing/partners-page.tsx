@@ -33,7 +33,7 @@ export function PartnersPage({ partnerCount }: { partnerCount?: number }) {
       <Faq
         id="faq"
         items={PARTNER_FAQ}
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         heading={
           <>
             Partner questions
@@ -48,14 +48,14 @@ export function PartnersPage({ partnerCount }: { partnerCount?: number }) {
 }
 
 const SANS = 'var(--font-sans)';
-const INDIGO_TINT = 'var(--sparx-primary-tint)';
-const INDIGO_TEXT = 'var(--sparx-primary-hover)';
+const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const INDIGO_TEXT = 'var(--color-primary)';
 
 function PartnersTiersSection() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent="var(--sparx-primary)"
+        accent="var(--color-primary)"
         headline={<>Three tiers. You choose the pace</>}
         lede="Start informal in a click, or apply for more. Every tier lists in the directory and earns on referrals — the higher tiers just earn more and unlock more."
       />
@@ -88,12 +88,12 @@ function PartnersApply() {
       id="apply"
       surface="page"
       padding="lg"
-      style={{ borderTop: '1px solid var(--color-border-default)' }}
+      style={{ borderTop: '1px solid var(--color-base-300)' }}
     >
       <div className="mkt-apply-grid">
         <div>
           <SectionHeader
-            accent="var(--sparx-primary)"
+            accent="var(--color-primary)"
             headline={<>Apply in two minutes</>}
             lede="This isn't a job application. Tell us who you are and how you'll use sparx with clients."
           />
@@ -124,7 +124,7 @@ function PartnersApply() {
                       fontFamily: SANS,
                       fontSize: '14px',
                       lineHeight: '21px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                       marginTop: '3px',
                     }}
                   >
@@ -137,8 +137,8 @@ function PartnersApply() {
         </div>
         <div
           style={{
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '18px',
             padding: 'clamp(24px, 3vw, 34px)',
             boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',

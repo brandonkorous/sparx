@@ -8,7 +8,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Switch } from 'silicaui-react';
+import { Badge, Switch } from '@wizeworks/silicaui-react';
 import { useConfirm } from '@sparx/ui';
 
 import { updateMarketProfileAction } from '../actions';

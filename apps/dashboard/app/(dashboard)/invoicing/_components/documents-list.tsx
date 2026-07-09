@@ -1,7 +1,7 @@
 'use client';
 
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../_components/entity-row-link';
 import { AR_STATUS_VARIANT, formatMoney } from './format';
@@ -52,8 +52,7 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
   const columns: SelectionColumn<DocumentRow>[] = [
     {
       header: 'Number',
-      cell: (d) =>
-        numberLink(d, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (d) => numberLink(d, 'text-sm font-medium hover:text-module hover:underline'),
     },
     {
       header: 'Kind',
@@ -79,11 +78,7 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
   ];
 
   const card: SelectionCard<DocumentRow> = {
-    title: (d) =>
-      numberLink(
-        d,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (d) => numberLink(d, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (d) => (
       <p className="text-base-content/70 text-xs">{stageLabels[d.stageId] ?? '—'}</p>
     ),

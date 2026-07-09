@@ -35,12 +35,19 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
               <a href="/tools" className="mkt-navlink" style={{ fontSize: '13px' }}>
                 Free tools
               </a>
-              <span style={{ color: 'var(--color-text-tertiary)', fontSize: '13px' }}>/</span>
+              <span
+                style={{
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                  fontSize: '13px',
+                }}
+              >
+                /
+              </span>
               <span
                 style={{
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {tool.name}
@@ -75,7 +82,7 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
                     fontFamily: 'var(--font-sans)',
                     fontSize: '18px',
                     lineHeight: '29px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     maxWidth: '660px',
                     margin: 0,
                   }}

@@ -6,7 +6,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { marketCategoryLabel } from '@sparx/commerce-schemas';
 
 import { AddToCart } from '@/components/add-to-cart';

@@ -71,16 +71,13 @@ function OptionRow({
   return (
     <CommandItem value={option.value} onSelect={onSelect}>
       <Check
-        className={cn(
-          'h-4 w-4 shrink-0',
-          selected ? 'text-[var(--module-active)] opacity-100' : 'opacity-0'
-        )}
+        className={cn('h-4 w-4 shrink-0', selected ? 'text-module opacity-100' : 'opacity-0')}
         aria-hidden
       />
       <span className="flex min-w-0 flex-col">
         <span className={cn('truncate text-sm', mono && 'font-mono text-xs')}>{option.value}</span>
         {option.label && (
-          <span className="truncate text-xs text-[var(--color-text-muted)]">{option.label}</span>
+          <span className="text-base-content/60 truncate text-xs">{option.label}</span>
         )}
       </span>
     </CommandItem>
@@ -104,7 +101,7 @@ function CustomRow({
         <Check className="h-4 w-4 shrink-0 opacity-0" aria-hidden />
         <span className="flex min-w-0 flex-col">
           <span className={cn('truncate text-sm', mono && 'font-mono text-xs')}>{text}</span>
-          <span className="text-xs text-[var(--color-text-muted)]">{hint}</span>
+          <span className="text-base-content/60 text-xs">{hint}</span>
         </span>
       </CommandItem>
     </CommandGroup>
@@ -169,15 +166,12 @@ export function Combobox({
           <span
             className={cn(
               'truncate text-sm',
-              value ? (mono ? 'font-mono' : '') : 'text-[var(--color-text-tertiary)]'
+              value ? (mono ? 'font-mono' : '') : 'text-base-content/50'
             )}
           >
             {value ? value : (placeholder ?? 'Choose or type…')}
           </span>
-          <ChevronsUpDown
-            className="ml-2 h-4 w-4 shrink-0 text-[var(--color-text-muted)]"
-            aria-hidden
-          />
+          <ChevronsUpDown className="text-base-content/60 ml-2 h-4 w-4 shrink-0" aria-hidden />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -274,8 +268,8 @@ export function MultiCombobox({
       <PopoverAnchor asChild>
         <div
           className={cn(
-            'flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 py-1.5',
-            'focus-within:ring-2 focus-within:ring-[var(--color-border-focus)]',
+            'flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-[var(--color-base-300)] bg-[var(--color-base-100)] px-2 py-1.5',
+            'focus-within:ring-2 focus-within:ring-[var(--color-primary)]',
             disabled && 'cursor-not-allowed opacity-50',
             triggerClassName
           )}
@@ -306,15 +300,12 @@ export function MultiCombobox({
               disabled={atMax || disabled}
               className={cn(
                 'flex flex-1 items-center justify-between gap-2 self-stretch text-left text-sm',
-                'text-[var(--color-text-tertiary)] disabled:cursor-not-allowed',
+                'text-base-content/50 disabled:cursor-not-allowed',
                 value.length > 0 && 'min-w-[6rem]'
               )}
             >
               <span className="truncate">{atMax ? `Max ${max} reached` : placeholder}</span>
-              <ChevronsUpDown
-                className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]"
-                aria-hidden
-              />
+              <ChevronsUpDown className="text-base-content/60 h-4 w-4 shrink-0" aria-hidden />
             </button>
           </PopoverTrigger>
         </div>

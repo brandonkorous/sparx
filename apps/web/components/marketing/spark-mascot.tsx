@@ -89,7 +89,7 @@ const TONES = {
   // shadow — the mark is flat linework so it sits flush with the rest of the UI,
   // which carries no shadows of its own.
   white: { ink: '#ffffff' },
-  indigo: { ink: 'var(--sparx-primary, #6366f1)' },
+  indigo: { ink: 'var(--color-primary, #6366f1)' },
 } as const;
 
 export function SparkMascot({

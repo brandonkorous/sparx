@@ -121,7 +121,7 @@ export default async function SupportPage({
       <Text size="xs" variant="muted">
         Cross-tenant search reads the platform search index. A tenant’s own index health and a
         rebuild live on that tenant’s{' '}
-        <Link href="/sparx/tenants" className="text-[var(--module-active-text)] hover:underline">
+        <Link href="/sparx/tenants" className="text-module hover:underline">
           detail page
         </Link>
         .
@@ -139,8 +139,8 @@ function ModeTab({ label, href, active }: { label: string; href: string; active:
       className={cn(
         'border-b-2 pb-1 text-sm font-medium transition-colors',
         active
-          ? 'border-[var(--module-active)] text-[var(--color-text-primary)]'
-          : 'border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
+          ? 'border-module text-base-content'
+          : 'text-base-content/60 hover:text-base-content border-transparent'
       )}
     >
       {label}

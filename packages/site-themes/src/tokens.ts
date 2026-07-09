@@ -44,13 +44,13 @@ export const TOKEN_KEYS: readonly ThemeTokenKey[] = [
 // Token → CSS custom properties it drives. Mirrors (and extends) the VAR_MAP
 // in apps/site/lib/theme.ts so light and dark share one mapping.
 export const TOKEN_CSS_VARS: Record<ThemeTokenKey, readonly string[]> = {
-  colorPrimary: ['--st-primary', '--sparx-primary', '--color-action-primary'],
+  colorPrimary: ['--st-primary', '--color-primary'],
   colorPrimaryForeground: ['--st-on-primary'],
   colorAccent: ['--st-accent'],
-  colorBackground: ['--st-bg', '--color-bg-page'],
-  colorForeground: ['--st-fg', '--color-text-primary'],
-  colorMuted: ['--st-bg-subtle', '--color-bg-subtle'],
-  colorBorder: ['--st-border', '--color-border-default'],
+  colorBackground: ['--st-bg', '--color-base-200'],
+  colorForeground: ['--st-fg', '--color-base-content'],
+  colorMuted: ['--st-bg-subtle', '--color-base-200'],
+  colorBorder: ['--st-border', '--color-base-300'],
   fontHeading: ['--st-font-heading'],
   fontBody: ['--st-font-body', '--font-sans'],
   radiusBase: ['--st-radius'],

@@ -3,7 +3,18 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Label, ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Checkbox, Input, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createContentType } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -71,6 +82,15 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
   const [schemaText, setSchemaText] = React.useState(initial?.schema ?? SAMPLE_SCHEMA);
   const [isSingleton, setIsSingleton] = React.useState(initial?.isSingleton ?? false);
   const [validationHint, setValidationHint] = React.useState<string | null>(null);
+
+  const v = useFieldValidation(
+    { key, name, plural_name: pluralName },
+    {
+      key: rule.required('Key is required.'),
+      name: rule.required('Name is required.'),
+      plural_name: rule.required('Plural name is required.'),
+    }
+  );
 
   React.useEffect(() => {
     try {
@@ -142,10 +162,7 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
 
   function submit() {
     setError(null);
-    if (!key.trim() || !name.trim() || !pluralName.trim()) {
-      setError('Key, name, and plural name are required.');
-      return;
-    }
+    if (!v.validate()) return;
     const data = new FormData();
     data.append('key', key.trim());
     data.append('name', name.trim());
@@ -192,72 +209,67 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                 <h3 className="text-xl font-semibold">Identity</h3>
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-row gap-3">
-                    <div className="flex flex-1 flex-col gap-1">
-                      <Label htmlFor="key" required>
-                        Key
-                      </Label>
-                      <Input
-                        id="key"
+                    <Field {...v.field('key')} className="flex-1">
+                      <FieldLabel required>Key</FieldLabel>
+                      <FieldControl
+                        name="key"
                         value={key}
                         onChange={(e) => setKey(e.target.value)}
+                        {...v.control('key')}
                         placeholder="case_study"
-                        required
-                        aria-required
                       />
-                      <p className="text-base-content/70 text-xs">
+                      <FieldDescription>
                         Immutable URL-safe identifier (lowercase, underscores).
-                      </p>
-                    </div>
-                    <div className="flex flex-1 flex-col gap-1">
-                      <Label htmlFor="name" required>
-                        Name
-                      </Label>
-                      <Input
-                        id="name"
+                      </FieldDescription>
+                    </Field>
+                    <Field {...v.field('name')} className="flex-1">
+                      <FieldLabel required>Name</FieldLabel>
+                      <FieldControl
+                        name="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        {...v.control('name')}
                         placeholder="Case study"
-                        required
-                        aria-required
                       />
-                    </div>
-                    <div className="flex flex-1 flex-col gap-1">
-                      <Label htmlFor="plural_name" required>
-                        Plural
-                      </Label>
-                      <Input
-                        id="plural_name"
+                    </Field>
+                    <Field {...v.field('plural_name')} className="flex-1">
+                      <FieldLabel required>Plural</FieldLabel>
+                      <FieldControl
+                        name="plural_name"
                         value={pluralName}
                         onChange={(e) => setPluralName(e.target.value)}
+                        {...v.control('plural_name')}
                         placeholder="Case studies"
-                        required
-                        aria-required
                       />
-                    </div>
+                    </Field>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
+                  <Field>
+                    <FieldLabel>Description</FieldLabel>
+                    <FieldControl
+                      name="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      rows={2}
-                      placeholder="Optional short note shown in the dashboard listing."
+                      render={
+                        <Textarea
+                          rows={2}
+                          placeholder="Optional short note shown in the dashboard listing."
+                        />
+                      }
                     />
-                  </div>
+                  </Field>
                   <div className="flex flex-row gap-3">
-                    <div className="flex flex-1 flex-col gap-1">
-                      <Label htmlFor="url_pattern">URL pattern (optional)</Label>
-                      <Input
-                        id="url_pattern"
+                    <Field className="flex-1">
+                      <FieldLabel>URL pattern (optional)</FieldLabel>
+                      <FieldControl
+                        name="url_pattern"
                         value={urlPattern}
                         onChange={(e) => setUrlPattern(e.target.value)}
                         placeholder="/case-studies/{slug}"
                       />
-                      <p className="text-base-content/70 text-xs">
+                      <FieldDescription>
                         Leave blank for non-routable types (referenced from other entries).
-                      </p>
-                    </div>
+                      </FieldDescription>
+                    </Field>
                     <div className="flex flex-col gap-1">
                       <Label htmlFor="is_singleton">Singleton?</Label>
                       <div className="flex flex-row items-center gap-2">
@@ -287,7 +299,7 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                   <code>reference</code>, <code>asset</code>, <code>object</code>,{' '}
                   <code>repeater</code>.
                 </p>
-                <div className="flex flex-col gap-2">
+                <Field>
                   <Textarea
                     value={schemaText}
                     onChange={(e) => setSchemaText(e.target.value)}
@@ -295,25 +307,21 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                     className="font-mono text-xs"
                     aria-label="Schema JSON"
                   />
-                  {validationHint && (
-                    <p
-                      className={`text-xs ${
-                        validationHint.startsWith('Looks good')
-                          ? 'text-base-content/70'
-                          : 'text-danger'
-                      }`}
-                      aria-live="polite"
-                    >
-                      {validationHint}
-                    </p>
-                  )}
-                </div>
+                  {validationHint &&
+                    (validationHint.startsWith('Looks good') ? (
+                      <FieldDescription aria-live="polite">{validationHint}</FieldDescription>
+                    ) : (
+                      <FieldStatus status="error" attached={false} aria-live="polite">
+                        {validationHint}
+                      </FieldStatus>
+                    ))}
+                </Field>
               </CardBody>
             </Card>
             {error && (
-              <p className="text-danger text-sm" role="alert" aria-live="polite">
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                 {error}
-              </p>
+              </FieldStatus>
             )}
           </div>
         </SurfaceStep>

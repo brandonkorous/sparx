@@ -8,10 +8,11 @@ import {
   Card,
   CardBody,
   CardTitle,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
   NativeSelect,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { CalendarOff, Trash2 } from 'lucide-react';
 
@@ -98,10 +99,9 @@ export function ExceptionsPanel({
         <CardTitle>Time off & exceptions</CardTitle>
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-1 items-end gap-2 sm:grid-cols-[8rem_1fr_1fr_auto]">
-            <div>
-              <Label htmlFor="ex-kind">Kind</Label>
+            <Field>
+              <FieldLabel>Kind</FieldLabel>
               <NativeSelect
-                id="ex-kind"
                 value={kind}
                 onChange={(e) => setKind(e.target.value as AvailabilityException['kind'])}
               >
@@ -111,37 +111,37 @@ export function ExceptionsPanel({
                   </option>
                 ))}
               </NativeSelect>
-            </div>
-            <div>
-              <Label htmlFor="ex-start">From</Label>
-              <Input
-                id="ex-start"
+            </Field>
+            <Field>
+              <FieldLabel>From</FieldLabel>
+              <FieldControl
                 type="datetime-local"
                 value={start}
                 onChange={(e) => setStart(e.target.value)}
               />
-            </div>
-            <div>
-              <Label htmlFor="ex-end">To</Label>
-              <Input
-                id="ex-end"
+            </Field>
+            <Field>
+              <FieldLabel>To</FieldLabel>
+              <FieldControl
                 type="datetime-local"
                 value={end}
                 onChange={(e) => setEnd(e.target.value)}
               />
-            </div>
+            </Field>
             <Button color="module" loading={saving} onClick={add}>
               Add
             </Button>
           </div>
-          <Input
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason (optional) — e.g. holiday, vacation"
-          />
+          <Field>
+            <FieldControl
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Reason (optional) — e.g. holiday, vacation"
+            />
+          </Field>
 
           {exceptions.length === 0 ? (
-            <p className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
+            <p className="text-base-content/70 flex items-center gap-2 text-sm">
               <CalendarOff className="h-4 w-4" />
               No exceptions — this resource follows its weekly hours.
             </p>
@@ -150,7 +150,7 @@ export function ExceptionsPanel({
               {exceptions.map((ex) => (
                 <div
                   key={ex.id}
-                  className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2"
+                  className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
                 >
                   <div className="flex items-center gap-3">
                     <Badge variant="soft" color={ex.resourceId ? 'neutral' : 'warning'}>
@@ -161,9 +161,7 @@ export function ExceptionsPanel({
                       {formatDateTime(ex.startAt)} → {formatDateTime(ex.endAt)}
                     </span>
                     {ex.reason ? (
-                      <span className="text-sm text-[var(--color-muted-foreground)]">
-                        {ex.reason}
-                      </span>
+                      <span className="text-base-content/70 text-sm">{ex.reason}</span>
                     ) : null}
                   </div>
                   <Button

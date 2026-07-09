@@ -9,7 +9,7 @@ import {
   statusLabel,
   statusTone,
 } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 import {
   bulkPublishEntriesAction,
@@ -116,8 +116,7 @@ export function ContentSelectionTable({
   const columns: SelectionColumn<ApiEntry>[] = [
     {
       header: 'Title',
-      cell: (e) =>
-        titleCell(e, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (e) => titleCell(e, 'text-sm font-medium hover:text-module hover:underline'),
     },
     ...(showType ? [{ header: 'Type', cell: typeBadge } satisfies SelectionColumn<ApiEntry>] : []),
     { header: 'Status', cell: statusBadge },
@@ -132,11 +131,7 @@ export function ContentSelectionTable({
   ];
 
   const card: SelectionCard<ApiEntry> = {
-    title: (e) =>
-      titleCell(
-        e,
-        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-      ),
+    title: (e) => titleCell(e, 'truncate text-sm font-medium hover:text-module hover:underline'),
     badge: statusBadge,
     body: (e) => (
       <div className="flex flex-row items-center justify-between gap-2">

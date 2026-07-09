@@ -9,7 +9,18 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Card, CardBody, CardTitle, Input, Label } from 'silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
+import { useFieldValidation } from '@sparx/forms';
 
 import { recordPaymentAction } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
@@ -31,7 +42,7 @@ interface PaymentsPanelProps {
 }
 
 const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
+  'flex h-9 w-full rounded-md border border-base-300 bg-base-100 px-2 text-sm text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 const KIND_OPTIONS = [
   { value: 'payment', label: 'Payment' },
@@ -62,12 +73,22 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
   const [amount, setAmount] = React.useState(balance > 0 ? String(balance.toFixed(2)) : '');
   const [reference, setReference] = React.useState('');
 
-  function record() {
-    const amt = Number(amount);
-    if (!(amt > 0)) {
-      setError('Enter a positive amount.');
-      return;
+  const v = useFieldValidation(
+    { amount },
+    {
+      amount: (val) => {
+        const n = Number(String(val).trim());
+        if (!Number.isFinite(n)) return 'Enter a valid amount.';
+        if (n <= 0) return 'Enter a positive amount.';
+        return null;
+      },
     }
+  );
+
+  function record() {
+    setError(null);
+    if (!v.validate()) return;
+    const amt = Number(amount);
     startTransition(async () => {
       setError(null);
       const res = await recordPaymentAction(documentId, {
@@ -99,8 +120,8 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
         </CardTitle>
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-12 items-end gap-2">
-            <div className="col-span-6 md:col-span-3">
-              <Label className="text-xs">Type</Label>
+            <Field className="col-span-6 md:col-span-3">
+              <FieldLabel className="text-xs">Type</FieldLabel>
               <select
                 className={SELECT_CLASS}
                 value={kind}
@@ -113,9 +134,9 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="col-span-6 md:col-span-3">
-              <Label className="text-xs">Method</Label>
+            </Field>
+            <Field className="col-span-6 md:col-span-3">
+              <FieldLabel className="text-xs">Method</FieldLabel>
               <select
                 className={SELECT_CLASS}
                 value={method}
@@ -128,10 +149,13 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="col-span-5 md:col-span-2">
-              <Label className="text-xs">Amount</Label>
-              <Input
+            </Field>
+            <Field {...v.field('amount')} className="col-span-5 md:col-span-2">
+              <FieldLabel className="text-xs" required>
+                Amount
+              </FieldLabel>
+              <FieldControl
+                name="amount"
                 type="number"
                 min="0"
                 step="0.01"
@@ -139,17 +163,19 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                 value={amount}
                 disabled={pending}
                 onChange={(e) => setAmount(e.target.value)}
+                {...v.control('amount')}
               />
-            </div>
-            <div className="col-span-7 md:col-span-3">
-              <Label className="text-xs">Reference</Label>
-              <Input
+            </Field>
+            <Field className="col-span-7 md:col-span-3">
+              <FieldLabel className="text-xs">Reference</FieldLabel>
+              <FieldControl
+                name="reference"
                 value={reference}
                 disabled={pending}
                 onChange={(e) => setReference(e.target.value)}
                 placeholder="Check #, memo…"
               />
-            </div>
+            </Field>
             <div className="col-span-12 flex md:col-span-1 md:justify-end">
               <Button
                 type="button"
@@ -165,9 +191,9 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
           </div>
 
           {error && (
-            <p className="text-danger text-sm" role="alert">
+            <FieldStatus status="error" attached={false} role="alert">
               {error}
-            </p>
+            </FieldStatus>
           )}
 
           {payments.length === 0 ? (
@@ -177,7 +203,7 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
               {payments.map((p) => (
                 <div
                   key={p.id}
-                  className="flex flex-row items-center justify-between rounded-md border border-[var(--color-border-default)] px-3 py-2"
+                  className="border-base-300 flex flex-row items-center justify-between rounded-md border px-3 py-2"
                 >
                   <div className="flex flex-row flex-wrap items-center gap-3">
                     <Badge

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, X } from 'lucide-react';
 
 import { useConfirm } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, Checkbox, Table } from 'silicaui-react';
+import { Badge, Button, Card, CardBody, Checkbox, Table } from '@wizeworks/silicaui-react';
 
 import {
   approvePriceReviewAction,
@@ -180,7 +180,7 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
       )}
 
       {selected.size > 0 && (
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3">
+        <div className="border-base-300 bg-base-200 flex flex-row flex-wrap items-center justify-between gap-3 rounded border px-4 py-3">
           <p className="text-sm">{selected.size} selected</p>
           <div className="flex flex-row gap-2">
             <Button

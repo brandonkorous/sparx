@@ -5,7 +5,18 @@ import { useRouter } from 'next/navigation';
 
 import type { ProviderEnvironment, ProviderKind } from '@sparx/commerce-schemas';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, Checkbox, Input, Label, NativeSelect, Textarea } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  NativeSelect,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 
 import { formString } from '../../../../../../lib/forms';
 import { installProviderAction } from '../../../provider-actions';
@@ -176,8 +187,8 @@ export function InstallProviderForm({
                   <div className="flex flex-col gap-4">
                     <p className="text-sm font-medium">Install</p>
                     <div className="flex flex-row flex-wrap gap-3">
-                      <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                        <Label htmlFor="environment">Environment *</Label>
+                      <Field className="min-w-[12rem] flex-1">
+                        <FieldLabel required>Environment</FieldLabel>
                         <NativeSelect
                           id="environment"
                           name="environment"
@@ -186,20 +197,19 @@ export function InstallProviderForm({
                           {sandboxAvailable && <option value="sandbox">sandbox</option>}
                           <option value="production">production</option>
                         </NativeSelect>
-                      </div>
-                      <div className="flex min-w-[14rem] flex-1 flex-col gap-2">
-                        <Label htmlFor="label">Label</Label>
-                        <Input
-                          id="label"
+                      </Field>
+                      <Field className="min-w-[14rem] flex-1">
+                        <FieldLabel>Label</FieldLabel>
+                        <FieldControl
                           name="label"
                           placeholder={`${displayName} — primary`}
                           maxLength={127}
                         />
-                        <p className="text-base-content/70 text-xs">
+                        <FieldDescription>
                           Distinguishes multiple installs of the same provider (e.g. US vs EU
                           entity).
-                        </p>
-                      </div>
+                        </FieldDescription>
+                      </Field>
                     </div>
                   </div>
                 </CardBody>
@@ -223,9 +233,9 @@ export function InstallProviderForm({
                         />
                       ))
                     )}
-                    <div className="flex flex-col gap-1 rounded bg-[var(--color-bg-subtle)] p-3">
+                    <div className="bg-base-200 flex flex-col gap-1 rounded p-3">
                       <p className="text-xs font-medium">Webhook path</p>
-                      <p className="font-mono text-xs text-[var(--color-text-muted)]">
+                      <p className="text-base-content/60 font-mono text-xs">
                         {webhookPathTemplate}
                       </p>
                       <p className="text-base-content/70 text-xs">
@@ -238,9 +248,9 @@ export function InstallProviderForm({
               </Card>
 
               {error && (
-                <p className="text-danger text-sm" role="alert" aria-live="polite">
+                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                   {error}
-                </p>
+                </FieldStatus>
               )}
             </div>
           </form>
@@ -260,29 +270,32 @@ function ConfigField({
   required: boolean;
 }) {
   const id = `config:${fieldKey}`;
-  return (
-    <div className="flex flex-col gap-1">
-      <Label htmlFor={id}>
-        {prop.title ?? fieldKey}
-        {required && <span className="text-[var(--color-danger)]"> *</span>}
-      </Label>
-      {prop.type === 'boolean' ? (
+  const label = prop.title ?? fieldKey;
+
+  if (prop.type === 'boolean') {
+    return (
+      <Field>
+        <FieldLabel required={required}>{label}</FieldLabel>
         <label className="flex items-center gap-2">
-          <Checkbox color="module" id={id} name={id} defaultChecked={prop.default === true} />
+          <Checkbox color="module" name={id} defaultChecked={prop.default === true} />
           <p className="text-base-content/70 text-sm">{prop.description ?? 'Enable'}</p>
         </label>
-      ) : prop.description && prop.description.length > 80 ? (
-        <Textarea
-          id={id}
+      </Field>
+    );
+  }
+
+  return (
+    <Field>
+      <FieldLabel required={required}>{label}</FieldLabel>
+      {prop.description && prop.description.length > 80 ? (
+        <FieldControl
+          render={<Textarea rows={2} className="font-mono text-xs" />}
           name={id}
-          rows={2}
           required={required}
           defaultValue={typeof prop.default === 'string' ? prop.default : undefined}
-          className="font-mono text-xs"
         />
       ) : (
-        <Input
-          id={id}
+        <FieldControl
           name={id}
           required={required}
           pattern={prop.pattern}
@@ -294,9 +307,7 @@ function ConfigField({
           }
         />
       )}
-      {prop.type !== 'boolean' && prop.description && (
-        <p className="text-base-content/70 text-xs">{prop.description}</p>
-      )}
-    </div>
+      {prop.description && <FieldDescription>{prop.description}</FieldDescription>}
+    </Field>
   );
 }

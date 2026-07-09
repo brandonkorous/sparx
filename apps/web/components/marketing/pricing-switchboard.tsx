@@ -35,7 +35,7 @@ const MODULES: Mod[] = [
     desc: 'Themes, pages, live URLs',
     price: 10,
     elsewhere: 39,
-    color: 'var(--module-builder)',
+    color: 'var(--color-module-builder)',
     long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
@@ -51,7 +51,7 @@ const MODULES: Mod[] = [
     desc: 'Cart, checkout, orders',
     price: 49,
     elsewhere: 399,
-    color: 'var(--module-commerce)',
+    color: 'var(--color-module-commerce)',
     long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.',
     feats: [
       'Variants, bundles, real-time inventory',
@@ -67,7 +67,7 @@ const MODULES: Mod[] = [
     desc: 'Words, media, SEO',
     price: 49,
     elsewhere: 99,
-    color: 'var(--module-cms)',
+    color: 'var(--color-module-cms)',
     long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
     feats: [
       'Block editor, autosave + revisions',
@@ -83,7 +83,7 @@ const MODULES: Mod[] = [
     desc: 'Customers, pipeline, signal',
     price: 49,
     elsewhere: 300,
-    color: 'var(--module-crm)',
+    color: 'var(--color-module-crm)',
     long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
     feats: [
       'One record, no deduping',
@@ -99,7 +99,7 @@ const MODULES: Mod[] = [
     desc: 'Transactional + marketing',
     price: 29,
     elsewhere: 165,
-    color: 'var(--module-email)',
+    color: 'var(--color-module-email)',
     long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.',
     feats: [
       'Transactional wired into every module',
@@ -115,7 +115,7 @@ const MODULES: Mod[] = [
     desc: 'Wholesale, net terms, fleet',
     price: 99,
     elsewhere: 2400,
-    color: 'var(--module-b2b)',
+    color: 'var(--color-module-b2b)',
     long: 'Wholesale pricing, net terms, purchase orders, RFQ, and fleet accounts — natively, not a bolt-on. Built for how industrial actually works.',
     feats: [
       'Account-tier + contract pricing',
@@ -131,7 +131,7 @@ const MODULES: Mod[] = [
     desc: 'Native MCP server',
     price: 49,
     elsewhere: 103,
-    color: 'var(--module-ai)',
+    color: 'var(--color-module-ai)',
     long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.',
     feats: [
       'First-class MCP server, per-tenant',
@@ -147,7 +147,7 @@ const MODULES: Mod[] = [
     desc: 'Suppliers, sync, fulfillment',
     price: 29,
     elsewhere: 60,
-    color: 'var(--module-dropship)',
+    color: 'var(--color-module-dropship)',
     long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
     feats: [
       'Supplier connectors + CSV/FTP/API',
@@ -163,7 +163,7 @@ const MODULES: Mod[] = [
     desc: 'Appointments, classes, bookings',
     price: 29,
     elsewhere: 61,
-    color: 'var(--module-scheduling)',
+    color: 'var(--color-module-scheduling)',
     long: 'Appointments, classes, reservations, and rentals on one engine, with deposits, reminders, waitlists, and calendar sync. Unlimited staff, resources, and bookings — no per-seat or per-cover fee, ever.',
     feats: [
       'Appointments, classes, reservations, rentals',
@@ -179,7 +179,7 @@ const MODULES: Mod[] = [
     desc: 'Estimates, invoices, AR',
     price: 19,
     elsewhere: 30,
-    color: 'var(--module-invoicing)',
+    color: 'var(--color-module-invoicing)',
     long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
     feats: [
       'Estimate → invoice workflows you name',
@@ -196,7 +196,7 @@ const MODULES: Mod[] = [
     desc: 'Stock, warehouses, ledger',
     price: 29,
     elsewhere: 99,
-    color: 'var(--module-inventory)',
+    color: 'var(--color-module-inventory)',
     long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
     feats: [
       'Multi-warehouse on-hand / allocated / available',
@@ -213,7 +213,7 @@ const MODULES: Mod[] = [
     desc: 'Widget, AI replies, inbox',
     price: 19,
     elsewhere: 74,
-    color: 'var(--module-chat)',
+    color: 'var(--color-module-chat)',
     long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
     feats: [
       'On-site widget in your theme',
@@ -326,7 +326,7 @@ export function PricingSwitchboard() {
               fontFamily: 'var(--font-sans)',
               fontSize: '17px',
               lineHeight: '27px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Every module is one toggle. Flip it and the bill on the right changes the instant you do
@@ -351,7 +351,7 @@ export function PricingSwitchboard() {
                       fontFamily: 'var(--font-sans)',
                       fontWeight: 500,
                       fontSize: '13px',
-                      color: 'var(--color-text-tertiary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                     }}
                   >
                     Add-ons
@@ -360,9 +360,7 @@ export function PricingSwitchboard() {
                 <div
                   style={{
                     borderBottom:
-                      i === MODULES.length - 1
-                        ? undefined
-                        : '1px solid var(--color-border-default)',
+                      i === MODULES.length - 1 ? undefined : '1px solid var(--color-base-300)',
                   }}
                 >
                   <div
@@ -408,7 +406,7 @@ export function PricingSwitchboard() {
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 500,
                             fontSize: '16px',
-                            color: 'var(--color-text-primary)',
+                            color: 'var(--color-base-content)',
                           }}
                         >
                           {m.name}
@@ -419,7 +417,7 @@ export function PricingSwitchboard() {
                         style={{
                           fontFamily: 'var(--font-sans)',
                           fontSize: '13px',
-                          color: 'var(--color-text-tertiary)',
+                          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                         }}
                       >
                         {m.desc}
@@ -437,9 +435,12 @@ export function PricingSwitchboard() {
                             lineHeight: '16px',
                             backgroundColor:
                               lock === 'included'
-                                ? 'var(--color-success-tint)'
-                                : 'var(--color-bg-muted, #f1f1f3)',
-                            color: lock === 'included' ? '#065F46' : 'var(--color-text-secondary)',
+                                ? 'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))'
+                                : 'var(--color-base-300)',
+                            color:
+                              lock === 'included'
+                                ? '#065F46'
+                                : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                           }}
                         >
                           {reason}
@@ -456,10 +457,10 @@ export function PricingSwitchboard() {
                         textAlign: 'right',
                         color:
                           lock === 'included'
-                            ? 'var(--color-success-text, #065F46)'
+                            ? 'var(--color-success)'
                             : isOn
-                              ? 'var(--color-text-primary)'
-                              : 'var(--color-text-tertiary)',
+                              ? 'var(--color-base-content)'
+                              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                       }}
                     >
                       {lock === 'included' ? 'Included' : `+ $${m.price}`}
@@ -524,7 +525,7 @@ export function PricingSwitchboard() {
                           fontFamily: 'var(--font-sans)',
                           fontSize: '14px',
                           lineHeight: '22px',
-                          color: 'var(--color-text-secondary)',
+                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                         }}
                       >
                         {m.long}
@@ -550,7 +551,8 @@ export function PricingSwitchboard() {
                               maxWidth: '100%',
                               fontFamily: 'var(--font-sans)',
                               fontSize: '13.5px',
-                              color: 'var(--color-text-secondary)',
+                              color:
+                                'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                             }}
                           >
                             <span
@@ -570,11 +572,17 @@ export function PricingSwitchboard() {
                         style={{
                           fontFamily: 'var(--font-sans)',
                           fontSize: '13px',
-                          color: 'var(--color-text-tertiary)',
+                          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                         }}
                       >
                         Replaces {m.replaces} — about{' '}
-                        <b style={{ fontWeight: 500, color: 'var(--color-text-secondary)' }}>
+                        <b
+                          style={{
+                            fontWeight: 500,
+                            color:
+                              'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                          }}
+                        >
                           ${m.elsewhere}/mo
                         </b>{' '}
                         bought separately.
@@ -592,8 +600,8 @@ export function PricingSwitchboard() {
       <aside
         className="mkt-pricing-plan"
         style={{
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border-default)',
+          backgroundColor: 'var(--color-base-100)',
+          border: '1px solid var(--color-base-300)',
           borderRadius: '16px',
           boxShadow: '0 16px 44px rgba(15, 15, 20, 0.08)',
           overflow: 'hidden',
@@ -613,7 +621,7 @@ export function PricingSwitchboard() {
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 500,
                 fontSize: '15px',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               Your plan
@@ -639,7 +647,7 @@ export function PricingSwitchboard() {
                 fontSize: '84px',
                 lineHeight: '80px',
                 letterSpacing: '-0.04em',
-                color: 'var(--color-text-primary)',
+                color: 'var(--color-base-content)',
               }}
             >
               ${total}
@@ -648,7 +656,7 @@ export function PricingSwitchboard() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '22px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               /mo
@@ -658,7 +666,7 @@ export function PricingSwitchboard() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '13px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Billed monthly · one invoice for everything
@@ -680,7 +688,7 @@ export function PricingSwitchboard() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               Flip on a module to start.
@@ -698,7 +706,7 @@ export function PricingSwitchboard() {
                     gap: '10px',
                     fontFamily: 'var(--font-sans)',
                     fontSize: '14px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   <span
@@ -719,8 +727,8 @@ export function PricingSwitchboard() {
                     fontSize: '14px',
                     color:
                       lockOf(m.key) === 'included'
-                        ? 'var(--color-success-text, #065F46)'
-                        : 'var(--color-text-primary)',
+                        ? 'var(--color-success)'
+                        : 'var(--color-base-content)',
                   }}
                 >
                   {lockOf(m.key) === 'included' ? 'Included' : `$${m.price}`}
@@ -744,7 +752,7 @@ export function PricingSwitchboard() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '13px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               Same stack, stitched together
@@ -753,7 +761,7 @@ export function PricingSwitchboard() {
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 textDecoration: 'line-through',
               }}
             >
@@ -766,7 +774,8 @@ export function PricingSwitchboard() {
               alignItems: 'center',
               gap: '9px',
               padding: '10px 12px',
-              backgroundColor: 'var(--color-success-tint)',
+              backgroundColor:
+                'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
               borderRadius: '8px',
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
@@ -795,7 +804,7 @@ export function PricingSwitchboard() {
             style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '12px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               textAlign: 'center',
             }}
           >

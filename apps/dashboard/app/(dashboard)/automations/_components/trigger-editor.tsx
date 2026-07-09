@@ -9,7 +9,7 @@
 //                it reuses <ConditionEditor>.
 
 import * as React from 'react';
-import { Button, Input, Label, Select } from 'silicaui-react';
+import { Button, Input, Label, Select } from '@wizeworks/silicaui-react';
 import { Combobox } from '@sparx/ui';
 import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
 import { DAYS_OF_WEEK, SCAN_ENTITIES, SCHEDULE_CADENCES, TRIGGER_EVENTS } from '../_lib/catalog';
@@ -123,7 +123,7 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
             options={eventSuggestions.map((e) => ({ value: e.eventType, label: e.label }))}
             onChange={(eventType) => onChange({ kind: 'event', eventType })}
           />
-          <p className="text-xs text-[var(--color-text-tertiary)]">
+          <p className="text-base-content/50 text-xs">
             The bus event that fires this automation. Pick a suggestion or type any event type.
           </p>
         </div>
@@ -217,7 +217,7 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
           </div>
 
           {/* predicate */}
-          <div className="flex flex-col gap-3 rounded-md border border-[var(--color-border-default)] p-3">
+          <div className="border-base-300 flex flex-col gap-3 rounded-md border p-3">
             <div className="flex flex-col gap-1.5">
               <Label>Scan</Label>
               <Select

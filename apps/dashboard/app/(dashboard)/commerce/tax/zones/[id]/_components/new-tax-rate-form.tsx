@@ -3,9 +3,17 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+} from '@wizeworks/silicaui-react';
 
-import { formBool, formNumber, formString } from '../../../../../../../lib/forms';
+import { rule, useFieldValidation } from '@sparx/forms';
+
 import { createTaxRateAction } from '../../../../tax-actions';
 
 export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
@@ -13,30 +21,48 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
+  const [name, setName] = React.useState('');
+  const [percent, setPercent] = React.useState('');
+  const [productTaxClass, setProductTaxClass] = React.useState('');
+  const [appliesToShipping, setAppliesToShipping] = React.useState(false);
+
+  const values = { name, percent, productTaxClass, appliesToShipping };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    percent: (val) => {
+      const raw = String(val).trim();
+      const n = Number(raw);
+      if (raw === '' || !Number.isFinite(n)) return 'Enter a rate.';
+      if (n < 0) return 'Rate cannot be negative.';
+      if (n > 100) return 'Rate must be between 0 and 100%.';
+      return null;
+    },
+  });
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    const form = new FormData(e.currentTarget);
-    const name = formString(form, 'name').trim();
-    const percent = formNumber(form, 'percent');
-    const appliesToShipping = formBool(form, 'appliesToShipping');
-    const productTaxClass = formString(form, 'productTaxClass').trim();
+    if (!v.validate()) return;
 
-    if (percent < 0 || percent > 100) {
-      setError('Rate must be between 0 and 100%');
-      return;
-    }
+    const trimmedName = name.trim();
+    const percentValue = Number(percent.trim());
+    const trimmedClass = productTaxClass.trim();
 
     startTransition(async () => {
       const result = await createTaxRateAction({
         zoneId,
-        name,
-        rateBasisPoints: Math.round(percent * 100),
+        name: trimmedName,
+        rateBasisPoints: Math.round(percentValue * 100),
         appliesToShipping,
-        ...(productTaxClass ? { productTaxClass } : {}),
+        ...(trimmedClass ? { productTaxClass: trimmedClass } : {}),
       });
       if (!result.ok) {
-        setError(result.error.message);
+        const known = (result.error.details ?? []).filter((d) => d.field in values);
+        if (known.length) {
+          v.setServerErrors(Object.fromEntries(known.map((d) => [d.field, d.message])));
+        } else {
+          setError(result.error.message);
+        }
         return;
       }
       router.refresh();
@@ -44,44 +70,57 @@ export function NewTaxRateForm({ zoneId }: { zoneId: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-3">
         <div className="flex flex-row flex-wrap gap-3">
-          <div className="flex min-w-[14rem] flex-col gap-1">
-            <Label htmlFor="name">Name *</Label>
-            <Input id="name" name="name" required placeholder="California sales tax" />
-          </div>
-          <div className="flex w-32 flex-col gap-1">
-            <Label htmlFor="percent">Rate (%) *</Label>
-            <Input
-              id="percent"
+          <Field {...v.field('name')} className="min-w-[14rem]">
+            <FieldLabel required>Name</FieldLabel>
+            <FieldControl
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="California sales tax"
+              {...v.control('name')}
+            />
+          </Field>
+          <Field {...v.field('percent')} className="w-32">
+            <FieldLabel required>Rate (%)</FieldLabel>
+            <FieldControl
               name="percent"
               type="number"
               step="0.01"
               min="0"
               max="100"
-              required
+              value={percent}
+              onChange={(e) => setPercent(e.target.value)}
               placeholder="8.25"
+              {...v.control('percent')}
             />
-          </div>
-          <div className="flex min-w-[10rem] flex-col gap-1">
-            <Label htmlFor="productTaxClass">Product tax class</Label>
-            <Input
-              id="productTaxClass"
+          </Field>
+          <Field className="min-w-[10rem]">
+            <FieldLabel>Product tax class</FieldLabel>
+            <FieldControl
               name="productTaxClass"
+              value={productTaxClass}
+              onChange={(e) => setProductTaxClass(e.target.value)}
               placeholder="prepared_food"
               maxLength={63}
             />
-          </div>
+          </Field>
         </div>
         <label className="flex items-center gap-2">
-          <Checkbox color="module" name="appliesToShipping" />
+          <Checkbox
+            color="module"
+            name="appliesToShipping"
+            checked={appliesToShipping}
+            onChange={(e) => setAppliesToShipping(e.target.checked)}
+          />
           <span className="text-sm">Apply this rate to shipping charges too</span>
         </label>
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
         <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>

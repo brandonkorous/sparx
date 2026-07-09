@@ -1,5 +1,12 @@
 import { PageHeader, statusLabel, statusTone } from '@sparx/ui';
-import { Badge, Card, CardActions, CardBody, CardTitle, EmptyState } from 'silicaui-react';
+import {
+  Badge,
+  Card,
+  CardActions,
+  CardBody,
+  CardTitle,
+  EmptyState,
+} from '@wizeworks/silicaui-react';
 import { Image as ImageIcon } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { EntityRowLink } from '../../_components/entity-row-link';
@@ -96,7 +103,7 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
         className="block"
       >
         <div
-          className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-[var(--color-bg-subtle)]"
+          className="bg-base-200 relative flex aspect-square w-full items-center justify-center overflow-hidden"
           style={asset.dominant_color ? { backgroundColor: asset.dominant_color } : undefined}
         >
           {isImage && thumb ? (
@@ -107,7 +114,7 @@ function MediaCard({ asset }: { asset: MediaAsset }) {
               loading="lazy"
             />
           ) : (
-            <ImageIcon className="h-10 w-10 text-[var(--color-text-muted)]" />
+            <ImageIcon className="text-base-content/60 h-10 w-10" />
           )}
           {asset.status !== 'ready' && (
             <Badge

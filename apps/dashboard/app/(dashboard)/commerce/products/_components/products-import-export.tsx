@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Upload } from 'lucide-react';
 import { ImportDialog, ExportButton, type ImportJobResult } from '@sparx/ui';
-import { Button } from 'silicaui-react';
+import { Button } from '@wizeworks/silicaui-react';
 import { parseXlsxAction } from '@/lib/parse-xlsx-action';
 import { submitProductImportAction, getProductImportStatusAction } from '../../product-actions';
 

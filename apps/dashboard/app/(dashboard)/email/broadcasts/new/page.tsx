@@ -1,5 +1,5 @@
 import { PageHeader } from '@sparx/ui';
-import { Card, CardBody, CardTitle } from 'silicaui-react';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { BroadcastComposer, type BuilderEmailOption } from '../_components/broadcast-composer';

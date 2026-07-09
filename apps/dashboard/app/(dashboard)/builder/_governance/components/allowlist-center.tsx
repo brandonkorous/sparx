@@ -108,7 +108,7 @@ export function AllowlistCenter({
         <CardContent>
           <Stack gap={3}>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[var(--module-active)]" aria-hidden />
+              <ShieldCheck className="text-module h-4 w-4" aria-hidden />
               <Text weight="medium">Platform protections</Text>
               <Badge color="success" variant="soft" size="sm">
                 Always on
@@ -121,10 +121,7 @@ export function AllowlistCenter({
             <Stack gap={2}>
               {initial.base.map((rule) => (
                 <div key={rule.label} className="flex items-start gap-2.5">
-                  <Lock
-                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--color-text-tertiary)]"
-                    aria-hidden
-                  />
+                  <Lock className="text-base-content/50 mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
                   <Text size="sm">
                     <span className="font-mono">{rule.label}</span> — {rule.reason}
                   </Text>

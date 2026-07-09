@@ -1,7 +1,7 @@
 'use client';
 
 import { type SelectionCard, type SelectionColumn, SelectionList } from '@sparx/ui';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Pencil } from 'lucide-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
@@ -63,10 +63,7 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
       header: 'Name',
       cell: (t) => (
         <div className="flex min-w-0 flex-col gap-1">
-          {nameLink(
-            t,
-            'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
-          )}
+          {nameLink(t, 'truncate text-sm font-medium hover:text-module hover:underline')}
           <p className="text-base-content/70 truncate text-xs">
             <code>{t.key}</code>
           </p>
@@ -88,8 +85,7 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
   ];
 
   const card: SelectionCard<TaxonomyListItem> = {
-    title: (t) =>
-      nameLink(t, 'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (t) => nameLink(t, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (t) => (
       <p className="text-base-content/70 text-xs">
         <code>{t.key}</code>

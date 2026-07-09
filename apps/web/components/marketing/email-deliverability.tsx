@@ -52,8 +52,8 @@ export function EmailKinds() {
               flexDirection: 'column',
               gap: '16px',
               padding: '30px',
-              backgroundColor: i === 0 ? moduleTint(E.color) : 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border-default)',
+              backgroundColor: i === 0 ? moduleTint(E.color) : 'var(--color-base-100)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
@@ -85,7 +85,7 @@ export function EmailKinds() {
                 fontFamily: SANS,
                 fontSize: '14.5px',
                 lineHeight: '23px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {p.body}
@@ -108,9 +108,9 @@ function FlowLine({ steps }: { steps: [string, string, string] }) {
         gap: '8px',
         fontFamily: MONO,
         fontSize: '12px',
-        color: 'var(--color-text-secondary)',
-        backgroundColor: 'var(--color-bg-page)',
-        border: '1px solid var(--color-border-default)',
+        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+        backgroundColor: 'var(--color-base-200)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '10px',
         padding: '13px 15px',
         marginTop: 'auto',
@@ -123,9 +123,12 @@ function FlowLine({ steps }: { steps: [string, string, string] }) {
               padding: '4px 9px',
               borderRadius: '6px',
               whiteSpace: 'nowrap',
-              backgroundColor: i === 1 ? E.tint : 'var(--color-bg-surface)',
-              border: `1px solid ${i === 1 ? E.color : 'var(--color-border-default)'}`,
-              color: i === 1 ? E.text : 'var(--color-text-secondary)',
+              backgroundColor: i === 1 ? E.tint : 'var(--color-base-100)',
+              border: `1px solid ${i === 1 ? E.color : 'var(--color-base-300)'}`,
+              color:
+                i === 1
+                  ? E.text
+                  : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             {s}
@@ -163,8 +166,8 @@ function SenderHealth() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -175,8 +178,8 @@ function SenderHealth() {
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <span
@@ -224,7 +227,7 @@ function HealthRow({
         alignItems: 'center',
         gap: '11px',
         padding: '15px 20px',
-        borderTop: first ? 'none' : '1px solid var(--color-bg-subtle)',
+        borderTop: first ? 'none' : '1px solid var(--color-base-200)',
         fontFamily: SANS,
         fontSize: '14px',
       }}
@@ -260,8 +263,11 @@ function Pill({ label, tone }: { label: string; tone: 'email' | 'muted' }) {
         fontSize: '11px',
         padding: '3px 9px',
         borderRadius: '9999px',
-        backgroundColor: tone === 'email' ? E.tint : 'var(--color-bg-subtle)',
-        color: tone === 'email' ? E.text : 'var(--color-text-secondary)',
+        backgroundColor: tone === 'email' ? E.tint : 'var(--color-base-200)',
+        color:
+          tone === 'email'
+            ? E.text
+            : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
       }}
     >
       {label}

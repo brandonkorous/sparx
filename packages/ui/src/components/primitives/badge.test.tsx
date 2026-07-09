@@ -11,18 +11,18 @@ describe('Badge', () => {
   it('applies the neutral color by default', () => {
     render(<Badge>Default</Badge>);
     const badge = screen.getByText('Default');
-    expect(badge.className).toMatch(/sx-c-neutral/);
+    expect(badge.className).toMatch(/badge-neutral/);
   });
 
   it('carries the module color class for color="module"', () => {
     render(<Badge color="module">Module</Badge>);
     const badge = screen.getByText('Module');
-    expect(badge.className).toMatch(/sx-c-module/);
+    expect(badge.className).toMatch(/badge-module/);
   });
 
   it('carries the success color class for color="success"', () => {
     render(<Badge color="success">Published</Badge>);
     const badge = screen.getByText('Published');
-    expect(badge.className).toMatch(/sx-c-success/);
+    expect(badge.className).toMatch(/badge-success/);
   });
 });

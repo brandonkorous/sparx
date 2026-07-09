@@ -19,10 +19,12 @@ import {
   Button,
   Card,
   CardBody,
-  Label,
+  Field,
+  FieldLabel,
+  FieldStatus,
   Select,
   Switch,
-} from 'silicaui-react';
+} from '@wizeworks/silicaui-react';
 
 import { setProductMarketStateAction } from '../../../product-actions';
 
@@ -90,10 +92,7 @@ export function ProductMarketPanel({
                 <AlertTitle>Join sparx.market first</AlertTitle>
                 <AlertDescription>
                   Your store isn’t selling on sparx.market yet. Enable it in{' '}
-                  <Link
-                    href="/commerce/market"
-                    className="font-medium text-[var(--module-active)] hover:underline"
-                  >
+                  <Link href="/commerce/market" className="text-module font-medium hover:underline">
                     Commerce → sparx.market
                   </Link>{' '}
                   to list products.
@@ -110,7 +109,7 @@ export function ProductMarketPanel({
               aria-label="List on sparx.market"
             />
             <div className="flex flex-col gap-0">
-              <Label>List on sparx.market</Label>
+              <FieldLabel>List on sparx.market</FieldLabel>
               <p className="text-base-content/70 text-xs">
                 {listed ? 'Visible on the marketplace.' : 'Not listed on the marketplace.'}
               </p>
@@ -118,8 +117,8 @@ export function ProductMarketPanel({
           </div>
 
           {listed && (
-            <div className="flex max-w-xs flex-col gap-2">
-              <Label htmlFor="market-product-category">Category</Label>
+            <Field className="max-w-xs">
+              <FieldLabel htmlFor="market-product-category">Category</FieldLabel>
               <Select
                 id="market-product-category"
                 value={category}
@@ -130,17 +129,23 @@ export function ProductMarketPanel({
               <p className="text-base-content/70 text-xs">
                 Which marketplace aisle this product appears in.
               </p>
-            </div>
+            </Field>
           )}
 
           <div className="flex flex-row flex-wrap items-center justify-end gap-3">
             {error && (
-              <p className="text-danger mr-auto text-sm" role="alert" aria-live="polite">
+              <FieldStatus
+                status="error"
+                attached={false}
+                role="alert"
+                aria-live="polite"
+                className="mr-auto"
+              >
                 {error}
-              </p>
+              </FieldStatus>
             )}
             {savedAt !== null && !dirty && (
-              <div className="flex flex-row items-center gap-1 text-[var(--color-success-text)]">
+              <div className="text-success flex flex-row items-center gap-1">
                 <Check className="h-4 w-4" />
                 <p className="text-success text-sm">Saved</p>
               </div>

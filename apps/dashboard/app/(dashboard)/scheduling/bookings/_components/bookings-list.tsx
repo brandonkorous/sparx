@@ -1,4 +1,4 @@
-import { Badge, Table } from 'silicaui-react';
+import { Badge, Table } from '@wizeworks/silicaui-react';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import type { Booking } from '../../_lib/types';
@@ -29,7 +29,7 @@ const DEPOSIT: Record<
 
 function DepositCell({ status }: { status: string | null }) {
   const dep = status ? DEPOSIT[status] : undefined;
-  if (!dep) return <span className="text-[var(--color-muted-foreground)]">—</span>;
+  if (!dep) return <span className="text-base-content/70">—</span>;
   return (
     <Badge color={dep.color} variant="soft">
       {dep.label}
@@ -59,7 +59,7 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
                 href={`/scheduling/bookings/${b.id}`}
                 entityType="booking"
                 entityId={b.id}
-                className="hover:text-[var(--module-active)] hover:underline"
+                className="hover:text-module hover:underline"
               >
                 {formatDateTime(b.startAt, b.timezone)}
               </EntityRowLink>
@@ -67,14 +67,14 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
             <td>
               <span className="flex flex-col">
                 <span>{b.service.name}</span>
-                <span className="text-xs text-[var(--color-muted-foreground)]">
+                <span className="text-base-content/70 text-xs">
                   {BOOKING_TYPE_LABEL[b.bookingType]}
                   {b.partySize ? ` · party of ${b.partySize}` : ''}
                 </span>
               </span>
             </td>
             <td>{customerLabel(b)}</td>
-            <td className="text-[var(--color-muted-foreground)]">
+            <td className="text-base-content/70">
               {b.resources.map((r) => r.resource.name).join(', ') || '—'}
             </td>
             <td>

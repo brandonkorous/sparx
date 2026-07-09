@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ExternalLink, ShieldCheck, Store } from 'lucide-react';
-import { Button, Card } from 'silicaui-react';
+import { Button, Card } from '@wizeworks/silicaui-react';
 
 export function SellerAttribution({
   merchantSlug,

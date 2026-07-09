@@ -4,11 +4,19 @@
 // action (React 19 form action), which forwards to the platform's public careers
 // API and uploads the résumé PDF. On success the whole form swaps for an inline
 // confirmation. Mirrors the /early waitlist form's structure (useActionState +
-// useFormStatus SubmitButton + honeypot + inline-CSS-var field styling).
+// client-gated validation + honeypot + inline-CSS-var field styling).
 
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
-import { Button, Input, Label, Textarea } from '@sparx/ui';
+import { useActionState, useState } from 'react';
+import {
+  Button,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { Spark } from '@/components/marketing/primitives';
 import { submitApplication, type ApplicationState } from '../actions';
 
@@ -18,24 +26,18 @@ const labelStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '13px',
   fontWeight: 500,
-  color: 'var(--color-text-primary)',
+  color: 'var(--color-base-content)',
 };
 
 const optionalStyle: React.CSSProperties = {
-  color: 'var(--color-text-tertiary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
   fontWeight: 400,
-};
-
-const fieldStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '7px',
 };
 
 const hintStyle: React.CSSProperties = {
   fontFamily: 'var(--font-sans)',
   fontSize: '12px',
-  color: 'var(--color-text-tertiary)',
+  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
 };
 
 export interface ApplyFormRole {
@@ -45,30 +47,50 @@ export interface ApplyFormRole {
   interestPrompt?: string;
 }
 
-type TextFieldProps = { label: string; optional?: boolean } & React.ComponentProps<typeof Input>;
+type TextFieldProps = {
+  label: string;
+  optional?: boolean;
+  fieldStatus?: { status?: 'error' | 'warning' | 'success'; statusMessage?: string };
+} & React.ComponentProps<'input'>;
 
-function TextField({ label, optional, ...input }: TextFieldProps) {
+function TextField({ label, optional, fieldStatus, ...control }: TextFieldProps) {
   return (
-    <div style={fieldStyle}>
-      <Label htmlFor={input.id} style={labelStyle}>
+    <Field {...fieldStatus}>
+      <FieldLabel required={!optional} style={labelStyle}>
         {label}
         {optional ? <span style={optionalStyle}> (optional)</span> : null}
-      </Label>
-      <Input {...input} />
-    </div>
+      </FieldLabel>
+      <FieldControl {...control} />
+    </Field>
   );
 }
 
 export function ApplyForm({ role }: { role: ApplyFormRole }) {
-  const [state, action] = useActionState(submitApplication, INITIAL);
+  const [state, action, pending] = useActionState(submitApplication, INITIAL);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+
+  const v = useFieldValidation(
+    { fullName, email },
+    {
+      fullName: rule.required('Enter your full name.'),
+      email: rules(rule.required('Enter your email.'), rule.email()),
+    }
+  );
 
   if (state.status === 'success') {
     return <Confirmation />;
   }
 
+  // Gate the server action on client validation; only dispatch when valid.
+  function clientAction(formData: FormData) {
+    if (!v.validate()) return;
+    action(formData);
+  }
+
   return (
     <form
-      action={action}
+      action={clientAction}
       style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}
       noValidate
     >
@@ -78,30 +100,33 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 
       <div className="mkt-grid-2-1">
         <TextField
-          id="ap-name"
           name="fullName"
           label="Full name"
           autoComplete="name"
-          required
           placeholder="Ada Lovelace"
           maxLength={255}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          fieldStatus={v.field('fullName')}
+          {...v.control('fullName')}
         />
         <TextField
-          id="ap-email"
           name="email"
           label="Email"
           type="email"
           inputMode="email"
           autoComplete="email"
-          required
           placeholder="you@company.com"
           maxLength={255}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fieldStatus={v.field('email')}
+          {...v.control('email')}
         />
       </div>
 
       <div className="mkt-grid-2-1">
         <TextField
-          id="ap-phone"
           name="phone"
           label="Phone"
           optional
@@ -111,7 +136,6 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
           maxLength={50}
         />
         <TextField
-          id="ap-location"
           name="location"
           label="Location"
           optional
@@ -123,7 +147,6 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 
       <div className="mkt-grid-2-1">
         <TextField
-          id="ap-linkedin"
           name="linkedinUrl"
           label="LinkedIn"
           optional
@@ -133,7 +156,6 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
           maxLength={500}
         />
         <TextField
-          id="ap-portfolio"
           name="portfolioUrl"
           label="Portfolio / site"
           optional
@@ -145,32 +167,36 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
       </div>
 
       {role.interestPrompt ? (
-        <div style={fieldStyle}>
-          <Label htmlFor="ap-interest" style={labelStyle}>
-            What would you own?
-          </Label>
-          <Textarea
-            id="ap-interest"
-            name="roleInterest"
-            rows={4}
-            placeholder={role.interestPrompt}
-            maxLength={255}
+        <Field>
+          <FieldLabel style={labelStyle}>What would you own?</FieldLabel>
+          <FieldControl
+            render={
+              <Textarea
+                name="roleInterest"
+                rows={4}
+                placeholder={role.interestPrompt}
+                maxLength={255}
+              />
+            }
           />
-        </div>
+        </Field>
       ) : null}
 
-      <div style={fieldStyle}>
-        <Label htmlFor="ap-cover" style={labelStyle}>
+      <Field>
+        <FieldLabel style={labelStyle}>
           Anything else? <span style={optionalStyle}>(optional)</span>
-        </Label>
-        <Textarea
-          id="ap-cover"
-          name="coverLetter"
-          rows={5}
-          placeholder="Tell us why this role, and point us to something you've shipped."
-          maxLength={20000}
+        </FieldLabel>
+        <FieldControl
+          render={
+            <Textarea
+              name="coverLetter"
+              rows={5}
+              placeholder="Tell us why this role, and point us to something you've shipped."
+              maxLength={20000}
+            />
+          }
         />
-      </div>
+      </Field>
 
       <ResumeField required={role.resumeRequired} />
 
@@ -181,20 +207,12 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
       </div>
 
       {state.status === 'error' ? (
-        <p
-          role="alert"
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'var(--color-danger-text, #b91c1c)',
-          }}
-        >
+        <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
           {state.message}
-        </p>
+        </FieldStatus>
       ) : null}
 
-      <SubmitButton />
+      <SubmitButton pending={pending} />
 
       <p style={{ ...hintStyle, margin: 0, lineHeight: '18px' }}>
         A real person — usually the founder — reads every application. No black hole, no bot screen.
@@ -204,27 +222,30 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 }
 
 function ResumeField({ required }: { required: boolean }) {
+  // The résumé file input is left native (file inputs can't be controlled); only
+  // its label + hint adopt the Field composition for consistency.
   return (
-    <div style={fieldStyle}>
-      <Label htmlFor="ap-resume" style={labelStyle}>
+    <Field>
+      <FieldLabel required={required} style={labelStyle}>
         Résumé <span style={optionalStyle}>{required ? '(PDF)' : '(PDF, optional)'}</span>
-      </Label>
-      <input
-        id="ap-resume"
-        name="resume"
-        type="file"
-        accept="application/pdf"
-        required={required}
-        className="mkt-file-input"
+      </FieldLabel>
+      <FieldControl
+        render={
+          <input
+            name="resume"
+            type="file"
+            accept="application/pdf"
+            required={required}
+            className="mkt-file-input"
+          />
+        }
       />
-      <span style={hintStyle}>PDF, max 8 MB.</span>
-    </div>
+      <FieldDescription>PDF, max 8 MB.</FieldDescription>
+    </Field>
   );
 }
 
-function SubmitButton() {
-  // useFormStatus reads the enclosing <form>'s pending state.
-  const { pending } = useFormStatus();
+function SubmitButton({ pending }: { pending: boolean }) {
   return (
     <Button type="submit" size="lg" disabled={pending} style={{ width: '100%' }}>
       {pending ? 'Sending…' : 'Submit application →'}
@@ -254,8 +275,8 @@ function Confirmation() {
           width: 44,
           height: 44,
           borderRadius: 9999,
-          backgroundColor: 'var(--sparx-primary-tint, #EEF2FF)',
-          color: 'var(--sparx-primary, #6366F1)',
+          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
+          color: 'var(--color-primary, #6366F1)',
           fontSize: 22,
         }}
       >
@@ -267,7 +288,7 @@ function Confirmation() {
           fontWeight: 500,
           fontSize: '24px',
           letterSpacing: '-0.02em',
-          color: 'var(--color-text-primary)',
+          color: 'var(--color-base-content)',
         }}
       >
         Application received
@@ -279,7 +300,7 @@ function Confirmation() {
           fontFamily: 'var(--font-sans)',
           fontSize: '15px',
           lineHeight: '24px',
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           maxWidth: '380px',
         }}
       >

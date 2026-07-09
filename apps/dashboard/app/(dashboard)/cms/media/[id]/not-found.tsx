@@ -4,7 +4,7 @@
 // with one click.
 
 import Link from 'next/link';
-import { Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ImageOff } from 'lucide-react';
 
 export default function NotFound() {

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardBody, Checkbox, Label } from 'silicaui-react';
+import { Button, Card, CardBody, Checkbox, Label } from '@wizeworks/silicaui-react';
 
 import { clearRecallAction, initiateRecallAction } from '../../../_lib/lot-actions';
 
@@ -72,7 +72,7 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
             Clear recall
           </Button>
         )}
-        {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+        {error && <p className="text-danger text-xs">{error}</p>}
       </div>
     );
   }
@@ -83,7 +83,7 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
         <Button color="danger" size="sm" onClick={() => setRecalling(true)}>
           Recall lot
         </Button>
-        {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
+        {error && <p className="text-danger text-xs">{error}</p>}
       </div>
     );
   }
@@ -100,7 +100,7 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
               rows={2}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+              className="border-base-300 bg-base-100 rounded border px-3 py-2 text-sm"
               placeholder="What's wrong with this batch?"
             />
           </div>
@@ -112,7 +112,7 @@ export function LotActionsBar({ id, recallStatus }: { id: string; recallStatus: 
             />
             Flag affected customers to notify
           </label>
-          {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
           <div className="flex flex-row justify-end gap-2">
             <Button variant="ghost" size="sm" disabled={busy} onClick={() => setRecalling(false)}>
               Cancel

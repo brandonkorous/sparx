@@ -6,7 +6,7 @@
 //
 // Still Phase 3 (noted at the foot): price lists and B2B contract pricing.
 
-import { Badge, Card, CardBody, Table } from 'silicaui-react';
+import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import { ProductBulkTiersEditor, type BulkTierRow } from './product-bulk-tiers-editor';
 
@@ -142,12 +142,12 @@ export function ProductPricingPanel({
                         </div>
                       </td>
                       <td className="text-right tabular-nums">{money(v.priceCents, v.currency)}</td>
-                      <td className="text-right text-[var(--color-text-muted)] tabular-nums">
+                      <td className="text-base-content/60 text-right tabular-nums">
                         {v.compareAtPriceCents !== null
                           ? money(v.compareAtPriceCents, v.currency)
                           : '—'}
                       </td>
-                      <td className="text-right text-[var(--color-text-muted)] tabular-nums">
+                      <td className="text-base-content/60 text-right tabular-nums">
                         {v.costCents !== null ? money(v.costCents, v.currency) : '—'}
                       </td>
                       <td className="text-right">

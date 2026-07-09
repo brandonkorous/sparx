@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { TermsManager } from './terms-manager';
 
@@ -56,7 +56,7 @@ export async function TaxonomyDetailContent({ id: key }: Props) {
           <Badge color="info" variant="soft" size="sm">
             {taxonomy.hierarchical ? 'hierarchical' : 'flat'}
           </Badge>
-          <code className="text-xs text-[var(--color-text-tertiary)]">{taxonomy.key}</code>
+          <code className="text-base-content/50 text-xs">{taxonomy.key}</code>
         </div>
         <p className="text-base-content/70 text-base">
           {terms.length} term{terms.length === 1 ? '' : 's'} in this taxonomy.

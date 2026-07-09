@@ -1,7 +1,7 @@
 import { ShoppingCart, Plus } from 'lucide-react';
 
 import { PageHeader } from '@sparx/ui';
-import { Badge, Card, EmptyState } from 'silicaui-react';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';

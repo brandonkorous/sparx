@@ -1,5 +1,5 @@
 import { Share2 } from 'lucide-react';
-import { Badge, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';

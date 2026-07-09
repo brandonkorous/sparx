@@ -8,7 +8,7 @@
 // and the product-creation wizard. Reset by remounting with `key={domainId}`.
 
 import * as React from 'react';
-import { Label, NativeSelect } from 'silicaui-react';
+import { Label, NativeSelect } from '@wizeworks/silicaui-react';
 
 import type { FitmentDimension, FitmentNodeRow } from '../../fitment-actions';
 import { listFitmentNodesAction } from '../../fitment-actions';

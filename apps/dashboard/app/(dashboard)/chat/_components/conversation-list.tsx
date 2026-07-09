@@ -10,7 +10,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Badge, Button } from 'silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 
 import { useChatSocket } from './chat-socket-provider';
 import type { ConversationStatus, ConversationSummaryDto } from '../_lib/types';
@@ -120,7 +120,7 @@ export function ConversationList({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex gap-1 border-b border-[var(--color-border)] p-2">
+      <div className="border-base-300 flex gap-1 border-b p-2">
         {TABS.map((t) => (
           <Button
             key={t.key}
@@ -136,26 +136,26 @@ export function ConversationList({
       </div>
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="p-6 text-sm text-[var(--color-text-secondary)]">No conversations.</p>
+          <p className="text-base-content/70 p-6 text-sm">No conversations.</p>
         ) : (
           filtered.map((c) => (
             <Link
               key={c.id}
               href={`/chat/inbox/${c.id}`}
-              className={`block border-b border-[var(--color-border)] px-4 py-3 ${
-                c.id === activeId ? 'bg-[var(--module-active-tint)]' : ''
+              className={`border-base-300 block border-b px-4 py-3 ${
+                c.id === activeId ? 'bg-module bg-soft' : ''
               }`}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-medium text-[var(--color-text-primary)]">
+                <span className="text-base-content truncate text-sm font-medium">
                   {c.customerName ?? c.customerEmail ?? 'Anonymous visitor'}
                 </span>
-                <span className="shrink-0 text-xs text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70 shrink-0 text-xs">
                   {timeAgo(c.lastMessageAt)}
                 </span>
               </div>
               <div className="mt-1 flex items-center justify-between gap-2">
-                <span className="truncate text-xs text-[var(--color-text-secondary)]">
+                <span className="text-base-content/70 truncate text-xs">
                   {c.lastMessageSnippet ?? 'No messages yet'}
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5">

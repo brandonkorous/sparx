@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
-import { Badge } from 'silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
 
 // Client wrapper for the B2B quotes / RFQ list. SelectionList takes render
 // functions (columns/card), which can't cross the server→client boundary, so
@@ -51,7 +51,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     q.b2bAccount ? (
       <Link
         href={`/b2b/accounts/${q.b2bAccount.id}`}
-        className="text-sm hover:text-[var(--module-active)] hover:underline"
+        className="hover:text-module text-sm hover:underline"
       >
         {q.b2bAccount.companyName}
       </Link>
@@ -68,7 +68,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
   const columns: SelectionColumn<QuoteRow>[] = [
     {
       header: 'Quote #',
-      cell: (q) => quoteLink(q, 'font-medium hover:text-[var(--module-active)] hover:underline'),
+      cell: (q) => quoteLink(q, 'font-medium hover:text-module hover:underline'),
     },
     { header: 'Account', cell: accountCell },
     { header: 'Status', cell: statusBadge },
@@ -91,13 +91,12 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
   ];
 
   const card: SelectionCard<QuoteRow> = {
-    title: (q) =>
-      quoteLink(q, 'truncate font-medium hover:text-[var(--module-active)] hover:underline'),
+    title: (q) => quoteLink(q, 'truncate font-medium hover:text-module hover:underline'),
     subtitle: (q) =>
       q.b2bAccount ? (
         <Link
           href={`/b2b/accounts/${q.b2bAccount.id}`}
-          className="truncate text-xs text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+          className="text-base-content/70 hover:text-module truncate text-xs hover:underline"
         >
           {q.b2bAccount.companyName}
         </Link>

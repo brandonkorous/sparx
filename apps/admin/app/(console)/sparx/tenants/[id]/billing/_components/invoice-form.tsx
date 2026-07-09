@@ -2,17 +2,16 @@
 
 import * as React from 'react';
 import { Plus, X } from 'lucide-react';
+import { Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
 import {
-  Button,
-  Input,
-  Label,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
   NativeSelect,
-  Stack,
-  Text,
   Textarea,
-  toast,
-  useConfirm,
-} from '@sparx/ui';
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 import type { OperatorInvoiceInput } from '@sparx/operator';
 import { createInvoiceAction } from '../actions';
 import { formatMoneyCents } from '@/lib/format';
@@ -53,11 +52,27 @@ export function InvoiceForm({ tenantId }: { tenantId: string }) {
     .filter((l) => l.description && Number.isFinite(l.amountCents) && l.amountCents > 0);
   const totalCents = parsedLines.reduce((sum, l) => sum + l.amountCents, 0);
 
-  async function submit() {
-    if (parsedLines.length === 0) {
-      toast.error('Add at least one line with a description and amount.');
-      return;
+  // `lineCount` is a synthetic field: the invoice needs at least one complete
+  // line, but that's a whole-form rule with no single control — surface it as a
+  // form-level FieldStatus (below the line editor) rather than per-input.
+  const v = useFieldValidation(
+    { daysUntilDue, lineCount: String(parsedLines.length) },
+    {
+      daysUntilDue: rule.number({
+        min: 1,
+        max: 365,
+        integer: true,
+        message: 'Enter a due window of 1–365 days.',
+      }),
+      lineCount: rule.number({
+        gt: 0,
+        message: 'Add at least one line with a description and amount.',
+      }),
     }
+  );
+
+  async function submit() {
+    if (!v.validate()) return;
     const ok = await confirm({
       title:
         mode === 'issue'
@@ -91,25 +106,27 @@ export function InvoiceForm({ tenantId }: { tenantId: string }) {
     });
   }
 
+  const lineError = v.visibleError('lineCount');
+
   return (
     <Stack gap={4}>
       <Stack gap={2}>
         {lines.map((line, index) => (
           <Stack key={index} direction="row" gap={2} align="end">
-            <Stack gap={2} className="flex-1">
-              {index === 0 ? <Label htmlFor={`line-desc-${index}`}>Description</Label> : null}
-              <Input
-                id={`line-desc-${index}`}
+            <Field className="flex-1">
+              {index === 0 ? <FieldLabel>Description</FieldLabel> : null}
+              <FieldControl
+                name={`line-desc-${index}`}
                 value={line.description}
                 onChange={(e) => setLine(index, { description: e.target.value })}
                 placeholder="e.g. Custom onboarding"
                 maxLength={500}
               />
-            </Stack>
-            <Stack gap={2} className="w-32">
-              {index === 0 ? <Label htmlFor={`line-amt-${index}`}>Amount ($)</Label> : null}
-              <Input
-                id={`line-amt-${index}`}
+            </Field>
+            <Field className="w-32">
+              {index === 0 ? <FieldLabel>Amount ($)</FieldLabel> : null}
+              <FieldControl
+                name={`line-amt-${index}`}
                 type="number"
                 inputMode="decimal"
                 min={0}
@@ -117,7 +134,7 @@ export function InvoiceForm({ tenantId }: { tenantId: string }) {
                 onChange={(e) => setLine(index, { amount: e.target.value })}
                 placeholder="0.00"
               />
-            </Stack>
+            </Field>
             <Button
               type="button"
               variant="ghost"
@@ -135,44 +152,52 @@ export function InvoiceForm({ tenantId }: { tenantId: string }) {
             <Plus className="mr-1 h-3.5 w-3.5" /> Add line
           </Button>
         </div>
+        {lineError ? (
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+            {lineError}
+          </FieldStatus>
+        ) : null}
       </Stack>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Stack gap={2}>
-          <Label htmlFor="invoice-due">Due in (days)</Label>
-          <Input
-            id="invoice-due"
+        <Field {...v.field('daysUntilDue')}>
+          <FieldLabel>Due in (days)</FieldLabel>
+          <FieldControl
+            name="daysUntilDue"
             type="number"
             min={1}
             max={365}
             value={daysUntilDue}
             onChange={(e) => setDaysUntilDue(e.target.value)}
+            {...v.control('daysUntilDue')}
           />
-        </Stack>
-        <Stack gap={2}>
-          <Label htmlFor="invoice-mode">On create</Label>
-          <NativeSelect
-            id="invoice-mode"
+        </Field>
+        <Field>
+          <FieldLabel>On create</FieldLabel>
+          <FieldControl
+            name="mode"
             value={mode}
             onChange={(e) => setMode(e.target.value as 'issue' | 'draft')}
-          >
-            <option value="draft">Save as draft</option>
-            <option value="issue">Issue immediately</option>
-          </NativeSelect>
-        </Stack>
+            render={
+              <NativeSelect>
+                <option value="draft">Save as draft</option>
+                <option value="issue">Issue immediately</option>
+              </NativeSelect>
+            }
+          />
+        </Field>
       </div>
 
-      <Stack gap={2}>
-        <Label htmlFor="invoice-memo">Memo (optional)</Label>
-        <Textarea
-          id="invoice-memo"
+      <Field>
+        <FieldLabel>Memo (optional)</FieldLabel>
+        <FieldControl
+          name="memo"
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
-          placeholder="Shown on the invoice."
-          rows={2}
           maxLength={2000}
+          render={<Textarea rows={2} placeholder="Shown on the invoice." />}
         />
-      </Stack>
+      </Field>
 
       <Stack direction="row" align="center" justify="between" className="flex-wrap gap-2">
         <Text size="sm" variant="muted">

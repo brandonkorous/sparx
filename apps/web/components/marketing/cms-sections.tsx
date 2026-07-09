@@ -1,4 +1,4 @@
-import { Button } from '@sparx/ui';
+import { Button } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -64,7 +64,7 @@ export function CmsHero() {
                 fontWeight: 400,
                 fontSize: 'clamp(16px, 1.6vw, 20px)',
                 lineHeight: 1.55,
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 maxWidth: '560px',
                 margin: '28px 0 0',
               }}
@@ -93,8 +93,8 @@ export function CmsHero() {
                     alignItems: 'center',
                     gap: '8px',
                     padding: '7px 13px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border-default)',
+                    backgroundColor: 'var(--color-base-100)',
+                    border: '1px solid var(--color-base-300)',
                     borderRadius: '9999px',
                   }}
                 >
@@ -103,7 +103,7 @@ export function CmsHero() {
                     style={{
                       fontFamily: MONO,
                       fontSize: '12px',
-                      color: 'var(--color-text-secondary)',
+                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                     }}
                   >
                     {c}
@@ -132,8 +132,8 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '16px',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
         overflow: 'hidden',
@@ -146,7 +146,7 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           justifyContent: 'space-between',
           gap: '12px',
           padding: '14px 18px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
@@ -166,13 +166,23 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           >
             <Dot color={M.color} size={7} /> Draft
           </span>
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+          <span
+            style={{
+              fontFamily: MONO,
+              fontSize: '11px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            }}
+          >
             autosaved 12s ago · v7
           </span>
         </span>
         <span
           className="mkt-hide-on-mobile"
-          style={{ fontFamily: MONO, fontSize: '11px', color: 'var(--color-text-tertiary)' }}
+          style={{
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+          }}
         >
           {domain}
         </span>
@@ -183,8 +193,8 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '6px',
           padding: '9px 18px',
-          borderBottom: '1px solid var(--color-bg-subtle)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-200)',
+          backgroundColor: 'var(--color-base-200)',
           flexWrap: 'wrap',
         }}
       >
@@ -194,11 +204,14 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
             style={{
               fontFamily: MONO,
               fontSize: '12px',
-              color: i === 1 ? M.text : 'var(--color-text-secondary)',
+              color:
+                i === 1
+                  ? M.text
+                  : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               padding: '3px 8px',
               borderRadius: '6px',
-              border: `1px solid ${i === 1 ? M.color : 'var(--color-border-default)'}`,
-              backgroundColor: i === 1 ? M.tint : 'var(--color-bg-surface)',
+              border: `1px solid ${i === 1 ? M.color : 'var(--color-base-300)'}`,
+              backgroundColor: i === 1 ? M.tint : 'var(--color-base-100)',
             }}
           >
             {t}
@@ -233,7 +246,7 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           style={{
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             margin: '0 0 16px',
           }}
         >
@@ -246,7 +259,7 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
               display: 'block',
               height: '9px',
               borderRadius: '9999px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               width: w,
               margin: '9px 0',
             }}
@@ -260,8 +273,8 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           justifyContent: 'space-between',
           gap: '12px',
           padding: '14px 18px',
-          borderTop: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderTop: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <span
@@ -270,7 +283,7 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
             alignItems: 'center',
             gap: '9px',
             fontSize: '12.5px',
-            color: 'var(--color-text-secondary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           }}
         >
           <span
@@ -334,7 +347,7 @@ export function CmsLifecycle() {
       />
       <div
         className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-bg-surface)' }}
+        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
       >
         {stages.map((s, i) => (
           <div
@@ -355,7 +368,7 @@ export function CmsLifecycle() {
                 fontSize: '11px',
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
-                color: 'var(--color-text-tertiary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
               {s.n}
@@ -381,7 +394,7 @@ export function CmsLifecycle() {
                 fontFamily: SANS,
                 fontSize: '13.5px',
                 lineHeight: '21px',
-                color: 'var(--color-text-secondary)',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
               {s.body}
@@ -397,8 +410,8 @@ export function CmsLifecycle() {
                   width: 22,
                   height: 22,
                   borderRadius: '9999px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-base-100)',
+                  border: '1px solid var(--color-base-300)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -448,7 +461,7 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
     <div
       style={{
         backgroundColor: moduleTint(M.color),
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
         display: 'flex',
@@ -461,7 +474,7 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
           alignItems: 'center',
           gap: '9px',
           padding: '14px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <Dot color={M.color} size={8} />
@@ -486,7 +499,7 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
             justifyContent: 'space-between',
             gap: '12px',
             padding: '13px 20px',
-            borderBottom: i < fields.length - 1 ? '1px solid var(--color-bg-subtle)' : 'none',
+            borderBottom: i < fields.length - 1 ? '1px solid var(--color-base-200)' : 'none',
           }}
         >
           <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{label}</span>
@@ -494,9 +507,9 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
             style={{
               fontFamily: MONO,
               fontSize: '11.5px',
-              color: 'var(--color-text-tertiary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               padding: '3px 9px',
-              border: '1px solid var(--color-border-default)',
+              border: '1px solid var(--color-base-300)',
               borderRadius: '9999px',
             }}
           >
@@ -521,8 +534,8 @@ function ResponsePanel() {
   return (
     <div
       style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border-default)',
+        backgroundColor: 'var(--color-base-100)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
         display: 'flex',
@@ -535,7 +548,7 @@ function ResponsePanel() {
           alignItems: 'center',
           gap: '9px',
           padding: '14px 20px',
-          borderBottom: '1px solid var(--color-border-default)',
+          borderBottom: '1px solid var(--color-base-300)',
         }}
       >
         <Dot color={M.color} size={8} />
@@ -558,7 +571,7 @@ function ResponsePanel() {
           fontFamily: MONO,
           fontSize: '12.5px',
           lineHeight: 1.75,
-          color: 'var(--color-text-secondary)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
           whiteSpace: 'pre',
           overflow: 'auto',
           flex: 1,
@@ -616,8 +629,8 @@ export function CmsEditor() {
                 display: 'flex',
                 gap: '13px',
                 padding: '18px 20px',
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-base-200)',
+                border: '1px solid var(--color-base-300)',
                 borderLeft: `3px solid ${M.color}`,
                 borderRadius: '12px',
                 marginBottom: '14px',
@@ -651,7 +664,7 @@ export function CmsEditor() {
                     fontFamily: SANS,
                     fontSize: '13px',
                     lineHeight: '20px',
-                    color: 'var(--color-text-secondary)',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   }}
                 >
                   {p.body}
@@ -670,10 +683,10 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
   return (
     <div
       style={{
-        border: '1px solid var(--color-border-default)',
+        border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
-        backgroundColor: 'var(--color-bg-surface)',
+        backgroundColor: 'var(--color-base-100)',
         boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
       }}
     >
@@ -683,8 +696,8 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
           alignItems: 'center',
           gap: '8px',
           padding: '12px 16px',
-          borderBottom: '1px solid var(--color-border-default)',
-          backgroundColor: 'var(--color-bg-page)',
+          borderBottom: '1px solid var(--color-base-300)',
+          backgroundColor: 'var(--color-base-200)',
         }}
       >
         <span style={{ display: 'flex', gap: '6px' }}>
@@ -700,9 +713,9 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             marginLeft: '8px',
             fontFamily: MONO,
             fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '7px',
             padding: '5px 12px',
             flex: 1,
@@ -744,7 +757,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             margin: '0 0 18px',
             fontFamily: SANS,
             fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           by {article.author} · {article.readTime} · v12 <Pin n="D" />
@@ -756,7 +769,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
               display: 'block',
               height: '9px',
               borderRadius: '9999px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               width: w,
               margin: '9px 0',
             }}
@@ -766,13 +779,13 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
           style={{
             height: '120px',
             borderRadius: '10px',
-            backgroundColor: 'var(--color-bg-subtle)',
+            backgroundColor: 'var(--color-base-200)',
             margin: '16px 0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
             fontFamily: MONO,
             fontSize: '12px',
           }}
@@ -786,7 +799,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
               display: 'block',
               height: '9px',
               borderRadius: '9999px',
-              backgroundColor: 'var(--color-bg-subtle)',
+              backgroundColor: 'var(--color-base-200)',
               width: w,
               margin: '9px 0',
             }}
@@ -797,7 +810,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             margin: '14px 0 0',
             fontFamily: SANS,
             fontSize: '12.5px',
-            color: 'var(--color-text-tertiary)',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
           <Pin n="A" /> blocks &nbsp; <Pin n="C" /> internal links
@@ -856,7 +869,7 @@ export function CmsSeoAudit() {
             gap: '18px',
             padding: '30px',
             backgroundColor: moduleTint(M.color),
-            border: '1px solid var(--color-border-default)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
           }}
         >
@@ -870,14 +883,22 @@ export function CmsSeoAudit() {
               color: M.text,
             }}
           >
-            98<span style={{ fontSize: '22px', color: 'var(--color-text-tertiary)' }}>/100</span>
+            98
+            <span
+              style={{
+                fontSize: '22px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              }}
+            >
+              /100
+            </span>
           </span>
           <span
             style={{
               fontFamily: SANS,
               fontSize: '14px',
               lineHeight: '21px',
-              color: 'var(--color-text-secondary)',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
             Live SEO score on &ldquo;Pour-over basics.&rdquo; Fix the one warning and it&rsquo;s a
@@ -886,8 +907,8 @@ export function CmsSeoAudit() {
         </div>
         <div
           style={{
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-base-100)',
+            border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
           }}
@@ -900,7 +921,7 @@ export function CmsSeoAudit() {
                 alignItems: 'center',
                 gap: '13px',
                 padding: '16px 22px',
-                borderBottom: i < checks.length - 1 ? '1px solid var(--color-bg-subtle)' : 'none',
+                borderBottom: i < checks.length - 1 ? '1px solid var(--color-base-200)' : 'none',
               }}
             >
               <span
@@ -924,7 +945,7 @@ export function CmsSeoAudit() {
                   marginLeft: 'auto',
                   fontFamily: MONO,
                   fontSize: '12px',
-                  color: 'var(--color-text-tertiary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                 }}
               >
                 {c.meta}

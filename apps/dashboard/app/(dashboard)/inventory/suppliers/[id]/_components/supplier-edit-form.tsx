@@ -3,7 +3,19 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Card, CardBody, CardActions, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardActions,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldLabel,
+  FieldStatus,
+  Textarea,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { updateSupplierAction } from '../../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -29,48 +41,76 @@ export interface SupplierDetail {
   isActive: boolean;
 }
 
+// Optional-email rule: blank is fine, but a typed value must be a real address.
+const optionalEmail = (value: unknown): string | null => {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (s === '') return null;
+  return rule.email()(s);
+};
+
+// Optional non-negative integer (lead time in days).
+const optionalLeadTime = (value: unknown): string | null => {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (s === '') return null;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return 'Enter a number of days.';
+  if (n < 0) return 'Lead time cannot be negative.';
+  return null;
+};
+
 export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
-  // The fields are an uncontrolled native form (read via FormData on submit), so
-  // dirtiness is derived from the live form on every input — true when any field
-  // differs from the passed-in supplier baseline (the same values seeded into the
-  // inputs' defaultValue / defaultChecked).
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const [dirty, setDirty] = React.useState(false);
-  const recomputeDirty = React.useCallback(() => {
-    const form = formRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const str = (k: string) => {
-      const v = data.get(k);
-      return typeof v === 'string' ? v.trim() : '';
-    };
-    const next =
-      str('name') !== supplier.name ||
-      str('code') !== supplier.code ||
-      str('contactName') !== (supplier.contactName ?? '') ||
-      str('email') !== (supplier.email ?? '') ||
-      str('phone') !== (supplier.phone ?? '') ||
-      str('website') !== (supplier.website ?? '') ||
-      str('line1') !== (supplier.line1 ?? '') ||
-      str('line2') !== (supplier.line2 ?? '') ||
-      str('city') !== (supplier.city ?? '') ||
-      str('region') !== (supplier.region ?? '') ||
-      str('postalCode') !== (supplier.postalCode ?? '') ||
-      str('country') !== (supplier.country ?? '') ||
-      str('paymentTerms') !== (supplier.paymentTerms ?? '') ||
-      str('leadTimeDays') !==
-        (supplier.leadTimeDays !== null ? String(supplier.leadTimeDays) : '') ||
-      str('currency') !== supplier.currency ||
-      str('notes') !== (supplier.notes ?? '') ||
-      (data.get('isActive') === 'on') !== supplier.isActive;
-    setDirty(next);
-  }, [supplier]);
+  const [name, setName] = React.useState(supplier.name);
+  const [code, setCode] = React.useState(supplier.code);
+  const [contactName, setContactName] = React.useState(supplier.contactName ?? '');
+  const [email, setEmail] = React.useState(supplier.email ?? '');
+  const [phone, setPhone] = React.useState(supplier.phone ?? '');
+  const [website, setWebsite] = React.useState(supplier.website ?? '');
+  const [line1, setLine1] = React.useState(supplier.line1 ?? '');
+  const [line2, setLine2] = React.useState(supplier.line2 ?? '');
+  const [city, setCity] = React.useState(supplier.city ?? '');
+  const [region, setRegion] = React.useState(supplier.region ?? '');
+  const [postalCode, setPostalCode] = React.useState(supplier.postalCode ?? '');
+  const [country, setCountry] = React.useState(supplier.country ?? '');
+  const [paymentTerms, setPaymentTerms] = React.useState(supplier.paymentTerms ?? '');
+  const [leadTimeDays, setLeadTimeDays] = React.useState(
+    supplier.leadTimeDays !== null ? String(supplier.leadTimeDays) : ''
+  );
+  const [currency, setCurrency] = React.useState(supplier.currency);
+  const [notes, setNotes] = React.useState(supplier.notes ?? '');
+  const [isActive, setIsActive] = React.useState(supplier.isActive);
+
+  const values = { name, code, email, leadTimeDays };
+  const v = useFieldValidation(values, {
+    name: rule.required('Name is required.'),
+    code: rule.required('Code is required.'),
+    email: optionalEmail,
+    leadTimeDays: optionalLeadTime,
+  });
+
+  // Dirtiness compares live state to the passed-in supplier baseline.
+  const dirty =
+    name.trim() !== supplier.name ||
+    code.trim() !== supplier.code ||
+    contactName.trim() !== (supplier.contactName ?? '') ||
+    email.trim() !== (supplier.email ?? '') ||
+    phone.trim() !== (supplier.phone ?? '') ||
+    website.trim() !== (supplier.website ?? '') ||
+    line1.trim() !== (supplier.line1 ?? '') ||
+    line2.trim() !== (supplier.line2 ?? '') ||
+    city.trim() !== (supplier.city ?? '') ||
+    region.trim() !== (supplier.region ?? '') ||
+    postalCode.trim() !== (supplier.postalCode ?? '') ||
+    country.trim() !== (supplier.country ?? '') ||
+    paymentTerms.trim() !== (supplier.paymentTerms ?? '') ||
+    leadTimeDays.trim() !== (supplier.leadTimeDays !== null ? String(supplier.leadTimeDays) : '') ||
+    currency.trim() !== supplier.currency ||
+    notes.trim() !== (supplier.notes ?? '') ||
+    isActive !== supplier.isActive;
 
   useUnsavedGuard(dirty, { kind: 'edit', noun: 'supplier' });
 
@@ -78,37 +118,41 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
     e.preventDefault();
     setError(null);
     setSavedAt(null);
-    setFieldErrors({});
+    if (!v.validate()) return;
 
-    const form = new FormData(e.currentTarget);
-    const lead = nonEmpty(form.get('leadTimeDays'));
+    const opt = (val: string) => (val.trim() ? val.trim() : null);
+    const lead = leadTimeDays.trim();
     const input = {
-      name: stringField(form.get('name'), supplier.name),
-      code: stringField(form.get('code'), supplier.code).toUpperCase(),
-      contactName: nonEmpty(form.get('contactName')) ?? null,
-      email: nonEmpty(form.get('email')) ?? null,
-      phone: nonEmpty(form.get('phone')) ?? null,
-      website: nonEmpty(form.get('website')) ?? null,
-      line1: nonEmpty(form.get('line1')) ?? null,
-      line2: nonEmpty(form.get('line2')) ?? null,
-      city: nonEmpty(form.get('city')) ?? null,
-      region: nonEmpty(form.get('region')) ?? null,
-      postalCode: nonEmpty(form.get('postalCode')) ?? null,
-      country: nonEmpty(form.get('country'))?.toUpperCase() ?? null,
-      paymentTerms: nonEmpty(form.get('paymentTerms')) ?? null,
-      leadTimeDays: lead !== undefined ? Number(lead) : null,
-      currency: stringField(form.get('currency'), supplier.currency).toUpperCase(),
-      notes: nonEmpty(form.get('notes')) ?? null,
-      isActive: form.get('isActive') === 'on',
+      name: name.trim(),
+      code: code.trim().toUpperCase(),
+      contactName: opt(contactName),
+      email: opt(email),
+      phone: opt(phone),
+      website: opt(website),
+      line1: opt(line1),
+      line2: opt(line2),
+      city: opt(city),
+      region: opt(region),
+      postalCode: opt(postalCode),
+      country: opt(country)?.toUpperCase() ?? null,
+      paymentTerms: opt(paymentTerms),
+      leadTimeDays: lead ? Number(lead) : null,
+      currency: (currency.trim() || supplier.currency).toUpperCase(),
+      notes: opt(notes),
+      isActive,
     };
 
     startTransition(async () => {
       const result = await updateSupplierAction(supplier.id, input);
       if (!result.ok) {
         setError(result.error.message);
-        const map: Record<string, string> = {};
-        for (const d of result.error.details ?? []) map[d.field] = d.message;
-        setFieldErrors(map);
+        const map: Partial<Record<keyof typeof values, string>> = {};
+        for (const d of result.error.details ?? []) {
+          if (d.field === 'name' || d.field === 'code' || d.field === 'email') {
+            map[d.field] = d.message;
+          }
+        }
+        v.setServerErrors(map);
         return;
       }
       setSavedAt(new Date().toLocaleTimeString());
@@ -117,7 +161,7 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
   }
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} onInput={recomputeDirty} onChange={recomputeDirty}>
+    <form onSubmit={onSubmit}>
       <Card>
         <CardBody>
           <div className="flex flex-col gap-1">
@@ -126,89 +170,159 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Name" name="name" defaultValue={supplier.name} required />
-              <Field
-                label="Code"
-                name="code"
-                defaultValue={supplier.code}
-                required
-                pattern="[A-Za-z0-9_-]+"
-                error={fieldErrors.code}
-              />
+              <Field className="min-w-[12rem] flex-1" {...v.field('name')}>
+                <FieldLabel required>Name</FieldLabel>
+                <FieldControl
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  {...v.control('name')}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1" {...v.field('code')}>
+                <FieldLabel required>Code</FieldLabel>
+                <FieldControl
+                  name="code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  pattern="[A-Za-z0-9_-]+"
+                  {...v.control('code')}
+                />
+              </Field>
             </div>
             <div className="flex flex-row flex-wrap gap-3">
-              <Field
-                label="Contact name"
-                name="contactName"
-                defaultValue={supplier.contactName ?? ''}
-              />
-              <Field
-                label="Email"
-                name="email"
-                type="email"
-                defaultValue={supplier.email ?? ''}
-                error={fieldErrors.email}
-              />
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Contact name</FieldLabel>
+                <FieldControl
+                  name="contactName"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1" {...v.field('email')}>
+                <FieldLabel>Email</FieldLabel>
+                <FieldControl
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  {...v.control('email')}
+                />
+              </Field>
             </div>
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="Phone" name="phone" defaultValue={supplier.phone ?? ''} />
-              <Field label="Website" name="website" defaultValue={supplier.website ?? ''} />
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Phone</FieldLabel>
+                <FieldControl
+                  name="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Website</FieldLabel>
+                <FieldControl
+                  name="website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </Field>
             </div>
-            <Field label="Address line 1" name="line1" defaultValue={supplier.line1 ?? ''} />
-            <Field label="Address line 2" name="line2" defaultValue={supplier.line2 ?? ''} />
+            <Field className="min-w-[12rem] flex-1">
+              <FieldLabel>Address line 1</FieldLabel>
+              <FieldControl name="line1" value={line1} onChange={(e) => setLine1(e.target.value)} />
+            </Field>
+            <Field className="min-w-[12rem] flex-1">
+              <FieldLabel>Address line 2</FieldLabel>
+              <FieldControl name="line2" value={line2} onChange={(e) => setLine2(e.target.value)} />
+            </Field>
             <div className="flex flex-row flex-wrap gap-3">
-              <Field label="City" name="city" defaultValue={supplier.city ?? ''} />
-              <Field label="Region" name="region" defaultValue={supplier.region ?? ''} />
-              <Field
-                label="Postal code"
-                name="postalCode"
-                defaultValue={supplier.postalCode ?? ''}
-              />
-              <Field
-                label="Country"
-                name="country"
-                defaultValue={supplier.country ?? ''}
-                maxLength={2}
-              />
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>City</FieldLabel>
+                <FieldControl name="city" value={city} onChange={(e) => setCity(e.target.value)} />
+              </Field>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Region</FieldLabel>
+                <FieldControl
+                  name="region"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Postal code</FieldLabel>
+                <FieldControl
+                  name="postalCode"
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Country</FieldLabel>
+                <FieldControl
+                  name="country"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  maxLength={2}
+                />
+              </Field>
             </div>
             <div className="flex flex-row flex-wrap gap-3">
-              <Field
-                label="Payment terms"
-                name="paymentTerms"
-                defaultValue={supplier.paymentTerms ?? ''}
-              />
-              <Field
-                label="Lead time (days)"
-                name="leadTimeDays"
-                type="number"
-                defaultValue={supplier.leadTimeDays !== null ? String(supplier.leadTimeDays) : ''}
-              />
-              <Field
-                label="Currency"
-                name="currency"
-                defaultValue={supplier.currency}
-                maxLength={3}
-              />
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Payment terms</FieldLabel>
+                <FieldControl
+                  name="paymentTerms"
+                  value={paymentTerms}
+                  onChange={(e) => setPaymentTerms(e.target.value)}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1" {...v.field('leadTimeDays')}>
+                <FieldLabel>Lead time (days)</FieldLabel>
+                <FieldControl
+                  name="leadTimeDays"
+                  type="number"
+                  min="0"
+                  value={leadTimeDays}
+                  onChange={(e) => setLeadTimeDays(e.target.value)}
+                  {...v.control('leadTimeDays')}
+                />
+              </Field>
+              <Field className="min-w-[12rem] flex-1">
+                <FieldLabel>Currency</FieldLabel>
+                <FieldControl
+                  name="currency"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  maxLength={3}
+                />
+              </Field>
             </div>
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="notes">Notes</Label>
-              <textarea
-                id="notes"
+            <Field>
+              <FieldLabel>Notes</FieldLabel>
+              <FieldControl
+                render={<Textarea rows={3} />}
                 name="notes"
-                rows={3}
-                defaultValue={supplier.notes ?? ''}
-                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 py-2 text-sm"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
-            </div>
+            </Field>
             <label className="flex items-center gap-2">
-              <Checkbox color="module" name="isActive" defaultChecked={supplier.isActive} />
+              <Checkbox
+                color="module"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+              />
               <p className="text-sm">Active</p>
             </label>
           </div>
         </CardBody>
         <CardActions>
           <div className="flex w-full flex-row items-center justify-between gap-2">
-            {error && <p className="text-sm text-[var(--color-danger)]">{error}</p>}
+            {error && (
+              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
+                {error}
+              </FieldStatus>
+            )}
             {savedAt && !error && <p className="text-base-content/70 text-xs">Saved {savedAt}</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save'}
@@ -218,53 +332,4 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
       </Card>
     </form>
   );
-}
-
-function Field({
-  label,
-  name,
-  defaultValue,
-  required,
-  error,
-  pattern,
-  maxLength,
-  type,
-}: {
-  label: string;
-  name: string;
-  defaultValue?: string;
-  required?: boolean;
-  error?: string;
-  pattern?: string;
-  maxLength?: number;
-  type?: string;
-}) {
-  return (
-    <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
-      <Label htmlFor={name}>
-        {label}
-        {required && <span className="text-[var(--color-danger)]">*</span>}
-      </Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        defaultValue={defaultValue}
-        required={required}
-        pattern={pattern}
-        maxLength={maxLength}
-      />
-      {error && <p className="text-xs text-[var(--color-danger)]">{error}</p>}
-    </div>
-  );
-}
-
-function nonEmpty(value: FormDataEntryValue | null): string | undefined {
-  if (typeof value !== 'string') return undefined;
-  const trimmed = value.trim();
-  return trimmed.length === 0 ? undefined : trimmed;
-}
-
-function stringField(value: FormDataEntryValue | null, fallback: string): string {
-  return typeof value === 'string' ? value.trim() : fallback;
 }

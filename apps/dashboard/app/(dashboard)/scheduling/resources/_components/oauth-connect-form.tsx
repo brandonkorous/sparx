@@ -9,8 +9,9 @@
 // push channel keeps it fresh — sparx still owns availability (the no-overlap guard).
 
 import { useEffect, useState } from 'react';
-import { Button, Input } from 'silicaui-react';
+import { Button, Field, FieldControl } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
+import { rule, useFieldValidation } from '@sparx/forms';
 import { CalendarCheck2 } from 'lucide-react';
 
 import { getCalendarOAuthProvidersAction, startCalendarOAuthAction } from '../../_lib/actions';
@@ -63,9 +64,17 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
 
   const byoReady = clientId.trim() && clientSecret.trim();
 
+  const v = useFieldValidation(
+    { clientId, clientSecret },
+    {
+      clientId: rule.required('Enter the client ID.'),
+      clientSecret: rule.required('Enter the client secret.'),
+    }
+  );
+
   if (providers && !providers.cryptoConfigured) {
     return (
-      <p className="text-xs text-[var(--color-muted-foreground)]">
+      <p className="text-base-content/70 text-xs">
         Real-time calendar sync isn&rsquo;t enabled on this deployment yet. You can still import a
         read-only calendar link below.
       </p>
@@ -76,7 +85,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-medium">Connect a calendar for real-time sync</p>
-        <p className="text-xs text-[var(--color-muted-foreground)]">
+        <p className="text-base-content/70 text-xs">
           One click. Outside events block this resource&rsquo;s sparx availability the moment they
           change, and confirmed bookings appear on the connected calendar.
         </p>
@@ -102,7 +111,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
         })}
       </div>
       {providers && (!providers.google || !providers.microsoft) ? (
-        <p className="text-xs text-[var(--color-muted-foreground)]">
+        <p className="text-base-content/70 text-xs">
           {!providers.google && !providers.microsoft
             ? 'The one-click apps aren’t configured here — use your own credentials below.'
             : `${!providers.google ? 'Google' : 'Microsoft'} one-click isn’t configured here — use your own credentials below.`}
@@ -112,7 +121,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
       <div>
         <button
           type="button"
-          className="text-xs text-[var(--color-muted-foreground)] underline"
+          className="text-base-content/70 text-xs underline"
           onClick={() => setByoOpen((v) => !v)}
         >
           {byoOpen
@@ -122,7 +131,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
       </div>
 
       {byoOpen ? (
-        <div className="flex flex-col gap-2 rounded-md border border-[var(--color-border)] p-3">
+        <div className="border-base-300 flex flex-col gap-2 rounded-md border p-3">
           <div className="flex gap-2">
             {(['google', 'microsoft'] as Provider[]).map((p) => (
               <Button
@@ -137,21 +146,27 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
               </Button>
             ))}
           </div>
-          <Input
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
-            placeholder={byoProvider === 'google' ? 'OAuth client ID' : 'Application (client) ID'}
-            autoComplete="off"
-            aria-label="OAuth client ID"
-          />
-          <Input
-            type="password"
-            value={clientSecret}
-            onChange={(e) => setClientSecret(e.target.value)}
-            placeholder="Client secret"
-            autoComplete="off"
-            aria-label="OAuth client secret"
-          />
+          <Field {...v.field('clientId')}>
+            <FieldControl
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              placeholder={byoProvider === 'google' ? 'OAuth client ID' : 'Application (client) ID'}
+              autoComplete="off"
+              aria-label="OAuth client ID"
+              {...v.control('clientId')}
+            />
+          </Field>
+          <Field {...v.field('clientSecret')}>
+            <FieldControl
+              type="password"
+              value={clientSecret}
+              onChange={(e) => setClientSecret(e.target.value)}
+              placeholder="Client secret"
+              autoComplete="off"
+              aria-label="OAuth client secret"
+              {...v.control('clientSecret')}
+            />
+          </Field>
           <div className="flex justify-end">
             <Button
               type="button"
@@ -159,12 +174,13 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
               size="sm"
               loading={busy === `${byoProvider}:tenant_byo`}
               disabled={!byoReady || busy !== null}
-              onClick={() =>
+              onClick={() => {
+                if (!v.validate()) return;
                 void connect(byoProvider, 'tenant_byo', {
                   oauthClientId: clientId.trim(),
                   oauthClientSecret: clientSecret.trim(),
-                })
-              }
+                });
+              }}
             >
               Connect with my app
             </Button>

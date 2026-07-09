@@ -19,7 +19,7 @@ import { SuspendControl } from './_components/suspend-control';
 import { StorageLimitControl } from './_components/storage-limit-control';
 
 const backLink = (
-  <Link href="/sparx/tenants" className="text-sm text-[var(--color-text-muted)] hover:underline">
+  <Link href="/sparx/tenants" className="text-base-content/60 text-sm hover:underline">
     ← All tenants
   </Link>
 );
@@ -93,7 +93,7 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           {hasCapability(operator, 'billing:read') ? (
             <Link
               href={`/sparx/tenants/${id}/billing`}
-              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+              className="text-module text-sm font-medium hover:underline"
             >
               Billing — charges, refunds & invoices →
             </Link>
@@ -101,21 +101,21 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           {hasCapability(operator, 'domain:manage') ? (
             <Link
               href={`/sparx/domains?tenantId=${id}`}
-              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+              className="text-module text-sm font-medium hover:underline"
             >
               Domains — routing, SSL & verification →
             </Link>
           ) : null}
           <Link
             href={`/sparx/tenants/${id}/support`}
-            className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+            className="text-module text-sm font-medium hover:underline"
           >
             Support — search index & email log →
           </Link>
           {hasCapability(operator, 'feedback:respond') ? (
             <Link
               href={`/sparx/feedback?tenantId=${id}`}
-              className="text-sm font-medium text-[var(--module-active-text)] hover:underline"
+              className="text-module text-sm font-medium hover:underline"
             >
               Feedback — this tenant’s submissions →
             </Link>

@@ -11,8 +11,8 @@ import { Section, SectionHeader } from '../primitives';
  */
 
 function Faux({
-  xColor = 'var(--sparx-primary)',
-  inkColor = 'var(--color-text-primary)',
+  xColor = 'var(--color-primary)',
+  inkColor = 'var(--color-base-content)',
   style,
 }: {
   xColor?: string;
@@ -44,7 +44,7 @@ const DONTS: { caption: string; demo: React.ReactNode }[] = [
   {
     caption:
       'Don’t let the “x” vanish into the letters. Keep it indigo — or, in one-color use, dimmed.',
-    demo: <Faux xColor="var(--color-text-primary)" />,
+    demo: <Faux xColor="var(--color-base-content)" />,
   },
   {
     caption: 'Don’t add shadows, glows, or gradients.',
@@ -74,7 +74,11 @@ export function MisuseSection() {
           headline={
             <>
               What not to do{' '}
-              <span style={{ color: 'var(--color-text-tertiary)' }}>with the mark</span>
+              <span
+                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+              >
+                with the mark
+              </span>
             </>
           }
           lede="The wordmark earns its clarity from restraint. These are the treatments that break it — each one undoes the single detail the brand is built on."
@@ -88,10 +92,10 @@ export function MisuseSection() {
                 margin: 0,
                 display: 'flex',
                 flexDirection: 'column',
-                border: '1px solid var(--color-border-default)',
+                border: '1px solid var(--color-base-300)',
                 borderRadius: 'var(--radius-xl)',
                 overflow: 'hidden',
-                backgroundColor: 'var(--color-bg-surface)',
+                backgroundColor: 'var(--color-base-100)',
               }}
             >
               <div
@@ -103,8 +107,8 @@ export function MisuseSection() {
                   padding: '40px 24px',
                   minHeight: '128px',
                   overflow: 'hidden',
-                  backgroundColor: i === 5 ? '#6366F1' : 'var(--color-bg-page)',
-                  borderBottom: '1px solid var(--color-border-default)',
+                  backgroundColor: i === 5 ? '#6366F1' : 'var(--color-base-200)',
+                  borderBottom: '1px solid var(--color-base-300)',
                 }}
               >
                 {d.demo}
@@ -136,7 +140,7 @@ export function MisuseSection() {
                   fontFamily: 'var(--font-sans)',
                   fontSize: '13.5px',
                   lineHeight: '20px',
-                  color: 'var(--color-text-secondary)',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                 }}
               >
                 {d.caption}

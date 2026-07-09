@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Avatar, Badge, Button, Card, CardBody, EmptyState } from 'silicaui-react';
+import { Avatar, Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 import { UserX } from 'lucide-react';
 

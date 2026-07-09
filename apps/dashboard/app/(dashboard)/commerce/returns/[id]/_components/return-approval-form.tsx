@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox, Input } from 'silicaui-react';
+import { Button, Checkbox, FieldStatus, Input } from '@wizeworks/silicaui-react';
 
 import { formBool, formString } from '../../../../../../lib/forms';
 import { approveReturnAction } from '../../../return-actions';
@@ -36,6 +36,17 @@ export function ReturnApprovalForm({
     const form = new FormData(e.currentTarget);
     const staffNote = formString(form, 'staffNote').trim();
     const generateLabel = formBool(form, 'generateLabel');
+
+    // Approved quantities are per-row inline editors — guard the numeric bounds
+    // (finite integer, 0..requested) before dispatching.
+    const outOfBounds = items.some((it) => {
+      const q = approved[it.id] ?? it.quantity;
+      return !Number.isInteger(q) || q < 0 || q > it.quantity;
+    });
+    if (outOfBounds) {
+      setError('Approved quantities must be whole numbers between 0 and the requested amount.');
+      return;
+    }
 
     const itemDecisions = items.map((it) => ({
       returnLineItemId: it.id,
@@ -90,9 +101,9 @@ export function ReturnApprovalForm({
           <Input name="staffNote" placeholder="Optional internal note" />
         </div>
         {error && (
-          <p className="text-danger text-sm" role="alert" aria-live="polite">
+          <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
             {error}
-          </p>
+          </FieldStatus>
         )}
         <div className="flex flex-row justify-end gap-2">
           <Button color="module" type="submit" disabled={pending}>

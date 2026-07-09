@@ -14,7 +14,19 @@ import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
-import { Card, CardBody, CardTitle, Checkbox, Input, Label } from 'silicaui-react';
+import {
+  Card,
+  CardBody,
+  CardTitle,
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Label,
+} from '@wizeworks/silicaui-react';
+import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createWorkflowAction } from '../../../workflow-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
@@ -49,6 +61,14 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
   // Until the user edits the slug by hand, keep it in lockstep with the name.
   const effectiveSlug = slugTouched ? slug : slugify(name);
 
+  const v = useFieldValidation(
+    { name, slug: effectiveSlug },
+    {
+      name: rule.required('Name is required.'),
+      slug: rule.required('Slug is required.'),
+    }
+  );
+
   const dirty = name.trim() !== '' || slugTouched || isDefault;
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'workflow' });
 
@@ -70,14 +90,7 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
 
   function submit() {
     setError(null);
-    if (!name.trim()) {
-      setError('Name is required.');
-      return;
-    }
-    if (!effectiveSlug) {
-      setError('Slug is required.');
-      return;
-    }
+    if (!v.validate()) return;
     const input = {
       name: name.trim(),
       slug: effectiveSlug,
@@ -123,34 +136,36 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
             <CardBody>
               <CardTitle>Workflow details</CardTitle>
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="workflow-name">Name</Label>
-                  <Input
-                    id="workflow-name"
+                <Field {...v.field('name')}>
+                  <FieldLabel required>Name</FieldLabel>
+                  <FieldControl
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Repair order"
+                    {...v.control('name')}
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     The internal name for this lifecycle (e.g. Repair Order, Quick Invoice, Tattoo
                     Booking).
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="workflow-slug">Slug</Label>
-                  <Input
-                    id="workflow-slug"
+                  </FieldDescription>
+                </Field>
+                <Field {...v.field('slug')}>
+                  <FieldLabel required>Slug</FieldLabel>
+                  <FieldControl
+                    name="slug"
                     value={effectiveSlug}
                     onChange={(e) => {
                       setSlugTouched(true);
                       setSlug(e.target.value);
                     }}
                     placeholder="repair-order"
+                    {...v.control('slug')}
                   />
-                  <p className="text-base-content/70 text-xs">
+                  <FieldDescription>
                     Lowercase kebab-case. Used as the stable identifier.
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
                 <div className="flex flex-row items-center gap-2">
                   <Checkbox
                     color="module"
@@ -162,9 +177,9 @@ export function NewWorkflowForm({ surface }: NewWorkflowFormProps) {
                 </div>
 
                 {error && (
-                  <p className="text-danger text-sm" role="alert" aria-live="polite">
+                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
                     {error}
-                  </p>
+                  </FieldStatus>
                 )}
               </div>
             </CardBody>
