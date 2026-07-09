@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
@@ -16,7 +15,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@sparx/ui';
-import { Maximize2, PanelRight, Square, X } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@wizeworks/silicaui-react';
+import { ArrowLeft, Maximize2, MoreHorizontal, PanelRight, Square } from 'lucide-react';
 import {
   CREATE_SENTINEL,
   findEntityType,
@@ -110,23 +115,12 @@ export function InlineDetailContent({ target, children }: InlineDetailProps) {
 
 function InlineDetailBody({ target, children }: InlineDetailProps) {
   const fullBleed = isFullBleedTarget(target);
-  const moduleId = findEntityType(target.typeId)?.manifest.id;
   return (
     <Stack gap={0} className="h-full">
       <DetailHeader target={target} />
       <div className={fullBleed ? 'min-h-0 flex-1' : 'bg-base-200 flex-1 overflow-y-auto p-6'}>
         {children}
       </div>
-      {/* Floored below the scroll body — the body's form teleports its Save here so
-          it pins to the drawer's bottom edge instead of scrolling away. Zero-height
-          until a form supplies one. Wrapped in the entity's ModuleProvider so a
-          teleported `color="module"` action reads the module hue: the portal's DOM
-          lands HERE (outside the body's own provider), and CSS vars cascade by DOM,
-          so without this `--module-active` falls back to the :root indigo and the
-          Save mismatches the header Publish + the full-page surface. */}
-      <ModuleProvider module={moduleId ?? 'platform'} className="shrink-0">
-        <DetailFooterSlotTarget />
-      </ModuleProvider>
     </Stack>
   );
 }
@@ -156,7 +150,6 @@ export function ModalDetailContent({ target, onClose, children }: ModalDetailPro
 
 function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   const fullBleed = isFullBleedTarget(target);
-  const moduleId = findEntityType(target.typeId)?.manifest.id;
   const runGuard = useLeaveGuard();
   // Width by purpose: a single-form edit detail reads best in a tighter dialog so
   // its fields don't stretch; every other record detail — a plain tabbed view or a
@@ -179,8 +172,14 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
   // h-full). Single-form full-bleed details (category) and the create wizards manage
   // their own internal scroll + toolbar, so they keep the content hug.
   const fixedHeight = fullBleed && !isCreate && !isSingleFormDetail(target.typeId);
-  // Pin the dialog's TOP edge (`top-[6vh] translate-y-0` overrides the base
-  // `top-1/2 -translate-y-1/2` via twMerge) instead of centering it. A centered
+  // Pin the dialog's TOP edge instead of centering it — `top-[6vh]` plus
+  // `[transform:translateX(-50%)]`, which REPLACES silica's own hardcoded
+  // `transform: translate(-50%,-50%)` (baked into its `.dialog-popup` CSS
+  // class, not a Tailwind utility, so a `translate-y-*` utility can't cancel
+  // just the Y half — that targets a different CSS property in Tailwind v4
+  // and would stack on top of it instead) with ONLY the X half: `left: 50%`
+  // (unchanged, still centering horizontally) needs that compensating -50%,
+  // but the Y half is dropped since `top` is no longer 50%. A centered
   // overlay that hugs its content grows from the middle when its height changes —
   // switching detail tabs or stepping a wizard makes the header drift up/down.
   // Anchoring at 6vh (where the 88vh-capped tallest content already sits) holds
@@ -198,7 +197,10 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
     <Modal open onOpenChange={(open) => !open && guardedClose()}>
       <ModalContent
         hideClose
-        className={cn('top-[6vh] max-h-[88vh] translate-y-0 overflow-hidden p-0', widthClass)}
+        className={cn(
+          'top-[6vh] max-h-[88vh] [transform:translateX(-50%)] overflow-hidden p-0',
+          widthClass
+        )}
       >
         <ModalTitle className="sr-only">{describeTarget(target)}</ModalTitle>
         <ModalDescription className="sr-only">
@@ -214,15 +216,6 @@ function ModalDetailBody({ target, onClose, children }: ModalDetailProps) {
           <div className={fullBleed ? 'min-h-0 flex-1' : 'bg-base-200 flex-1 overflow-y-auto p-6'}>
             {children}
           </div>
-          {/* Floored below the scroll body so a teleported Save pins to the modal's
-              bottom edge (a sticky bar inside the scroll body can't). Zero-height
-              until a form supplies one. Wrapped in the entity's ModuleProvider so a
-              teleported `color="module"` action reads the module hue — the portal's
-              DOM lands here, outside the body's provider, so without it the action
-              falls back to the :root indigo (mismatching the header + full page). */}
-          <ModuleProvider module={moduleId ?? 'platform'} className="shrink-0">
-            <DetailFooterSlotTarget />
-          </ModuleProvider>
         </Stack>
       </ModalContent>
     </Modal>
@@ -244,13 +237,9 @@ function DetailHeader({ target }: { target: DetailTarget }) {
   const found = findEntityType(target.typeId);
   if (!found) return null;
   const { manifest } = found;
-  // Null only when the token genuinely can't address a full page. content-entry
-  // encodes <typeKey>:<id> so this resolves to /cms/types/<typeKey>/<id> like
-  // any other entity — the maximize button shows for it too.
-  const fullPageHref = fullPageHrefFor(target.typeId, target.entityId);
 
-  // Close + switch both leave (or remount) the form, so they run the dirty-guard
-  // first — the active form blocks the leave if it has unsaved edits.
+  // Close leaves (or remounts) the form, so it runs the dirty-guard first —
+  // the active form blocks the leave if it has unsaved edits.
   async function close() {
     if (!(await runGuard())) return;
     const next = new URLSearchParams(searchParams ?? '');
@@ -260,24 +249,32 @@ function DetailHeader({ target }: { target: DetailTarget }) {
     router.replace(qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
   }
 
-  async function switchMode() {
-    if (!(await runGuard())) return;
-    const next = new URLSearchParams(searchParams ?? '');
-    const nextMode: 'drawer' | 'modal' = target.mode === 'drawer' ? 'modal' : 'drawer';
-    next.delete('drawer');
-    next.delete('modal');
-    next.set(nextMode, `${target.typeId}:${target.entityId}`);
-    router.replace(`${window.location.pathname}?${next.toString()}`);
-  }
-
-  const SwitchIcon = target.mode === 'drawer' ? Square : PanelRight;
-  const switchLabel = target.mode === 'drawer' ? 'Switch to modal' : 'Switch to drawer';
-
   return (
     <ModuleProvider module={manifest.id}>
-      {/* Title on the left, window controls on the right with Close last (the
-          corner), matching the wizard F layout (docs/86). */}
-      <div className="border-base-300 bg-base-100 flex h-[52px] shrink-0 items-center gap-1 border-b pr-2 pl-5">
+      {/* "Leaving" is always the far-left control, on every surface — a full
+          page gets a real "← {list}" link; this overlay has no list to
+          navigate to (it's dismissing a layer, the list is already showing
+          behind it), so it's a bare "←" that runs the same guarded close.
+          Same icon, same position, same meaning regardless of presentation —
+          only the window/switch controls (which view you're in) stay right. */}
+      <div
+        className={cn(
+          'border-base-300 bg-base-100 @container/toolbar flex h-[52px] shrink-0 items-center gap-1 border-b pr-2 pl-2',
+          // Reveal the zone-divider only when BOTH the lifecycle and
+          // form-actions slots are actually populated (pure CSS — neither
+          // slot's fill state is knowable in JS, they're portal targets).
+          'has-[[data-slot=lifecycle]:not(:empty)]:has-[[data-slot=formactions]:not(:empty)]:[&>[data-slot=zone-divider]]:flex'
+        )}
+      >
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="sm" aria-label="Close" onClick={() => void close()}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Close</TooltipContent>
+        </Tooltip>
+
         <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
           {describeTarget(target)}
         </span>
@@ -288,102 +285,125 @@ function DetailHeader({ target }: { target: DetailTarget }) {
             supply none. */}
         <DetailHeaderSlotTarget className="flex items-center gap-2" />
 
-        {fullPageHref && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" aria-label="Open in full page" asChild>
-                <Link href={fullPageHref}>
-                  <Maximize2 className="h-4 w-4" />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Open in full page</TooltipContent>
-          </Tooltip>
-        )}
+        {/* Toolbar zone divider — Lifecycle (persisted-state actions) vs.
+            Form-actions (the open edit's Cancel/Save) are categorically
+            different; see the toolbar zone system. */}
+        <div
+          aria-hidden
+          data-slot="zone-divider"
+          className="hidden h-5 w-px shrink-0 bg-[var(--color-base-300)]"
+        />
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label={switchLabel}
-              onClick={() => void switchMode()}
-            >
-              <SwitchIcon className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{switchLabel}</TooltipContent>
-        </Tooltip>
+        {/* The detail body's edit tab teleports its Save here too — top-docked
+            next to lifecycle actions instead of floored at the panel's bottom
+            edge. Zero-width until a form supplies one. Already inside this
+            ModuleProvider, so a teleported `color="module"` Save reads the
+            module hue (CSS vars cascade by DOM, not the React tree). */}
+        <DetailFooterSlotTarget className="flex items-center gap-2" />
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Close" onClick={() => void close()}>
-              <X className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Close</TooltipContent>
-        </Tooltip>
+        <ViewSwitcher typeId={target.typeId} entityId={target.entityId} current={target.mode} />
       </div>
     </ModuleProvider>
   );
 }
 
-// ── Full-page presentation switch ──────────────────────────
-// The overlay host (DetailHeader) lets a record switch drawer↔modal and close;
-// the full-page route has the breadcrumb + back for "close" and can't "maximize"
-// (it IS maximized), but it had no way to COLLAPSE back into an overlay. This
-// gives that parity: open the same record as a drawer/modal over its list (the
-// list route comes from the manifest `routePrefix`). It rides in the embedded
-// frame's `headerActions` slot. Guarded — if the form is dirty, the shared
-// unsaved-guard confirms before navigating (the page wraps it in the provider).
-export function DetailPresentationSwitch({
+// ── View zone — switch presentation ─────────────────────────
+// The ONE "which view, and how do I switch" control — shared by the drawer/
+// modal chrome (DetailHeader) AND the full-page shell (DetailPageShell), so
+// every presentation offers the identical experience instead of two
+// independently-maintained implementations (the old Maximize/Switch icon
+// pair here, and the old `DetailPresentationSwitch` full-page-only export).
+// Collapsed into one "⋯" trigger — switching view is rare enough that it
+// doesn't earn always-visible icon buttons (toolbar zone system, View zone),
+// and a text-labeled menu beats guessing which bare icon means which mode.
+// State-aware: pass the CURRENT presentation and it renders menu items only
+// for the other reachable ones, each running the SAME guarded navigation
+// (previously only Switch and "open as" were guarded — Maximize wasn't,
+// a pre-existing gap this unification also closes).
+//
+// DropdownMenu here is silica's (Base UI), matching `Modal` below — which is
+// ALSO now built on silica's Dialog (see modal.tsx), not raw Radix. The two
+// libraries are specifically designed to coordinate portals/focus-trapping
+// with each other; a DIFFERENT library's popup nested in one silently fails
+// to open (verified — that's the exact bug that broke this menu inside the
+// modal presentation until Modal migrated). `Combobox`/`Popover` elsewhere in
+// this Modal are still Radix and unaffected by this — Radix popovers
+// coordinate fine with each other regardless of which Modal hosts them.
+export type DetailViewMode = 'page' | 'drawer' | 'modal';
+
+const VIEW_OPTION: Record<
+  DetailViewMode,
+  { label: string; icon: React.ComponentType<{ className?: string }> }
+> = {
+  page: { label: 'Open full page', icon: Maximize2 },
+  drawer: { label: 'Open as drawer', icon: PanelRight },
+  modal: { label: 'Open as modal', icon: Square },
+};
+
+export function ViewSwitcher({
   typeId,
   entityId,
+  current,
 }: {
   typeId: string;
   entityId: string;
+  current: DetailViewMode;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const runGuard = useLeaveGuard();
   const found = findEntityType(typeId);
   if (!found) return null;
-  const base = found.entityType.routePrefix;
+  // Null only when the token genuinely can't address a full page (content-entry
+  // create with no type-scoped id yet) — that option just doesn't render.
+  const fullPageHref = fullPageHrefFor(typeId, entityId);
+  const listHref = found.entityType.routePrefix;
 
-  function openAs(mode: 'drawer' | 'modal') {
+  function go(mode: DetailViewMode) {
     void (async () => {
       if (!(await runGuard())) return;
-      router.push(`${base}?${mode}=${typeId}:${entityId}`);
+      if (mode === 'page') {
+        if (fullPageHref) router.push(fullPageHref);
+        return;
+      }
+      if (current === 'page') {
+        router.push(`${listHref}?${mode}=${typeId}:${entityId}`);
+        return;
+      }
+      const next = new URLSearchParams(searchParams ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      next.set(mode, `${typeId}:${entityId}`);
+      router.replace(`${window.location.pathname}?${next.toString()}`);
     })();
   }
 
+  const reachable = (['page', 'drawer', 'modal'] as const).filter(
+    (mode) => mode !== current && (mode !== 'page' || fullPageHref)
+  );
+  if (reachable.length === 0) return null;
+
   return (
-    <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Open as drawer"
-            onClick={() => openAs('drawer')}
-          >
-            <PanelRight className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Open as drawer</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Open as modal"
-            onClick={() => openAs('modal')}
-          >
-            <Square className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Open as modal</TooltipContent>
-      </Tooltip>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="ghost" size="sm" aria-label="View options">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      {/* This menu can be triggered from inside a Modal (the "modal" view). Base
+          UI's floating positioner otherwise renders BEHIND an open dialog —
+          see the global stacking-order fix in packages/ui/src/tokens.css. */}
+      <DropdownMenuContent align="end">
+        {reachable.map((mode) => {
+          const { label, icon: Icon } = VIEW_OPTION[mode];
+          return (
+            <DropdownMenuItem key={mode} onClick={() => go(mode)}>
+              <Icon className="mr-2 h-4 w-4" />
+              {label}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

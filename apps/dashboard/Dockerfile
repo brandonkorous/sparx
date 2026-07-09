@@ -64,6 +64,9 @@ COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
+# @sparx/silica-catalog — the silica-native commerce composites the builder host
+# merges into the Insert palette. React-free (only silicaui-html); no @sparx deps.
+COPY packages/silica-catalog/package.json packages/silica-catalog/
 # @sparx/builder-render — the shared canvas↔live render path (docs/builder/02), a
 # dashboard dep. Its workspace deps (builder-schemas, cms-editor, site-ui) are above.
 COPY packages/builder-render/package.json packages/builder-render/
@@ -126,6 +129,7 @@ COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
+COPY packages/silica-catalog packages/silica-catalog
 COPY packages/builder-render packages/builder-render
 COPY packages/surface-compile packages/surface-compile
 COPY packages/attribution packages/attribution

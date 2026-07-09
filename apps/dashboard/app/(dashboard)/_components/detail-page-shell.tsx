@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button, cn, Container, ModuleProvider, Stack } from '@sparx/ui';
 
 import { findEntityType, isFullBleedDetail } from '../_shell/detail-registry';
-import { DetailPresentationSwitch } from './detail-panel';
+import { ViewSwitcher } from './detail-panel';
 import {
   DetailChromeProvider,
   DetailFooterSlotTarget,
@@ -82,11 +82,31 @@ export function DetailPageShell({
   const fullBleed = isFullBleedDetail(typeId);
   const body = (
     <Stack gap={0} className={cn(fullBleed && 'h-full')}>
-      <div className="border-base-300 bg-base-100 flex h-[52px] shrink-0 items-center gap-2 border-b px-2">
+      <div
+        className={cn(
+          'border-base-300 bg-base-100 @container/toolbar flex h-[52px] shrink-0 items-center gap-2 border-b px-2',
+          // Reveal the zone-divider only when BOTH the lifecycle and
+          // form-actions slots are actually populated (pure CSS — neither
+          // slot's fill state is knowable in JS, they're portal targets).
+          'has-[[data-slot=lifecycle]:not(:empty)]:has-[[data-slot=formactions]:not(:empty)]:[&>[data-slot=zone-divider]]:flex'
+        )}
+      >
         {listHref && <DetailBackLink href={listHref} label={listLabel ?? ''} />}
         <div className="flex-1" />
         <DetailHeaderSlotTarget className="flex items-center gap-2" />
-        <DetailPresentationSwitch typeId={typeId} entityId={entityId} />
+        {/* Toolbar zone divider — Lifecycle (persisted-state actions) vs.
+            Form-actions (the open edit's Cancel/Save) are categorically
+            different; see the toolbar zone system. */}
+        <div
+          aria-hidden
+          data-slot="zone-divider"
+          className="hidden h-5 w-px shrink-0 bg-[var(--color-base-300)]"
+        />
+        {/* The body's form teleports its Save here, next to lifecycle actions —
+            top-docked like every other toolbar on the platform, not floored at
+            the page bottom. Zero-width until a form supplies one. */}
+        <DetailFooterSlotTarget className="flex items-center gap-2" />
+        <ViewSwitcher typeId={typeId} entityId={entityId} current="page" />
       </div>
       {fullBleed ? (
         <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
@@ -97,11 +117,6 @@ export function DetailPageShell({
           </Stack>
         </Container>
       )}
-      {/* The body's form teleports its Save here. On a document-flow page the bar
-          is sticky to the viewport bottom (parity with the overlay's floored
-          footer); in a fixed-height frame it's the frame's own bottom rail.
-          Zero-height until a form supplies one. */}
-      <DetailFooterSlotTarget className={cn(fullBleed ? 'shrink-0' : 'sticky bottom-0 z-10')} />
     </Stack>
   );
 

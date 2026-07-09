@@ -37,6 +37,7 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 import {
+  AdaptiveLabel,
   ModuleProvider,
   SurfaceFrame,
   SurfaceStep,
@@ -62,6 +63,9 @@ import {
 } from '../../../../inventory/_lib/inventory-actions';
 import { listFitmentDomainsAction } from '../../../fitment-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../../_components/detail-header-slot';
+import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
+import { ViewSwitcher } from '../../../../_components/detail-panel';
 import { OrganizationStep } from './organization-step';
 import { VariantsStep } from './variants-step';
 import { MediaStep } from './media-step';
@@ -234,6 +238,11 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const confirm = useConfirm();
+  // Overlay only: the drawer/modal host's own toolbar row (title + switch +
+  // close), already rendered by `detail-panel.tsx`'s `DetailHeader`. Handing it
+  // to `SurfaceFrame` merges the wizard's Cancel/Continue into THAT row instead
+  // of stacking a second toolbar underneath it — null until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
 
   const [stepKey, setStepKey] = React.useState<StepKey>('basics');
   const [submitting, setSubmitting] = React.useState(false);
@@ -632,7 +641,9 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       }}
       actions={{
         onNext: () => void commitBasics(),
-        nextLabel: productId ? 'Save & continue' : 'Create draft & continue',
+        nextLabel: productId
+          ? { full: 'Save & continue', short: 'Continue' }
+          : { full: 'Create draft & continue', short: 'Continue' },
         nextDisabled: title.trim().length === 0 || submitting,
         nextLoading: submitting,
       }}
@@ -725,7 +736,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       actions={{
         onBack: () => goToStep(prevKeyBefore('pricing')),
         onNext: () => void commitPricing(),
-        nextLabel: 'Save & continue',
+        nextLabel: { full: 'Save & continue', short: 'Continue' },
         nextDisabled:
           sku.trim().length === 0 || dollarsToCents(priceStr) === undefined || submitting,
         nextLoading: submitting,
@@ -815,7 +826,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         onBack: () => goToStep(prevKeyBefore('inventory')),
         onNext: () => void commitInventory(),
         onSkip: () => goToStep(nextKeyAfter('inventory')),
-        nextLabel: 'Save & continue',
+        nextLabel: { full: 'Save & continue', short: 'Continue' },
         nextLoading: submitting,
         nextDisabled: submitting,
       }}
@@ -994,12 +1005,12 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
       actions={{
         onBack: () => goToStep(prevKeyBefore('review')),
         onNext: () => void finish(true),
-        nextLabel: 'Publish product',
+        nextLabel: { full: 'Publish product', short: 'Publish' },
         nextLoading: submitting,
         nextDisabled: submitting,
         extra: (
           <Button variant="outline" onClick={() => void finish(false)} disabled={submitting}>
-            Save as draft
+            <AdaptiveLabel label={{ full: 'Save as draft', short: 'Draft' }} />
           </Button>
         ),
       }}
@@ -1149,10 +1160,22 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   // One top-stepper frame for both presentations: `embedded` fills the dashboard
   // content area at the `/new` route (sidebar + header stay); `inline` fills the
   // drawer/modal detail panel, which supplies its own close/switch/maximize chrome.
+  // `backLabel` gives the embedded full page a real "← Products" link (the same
+  // guarded leave as Cancel); `headerActions` gives it the View menu —
+  // `ViewSwitcher` already builds `?{mode}=product:new` for any entityId,
+  // `CREATE_SENTINEL` included, so it works unmodified for a draft that
+  // doesn't exist yet.
   return (
     <SurfaceFrame
       variant={presentation === 'overlay' ? 'inline' : 'embedded'}
       title="New product"
+      backLabel="Products"
+      headerActions={
+        presentation === 'page' ? (
+          <ViewSwitcher typeId="product" entityId={CREATE_SENTINEL} current="page" />
+        ) : undefined
+      }
+      actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
       steps={steps}
       current={current}
       context={railContext}

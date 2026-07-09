@@ -59,26 +59,37 @@ export function StoryComposer({
   siteOrigin: string;
   useTenantParam: boolean;
 }): ReactNode {
+  // `started` = the owner has made a template THEIR OWN (edited it, or chose a blank
+  // page). Until then they're browsing a pristine template — editable in place, but not
+  // yet persisted, so navigating away resets it (a template is a starting point, not a
+  // commitment). The composer opens on the first template so there is always something
+  // to edit, not a dead read-only preview.
   const [started, setStarted] = useState(!!initialStory);
   const [exampleIdx, setExampleIdx] = useState(0);
   const [story, setStory] = useState<StoryState>(
-    initialStory ?? { ...EMPTY_STORY, name: initialName }
+    initialStory ?? cloneStory({ ...STORY_EXAMPLES[0]!.story, name: initialName })
   );
   const [committed, setCommitted] = useState<Committed | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  // Any edit promotes a browsed template into the owner's own story — it flips
+  // `started` (the draft begins persisting + the heading changes) and applies the edit.
+  const edit = (updater: (s: StoryState) => StoryState): void => {
+    setStarted(true);
+    setStory(updater);
+  };
   const dispatch: StoryDispatch = {
-    setTense: (t) => setStory((s) => ({ ...s, tense: t })),
-    setIndustry: (slug) => setStory((s) => ({ ...s, industry: slug })),
-    setAudience: (a) => setStory((s) => ({ ...s, audience: a })),
-    addCust: (id) => setStory((s) => addCust(s, id)),
-    addToLine: (li, id) => setStory((s) => addToLine(s, li, id)),
-    addNewLine: (id) => setStory((s) => addNewLine(s, id)),
-    removeClause: (id) => setStory((s) => removeClause(s, id)),
-    swapClause: (o, n) => setStory((s) => swapClause(s, o, n)),
-    setSlot: (id, v) => setStory((s) => ({ ...s, slots: { ...s.slots, [id]: v } })),
-    setName: (v) => setStory((s) => ({ ...s, name: v })),
+    setTense: (t) => edit((s) => ({ ...s, tense: t })),
+    setIndustry: (slug) => edit((s) => ({ ...s, industry: slug })),
+    setAudience: (a) => edit((s) => ({ ...s, audience: a })),
+    addCust: (id) => edit((s) => addCust(s, id)),
+    addToLine: (li, id) => edit((s) => addToLine(s, li, id)),
+    addNewLine: (id) => edit((s) => addNewLine(s, id)),
+    removeClause: (id) => edit((s) => removeClause(s, id)),
+    swapClause: (o, n) => edit((s) => swapClause(s, o, n)),
+    setSlot: (id, v) => edit((s) => ({ ...s, slots: { ...s.slots, [id]: v } })),
+    setName: (v) => edit((s) => ({ ...s, name: v })),
   };
 
   // Persist the in-progress narrative as the owner composes, so a refresh or a trip
@@ -118,8 +129,9 @@ export function StoryComposer({
     );
   }
 
-  const example = STORY_EXAMPLES[exampleIdx] ?? STORY_EXAMPLES[0]!;
-  const display = started ? story : example.story;
+  // The canvas is always the live, editable story (seeded from a template or a draft),
+  // so the plan rail always mirrors exactly what's on screen.
+  const display = story;
   const on = resolveModules(display);
   const selling = SELLING.some((k) => on[k]);
   const canBuild = !!display.industry && !!display.audience && handleSlug(display.name).length >= 3;
@@ -136,6 +148,31 @@ export function StoryComposer({
   const startFrom = (seed: StoryState): void => {
     setStory(cloneStory(seed));
     setStarted(true);
+  };
+
+  // A pristine copy of a template, keyed to the tenant's own web handle.
+  const seedTemplate = (i: number): StoryState =>
+    cloneStory({ ...STORY_EXAMPLES[i]!.story, name: initialName });
+
+  // Picking a template while browsing (not yet started) just swaps the editable canvas.
+  const onSelectTemplate = (i: number): void => {
+    setExampleIdx(i);
+    setStory(seedTemplate(i));
+    setStarted(false);
+  };
+
+  // "Start over" discards the owner's edits and returns to the template picker. Guarded
+  // because it's destructive; the (onboarding) group has no ConfirmProvider, so this
+  // uses the native confirm rather than useConfirm.
+  const onStartOver = (): void => {
+    if (
+      typeof window !== 'undefined' &&
+      !window.confirm('Start over? Your story so far will be cleared.')
+    ) {
+      return;
+    }
+    setStarted(false);
+    setStory(seedTemplate(exampleIdx));
   };
 
   const onBuild = (): void => {
@@ -164,9 +201,15 @@ export function StoryComposer({
     });
   };
 
-  const cta = started
-    ? { label: `Build my ${buildLabel}`, onClick: onBuild, disabled: !canBuild, loading: pending }
-    : { label: 'Start from this story', onClick: () => startFrom(example.story) };
+  // One CTA throughout compose: build what's on screen. Enabled once the story has the
+  // essentials (industry + audience + a ≥3-char handle) — true for any template as-is,
+  // so an owner who likes a template can build it in one tap, or edit it first.
+  const cta = {
+    label: `Build my ${buildLabel}`,
+    onClick: onBuild,
+    disabled: !canBuild,
+    loading: pending,
+  };
 
   return (
     <SurfaceFrame
@@ -188,8 +231,9 @@ export function StoryComposer({
             examples={STORY_EXAMPLES}
             activeIdx={exampleIdx}
             dispatch={dispatch}
-            onSelect={setExampleIdx}
+            onSelectTemplate={onSelectTemplate}
             onStartBlank={() => startFrom({ ...EMPTY_STORY, name: initialName })}
+            onStartOver={onStartOver}
           />
 
           <SummaryCard

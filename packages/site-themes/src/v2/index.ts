@@ -9,5 +9,6 @@ export * from './types';
 export * from './color';
 export * from './compile';
 export * from './css';
+export * from './silica-css';
 export * from './legacy';
 export * from './tenant';

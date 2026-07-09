@@ -58,16 +58,20 @@ function useTargetRef(ctx: React.Context<((node: HTMLElement | null) => void) | 
 // Rendered by the active frame's header bar. Registers its element as the portal
 // target for whatever the body teleports in. An empty target is a zero-width
 // flex child, so frames whose body supplies no header content are unaffected.
+// `data-slot="lifecycle"` lets the frame's own zone-divider (see
+// `detail-panel.tsx` / `detail-page-shell.tsx`) detect via CSS `:has()` /
+// `:empty` whether this zone is actually populated, without any JS state.
 export function DetailHeaderSlotTarget({ className }: { className?: string }) {
   const ref = useTargetRef(HeaderSetContext);
-  return <div ref={ref} className={className} />;
+  return <div ref={ref} data-slot="lifecycle" className={className} />;
 }
 
 // Rendered by the active frame BELOW its scrolling body. Empty (zero-height)
 // until a body teleports a footer in, so frames/tabs without a Save show no bar.
+// `data-slot="formactions"` — see `DetailHeaderSlotTarget` above.
 export function DetailFooterSlotTarget({ className }: { className?: string }) {
   const ref = useTargetRef(FooterSetContext);
-  return <div ref={ref} className={className} />;
+  return <div ref={ref} data-slot="formactions" className={className} />;
 }
 
 // Rendered by the detail body. Portals its children into the active frame's
@@ -85,4 +89,12 @@ export function DetailFooterSlot({ children }: { children: React.ReactNode }) {
   const node = React.useContext(FooterNodeContext);
   if (!node) return null;
   return createPortal(children, node);
+}
+
+// Imperative escape hatch for a body that needs the raw target node rather
+// than portaling children itself — e.g. handing it to `SurfaceFrame`'s
+// `actionsTarget` prop so the create wizard's own action row merges into
+// THIS slot instead of the frame rendering a second toolbar bar underneath it.
+export function useDetailFooterNode(): HTMLElement | null {
+  return React.useContext(FooterNodeContext);
 }

@@ -13,10 +13,11 @@ import {
   FieldControl,
   FieldLabel,
   FieldStatus,
+  Label,
   NativeSelect,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { Combobox, type ComboboxOption, MultiCombobox } from '@sparx/ui';
+import { AdaptiveLabel, Combobox, type ComboboxOption, MultiCombobox, toast } from '@sparx/ui';
 import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { Property } from '@/lib/sites';
@@ -77,7 +78,6 @@ export function ProductEditForm({
 }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
@@ -128,12 +128,10 @@ export function ProductEditForm({
 
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
-    setError(null);
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     setSavedAt(null);
 
     if (!v.validate()) return;
@@ -166,7 +164,7 @@ export function ProductEditForm({
           }
           if (Object.keys(map).length > 0) v.setServerErrors(map);
         }
-        setError(result.error.message);
+        toast.error(result.error.message);
         return;
       }
       setBaseline(form);
@@ -232,7 +230,7 @@ export function ProductEditForm({
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-4">
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <FieldLabel htmlFor="productType">Product type</FieldLabel>
+                  <Label htmlFor="productType">Product type</Label>
                   <Combobox
                     id="productType"
                     value={form.productType}
@@ -245,7 +243,7 @@ export function ProductEditForm({
                   />
                 </div>
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <FieldLabel htmlFor="vendor">Vendor</FieldLabel>
+                  <Label htmlFor="vendor">Vendor</Label>
                   <Combobox
                     id="vendor"
                     value={form.vendor}
@@ -259,7 +257,7 @@ export function ProductEditForm({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <FieldLabel htmlFor="tags">Tags</FieldLabel>
+                <Label htmlFor="tags">Tags</Label>
                 <MultiCombobox
                   id="tags"
                   value={form.tags}
@@ -281,7 +279,7 @@ export function ProductEditForm({
                 )}
               </div>
               <div className="flex max-w-xs flex-col gap-2">
-                <FieldLabel htmlFor="taxClass">Tax class</FieldLabel>
+                <Label htmlFor="taxClass">Tax class</Label>
                 <Combobox
                   id="taxClass"
                   value={form.taxClass}
@@ -306,7 +304,7 @@ export function ProductEditForm({
             <div className="flex flex-col gap-4">
               <div className="flex flex-row flex-wrap gap-4">
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <FieldLabel htmlFor="fulfillmentType">Fulfillment</FieldLabel>
+                  <Label htmlFor="fulfillmentType">Fulfillment</Label>
                   <NativeSelect
                     id="fulfillmentType"
                     value={form.fulfillmentType}
@@ -321,7 +319,7 @@ export function ProductEditForm({
                   </NativeSelect>
                 </div>
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
-                  <FieldLabel htmlFor="hazmatClass">Hazmat class</FieldLabel>
+                  <Label htmlFor="hazmatClass">Hazmat class</Label>
                   <NativeSelect
                     id="hazmatClass"
                     value={form.hazmatClass}
@@ -346,46 +344,35 @@ export function ProductEditForm({
                   checked={form.requiresShipping}
                   onChange={(e) => set('requiresShipping', e.target.checked)}
                 />
-                <FieldLabel htmlFor="requiresShipping">Requires shipping</FieldLabel>
+                <Label htmlFor="requiresShipping">Requires shipping</Label>
               </div>
             </div>
           </CardBody>
         </Card>
       </div>
 
-      {/* The primary action floors the active frame (drawer / modal / full page)
-          via the footer teleport — it renders OUTSIDE the scrolling body, so it
-          pins to the frame's bottom edge instead of scrolling away with the form
-          (a `sticky` bar inside the scroll body can't reach the modal's floor).
-          The button is portaled out of this <form>, so it re-associates by id.
-          Identity/lifecycle stay in the header; this carries only Save + result. */}
+      {/* The primary action teleports up into the frame's top toolbar (next to
+          lifecycle actions), not floored at the bottom — it renders OUTSIDE the
+          scrolling body, portaled out of this <form>, so it re-associates by id.
+          A failed save surfaces as a toast — there's no room for a persistent
+          error line in the compact shared toolbar row. */}
       <DetailFooterSlot>
-        <div className="border-base-300 bg-base-100 flex flex-wrap items-center justify-end gap-3 border-t px-6 py-3">
-          {error && (
-            <FieldStatus
-              status="error"
-              attached={false}
-              role="alert"
-              aria-live="polite"
-              className="mr-auto"
-            >
-              {error}
-            </FieldStatus>
-          )}
+        <div className="flex items-center gap-2">
           {savedAt !== null && !dirty && (
-            <div className="text-success flex flex-row items-center gap-1">
-              <Check className="h-4 w-4" />
-              <p className="text-success text-sm">Saved</p>
-            </div>
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
           )}
           <Button
             type="submit"
             form="product-edit-form"
+            size="sm"
             color="module"
             disabled={pending || !dirty}
             loading={pending}
           >
-            Save changes
+            <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
           </Button>
         </div>
       </DetailFooterSlot>

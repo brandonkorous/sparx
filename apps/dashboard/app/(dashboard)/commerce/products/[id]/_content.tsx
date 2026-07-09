@@ -352,12 +352,13 @@ export async function ProductDetailContent({ id }: Props) {
           productId={product.id}
           status={product.status}
           hasVariants={product.variantCount > 0}
-        />
-        <ProductPreviewButton
-          productId={product.id}
-          handle={product.handle}
-          tenantSlug={tenant.slug}
-        />
+        >
+          <ProductPreviewButton
+            productId={product.id}
+            handle={product.handle}
+            tenantSlug={tenant.slug}
+          />
+        </ProductStatusBar>
       </DetailHeaderSlot>
 
       {/* Tabbed editor (left, scrolls) + a persistent product CONTEXT RAIL (right) —

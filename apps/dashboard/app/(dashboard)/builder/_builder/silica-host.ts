@@ -1,0 +1,82 @@
+// The sparx `BuilderHost` — the whole domain seam silica's `<Builder>` reads
+// (silicaui-builder/react). It composes the four host pieces built in
+// @sparx/builder-schemas + @sparx/silica-catalog into the one adapter the engine
+// consumes (docs/118 §4):
+//   · resolveBinding / resolveCollection → `createSilicaResolver` over the tenant's
+//     pre-loaded data root (the editor's `buildPreviewData`).
+//   · dataSources() → `toSilicaDataSources` of the tenant binding catalog, so the
+//     built-in binding picker + `scopeAt` narrow to real product/CMS/site fields.
+//   · catalog() → the commerce composites silica doesn't ship, ADDED via `extend`
+//     (the engine calls `mergeCatalog` itself — the host only contributes additions).
+//   · validateClass → the tenant's OPTIONAL tighten rules over silica's built-in
+//     denylist floor (omitted entirely when the tenant has no custom rules).
+//
+// Pure + framework-free (type-only imports from silicaui-builder/react, so this
+// module never pulls the editor bundle server-side); the client studio wraps the
+// live `<Builder>` around the host this returns.
+
+import type { BuilderHost, PaletteGroup } from '@wizeworks/silicaui-builder/react';
+import type { DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
+import {
+  createSilicaClassValidator,
+  createSilicaResolver,
+  type DataSources,
+  type NodeBinding,
+} from '@sparx/builder-schemas';
+import { COMMERCE_CATALOG } from '@sparx/silica-catalog';
+
+/** The default host value formatter, covering the two shape gaps between sparx's
+ *  resolver data and silica's `fillValue`:
+ *   · an image/file field resolves to a `{ url, alt }` OBJECT, but `fillValue` sets
+ *     `<img src>` only from a STRING — so unwrap to the url. An EMPTY url returns
+ *     `undefined`, which leaves the node's authored `src` (the composite's
+ *     placeholder tile) in place rather than blanking it.
+ *   · a `price` field resolves to a raw number — render it as currency (formatting
+ *     is host territory; the composite binds the number, never a pre-formatted string).
+ *  A host can pass its own `formatValue` to override (e.g. locale-aware currency). */
+export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unknown {
+  if (value && typeof value === 'object' && 'url' in (value as Record<string, unknown>)) {
+    const url = (value as { url?: unknown }).url;
+    return typeof url === 'string' && url ? url : undefined;
+  }
+  if (typeof value === 'number' && /price/i.test(binding.path ?? '')) {
+    return `$${value.toFixed(2)}`;
+  }
+  return value;
+}
+
+export interface SilicaHostOptions {
+  /** The pre-loaded data root the resolver reads from (`buildPreviewData` in the
+   *  editor; `loadBuilderData` on the storefront). Fetched ONCE, up front — the
+   *  resolver is synchronous by silica's contract. */
+  root: DataSources;
+  /** The tenant binding catalog projected to silica `DataSource[]` — computed once
+   *  (`toSilicaDataSources(catalog.sources)`) and handed straight to the engine. */
+  dataSources: SilicaDataSource[];
+  /** The tenant's stored `builder_governance.utility_allowlist` (or null). */
+  tenantAllowlist?: unknown;
+  /** Host value formatter — price → "$49.00", ISO date → "May 27". Formatting is
+   *  host territory; the engine only fills the returned value. */
+  formatValue?: (value: unknown, binding: NodeBinding) => unknown;
+  /** The media picker `<Builder>` invokes when an image/video field asks for a
+   *  source. Omitted → the engine falls back to a raw URL input. */
+  pickAsset?: BuilderHost['pickAsset'];
+}
+
+/** Assemble the sparx `BuilderHost`. The commerce catalog is structurally silica's
+ *  `PaletteGroup[]` (its `icon` is a silica `IconName`, typed `string` in the
+ *  React-free catalog package) — the cast narrows that one nominal gap. */
+export function buildSilicaHost(opts: SilicaHostOptions): BuilderHost {
+  const resolver = createSilicaResolver({ root: opts.root, format: opts.formatValue });
+  const validateClass = createSilicaClassValidator(opts.tenantAllowlist);
+  return {
+    resolveBinding: resolver.resolveBinding,
+    resolveCollection: resolver.resolveCollection,
+    dataSources: () => opts.dataSources,
+    catalog: () => ({ extend: COMMERCE_CATALOG as unknown as PaletteGroup[] }),
+    ...(validateClass ? { validateClass } : {}),
+    ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
+    // inspectorPanels — sparx's SEO / product-pin / per-module panels are additive
+    // and land next; the engine's built-in panels cover the base case until then.
+  };
+}

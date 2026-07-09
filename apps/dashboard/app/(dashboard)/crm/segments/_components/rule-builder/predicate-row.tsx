@@ -8,7 +8,7 @@
 
 import { Trash2 } from 'lucide-react';
 import type { SegmentField, SegmentOperator } from '@sparx/crm-schemas';
-import { Button, FieldControl, NativeSelect } from '@wizeworks/silicaui-react';
+import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import {
   type FieldKind,
@@ -102,7 +102,7 @@ function ValueInput(props: {
   if (isArray) {
     const asText = Array.isArray(value) ? value.join(', ') : '';
     return (
-      <FieldControl
+      <Input
         value={asText}
         onChange={(e) => onChange(parseList(e.target.value, kind))}
         placeholder="comma-separated"
@@ -137,7 +137,7 @@ function ValueInput(props: {
   }
   if (kind === 'number') {
     return (
-      <FieldControl
+      <Input
         type="number"
         value={typeof value === 'number' ? value : ''}
         onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
@@ -147,7 +147,7 @@ function ValueInput(props: {
   }
   if (kind === 'datetime') {
     return (
-      <FieldControl
+      <Input
         type="datetime-local"
         value={typeof value === 'string' ? value.slice(0, 16) : ''}
         onChange={(e) => onChange(e.target.value ? new Date(e.target.value).toISOString() : null)}
@@ -155,7 +155,7 @@ function ValueInput(props: {
     );
   }
   return (
-    <FieldControl
+    <Input
       value={typeof value === 'string' ? value : ''}
       onChange={(e) => onChange(e.target.value)}
       className="w-56"

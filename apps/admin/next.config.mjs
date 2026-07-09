@@ -6,7 +6,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  transpilePackages: ['@sparx/ui', '@sparx/operator', '@sparx/operator-auth'],
+  transpilePackages: [
+    '@sparx/ui',
+    '@sparx/brand',
+    '@sparx/forms',
+    '@wizeworks/silicaui-react',
+    '@sparx/operator',
+    '@sparx/operator-auth',
+  ],
   // Keep the operator auth instance's native/server-only deps external to the
   // Next bundle — pg (the wize_admin pool) + Better Auth + the @sparx/events
   // Pub/Sub client (used by the operator set-password email path).

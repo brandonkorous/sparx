@@ -18,6 +18,7 @@ import {
   FieldControl,
   FieldLabel,
   FieldStatus,
+  Label,
   Loading,
   Table,
 } from '@wizeworks/silicaui-react';
@@ -137,7 +138,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
         ) : (
           <div className="flex flex-col gap-5 py-2">
             <div className="flex flex-col gap-2">
-              <FieldLabel>Adjustment</FieldLabel>
+              <Label>Adjustment</Label>
               <div className="flex flex-row flex-wrap gap-2">
                 {MODES.map((m) => (
                   <Button
@@ -157,7 +158,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
 
             {mode !== 'set' ? (
               <div className="flex flex-col gap-2">
-                <FieldLabel>Direction</FieldLabel>
+                <Label>Direction</Label>
                 <div className="flex flex-row gap-2">
                   <Button
                     type="button"

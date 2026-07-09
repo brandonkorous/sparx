@@ -132,6 +132,7 @@ export function SelectionList<T>({
   if (view === 'card') {
     return (
       <>
+        {bar}
         <Grid minItemWidth="18rem" gap={4} className={className}>
           {items.map((item) => {
             const id = getId(item);
@@ -174,7 +175,6 @@ export function SelectionList<T>({
             );
           })}
         </Grid>
-        {bar}
         {after}
       </>
     );
@@ -182,6 +182,7 @@ export function SelectionList<T>({
 
   return (
     <>
+      {bar}
       <Card padding="none" className={className}>
         <CardContent className="p-0">
           <Table>
@@ -243,7 +244,6 @@ export function SelectionList<T>({
           </Table>
         </CardContent>
       </Card>
-      {bar}
       {after}
     </>
   );

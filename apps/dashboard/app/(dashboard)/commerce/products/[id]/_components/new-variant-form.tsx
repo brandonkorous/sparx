@@ -9,6 +9,7 @@ import {
   FieldControl,
   FieldLabel,
   FieldStatus,
+  Label,
   NativeSelect,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
@@ -213,7 +214,7 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
             checked={isDefault}
             onChange={(e) => setIsDefault(e.target.checked)}
           />
-          <FieldLabel htmlFor="isDefault">Make this the default variant</FieldLabel>
+          <Label htmlFor="isDefault">Make this the default variant</Label>
         </div>
 
         {error && (

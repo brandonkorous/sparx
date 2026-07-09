@@ -126,7 +126,7 @@ export function BrandPaletteImport({ onApply }: { onApply: (roles: AppliedRoles)
         if (!o) setText('');
       }}
     >
-      <ModalTrigger asChild>
+      <ModalTrigger>
         <button
           type="button"
           className="bx-newtpl"

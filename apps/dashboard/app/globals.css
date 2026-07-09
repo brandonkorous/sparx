@@ -44,6 +44,20 @@
    plugin classes, so they need no @source scan. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
+/* The silica-engine Builder canvas (/builder/silica) renders documents whose
+   LAYOUT utilities (grid, grid-cols-*, aspect-square, @container, snap-x, gap-*,
+   object-cover, …) are core Tailwind utilities — they only emit if Tailwind SEES
+   the class strings. The silica engine's contract is that every authorable class
+   is a LITERAL string in these sources, so scanning them safelists exactly what
+   the canvas + Inspector can produce (no hand-maintained safelist):
+     • @sparx/silica-catalog — sparx's commerce composites
+     • silicaui-html dist    — the shipped blocks + component expansions
+     • silicaui-builder dist — the Inspector's authorable-utility set + chrome
+   Explicit @source overrides Tailwind's default node_modules ignore. */
+@source '../../../packages/silica-catalog/src/**/*.{ts,tsx}';
+@source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
+@source '../node_modules/@wizeworks/silicaui-builder/dist/**/*.js';
+
 /* Bridge the non-color sparx tokens into the Tailwind v4 theme (font, radius).
    Colors are owned entirely by silicaui: the @plugin above registers the
    semantic + module palette (so `bg-primary` / `text-success` / `bg-module` and

@@ -9,6 +9,7 @@ import {
   FieldControl,
   FieldLabel,
   FieldStatus,
+  Input,
   NativeSelect,
 } from '@wizeworks/silicaui-react';
 
@@ -220,7 +221,7 @@ export function OptionsEditor({
                 <p className="text-base-content/70 text-xs">Values</p>
                 {opt.values.map((val, vi) => (
                   <div key={val.localKey} className="flex flex-row items-center gap-2">
-                    <FieldControl
+                    <Input
                       value={val.value}
                       onChange={(e) => patchValue(oi, vi, { value: e.target.value })}
                       placeholder="Red"
@@ -228,7 +229,7 @@ export function OptionsEditor({
                       aria-label={`Value ${vi + 1}`}
                     />
                     {(opt.displayType === 'swatch' || opt.displayType === 'image_swatch') && (
-                      <FieldControl
+                      <Input
                         value={val.swatchHex}
                         onChange={(e) => patchValue(oi, vi, { swatchHex: e.target.value })}
                         placeholder="#FF0000"

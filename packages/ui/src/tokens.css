@@ -196,3 +196,30 @@
     display: none;
   }
 }
+
+/* ── silica floating-positioner stacking fix ─────────────────────────────
+   Base UI (silica's underlying primitive library) portals every floating
+   overlay's positioner — Menu, Select, Combobox, Popover, Tooltip — as a DOM
+   SIBLING near <body>, never nested inside whatever triggered it. That's fine
+   between two page-level popovers, but breaks the common case of one of these
+   triggered from INSIDE an open Modal (silica's Dialog, which `Modal` in this
+   package builds on): silica bakes `.dialog-popup` at z-index 51 and the
+   positioner at z-index auto (unstyled), so the dialog paints on top and the
+   popover becomes invisible — though still present and clickable in the
+   accessibility tree, which is why a jsdom-based interaction test can pass
+   while a real browser shows nothing (caught only via live verification).
+   `DropdownMenuContent` et al. only forward `className` to their inner Popup
+   (which is `position: static` and can't itself carry a stacking z-index) —
+   there's no public prop reaching the Positioner. Until silicaui exposes one
+   (or gives the Positioner a z-index that's always above Dialog by default),
+   elevate every open positioner above any open dialog here. Scoped with
+   `:has()` so it only applies while a `.dialog-popup` actually exists in the
+   DOM — Modal unmounts it on close, so this never affects a page-level popover
+   with no dialog open. Targets `[data-side]` (Base UI's Positioner-only
+   attribute, set for its side/align placement) rather than the broader
+   `[role="presentation"]` — the dialog's own backdrop ALSO carries
+   `role="presentation"` and would otherwise get elevated too, covering the
+   dialog's own content and blocking clicks into it. */
+body:has(.dialog-popup) [data-side] {
+  z-index: 60;
+}

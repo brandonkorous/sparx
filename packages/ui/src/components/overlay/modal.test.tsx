@@ -2,6 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@wizeworks/silicaui-react';
+import {
   Modal,
   ModalContent,
   ModalDescription,
@@ -14,7 +20,7 @@ import { Button } from '../primitives/button';
 function ModalFixture({ hideClose = false }: { hideClose?: boolean }) {
   return (
     <Modal>
-      <ModalTrigger asChild>
+      <ModalTrigger>
         <Button>Open</Button>
       </ModalTrigger>
       <ModalContent hideClose={hideClose}>
@@ -67,5 +73,30 @@ describe('Modal', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
+  });
+
+  // Regression: a silica (Base UI) popover nested inside the OLD Radix-based
+  // Modal silently failed to open — Radix marks everything outside its own
+  // portal inert while open, including a Base UI popup's separately-portaled
+  // root. Modal is now built on silica's own Dialog specifically so this
+  // pairing works (see the migration note atop modal.tsx).
+  it('opens a nested silica DropdownMenu', async () => {
+    render(
+      <Modal open>
+        <ModalContent>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button>View options</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Open as drawer</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </ModalContent>
+      </Modal>
+    );
+    await screen.findByRole('dialog');
+    await userEvent.click(screen.getByRole('button', { name: 'View options' }));
+    expect(await screen.findByText('Open as drawer')).toBeInTheDocument();
   });
 });

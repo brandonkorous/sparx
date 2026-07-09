@@ -10,14 +10,7 @@
 // router.refresh, which doesn't fit the client wizard).
 
 import * as React from 'react';
-import {
-  Card,
-  CardBody,
-  Checkbox,
-  FieldLabel,
-  FieldStatus,
-  Loading,
-} from '@wizeworks/silicaui-react';
+import { Card, CardBody, Checkbox, FieldStatus, Loading } from '@wizeworks/silicaui-react';
 import { SurfaceStep } from '@sparx/ui';
 
 import { updateProductAction } from '../../../product-actions';
@@ -201,7 +194,7 @@ function PickerSection({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <FieldLabel>{title}</FieldLabel>
+      <p className="text-sm font-medium">{title}</p>
       {items.length === 0 ? (
         <p className="text-base-content/70 text-sm">{empty}</p>
       ) : (

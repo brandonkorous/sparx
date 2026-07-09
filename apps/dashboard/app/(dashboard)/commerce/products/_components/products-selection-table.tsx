@@ -123,6 +123,9 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
     {
       label: 'Archive',
       icon: Archive,
+      requiresConfirm: true,
+      confirmLabel:
+        'Archive {count} product(s)? They’ll be hidden from your site and lists — restore them any time from the archived filter.',
       onAction: async (ids) => {
         const results = await Promise.all(ids.map((id) => archiveProductAction(id)));
         const failed = results.filter((r) => !r.ok).length;

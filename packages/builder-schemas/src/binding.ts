@@ -166,6 +166,11 @@ const PRODUCT_FIELDS: FieldSchema[] = [
   { key: 'compareAtPrice', label: 'Compare-at price', kind: 'number', cardinality: 'scalar' },
   { key: 'description', label: 'Description', kind: 'richtext', cardinality: 'scalar' },
   { key: 'images', label: 'Images', kind: 'images', cardinality: 'array' },
+  // The primary-image URL as a SCALAR — the derived first-of-`images` a silica
+  // `Image` atom binds its `src` to (silica's `fillValue` sets `<img src>` from a
+  // string, so a card/buy-box media node needs a scalar image ref, not the array).
+  // The preview/live data loaders populate it from `images[0].url`.
+  { key: 'image', label: 'Primary image', kind: 'image', cardinality: 'scalar' },
   { key: 'sku', label: 'SKU', kind: 'text', cardinality: 'scalar' },
 ];
 

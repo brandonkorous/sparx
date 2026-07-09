@@ -74,14 +74,7 @@ export function NewComponentButton() {
           if (!busy) setOpen(next);
         }}
       >
-        <ModalContent
-          size="sm"
-          onOpenAutoFocus={(e) => {
-            // Focus the name field on open so the author can type immediately.
-            e.preventDefault();
-            inputRef.current?.focus();
-          }}
-        >
+        <ModalContent size="sm" initialFocus={inputRef}>
           <ModalHeader>
             <ModalTitle>New component</ModalTitle>
             <ModalDescription>

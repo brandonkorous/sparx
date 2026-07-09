@@ -312,11 +312,13 @@ export {
   SurfaceSummary,
   SurfaceSummaryRow,
   SurfaceSummaryDivider,
+  AdaptiveLabel,
   type SurfaceFrameProps,
   type SurfaceStepProps,
   type SurfaceStepActions,
   type SurfaceStepDef,
   type SurfaceVariant,
+  type ResponsiveLabel,
 } from './components/navigation/surface-frame';
 export {
   NavigationMenu,

@@ -7,7 +7,6 @@ import {
   CardBody,
   Field,
   FieldControl,
-  FieldDescription,
   FieldLabel,
   Select,
 } from '@wizeworks/silicaui-react';
@@ -95,7 +94,7 @@ export function InviteForm() {
                 Send invite
               </Button>
             </div>
-            <FieldDescription>{ROLE_DESCRIPTIONS[role]}</FieldDescription>
+            <p className="text-base-content/70 text-sm">{ROLE_DESCRIPTIONS[role]}</p>
           </div>
         </form>
       </CardBody>

@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { Check } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { Button } from '../primitives/button';
 import { Heading } from '../primitives/heading';
@@ -63,6 +64,13 @@ export interface SurfaceFrameProps {
   /** Top-stepper variants: the wizard's title at the header left, e.g. "New
    *  product". (Page variant uses `lede` instead.) */
   title?: React.ReactNode;
+  /** `embedded` variant only: renders a real "← {backLabel}" link at the far
+   *  left of the frame's toolbar (e.g. "Products"), replacing the plain Cancel
+   *  button — one leave-affordance, not two. Reuses `onCancel` as the guarded
+   *  leave handler (same discard confirm). `inline` has no list to go back to
+   *  (the overlay host's Close already serves that role) and `modal`/`page`
+   *  don't take one. Omit to keep the plain Cancel button. */
+  backLabel?: string;
   /** Page variant lede under the brand — a headline + supporting blurb that the
    *  consumer changes per step to narrate the journey. */
   lede?: { title: React.ReactNode; blurb?: React.ReactNode };
@@ -81,15 +89,16 @@ export interface SurfaceFrameProps {
   /** Header/rail utility slot. Page variant: rail links (Save & exit / Need help)
    *  pinned to the rail bottom. Modal variant: header-right content. NOTE: the F
    *  variants (inline/embedded) do NOT use this for Cancel — pass `onCancel`, which
-   *  the frame renders as a real ghost Button in the bottom toolbar. */
+   *  the frame renders as a real ghost Button in the top toolbar. */
   footer?: React.ReactNode;
   /** The leave/cancel action for the in-app variants. The frame renders it as a
-   *  ghost Cancel Button so it always matches Back/Next — at the left of the F
-   *  variants' bottom action toolbar. Never hand-roll a cancel <button> at the
-   *  call site (that drift is exactly what stranded the old styling — docs/86). */
+   *  ghost Cancel Button (or, on `embedded` with `backLabel` set, a "← Back"
+   *  link) so it always matches Back/Next — in the F variants' top toolbar.
+   *  Never hand-roll a cancel <button> at the call site (that drift is exactly
+   *  what stranded the old styling — docs/86). */
   onCancel?: () => void;
   /** Label for the frame-owned Cancel button. Defaults to "Cancel". */
-  cancelLabel?: string;
+  cancelLabel?: ResponsiveLabel;
   /** F variants (inline/embedded): a live "draft summary" tree (compose with
    *  SurfaceSummary / SurfaceSummaryRow). Renders as the right-hand column when the
    *  frame is wide and stacks as a card after the fields when narrow. Omit for
@@ -100,6 +109,17 @@ export interface SurfaceFrameProps {
    *  because the drawer/modal HOST chrome already owns the window controls; the
    *  embedded full-page surface has no host, so it carries them here for parity. */
   headerActions?: React.ReactNode;
+  /** `inline` variant only: an externally-supplied DOM node — typically the
+   *  drawer/modal HOST chrome's own action slot (e.g. the dashboard's
+   *  `DetailFooterSlotTarget`) — that the active step's action row portals
+   *  into instead of the frame rendering its own toolbar bar underneath the
+   *  host's. Merges into the ONE existing toolbar rather than stacking a
+   *  second one (the host already shows title + window controls). Pass `null`
+   *  while the host hasn't mounted its target yet — the row simply doesn't
+   *  render until it has, same as `null` behaves for `DetailFooterSlot`. Omit
+   *  entirely to keep the frame's self-contained toolbar row (the default —
+   *  every consumer without a host chrome to merge into, e.g. Quote/Order). */
+  actionsTarget?: HTMLElement | null;
   className?: string;
   children: React.ReactNode;
 
@@ -115,10 +135,10 @@ export interface SurfaceFrameProps {
 interface SurfaceContextValue {
   variant: SurfaceVariant;
   /** F variants (inline/embedded): the leave action. The frame renders it as a
-   *  ghost Cancel Button in the bottom toolbar (matching Back) — never raw JSX. */
+   *  ghost Cancel Button in the top toolbar (matching Back) — never raw JSX. */
   onCancel?: () => void;
   /** Label for the frame-owned Cancel button (default "Cancel"). */
-  cancelLabel?: string;
+  cancelLabel?: ResponsiveLabel;
   /** F variants: the live summary content. Rendered as the right-hand column when
    *  the frame is wide enough (container query) and stacked as a card after the
    *  fields when it's narrow (the drawer). */
@@ -126,6 +146,37 @@ interface SurfaceContextValue {
 }
 
 const SurfaceContext = React.createContext<SurfaceContextValue>({ variant: 'page' });
+
+// ── Action-slot portal (frame toolbar ⇄ SurfaceStep) ───────────────────────
+// SurfaceStep owns the active step's `actions` (Cancel/Back/Skip/primary — they
+// vary per step), but the toolbar now lives in the FRAME's own header row, a
+// sibling the step can't reach by props alone. Same two-context portal shape as
+// the dashboard's DetailHeaderSlot/DetailFooterSlot: the frame renders a target
+// in its toolbar; the step portals its ActionRow into it. Scoped to this file —
+// `@sparx/ui` stays framework/app-agnostic, no dependency on dashboard code.
+const ActionSlotSetContext = React.createContext<((node: HTMLElement | null) => void) | null>(null);
+const ActionSlotNodeContext = React.createContext<HTMLElement | null>(null);
+
+function ActionSlotProvider({ children }: { children: React.ReactNode }) {
+  const [node, setNode] = React.useState<HTMLElement | null>(null);
+  return (
+    <ActionSlotSetContext.Provider value={setNode}>
+      <ActionSlotNodeContext.Provider value={node}>{children}</ActionSlotNodeContext.Provider>
+    </ActionSlotSetContext.Provider>
+  );
+}
+
+function ActionSlotTarget({ className }: { className?: string }) {
+  const setNode = React.useContext(ActionSlotSetContext);
+  const ref = React.useCallback((el: HTMLElement | null) => setNode?.(el), [setNode]);
+  return <div ref={ref} className={className} />;
+}
+
+// Overrides the internal action-slot target with a HOST-supplied one (see
+// `SurfaceFrameProps.actionsTarget`). `undefined` (the default) means "no
+// override, use the frame's own toolbar"; `null` means "overridden, but the
+// host hasn't mounted its target yet."
+const ExternalActionsTargetContext = React.createContext<HTMLElement | null | undefined>(undefined);
 
 // The F layout is responsive by CONTAINER width, not viewport: at/above ~720px
 // the frame is two columns (form + summary aside); below it collapses to one and
@@ -392,25 +443,82 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
   );
 }
 
-// The header strip above the stepper: the wizard title (left) and the footer /
-// cancel affordance (right). Omitted entirely when neither is supplied.
-function SurfaceTopHeader({
-  title,
-  footer,
-}: {
-  title?: React.ReactNode;
-  footer?: React.ReactNode;
-}) {
-  if (!title && !footer) return null;
+// A toolbar label that shortens on a narrow toolbar row instead of wrapping or
+// crowding out its neighbors — "Create draft & continue" reads fine on a wide
+// full page but has no business on a 380px drawer. Pass a plain string to opt
+// out (most labels — Cancel, Back, Products — are already one word). Screen
+// readers always get the FULL text via a visually-hidden span, regardless of
+// which visual variant the CSS toggle is showing.
+export type ResponsiveLabel = string | { full: string; short: string };
+
+// Exported so the dashboard's own top toolbars (the drawer/modal/full-page
+// detail header, which is app-level chrome outside this file) can shorten
+// their portaled Save button the same way — one label-collapsing convention
+// platform-wide, not a `@sparx/ui`-only trick.
+export function AdaptiveLabel({ label }: { label: ResponsiveLabel }) {
+  if (typeof label === 'string') return <>{label}</>;
   return (
-    <div className="flex shrink-0 items-center gap-3 border-b border-[var(--color-base-300)] bg-[var(--color-base-100)] px-6 py-3">
-      {title && (
-        <div className="text-base-content min-w-0 truncate text-sm font-semibold tracking-tight">
-          {title}
-        </div>
+    <>
+      <span aria-hidden className="hidden @[34rem]/toolbar:inline">
+        {label.full}
+      </span>
+      <span aria-hidden className="@[34rem]/toolbar:hidden">
+        {label.short}
+      </span>
+      <span className="sr-only">{label.full}</span>
+    </>
+  );
+}
+
+// The frame's own top toolbar — back-link + title on the left, the
+// presentation switch / rail footer text + the active step's portaled
+// ActionRow on the right. ONE row, shared by every topStepper-family variant
+// (inline, embedded, modal); which pieces populate differs by variant. Named
+// `@container/toolbar` so AdaptiveLabel can react to THIS row's own width
+// rather than the whole frame's (which is tuned for the wider summary-column
+// breakpoint) — a narrow drawer shortens labels well before 720px.
+function FrameToolbar({
+  backLabel,
+  onBack,
+  title,
+  headerActions,
+  footer,
+  className,
+}: {
+  backLabel?: string;
+  onBack?: () => void;
+  title?: React.ReactNode;
+  headerActions?: React.ReactNode;
+  footer?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        '@container/toolbar flex h-[52px] shrink-0 items-center gap-3 border-b border-[var(--color-base-300)] bg-[var(--color-base-100)] px-6 max-[680px]:px-4',
+        className
       )}
-      <div className="flex-1" />
+    >
+      {backLabel && onBack && (
+        <Button variant="ghost" size="sm" onClick={onBack} className="shrink-0">
+          <ArrowLeft className="h-4 w-4" />
+          {backLabel}
+        </Button>
+      )}
+      {title ? (
+        <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
+          {title}
+        </span>
+      ) : (
+        <div className="flex-1" />
+      )}
       {footer && <div className="text-base-content/60 shrink-0 text-[0.8rem]">{footer}</div>}
+      {/* Zone order: Form actions (Cancel/Continue) before Presentation
+          (headerActions — the drawer/modal switch) before Window — the
+          rightmost, strongest control is always the one that moves forward,
+          never a view-switcher (toolbar zone system). */}
+      <ActionSlotTarget className="flex shrink-0 items-center" />
+      {headerActions && <div className="flex shrink-0 items-center gap-1">{headerActions}</div>}
     </div>
   );
 }
@@ -441,33 +549,34 @@ function TopStepperFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-base-200)]', className)}
-    >
-      <SurfaceTopHeader title={title} footer={footer} />
-      <TopStepper
-        steps={steps}
-        current={current}
-        onStepSelect={onStepSelect}
-        canSelectStep={canSelectStep}
-      />
-      {context && (
-        <p className="text-base-content/60 shrink-0 border-b border-[var(--color-base-300)] bg-[var(--color-base-200)] px-6 py-2 text-center text-xs">
-          {context}
-        </p>
-      )}
-      <div className="min-h-0 flex-1">{children}</div>
-    </div>
+    <ActionSlotProvider>
+      <div
+        className={cn('flex h-full flex-col overflow-hidden bg-[var(--color-base-200)]', className)}
+      >
+        <FrameToolbar title={title} footer={footer} />
+        <TopStepper
+          steps={steps}
+          current={current}
+          onStepSelect={onStepSelect}
+          canSelectStep={canSelectStep}
+        />
+        {context && (
+          <p className="text-base-content/60 shrink-0 border-b border-[var(--color-base-300)] bg-[var(--color-base-200)] px-6 py-2 text-center text-xs">
+            {context}
+          </p>
+        )}
+        <div className="min-h-0 flex-1">{children}</div>
+      </div>
+    </ActionSlotProvider>
   );
 }
 
 // ── F layout (inline + embedded): form column + live summary ───────────────────
-// The in-app create surface (docs/86). A title strip (embedded only — the
-// drawer/modal host supplies the title + window controls for inline), a compact
-// MiniProgress, the working pane, and a quiet module-tinted summary that fills
-// the right column when wide and stacks as a card when narrow. The bottom action
-// toolbar (Cancel + Back/Next) lives under the FORM column only; the summary runs
-// full height beside it.
+// The in-app create surface (docs/86). A top toolbar (title + back-link on
+// embedded — the drawer/modal host supplies the title for inline — plus the
+// active step's Cancel/Back/Skip/primary), a compact MiniProgress, the working
+// pane, and a quiet module-tinted summary that fills the right column when wide
+// and stacks as a card when narrow.
 
 // The compact progress indicator: n segments filled through the current step, plus
 // "<label> · step n of m". Replaces the big numbered stepper in the F layout.
@@ -565,34 +674,47 @@ export function SurfaceSummaryDivider() {
   return <div className="my-1.5 border-t border-[var(--color-base-300)]" />;
 }
 
-// The shared F frame. `showHeader` adds the title strip (embedded full page);
-// inline omits it because the host chrome owns the title + window controls.
+// The shared F frame. Its own toolbar always renders (both variants need a
+// place for the ActionRow); embedded additionally shows the title + back-link +
+// presentation switch — inline omits those because the host chrome above it
+// already owns the title + window controls.
 function FSurfaceFrame({
   variant,
-  showHeader,
   title,
   headerActions,
+  backLabel,
   steps,
   current,
   summary,
   onCancel,
   cancelLabel,
+  actionsTarget,
   className,
   children,
 }: {
   variant: 'inline' | 'embedded';
-  showHeader: boolean;
   title?: React.ReactNode;
   headerActions?: React.ReactNode;
+  backLabel?: string;
   steps: SurfaceStepDef[];
   current: number;
   summary?: React.ReactNode;
   onCancel?: () => void;
-  cancelLabel?: string;
+  cancelLabel?: ResponsiveLabel;
+  actionsTarget?: HTMLElement | null;
   className?: string;
   children: React.ReactNode;
 }) {
   const hasSummary = Boolean(summary);
+  // `embedded` (full page) trades the plain Cancel button for a real "← Back"
+  // link at the toolbar's far left — one leave-affordance, not two. `inline`
+  // (drawer/modal) has no list to go back to (the host's Close already does
+  // that), so it keeps Cancel in the ActionRow, unchanged.
+  const showBackLink = variant === 'embedded' && Boolean(backLabel) && Boolean(onCancel);
+  // Inline only, and only when the host opted in (prop present at all — `null`
+  // still counts, it means "opted in, not mounted yet"): merge into the host's
+  // existing toolbar instead of stacking a second bar underneath it.
+  const mergeIntoHostChrome = variant === 'inline' && actionsTarget !== undefined;
   const inner = (
     <div
       className={cn(
@@ -611,17 +733,20 @@ function FSurfaceFrame({
         className
       )}
     >
-      {showHeader && (title != null || headerActions != null) && (
-        <div className="flex h-[52px] shrink-0 items-center gap-3 border-b border-[var(--color-base-300)] px-7 max-[680px]:px-5">
-          {title && (
-            <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
-              {title}
-            </span>
-          )}
-          {headerActions && (
-            <div className="ml-auto flex shrink-0 items-center gap-1">{headerActions}</div>
-          )}
-        </div>
+      {/* The frame's own top toolbar — carries the title (embedded only; inline's
+          host chrome already shows one above this), the back-link / presentation
+          switch (embedded only), and the active step's portaled ActionRow. Skipped
+          entirely for inline when the host supplied `actionsTarget`: the ActionRow
+          portals into the HOST's own toolbar row instead (see `mergeIntoHostChrome`
+          below) — one toolbar, not two. */}
+      {!mergeIntoHostChrome && (
+        <FrameToolbar
+          backLabel={showBackLink ? backLabel : undefined}
+          onBack={showBackLink ? onCancel : undefined}
+          title={variant === 'embedded' ? title : undefined}
+          headerActions={variant === 'embedded' ? headerActions : undefined}
+          className="px-7 max-[680px]:px-5"
+        />
       )}
       <div
         className={cn(
@@ -629,9 +754,9 @@ function FSurfaceFrame({
           hasSummary && '@[720px]:grid-cols-[1fr_320px]'
         )}
       >
-        {/* Form column: progress + working pane (SurfaceStep owns its scroll +
-            the action toolbar pinned at the bottom). A single-step form (one
-            step) hides MiniProgress — there's no journey to show. */}
+        {/* Form column: progress + working pane (SurfaceStep owns its scroll and
+            portals its action toolbar up into the frame's FrameToolbar above). A
+            single-step form (one step) hides MiniProgress — nothing to show. */}
         <div className="flex min-h-0 flex-col">
           {steps.length > 1 && (
             <div className="shrink-0 bg-[var(--color-base-200)] px-7 pt-4 pb-1 max-[680px]:px-5">
@@ -656,13 +781,19 @@ function FSurfaceFrame({
     </div>
   );
   return (
-    <SurfaceContext.Provider value={{ variant, onCancel, cancelLabel, summary }}>
-      {variant === 'embedded' ? (
-        <div className="h-full overflow-hidden bg-[var(--color-base-200)]">{inner}</div>
-      ) : (
-        inner
-      )}
-    </SurfaceContext.Provider>
+    <ExternalActionsTargetContext.Provider value={mergeIntoHostChrome ? actionsTarget : undefined}>
+      <ActionSlotProvider>
+        <SurfaceContext.Provider
+          value={{ variant, onCancel: showBackLink ? undefined : onCancel, cancelLabel, summary }}
+        >
+          {variant === 'embedded' ? (
+            <div className="h-full overflow-hidden bg-[var(--color-base-200)]">{inner}</div>
+          ) : (
+            inner
+          )}
+        </SurfaceContext.Provider>
+      </ActionSlotProvider>
+    </ExternalActionsTargetContext.Provider>
   );
 }
 
@@ -672,6 +803,7 @@ export function SurfaceFrame({
   variant = 'page',
   wordmark,
   title,
+  backLabel,
   lede,
   steps,
   current,
@@ -683,6 +815,7 @@ export function SurfaceFrame({
   cancelLabel,
   summary,
   headerActions,
+  actionsTarget,
   className,
   children,
   open,
@@ -766,14 +899,15 @@ export function SurfaceFrame({
     return (
       <FSurfaceFrame
         variant={variant}
-        showHeader={variant === 'embedded'}
         title={title}
         headerActions={headerActions}
+        backLabel={backLabel}
         steps={steps}
         current={current}
         summary={summary}
         onCancel={onCancel}
         cancelLabel={cancelLabel}
+        actionsTarget={actionsTarget}
         className={className}
       >
         {children}
@@ -820,9 +954,15 @@ export function SurfaceFrame({
 
 export interface SurfaceStepActions {
   onBack?: () => void;
-  backLabel?: string;
+  /** Defaults to "Back". Accepts `{ full, short }` for long custom wording —
+   *  most callers never need to (it's plain "Back"). */
+  backLabel?: ResponsiveLabel;
   onNext?: () => void;
-  nextLabel?: string;
+  /** Defaults to "Continue". The primary action's wording is the one MOST
+   *  likely to run long ("Create draft & continue", "Publish product") — pass
+   *  `{ full, short }` so it shortens on a narrow toolbar instead of wrapping
+   *  or crowding out Cancel/Back/Skip. */
+  nextLabel?: ResponsiveLabel;
   nextDisabled?: boolean;
   nextLoading?: boolean;
   /** When set, the primary button becomes a real `type="submit"` associated
@@ -831,7 +971,9 @@ export interface SurfaceStepActions {
    *  `onNext` is unnecessary — the form's own `onSubmit` runs the save. */
   nextForm?: string;
   onSkip?: () => void;
-  skipLabel?: string;
+  /** Defaults to "Skip for now" — pass `{ full: 'Skip for now', short: 'Skip' }`
+   *  (or similar) so it doesn't crowd the primary button on a narrow toolbar. */
+  skipLabel?: ResponsiveLabel;
   /** A destructive action (e.g. a Delete button) seated in the left cluster
    *  AFTER Cancel/Back — so Cancel stays the leftmost anchor on every surface,
    *  while the destructive action sits left-of-center, away from the primary so
@@ -882,61 +1024,77 @@ function ActionRow({
 }: {
   actions?: SurfaceStepActions;
   onCancel?: () => void;
-  cancelLabel?: string;
+  cancelLabel?: ResponsiveLabel;
 }) {
   const {
     onBack,
-    backLabel = 'Back',
+    backLabel: stepBackLabel = 'Back',
     onNext,
     nextLabel = 'Continue',
     nextDisabled,
     nextLoading,
     nextForm,
     onSkip,
-    skipLabel = 'Skip for now',
+    skipLabel = { full: 'Skip for now', short: 'Skip' },
     destructive,
     extra,
   } = actions ?? {};
+  const hasLeftCluster = Boolean(onCancel) || Boolean(onBack) || Boolean(destructive);
+  const hasRightCluster = Boolean(extra) || Boolean(onSkip) || onNext != null || nextForm != null;
+  // A plain flex row, NOT silica's `Toolbar` primitive — that component is a
+  // self-contained formatting-toolbar widget (bordered chrome, tight 2px gaps,
+  // flat ghost-only buttons for things like Bold/Italic) and stamps its own
+  // `toolbar-button` class over anything passed to it via `render`, flattening
+  // real pill buttons into a joined, dated-looking block. The Astryx docking
+  // convention this satisfies is the ROW itself (top-docked, in-flow, secondary
+  // left / primary right) — the buttons inside it are ordinary Buttons.
   return (
-    <div className="flex items-center justify-between gap-3">
-      {/* Cancel is ALWAYS the leftmost button — the same anchor on every surface
-          (create, edit, wizard) so a user never hunts for it. Back follows, then
-          any destructive action (Delete), seated left-of-center and away from the
-          primary so it can't be mis-clicked — never buried in the summary aside.
-          All ghost Buttons, one consistent button row (never a hand-rolled link). */}
-      <div className="flex items-center gap-2">
-        {onCancel && (
-          <Button variant="ghost" color="neutral" onClick={onCancel}>
-            {cancelLabel}
-          </Button>
-        )}
-        {onBack && (
-          <Button variant="ghost" color="neutral" onClick={onBack}>
-            {backLabel}
-          </Button>
-        )}
-        {destructive}
-      </div>
-      <div className="flex items-center gap-2">
-        {extra}
-        {onSkip && (
-          <Button variant="ghost" color="neutral" onClick={onSkip}>
-            {skipLabel}
-          </Button>
-        )}
-        {(onNext != null || nextForm != null) && (
-          <Button
-            color="module"
-            type={nextForm ? 'submit' : 'button'}
-            form={nextForm}
-            onClick={nextForm ? undefined : onNext}
-            disabled={(nextDisabled ?? false) || (nextLoading ?? false)}
-            loading={nextLoading}
-          >
-            {nextLabel}
-          </Button>
-        )}
-      </div>
+    <div className="flex items-center gap-2">
+      {/* Cancel is ALWAYS the leftmost button in this cluster — the same anchor
+          on every surface (create, edit, wizard) so a user never hunts for it.
+          Back follows, then any destructive action (Delete), away from the
+          primary so it can't be mis-clicked — never buried in the summary aside. */}
+      {hasLeftCluster && (
+        <div className="flex items-center gap-1">
+          {onCancel && (
+            <Button variant="ghost" color="neutral" size="sm" onClick={onCancel}>
+              <AdaptiveLabel label={cancelLabel} />
+            </Button>
+          )}
+          {onBack && (
+            <Button variant="ghost" color="neutral" size="sm" onClick={onBack}>
+              <AdaptiveLabel label={stepBackLabel} />
+            </Button>
+          )}
+          {destructive}
+        </div>
+      )}
+      {hasLeftCluster && hasRightCluster && (
+        <div aria-hidden className="h-5 w-px shrink-0 bg-[var(--color-base-300)]" />
+      )}
+      {hasRightCluster && (
+        <div className="flex items-center gap-1">
+          {extra}
+          {onSkip && (
+            <Button variant="ghost" color="neutral" size="sm" onClick={onSkip}>
+              <AdaptiveLabel label={skipLabel} />
+            </Button>
+          )}
+          {(onNext != null || nextForm != null) && (
+            <Button
+              size="sm"
+              color="module"
+              type={nextForm ? 'submit' : 'button'}
+              form={nextForm}
+              onClick={nextForm ? undefined : onNext}
+              disabled={(nextDisabled ?? false) || (nextLoading ?? false)}
+              loading={nextLoading}
+            >
+              <AdaptiveLabel label={nextLabel} />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -949,14 +1107,20 @@ export function SurfaceStep({
   children,
 }: SurfaceStepProps) {
   const { variant, onCancel, cancelLabel, summary } = React.useContext(SurfaceContext);
+  const actionSlotNode = React.useContext(ActionSlotNodeContext);
+  const externalActionsTarget = React.useContext(ExternalActionsTargetContext);
+  // A host-supplied target (see `actionsTarget` on SurfaceFrame) takes priority
+  // over the frame's own internal toolbar slot — that's the whole point of it.
+  const portalTarget = externalActionsTarget !== undefined ? externalActionsTarget : actionSlotNode;
   const isF = variant === 'inline' || variant === 'embedded';
   const topStepper = isF || variant === 'modal';
 
-  // Top-stepper family (inline / embedded / self-owned modal): a flex column that
-  // fills the pane — a scrolling body and an action row pinned to the bottom edge,
-  // both centered on the same column width. The F variants additionally seat
-  // Cancel in the toolbar and, when too narrow for the summary aside, stack the
-  // summary as a card after the fields (container query — see FSurfaceFrame).
+  // Top-stepper family (inline / embedded / self-owned modal): a flex column
+  // that fills the pane — a scrolling body, and the action row PORTALED up into
+  // the frame's own toolbar (FrameToolbar) instead of pinned to this step's
+  // bottom edge. The F variants additionally seat Cancel in the toolbar and,
+  // when too narrow for the summary aside, stack the summary as a card after
+  // the fields (container query — see FSurfaceFrame).
   if (topStepper) {
     // F variants FILL their column (the drawer / modal / contained sheet width is
     // already the readable bound) so the content spans edge-to-edge with symmetric
@@ -995,17 +1159,16 @@ export function SurfaceStep({
             )}
           </div>
         </div>
-        {(actions != null || (isF && onCancel != null)) && (
-          <div className="shrink-0 border-t border-[var(--color-base-300)] bg-[var(--color-base-100)]">
-            <div className={cn('w-full px-7 py-4 max-[680px]:px-5', colWidth, !isF && 'mx-auto')}>
+        {portalTarget && (actions != null || (isF && onCancel != null))
+          ? createPortal(
               <ActionRow
                 actions={actions}
                 onCancel={isF ? onCancel : undefined}
                 cancelLabel={cancelLabel}
-              />
-            </div>
-          </div>
-        )}
+              />,
+              portalTarget
+            )
+          : null}
       </div>
     );
   }

@@ -29,7 +29,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
-import { DetailPresentationSwitch } from '../../../_components/detail-panel';
+import { ViewSwitcher } from '../../../_components/detail-panel';
 import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
 
@@ -225,7 +225,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
         // (the overlay's DetailHeader already supplies switch + close).
         headerActions={
           surface === 'page' ? (
-            <DetailPresentationSwitch typeId="category" entityId={category.id} />
+            <ViewSwitcher typeId="category" entityId={category.id} current="page" />
           ) : undefined
         }
         steps={STEPS}

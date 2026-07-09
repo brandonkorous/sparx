@@ -22,6 +22,7 @@ import {
   Field,
   FieldLabel,
   FieldStatus,
+  Label,
   Select,
   Switch,
 } from '@wizeworks/silicaui-react';
@@ -109,7 +110,7 @@ export function ProductMarketPanel({
               aria-label="List on sparx.market"
             />
             <div className="flex flex-col gap-0">
-              <FieldLabel>List on sparx.market</FieldLabel>
+              <Label>List on sparx.market</Label>
               <p className="text-base-content/70 text-xs">
                 {listed ? 'Visible on the marketplace.' : 'Not listed on the marketplace.'}
               </p>

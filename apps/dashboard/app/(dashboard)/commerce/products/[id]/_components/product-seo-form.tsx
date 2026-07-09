@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
-import { Button, Card, CardBody, FieldStatus } from '@wizeworks/silicaui-react';
-import { ModuleProvider } from '@sparx/ui';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
+import { AdaptiveLabel, ModuleProvider, toast } from '@sparx/ui';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
 
@@ -38,7 +38,6 @@ export function ProductSeoForm({
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<number | null>(null);
 
   const initialTitle = seoTitle ?? '';
@@ -67,7 +66,6 @@ export function ProductSeoForm({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     setSavedAt(null);
     startTransition(async () => {
       const result = await updateProductAction(productId, {
@@ -75,7 +73,7 @@ export function ProductSeoForm({
         seoDescription: seoDescriptionValue.trim() || null,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        toast.error(result.error.message);
         return;
       }
       setSavedAt(Date.now());
@@ -116,32 +114,22 @@ export function ProductSeoForm({
         </Card>
 
         <DetailFooterSlot>
-          <div className="border-base-300 bg-base-100 flex flex-wrap items-center justify-end gap-3 border-t px-6 py-3">
-            {error && (
-              <FieldStatus
-                status="error"
-                attached={false}
-                role="alert"
-                aria-live="polite"
-                className="mr-auto"
-              >
-                {error}
-              </FieldStatus>
-            )}
+          <div className="flex items-center gap-2">
             {savedAt !== null && !dirty && (
-              <div className="text-success flex flex-row items-center gap-1">
-                <Check className="h-4 w-4" />
-                <p className="text-success text-sm">Saved</p>
-              </div>
+              <span className="text-success flex items-center gap-1 text-xs">
+                <Check className="h-3.5 w-3.5" />
+                Saved
+              </span>
             )}
             <Button
               type="submit"
               form="product-seo-form"
+              size="sm"
               color="module"
               disabled={pending || !dirty}
               loading={pending}
             >
-              Save changes
+              <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
             </Button>
           </div>
         </DetailFooterSlot>

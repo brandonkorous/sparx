@@ -9,7 +9,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 
-import { Button, FieldControl, NativeSelect } from '@wizeworks/silicaui-react';
+import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
 import { updatePipelineStageAction } from '../../../../pipeline-actions';
@@ -67,14 +67,14 @@ export function SortableStageRow({ stage, pipelineId }: { stage: StageRow; pipel
       >
         <GripVertical className="h-4 w-4" />
       </button>
-      <FieldControl
+      <Input
         name="stage-name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="flex-1"
         placeholder="Stage name"
       />
-      <FieldControl
+      <Input
         name="stage-prob"
         type="number"
         min="0"
