@@ -17,85 +17,85 @@ import { Webhook } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 export default function WebhooksPage() {
-    return (
-        <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-6 py-10">
-                <PageHeader
-                    icon={<Webhook className="h-5 w-5" />}
-                    title="Webhooks"
-                    badge={
-                        <Badge color="neutral" variant="soft" size="sm">
-                            coming soon
-                        </Badge>
-                    }
-                    description={
-                        <>
-                            Subscribe an external endpoint to <code>content.*</code> events so a publish in sparx
-                            triggers a downstream rebuild, cache purge, or notification. Backend wiring is live —
-                            the dashboard editor lands in a follow-up.
-                        </>
-                    }
-                />
+  return (
+    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-6 py-10">
+        <PageHeader
+          icon={<Webhook className="h-5 w-5" />}
+          title="Webhooks"
+          badge={
+            <Badge color="neutral" variant="soft" size="sm">
+              coming soon
+            </Badge>
+          }
+          description={
+            <>
+              Subscribe an external endpoint to <code>content.*</code> events so a publish in sparx
+              triggers a downstream rebuild, cache purge, or notification. Backend wiring is live —
+              the dashboard editor lands in a follow-up.
+            </>
+          }
+        />
 
-                <Card className="bg-vase-100">
-                    <CardBody>
-                        <EmptyState
-                            icon={<Webhook className="h-5 w-5" />}
-                            title="Webhook editor is on the roadmap"
-                            description="Until the UI ships, configure subscriptions via the API: POST /v1/webhooks/subscriptions with a target URL, the events you care about, and an HMAC signing secret. Deliveries are logged with retry state."
-                            actions={
-                                <Button
-                                    color="module"
-                                    variant="outline"
-                                    render={
-                                        <a
-                                            href="https://docs.sparx.works/api/webhooks"
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            aria-label="Read the webhook API docs"
-                                        />
-                                    }
-                                >
-                                    Read the webhook API docs
-                                </Button>
-                            }
-                        />
-                    </CardBody>
-                </Card>
+        <Card className="bg-vase-100">
+          <CardBody>
+            <EmptyState
+              icon={<Webhook className="h-5 w-5" />}
+              title="Webhook editor is on the roadmap"
+              description="Until the UI ships, configure subscriptions via the API: POST /v1/webhooks/subscriptions with a target URL, the events you care about, and an HMAC signing secret. Deliveries are logged with retry state."
+              actions={
+                <Button
+                  color="module"
+                  variant="outline"
+                  render={
+                    <a
+                      href="https://docs.sparx.works/api/webhooks"
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="Read the webhook API docs"
+                    />
+                  }
+                >
+                  Read the webhook API docs
+                </Button>
+              }
+            />
+          </CardBody>
+        </Card>
 
-                <Card>
-                    <CardBody>
-                        <h3 className="text-xl font-semibold">Events you can subscribe to</h3>
-                        <p className="opacity-70">
-                            Every state-changing CMS mutation fans out to Pub/Sub and (when subscribed) to your
-                            endpoint with an HMAC-SHA256 signature in the <code>X-sparx-Signature</code> header.
-                        </p>
-                        <div className="flex flex-col gap-1">
-                            <p className="text-sm">
-                                <code>content.entry.created</code> · new entry inserted
-                            </p>
-                            <p className="text-sm">
-                                <code>content.entry.updated</code> · entry body / SEO patched (autosave or save)
-                            </p>
-                            <p className="text-sm">
-                                <code>content.entry.published</code> · entry flipped to <code>published</code>
-                            </p>
-                            <p className="text-sm">
-                                <code>content.entry.scheduled</code> · entry scheduled for future publish
-                            </p>
-                            <p className="text-sm">
-                                <code>content.entry.unpublished</code> · entry reverted to <code>draft</code>
-                            </p>
-                            <p className="text-sm">
-                                <code>content.entry.deleted</code> · soft delete
-                            </p>
-                            <p className="text-sm">
-                                <code>content_type.upserted</code> · custom content type schema saved
-                            </p>
-                        </div>
-                    </CardBody>
-                </Card>
+        <Card>
+          <CardBody>
+            <h3 className="text-xl font-semibold">Events you can subscribe to</h3>
+            <p className="opacity-70">
+              Every state-changing CMS mutation fans out to Pub/Sub and (when subscribed) to your
+              endpoint with an HMAC-SHA256 signature in the <code>X-sparx-Signature</code> header.
+            </p>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm">
+                <code>content.entry.created</code> · new entry inserted
+              </p>
+              <p className="text-sm">
+                <code>content.entry.updated</code> · entry body / SEO patched (autosave or save)
+              </p>
+              <p className="text-sm">
+                <code>content.entry.published</code> · entry flipped to <code>published</code>
+              </p>
+              <p className="text-sm">
+                <code>content.entry.scheduled</code> · entry scheduled for future publish
+              </p>
+              <p className="text-sm">
+                <code>content.entry.unpublished</code> · entry reverted to <code>draft</code>
+              </p>
+              <p className="text-sm">
+                <code>content.entry.deleted</code> · soft delete
+              </p>
+              <p className="text-sm">
+                <code>content_type.upserted</code> · custom content type schema saved
+              </p>
             </div>
-        </div>
-    );
+          </CardBody>
+        </Card>
+      </div>
+    </div>
+  );
 }

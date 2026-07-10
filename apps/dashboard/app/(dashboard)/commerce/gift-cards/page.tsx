@@ -15,85 +15,85 @@ export const dynamic = 'force-dynamic';
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 interface PageProps {
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function GiftCardsPage({ searchParams }: PageProps) {
-    const params = await searchParams;
-    const q = stringParam(params.q);
-    const query = new URLSearchParams({ take: '100' });
-    if (q) query.set('q', q);
+  const params = await searchParams;
+  const q = stringParam(params.q);
+  const query = new URLSearchParams({ take: '100' });
+  if (q) query.set('q', q);
 
-    const [prefs, cards] = await Promise.all([
-        getUserPreferences(),
-        api.get<GiftCardSummary[]>(`/v1/commerce/gift-cards?${query.toString()}`),
-    ]);
+  const [prefs, cards] = await Promise.all([
+    getUserPreferences(),
+    api.get<GiftCardSummary[]>(`/v1/commerce/gift-cards?${query.toString()}`),
+  ]);
 
-    const outstandingCents = cards
-        .filter((c) => c.status === 'active')
-        .reduce((acc, c) => acc + c.balanceCents, 0);
-    const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
+  const outstandingCents = cards
+    .filter((c) => c.status === 'active')
+    .reduce((acc, c) => acc + c.balanceCents, 0);
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
-    return (
-        <ListPageShell
-            header={
-                <PageHeader
-                    icon={<Gift className="h-5 w-5" />}
-                    title="Gift cards"
-                    badge={
-                        <Badge color="module">{moneyFmt.format(outstandingCents / 100)} outstanding</Badge>
-                    }
-                    description="Issue, look up, and adjust gift cards. Cards sold as a product (a future Phase 4 sellable product type) link back to the order item so a refund revokes the unspent balance."
-                    className="mb-0"
-                />
+  return (
+    <ListPageShell
+      header={
+        <PageHeader
+          icon={<Gift className="h-5 w-5" />}
+          title="Gift cards"
+          badge={
+            <Badge color="module">{moneyFmt.format(outstandingCents / 100)} outstanding</Badge>
+          }
+          description="Issue, look up, and adjust gift cards. Cards sold as a product (a future Phase 4 sellable product type) link back to the order item so a refund revokes the unspent balance."
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search code, recipient name or email…"
+          enableViewToggle
+          primaryAction={
+            <EntityCreateButton
+              entityType="gift-card"
+              newHref="/commerce/gift-cards/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
+        />
+      }
+    >
+      {cards.length === 0 ? (
+        <Card className="bg-base-100">
+          <EmptyState
+            icon={<Gift className="h-5 w-5" />}
+            title="No gift cards yet"
+            description="Issue one with the New button. Cards stay active until spent, expired, or cancelled."
+            actions={
+              <EntityCreateButton
+                entityType="gift-card"
+                newHref="/commerce/gift-cards/new"
+                color="module"
+                variant="solid"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
             }
-            toolbar={
-                <ListToolbar
-                    searchPlaceholder="Search code, recipient name or email…"
-                    enableViewToggle
-                    primaryAction={
-                        <EntityCreateButton
-                            entityType="gift-card"
-                            newHref="/commerce/gift-cards/new"
-                            color="module"
-                            size="sm"
-                            leftIcon={<Plus className="h-4 w-4" />}
-                        >
-                            New
-                        </EntityCreateButton>
-                    }
-                />
-            }
-        >
-            {cards.length === 0 ? (
-                <Card className="bg-base-100">
-                    <EmptyState
-                        icon={<Gift className="h-5 w-5" />}
-                        title="No gift cards yet"
-                        description="Issue one with the New button. Cards stay active until spent, expired, or cancelled."
-                        actions={
-                            <EntityCreateButton
-                                entityType="gift-card"
-                                newHref="/commerce/gift-cards/new"
-                                color="module"
-                                variant="solid"
-                                size="sm"
-                                leftIcon={<Plus className="h-4 w-4" />}
-                            >
-                                New
-                            </EntityCreateButton>
-                        }
-                    />
-                </Card>
-            ) : (
-                <GiftCardsList cards={cards} view={view} />
-            )}
-        </ListPageShell>
-    );
+          />
+        </Card>
+      ) : (
+        <GiftCardsList cards={cards} view={view} />
+      )}
+    </ListPageShell>
+  );
 }
 
 function stringParam(v: string | string[] | undefined): string | undefined {
-    if (Array.isArray(v)) return v[0];
-    if (typeof v === 'string' && v.length > 0) return v;
-    return undefined;
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
