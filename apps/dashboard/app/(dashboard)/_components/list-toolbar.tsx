@@ -54,6 +54,12 @@ export interface ListToolbarProps {
   /** Show the saved-views control. Default true; auto-hidden when the list has
    *  no view-defining params (nothing to save). */
   enableSavedViews?: boolean;
+  /** Secondary action(s) — e.g. Import/Export — rendered inline before
+   *  `primaryAction`. Collapses into the mobile overflow popover. */
+  actions?: React.ReactNode;
+  /** The primary page action — e.g. "New product" — pinned rightmost on
+   *  desktop and kept visible (next to search) on mobile. */
+  primaryAction?: React.ReactNode;
 }
 
 export function ListToolbar({
@@ -68,6 +74,8 @@ export function ListToolbar({
   enableRefresh = true,
   debounceMs = 250,
   enableSavedViews = true,
+  actions,
+  primaryAction,
 }: ListToolbarProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -147,6 +155,8 @@ export function ListToolbar({
       view={enableViewToggle ? view : undefined}
       onViewChange={(v) => commit({ [viewKey]: v })}
       onRefresh={enableRefresh ? () => router.refresh() : undefined}
+      actions={actions}
+      primaryAction={primaryAction}
     />
   );
 }

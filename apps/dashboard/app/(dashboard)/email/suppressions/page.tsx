@@ -1,9 +1,9 @@
 import { Plus, ShieldOff } from 'lucide-react';
 import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
-import { EmailShell } from '../_components/email-shell';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
@@ -34,28 +34,39 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <EmailShell
-      width="full"
-      icon={<ShieldOff className="h-5 w-5" />}
-      title="Suppressions"
-      description="Addresses that are never emailed. Bounces, complaints, and unsubscribes are added automatically; you can also suppress addresses manually."
-      actions={
-        <EntityCreateButton
-          entityType="suppression"
-          newHref="/email/suppressions/new"
-          color="module"
-          leftIcon={<Plus className="h-4 w-4" />}
-        >
-          New
-        </EntityCreateButton>
+    <ListPageShell
+      header={
+        <PageHeader
+          icon={<ShieldOff className="h-5 w-5" />}
+          title="Suppressions"
+          description="Addresses that are never emailed. Bounces, complaints, and unsubscribes are added automatically; you can also suppress addresses manually."
+          className="mb-0"
+        />
       }
+      toolbar={
+        <>
+          <p className="text-base-content/70 text-sm">
+            {total} suppressed address{total === 1 ? '' : 'es'}
+          </p>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="suppression"
+                newHref="/email/suppressions/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
     >
-      <p className="text-base-content/70 text-sm">
-        {total} suppressed address{total === 1 ? '' : 'es'}
-      </p>
-
-      <ListToolbar enableViewToggle searchable={false} />
-
       {items.length === 0 ? (
         <Card>
           <CardBody className="p-0">
@@ -80,9 +91,7 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
       ) : (
         <SuppressionsList rows={items} view={view} />
       )}
-
-      <ListPager total={total} />
-    </EmailShell>
+    </ListPageShell>
   );
 }
 

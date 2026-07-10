@@ -1,6 +1,6 @@
 import { CreditCard } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -43,52 +43,53 @@ export default async function CheckoutSessionsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<CreditCard className="h-5 w-5" />}
           title="Checkout sessions"
           badge={<Badge color="module">{total} in-flight</Badge>}
           description="Read-only diagnostic. The state machine advances cart_review → contact → shipping → payment → review → completed. Sessions stuck in a non-terminal step are auto-expired on TTL by the worker; staff can manually expire a session from the API if needed."
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[{ key: 'step', label: 'Steps', options: STEP_OPTIONS }]}
           enableViewToggle
         />
-
-        {sessions.length === 0 ? (
-          <Card>
-            <CardBody>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
-                <p className="opacity-70">
-                  Click a cart ID to see the items + pricing trace; the session lifecycle is the
-                  table here.
-                </p>
-              </div>
-              <EmptyState
-                icon={<CreditCard className="h-5 w-5" />}
-                title="No sessions"
-                description="Checkout sessions appear here when the storefront starts writing."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-1">
-            <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
-            <p className="opacity-70">
-              Click a cart ID to see the items + pricing trace; the session lifecycle is the table
-              here.
-            </p>
-            <CheckoutSessionsList rows={sessions} view={view} />
-          </div>
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {sessions.length === 0 ? (
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
+              <p className="opacity-70">
+                Click a cart ID to see the items + pricing trace; the session lifecycle is the table
+                here.
+              </p>
+            </div>
+            <EmptyState
+              icon={<CreditCard className="h-5 w-5" />}
+              title="No sessions"
+              description="Checkout sessions appear here when the storefront starts writing."
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">{step ? labelForStep(step) : 'Active'}</h3>
+          <p className="opacity-70">
+            Click a cart ID to see the items + pricing trace; the session lifecycle is the table
+            here.
+          </p>
+          <CheckoutSessionsList rows={sessions} view={view} />
+        </div>
+      )}
+    </ListPageShell>
   );
 }
 

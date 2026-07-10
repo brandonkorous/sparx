@@ -1,6 +1,6 @@
 import { Share2 } from 'lucide-react';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
-import { ModuleProvider, PageHeader } from '@sparx/ui';
+import { ListPageShell, ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -39,8 +39,8 @@ export default async function PartnerReferralsPage({ searchParams }: PageProps) 
 
   return (
     <ModuleProvider module="partner">
-      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-6 py-10">
+      <ListPageShell
+        header={
           <PageHeader
             icon={<Share2 className="h-5 w-5" />}
             title="Referrals"
@@ -50,28 +50,30 @@ export default async function PartnerReferralsPage({ searchParams }: PageProps) 
               </Badge>
             }
             description="Share your link and track every account that signs up under it. You earn commission when a referral makes their first payment."
+            className="mb-0"
           />
-
-          <ReferralLinkCard referralCode={data.referralCode} />
-
-          {referrals.length === 0 ? (
-            <Card>
-              <CardBody className="p-0">
-                <EmptyState
-                  icon={<Share2 className="h-5 w-5" />}
-                  title="No referrals yet"
-                  description="Share your referral link above. New signups that come through it will appear here, along with their status and your commission rate."
-                />
-              </CardBody>
-            </Card>
-          ) : (
-            <>
-              <ListToolbar enableViewToggle searchable={false} />
-              <ReferralsList rows={referrals} view={view} />
-            </>
-          )}
-        </div>
-      </div>
+        }
+        toolbar={
+          <>
+            <ReferralLinkCard referralCode={data.referralCode} />
+            <ListToolbar enableViewToggle searchable={false} />
+          </>
+        }
+      >
+        {referrals.length === 0 ? (
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<Share2 className="h-5 w-5" />}
+                title="No referrals yet"
+                description="Share your referral link above. New signups that come through it will appear here, along with their status and your commission rate."
+              />
+            </CardBody>
+          </Card>
+        ) : (
+          <ReferralsList rows={referrals} view={view} />
+        )}
+      </ListPageShell>
     </ModuleProvider>
   );
 }

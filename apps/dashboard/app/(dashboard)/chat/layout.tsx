@@ -11,7 +11,9 @@ import { ModuleGate } from '@/components/module-gate';
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
   return (
     <ModuleGate module="chat">
-      <ModuleProvider module="chat">{children}</ModuleProvider>
+      <ModuleProvider module="chat" className="flex h-full min-h-0 flex-col">
+        {children}
+      </ModuleProvider>
     </ModuleGate>
   );
 }

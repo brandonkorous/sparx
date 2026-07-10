@@ -1,6 +1,6 @@
 import { FileText, Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -76,8 +76,8 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<FileText className="h-5 w-5" />}
           title="Documents"
@@ -87,18 +87,10 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
             </Badge>
           }
           description="Estimates, work orders, invoices and tickets — one engine, your labels. Open a document to compose lines, advance its stage, take payment, and print."
-          actions={
-            <EntityCreateButton
-              entityType="billing-document"
-              newHref="/invoicing/documents/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[
@@ -106,25 +98,35 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
             { key: 'workflowId', label: 'Workflows', options: workflowOptions },
           ]}
           enableViewToggle
+          primaryAction={
+            <EntityCreateButton
+              entityType="billing-document"
+              newHref="/invoicing/documents/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        {items.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<FileText className="h-5 w-5" />}
-                title="No documents match"
-                description="Create an estimate, invoice or work order to get started."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <DocumentsList items={items} view={view} stageLabels={stageLabels} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {items.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<FileText className="h-5 w-5" />}
+              title="No documents match"
+              description="Create an estimate, invoice or work order to get started."
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <DocumentsList items={items} view={view} stageLabels={stageLabels} />
+      )}
+    </ListPageShell>
   );
 }
 

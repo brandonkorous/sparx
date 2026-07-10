@@ -2,7 +2,7 @@ import { Inbox } from 'lucide-react';
 
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -50,54 +50,55 @@ export default async function ReturnsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Inbox className="h-5 w-5" />}
           title="Returns"
           badge={<Badge color="module">{total} total</Badge>}
           description="Customer- or staff-initiated returns. Approve, generate a label, receive, inspect each line, then settle as refund or account credit. Provider-driven refund settlement (Stripe, etc.) happens via the order-payments path once a TaxProvider/PaymentProvider is wired into the marketplace."
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
-
-        {items.length === 0 ? (
-          <Card>
-            <CardBody>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-semibold">
-                  {status ? labelForStatus(status) : 'All returns'}
-                </h3>
-                <p className="opacity-70">Click an ID to open the inspection queue.</p>
-              </div>
-              <EmptyState
-                icon={<Inbox className="h-5 w-5" />}
-                title="No returns"
-                description={
-                  status === 'requested'
-                    ? 'No new return requests waiting for staff review.'
-                    : 'Returns are created when customers submit one from /account/orders.'
-                }
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-1">
-            <h3 className="text-xl font-semibold">
-              {status ? labelForStatus(status) : 'All returns'}
-            </h3>
-            <p className="opacity-70">Click an ID to open the inspection queue.</p>
-            <ReturnsList rows={items} view={view} />
-          </div>
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {items.length === 0 ? (
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">
+                {status ? labelForStatus(status) : 'All returns'}
+              </h3>
+              <p className="opacity-70">Click an ID to open the inspection queue.</p>
+            </div>
+            <EmptyState
+              icon={<Inbox className="h-5 w-5" />}
+              title="No returns"
+              description={
+                status === 'requested'
+                  ? 'No new return requests waiting for staff review.'
+                  : 'Returns are created when customers submit one from /account/orders.'
+              }
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">
+            {status ? labelForStatus(status) : 'All returns'}
+          </h3>
+          <p className="opacity-70">Click an ID to open the inspection queue.</p>
+          <ReturnsList rows={items} view={view} />
+        </div>
+      )}
+    </ListPageShell>
   );
 }
 

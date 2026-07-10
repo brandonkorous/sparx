@@ -10,7 +10,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // the next request re-checks.
 export default function CrmLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="crm">
+    <ModuleProvider module="crm" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="crm">{children}</ModuleGate>
     </ModuleProvider>
   );

@@ -2,7 +2,7 @@ import { Truck } from 'lucide-react';
 
 import { Badge } from '@wizeworks/silicaui-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -85,9 +85,14 @@ export default async function ShippingPage({ searchParams }: PageProps) {
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
+  // Special case: two independently-paged sections (zones + profiles), each with
+  // its own inline <ListPager> rendered by ShippingLists — so there is no single
+  // pager to hand to ListPageShell's `pager` slot. Only the header + shared
+  // ListToolbar are pinned; both sections (with their own pagers) scroll
+  // together in `children`.
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Shipping"
@@ -98,21 +103,21 @@ export default async function ShippingPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Zones map ship-to addresses (by country, region, postal range) to the rates a merchant offers there. Profiles group products that share carrier eligibility (standard goods, hazmat, freight). Real-time provider rates layer on top once you install a carrier from Commerce → Providers; the manual rates here serve as the fallback."
+          className="mb-0"
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        <ShippingLists
-          zones={zones}
-          profiles={profiles}
-          view={view}
-          zoneTotal={zoneTotal}
-          profileTotal={profileTotal}
-          zonePagerKeys={ZONE_KEYS}
-          profilePagerKeys={PROFILE_KEYS}
-        />
-      </div>
-    </div>
+      }
+      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+    >
+      <ShippingLists
+        zones={zones}
+        profiles={profiles}
+        view={view}
+        zoneTotal={zoneTotal}
+        profileTotal={profileTotal}
+        zonePagerKeys={ZONE_KEYS}
+        profilePagerKeys={PROFILE_KEYS}
+      />
+    </ListPageShell>
   );
 }
 

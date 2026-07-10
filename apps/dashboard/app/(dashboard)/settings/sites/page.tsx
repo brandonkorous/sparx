@@ -1,5 +1,5 @@
 import { Globe, Plus } from 'lucide-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 import {
   getActivePropertyId,
@@ -57,10 +57,21 @@ export default async function SitesSettingsPage({ searchParams }: PageProps) {
       New site
     </EntityCreateButton>
   );
+  const newSiteButtonToolbar = (
+    <EntityCreateButton
+      entityType="site"
+      newHref="/settings/sites/new"
+      color="module"
+      size="sm"
+      leftIcon={<Plus className="h-4 w-4" />}
+    >
+      New site
+    </EntityCreateButton>
+  );
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Globe className="h-5 w-5" />}
           title="Sites"
@@ -70,22 +81,23 @@ export default async function SitesSettingsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Each site is a distinct web property — its own pages, domains, and settings — over your shared back office. Its look & feel is set on the Brand page."
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar enableViewToggle searchable={false} primaryAction={newSiteButtonToolbar} />
+      }
+    >
+      {properties.length === 0 ? (
+        <EmptyState
+          icon={<Globe className="h-5 w-5" />}
+          title="No sites yet"
+          description="Spin up your first site — blank or from a blueprint — over your shared back office."
           actions={newSiteButton}
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {properties.length === 0 ? (
-          <EmptyState
-            icon={<Globe className="h-5 w-5" />}
-            title="No sites yet"
-            description="Spin up your first site — blank or from a blueprint — over your shared back office."
-            actions={newSiteButton}
-          />
-        ) : (
-          <SitesList sites={properties} domains={domains} activePropertyId={activeId} view={view} />
-        )}
-      </div>
-    </div>
+      ) : (
+        <SitesList sites={properties} domains={domains} activePropertyId={activeId} view={view} />
+      )}
+    </ListPageShell>
   );
 }

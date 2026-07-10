@@ -9,7 +9,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // request re-checks.
 export default function CmsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="cms">
+    <ModuleProvider module="cms" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="cms">{children}</ModuleGate>
     </ModuleProvider>
   );

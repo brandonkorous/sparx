@@ -4,7 +4,7 @@
 // fetch window (`skip`/`take`). Keep `DEFAULT_PAGE_SIZE` and `PAGE_SIZE_OPTIONS`
 // in sync with the `ListPager` defaults so the size selector round-trips.
 
-export const DEFAULT_PAGE_SIZE = 50;
+export const DEFAULT_PAGE_SIZE = 25;
 export const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
 export interface PageWindow {

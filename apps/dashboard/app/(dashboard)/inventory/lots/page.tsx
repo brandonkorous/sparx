@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CircleAlert, Plus, X } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -66,8 +66,8 @@ export default async function LotsPage({ searchParams }: PageProps) {
   const hasFilters = Boolean(f.variantId || f.warehouseId || f.recallStatus || f.expiring || f.q);
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<CircleAlert className="h-5 w-5" />}
           title="Lots & serials"
@@ -77,71 +77,78 @@ export default async function LotsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Batch + serial traceability for regulated, expiring, or serialized stock. Hazmat-flagged batches inform shipping routing; a recall flips the affected serials and surfaces who to notify."
-          actions={
-            <EntityCreateButton
-              entityType="lot"
-              newHref="/inventory/lots/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New lot
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
+      }
+      toolbar={
+        <>
+          <LotsFilterBar
+            warehouses={warehousePage.data}
+            current={{ ...f, view: view === 'card' ? 'card' : '' }}
+          />
 
-        <LotsFilterBar
-          warehouses={warehousePage.data}
-          current={{ ...f, view: view === 'card' ? 'card' : '' }}
-        />
+          {f.variantId ? (
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <p className="text-base-content/70 text-sm">Filtered to item:</p>
+              <Badge color="module" variant="soft">
+                {f.sku || f.variantId.slice(0, 8)}
+              </Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                iconStart={<X className="h-3.5 w-3.5" />}
+                render={<Link href={clearVariantHref(f, view)} />}
+              >
+                Clear item
+              </Button>
+            </div>
+          ) : null}
 
-        {f.variantId ? (
-          <div className="flex flex-row flex-wrap items-center gap-2">
-            <p className="text-base-content/70 text-sm">Filtered to item:</p>
-            <Badge color="module" variant="soft">
-              {f.sku || f.variantId.slice(0, 8)}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              iconStart={<X className="h-3.5 w-3.5" />}
-              render={<Link href={clearVariantHref(f, view)} />}
-            >
-              Clear item
-            </Button>
-          </div>
-        ) : null}
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {lots.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<CircleAlert className="h-5 w-5" />}
-              title={hasFilters ? 'No lots match these filters' : 'No lots yet'}
-              description={
-                hasFilters
-                  ? 'Adjust or clear the filters to see more.'
-                  : 'Create a lot to track a batch by expiry, hazmat class, supplier reference, and per-unit serials — and to drive recalls.'
-              }
-              actions={
-                <EntityCreateButton
-                  entityType="lot"
-                  newHref="/inventory/lots/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New lot
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <LotsList rows={lots} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="lot"
+                newHref="/inventory/lots/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New lot
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {lots.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<CircleAlert className="h-5 w-5" />}
+            title={hasFilters ? 'No lots match these filters' : 'No lots yet'}
+            description={
+              hasFilters
+                ? 'Adjust or clear the filters to see more.'
+                : 'Create a lot to track a batch by expiry, hazmat class, supplier reference, and per-unit serials — and to drive recalls.'
+            }
+            actions={
+              <EntityCreateButton
+                entityType="lot"
+                newHref="/inventory/lots/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New lot
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <LotsList rows={lots} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

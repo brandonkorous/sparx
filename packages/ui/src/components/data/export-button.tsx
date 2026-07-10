@@ -33,6 +33,10 @@ export interface ExportButtonProps {
   disabled?: boolean;
   className?: string;
   label?: string;
+  /** Render as an icon-only square button (no label text) — for dense
+   *  toolbars. The dropdown's "Export all" / "Export selected" item labels
+   *  stay full text either way. */
+  iconOnly?: boolean;
 }
 
 export function ExportButton({
@@ -41,6 +45,7 @@ export function ExportButton({
   disabled,
   className,
   label = 'Export',
+  iconOnly = false,
 }: ExportButtonProps) {
   const hasSelection = selectedCount > 0;
 
@@ -49,12 +54,14 @@ export function ExportButton({
       <Button
         variant="outline"
         size="sm"
-        leftIcon={<Download className="h-4 w-4" />}
+        shape={iconOnly ? 'square' : undefined}
+        leftIcon={iconOnly ? undefined : <Download className="h-4 w-4" />}
+        aria-label={iconOnly ? label : undefined}
         disabled={disabled}
         className={className}
         onClick={() => onExport('all')}
       >
-        {label}
+        {iconOnly ? <Download className="h-4 w-4" /> : label}
       </Button>
     );
   }
@@ -65,12 +72,13 @@ export function ExportButton({
         <Button
           variant="outline"
           size="sm"
-          leftIcon={<Download className="h-4 w-4" />}
-          rightIcon={<ChevronDown className="h-3.5 w-3.5" />}
+          leftIcon={iconOnly ? undefined : <Download className="h-4 w-4" />}
+          rightIcon={iconOnly ? undefined : <ChevronDown className="h-3.5 w-3.5" />}
+          aria-label={iconOnly ? label : undefined}
           disabled={disabled}
-          className={cn('gap-1', className)}
+          className={cn(!iconOnly && 'gap-1', className)}
         >
-          {label}
+          {iconOnly ? <Download className="h-4 w-4" /> : label}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

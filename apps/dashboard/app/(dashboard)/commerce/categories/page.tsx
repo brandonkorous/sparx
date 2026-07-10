@@ -1,7 +1,7 @@
 import { FolderTree, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -53,8 +53,8 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<FolderTree className="h-5 w-5" />}
           title="Categories"
@@ -64,47 +64,50 @@ export default async function CategoriesPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="The organizational tree your shoppers browse. Nesting shows as indented rows you can expand or collapse; open a category to rename, reslug, reparent, reorder, or delete."
-          actions={
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search categories…"
+          filters={[{ key: 'featured', label: 'Featured', options: FEATURED_OPTIONS }]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="category"
               newHref="/commerce/categories/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar
-          searchPlaceholder="Search categories…"
-          filters={[{ key: 'featured', label: 'Featured', options: FEATURED_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {tree.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<FolderTree className="h-5 w-5" />}
-              title="No categories yet"
-              description="Start with a few top-level categories that match how shoppers browse your site."
-              actions={
-                <EntityCreateButton
-                  entityType="category"
-                  newHref="/commerce/categories/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <CategoriesTable tree={tree} view={view} q={q} featured={featured} />
-        )}
-      </div>
-    </div>
+      }
+    >
+      {tree.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<FolderTree className="h-5 w-5" />}
+            title="No categories yet"
+            description="Start with a few top-level categories that match how shoppers browse your site."
+            actions={
+              <EntityCreateButton
+                entityType="category"
+                newHref="/commerce/categories/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <CategoriesTable tree={tree} view={view} q={q} featured={featured} />
+      )}
+    </ListPageShell>
   );
 }
 

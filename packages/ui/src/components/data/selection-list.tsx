@@ -183,10 +183,10 @@ export function SelectionList<T>({
   return (
     <>
       {bar}
-      <Card padding="none" className={className}>
-        <CardContent className="p-0">
-          <Table hover wrapperClassName="overflow-x-auto">
-            <thead>
+      <Card padding="none" className={cn('flex min-h-0 flex-col', className)}>
+        <CardContent className="min-h-0 flex-1 overflow-hidden p-0">
+          <Table hover size="sm" wrapperClassName="h-full overflow-x-auto">
+            <thead className="bg-base-100 sticky top-0 z-10">
               <tr>
                 {isSelectable && (
                   <th className="w-10">

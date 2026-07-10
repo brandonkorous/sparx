@@ -8,7 +8,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // (revalidatePath('/b2b', 'layout')).
 export default function B2bLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="b2b">
+    <ModuleProvider module="b2b" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="b2b">{children}</ModuleGate>
     </ModuleProvider>
   );

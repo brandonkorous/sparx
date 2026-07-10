@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ClipboardList, Plus } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -40,8 +40,8 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<ClipboardList className="h-5 w-5" />}
           title="Purchase orders"
@@ -51,65 +51,72 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Inbound orders — buy stock from a supplier, received into a warehouse. Draft an order, submit it, then receive against it as goods arrive."
-          actions={
-            <EntityCreateButton
-              entityType="purchase-order"
-              newHref="/inventory/purchase-orders/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
-
-        <div className="flex flex-row flex-wrap gap-2">
-          {STATUS_FILTERS.map((f) => {
-            const active = f.value === status;
-            const href = f.value
-              ? `/inventory/purchase-orders?status=${f.value}`
-              : '/inventory/purchase-orders';
-            return (
-              <Button
-                key={f.value || 'all'}
-                size="sm"
-                color={active ? 'module' : 'neutral'}
-                variant={active ? 'solid' : 'outline'}
-                render={<Link href={href} aria-current={active ? 'page' : undefined} />}
-              >
-                {f.label}
-              </Button>
-            );
-          })}
-        </div>
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {orders.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<ClipboardList className="h-5 w-5" />}
-              title={status ? `No ${status} purchase orders` : 'No purchase orders yet'}
-              description="Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive."
-              actions={
-                <EntityCreateButton
-                  entityType="purchase-order"
-                  newHref="/inventory/purchase-orders/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
+      }
+      toolbar={
+        <>
+          <div className="flex flex-row flex-wrap gap-2">
+            {STATUS_FILTERS.map((f) => {
+              const active = f.value === status;
+              const href = f.value
+                ? `/inventory/purchase-orders?status=${f.value}`
+                : '/inventory/purchase-orders';
+              return (
+                <Button
+                  key={f.value || 'all'}
+                  size="sm"
+                  color={active ? 'module' : 'neutral'}
+                  variant={active ? 'solid' : 'outline'}
+                  render={<Link href={href} aria-current={active ? 'page' : undefined} />}
                 >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <PurchaseOrdersList rows={orders} view={view} />
-        )}
+                  {f.label}
+                </Button>
+              );
+            })}
+          </div>
 
-        <ListPager total={total} />
-      </div>
-    </div>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="purchase-order"
+                newHref="/inventory/purchase-orders/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {orders.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<ClipboardList className="h-5 w-5" />}
+            title={status ? `No ${status} purchase orders` : 'No purchase orders yet'}
+            description="Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive."
+            actions={
+              <EntityCreateButton
+                entityType="purchase-order"
+                newHref="/inventory/purchase-orders/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <PurchaseOrdersList rows={orders} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

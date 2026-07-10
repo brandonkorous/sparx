@@ -1,7 +1,7 @@
 import { HelpCircle } from 'lucide-react';
 
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -110,52 +110,53 @@ export default async function QaPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<HelpCircle className="h-5 w-5" />}
           title="Questions & answers"
           badge={<Badge color="module">{total} shown</Badge>}
           description="Customer questions are moderated before they reach the storefront. Answering with the staff badge marks the response as official; community answers can land too once the question is published."
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchPlaceholder="Search by question text, author, or product…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
-
-        {rows.length === 0 ? (
-          <Card>
-            <CardBody>
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
-                <p className="opacity-70">
-                  Click a question to publish or reject, and post an official answer.
-                </p>
-              </div>
-              <EmptyState
-                icon={<HelpCircle className="h-5 w-5" />}
-                title="No questions"
-                description="Questions arrive here once the storefront PDP starts accepting them."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-1">
-            <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
-            <p className="opacity-70">
-              Click a question to publish or reject, and post an official answer.
-            </p>
-            <QaList rows={rows} view={view} />
-          </div>
-        )}
-
-        {/* The pending queue is the full pending set (its own endpoint), so the
-            pager only applies to the paged (search / status-filtered) list. */}
-        {paged ? <ListPager total={total} /> : null}
-      </div>
-    </div>
+      }
+      // The pending queue is the full pending set (its own endpoint), so the
+      // pager only applies to the paged (search / status-filtered) list.
+      pager={paged ? <ListPager total={total} /> : undefined}
+    >
+      {rows.length === 0 ? (
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
+              <p className="opacity-70">
+                Click a question to publish or reject, and post an official answer.
+              </p>
+            </div>
+            <EmptyState
+              icon={<HelpCircle className="h-5 w-5" />}
+              title="No questions"
+              description="Questions arrive here once the storefront PDP starts accepting them."
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold">{labelFor(statusParam)}</h3>
+          <p className="opacity-70">
+            Click a question to publish or reject, and post an official answer.
+          </p>
+          <QaList rows={rows} view={view} />
+        </div>
+      )}
+    </ListPageShell>
   );
 }
 

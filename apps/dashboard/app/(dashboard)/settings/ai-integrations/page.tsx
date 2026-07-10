@@ -6,7 +6,7 @@
 // IssueKeyForm + revoke actions live in ./_components.
 
 import { KeyRound } from 'lucide-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 
 import { getUserPreferences } from '../../_shell/preferences';
@@ -41,8 +41,8 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
   const activeCount = keys.filter((k) => !k.revokedAt).length;
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-8 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<KeyRound className="h-5 w-5" />}
           title="AI Integrations"
@@ -52,9 +52,11 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Connect Claude, ChatGPT, or Copilot to your live data over MCP. Assistants connect via OAuth (recommended) — you approve exactly what they can do — or with a scoped API key. Revoke either anytime."
-          actions={<IssueKeyForm />}
+          className="mb-0"
         />
-
+      }
+    >
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">Connected assistants</h2>
           {connections.length === 0 ? (
@@ -70,7 +72,7 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
 
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">API keys</h2>
-          <ListToolbar enableViewToggle searchable={false} />
+          <ListToolbar enableViewToggle searchable={false} primaryAction={<IssueKeyForm />} />
           {keys.length === 0 ? (
             <EmptyState
               icon={<KeyRound className="h-5 w-5" />}
@@ -83,6 +85,6 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
           )}
         </div>
       </div>
-    </div>
+    </ListPageShell>
   );
 }

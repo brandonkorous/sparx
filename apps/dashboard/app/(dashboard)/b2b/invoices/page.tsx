@@ -1,6 +1,6 @@
 import { Receipt } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -65,8 +65,8 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
     .reduce((sum, i) => sum + i.balanceCents, 0);
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Receipt className="h-5 w-5" />}
           title="Invoices"
@@ -85,32 +85,34 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
               <p className="text-base-content/70 text-sm">{formatCents(totalOwed)} outstanding</p>
             )
           }
+          className="mb-0"
         />
-
-        {aging ? <ArAgingSummary aging={aging} /> : null}
-
-        <ListToolbar
-          searchPlaceholder="Search by invoice # or account…"
-          filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {invoices.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<Receipt className="h-5 w-5" />}
-                title="No invoices yet"
-                description="Net-terms orders automatically generate invoices. Manual invoices can also be created from an account's detail page."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <InvoicesList invoices={invoices} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <>
+          {aging ? <ArAgingSummary aging={aging} /> : null}
+          <ListToolbar
+            searchPlaceholder="Search by invoice # or account…"
+            filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
+            enableViewToggle
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {invoices.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<Receipt className="h-5 w-5" />}
+              title="No invoices yet"
+              description="Net-terms orders automatically generate invoices. Manual invoices can also be created from an account's detail page."
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <InvoicesList invoices={invoices} view={view} />
+      )}
+    </ListPageShell>
   );
 }

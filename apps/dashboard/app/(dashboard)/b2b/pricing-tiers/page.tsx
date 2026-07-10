@@ -1,6 +1,6 @@
 import { DollarSign } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -36,8 +36,9 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      className="mx-auto max-w-screen-xl"
+      header={
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Pricing tiers"
@@ -47,29 +48,29 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Named discount structures applied to B2B accounts. Product-level overrides take precedence over tier discounts."
-          actions={<TierCreateButton />}
+          className="mb-0"
         />
-
-        <ListToolbar searchable={false} enableViewToggle />
-
-        {tiers.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<DollarSign className="h-5 w-5" />}
-                title="No pricing tiers yet"
-                description="Create a pricing tier to apply automatic discounts to wholesale or fleet accounts."
-                actions={<TierCreateButton />}
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <PricingTiersList rows={tiers} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <ListToolbar searchable={false} enableViewToggle primaryAction={<TierCreateButton />} />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {tiers.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<DollarSign className="h-5 w-5" />}
+              title="No pricing tiers yet"
+              description="Create a pricing tier to apply automatic discounts to wholesale or fleet accounts."
+              actions={<TierCreateButton />}
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <PricingTiersList rows={tiers} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

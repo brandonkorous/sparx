@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Boxes } from 'lucide-react';
 
 import { Badge, Button, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -137,121 +137,127 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   const view = (pickString(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Boxes className="h-5 w-5" />}
           title="Inventory"
           badge={fallbackWarehouse && <Badge color="module">{fallbackWarehouse.code}</Badge>}
           description="On-hand is the authoritative count; allocated is the active reservation total across carts, orders, and subscriptions; available = on-hand − allocated."
+          // "Manage warehouses" stays a header action (rather than moving into the
+          // toolbar) because the toolbar itself doesn't render at all in the
+          // no-warehouses state below — this link must stay reachable either way.
           actions={
-            <Button variant="outline" render={<Link href="/inventory/warehouses" />}>
+            <Button variant="outline" size="sm" render={<Link href="/inventory/warehouses" />}>
               Manage warehouses
             </Button>
           }
+          className="mb-0"
         />
-
-        {warehouses.length === 0 ? (
-          <EmptyState
-            icon={<Boxes className="h-5 w-5" />}
-            title="No warehouses yet"
-            description="Create a warehouse before tracking inventory."
-            actions={
-              <Button color="module" render={<Link href="/inventory/warehouses/new" />}>
-                Add warehouse
-              </Button>
-            }
+      }
+      toolbar={
+        warehouses.length === 0 ? undefined : (
+          <ListToolbar
+            searchable={false}
+            filters={[{ key: 'warehouse', label: 'Warehouses', options: warehouseOptions }]}
+            enableViewToggle
           />
-        ) : (
-          <>
-            <ListToolbar
-              searchable={false}
-              filters={[{ key: 'warehouse', label: 'Warehouses', options: warehouseOptions }]}
-              enableViewToggle
-            />
-
-            {lowStock.length > 0 && (
-              <Card>
-                <CardBody>
-                  <div className="flex flex-col gap-1">
-                    <h3 className="text-xl font-semibold">Reorder watch</h3>
-                    <p className="opacity-70">
-                      Variants at or below their reorder point. Filtered to{' '}
-                      {warehouseFilter ? 'the selected warehouse' : 'every warehouse'}.
-                    </p>
-                  </div>
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>SKU</th>
-                        <th>Product</th>
-                        <th>Warehouse</th>
-                        <th>Available</th>
-                        <th>Reorder at</th>
-                        <th>Suggested order</th>
+        )
+      }
+      pager={<ListPager total={gridTotal} />}
+    >
+      {warehouses.length === 0 ? (
+        <EmptyState
+          icon={<Boxes className="h-5 w-5" />}
+          title="No warehouses yet"
+          description="Create a warehouse before tracking inventory."
+          actions={
+            <Button color="module" render={<Link href="/inventory/warehouses/new" />}>
+              Add warehouse
+            </Button>
+          }
+        />
+      ) : (
+        <div className="flex flex-col gap-6">
+          {lowStock.length > 0 && (
+            <Card>
+              <CardBody>
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-xl font-semibold">Reorder watch</h3>
+                  <p className="opacity-70">
+                    Variants at or below their reorder point. Filtered to{' '}
+                    {warehouseFilter ? 'the selected warehouse' : 'every warehouse'}.
+                  </p>
+                </div>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>SKU</th>
+                      <th>Product</th>
+                      <th>Warehouse</th>
+                      <th>Available</th>
+                      <th>Reorder at</th>
+                      <th>Suggested order</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lowStock.map((row) => (
+                      <tr key={`${row.variantId}:${row.warehouseId}`}>
+                        <td>
+                          <span className="font-mono text-xs">{row.sku}</span>
+                        </td>
+                        <td>
+                          <Link
+                            href={`/commerce/products/${row.productId}`}
+                            className="hover:text-module"
+                          >
+                            {row.title}
+                          </Link>
+                        </td>
+                        <td>
+                          <Badge color="neutral" variant="soft" size="sm">
+                            {row.warehouseCode}
+                          </Badge>
+                        </td>
+                        <td>
+                          <p className="text-warning text-base">{row.available}</p>
+                        </td>
+                        <td>{row.reorderPoint}</td>
+                        <td>{row.reorderQuantity ?? '—'}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {lowStock.map((row) => (
-                        <tr key={`${row.variantId}:${row.warehouseId}`}>
-                          <td>
-                            <span className="font-mono text-xs">{row.sku}</span>
-                          </td>
-                          <td>
-                            <Link
-                              href={`/commerce/products/${row.productId}`}
-                              className="hover:text-module"
-                            >
-                              {row.title}
-                            </Link>
-                          </td>
-                          <td>
-                            <Badge color="neutral" variant="soft" size="sm">
-                              {row.warehouseCode}
-                            </Badge>
-                          </td>
-                          <td>
-                            <p className="text-warning text-base">{row.available}</p>
-                          </td>
-                          <td>{row.reorderPoint}</td>
-                          <td>{row.reorderQuantity ?? '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </CardBody>
+                    ))}
+                  </tbody>
+                </Table>
+              </CardBody>
+            </Card>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <h3 className="text-xl font-semibold">
+              Stock at {fallbackWarehouse?.code ?? '—'}
+              <Badge color="neutral" variant="soft" size="sm" className="ml-2">
+                {gridRows.length} variants
+              </Badge>
+            </h3>
+            <p className="text-base-content/70 text-sm">
+              Each row shows the latest counts; the inline editor records every change as an audited
+              adjustment (sale, recount, manual…).
+            </p>
+
+            {gridRows.length === 0 ? (
+              <Card className="bg-module bg-soft">
+                <EmptyState
+                  icon={<Boxes className="h-5 w-5" />}
+                  title="No stock tracked at this warehouse"
+                  description="As soon as a variant is reserved, sold, or manually adjusted at this warehouse, a row appears here."
+                />
               </Card>
+            ) : (
+              <InventoryList rows={gridRows} warehouseId={fallbackWarehouse!.id} view={view} />
             )}
-
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">
-                Stock at {fallbackWarehouse?.code ?? '—'}
-                <Badge color="neutral" variant="soft" size="sm" className="ml-2">
-                  {gridRows.length} variants
-                </Badge>
-              </h3>
-              <p className="text-base-content/70 text-sm">
-                Each row shows the latest counts; the inline editor records every change as an
-                audited adjustment (sale, recount, manual…).
-              </p>
-
-              {gridRows.length === 0 ? (
-                <Card className="bg-module bg-soft">
-                  <EmptyState
-                    icon={<Boxes className="h-5 w-5" />}
-                    title="No stock tracked at this warehouse"
-                    description="As soon as a variant is reserved, sold, or manually adjusted at this warehouse, a row appears here."
-                  />
-                </Card>
-              ) : (
-                <InventoryList rows={gridRows} warehouseId={fallbackWarehouse!.id} view={view} />
-              )}
-            </div>
-          </>
-        )}
-
-        <ListPager total={gridTotal} />
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </ListPageShell>
   );
 }

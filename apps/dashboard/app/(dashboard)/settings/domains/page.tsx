@@ -1,5 +1,5 @@
 import { Globe } from 'lucide-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 import { listProperties, listDomains, type Domain, type Property } from '@/lib/sites';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -39,8 +39,8 @@ export default async function DomainsSettingsPage({ searchParams }: PageProps) {
   const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Globe className="h-5 w-5" />}
           title="Domains"
@@ -50,24 +50,29 @@ export default async function DomainsSettingsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Purchase new domains, track renewals, and manage WHOIS privacy and DNS settings. Connected domains are also managed per-site under Sites."
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">Your domains</h2>
           <ListToolbar enableViewToggle searchable={false} />
-          {domains.length === 0 ? (
-            <EmptyState
-              icon={<Globe className="h-5 w-5" />}
-              title="No domains yet"
-              description="Purchase a new domain below, or connect one you already own from Settings → Sites."
-            />
-          ) : (
-            <DomainsInventory domains={domains} properties={properties} view={view} />
-          )}
         </div>
+      }
+    >
+      <div className="flex flex-col gap-6">
+        {domains.length === 0 ? (
+          <EmptyState
+            icon={<Globe className="h-5 w-5" />}
+            title="No domains yet"
+            description="Purchase a new domain below, or connect one you already own from Settings → Sites."
+          />
+        ) : (
+          <DomainsInventory domains={domains} properties={properties} view={view} />
+        )}
 
         <DomainSearch properties={properties} purchaseEnabled={purchaseEnabled} />
       </div>
-    </div>
+    </ListPageShell>
   );
 }

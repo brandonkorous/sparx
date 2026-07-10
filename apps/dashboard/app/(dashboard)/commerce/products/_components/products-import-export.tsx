@@ -65,13 +65,14 @@ export function ProductsImportExport({ selectedCount = 0 }: ProductsImportExport
       <Button
         variant="outline"
         size="sm"
-        iconStart={<Upload className="h-4 w-4" />}
+        shape="square"
+        aria-label="Import"
         onClick={() => setImportOpen(true)}
       >
-        Import
+        <Upload className="h-4 w-4" />
       </Button>
 
-      <ExportButton selectedCount={selectedCount} onExport={handleExport} />
+      <ExportButton selectedCount={selectedCount} onExport={handleExport} iconOnly />
 
       <ImportDialog
         open={importOpen}

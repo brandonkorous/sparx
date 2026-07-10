@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ClipboardCheck, Plus } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -41,8 +41,8 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<ClipboardCheck className="h-5 w-5" />}
           title="Counts"
@@ -52,63 +52,70 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Reconcile recorded stock against a physical count. Capture counted quantities, review the variance, and post — large variances need an approval before they apply."
-          actions={
-            <EntityCreateButton
-              entityType="count"
-              newHref="/inventory/counts/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New count
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
-
-        <div className="flex flex-row flex-wrap gap-2">
-          {STATUS_FILTERS.map((f) => {
-            const active = f.value === status;
-            const href = f.value ? `/inventory/counts?status=${f.value}` : '/inventory/counts';
-            return (
-              <Button
-                key={f.value || 'all'}
-                size="sm"
-                color={active ? 'module' : 'neutral'}
-                variant={active ? 'solid' : 'outline'}
-                render={<Link href={href} aria-current={active ? 'page' : undefined} />}
-              >
-                {f.label}
-              </Button>
-            );
-          })}
-        </div>
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {counts.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<ClipboardCheck className="h-5 w-5" />}
-              title={status ? `No ${status} counts` : 'No counts yet'}
-              description="Start a cycle count of a few SKUs or a full physical count of a warehouse. Enter the counted quantities, then post to correct stock with an audit trail."
-              actions={
-                <EntityCreateButton
-                  entityType="count"
-                  newHref="/inventory/counts/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
+      }
+      toolbar={
+        <>
+          <div className="flex flex-row flex-wrap gap-2">
+            {STATUS_FILTERS.map((f) => {
+              const active = f.value === status;
+              const href = f.value ? `/inventory/counts?status=${f.value}` : '/inventory/counts';
+              return (
+                <Button
+                  key={f.value || 'all'}
+                  size="sm"
+                  color={active ? 'module' : 'neutral'}
+                  variant={active ? 'solid' : 'outline'}
+                  render={<Link href={href} aria-current={active ? 'page' : undefined} />}
                 >
-                  New count
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <CountsList rows={counts} view={view} />
-        )}
+                  {f.label}
+                </Button>
+              );
+            })}
+          </div>
 
-        <ListPager total={total} />
-      </div>
-    </div>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="count"
+                newHref="/inventory/counts/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New count
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {counts.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<ClipboardCheck className="h-5 w-5" />}
+            title={status ? `No ${status} counts` : 'No counts yet'}
+            description="Start a cycle count of a few SKUs or a full physical count of a warehouse. Enter the counted quantities, then post to correct stock with an audit trail."
+            actions={
+              <EntityCreateButton
+                entityType="count"
+                newHref="/inventory/counts/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New count
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <CountsList rows={counts} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

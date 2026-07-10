@@ -1,7 +1,7 @@
 import { DollarSign, Plus } from 'lucide-react';
 
 import { Badge } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -87,25 +87,17 @@ export default async function PricingPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Pricing"
           badge={<Badge color="module">{priceListTotal} price lists</Badge>}
           description="Resolution order: B2B contract price → price list → bulk tier → variant base. Discounts apply on top via the Discounts page."
-          actions={
-            <EntityCreateButton
-              entityType="price-list"
-              newHref="/commerce/pricing/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           enableViewToggle
           searchPlaceholder="Search price lists…"
@@ -113,16 +105,27 @@ export default async function PricingPage({ searchParams }: PageProps) {
             { key: 'status', label: 'Status', options: STATUS_OPTIONS },
             { key: 'channel', label: 'Channel', options: CHANNEL_OPTIONS },
           ]}
+          primaryAction={
+            <EntityCreateButton
+              entityType="price-list"
+              newHref="/commerce/pricing/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        <PricingLists
-          priceLists={priceLists}
-          bulkTiers={bulkTiers}
-          view={view}
-          priceListTotal={priceListTotal}
-        />
-      </div>
-    </div>
+      }
+    >
+      <PricingLists
+        priceLists={priceLists}
+        bulkTiers={bulkTiers}
+        view={view}
+        priceListTotal={priceListTotal}
+      />
+    </ListPageShell>
   );
 }
 

@@ -8,5 +8,9 @@
 import { ModuleProvider } from '@sparx/ui';
 
 export default function AutomationsLayout({ children }: { children: React.ReactNode }) {
-  return <ModuleProvider module="automations">{children}</ModuleProvider>;
+  return (
+    <ModuleProvider module="automations" className="flex h-full min-h-0 flex-col">
+      {children}
+    </ModuleProvider>
+  );
 }

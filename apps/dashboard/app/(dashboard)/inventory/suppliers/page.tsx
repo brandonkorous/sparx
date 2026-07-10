@@ -1,7 +1,7 @@
 import { Truck, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -40,8 +40,8 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Suppliers"
@@ -52,45 +52,50 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Vendors you purchase stock from. Each supplier carries contact + default terms; per-variant purchasing detail (their part number, cost, MOQ) is set on the supplier's detail page and feeds purchase orders, receiving, and the moving-average cost basis."
-          actions={
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          enableViewToggle
+          searchable={false}
+          primaryAction={
             <EntityCreateButton
               entityType="supplier"
               newHref="/inventory/suppliers/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {suppliers.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Truck className="h-5 w-5" />}
-              title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
-              description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
-              actions={
-                <EntityCreateButton
-                  entityType="supplier"
-                  newHref="/inventory/suppliers/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <SuppliersList rows={suppliers} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {suppliers.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Truck className="h-5 w-5" />}
+            title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
+            description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
+            actions={
+              <EntityCreateButton
+                entityType="supplier"
+                newHref="/inventory/suppliers/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <SuppliersList rows={suppliers} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

@@ -1,6 +1,6 @@
 import { Calendar } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -54,34 +54,34 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Calendar className="h-5 w-5" />}
           title="Service Types"
           description="Define the types of service your team offers for B2B account appointments."
-          actions={<NewServiceTypeButton />}
+          className="mb-0"
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {types.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<Calendar className="h-5 w-5" />}
-                title="No service types yet"
-                description="Add your first service type so B2B accounts can book appointments."
-                actions={<NewServiceTypeButton />}
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <ServiceTypesList types={types} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <ListToolbar enableViewToggle searchable={false} primaryAction={<NewServiceTypeButton />} />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {types.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<Calendar className="h-5 w-5" />}
+              title="No service types yet"
+              description="Add your first service type so B2B accounts can book appointments."
+              actions={<NewServiceTypeButton />}
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <ServiceTypesList types={types} view={view} />
+      )}
+    </ListPageShell>
   );
 }

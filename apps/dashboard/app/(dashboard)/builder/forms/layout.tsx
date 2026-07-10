@@ -7,5 +7,9 @@ import { ModuleProvider } from '@sparx/ui';
 // are ordinary document-flow pages, so they add their own ModuleProvider here to
 // wear the Builder indigo — the chrome tint + the page-level primary action.
 export default function FormsLayout({ children }: { children: React.ReactNode }) {
-  return <ModuleProvider module="builder">{children}</ModuleProvider>;
+  return (
+    <ModuleProvider module="builder" className="flex h-full min-h-0 flex-col">
+      {children}
+    </ModuleProvider>
+  );
 }

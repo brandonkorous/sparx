@@ -8,7 +8,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // 'layout') so the next request re-checks (docs/87 §14).
 export default function InvoicingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="invoicing">
+    <ModuleProvider module="invoicing" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="invoicing">{children}</ModuleGate>
     </ModuleProvider>
   );

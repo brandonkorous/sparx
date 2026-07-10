@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { History, X } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -66,8 +66,8 @@ export default async function InventoryMovementsPage({ searchParams }: PageProps
   );
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<History className="h-5 w-5" />}
           title="Movements"
@@ -77,51 +77,54 @@ export default async function InventoryMovementsPage({ searchParams }: PageProps
             </Badge>
           }
           description="The audit trail for every stock change — sales, receipts, transfers, recounts, syncs, and manual adjustments. Filter to answer who moved what, when, why, and by how much."
+          className="mb-0"
         />
+      }
+      toolbar={
+        <>
+          <MovementsFilterBar
+            warehouses={warehousePage.data}
+            current={{ ...f, view: view === 'card' ? 'card' : '' }}
+          />
 
-        <MovementsFilterBar
-          warehouses={warehousePage.data}
-          current={{ ...f, view: view === 'card' ? 'card' : '' }}
-        />
+          {f.variantId ? (
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <p className="text-base-content/70 text-sm">Filtered to item:</p>
+              <Badge color="module" variant="soft">
+                {f.sku || f.variantId.slice(0, 8)}
+              </Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                iconStart={<X className="h-3.5 w-3.5" />}
+                render={<Link href={clearVariantHref(f, view)} />}
+              >
+                Clear item
+              </Button>
+            </div>
+          ) : null}
 
-        {f.variantId ? (
-          <div className="flex flex-row flex-wrap items-center gap-2">
-            <p className="text-base-content/70 text-sm">Filtered to item:</p>
-            <Badge color="module" variant="soft">
-              {f.sku || f.variantId.slice(0, 8)}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              iconStart={<X className="h-3.5 w-3.5" />}
-              render={<Link href={clearVariantHref(f, view)} />}
-            >
-              Clear item
-            </Button>
-          </div>
-        ) : null}
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {movements.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<History className="h-5 w-5" />}
-              title={hasFilters ? 'No movements match these filters' : 'No stock movements yet'}
-              description={
-                hasFilters
-                  ? 'Adjust or clear the filters to see more of the ledger.'
-                  : 'Every receipt, sale, transfer, recount, and adjustment is recorded here. As soon as stock moves, it shows up.'
-              }
-            />
-          </Card>
-        ) : (
-          <MovementsList rows={movements} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+          <ListToolbar enableViewToggle searchable={false} />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {movements.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<History className="h-5 w-5" />}
+            title={hasFilters ? 'No movements match these filters' : 'No stock movements yet'}
+            description={
+              hasFilters
+                ? 'Adjust or clear the filters to see more of the ledger.'
+                : 'Every receipt, sale, transfer, recount, and adjustment is recorded here. As soon as stock moves, it shows up.'
+            }
+          />
+        </Card>
+      ) : (
+        <MovementsList rows={movements} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

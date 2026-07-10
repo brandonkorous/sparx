@@ -1,7 +1,7 @@
 import { CheckSquare, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, CardTitle, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -64,9 +64,10 @@ export default async function TasksPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<CheckSquare className="h-5 w-5" />}
           title="Tasks"
           badge={
@@ -78,73 +79,74 @@ export default async function TasksPage({ searchParams }: PageProps) {
             </>
           }
           description="Follow-ups attached to customers, deals, or standalone reminders. Overdue tasks trigger an email reminder to the assignee via the automation engine."
-          actions={
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchable={false}
+          filters={[{ key: 'scope', label: 'Scope', options: SCOPE_OPTIONS, defaultValue: 'me' }]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="task"
               newHref="/crm/tasks/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar
-          searchable={false}
-          filters={[{ key: 'scope', label: 'Scope', options: SCOPE_OPTIONS, defaultValue: 'me' }]}
-          enableViewToggle
-        />
-
-        {overdueTasks.length > 0 && (
-          <Card className="bg-module bg-soft">
-            <CardBody>
-              <CardTitle>
-                <div className="flex flex-row items-center gap-2">
-                  <AlertCircle className="h-4 w-4" /> Overdue
-                  <Badge color="danger">{overdueTasks.length}</Badge>
-                </div>
-              </CardTitle>
-              <TasksList tasks={overdueTasks.map(serializeTask)} view={view} overdue />
-            </CardBody>
-          </Card>
-        )}
-
-        <Card>
+      }
+      // Paginates the OPEN list only — the overdue/completed groups below are
+      // capped helper queries, so the pager total reflects open tasks.
+      pager={<ListPager total={openTotal} />}
+    >
+      {overdueTasks.length > 0 && (
+        <Card className="bg-module bg-soft">
           <CardBody>
             <CardTitle>
               <div className="flex flex-row items-center gap-2">
-                <Calendar className="h-4 w-4" /> Open
-                <Badge color="neutral" variant="soft" size="sm">
-                  {openTotal}
-                </Badge>
+                <AlertCircle className="h-4 w-4" /> Overdue
+                <Badge color="danger">{overdueTasks.length}</Badge>
               </div>
             </CardTitle>
-            {openTasks.length === 0 ? (
-              <EmptyState
-                title="No open tasks"
-                description="Create a task to track follow-ups, calls, or to-dos for yourself or your team."
-              />
-            ) : (
-              <TasksList tasks={openTasks.map(serializeTask)} view={view} />
-            )}
+            <TasksList tasks={overdueTasks.map(serializeTask)} view={view} overdue />
           </CardBody>
         </Card>
+      )}
 
-        {completedTasks.length > 0 && (
-          <Card>
-            <CardBody>
-              <CardTitle>Recently completed</CardTitle>
-              <TasksList tasks={completedTasks.map(serializeTask)} view={view} />
-            </CardBody>
-          </Card>
-        )}
+      <Card>
+        <CardBody>
+          <CardTitle>
+            <div className="flex flex-row items-center gap-2">
+              <Calendar className="h-4 w-4" /> Open
+              <Badge color="neutral" variant="soft" size="sm">
+                {openTotal}
+              </Badge>
+            </div>
+          </CardTitle>
+          {openTasks.length === 0 ? (
+            <EmptyState
+              title="No open tasks"
+              description="Create a task to track follow-ups, calls, or to-dos for yourself or your team."
+            />
+          ) : (
+            <TasksList tasks={openTasks.map(serializeTask)} view={view} />
+          )}
+        </CardBody>
+      </Card>
 
-        {/* Paginates the OPEN list only — the overdue/completed groups above are
-            capped helper queries, so the pager total reflects open tasks. */}
-        <ListPager total={openTotal} />
-      </div>
-    </div>
+      {completedTasks.length > 0 && (
+        <Card>
+          <CardBody>
+            <CardTitle>Recently completed</CardTitle>
+            <TasksList tasks={completedTasks.map(serializeTask)} view={view} />
+          </CardBody>
+        </Card>
+      )}
+    </ListPageShell>
   );
 }
 

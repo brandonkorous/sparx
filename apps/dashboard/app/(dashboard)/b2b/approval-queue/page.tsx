@@ -1,6 +1,6 @@
 import { CheckCircle } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -55,8 +55,8 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<CheckCircle className="h-5 w-5" />}
           title="Approval Queue"
@@ -72,26 +72,25 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
             )
           }
           description="B2B portal orders waiting for staff review before they are placed."
+          className="mb-0"
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {orders.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<CheckCircle className="h-5 w-5" />}
-                title="No orders pending approval"
-                description="B2B portal orders that exceed an approval threshold will appear here."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <ApprovalQueueList orders={orders} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+      pager={<ListPager total={total} />}
+    >
+      {orders.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<CheckCircle className="h-5 w-5" />}
+              title="No orders pending approval"
+              description="B2B portal orders that exceed an approval threshold will appear here."
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <ApprovalQueueList orders={orders} view={view} />
+      )}
+    </ListPageShell>
   );
 }

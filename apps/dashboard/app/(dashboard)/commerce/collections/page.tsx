@@ -1,6 +1,6 @@
 import { Layers, Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -46,8 +46,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Layers className="h-5 w-5" />}
           title="Collections"
@@ -57,55 +57,57 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Manual lists and rules-driven smart collections. Manual stays the same until you edit it; rules re-project on the next index flush (Phase 1.5 wires the indexer)."
-          actions={
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search collections…"
+          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="collection"
               newHref="/commerce/collections/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar
-          searchPlaceholder="Search collections…"
-          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {items.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Layers className="h-5 w-5" />}
-              title={total === 0 ? 'No collections yet' : 'No collections match these filters'}
-              description={
-                total === 0
-                  ? 'Start with a hand-picked "Featured" list, then add rules-driven collections (best sellers, on sale, by tag) once you have a few products.'
-                  : 'Adjust filters to broaden the results.'
-              }
-              actions={
-                total === 0 ? (
-                  <EntityCreateButton
-                    entityType="collection"
-                    newHref="/commerce/collections/new"
-                    color="module"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    New
-                  </EntityCreateButton>
-                ) : undefined
-              }
-            />
-          </Card>
-        ) : (
-          <CollectionsSelectionTable collections={items} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {items.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Layers className="h-5 w-5" />}
+            title={total === 0 ? 'No collections yet' : 'No collections match these filters'}
+            description={
+              total === 0
+                ? 'Start with a hand-picked "Featured" list, then add rules-driven collections (best sellers, on sale, by tag) once you have a few products.'
+                : 'Adjust filters to broaden the results.'
+            }
+            actions={
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="collection"
+                  newHref="/commerce/collections/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
+            }
+          />
+        </Card>
+      ) : (
+        <CollectionsSelectionTable collections={items} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

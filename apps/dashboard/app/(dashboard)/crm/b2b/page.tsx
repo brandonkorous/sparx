@@ -1,6 +1,6 @@
 import { Building2, Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -48,8 +48,8 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Building2 className="h-5 w-5" />}
           title="B2B accounts"
@@ -59,49 +59,51 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Wholesale + fleet customers. Pricing tier, credit limit, and engine profiles feed the fitment-aware catalog and the B2B portal pricing engine."
-          actions={
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search company…"
+          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="b2b-account"
               newHref="/b2b/accounts/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar
-          searchPlaceholder="Search company…"
-          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {accounts.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Building2 className="h-5 w-5" />}
-              title="No B2B accounts yet"
-              description="Add a wholesale or fleet customer to start tracking pricing tiers, credit, and engine profiles."
-              actions={
-                <EntityCreateButton
-                  entityType="b2b-account"
-                  newHref="/crm/b2b/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <B2bAccountsSelectionTable accounts={accounts} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {accounts.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Building2 className="h-5 w-5" />}
+            title="No B2B accounts yet"
+            description="Add a wholesale or fleet customer to start tracking pricing tiers, credit, and engine profiles."
+            actions={
+              <EntityCreateButton
+                entityType="b2b-account"
+                newHref="/crm/b2b/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <B2bAccountsSelectionTable accounts={accounts} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

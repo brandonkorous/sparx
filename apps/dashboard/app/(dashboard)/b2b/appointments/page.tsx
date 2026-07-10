@@ -1,6 +1,6 @@
 import { Calendar } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -77,8 +77,8 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Calendar className="h-5 w-5" />}
           title="Appointments"
@@ -90,39 +90,40 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
             ) : undefined
           }
           description="Manage B2B service appointments and track their status."
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
-
-        {appointments.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<Calendar className="h-5 w-5" />}
-                title={status ? 'No appointments match this filter' : 'No appointments'}
-                description={
-                  status
-                    ? 'Clear the status filter to see every appointment.'
-                    : 'Appointments booked from the B2B portal or created here will appear in this list.'
-                }
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <>
-            <p className="text-base-content/70 text-sm">
-              {total} appointment{total !== 1 ? 's' : ''} total
-            </p>
-            <AppointmentsList appointments={appointments} view={view} />
-          </>
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {appointments.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<Calendar className="h-5 w-5" />}
+              title={status ? 'No appointments match this filter' : 'No appointments'}
+              description={
+                status
+                  ? 'Clear the status filter to see every appointment.'
+                  : 'Appointments booked from the B2B portal or created here will appear in this list.'
+              }
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <>
+          <p className="text-base-content/70 text-sm">
+            {total} appointment{total !== 1 ? 's' : ''} total
+          </p>
+          <AppointmentsList appointments={appointments} view={view} />
+        </>
+      )}
+    </ListPageShell>
   );
 }

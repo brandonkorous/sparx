@@ -1,6 +1,6 @@
 import { Plus, Tag } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -44,8 +44,8 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Tag className="h-5 w-5" />}
           title="Discounts"
@@ -55,9 +55,37 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Codes activate when a shopper enters them; automatic discounts apply silently when their conditions match. Stacking rules govern combining with subscribe-and-save and loyalty."
-          actions={
-            <div className="flex flex-row gap-2">
-              <DiscountsImportExport />
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search code or name…"
+          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
+          actions={<DiscountsImportExport />}
+          primaryAction={
+            <EntityCreateButton
+              entityType="discount"
+              newHref="/commerce/discounts/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
+        />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {discounts.length === 0 ? (
+        <Card className="bg-module bg-soft">
+          <EmptyState
+            icon={<Tag className="h-5 w-5" />}
+            title="No discounts yet"
+            description="Create a code (e.g. WELCOME10) for new-customer promos, or an automatic discount that applies when conditions are met."
+            actions={
               <EntityCreateButton
                 entityType="discount"
                 newHref="/commerce/discounts/new"
@@ -66,47 +94,19 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
               >
                 New
               </EntityCreateButton>
-            </div>
-          }
-        />
-
-        <ListToolbar
-          searchPlaceholder="Search code or name…"
-          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {discounts.length === 0 ? (
-          <Card className="bg-module bg-soft">
-            <EmptyState
-              icon={<Tag className="h-5 w-5" />}
-              title="No discounts yet"
-              description="Create a code (e.g. WELCOME10) for new-customer promos, or an automatic discount that applies when conditions are met."
-              actions={
-                <EntityCreateButton
-                  entityType="discount"
-                  newHref="/commerce/discounts/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <>
-            <p className="text-base-content/70 text-sm">
-              Higher-priority discounts evaluate first when multiple are eligible. Per-customer
-              limits and total caps are enforced at redemption time.
-            </p>
-            <DiscountsList discounts={discounts} view={view} />
-          </>
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+            }
+          />
+        </Card>
+      ) : (
+        <>
+          <p className="text-base-content/70 text-sm">
+            Higher-priority discounts evaluate first when multiple are eligible. Per-customer limits
+            and total caps are enforced at redemption time.
+          </p>
+          <DiscountsList discounts={discounts} view={view} />
+        </>
+      )}
+    </ListPageShell>
   );
 }
 

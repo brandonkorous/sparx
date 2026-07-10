@@ -1,7 +1,7 @@
 import { CircleDollarSign, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -36,9 +36,10 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<CircleDollarSign className="h-5 w-5" />}
           title="Account credit"
           badge={
@@ -47,50 +48,55 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Per-customer credit balance — accrues from refunds, loyalty conversions, or manual grants. Spent at checkout via the pricing pipeline."
-          actions={
-            <EntityCreateButton
-              entityType="account-credit"
-              newHref="/commerce/account-credit/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
         />
-
-        <h3 className="text-xl font-semibold">Outstanding balances</h3>
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {balances.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<CircleDollarSign className="h-5 w-5" />}
-              title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
-              description="Grant credit with the New button, or have it auto-issued from a refund."
-              actions={
-                total === 0 ? (
-                  <EntityCreateButton
-                    entityType="account-credit"
-                    newHref="/commerce/account-credit/new"
-                    variant="outline"
-                    size="sm"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    New
-                  </EntityCreateButton>
-                ) : undefined
-              }
-            />
-          </Card>
-        ) : (
-          <AccountCreditList balances={balances} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <>
+          <h3 className="text-xl font-semibold">Outstanding balances</h3>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="account-credit"
+                newHref="/commerce/account-credit/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {balances.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<CircleDollarSign className="h-5 w-5" />}
+            title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
+            description="Grant credit with the New button, or have it auto-issued from a refund."
+            actions={
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="account-credit"
+                  newHref="/commerce/account-credit/new"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
+            }
+          />
+        </Card>
+      ) : (
+        <AccountCreditList balances={balances} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

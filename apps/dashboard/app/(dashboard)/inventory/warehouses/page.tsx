@@ -1,7 +1,7 @@
 import { Warehouse as WarehouseIcon, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -44,8 +44,8 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<WarehouseIcon className="h-5 w-5" />}
           title="Warehouses"
@@ -56,45 +56,50 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Inventory levels, lot batches, and serial units all sit beneath a warehouse. A tenant needs at least one active warehouse before stock can be reserved or sold. Dropship suppliers register as a virtual warehouse so the inventory model stays uniform."
-          actions={
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <ListToolbar
+          enableViewToggle
+          searchable={false}
+          primaryAction={
             <EntityCreateButton
               entityType="warehouse"
               newHref="/inventory/warehouses/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {warehouses.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<WarehouseIcon className="h-5 w-5" />}
-              title={total === 0 ? 'No warehouses yet' : 'No warehouses on this page'}
-              description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
-              actions={
-                <EntityCreateButton
-                  entityType="warehouse"
-                  newHref="/inventory/warehouses/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <WarehousesList rows={warehouses} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {warehouses.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<WarehouseIcon className="h-5 w-5" />}
+            title={total === 0 ? 'No warehouses yet' : 'No warehouses on this page'}
+            description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
+            actions={
+              <EntityCreateButton
+                entityType="warehouse"
+                newHref="/inventory/warehouses/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <WarehousesList rows={warehouses} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

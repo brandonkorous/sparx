@@ -4,7 +4,7 @@
 // over the existing authors. The card view is preserved as the `card` slot; the
 // table mirrors its key fields.
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { Plus, Users } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
@@ -36,9 +36,10 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           title="Authors"
           badge={
             <Badge color="neutral" variant="soft" size="sm">
@@ -46,51 +47,55 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Bylines for blog posts and editorial entries. An author is independent from a staff user — a user can write under multiple pen names, an author can outlive a user row."
-          actions={
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchable={false}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="author"
               newHref="/cms/authors/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar searchable={false} enableViewToggle />
-
-        {authors.length === 0 ? (
-          <Card className="bg-module bg-soft">
-            <EmptyState
-              icon={<Users className="h-5 w-5" />}
-              title="No authors yet"
-              description="Add your first author to start attributing blog posts and editorial entries."
-              actions={
-                <EntityCreateButton
-                  entityType="author"
-                  newHref="/cms/authors/new"
-                  variant="outline"
-                  size="sm"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <>
-            <p className="text-base-content/70 text-sm">
-              Click an author to edit name, slug, and bio.
-            </p>
-            <AuthorsList rows={authors} view={view} />
-          </>
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {authors.length === 0 ? (
+        <Card className="bg-module bg-soft">
+          <EmptyState
+            icon={<Users className="h-5 w-5" />}
+            title="No authors yet"
+            description="Add your first author to start attributing blog posts and editorial entries."
+            actions={
+              <EntityCreateButton
+                entityType="author"
+                newHref="/cms/authors/new"
+                variant="outline"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <>
+          <p className="text-base-content/70 mb-6 text-sm">
+            Click an author to edit name, slug, and bio.
+          </p>
+          <AuthorsList rows={authors} view={view} />
+        </>
+      )}
+    </ListPageShell>
   );
 }
 

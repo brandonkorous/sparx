@@ -1,5 +1,5 @@
 import { Inbox, MailPlus } from 'lucide-react';
-import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import { Badge, Card, EmptyState, ListPageShell, PageHeader } from '@sparx/ui';
 import { requireSession } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';
@@ -65,8 +65,8 @@ export default async function FormSubmissionsPage({ searchParams }: PageProps) {
   const { submissions, counts } = data;
 
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <ListPageShell
+      header={
         <PageHeader
           className="mb-0"
           icon={<Inbox className="h-5 w-5" />}
@@ -80,33 +80,35 @@ export default async function FormSubmissionsPage({ searchParams }: PageProps) {
           }
           description="Messages people send through the contact forms on your site. Every one is saved here — read it, reply, or clear out spam."
         />
-
-        {!crmEnabled ? <CrmUpsellBanner canActivate={canActivateCrm} /> : null}
-
-        <ListToolbar
-          searchable={false}
-          filters={[{ key: 'status', label: 'Status', options: STATUS_FILTER_OPTIONS }]}
-          enableSavedViews={false}
-        />
-
-        {submissions.length === 0 ? (
-          <Card padding="none">
-            <EmptyState
-              icon={<MailPlus className="h-5 w-5" />}
-              title={
-                status ? `No ${STATUS_LABEL[status].toLowerCase()} messages` : 'No submissions yet'
-              }
-              description={
-                status
-                  ? 'Try a different status above, or clear the filter to see everything.'
-                  : 'Add a Contact form block to a page on your site — messages people send through it will land right here.'
-              }
-            />
-          </Card>
-        ) : (
-          <SubmissionsList initial={submissions} status={status} />
-        )}
-      </Stack>
-    </Container>
+      }
+      toolbar={
+        <>
+          {!crmEnabled ? <CrmUpsellBanner canActivate={canActivateCrm} /> : null}
+          <ListToolbar
+            searchable={false}
+            filters={[{ key: 'status', label: 'Status', options: STATUS_FILTER_OPTIONS }]}
+            enableSavedViews={false}
+          />
+        </>
+      }
+    >
+      {submissions.length === 0 ? (
+        <Card padding="none">
+          <EmptyState
+            icon={<MailPlus className="h-5 w-5" />}
+            title={
+              status ? `No ${STATUS_LABEL[status].toLowerCase()} messages` : 'No submissions yet'
+            }
+            description={
+              status
+                ? 'Try a different status above, or clear the filter to see everything.'
+                : 'Add a Contact form block to a page on your site — messages people send through it will land right here.'
+            }
+          />
+        </Card>
+      ) : (
+        <SubmissionsList initial={submissions} status={status} />
+      )}
+    </ListPageShell>
   );
 }

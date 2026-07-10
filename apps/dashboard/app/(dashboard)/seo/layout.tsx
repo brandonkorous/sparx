@@ -5,5 +5,9 @@ import { ModuleProvider } from '@sparx/ui';
 // /seo/* route (the overview, the audits list, the per-entity report) via
 // ModuleProvider, matching how the gated module layouts set their accent.
 export default function SeoLayout({ children }: { children: React.ReactNode }) {
-  return <ModuleProvider module="seo">{children}</ModuleProvider>;
+  return (
+    <ModuleProvider module="seo" className="flex h-full min-h-0 flex-col">
+      {children}
+    </ModuleProvider>
+  );
 }

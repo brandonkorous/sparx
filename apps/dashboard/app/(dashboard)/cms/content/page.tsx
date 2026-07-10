@@ -10,7 +10,7 @@
 // single type. A content type links to its items as /cms/content?type=<key>.
 
 import Link from 'next/link';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { FileText } from 'lucide-react';
 
@@ -131,8 +131,8 @@ export default async function ContentListPage({ searchParams }: PageProps) {
     Boolean(type && type !== 'all') || Boolean(status && status !== 'all') || Boolean(q);
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
@@ -143,14 +143,9 @@ export default async function ContentListPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Every page, post, and entry across your content types."
-          actions={
-            <ContentNewButton
-              types={NEW_TYPES}
-              activeType={type && type !== 'all' ? type : undefined}
-            />
-          }
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchPlaceholder="Search by title or slug…"
           filters={[
@@ -159,43 +154,48 @@ export default async function ContentListPage({ searchParams }: PageProps) {
             ...siteFilter,
           ]}
           enableViewToggle
-        />
-
-        {entries.length === 0 ? (
-          <Card className="bg-module bg-soft">
-            <EmptyState
-              icon={<FileText className="h-5 w-5" />}
-              title={isFiltered ? 'No content matches your filter' : 'No content yet'}
-              description={
-                isFiltered
-                  ? 'Try clearing the filter or searching for a different term.'
-                  : 'Create your first page or post to get started.'
-              }
-              actions={
-                isFiltered ? (
-                  <Button variant="ghost" render={<Link href="/cms/content" />}>
-                    Clear filters
-                  </Button>
-                ) : (
-                  <ContentNewButton
-                    types={NEW_TYPES}
-                    activeType={type && type !== 'all' ? type : undefined}
-                  />
-                )
-              }
+          primaryAction={
+            <ContentNewButton
+              types={NEW_TYPES}
+              activeType={type && type !== 'all' ? type : undefined}
             />
-          </Card>
-        ) : (
-          <ContentSelectionTable
-            entries={entries}
-            view={view}
-            showType={showType}
-            typeName={Object.fromEntries(typeName)}
+          }
+        />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {entries.length === 0 ? (
+        <Card className="bg-module bg-soft">
+          <EmptyState
+            icon={<FileText className="h-5 w-5" />}
+            title={isFiltered ? 'No content matches your filter' : 'No content yet'}
+            description={
+              isFiltered
+                ? 'Try clearing the filter or searching for a different term.'
+                : 'Create your first page or post to get started.'
+            }
+            actions={
+              isFiltered ? (
+                <Button variant="ghost" render={<Link href="/cms/content" />}>
+                  Clear filters
+                </Button>
+              ) : (
+                <ContentNewButton
+                  types={NEW_TYPES}
+                  activeType={type && type !== 'all' ? type : undefined}
+                />
+              )
+            }
           />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+        </Card>
+      ) : (
+        <ContentSelectionTable
+          entries={entries}
+          view={view}
+          showType={showType}
+          typeName={Object.fromEntries(typeName)}
+        />
+      )}
+    </ListPageShell>
   );
 }

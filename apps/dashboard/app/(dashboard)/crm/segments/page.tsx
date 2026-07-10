@@ -1,7 +1,7 @@
 import { Layers, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -78,9 +78,10 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<Layers className="h-5 w-5" />}
           title="Segments"
           badge={
@@ -89,60 +90,59 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Live customer audiences updated incrementally as events flow. Email broadcasts and automations target segments by name; membership joins are O(1)."
-          actions={
-            <>
-              <RecomputeButton />
-              <EntityCreateButton
-                entityType="segment"
-                newHref="/crm/segments/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
-            </>
-          }
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[
             { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
           ]}
           enableViewToggle
+          actions={<RecomputeButton />}
+          primaryAction={
+            <EntityCreateButton
+              entityType="segment"
+              newHref="/crm/segments/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        {segments.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Layers className="h-5 w-5" />}
-              title={archived === 'archived' ? 'No archived segments' : 'No segments yet'}
-              description={
-                archived === 'archived'
-                  ? 'Archived segments stay out of the active list. Switch the filter to Active or All to see the rest.'
-                  : "Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
-              }
-              actions={
-                archived === 'archived' ? undefined : (
-                  <EntityCreateButton
-                    entityType="segment"
-                    newHref="/crm/segments/new"
-                    color="module"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    New
-                  </EntityCreateButton>
-                )
-              }
-            />
-          </Card>
-        ) : (
-          <SegmentsList segments={segments} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {segments.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Layers className="h-5 w-5" />}
+            title={archived === 'archived' ? 'No archived segments' : 'No segments yet'}
+            description={
+              archived === 'archived'
+                ? 'Archived segments stay out of the active list. Switch the filter to Active or All to see the rest.'
+                : "Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
+            }
+            actions={
+              archived === 'archived' ? undefined : (
+                <EntityCreateButton
+                  entityType="segment"
+                  newHref="/crm/segments/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              )
+            }
+          />
+        </Card>
+      ) : (
+        <SegmentsList segments={segments} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

@@ -1,7 +1,7 @@
 import { Briefcase, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -96,9 +96,10 @@ export default async function DealsPage({ searchParams }: PageProps) {
   const pipelineOptions = pipelines.map((p) => ({ value: p.id, label: p.name }));
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<Briefcase className="h-5 w-5" />}
           title="Deals"
           badge={
@@ -107,18 +108,9 @@ export default async function DealsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Every sales opportunity across all pipelines. Open a deal to attach orders and quotes; move it between stages on its pipeline's Kanban board, where stage probability feeds the forecast."
-          actions={
-            <EntityCreateButton
-              entityType="deal"
-              newHref="/crm/deals/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[
@@ -126,23 +118,33 @@ export default async function DealsPage({ searchParams }: PageProps) {
             { key: 'pipeline', label: 'Pipelines', options: pipelineOptions },
           ]}
           enableViewToggle
+          primaryAction={
+            <EntityCreateButton
+              entityType="deal"
+              newHref="/crm/deals/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        {rows.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Briefcase className="h-5 w-5" />}
-              title="No deals match"
-              description="Deals appear here as opportunities are created. Start one with New, or from a pipeline's Kanban board."
-            />
-          </Card>
-        ) : (
-          <DealsList deals={rows} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {rows.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Briefcase className="h-5 w-5" />}
+            title="No deals match"
+            description="Deals appear here as opportunities are created. Start one with New, or from a pipeline's Kanban board."
+          />
+        </Card>
+      ) : (
+        <DealsList deals={rows} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

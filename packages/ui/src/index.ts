@@ -395,6 +395,7 @@ export {
   type SelectionCardContext,
 } from './components/data/selection-list';
 export { Pager, type PagerProps } from './components/data/pager';
+export { ListPageShell, type ListPageShellProps } from './components/data/list-page-shell';
 export {
   ImportDialog,
   type ImportDialogProps,

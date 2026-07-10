@@ -8,7 +8,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // (revalidatePath('/dropship', 'layout')).
 export default function DropshipLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="dropship">
+    <ModuleProvider module="dropship" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="dropship">{children}</ModuleGate>
     </ModuleProvider>
   );

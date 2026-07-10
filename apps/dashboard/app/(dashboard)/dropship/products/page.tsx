@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { Package } from 'lucide-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -53,9 +53,10 @@ export default async function DropshipProductsPage({ searchParams }: PageProps) 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<Package className="h-5 w-5" />}
           title="Dropship products"
           badge={
@@ -65,30 +66,29 @@ export default async function DropshipProductsPage({ searchParams }: PageProps) 
           }
           description={`${totalImported} products imported from ${suppliers.length} supplier${suppliers.length !== 1 ? 's' : ''}`}
         />
-
-        <ListToolbar searchPlaceholder="Search products…" enableViewToggle />
-
-        {totalImported === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                title="No products imported yet"
-                description="Browse a supplier's catalog and import products to see them here."
-                actions={
-                  <Link href="/dropship/suppliers">
-                    <Button color="module" variant="soft">
-                      Browse suppliers
-                    </Button>
-                  </Link>
-                }
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <DropshipProductsList groups={productsBySupplier} view={view} />
-        )}
-      </div>
-    </div>
+      }
+      toolbar={<ListToolbar searchPlaceholder="Search products…" enableViewToggle />}
+    >
+      {totalImported === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              title="No products imported yet"
+              description="Browse a supplier's catalog and import products to see them here."
+              actions={
+                <Link href="/dropship/suppliers">
+                  <Button color="module" variant="soft">
+                    Browse suppliers
+                  </Button>
+                </Link>
+              }
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <DropshipProductsList groups={productsBySupplier} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

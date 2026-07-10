@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { GraduationCap, Plus } from 'lucide-react';
 import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
-import { ModuleProvider, PageHeader } from '@sparx/ui';
+import { ListPageShell, ModuleProvider, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -47,11 +47,21 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
       New bootcamp
     </Button>
   ) : undefined;
+  const newButtonToolbar = canHost ? (
+    <Button
+      render={<Link href="/partner/bootcamps/new" />}
+      color="module"
+      size="sm"
+      iconStart={<Plus className="h-4 w-4" />}
+    >
+      New bootcamp
+    </Button>
+  ) : undefined;
 
   return (
     <ModuleProvider module="partner">
-      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-6 py-10">
+      <ListPageShell
+        header={
           <PageHeader
             icon={<GraduationCap className="h-5 w-5" />}
             title="Bootcamps"
@@ -61,44 +71,45 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
               </Badge>
             }
             description="Host training cohorts on Sparx. On-platform RSVPs land as leads in your CRM; Certified partners can publish theirs to the public directory."
-            actions={newButton}
+            className="mb-0"
           />
-
-          {!canHost && (
-            <Card>
-              <CardBody>
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">
-                    Hosting unlocks when your partner account is active
-                  </p>
-                  <p className="text-base-content/70 text-sm">
-                    Your application is in review. Once you’re an active partner you’ll be able to
-                    create and run bootcamps here.
-                  </p>
-                </div>
-              </CardBody>
-            </Card>
-          )}
-
-          {bootcamps.length === 0 ? (
-            <Card>
-              <CardBody className="p-0">
-                <EmptyState
-                  icon={<GraduationCap className="h-5 w-5" />}
-                  title="No bootcamps yet"
-                  description="Create your first cohort. Save it as a draft, then publish when you’re ready to take registrations."
-                  actions={newButton}
-                />
-              </CardBody>
-            </Card>
-          ) : (
-            <>
-              <ListToolbar enableViewToggle searchable={false} />
-              <BootcampsList rows={bootcamps} view={view} />
-            </>
-          )}
-        </div>
-      </div>
+        }
+        toolbar={
+          <>
+            <ListToolbar enableViewToggle searchable={false} primaryAction={newButtonToolbar} />
+            {!canHost && (
+              <Card>
+                <CardBody>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium">
+                      Hosting unlocks when your partner account is active
+                    </p>
+                    <p className="text-base-content/70 text-sm">
+                      Your application is in review. Once you’re an active partner you’ll be able to
+                      create and run bootcamps here.
+                    </p>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+          </>
+        }
+      >
+        {bootcamps.length === 0 ? (
+          <Card>
+            <CardBody className="p-0">
+              <EmptyState
+                icon={<GraduationCap className="h-5 w-5" />}
+                title="No bootcamps yet"
+                description="Create your first cohort. Save it as a draft, then publish when you’re ready to take registrations."
+                actions={newButton}
+              />
+            </CardBody>
+          </Card>
+        ) : (
+          <BootcampsList rows={bootcamps} view={view} />
+        )}
+      </ListPageShell>
     </ModuleProvider>
   );
 }

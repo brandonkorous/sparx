@@ -1,15 +1,35 @@
 'use client';
 
 import * as React from 'react';
-import { LayoutGrid, RefreshCw, Rows3, Search, X } from 'lucide-react';
+import { LayoutGrid, MoreHorizontal, RefreshCw, Rows3 } from 'lucide-react';
+import {
+  Button,
+  Divider,
+  NativeSelect,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  SearchInput,
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@wizeworks/silicaui-react';
+import { useMediaQuery } from '../../hooks/use-media-query';
 import { cn } from '../../utils/cn';
-import { Input } from '../form/input';
-import { NativeSelect } from '../form/native-select';
 
 // ListToolbar — the standard toolbar above every Collection/List (docs/34 §7.1).
-// One row: a leading search box that grows, inline quick-filter selects, and a
-// right cluster (sort + Table/Cards view toggle). Active filters render as
-// removable chips below the bar.
+// One row: a leading saved-views control, a search box that grows, inline
+// quick-filter selects, and a right cluster (refresh + sort + secondary
+// actions + primary action + the Table/Cards toggle). Built entirely from
+// silicaui primitives (`SearchInput`/`NativeSelect`/`ToggleGroup`/`Button`/
+// `Popover`) — no hand-rolled inputs or buttons.
+//
+// Below `md`, only saved views, the search box, and `primaryAction` stay
+// inline — every other control (filters, refresh, sort, secondary `actions`,
+// the view toggle) collapses into a single "More" popover, so the row never
+// wraps into a multi-line mess on a phone. Saved views and `primaryAction`
+// stay outside the popover because they're navigation/primary controls
+// people reach for most — burying them behind an overflow menu would hurt
+// discoverability.
 //
 // Presentational + controlled only: every control reports changes through a
 // callback and this component holds no URL/router knowledge — so `@sparx/ui`
@@ -25,7 +45,7 @@ export interface ListToolbarOption {
 export interface ListToolbarFilter {
   /** The query-string key this filter writes (e.g. `status`). */
   key: string;
-  /** Human label — used for the "All {label}" default option and the chip. */
+  /** Human label — used for the "All {label}" default option. */
   label: string;
   options: ListToolbarOption[];
   /** Current value; `''` means no filter applied. */
@@ -46,32 +66,45 @@ export interface ListToolbarProps {
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
 
-  /** Quick-filter selects, rendered inline after the search box. */
+  /** Quick-filter selects, rendered inline after the search box on desktop;
+   *  collapse into the overflow popover below `md`. */
   filters?: ListToolbarFilter[];
   onFilterChange?: (key: string, value: string) => void;
 
-  /** Sort control, pinned right. */
+  /** Sort control. Collapses into the overflow popover below `md`. */
   sort?: ListToolbarSort;
   onSortChange?: (value: string) => void;
 
-  /** Table/Cards toggle, far right. Omit to hide it (single-rendering lists). */
+  /** Table/Cards toggle, far right on desktop. Omit to hide it (single-rendering
+   *  lists). Collapses into the overflow popover below `md`. */
   view?: ListToolbarView;
   onViewChange?: (view: ListToolbarView) => void;
 
-  /** Manual refresh, pinned to the right cluster. Omit to hide the button —
-   *  e.g. lists that already carry their own re-fetch action. The icon spins
-   *  briefly on click for feedback. */
+  /** Manual refresh. Omit to hide the button — e.g. lists that already carry
+   *  their own re-fetch action. The icon spins briefly on click for feedback.
+   *  Collapses into the overflow popover below `md`. */
   onRefresh?: () => void;
 
-  /** Optional leading slot for a saved-views control, rendered first in the row.
-   *  Presentational-agnostic: the dashboard wrapper supplies the control. */
+  /** Optional leading slot for a saved-views control, rendered first in the
+   *  row (before search) — always visible, like `primaryAction`, since it's
+   *  a navigation control (switching views) rather than a filter. Never
+   *  collapses into the mobile overflow popover. Presentational-agnostic:
+   *  the dashboard wrapper supplies the control. */
   views?: React.ReactNode;
 
-  className?: string;
-}
+  /** Secondary action(s) — e.g. Import/Export — rendered inline before
+   *  `primaryAction` on desktop. Collapses into the overflow popover below
+   *  `md` (unlike `primaryAction`, which always stays visible). */
+  actions?: React.ReactNode;
 
-function labelForValue(filter: ListToolbarFilter): string {
-  return filter.options.find((o) => o.value === filter.value)?.label ?? filter.value;
+  /** The primary page action — e.g. "New product" — pinned as the rightmost
+   *  element on desktop, and kept visible (next to search) on mobile even
+   *  though every other control collapses. Toolbars carry buttons, not the
+   *  page header: keep `PageHeader.actions` for secondary/utility actions,
+   *  and put the primary create action here. */
+  primaryAction?: React.ReactNode;
+
+  className?: string;
 }
 
 export function ListToolbar({
@@ -86,116 +119,142 @@ export function ListToolbar({
   onViewChange,
   onRefresh,
   views,
+  actions,
+  primaryAction,
   className,
 }: ListToolbarProps) {
-  const activeChips = filters.filter((f) => f.value !== '');
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  const hasOverflow =
+    filters.length > 0 || Boolean(onRefresh) || Boolean(sort) || Boolean(actions) || Boolean(view);
+
+  const filterSelects = filters.map((f) => (
+    <NativeSelect
+      key={f.key}
+      className="w-auto"
+      aria-label={f.label}
+      value={f.value}
+      onChange={(e) => onFilterChange?.(f.key, e.target.value)}
+    >
+      <option value="">All {f.label.toLowerCase()}</option>
+      {f.options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </NativeSelect>
+  ));
+
+  const sortSelect = sort && (
+    <NativeSelect
+      className="w-auto"
+      aria-label="Sort by"
+      value={sort.value}
+      onChange={(e) => onSortChange?.(e.target.value)}
+    >
+      {sort.options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </NativeSelect>
+  );
+
+  const viewToggle = view && (
+    <ToggleGroup
+      aria-label="List view"
+      value={[view]}
+      onValueChange={(next: string[]) => {
+        const v = next[0];
+        if (v) onViewChange?.(v as ListToolbarView);
+      }}
+    >
+      <ToggleGroupItem value="table" aria-label="Table view">
+        <Rows3 className="h-4 w-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="card" aria-label="Card view">
+        <LayoutGrid className="h-4 w-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
 
   return (
-    <div className={cn('mb-4 flex flex-col gap-2', className)}>
-      <div role="search" className="flex flex-wrap items-center gap-2">
-        {views}
+    <div role="search" className={cn('flex flex-wrap items-center gap-2', className)}>
+      {views}
 
-        {onSearchChange && (
-          <div className="relative min-w-48 flex-1">
-            <Search
-              aria-hidden
-              className="text-base-content/50 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2"
-            />
-            <Input
-              type="search"
-              className="pl-8"
-              placeholder={searchPlaceholder}
-              value={searchValue ?? ''}
-              onChange={(e) => onSearchChange(e.target.value)}
-              aria-label="Search"
-            />
-          </div>
-        )}
+      {onSearchChange && (
+        <div className="min-w-48 flex-1">
+          <SearchInput
+            placeholder={searchPlaceholder}
+            value={searchValue ?? ''}
+            onValueChange={onSearchChange}
+            aria-label="Search"
+          />
+        </div>
+      )}
 
-        {filters.map((f) => (
-          <NativeSelect
-            key={f.key}
-            className="w-auto"
-            aria-label={f.label}
-            value={f.value}
-            onChange={(e) => onFilterChange?.(f.key, e.target.value)}
-          >
-            <option value="">All {f.label.toLowerCase()}</option>
-            {f.options.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </NativeSelect>
-        ))}
+      {isDesktop ? (
+        <>
+          {filterSelects}
 
-        {(Boolean(sort) || Boolean(view) || Boolean(onRefresh)) && (
-          <div className="ml-auto flex items-center gap-2">
-            {onRefresh && <RefreshButton onRefresh={onRefresh} />}
+          {(Boolean(sort) ||
+            Boolean(view) ||
+            Boolean(onRefresh) ||
+            Boolean(actions) ||
+            Boolean(primaryAction)) && (
+            <div className="ml-auto flex items-center gap-2">
+              {onRefresh && <RefreshButton onRefresh={onRefresh} />}
 
-            {sort && (
-              <NativeSelect
-                className="w-auto"
-                aria-label="Sort by"
-                value={sort.value}
-                onChange={(e) => onSortChange?.(e.target.value)}
-              >
-                {sort.options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </NativeSelect>
-            )}
+              {sortSelect}
 
-            {view && (
-              <div
-                role="group"
-                aria-label="List view"
-                className="border-base-300 inline-flex shrink-0 rounded-md border p-0.5"
-              >
-                <ViewButton
-                  active={view === 'table'}
-                  label="Table view"
-                  onClick={() => onViewChange?.('table')}
+              {Boolean(sort) && Boolean(actions) && (
+                <Divider orientation="vertical" className="m-0 h-6 p-0" />
+              )}
+
+              {actions}
+              {primaryAction}
+
+              {(Boolean(actions) || Boolean(primaryAction)) && Boolean(view) && (
+                <Divider orientation="vertical" className="m-0 h-6 p-0" />
+              )}
+
+              {viewToggle}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="ml-auto flex items-center gap-2">
+          {primaryAction}
+
+          {hasOverflow && (
+            <Popover>
+              <PopoverTrigger>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  shape="square"
+                  aria-label="More list controls"
                 >
-                  <Rows3 className="h-4 w-4" />
-                </ViewButton>
-                <ViewButton
-                  active={view === 'card'}
-                  label="Card view"
-                  onClick={() => onViewChange?.('card')}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </ViewButton>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {activeChips.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          {activeChips.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => onFilterChange?.(f.key, '')}
-              className="text-base-content/70 hover:text-base-content border-base-300 bg-base-200 inline-flex items-center gap-1 rounded-full border py-1 pr-1.5 pl-2.5 text-xs transition-colors"
-            >
-              <span className="text-base-content/50">{f.label}:</span>
-              <span className="font-medium">{labelForValue(f)}</span>
-              <X aria-hidden className="h-3.5 w-3.5" />
-              <span className="sr-only">Remove {f.label} filter</span>
-            </button>
-          ))}
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="flex w-64 flex-col gap-2">
+                {filterSelects}
+                {sortSelect}
+                {onRefresh && <RefreshButton onRefresh={onRefresh} full />}
+                {actions}
+                {viewToggle}
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function RefreshButton({ onRefresh }: { onRefresh: () => void }) {
+function RefreshButton({ onRefresh, full }: { onRefresh: () => void; full?: boolean }) {
   const [spinning, setSpinning] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -209,37 +268,19 @@ function RefreshButton({ onRefresh }: { onRefresh: () => void }) {
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="sm"
+      shape={full ? undefined : 'square'}
+      block={full}
+      iconStart={
+        full ? <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} /> : undefined
+      }
       aria-label="Refresh"
       onClick={handleClick}
-      className="text-base-content/50 hover:text-base-content/70 border-base-300 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none"
     >
-      <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />
-    </button>
-  );
-}
-
-interface ViewButtonProps {
-  active: boolean;
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-function ViewButton({ active, label, onClick, children }: ViewButtonProps) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      aria-pressed={active}
-      onClick={onClick}
-      className={cn(
-        'flex h-7 w-7 items-center justify-center rounded transition-colors',
-        active ? 'bg-module bg-soft text-module' : 'text-base-content/50 hover:text-base-content/70'
-      )}
-    >
-      {children}
-    </button>
+      {full ? 'Refresh' : <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />}
+    </Button>
   );
 }

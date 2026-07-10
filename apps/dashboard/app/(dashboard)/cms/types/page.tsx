@@ -8,7 +8,7 @@
 // Collection/List surface (docs/34 §7): ListToolbar with a Table/Cards toggle
 // honoring the user's defaultListView.
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 import { Database, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
@@ -71,9 +71,10 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<Database className="h-5 w-5" />}
           title="Content types"
           badge={
@@ -82,44 +83,48 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="The authoring shapes behind your content — pages, posts, FAQs, and any custom type. Click a type to see its items, or open its schema to edit the fields."
-          actions={
+        />
+      }
+      toolbar={
+        <ListToolbar
+          enableViewToggle
+          searchable={false}
+          primaryAction={
             <EntityCreateButton
               entityType="content-type"
               newHref="/cms/types/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {types.length === 0 ? (
-          <Card className="bg-module bg-soft">
-            <EmptyState
-              icon={<Database className="h-5 w-5" />}
-              title="No content types yet"
-              description="Define a custom authoring shape — testimonials, case studies, events — with its own field schema."
-              actions={
-                <EntityCreateButton
-                  entityType="content-type"
-                  newHref="/cms/types/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <ContentTypesList types={types} counts={counts} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {types.length === 0 ? (
+        <Card className="bg-module bg-soft">
+          <EmptyState
+            icon={<Database className="h-5 w-5" />}
+            title="No content types yet"
+            description="Define a custom authoring shape — testimonials, case studies, events — with its own field schema."
+            actions={
+              <EntityCreateButton
+                entityType="content-type"
+                newHref="/cms/types/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <ContentTypesList types={types} counts={counts} view={view} />
+      )}
+    </ListPageShell>
   );
 }

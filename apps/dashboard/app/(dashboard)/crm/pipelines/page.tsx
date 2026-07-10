@@ -1,7 +1,7 @@
 import { KanbanSquare, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -51,9 +51,10 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<KanbanSquare className="h-5 w-5" />}
           title="Pipelines"
           badge={
@@ -62,45 +63,46 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Each pipeline has its own ordered stage list. Deals move between stages on the Kanban board; stage probability feeds the forecast."
-          actions={
-            <EntityCreateButton
-              entityType="pipeline"
-              newHref="/crm/pipelines/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[
             { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
           ]}
           enableViewToggle
+          primaryAction={
+            <EntityCreateButton
+              entityType="pipeline"
+              newHref="/crm/pipelines/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        {pipelines.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<KanbanSquare className="h-5 w-5" />}
-              title={archived === 'archived' ? 'No archived pipelines' : 'No pipelines yet'}
-              description={
-                archived === 'archived'
-                  ? 'Archived pipelines stay out of the active list. Switch the filter to Active or All to see the rest.'
-                  : 'A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured.'
-              }
-            />
-          </Card>
-        ) : (
-          <PipelinesList pipelines={pipelines} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {pipelines.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<KanbanSquare className="h-5 w-5" />}
+            title={archived === 'archived' ? 'No archived pipelines' : 'No pipelines yet'}
+            description={
+              archived === 'archived'
+                ? 'Archived pipelines stay out of the active list. Switch the filter to Active or All to see the rest.'
+                : 'A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured.'
+            }
+          />
+        </Card>
+      ) : (
+        <PipelinesList pipelines={pipelines} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

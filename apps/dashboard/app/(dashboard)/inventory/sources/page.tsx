@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { Database } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ListPager } from '../../_components/list-pager';
 import { parsePageParams } from '@/lib/pagination';
@@ -47,8 +47,8 @@ export default async function InventorySourcesPage({ searchParams }: PageProps) 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Database className="h-5 w-5" />}
           title="Sources"
@@ -58,26 +58,30 @@ export default async function InventorySourcesPage({ searchParams }: PageProps) 
             </Badge>
           }
           description="Inventory feeds that push stock counts into sparx."
-          actions={<NewSourceButton />}
+          className="mb-0"
         />
-
-        <ListToolbar searchPlaceholder="Search sources…" enableViewToggle />
-
-        {sources.length === 0 ? (
-          <Card>
-            <EmptyState
-              title="No inventory sources connected"
-              description="Connect a CSV feed or API source to sync stock levels."
-              actions={<NewSourceButton />}
-            />
-          </Card>
-        ) : (
-          <SourcesList sources={sources} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search sources…"
+          enableViewToggle
+          primaryAction={<NewSourceButton />}
+        />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {sources.length === 0 ? (
+        <Card>
+          <EmptyState
+            title="No inventory sources connected"
+            description="Connect a CSV feed or API source to sync stock levels."
+            actions={<NewSourceButton />}
+          />
+        </Card>
+      ) : (
+        <SourcesList sources={sources} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

@@ -20,7 +20,7 @@ import {
   Button,
   Card,
   CardContent,
-  Container,
+  ListPageShell,
   ModuleProvider,
   PageHeader,
   Stack,
@@ -123,46 +123,41 @@ export default async function BuilderBlueprintsPage({ searchParams }: PageProps)
   );
 
   return (
-    <ModuleProvider module="builder">
-      <Container size="xl">
-        <Stack gap={6} className="py-10">
+    <ModuleProvider module="builder" className="flex h-full min-h-0 flex-col">
+      <ListPageShell
+        header={
           <PageHeader
             icon={<LayoutTemplate className="h-5 w-5" />}
             title="Blueprints"
             description="The blueprints installed on your site. Review and go live, update to the latest version (keeping your edits), or delete to remove — and browse the marketplace to install more."
-            actions={browseButton}
+            className="mb-0"
           />
-
-          <ListToolbar searchable={false} enableViewToggle />
-
-          {installed.length === 0 ? (
-            <Card variant="module">
-              <CardContent>
-                <Stack gap={4} className="items-start py-2">
-                  <Text variant="muted">
-                    You haven&apos;t installed any blueprints yet. Install one from the marketplace
-                    to drop a fully themed starting point — site, pages, products, content, and
-                    emails — onto your site as drafts.
-                  </Text>
-                  <Button color="module" asChild>
-                    <Link href="/marketplace">
-                      Browse the marketplace
-                      <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </Stack>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
-              {/* The pager rides the installed list only — never over the empty
-                  state, and its total is now the installed count (eval Finding 8). */}
-              <ListPager total={total} />
-            </>
-          )}
-        </Stack>
-      </Container>
+        }
+        toolbar={<ListToolbar searchable={false} enableViewToggle actions={browseButton} />}
+        pager={<ListPager total={total} />}
+      >
+        {installed.length === 0 ? (
+          <Card variant="module">
+            <CardContent>
+              <Stack gap={4} className="items-start py-2">
+                <Text variant="muted">
+                  You haven&apos;t installed any blueprints yet. Install one from the marketplace to
+                  drop a fully themed starting point — site, pages, products, content, and emails —
+                  onto your site as drafts.
+                </Text>
+                <Button color="module" asChild>
+                  <Link href="/marketplace">
+                    Browse the marketplace
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Link>
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        ) : (
+          <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
+        )}
+      </ListPageShell>
     </ModuleProvider>
   );
 }

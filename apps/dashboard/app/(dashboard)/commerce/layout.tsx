@@ -8,7 +8,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // revalidatePath('/commerce', 'layout') so the next request re-checks the flag.
 export default function CommerceLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="commerce">
+    <ModuleProvider module="commerce" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="commerce">{children}</ModuleGate>
     </ModuleProvider>
   );

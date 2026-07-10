@@ -9,7 +9,7 @@
 
 import { Gauge } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -56,48 +56,50 @@ export default async function SeoAuditsPage({ searchParams }: PageProps) {
   const avg = count ? Math.round(rows.reduce((sum, r) => sum + r.score, 0) / count) : null;
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Gauge className="h-5 w-5" />}
           title="Audits"
           description="Every page, product, and collection scored — worst first, so you know where to start. Open any row for its full report; from there, jump to the editor to fix it."
-          actions={canScan ? <RescanButton /> : undefined}
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchable={false}
           filters={[{ key: 'type', label: 'Type', options: TYPE_OPTIONS }]}
           enableViewToggle
+          actions={canScan ? <RescanButton /> : undefined}
         />
+      }
+    >
+      {count === 0 ? (
+        <Card className="bg-module bg-soft">
+          <CardBody className="p-0">
+            <EmptyState
+              icon={<Gauge className="h-5 w-5" />}
+              title={typeFilter ? 'Nothing of this type scored yet' : 'No audits yet'}
+              description={
+                typeFilter
+                  ? 'Clear the filter, or run a scan to score every page, product, and collection.'
+                  : 'Run a scan to score every page, product, and collection across your site.'
+              }
+              actions={!typeFilter && canScan ? <RescanButton size="md" /> : undefined}
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <>
+          <p className="text-base-content/70 mb-6 text-sm">
+            {count} page{count === 1 ? '' : 's'} scored
+            {avg != null ? ` · average ${avg}/100` : ''}
+          </p>
 
-        {count === 0 ? (
-          <Card className="bg-module bg-soft">
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<Gauge className="h-5 w-5" />}
-                title={typeFilter ? 'Nothing of this type scored yet' : 'No audits yet'}
-                description={
-                  typeFilter
-                    ? 'Clear the filter, or run a scan to score every page, product, and collection.'
-                    : 'Run a scan to score every page, product, and collection across your site.'
-                }
-                actions={!typeFilter && canScan ? <RescanButton size="md" /> : undefined}
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <>
-            <p className="text-base-content/70 text-sm">
-              {count} page{count === 1 ? '' : 's'} scored
-              {avg != null ? ` · average ${avg}/100` : ''}
-            </p>
-
-            <SeoAuditList rows={rows} view={view} />
-          </>
-        )}
-      </div>
-    </div>
+          <SeoAuditList rows={rows} view={view} />
+        </>
+      )}
+    </ListPageShell>
   );
 }
 

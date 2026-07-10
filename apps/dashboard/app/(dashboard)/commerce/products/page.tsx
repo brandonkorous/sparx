@@ -1,7 +1,7 @@
 import { PackageOpen, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
@@ -166,8 +166,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<PackageOpen className="h-5 w-5" />}
           title="Products"
@@ -177,61 +177,62 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Your catalog. Variants, options, fitment, and configurator templates hang off each product. Draft → Active publishes to the storefront; archived rows stay searchable but render as 410."
-          actions={
-            <>
-              <ProductsImportExport />
+          className="mb-0"
+        />
+      }
+      toolbar={
+        <>
+          <ListToolbar
+            searchPlaceholder="Search title, handle, or vendor…"
+            filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }, ...siteFilter]}
+            sortOptions={SORT_OPTIONS}
+            enableViewToggle
+            actions={<ProductsImportExport />}
+            primaryAction={
               <EntityCreateButton
                 entityType="product"
                 newHref="/commerce/products/new"
                 color="module"
+                size="sm"
                 leftIcon={<Plus className="h-4 w-4" />}
               >
                 New
               </EntityCreateButton>
-            </>
-          }
-        />
-
-        <ListToolbar
-          searchPlaceholder="Search title, handle, or vendor…"
-          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }, ...siteFilter]}
-          sortOptions={SORT_OPTIONS}
-          enableViewToggle
-        />
-
-        {latestRevert ? <BulkPriceRevertBanner op={latestRevert} /> : null}
-
-        {products.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<PackageOpen className="h-5 w-5" />}
-              title={total === 0 ? 'No products yet' : 'No products match these filters'}
-              description={
-                total === 0
-                  ? 'Start your catalog with a single product. Variants, options, and fitment can be added after the basics are saved.'
-                  : 'Adjust filters or clear the search to broaden the results.'
-              }
-              actions={
-                total === 0 ? (
-                  <EntityCreateButton
-                    entityType="product"
-                    newHref="/commerce/products/new"
-                    color="module"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    New
-                  </EntityCreateButton>
-                ) : undefined
-              }
-            />
-          </Card>
-        ) : (
-          <ProductsSelectionTable products={products} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+            }
+          />
+          {latestRevert ? <BulkPriceRevertBanner op={latestRevert} /> : null}
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {products.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<PackageOpen className="h-5 w-5" />}
+            title={total === 0 ? 'No products yet' : 'No products match these filters'}
+            description={
+              total === 0
+                ? 'Start your catalog with a single product. Variants, options, and fitment can be added after the basics are saved.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
+            actions={
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="product"
+                  newHref="/commerce/products/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
+            }
+          />
+        </Card>
+      ) : (
+        <ProductsSelectionTable products={products} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

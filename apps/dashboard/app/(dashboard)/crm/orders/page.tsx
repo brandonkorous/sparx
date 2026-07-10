@@ -1,6 +1,6 @@
 import { ShoppingCart, Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -139,9 +139,10 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<ShoppingCart className="h-5 w-5" />}
           title="Orders"
           badge={
@@ -150,18 +151,9 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Customer orders — placed, paid, fulfilled, delivered, refunded. Linked back to customer records and (optionally) to a sales deal via the deal_orders join."
-          actions={
-            <EntityCreateButton
-              entityType="order"
-              newHref="/crm/orders/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
-          }
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchPlaceholder="Search order #, customer, or item…"
           filters={[
@@ -171,23 +163,33 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             ...siteFilter,
           ]}
           enableViewToggle
+          primaryAction={
+            <EntityCreateButton
+              entityType="order"
+              newHref="/crm/orders/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
-
-        {orders.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<ShoppingCart className="h-5 w-5" />}
-              title="No orders match"
-              description="Orders placed through your storefront, B2B portal, admin, or a connected sales channel (TikTok Shop, …) appear here. Adjust filters above or place a new order manually."
-            />
-          </Card>
-        ) : (
-          <OrdersSelectionTable orders={orders} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {orders.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<ShoppingCart className="h-5 w-5" />}
+            title="No orders match"
+            description="Orders placed through your storefront, B2B portal, admin, or a connected sales channel (TikTok Shop, …) appear here. Adjust filters above or place a new order manually."
+          />
+        </Card>
+      ) : (
+        <OrdersSelectionTable orders={orders} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

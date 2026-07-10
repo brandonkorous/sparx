@@ -8,7 +8,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // (revalidatePath('/ai', 'layout')).
 export default function AiLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="ai">
+    <ModuleProvider module="ai" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="ai">{children}</ModuleGate>
     </ModuleProvider>
   );

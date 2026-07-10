@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowLeftRight, Plus } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -40,8 +40,8 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<ArrowLeftRight className="h-5 w-5" />}
           title="Transfers"
@@ -51,65 +51,72 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
             </Badge>
           }
           description="Move stock between warehouses. Shipping leaves the source and holds the units in transit; receiving lands them at the destination — so total inventory stays correct the whole way."
-          actions={
-            <EntityCreateButton
-              entityType="transfer"
-              newHref="/inventory/transfers/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New transfer
-            </EntityCreateButton>
-          }
+          className="mb-0"
         />
-
-        <div className="flex flex-row flex-wrap gap-2">
-          {STATUS_FILTERS.map((f) => {
-            const active = f.value === status;
-            const href = f.value
-              ? `/inventory/transfers?status=${f.value}`
-              : '/inventory/transfers';
-            return (
-              <Button
-                key={f.value || 'all'}
-                size="sm"
-                color={active ? 'module' : 'neutral'}
-                variant={active ? 'solid' : 'outline'}
-                render={<Link href={href} aria-current={active ? 'page' : undefined} />}
-              >
-                {f.label}
-              </Button>
-            );
-          })}
-        </div>
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        {transfers.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<ArrowLeftRight className="h-5 w-5" />}
-              title={status ? `No ${status.replace('_', ' ')} transfers` : 'No transfers yet'}
-              description="Move stock between two warehouses. Build the lines, ship to send the units into transit, then receive them at the destination — every leg is recorded in the movement ledger."
-              actions={
-                <EntityCreateButton
-                  entityType="transfer"
-                  newHref="/inventory/transfers/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
+      }
+      toolbar={
+        <>
+          <div className="flex flex-row flex-wrap gap-2">
+            {STATUS_FILTERS.map((f) => {
+              const active = f.value === status;
+              const href = f.value
+                ? `/inventory/transfers?status=${f.value}`
+                : '/inventory/transfers';
+              return (
+                <Button
+                  key={f.value || 'all'}
+                  size="sm"
+                  color={active ? 'module' : 'neutral'}
+                  variant={active ? 'solid' : 'outline'}
+                  render={<Link href={href} aria-current={active ? 'page' : undefined} />}
                 >
-                  New transfer
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <TransfersList rows={transfers} view={view} />
-        )}
+                  {f.label}
+                </Button>
+              );
+            })}
+          </div>
 
-        <ListPager total={total} />
-      </div>
-    </div>
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={
+              <EntityCreateButton
+                entityType="transfer"
+                newHref="/inventory/transfers/new"
+                color="module"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New transfer
+              </EntityCreateButton>
+            }
+          />
+        </>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {transfers.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<ArrowLeftRight className="h-5 w-5" />}
+            title={status ? `No ${status.replace('_', ' ')} transfers` : 'No transfers yet'}
+            description="Move stock between two warehouses. Build the lines, ship to send the units into transit, then receive them at the destination — every leg is recorded in the movement ledger."
+            actions={
+              <EntityCreateButton
+                entityType="transfer"
+                newHref="/inventory/transfers/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New transfer
+              </EntityCreateButton>
+            }
+          />
+        </Card>
+      ) : (
+        <TransfersList rows={transfers} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

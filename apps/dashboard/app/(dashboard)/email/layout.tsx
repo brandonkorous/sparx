@@ -9,7 +9,7 @@ import { ModuleGate } from '../../../components/module-gate';
 // next request re-checks.
 export default function EmailLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ModuleProvider module="email">
+    <ModuleProvider module="email" className="flex h-full min-h-0 flex-col">
       <ModuleGate module="email">{children}</ModuleGate>
     </ModuleProvider>
   );

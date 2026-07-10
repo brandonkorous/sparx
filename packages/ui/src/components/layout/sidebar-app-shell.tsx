@@ -221,7 +221,7 @@ export function SidebarAppShell({
               id="main-content"
               tabIndex={-1}
               style={{ flexBasis: `${100 - detailWidth.value}%` }}
-              className="min-w-0 overflow-y-auto focus:outline-none"
+              className="relative min-w-0 overflow-y-auto focus:outline-none"
             >
               {children}
             </div>
@@ -229,7 +229,7 @@ export function SidebarAppShell({
             <aside
               aria-label={detailMobileLabel}
               style={{ flexBasis: `${detailWidth.value}%` }}
-              className="border-base-300 bg-base-100 min-w-0 overflow-y-auto border-l"
+              className="border-base-300 bg-base-100 relative min-w-0 overflow-y-auto border-l"
             >
               {detail}
             </aside>
@@ -239,7 +239,7 @@ export function SidebarAppShell({
             ref={contentRef}
             id="main-content"
             tabIndex={-1}
-            className="min-h-0 flex-1 overflow-y-auto focus:outline-none"
+            className="relative min-h-0 flex-1 overflow-y-auto focus:outline-none"
           >
             {children}
           </div>

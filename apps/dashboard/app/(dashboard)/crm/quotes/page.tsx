@@ -1,7 +1,7 @@
 import { FileText, Plus } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -52,9 +52,10 @@ export default async function QuotesPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<FileText className="h-5 w-5" />}
           title="Quotes"
           badge={
@@ -63,39 +64,40 @@ export default async function QuotesPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Sales quotes — draft, submitted, accepted, declined, expired, converted to an order. Accepted quotes convert atomically to a new Order via the quote detail page."
-          actions={
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchable={false}
+          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="quote"
               newHref="/crm/quotes/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
               New
             </EntityCreateButton>
           }
         />
-
-        <ListToolbar
-          searchable={false}
-          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
-          enableViewToggle
-        />
-
-        {quotes.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<FileText className="h-5 w-5" />}
-              title="No quotes match"
-              description="Quotes appear here once created. Start one from a deal or directly here."
-            />
-          </Card>
-        ) : (
-          <QuotesList quotes={quotes} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      {quotes.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<FileText className="h-5 w-5" />}
+            title="No quotes match"
+            description="Quotes appear here once created. Start one from a deal or directly here."
+          />
+        </Card>
+      ) : (
+        <QuotesList quotes={quotes} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 

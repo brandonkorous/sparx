@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Truck } from 'lucide-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
@@ -59,8 +59,8 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Truck className="h-5 w-5" />}
           title="Suppliers"
@@ -70,38 +70,42 @@ export default async function DropshipSuppliersPage({ searchParams }: Props) {
             </Badge>
           }
           description="Connect suppliers to source and import products for dropshipping."
-          actions={<NewSupplierButton />}
+          className="mb-0"
         />
-
-        <ListToolbar searchPlaceholder="Search suppliers…" enableViewToggle />
-
-        {suppliers.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                title={q ? `No suppliers match "${q}"` : 'No suppliers connected'}
-                description={
-                  q
-                    ? 'Try a different search term.'
-                    : 'Connect your first supplier to start importing dropship products.'
-                }
-                actions={!q ? <NewSupplierButton /> : undefined}
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <SuppliersList
-            suppliers={suppliers}
-            view={view}
-            sites={sites}
-            vendors={vendors}
-            showSites={sites.length > 1}
-          />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search suppliers…"
+          enableViewToggle
+          primaryAction={<NewSupplierButton />}
+        />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {suppliers.length === 0 ? (
+        <Card>
+          <CardBody className="p-0">
+            <EmptyState
+              title={q ? `No suppliers match "${q}"` : 'No suppliers connected'}
+              description={
+                q
+                  ? 'Try a different search term.'
+                  : 'Connect your first supplier to start importing dropship products.'
+              }
+              actions={!q ? <NewSupplierButton /> : undefined}
+            />
+          </CardBody>
+        </Card>
+      ) : (
+        <SuppliersList
+          suppliers={suppliers}
+          view={view}
+          sites={sites}
+          vendors={vendors}
+          showSites={sites.length > 1}
+        />
+      )}
+    </ListPageShell>
   );
 }
 

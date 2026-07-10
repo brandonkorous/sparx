@@ -72,7 +72,7 @@ export function SavedViewsMenu({ target, paramKeys }: SavedViewsMenuProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button color="module" variant="outline" size="sm">
           <ListFilter className="h-4 w-4" />
           Views{views.length > 0 ? ` · ${views.length}` : ''}
         </Button>

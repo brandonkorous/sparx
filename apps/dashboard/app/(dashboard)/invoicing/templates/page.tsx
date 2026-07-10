@@ -1,6 +1,6 @@
 import { LayoutTemplate } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -34,16 +34,20 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      className="mx-auto w-full max-w-screen-lg"
+      header={
         <PageHeader
           icon={<LayoutTemplate className="h-5 w-5" />}
           title="Print templates"
           description="Design how invoices and estimates print. Every document renders with the built-in default until you publish a template; the default template, once published, drives every document's print + PDF."
+          className="mb-0"
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
+      }
+      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+      pager={<ListPager total={total} />}
+    >
+      <div className="flex flex-col gap-6">
         <TemplatesList rows={templates} view={view} />
 
         <p className="text-base-content/70 text-xs">
@@ -51,10 +55,8 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
           builders). The visual template editor is coming; today the default ships ready to publish,
           and you can preview any template against sample data.
         </p>
-
-        <ListPager total={total} />
       </div>
-    </div>
+    </ListPageShell>
   );
 }
 

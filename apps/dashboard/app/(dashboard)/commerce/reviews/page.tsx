@@ -1,7 +1,7 @@
 import { MessageSquare, Star } from 'lucide-react';
 
 import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -62,8 +62,8 @@ export default async function ReviewsPage({
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Star className="h-5 w-5" />}
           title="Reviews"
@@ -75,35 +75,36 @@ export default async function ReviewsPage({
               invalidates.
             </>
           }
+          className="mb-0"
         />
-
+      }
+      toolbar={
         <ListToolbar
           searchPlaceholder="Search by review text, author, or product…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
-
-        {rows.length === 0 ? (
-          <Card className="bg-module bg-soft">
-            <EmptyState
-              icon={<MessageSquare className="h-5 w-5" />}
-              title="Nothing here"
-              description="Reviews land here as customers submit them on storefront PDPs."
-            />
-          </Card>
-        ) : (
-          <>
-            <p className="text-base-content/70 text-sm">
-              {labelFor(filter)} — click a review to read the full body + media, respond as the
-              merchant, or moderate.
-            </p>
-            <ReviewsList rows={rows} view={view} />
-          </>
-        )}
-
-        {paged ? <ListPager total={total} /> : null}
-      </div>
-    </div>
+      }
+      pager={paged ? <ListPager total={total} /> : undefined}
+    >
+      {rows.length === 0 ? (
+        <Card className="bg-module bg-soft">
+          <EmptyState
+            icon={<MessageSquare className="h-5 w-5" />}
+            title="Nothing here"
+            description="Reviews land here as customers submit them on storefront PDPs."
+          />
+        </Card>
+      ) : (
+        <>
+          <p className="text-base-content/70 text-sm">
+            {labelFor(filter)} — click a review to read the full body + media, respond as the
+            merchant, or moderate.
+          </p>
+          <ReviewsList rows={rows} view={view} />
+        </>
+      )}
+    </ListPageShell>
   );
 }
 

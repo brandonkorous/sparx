@@ -6,7 +6,7 @@
 
 import { Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 import { api } from '@/lib/api-rest-client';
 import { parsePageParams } from '@/lib/pagination';
@@ -47,9 +47,10 @@ export default async function RedirectsPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           title="Redirects"
           badge={
             <Badge color="neutral" variant="soft" size="sm">
@@ -57,25 +58,30 @@ export default async function RedirectsPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Forward old URLs to new ones. Loops and chains over 8 hops are rejected at insert."
-          actions={
-            <div className="flex flex-row gap-2">
-              <ImportRedirectsButton />
-              <EntityCreateButton
-                entityType="redirect"
-                newHref="/cms/redirects/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
-            </div>
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchable={false}
+          enableViewToggle
+          actions={<ImportRedirectsButton />}
+          primaryAction={
+            <EntityCreateButton
+              entityType="redirect"
+              newHref="/cms/redirects/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
           }
         />
-        <ListToolbar searchable={false} enableViewToggle />
-        <RedirectsList rows={redirects} view={view} />
-        <ListPager total={total} />
-      </div>
-    </div>
+      }
+      pager={<ListPager total={total} />}
+    >
+      <RedirectsList rows={redirects} view={view} />
+    </ListPageShell>
   );
 }
 

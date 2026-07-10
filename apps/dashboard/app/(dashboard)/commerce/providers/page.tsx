@@ -5,7 +5,7 @@ import type {
   ProviderKind,
   ProviderMetadata,
 } from '@sparx/commerce-schemas';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 import { Badge } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
@@ -77,8 +77,8 @@ export default async function ProvidersPage({ searchParams }: PageProps) {
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           icon={<Plug className="h-5 w-5" />}
           title="Providers"
@@ -88,13 +88,13 @@ export default async function ProvidersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Pick a tax / shipping / subscription provider per environment. sparx-branded options wrap a real provider underneath (Shippo for sparx Shipping) so a merchant who doesn't want to manage carrier accounts can still transact. Sandbox installs run real provider calls against the provider's test environment. Looking to accept payments? That's in Finance → Payments."
+          className="mb-0"
         />
-
-        <ListToolbar enableViewToggle searchable={false} />
-
-        <ProvidersLists groups={groups} view={view} />
-      </div>
-    </div>
+      }
+      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+    >
+      <ProvidersLists groups={groups} view={view} />
+    </ListPageShell>
   );
 }
 

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Users, Plus, UserPlus } from 'lucide-react';
 
 import { Badge, Button, Card, EmptyState } from '@wizeworks/silicaui-react';
-import { PageHeader } from '@sparx/ui';
+import { ListPageShell, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
@@ -138,8 +138,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-none px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
           className="mb-0"
           icon={<Users className="h-5 w-5" />}
@@ -150,12 +150,45 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
             </Badge>
           }
           description="Customer intelligence for the whole platform — orders, segments, deals, and activity."
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search name, email, company…"
+          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }, ...siteFilter]}
+          sortKey="sort"
+          sortOptions={SORT_OPTIONS}
+          enableViewToggle
           actions={
             <>
-              <Button variant="outline" render={<Link href="/crm/duplicates" />}>
+              <Button variant="outline" size="sm" render={<Link href="/crm/duplicates" />}>
                 Find duplicates
               </Button>
               <CustomersImportExport />
+            </>
+          }
+          primaryAction={
+            <EntityCreateButton
+              entityType="customer"
+              newHref="/crm/customers/new"
+              color="module"
+              size="sm"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
+        />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {customers.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<UserPlus className="h-5 w-5" />}
+            title="No customers match"
+            description="Adjust the filters above, or add a new customer manually."
+            actions={
               <EntityCreateButton
                 entityType="customer"
                 newHref="/crm/customers/new"
@@ -164,43 +197,13 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
               >
                 New
               </EntityCreateButton>
-            </>
-          }
-        />
-
-        <ListToolbar
-          searchPlaceholder="Search name, email, company…"
-          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }, ...siteFilter]}
-          sortKey="sort"
-          sortOptions={SORT_OPTIONS}
-          enableViewToggle
-        />
-
-        {customers.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<UserPlus className="h-5 w-5" />}
-              title="No customers match"
-              description="Adjust the filters above, or add a new customer manually."
-              actions={
-                <EntityCreateButton
-                  entityType="customer"
-                  newHref="/crm/customers/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
-              }
-            />
-          </Card>
-        ) : (
-          <CustomersSelectionTable customers={customers} view={view} />
-        )}
-
-        <ListPager total={total} />
-      </div>
-    </div>
+            }
+          />
+        </Card>
+      ) : (
+        <CustomersSelectionTable customers={customers} view={view} />
+      )}
+    </ListPageShell>
   );
 }
 
