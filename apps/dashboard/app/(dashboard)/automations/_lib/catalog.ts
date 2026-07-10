@@ -107,7 +107,11 @@ export interface ScanEntityDef {
 export const SCAN_ENTITIES: readonly ScanEntityDef[] = [
   { entity: 'customer', label: 'Customers', module: 'crm' },
   { entity: 'b2b_account', label: 'B2B accounts', module: 'b2b' },
-  { entity: 'billing_document', label: 'Billing documents (quotes, invoices…)', module: 'invoicing' },
+  {
+    entity: 'billing_document',
+    label: 'Billing documents (quotes, invoices…)',
+    module: 'invoicing',
+  },
 ];
 
 export function moduleForScanEntity(entity: string): ModuleSlug {

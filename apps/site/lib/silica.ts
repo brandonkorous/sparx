@@ -71,6 +71,12 @@ function starterPageDtoForSlug(slug: string): PublishedSilicaPageDto | null {
   return page ? starterPageDto(page.name, STARTER_SLUG(page.slug), page.root) : null;
 }
 
+/** The starter frame DTO (brand-derived theme → null). Built lazily, only on the
+ *  fallback path, so a published tenant never pays to stamp the starter tree. */
+function starterFrameDto(): PublishedSilicaFrameDto {
+  return { frame: starterFrame(), symbols: {}, theme: null };
+}
+
 /** The default per-record composite for a record type (PDP / collection), or null. */
 function starterCollectionDto(recordType: string): PublishedSilicaPageDto | null {
   if (recordType === 'commerce.product') {
@@ -106,28 +112,28 @@ const NO_STORE: RequestInit = { cache: 'no-store' };
 
 /** The published site FRAME + site-global symbols + authored theme — one read for
  *  everything the root layout needs. It renders the chrome once, wrapping every page
- *  at its Outlet. Always resolves (never throws): `frame` is null until a silica
- *  layout is published, so the layout decides chrome cleanly; `theme` is null until
- *  an author saves one, so the brand-derived theme keeps rendering. */
+ *  at its Outlet. Falls back to the code starter frame when the tenant has published
+ *  no silica layout, so the storefront ALWAYS wears silica chrome (a fresh tenant is
+ *  live, not blank); `theme` stays null so the brand-derived theme keeps rendering. */
 export async function getPublishedSilicaFrame(
   tenantSlug: string
 ): Promise<PublishedSilicaFrameDto> {
-  const empty: PublishedSilicaFrameDto = { frame: null, symbols: {}, theme: null };
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return empty;
+    if (!res.ok || 'error' in json || !json.data.frame) return starterFrameDto();
     return json.data;
   } catch {
-    return empty;
+    return starterFrameDto();
   }
 }
 
-/** The property's PUBLISHED silica home body (the page whose slug is `/`), or null
- *  so the storefront root falls through to its legacy composition. */
+/** The property's PUBLISHED silica home body (the page whose slug is `/`). Falls back
+ *  to the code starter home when none is published, so a fresh tenant's homepage is
+ *  the editable silica starter rather than a blank/legacy composition. */
 export async function getPublishedSilicaHome(
   tenantSlug: string
 ): Promise<PublishedSilicaPageDto | null> {
@@ -137,16 +143,18 @@ export async function getPublishedSilicaHome(
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return null;
+    if (!res.ok || 'error' in json) return starterHomeDto();
     return json.data;
   } catch {
-    return null;
+    return starterHomeDto();
   }
 }
 
-/** The PUBLISHED silica page body owning a storefront slug, or null when none does
- *  (the caller keeps its legacy render path). The slug is the joined path segments
- *  (`shop`, `about/team`); api-rest matches it against the stored `/`-prefixed slug. */
+/** The PUBLISHED silica page body owning a storefront slug. Falls back to a code
+ *  starter page (shop/about/contact) when the tenant has published none — but only
+ *  for those starter slugs; any OTHER slug (a CMS article) returns null so the caller
+ *  keeps its legacy content path. The slug is the joined path segments (`shop`,
+ *  `about/team`); api-rest matches it against the stored `/`-prefixed slug. */
 export async function getPublishedSilicaPage(
   tenantSlug: string,
   slug: string
@@ -157,18 +165,19 @@ export async function getPublishedSilicaPage(
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return null;
+    if (!res.ok || 'error' in json) return starterPageDtoForSlug(slug);
     return json.data;
   } catch {
-    return null;
+    return starterPageDtoForSlug(slug);
   }
 }
 
 /** The PUBLISHED silica COLLECTION template for a record type (docs/118 Stage 6 —
- *  the generic per-record router). `recordType` is `commerce.product` / `cms.blog_post`;
+ *  the generic per-record router). `recordType` is `commerce.product` / `commerce.collection`;
  *  the optional `recordId` lets a per-record template override win over the type
- *  default. Null when no silica collection template is published — the caller keeps
- *  its legacy per-record render path (the sparx builder collection / section template). */
+ *  default. Falls back to the code composite (`productDetailPage` / `collectionDetailPage`)
+ *  when the tenant has published no template for a KNOWN record type, so every product
+ *  and collection renders on silica out of the box; an unknown record type returns null. */
 export async function getPublishedSilicaCollection(
   tenantSlug: string,
   recordType: string,
@@ -181,9 +190,9 @@ export async function getPublishedSilicaCollection(
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return null;
+    if (!res.ok || 'error' in json) return starterCollectionDto(recordType);
     return json.data;
   } catch {
-    return null;
+    return starterCollectionDto(recordType);
   }
 }

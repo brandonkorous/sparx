@@ -105,13 +105,7 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
   );
 }
 
-export function DetachQuoteButton({
-  dealId,
-  documentId,
-}: {
-  dealId: string;
-  documentId: string;
-}) {
+export function DetachQuoteButton({ dealId, documentId }: { dealId: string; documentId: string }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
 

@@ -15,7 +15,11 @@ import { CreditCard, FileOutput, Trash2 } from 'lucide-react';
 import { useConfirm, toast } from '@sparx/ui';
 import { Button } from '@wizeworks/silicaui-react';
 
-import { convertToOrderAction, deleteDocumentAction, paymentLinkAction } from '../../../document-actions';
+import {
+  convertToOrderAction,
+  deleteDocumentAction,
+  paymentLinkAction,
+} from '../../../document-actions';
 
 interface DocumentActionsBarProps {
   documentId: string;

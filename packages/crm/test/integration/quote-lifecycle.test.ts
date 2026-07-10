@@ -195,8 +195,8 @@ describe('b2b quote lifecycle (BillingDocument on the b2b-quotes workflow)', () 
     expect(created).toHaveLength(1);
 
     // Idempotency — a document can only convert to one order.
-    await expect(
-      billingDocumentConversionService.convertToOrder(test.ctx, doc.id)
-    ).rejects.toThrow(/already been converted/);
+    await expect(billingDocumentConversionService.convertToOrder(test.ctx, doc.id)).rejects.toThrow(
+      /already been converted/
+    );
   });
 });
