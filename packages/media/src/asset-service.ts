@@ -96,6 +96,26 @@ export interface UploadImageBytesInput {
   height?: number;
 }
 
+// Non-image document types — INTERNAL server-side writes only (shipping
+// labels, generated PDFs). Deliberately NOT exposed through the public MCP
+// image tools, which stay pinned to ALLOWED_IMAGE_MIME above.
+export const ALLOWED_DOCUMENT_MIME: ReadonlySet<string> = new Set(['application/pdf', 'image/png']);
+
+// Shipping labels are small (tens of KB); this is generous headroom without
+// opening the door to arbitrary large uploads through this path.
+export const MAX_UPLOAD_DOCUMENT_BYTES = 5 * 1024 * 1024;
+
+export interface UploadDocumentBytesInput {
+  data: Buffer;
+  mimeType: string;
+  filename: string;
+}
+
+export interface CreatedDocument {
+  assetId: string;
+  status: string;
+}
+
 export interface ImageFromUrlInput {
   url: string;
   alt?: string;
@@ -167,6 +187,49 @@ export async function createImageAssetFromBytes(
     url: resolveMediaUrl(created.id, ctx.tenantSlug),
     status: nextStatus,
   };
+}
+
+/** Server-side write for non-image documents (shipping labels today).
+ *  Unlike createImageAssetFromBytes, there is no transcode step — the
+ *  bytes ARE the deliverable — so the asset is 'ready' immediately and no
+ *  media.uploaded event fans out (the image transcoder wouldn't know what
+ *  to do with a PDF). Not reachable from the public MCP image tools. */
+export async function createDocumentAssetFromBytes(
+  ctx: MediaWriteContext,
+  input: UploadDocumentBytesInput
+): Promise<CreatedDocument> {
+  if (!ALLOWED_DOCUMENT_MIME.has(input.mimeType)) {
+    throw new MediaValidationError(
+      `Unsupported document type "${input.mimeType}". Allowed: ${[...ALLOWED_DOCUMENT_MIME].sort().join(', ')}.`
+    );
+  }
+  if (input.data.length === 0) throw new MediaValidationError('Document is empty (0 bytes).');
+  if (input.data.length > MAX_UPLOAD_DOCUMENT_BYTES) {
+    throw new MediaValidationError(
+      `Document is ${(input.data.length / 1024).toFixed(0)} KiB; the upload cap is ${MAX_UPLOAD_DOCUMENT_BYTES / 1024} KiB.`
+    );
+  }
+
+  const storage = getStorage();
+  const created = await withTenant({ tenantId: ctx.tenantId }, async (tx) => {
+    const row = await tx.mediaAsset.create({
+      data: {
+        tenantId: ctx.tenantId,
+        key: '',
+        originalFilename: safeFilename(input.filename),
+        mimeType: input.mimeType,
+        byteSize: BigInt(input.data.length),
+        status: 'uploading',
+      },
+      select: { id: true },
+    });
+    const key = originalKey(ctx.tenantId, row.id, input.filename);
+    await storage.writeObject(key, input.mimeType, input.data);
+    await tx.mediaAsset.update({ where: { id: row.id }, data: { key, status: 'ready' } });
+    return { id: row.id };
+  });
+
+  return { assetId: created.id, status: 'ready' };
 }
 
 // ── Proxied upload — the two-phase, byte-free-through-the-model path ─────────

@@ -44,6 +44,7 @@ import {
   INVOICING_OVERDUE_7,
   INVOICING_OVERDUE_14,
   INVOICING_OVERDUE_30,
+  INVOICING_RECEIPT_ON_PAID,
   INVOICING_REMINDER_3D,
 } from './invoicing.js';
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
@@ -59,9 +60,9 @@ export interface SystemAutomationSeed {
 
 /**
  * Every platform-seeded system automation, grouped by owning module — the full
- * catalog (docs/90 §3b). 24 seeds: the no-email defaults (tags, tasks, notes,
+ * catalog (docs/90 §3b). 26 seeds: the no-email defaults (tags, tasks, notes,
  * internal staff alerts, the paused inventory auto-reorder) + the locked B2B
- * dunning + the 13 email-sending defaults that reference a provisioned
+ * dunning + the 14 email-sending defaults that reference a provisioned
  * Builder-email template by `key`. An email seed
  * installs on its OWNING module's activation (a commerce tenant gets abandoned-cart
  * the moment commerce is on); its send is then gated by the `email.send_campaign`
@@ -95,6 +96,7 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'invoicing', spec: INVOICING_OVERDUE_7 },
   { module: 'invoicing', spec: INVOICING_OVERDUE_14 },
   { module: 'invoicing', spec: INVOICING_OVERDUE_30 },
+  { module: 'invoicing', spec: INVOICING_RECEIPT_ON_PAID },
   // Chat
   { module: 'chat', spec: CHAT_NO_RESPONSE_ALERT },
   { module: 'chat', spec: CHAT_SATISFACTION_SURVEY },

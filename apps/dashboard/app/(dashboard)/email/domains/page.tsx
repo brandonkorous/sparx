@@ -20,6 +20,7 @@ interface PageProps {
 export default async function DomainsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, { data: domains, meta }] = await Promise.all([
     getUserPreferences(),
@@ -27,6 +28,7 @@ export default async function DomainsPage({ searchParams }: PageProps) {
       `/v1/email/domains?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -46,7 +48,7 @@ export default async function DomainsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search domain…"
           enableViewToggle
           primaryAction={
             <EntityCreateButton
@@ -66,18 +68,24 @@ export default async function DomainsPage({ searchParams }: PageProps) {
       {domains.length === 0 ? (
         <EmptyState
           icon={<Globe className="h-5 w-5" />}
-          title="No sending domains yet"
-          description="Add your first domain with the New button to start sending from your own brand."
+          title={q ? 'No sending domains match this search' : 'No sending domains yet'}
+          description={
+            q
+              ? 'Clear the search to see every sending domain.'
+              : 'Add your first domain with the New button to start sending from your own brand.'
+          }
           actions={
-            <EntityCreateButton
-              entityType="sending-domain"
-              newHref="/email/domains/new"
-              variant="outline"
-              size="sm"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
+            q ? undefined : (
+              <EntityCreateButton
+                entityType="sending-domain"
+                newHref="/email/domains/new"
+                variant="outline"
+                size="sm"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            )
           }
         />
       ) : (

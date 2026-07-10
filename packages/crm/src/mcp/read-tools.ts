@@ -14,7 +14,7 @@ import {
   segmentService,
   activityService,
   orderService,
-  quoteService,
+  billingDocumentService,
   reportingService,
 } from '../services';
 
@@ -207,13 +207,15 @@ export const getOrder: McpToolDefinition = {
   run: (ctx, input) => orderService.get(ctx, (input as { orderId: string }).orderId),
 };
 
+// A quote IS a BillingDocument on the system `b2b-quotes` workflow (docs/87
+// convergence) — the tool name/scope stay stable for existing MCP clients.
 export const getQuote: McpToolDefinition = {
   name: 'get_quote',
-  description: 'Fetch a single quote by id, including items + lifecycle status.',
+  description: 'Fetch a single quote by id, including lines + lifecycle stage.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ quoteId: z.string().uuid() }),
-  run: (ctx, input) => quoteService.get(ctx, (input as { quoteId: string }).quoteId),
+  run: (ctx, input) => billingDocumentService.get(ctx, (input as { quoteId: string }).quoteId),
 };
 
 export const getCrmMetrics: McpToolDefinition = {

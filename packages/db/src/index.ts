@@ -73,7 +73,7 @@ export type {
   BillingDocumentTemplate,
   Deal,
   DealOrder,
-  DealQuote,
+  DealBillingDocument,
   CrmActivity,
   Task,
   Segment,
@@ -87,9 +87,6 @@ export type {
   OrderRefundItem,
   OrderFulfillment,
   OrderFulfillmentItem,
-  // CRM — quotes
-  Quote,
-  QuoteItem,
   // Commerce — catalog
   Product,
   ProductTranslation,

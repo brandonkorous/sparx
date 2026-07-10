@@ -84,6 +84,8 @@ export const dealMutationResolvers = {
     return true;
   },
 
+  // `quoteId` stays the GraphQL field name for schema stability — the linked
+  // entity is now a BillingDocument (quotes ARE billing documents).
   attachQuoteToDeal: async (
     _p: unknown,
     args: { dealId: string; quoteId: string },
@@ -91,7 +93,10 @@ export const dealMutationResolvers = {
   ) => {
     requireRole(ctx.request, 'editor');
     await requireCrmModule(ctx.request);
-    await dealService.attachQuote(toCrmContext(ctx.request), args);
+    await dealService.attachDocument(toCrmContext(ctx.request), {
+      dealId: args.dealId,
+      documentId: args.quoteId,
+    });
     return true;
   },
 
@@ -102,7 +107,10 @@ export const dealMutationResolvers = {
   ) => {
     requireRole(ctx.request, 'editor');
     await requireCrmModule(ctx.request);
-    await dealService.detachQuote(toCrmContext(ctx.request), args);
+    await dealService.detachDocument(toCrmContext(ctx.request), {
+      dealId: args.dealId,
+      documentId: args.quoteId,
+    });
     return true;
   },
 };

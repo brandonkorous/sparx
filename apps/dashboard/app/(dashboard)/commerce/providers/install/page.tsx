@@ -56,6 +56,7 @@ export default async function InstallProviderPage({
       configSchemaJson={metadata.configSchemaJson}
       sandboxAvailable={metadata.sandboxAvailable}
       webhookPathTemplate={metadata.webhookPathTemplate}
+      secretFields={metadata.secretFields}
     />
   );
 }

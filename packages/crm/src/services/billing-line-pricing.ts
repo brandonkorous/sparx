@@ -2,8 +2,8 @@
 //
 // Resolves a line's unit price from its line-type `pricingMode`. The markup and
 // marked-up pass-through paths reuse the shipped, shared markup engine
-// (quote-markup.resolveAndPriceLine → @sparx/commerce-schemas) so document-line
-// markup never drifts from catalog/quote markup; the labor / flat / catalog
+// (document-line-markup.resolveAndPriceLine → @sparx/commerce-schemas) so
+// document-line markup never drifts from catalog markup; the labor / flat / catalog
 // paths are straight arithmetic. Cost-derived modes stamp the reproducibility
 // snapshot (`appliedMarkup`) onto the line. Runs inside the caller's tx so cost
 // basis + rule reads stay RLS-scoped and atomic.
@@ -12,7 +12,7 @@ import type { Prisma } from '@sparx/db';
 import type { LineMarkupInput, LineMarkupSnapshot } from '@sparx/commerce-schemas';
 
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { resolveAndPriceLine } from './quote-markup';
+import { resolveAndPriceLine } from './document-line-markup';
 
 export type BillingPricingMode = 'catalog' | 'markup' | 'labor' | 'flat' | 'pass_through';
 

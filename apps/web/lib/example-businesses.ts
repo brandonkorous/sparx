@@ -304,7 +304,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       recipients: '6,420',
       openRate: '52.4%',
       clickRate: '7.1%',
-      transactional: { event: 'order.created', subject: 'Your Flax & Fern order is confirmed' },
+      transactional: { event: 'order.placed', subject: 'Your Flax & Fern order is confirmed' },
       previewLine: 'Hi Dana — your order is confirmed and heading out the door.',
     },
     b2b: {
@@ -405,7 +405,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       recipients: '3,180',
       openRate: '48.9%',
       clickRate: '6.3%',
-      transactional: { event: 'order.created', subject: 'Pickup confirmed — see you Saturday' },
+      transactional: { event: 'order.placed', subject: 'Pickup confirmed — see you Saturday' },
       previewLine: 'Hi Marcus — your pickup is set. Here is what is ready this week.',
     },
     b2b: {
@@ -511,7 +511,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       recipients: '2,260',
       openRate: '54.7%',
       clickRate: '8.2%',
-      transactional: { event: 'fulfillment.created', subject: 'Your Waggle order has shipped' },
+      transactional: { event: 'order.fulfilled', subject: 'Your Waggle order has shipped' },
       previewLine: 'Hi Priya — good news, your collar and tag are on the way.',
     },
     b2b: {
@@ -727,7 +727,10 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       recipients: '1,140',
       openRate: '61.3%',
       clickRate: '11.4%',
-      transactional: { event: 'quote.created', subject: 'Your quote from Atlas Supply is ready' },
+      transactional: {
+        event: 'b2b.quote.responded',
+        subject: 'Your quote from Atlas Supply is ready',
+      },
       previewLine: 'Hi Reyes — your requested quote is attached, valid for 30 days.',
     },
     b2b: {

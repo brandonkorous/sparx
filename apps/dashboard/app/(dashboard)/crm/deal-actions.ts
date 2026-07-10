@@ -27,7 +27,7 @@ interface DealOrderLink {
 
 interface DealQuoteLink {
   dealId: string;
-  quoteId: string;
+  documentId: string;
 }
 
 interface AttachOrderInputShape {
@@ -37,7 +37,7 @@ interface AttachOrderInputShape {
 
 interface AttachQuoteInputShape {
   dealId: string;
-  quoteId: string;
+  documentId: string;
 }
 
 export async function createDealAction(input: unknown): Promise<ActionResult<{ id: string }>> {
@@ -108,26 +108,26 @@ export async function detachOrderFromDealAction(
 
 export async function attachQuoteToDealAction(
   input: unknown
-): Promise<ActionResult<{ dealId: string; quoteId: string }>> {
+): Promise<ActionResult<{ dealId: string; documentId: string }>> {
   return restAction(async () => {
-    const { dealId, quoteId } = input as AttachQuoteInputShape;
+    const { dealId, documentId } = input as AttachQuoteInputShape;
     const link = await api.post<DealQuoteLink>(`/v1/crm/deals/${dealId}/quotes`, {
-      quote_id: quoteId,
+      document_id: documentId,
     });
     revalidatePath(`/crm/deals/${link.dealId}`);
-    revalidatePath(`/crm/quotes/${link.quoteId}`);
-    return { dealId: link.dealId, quoteId: link.quoteId };
+    revalidatePath(`/invoicing/documents/${link.documentId}`);
+    return { dealId: link.dealId, documentId: link.documentId };
   });
 }
 
 export async function detachQuoteFromDealAction(
   input: unknown
-): Promise<ActionResult<{ dealId: string; quoteId: string }>> {
+): Promise<ActionResult<{ dealId: string; documentId: string }>> {
   return restAction(async () => {
-    const { dealId, quoteId } = input as AttachQuoteInputShape;
-    await api.delete<void>(`/v1/crm/deals/${dealId}/quotes/${quoteId}`);
+    const { dealId, documentId } = input as AttachQuoteInputShape;
+    await api.delete<void>(`/v1/crm/deals/${dealId}/quotes/${documentId}`);
     revalidatePath(`/crm/deals/${dealId}`);
-    revalidatePath(`/crm/quotes/${quoteId}`);
-    return { dealId, quoteId };
+    revalidatePath(`/invoicing/documents/${documentId}`);
+    return { dealId, documentId };
   });
 }

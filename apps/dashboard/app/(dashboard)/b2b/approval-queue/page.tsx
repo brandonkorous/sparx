@@ -38,13 +38,14 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 export default async function ApprovalQueuePage({ searchParams }: PageProps) {
   const params = await searchParams;
   // account_id stays URL-readable for deep links from an account page; it isn't
-  // a toolbar control. The queue has no text search or status facet on its
-  // endpoint, so the toolbar surfaces only the view toggle.
+  // a toolbar control.
   const accountId = stringParam(params.account_id);
+  const q = stringParam(params.q);
   const { skip, take } = parsePageParams(params);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (accountId) query.set('account_id', accountId);
+  if (q) query.set('q', q);
 
   const [prefs, { data: orders, meta }] = await Promise.all([
     getUserPreferences(),
@@ -75,7 +76,9 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
           className="mb-0"
         />
       }
-      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+      toolbar={
+        <ListToolbar enableViewToggle searchPlaceholder="Search order #, customer, or company…" />
+      }
       pager={<ListPager total={total} />}
     >
       {orders.length === 0 ? (
@@ -83,8 +86,12 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
           <CardBody className="p-0">
             <EmptyState
               icon={<CheckCircle className="h-5 w-5" />}
-              title="No orders pending approval"
-              description="B2B portal orders that exceed an approval threshold will appear here."
+              title={q ? 'No orders match this search' : 'No orders pending approval'}
+              description={
+                q
+                  ? 'Clear the search to see every order awaiting approval.'
+                  : 'B2B portal orders that exceed an approval threshold will appear here.'
+              }
             />
           </CardBody>
         </Card>

@@ -15,6 +15,8 @@
 
 import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
+import { ButtonLink } from './button-link';
+
 import type {
   PublicFitmentDimension,
   PublicFitmentDomain,
@@ -111,13 +113,9 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
         <Button type="submit" color="primary" style={{ flex: 1 }}>
           Apply
         </Button>
-        <Button
-          render={<a href={action} aria-label="Clear filters" />}
-          color="neutral"
-          variant="ghost"
-        >
+        <ButtonLink href={action} aria-label="Clear filters" color="neutral" variant="ghost">
           Clear
-        </Button>
+        </ButtonLink>
       </div>
     </form>
   );

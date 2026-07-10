@@ -23,14 +23,15 @@ import type {
 
 const SAMPLE_AT = '2026-01-02T00:00:00.000Z';
 
-// The sample Vehicle domain's shape: Make → Model → Engine (the level tree),
-// narrowed by Year (a range axis). Shared by the sample product's fitment rows
-// and the sample domain map so the PDP fitment table renders generically.
-const SAMPLE_VEHICLE_DIMENSIONS: PublicFitmentDimension[] = [
-  { key: 'make', label: 'Make', kind: 'level' },
-  { key: 'model', label: 'Model', kind: 'level' },
-  { key: 'engine', label: 'Engine', kind: 'level' },
-  { key: 'year', label: 'Year', kind: 'range', unit: 'year' },
+// The sample Compatibility domain's shape: Series → Size (the level tree),
+// narrowed by Capacity (a range axis). Shared by the sample product's fitment
+// rows and the sample domain map so the PDP fitment table renders generically —
+// deliberately a neutral consumer-goods domain, not a vehicle tree, since the
+// same table serves every vertical (pets, apparel, homeware…).
+const SAMPLE_COMPAT_DIMENSIONS: PublicFitmentDimension[] = [
+  { key: 'series', label: 'Series', kind: 'level' },
+  { key: 'size', label: 'Size', kind: 'level' },
+  { key: 'capacity', label: 'Capacity', kind: 'range', unit: 'oz' },
 ];
 
 const first = (v: string | string[] | undefined): string | undefined =>
@@ -70,14 +71,14 @@ function sampleListItem(i: number): PublicProductListItem {
 
 export const SAMPLE_PRODUCT: PublicProduct = {
   id: 'sample-product',
-  title: 'Sample Product — Pro HD Oil Filter',
+  title: 'Sample Product — Stoneware Pour-Over Dripper',
   handle: 'sample-product',
   description:
     'This is sample product copy. Use it to design your product page layout — the sections, ' +
     'their order, and how everything looks — before you have real products. Every published ' +
     'product renders through this same layout.',
   vendor: 'sparx Sample Co.',
-  productType: 'Filters',
+  productType: 'Coffee & Tea',
   tags: ['sample', 'featured'],
   priceMinCents: 2499,
   priceMaxCents: 3499,
@@ -93,41 +94,41 @@ export const SAMPLE_PRODUCT: PublicProduct = {
   updatedAt: SAMPLE_AT,
   fulfillmentType: 'physical',
   weightGrams: 450,
-  dimensions: { lengthMm: 120, widthMm: 90, heightMm: 90 },
+  dimensions: { lengthMm: 120, widthMm: 120, heightMm: 95 },
   options: [
     {
-      id: 'sample-opt-grade',
-      name: 'Grade',
-      displayType: 'pill',
+      id: 'sample-opt-finish',
+      name: 'Finish',
+      displayType: 'swatch',
       position: 0,
       values: [
-        { id: 'sample-val-std', value: 'Standard', swatchHex: null, position: 0 },
-        { id: 'sample-val-hd', value: 'Heavy Duty', swatchHex: null, position: 1 },
+        { id: 'sample-val-white', value: 'Matte White', swatchHex: '#F3F1EC', position: 0 },
+        { id: 'sample-val-charcoal', value: 'Charcoal', swatchHex: '#3A3A3A', position: 1 },
       ],
     },
   ],
   variants: [
     {
-      id: 'sample-var-std',
-      sku: 'SAMPLE-STD',
-      title: 'Standard',
+      id: 'sample-var-white',
+      sku: 'SAMPLE-WHITE',
+      title: 'Matte White',
       priceCents: 2499,
       compareAtPriceCents: 3999,
       isDefault: true,
       inventoryPolicy: 'deny',
-      optionValueIds: ['sample-val-std'],
+      optionValueIds: ['sample-val-white'],
       available: 42,
       inStock: true,
     },
     {
-      id: 'sample-var-hd',
-      sku: 'SAMPLE-HD',
-      title: 'Heavy Duty',
+      id: 'sample-var-charcoal',
+      sku: 'SAMPLE-CHARCOAL',
+      title: 'Charcoal',
       priceCents: 3499,
       compareAtPriceCents: null,
       isDefault: false,
       inventoryPolicy: 'deny',
-      optionValueIds: ['sample-val-hd'],
+      optionValueIds: ['sample-val-charcoal'],
       available: 8,
       inStock: true,
     },
@@ -136,22 +137,22 @@ export const SAMPLE_PRODUCT: PublicProduct = {
   fitments: [
     {
       id: 'sample-fit-1',
-      domainSlug: 'vehicle',
-      domainLabel: 'Vehicle',
-      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
-      nodeName: '6.7L Power Stroke',
-      nodePath: ['Ford', 'F-250', '6.7L Power Stroke'],
-      ranges: [{ dimensionKey: 'year', min: 2017, max: 2022 }],
+      domainSlug: 'compatibility',
+      domainLabel: 'Compatibility',
+      dimensions: SAMPLE_COMPAT_DIMENSIONS,
+      nodeName: 'Everyday Two-Cup',
+      nodePath: ['Everyday', 'Two-Cup'],
+      ranges: [{ dimensionKey: 'capacity', min: 12, max: 20 }],
       notes: null,
     },
     {
       id: 'sample-fit-2',
-      domainSlug: 'vehicle',
-      domainLabel: 'Vehicle',
-      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
-      nodeName: '6.7L Cummins',
-      nodePath: ['Ram', '2500', '6.7L Cummins'],
-      ranges: [{ dimensionKey: 'year', min: 2019, max: 2023 }],
+      domainSlug: 'compatibility',
+      domainLabel: 'Compatibility',
+      dimensions: SAMPLE_COMPAT_DIMENSIONS,
+      nodeName: 'Everyday Four-Cup',
+      nodePath: ['Everyday', 'Four-Cup'],
+      ranges: [{ dimensionKey: 'capacity', min: 24, max: 34 }],
       notes: null,
     },
   ],
@@ -171,7 +172,7 @@ export const SAMPLE_PRODUCT_EXTRAS: {
         id: 'sample-review-1',
         rating: 5,
         title: 'Exactly as described',
-        body: 'Great quality and fast shipping. Fit perfectly and looks even better in person.',
+        body: 'Great quality and fast shipping. Brews a clean, even cup and looks even better in person.',
         author: 'Alex P.',
         verifiedPurchase: true,
         helpfulCount: 4,
@@ -197,13 +198,13 @@ export const SAMPLE_PRODUCT_EXTRAS: {
     {
       id: 'sample-q-1',
       displayName: 'Jordan M.',
-      body: 'Does this fit a 2020 model? Want to be sure before I order.',
+      body: 'Will this work with my two-cup press? Want to be sure before I order.',
       createdAt: SAMPLE_AT,
       helpfulCount: 6,
       answers: [
         {
           id: 'sample-a-1',
-          body: 'Yes — it covers 2017–2022. The Heavy Duty grade is a great choice for towing.',
+          body: 'Yes — it fits the Everyday two-cup and four-cup sizes. The Matte White finish is our most popular.',
           isOfficial: true,
           createdAt: SAMPLE_AT,
         },
@@ -212,20 +213,20 @@ export const SAMPLE_PRODUCT_EXTRAS: {
     {
       id: 'sample-q-2',
       displayName: 'Sam R.',
-      body: 'How often should this be replaced?',
+      body: 'Is it dishwasher safe?',
       createdAt: SAMPLE_AT,
       helpfulCount: 2,
       answers: [],
     },
   ],
   fitmentDomainsBySlug: {
-    vehicle: {
-      id: 'sample-domain-vehicle',
-      slug: 'vehicle',
-      displayName: 'Vehicle',
+    compatibility: {
+      id: 'sample-domain-compatibility',
+      slug: 'compatibility',
+      displayName: 'Compatibility',
       description: null,
       iconKey: null,
-      dimensions: SAMPLE_VEHICLE_DIMENSIONS,
+      dimensions: SAMPLE_COMPAT_DIMENSIONS,
     },
   },
 };

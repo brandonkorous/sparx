@@ -1,18 +1,23 @@
 // dealService — attach/detach + forecast math.
 //
-// Locked decision #5: deals attach to orders/quotes via join tables, never
-// via columns on orders/quotes. attachOrder writes deal_orders + emits the
-// matching event; detachOrder deletes the join row. Orders themselves are
-// never mutated.
+// Locked decision #5: deals attach to orders/billing-documents via join tables,
+// never via columns on orders/documents. attachOrder writes deal_orders +
+// emits the matching event; detachOrder deletes the join row. Orders/documents
+// themselves are never mutated. A quote is a BillingDocument on the system
+// `b2b-quotes` workflow (docs/87 §15 convergence), so attachDocument is what
+// the old attachQuote exercised.
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
+import { withTenant } from '@sparx/db';
+
 import {
+  b2bQuoteService,
+  billingDocumentService,
   customerService,
   dealService,
   orderService,
   pipelineService,
-  quoteService,
 } from '../../src/services/index.js';
 import { resetPlatformBusForTesting } from '../../src/consumers/platform-bus.js';
 import { CrmConflictError, CrmNotFoundError } from '../../src/errors.js';
@@ -140,7 +145,7 @@ describe('deal attach + forecast', () => {
     ).rejects.toBeInstanceOf(CrmNotFoundError);
   });
 
-  it('attachQuote / listAttachedQuotes — symmetrical to orders', async () => {
+  it('attachDocument / listAttachedDocuments — symmetrical to orders (a quote is a BillingDocument)', async () => {
     const deal = await dealService.create(test.ctx, {
       pipelineId,
       stageId: leadStageId,
@@ -148,14 +153,18 @@ describe('deal attach + forecast', () => {
       title: 'Quote-attached deal',
       value: 1,
     });
-    const quote = await quoteService.create(test.ctx, {
+    const draftStage = await withTenant(test.ctx, (tx) =>
+      b2bQuoteService.b2bQuoteDraftStage(tx, test.ctx.tenantId)
+    );
+    const quote = await billingDocumentService.create(test.ctx, {
+      workflowId: draftStage.workflowId,
+      stageId: draftStage.id,
       customerId,
-      items: [{ sku: 'Q-1', name: 'Quote item', quantity: 1, unitPrice: 1 }],
     });
 
-    await dealService.attachQuote(test.ctx, { dealId: deal.id, quoteId: quote.id });
-    const attached = await dealService.listAttachedQuotes(test.ctx, deal.id);
-    expect(attached.map((q) => q.id)).toEqual([quote.id]);
+    await dealService.attachDocument(test.ctx, { dealId: deal.id, documentId: quote.id });
+    const attached = await dealService.listAttachedDocuments(test.ctx, deal.id);
+    expect(attached.map((d) => d.id)).toEqual([quote.id]);
   });
 
   it('forecast — sums weighted open value across months', async () => {

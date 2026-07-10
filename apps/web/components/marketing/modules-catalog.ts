@@ -95,7 +95,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Invoicing',
     title: 'Quotes, invoices, payment links.',
     description:
-      'Send quotes and invoices, take card or ACH, track what is paid — tied to the same customers.',
+      'Send estimates, quotes, and invoices, take card or ACH, track what is paid — tied to the same customers.',
     price: 19,
     includedWith: ['Commerce', 'B2B'],
   },

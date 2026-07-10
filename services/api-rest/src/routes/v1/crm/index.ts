@@ -15,7 +15,6 @@ import taskRoutes from './tasks.js';
 import segmentRoutes from './segments.js';
 import reportRoutes from './reports.js';
 import orderRoutes from './orders.js';
-import quoteRoutes from './quotes.js';
 import crmImportExportRoutes from './import.js';
 import { toCrmContext } from '../../../lib/crm-context.js';
 
@@ -29,7 +28,6 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   await app.register(segmentRoutes);
   await app.register(reportRoutes);
   await app.register(orderRoutes);
-  await app.register(quoteRoutes);
   await app.register(crmImportExportRoutes);
 
   // Idempotent seed for tenants that just enabled CRM. Same functions also

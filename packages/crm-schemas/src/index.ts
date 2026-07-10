@@ -18,7 +18,6 @@ export * from './evaluate-segment-rule';
 export * from './orders';
 export * from './order-payments';
 export * from './order-fulfillments';
-export * from './quotes';
 export * from './invoicing';
 export * from './common-commerce';
 export * from './common';

@@ -10,6 +10,7 @@ import { AR_STATUS_VARIANT, formatMoney } from '../../_components/format';
 import { StageBar } from './_components/stage-bar';
 import { LineGrid, type MarkupRuleSummary } from './_components/line-grid';
 import { PaymentsPanel } from './_components/payments-panel';
+import { DocumentActionsBar } from './_components/document-actions-bar';
 
 interface LineMarkupSnapshot {
   ruleId: string | null;
@@ -64,6 +65,7 @@ interface BillingDocument {
   finalizedAt: string | null;
   voidedAt: string | null;
   lines: DocumentLine[];
+  convertedOrder: { id: string; orderNumber: string | null } | null;
 }
 interface Stage {
   id: string;
@@ -166,22 +168,31 @@ export async function DocumentEditorContent({ id }: Props) {
             <Badge color={AR_STATUS_VARIANT[doc.status] ?? 'neutral'}>{doc.status}</Badge>
             {partyName && <p className="text-base-content/70 text-sm">{partyName}</p>}
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            color="module"
-            iconStart={<Printer className="h-4 w-4" />}
-            render={
-              <a
-                href={`/invoicing/documents/${doc.id}/print`}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Print"
-              />
-            }
-          >
-            Print
-          </Button>
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <DocumentActionsBar
+              documentId={doc.id}
+              canConvertToOrder={currentStage?.stageType === 'committed'}
+              convertedOrder={doc.convertedOrder}
+              canDelete={currentStage?.stageType === 'draft'}
+              balance={Number(doc.balance)}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              color="module"
+              iconStart={<Printer className="h-4 w-4" />}
+              render={
+                <a
+                  href={`/invoicing/documents/${doc.id}/print`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Print"
+                />
+              }
+            >
+              Print
+            </Button>
+          </div>
         </div>
       </div>
 

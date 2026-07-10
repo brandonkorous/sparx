@@ -8,7 +8,10 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
+import { SilicaBody } from '@/components/silica-chrome';
 import { getCollection, listCollectionProducts } from '@/lib/commerce';
+import { getPublishedSilicaCollection } from '@/lib/silica';
+import { buildSilicaHost, collectionToSilicaRecord } from '@/lib/silica-data';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import {
@@ -72,6 +75,35 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   if (!collection) {
     if (!sample) await applyRedirect(site.slug, `/collections/${handle}`);
     notFound();
+  }
+
+  // The silica engine's published `commerce.collection` template wins first (docs/118
+  // Stage 6): it renders the collection through the shared silica walker — a header
+  // over a grid of THIS collection's products, injected as the `collection` object
+  // scope (with its products pre-fetched onto the record's `products` list, so the
+  // grid never binds the whole catalog). Null → fall through to the legacy sections.
+  // Preview sample-data keeps the legacy path. Bare, like the PDP — the silica frame
+  // in the root layout provides the chrome.
+  if (!sample) {
+    const silicaTemplate = await getPublishedSilicaCollection(
+      site.slug,
+      'commerce.collection',
+      collection.id
+    );
+    if (silicaTemplate) {
+      // Render the collection's products in one grid (page 1, a generous cap).
+      // Paginated collection templates are a follow-up — the composite has no pager.
+      const { items } = await listCollectionProducts(site.slug, handle, 1, 48);
+      const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
+        record: {
+          key: 'collection',
+          value: collectionToSilicaRecord(collection, items, site.slug),
+        },
+        currency: site.commerce.defaultCurrency,
+        locale: site.commerce.defaultLocale,
+      });
+      return <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />;
+    }
   }
 
   // The commerce:collection layout: the merchant's published one, or the seeded

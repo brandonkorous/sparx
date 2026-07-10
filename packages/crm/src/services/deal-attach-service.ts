@@ -1,16 +1,17 @@
-// Deal ↔ order / quote attachment service.
+// Deal ↔ order / billing-document (quote) attachment service.
 //
 // Locked decision #5: deals are independent of orders, linked via join
 // tables. `deal_orders(deal_id, order_id, tenant_id)` and the same shape
-// for quotes. Orders never get a deal_id column — one deal can yield
-// multiple orders, and most orders have no deal.
+// for billing documents (`deal_billing_documents`). Orders/documents never
+// get a deal_id column — one deal can yield multiple orders, and most
+// orders have no deal.
 //
 // Both the deal and the linked entity must belong to the same tenant; RLS
 // is the backstop and the service-layer fetch confirms both rows exist
 // before writing the join row.
 
 import { withTenant } from '@sparx/db';
-import type { DealOrder, DealQuote, Order, Quote } from '@sparx/db';
+import type { BillingDocument, DealBillingDocument, DealOrder, Order } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -29,15 +30,19 @@ export async function listAttachedOrders(ctx: ServiceContext, dealId: string): P
   });
 }
 
-/** List quotes attached to a deal via the deal_quotes join table. */
-export async function listAttachedQuotes(ctx: ServiceContext, dealId: string): Promise<Quote[]> {
+/** List billing documents (quotes) attached to a deal via the
+ *  deal_billing_documents join table. */
+export async function listAttachedDocuments(
+  ctx: ServiceContext,
+  dealId: string
+): Promise<BillingDocument[]> {
   return withTenant(ctx, async (tx) => {
-    const links = await tx.dealQuote.findMany({
+    const links = await tx.dealBillingDocument.findMany({
       where: { dealId },
-      include: { quote: true },
+      include: { document: true },
       orderBy: { createdAt: 'desc' },
     });
-    return links.map((link) => link.quote);
+    return links.map((link) => link.document);
   });
 }
 
@@ -122,30 +127,30 @@ export async function detachOrder(
   });
 }
 
-export async function attachQuote(
+export async function attachDocument(
   ctx: ServiceContext,
-  args: { dealId: string; quoteId: string }
-): Promise<DealQuote> {
+  args: { dealId: string; documentId: string }
+): Promise<DealBillingDocument> {
   const link = await withTenant(ctx, async (tx) => {
-    const [deal, quote] = await Promise.all([
+    const [deal, document] = await Promise.all([
       tx.deal.findUnique({ where: { id: args.dealId } }),
-      tx.quote.findUnique({ where: { id: args.quoteId } }),
+      tx.billingDocument.findUnique({ where: { id: args.documentId } }),
     ]);
     if (!deal) throw new CrmNotFoundError('Deal', args.dealId);
-    if (!quote) throw new CrmNotFoundError('Quote', args.quoteId);
+    if (!document) throw new CrmNotFoundError('BillingDocument', args.documentId);
 
-    const existing = await tx.dealQuote.findUnique({
-      where: { dealId_quoteId: { dealId: args.dealId, quoteId: args.quoteId } },
+    const existing = await tx.dealBillingDocument.findUnique({
+      where: { dealId_documentId: { dealId: args.dealId, documentId: args.documentId } },
     });
     if (existing) {
-      throw new CrmConflictError('Quote is already attached to this deal');
+      throw new CrmConflictError('Document is already attached to this deal');
     }
 
-    const created = await tx.dealQuote.create({
+    const created = await tx.dealBillingDocument.create({
       data: {
         tenantId: ctx.tenantId,
         dealId: args.dealId,
-        quoteId: args.quoteId,
+        documentId: args.documentId,
       },
     });
     await writeAuditLog({
@@ -153,52 +158,52 @@ export async function attachQuote(
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'crm.deal.quote_attached',
-      entityType: 'DealQuote',
+      action: 'crm.deal.document_attached',
+      entityType: 'DealBillingDocument',
       entityId: args.dealId,
-      diff: { after: { quoteId: args.quoteId } },
+      diff: { after: { documentId: args.documentId } },
     });
     return created;
   });
 
   await publishCrmEvent({
     tenantId: ctx.tenantId,
-    topic: 'crm.deal.quote_attached',
-    payload: { dealId: args.dealId, quoteId: args.quoteId },
-    dedupeKey: `crm.deal.quote_attached:${args.dealId}:${args.quoteId}`,
+    topic: 'crm.deal.document_attached',
+    payload: { dealId: args.dealId, documentId: args.documentId },
+    dedupeKey: `crm.deal.document_attached:${args.dealId}:${args.documentId}`,
   });
 
   return link;
 }
 
-export async function detachQuote(
+export async function detachDocument(
   ctx: ServiceContext,
-  args: { dealId: string; quoteId: string }
+  args: { dealId: string; documentId: string }
 ): Promise<void> {
   await withTenant(ctx, async (tx) => {
-    const existing = await tx.dealQuote.findUnique({
-      where: { dealId_quoteId: { dealId: args.dealId, quoteId: args.quoteId } },
+    const existing = await tx.dealBillingDocument.findUnique({
+      where: { dealId_documentId: { dealId: args.dealId, documentId: args.documentId } },
     });
     if (!existing) return;
-    await tx.dealQuote.delete({
-      where: { dealId_quoteId: { dealId: args.dealId, quoteId: args.quoteId } },
+    await tx.dealBillingDocument.delete({
+      where: { dealId_documentId: { dealId: args.dealId, documentId: args.documentId } },
     });
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'crm.deal.quote_detached',
-      entityType: 'DealQuote',
+      action: 'crm.deal.document_detached',
+      entityType: 'DealBillingDocument',
       entityId: args.dealId,
-      diff: { before: { quoteId: args.quoteId } },
+      diff: { before: { documentId: args.documentId } },
     });
   });
 
   await publishCrmEvent({
     tenantId: ctx.tenantId,
-    topic: 'crm.deal.quote_detached',
-    payload: { dealId: args.dealId, quoteId: args.quoteId },
-    dedupeKey: `crm.deal.quote_detached:${args.dealId}:${args.quoteId}:${Date.now()}`,
+    topic: 'crm.deal.document_detached',
+    payload: { dealId: args.dealId, documentId: args.documentId },
+    dedupeKey: `crm.deal.document_detached:${args.dealId}:${args.documentId}:${Date.now()}`,
   });
 }

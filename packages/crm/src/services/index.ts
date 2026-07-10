@@ -7,6 +7,11 @@ export * as b2bAccountService from './b2b-account-service';
 export * as b2bEscalationService from './b2b-escalation-service';
 // Order-derived B2B net-terms AR, materialised as BillingDocuments (docs/87 §15).
 export * as b2bArService from './b2b-ar-service';
+// Quotes are BillingDocuments on the system `b2b-quotes` workflow.
+export * as b2bQuoteService from './b2b-quote-service';
+// The direct-customer (non-B2B) counterpart — estimate requests on the system
+// `customer-estimates` workflow.
+export * as customerEstimateService from './customer-estimate-service';
 export * as pipelineService from './pipeline-service';
 export * as dealService from './deal-service';
 export * as activityService from './activity-service';
@@ -16,23 +21,24 @@ export * as taskService from './task-service';
 export * as leadService from './lead-service';
 export * as segmentService from './segment-service';
 
-// CRM — orders / quotes spine (Phase 3). Each service file stays under
-// the 200-line target by splitting subresources into their own files.
+// CRM — orders spine (Phase 3). Each service file stays under the 200-line
+// target by splitting subresources into their own files.
 export * as orderService from './order-service';
 export * as orderPaymentsService from './order-payments-service';
 export * as orderRefundsService from './order-refunds-service';
 export * as orderFulfillmentsService from './order-fulfillments-service';
-export * as quoteService from './quote-service';
-export * as quoteLifecycleService from './quote-lifecycle-service';
 
-// Invoicing module (docs/87) — authored billing documents. Phase 1 exposes the
-// workflow / stage / line-type config surface; documents + lines land in later
-// phases.
+// Invoicing module (docs/87) — authored billing documents. This is now the
+// ONE quote/estimate/invoice/receipt entity — the old standalone Quote model
+// (quote-service.ts / quote-lifecycle-service.ts) converged onto it; see
+// billing-document-conversion-service.ts for the quote→order conversion it
+// inherited.
 export * as documentWorkflowService from './document-workflow-service';
 export * as documentLineTypeService from './document-line-type-service';
 export * as billingDocumentService from './billing-document-service';
 export * as billingLineService from './billing-line-service';
 export * as billingDocumentStageService from './billing-document-stage-service';
+export * as billingDocumentConversionService from './billing-document-conversion-service';
 export * as billingPaymentService from './billing-payment-service';
 export * as billingRenderService from './billing-render-service';
 export * as billingTemplateService from './billing-template-service';

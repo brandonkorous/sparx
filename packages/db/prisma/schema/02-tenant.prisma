@@ -156,11 +156,11 @@ model Tenant {
   b2bAccounts       B2BAccount[]
 
   // CRM module — sales pipeline
-  pipelines      Pipeline[]
-  pipelineStages PipelineStage[]
-  deals          Deal[]
-  dealOrders     DealOrder[]
-  dealQuotes     DealQuote[]
+  pipelines            Pipeline[]
+  pipelineStages       PipelineStage[]
+  deals                Deal[]
+  dealOrders           DealOrder[]
+  dealBillingDocuments DealBillingDocument[]
 
   // CRM module — orders, payments, refunds, fulfillments
   orders                Order[]
@@ -170,10 +170,7 @@ model Tenant {
   orderRefundItems      OrderRefundItem[]
   orderFulfillments     OrderFulfillment[]
   orderFulfillmentItems OrderFulfillmentItem[]
-
-  // CRM module — quotes
-  quotes     Quote[]
-  quoteItems QuoteItem[]
+  fulfillmentLabels     FulfillmentLabel[]
 
   // CRM module — activity, tasks, segments, views
   crmActivities  CrmActivity[]
@@ -459,12 +456,12 @@ model Tenant {
   // Partner Program (docs/114 Part B) — the partner capability row (1:1),
   // WizeWorks' application queue (platform tenant), referral/commission/payout
   // ledger (partner's own org), and hosted bootcamps + their registrations.
-  partner              Partner?
-  partnerApplications  PartnerApplication[]
-  partnerReferrals     PartnerReferral[]
-  partnerCommissions   PartnerCommission[]
-  partnerPayoutRuns    PartnerPayoutRun[]
-  bootcamps            Bootcamp[]
+  partner               Partner?
+  partnerApplications   PartnerApplication[]
+  partnerReferrals      PartnerReferral[]
+  partnerCommissions    PartnerCommission[]
+  partnerPayoutRuns     PartnerPayoutRun[]
+  bootcamps             Bootcamp[]
   bootcampRegistrations BootcampRegistration[]
 
   @@map("tenants")

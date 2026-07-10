@@ -1,15 +1,16 @@
-// Document-line markup pricing for quotes (docs/48 §5).
+// Document-line markup pricing (docs/48 §5, docs/87 §5).
 //
 // Resolves a markup directive (a saved rule or an ad-hoc markup) against a
-// quote line's cost basis and computes the priced line plus the mandatory
-// reproducibility snapshot. The cost basis + markup rule are read inside the
-// caller's transaction (so it stays RLS-scoped and atomic); the cost→price
-// math lives in @sparx/commerce-schemas's pure `priceLineByMarkup`, shared with
-// the catalog markup engine so the two never drift.
+// BillingDocumentLine's cost basis and computes the priced line plus the
+// mandatory reproducibility snapshot. The cost basis + markup rule are read
+// inside the caller's transaction (so it stays RLS-scoped and atomic); the
+// cost→price math lives in @sparx/commerce-schemas's pure `priceLineByMarkup`,
+// shared with the catalog markup engine so the two never drift.
 //
-// This glue lives in CRM — quotes are the CRM spine (quotes + quote_items) —
-// and depends only on the pure commerce-schemas package, not the commerce
-// service layer.
+// This glue lives in CRM alongside the rest of the invoicing/billing-document
+// service layer, and depends only on the pure commerce-schemas package, not
+// the commerce service layer. Consumed by billing-line-pricing.ts's `markup`
+// and marked-up `pass_through` pricing modes.
 
 import type { MarkupRule, Prisma } from '@sparx/db';
 import {
@@ -24,8 +25,8 @@ import {
 
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 
-export interface PricedQuoteLine {
-  unitPrice: number; // dollars — for QuoteItem.unitPrice (Decimal(12,2))
+export interface PricedDocumentLine {
+  unitPrice: number; // dollars — for BillingDocumentLine.unitPrice (Decimal(12,2))
   costCents: number; // the cost basis the price was derived from
   snapshot: LineMarkupSnapshot;
 }
@@ -63,7 +64,7 @@ export async function resolveAndPriceLine(
   tx: Prisma.TransactionClient,
   tenantId: string,
   args: PriceLineArgs
-): Promise<PricedQuoteLine> {
+): Promise<PricedDocumentLine> {
   // 1. Cost basis: an explicit override wins; otherwise the linked variant.
   let costCents: number | null = null;
   let costSource: LineCostSource = 'manual';

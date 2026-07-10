@@ -48,6 +48,7 @@
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/legal-templates": "workspace:*",
     "@sparx/marketplace-schemas": "workspace:*",
+    "@sparx/silica-catalog": "workspace:*",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.11.10",
     "prisma": "^6.2.0",

@@ -27,9 +27,8 @@ export const SAMPLE_SLUG_PREFIX = 'sample-';
 /** Prefix on supplier codes. */
 export const SAMPLE_SUPPLIER_PREFIX = 'SMP-';
 
-/** Order / quote number prefixes — distinct from a tenant's own SO-/Q- series. */
+/** Order / PO number prefixes — distinct from a tenant's own SO-/PO- series. */
 export const SAMPLE_ORDER_PREFIX = 'SO-9';
-export const SAMPLE_QUOTE_PREFIX = 'Q-9';
 export const SAMPLE_PO_PREFIX = 'PO-9';
 
 /** The email domain every sample persona/customer is rewritten onto. A real

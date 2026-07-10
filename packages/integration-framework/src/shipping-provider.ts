@@ -6,6 +6,7 @@ import type { RateOption, ShipmentRequest } from '@sparx/commerce-schemas';
 
 import type { ProviderRunContext } from './context';
 import type { ProviderMetadataDescriptor } from './metadata';
+import type { WebhookEvent } from './payment-provider';
 
 export interface ShippingLabel {
   labelRef: string;
@@ -57,4 +58,10 @@ export interface ShippingProvider {
   ): Promise<TrackingStatus>;
 
   voidLabel(ctx: ProviderRunContext, labelRef: string): Promise<void>;
+
+  /** Verify + parse an inbound tracking/label webhook. Providers whose
+   *  webhooks aren't signed (metadata.webhookRequiresSignature === false)
+   *  receive an empty `signature`/`secret` and instead trust the
+   *  URL-embedded installationId the caller already resolved. */
+  verifyWebhook(input: { rawBody: string; signature: string; secret: string }): WebhookEvent;
 }

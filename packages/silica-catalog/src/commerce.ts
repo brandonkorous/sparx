@@ -21,8 +21,16 @@
 //   · a bound image binds a SCALAR `image` ref (the product's primary-image URL);
 //     silica's `fillValue` sets `<img src>` / an `Image` atom's `src` prop from a
 //     string value (an array ref would fill text, not a src).
+//   · a bound ATTRIBUTE (a card's `href`) uses `bindAttr(el, 'href', 'url')` —
+//     silica's `resolveTree` stops resolving a node's children once it fills an
+//     attribute binding, so the value rides a hidden carrier input that
+//     `hoistAttrBindings` lifts + removes before `toHtml`. See `attr-binding.ts`.
+//     Binding an `<a>` with a plain `bind()` would replace its children with the
+//     URL string and destroy the card.
 
 import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
+
+import { bindAttr } from './attr-binding';
 
 // A neutral, self-contained placeholder tile (inline SVG data-URI) — the Image's
 // default `src` so the UNBOUND state (a card just inserted, not yet pinned to a
@@ -39,26 +47,36 @@ const PLACEHOLDER_IMAGE =
 /** The shared product card body — image, title, price. Used standalone (pin it to
  *  one product) and as the repeated item in `product_grid` / `featured_products`.
  *  `extraClass` lets a caller add layout affordances (a fixed width for the
- *  horizontal featured rail) without a second card definition. */
+ *  horizontal featured rail) without a second card definition.
+ *
+ *  The card IS the link: an `<a>` whose `href` is bound to the product's `url`
+ *  through `bindAttr` (silica cannot bind an attribute natively — see
+ *  `attr-binding.ts`). The whole tile is the hit target, which is what a shopper
+ *  expects, and a product with no url degrades to a plain, un-clickable card. */
 function productCardNode(extraClass = ''): Node {
-  const base = 'card bg-base-100 border border-base-300 rounded-box overflow-hidden';
-  return el('div', extraClass ? `${base} ${extraClass}` : base, {
-    children: [
-      bind(
-        atom('Image', 'aspect-square w-full object-cover', {
-          src: PLACEHOLDER_IMAGE,
-          alt: 'Product image',
+  const base =
+    'card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary';
+  return bindAttr(
+    el('a', extraClass ? `${base} ${extraClass}` : base, {
+      children: [
+        bind(
+          atom('Image', 'aspect-square w-full object-cover', {
+            src: PLACEHOLDER_IMAGE,
+            alt: 'Product image',
+          }),
+          'image'
+        ),
+        el('div', 'flex flex-col gap-1.5 p-4', {
+          children: [
+            bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
+            bind(el('p', 'text-lg font-bold text-primary', { text: '$0.00' }), 'price'),
+          ],
         }),
-        'image'
-      ),
-      el('div', 'flex flex-col gap-1.5 p-4', {
-        children: [
-          bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
-          bind(el('p', 'text-lg font-bold text-primary', { text: '$0.00' }), 'price'),
-        ],
-      }),
-    ],
-  });
+      ],
+    }),
+    'href',
+    'url'
+  );
 }
 
 /** A single product card — image, name, price. Bind it to one product (an entity
@@ -185,6 +203,61 @@ export function buyBox(): Node {
       ],
     }),
     'product'
+  );
+}
+
+/** The full product-detail PAGE body — the buy box above a "related" rail. This is
+ *  the composed tree a `commerce.product` collection template renders: the storefront
+ *  injects the routed product as the `product` object scope (a collection-of-one), so
+ *  the buy box resolves `item.*` for THIS product while the rail below repeats the
+ *  catalog's `commerce.product` source. Dropping it as a page needs no pinning — the
+ *  page's record scope drives it. The container section gives the buy box page margins;
+ *  `featuredProducts` (a `commerce.product` repeat) is the cross-sell strip. */
+export function productDetailPage(): Node {
+  return el('div', 'flex flex-col', {
+    children: [
+      el('section', 'bg-base-100 @container px-6 py-12', { children: [buyBox()] }),
+      featuredProducts(),
+    ],
+  });
+}
+
+/** The full collection-detail PAGE body — a header (the collection's name +
+ *  description) above a grid of the collection's OWN products. Self-scoping: the
+ *  root repeats over the injected `collection` object (a collection-of-one), so the
+ *  header binds `name`/`description` scope-relative to the collection, and the grid's
+ *  inner repeat walks the collection's `products` list (a scope-relative field the
+ *  storefront pre-fetches onto the record) — each card then scopes to its product and
+ *  links to that product's PDP. No whole-catalog `commerce.product` source is bound,
+ *  so only THIS collection's products render. */
+export function collectionDetailPage(): Node {
+  return repeat(
+    el('div', 'flex flex-col', {
+      children: [
+        el('section', 'bg-base-100 px-6 py-12 text-center', {
+          children: [
+            bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'name'),
+            bind(
+              el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content/70', {
+                text: 'Collection description.',
+              }),
+              'description'
+            ),
+          ],
+        }),
+        el('section', 'bg-base-100 @container px-6 pb-12', {
+          children: [
+            repeat(
+              el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
+                children: [productCardNode()],
+              }),
+              'products'
+            ),
+          ],
+        }),
+      ],
+    }),
+    'collection'
   );
 }
 

@@ -794,7 +794,7 @@ const MODULES: ModuleDef[] = [
           { label: 'Expires' },
         ],
         rows: [
-          ['Q-2041\n12 items', 'Sent', 'Northwind Supply', '$12,400', 'Jun 20'],
+          ['Q-2041\n12 items', 'Quoted', 'Northwind Supply', '$12,400', 'Jun 20'],
           ['Q-2040\n6 items', 'Draft', 'Ridgeline Co.', '$8,000', '—'],
           ['Q-2039\n3 items', 'Accepted', 'Summit Outfitters', '$3,200', 'Jun 5'],
           ['Q-2038\n20 items', 'Expired', 'Trailhead Gear', '$5,600', 'May 30'],

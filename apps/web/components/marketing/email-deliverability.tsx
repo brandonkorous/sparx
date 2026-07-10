@@ -5,7 +5,7 @@ import { getModuleColor, moduleTint, Section, SectionHeader } from './primitives
  * Two more structural devices for the /email page:
  *
  *  - EmailKinds ......... transactional vs marketing as a two-panel split, each
- *    with its real trigger flow (order.created → email.send → delivered, and
+ *    with its real trigger flow (order.placed → email.send → delivered, and
  *    CRM segment → broadcast → open · click). One engine, one reputation.
  *  - EmailDeliverability  the sender-health checklist (SPF·DKIM·DMARC Pass,
  *    bounce/complaint guardrails) beside a dark auto-configured DNS records
@@ -27,7 +27,7 @@ export function EmailKinds() {
       tag: 'transactional · triggered',
       title: 'Sent the instant something happens',
       body: 'Order confirmations, shipping updates, password resets, quote replies — wired into every module and live from the moment Email is on. Editable, brandable, never missed.',
-      flow: ['order.created', 'email.send', 'delivered'],
+      flow: ['order.placed', 'email.send', 'delivered'],
     },
     {
       tag: 'marketing · segment-targeted',

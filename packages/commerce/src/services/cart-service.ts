@@ -73,16 +73,16 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<{ 
         currency: input.currency,
         // Origin site (docs/58 D1) — carried onto the order at checkout.
         propertyId: input.propertyId ?? null,
-        fromQuoteId: input.fromQuoteId ?? null,
+        fromDocumentId: input.fromDocumentId ?? null,
         fromSubscriptionId: input.fromSubscriptionId ?? null,
         expiresAt,
       },
       select: { id: true },
     });
 
-    // Bootstrap lines from a quote when carried over (B2B path).
-    if (input.fromQuoteId) {
-      await bootstrapFromQuote(tx, ctx, cart.id, input.fromQuoteId);
+    // Bootstrap lines from an accepted quote when carried over (B2B path).
+    if (input.fromDocumentId) {
+      await bootstrapFromDocument(tx, ctx, cart.id, input.fromDocumentId);
       await recomputeTotals(tx, ctx, cart.id);
     }
 
@@ -669,31 +669,32 @@ async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: strin
   });
 }
 
-async function bootstrapFromQuote(
+async function bootstrapFromDocument(
   tx: TxClient,
   ctx: ServiceContext,
   cartId: string,
-  quoteId: string
+  documentId: string
 ): Promise<void> {
-  const quote = await tx.quote.findFirst({
-    where: { id: quoteId },
-    include: { items: true },
+  const document = await tx.billingDocument.findFirst({
+    where: { id: documentId },
+    include: { lines: true },
   });
-  if (!quote) throw new CommerceNotFoundError('Quote', quoteId);
+  if (!document) throw new CommerceNotFoundError('BillingDocument', documentId);
 
-  for (const line of quote.items) {
+  for (const line of document.lines) {
     if (!line.variantId) continue;
-    // Quote stores prices as Decimal(12,2); convert to integer cents
-    // so the cart contract (always integer cents) stays consistent.
+    // BillingDocumentLine stores prices as Decimal(12,2); convert to integer
+    // cents so the cart contract (always integer cents) stays consistent.
     const unitPriceCents = Math.round(line.unitPrice.toNumber() * 100);
+    const quantity = Math.round(line.quantity.toNumber());
     await tx.cartItem.create({
       data: {
         tenantId: ctx.tenantId,
         cartId,
         variantId: line.variantId,
-        quantity: line.quantity,
+        quantity,
         unitPriceCents,
-        subtotalCents: unitPriceCents * line.quantity,
+        subtotalCents: unitPriceCents * quantity,
         attributes: {},
       },
     });

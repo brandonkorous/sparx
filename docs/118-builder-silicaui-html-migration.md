@@ -1,8 +1,18 @@
 # 118 — Builder → silicaui-html Migration Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-09
+**Last Updated:** 2026-07-10
+
+> **STATUS (2026-07-10) — engine adoption SHIPPED; storefront on silica for four routes; legacy deletion GATED.**
+> The silica `<Builder>` engine is the studio (`/builder/silica`), and the storefront renders silica end-to-end for the **home, catch-all page, product detail (PDP), and blog** routes — each path being: silica-published-tree → shared host resolver → `renderSilicaBody`, winning over the sparx-builder + legacy-section fallbacks. Landed this pass:
+>
+> - **Render cutover (Stage 6).** All four routes resolve a published silica tree first. A silica `commerce.product` / `cms.blog_post` **collection template** renders per-record with the routed record injected as the object scope (a collection-of-one); the interactive buy box adds to cart through `hydrate() → onAction`. New seam: `siteService.getPublishedByRecordType` (silica) → `/v1/public/builder/silica/collection` → `getPublishedSilicaCollection` → the PDP/blog silica branches.
+> - **Editor host completeness (Stage 10).** The studio host now carries a **media picker** (`pickAsset`, bridged to the asset library), a header **save/changed indicator** + **page-settings** surface (silicaui's v0.14 `toolbarSlot`, reading the active page via `useEditor()` since the slot renders inside `EditorProvider`), and page-level **SEO + record-type** authoring persisted to the `BuilderPage` row columns — silica's flat `Page` (`{id,name,slug,root}`) has no home for domain metadata, so it lives on the row, edited through the same page endpoints (the silica page id IS the row id). Setting a record type flips a page to a collection template (kind derived from recordType).
+> - **Seed.** A published silica product-detail template ships in the DB seed so the demo storefront renders a real PDP without hand-authoring.
+> - **Deferred (with reason):** the node-scoped **product-pin** inspector panel — it needs a product-picker data path that doesn't exist cleanly yet, and the grid/PDP/rail already cover commerce binding via scope + collection.
+>
+> **Still GATED — do NOT delete legacy yet.** The legacy render clusters (`@sparx/site-ui`, the sparx `BuilderRenderer` storefront half, `surface-compile`'s compile pipeline + `/styles`, the section renderer + `sections/*`) remain the FALLBACK beneath silica, and the **`collections/[handle]`** route has **no silica path at all** (its section renderer is the sole renderer, not a fallback). Deletion is safe only once silica covers home + page + PDP + blog + **collections** + frame for every tenant. `@sparx/builder-render` (dashboard editor canvas + serializer) and `surface-compile/allowlist.ts` (governance) are **retained**, not deleted. Full deletion map: brain builder node + [119](119-silicaui-builder-gap-questions.md).
 
 > **Purpose.** This is the **sparx-side execution plan** for migrating the Builder and the storefront (`apps/site`) off sparx's bespoke render stack (`@sparx/site-ui` `st-*` classes + `surface-compile`'s `--st-*` theme) and onto the **silicaui design system + `@wizeworks/silicaui-html` document/component model** — while **keeping the sparx builder engine** (the two-zone studio, the binding/scope/iteration runtime, collections, publish, per-site scoping). It is the complement to [silicaui-site-ui-parity-spec.md](silicaui-site-ui-parity-spec.md) (what silicaui must do) and to the two silica-repo contracts ([`silicaui/docs/builder-contract.md`](../../silicaui/docs/builder-contract.md), [`silicaui/docs/blocks-contract.md`](../../silicaui/docs/blocks-contract.md)).
 >
@@ -295,6 +305,8 @@ The point of the finding work: this is **not** "migrate two builders." It is **o
 ---
 
 ## 8. Definition of done
+
+> **Reality note (2026-07-10):** the checkboxes below are framed against the SUPERSEDED "retarget in place" path (WS-3 `renderLeaf`). Under engine adoption the storefront renders through silica's shared `renderSilicaBody` instead, and that path is **shipped for four routes** (home, page, PDP, blog) with the editor host complete — see the STATUS banner at the top. What remains is **coverage** (a silica `collections/[handle]` route) and, only after full coverage, the legacy **deletion** — both tracked in the banner + the deletion map.
 
 - [ ] silicaui closes the parity-spec §13 gap list for every token/class the sparx catalog references (WS-1).
 - [ ] `renderLeaf` + `renderSiteUiAtom` + `serialize-html` emit silica classes/components; canvas, storefront, and View-HTML are byte-faithful to each other (WS-3).

@@ -79,10 +79,10 @@ model Deal {
   b2bAccount  B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
   assignedRep User?         @relation("DealAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
 
-  activities CrmActivity[]
-  tasks      Task[]
-  orderLinks DealOrder[]
-  quoteLinks DealQuote[]
+  activities    CrmActivity[]
+  tasks         Task[]
+  orderLinks    DealOrder[]
+  documentLinks DealBillingDocument[]
 
   @@index([tenantId, pipelineId, stageId])
   @@index([tenantId, assignedRepId, stageId])

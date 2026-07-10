@@ -12,7 +12,11 @@
 //   • crm.customer.high_value        customer crossed totalSpent threshold
 //   • crm.deal.close_date_approaching deal expectedCloseDate within N days
 //   • crm.b2b.credit_near_limit       utilization ≥ threshold
-//   • crm.quote.expiring              quote validUntil within N days
+//
+// Quote-expiry (formerly emitted from here) moved to the unified automation
+// engine's `billing_document` scanner (docs/81 §3.1: one runtime, no parallel
+// hardcoded engine beside it) — see B2B_QUOTE_EXPIRING in
+// packages/automation-actions/src/seeds/b2b.ts.
 //
 // We DO NOT also write CrmActivity rows here — that's the email/automation
 // engine's job once it actually fires the message.
@@ -31,8 +35,6 @@ export interface TriggerThresholds {
   dealCloseSoonDays?: number;
   /** Credit utilization ratio (0–1) at which to flag the account. */
   creditUtilizationThreshold?: number;
-  /** Days-until-valid-until inside which to flag a quote. */
-  quoteExpirySoonDays?: number;
 }
 
 const DEFAULTS: Required<TriggerThresholds> = {
@@ -40,7 +42,6 @@ const DEFAULTS: Required<TriggerThresholds> = {
   highValueAmount: 5_000,
   dealCloseSoonDays: 7,
   creditUtilizationThreshold: 0.85,
-  quoteExpirySoonDays: 7,
 };
 
 export interface TriggerSummary {
@@ -48,7 +49,6 @@ export interface TriggerSummary {
   highValue: number;
   dealsClosing: number;
   b2bCreditNearLimit: number;
-  quotesExpiring: number;
 }
 
 /** Run every scheduled automation trigger for one tenant. Caller iterates
@@ -59,17 +59,14 @@ export async function runDailyAutomationTriggers(
 ): Promise<TriggerSummary> {
   const t = { ...DEFAULTS, ...thresholds };
 
-  const [inactive, highValue, dealsClosing, b2bCreditNearLimit, quotesExpiring] = await Promise.all(
-    [
-      emitInactiveCustomers(ctx, t.inactiveDays),
-      emitHighValueCrossings(ctx, t.highValueAmount),
-      emitDealsClosingSoon(ctx, t.dealCloseSoonDays),
-      emitB2bCreditNearLimit(ctx, t.creditUtilizationThreshold),
-      emitQuotesExpiring(ctx, t.quoteExpirySoonDays),
-    ]
-  );
+  const [inactive, highValue, dealsClosing, b2bCreditNearLimit] = await Promise.all([
+    emitInactiveCustomers(ctx, t.inactiveDays),
+    emitHighValueCrossings(ctx, t.highValueAmount),
+    emitDealsClosingSoon(ctx, t.dealCloseSoonDays),
+    emitB2bCreditNearLimit(ctx, t.creditUtilizationThreshold),
+  ]);
 
-  return { inactive, highValue, dealsClosing, b2bCreditNearLimit, quotesExpiring };
+  return { inactive, highValue, dealsClosing, b2bCreditNearLimit };
 }
 
 async function emitInactiveCustomers(ctx: ServiceContext, days: number): Promise<number> {
@@ -161,31 +158,5 @@ async function emitB2bCreditNearLimit(ctx: ServiceContext, threshold: number): P
       });
     }
     return count;
-  });
-}
-
-async function emitQuotesExpiring(ctx: ServiceContext, daysAhead: number): Promise<number> {
-  const horizon = new Date(Date.now() + daysAhead * 86_400_000);
-  return withTenant(ctx, async (tx) => {
-    const quotes = await tx.quote.findMany({
-      where: {
-        status: { in: ['submitted', 'accepted'] },
-        validUntil: { not: null, lte: horizon, gte: new Date() },
-      },
-      select: { id: true, validUntil: true, customerId: true },
-      take: 5000,
-    });
-    for (const q of quotes) {
-      const daysUntil = q.validUntil
-        ? Math.ceil((q.validUntil.getTime() - Date.now()) / 86_400_000)
-        : null;
-      await publishCrmEvent({
-        tenantId: ctx.tenantId,
-        topic: 'crm.quote.expired',
-        payload: { quoteId: q.id, reason: 'expiring_soon', daysUntil },
-        dedupeKey: `crm.quote.expiring:${q.id}:${new Date().toISOString().slice(0, 10)}`,
-      });
-    }
-    return quotes.length;
   });
 }

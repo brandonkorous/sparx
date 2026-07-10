@@ -20,7 +20,7 @@ import { attachQuoteToDealAction, detachQuoteFromDealAction } from '../../../dea
 
 interface QuoteOption {
   id: string;
-  quoteNumber: string;
+  number: string | null;
   status: string;
   total: string;
   currency: string;
@@ -41,12 +41,12 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
   const attached = new Set(attachedIds);
   const filtered = candidates
     .filter((q) => !attached.has(q.id))
-    .filter((q) => q.quoteNumber.toLowerCase().includes(query.toLowerCase()))
+    .filter((q) => (q.number ?? '').toLowerCase().includes(query.toLowerCase()))
     .slice(0, 25);
 
-  function attach(quoteId: string) {
+  function attach(documentId: string) {
     startTransition(async () => {
-      const result = await attachQuoteToDealAction({ dealId, quoteId });
+      const result = await attachQuoteToDealAction({ dealId, documentId });
       if (!result.ok) {
         toast.error(result.error.message ?? 'Could not attach quote');
         return;
@@ -86,7 +86,7 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
                   >
                     <div className="flex flex-row items-center gap-2">
                       <Link2 className="text-base-content/50 h-3.5 w-3.5" />
-                      <p className="text-sm font-medium">{q.quoteNumber}</p>
+                      <p className="text-sm font-medium">{q.number ?? '—'}</p>
                       <Badge color={statusTone(q.status)} variant="soft" size="sm">
                         {statusLabel(q.status)}
                       </Badge>
@@ -105,13 +105,19 @@ export function AttachQuotePopover({ dealId, candidates, attachedIds }: AttachQu
   );
 }
 
-export function DetachQuoteButton({ dealId, quoteId }: { dealId: string; quoteId: string }) {
+export function DetachQuoteButton({
+  dealId,
+  documentId,
+}: {
+  dealId: string;
+  documentId: string;
+}) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
 
   function detach() {
     startTransition(async () => {
-      const result = await detachQuoteFromDealAction({ dealId, quoteId });
+      const result = await detachQuoteFromDealAction({ dealId, documentId });
       if (!result.ok) {
         toast.error(result.error.message ?? 'Could not detach quote');
         return;

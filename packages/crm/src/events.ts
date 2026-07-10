@@ -53,26 +53,23 @@ export type CrmTopic =
   | 'crm.segment.updated'
   | 'crm.segment.entered' // emitted by Phase 4 segment evaluator
   | 'crm.segment.exited' // emitted by Phase 4 segment evaluator
-  // Quote lifecycle
-  | 'crm.quote.created'
-  | 'crm.quote.submitted'
-  | 'crm.quote.accepted'
-  | 'crm.quote.declined'
-  | 'crm.quote.expired'
-  // Deal attach/detach — emitted when orders or quotes are linked to a deal
+  // Deal attach/detach — emitted when orders or billing documents (quotes) are
+  // linked to a deal
   | 'crm.deal.order_attached'
   | 'crm.deal.order_detached'
-  | 'crm.deal.quote_attached'
-  | 'crm.deal.quote_detached'
-  // Invoicing — authored billing documents (docs/87 §13). A stage transition is
-  // exactly the kind of event a tenant automation rule gates ("when a Repair
-  // Order reaches Approved, email the customer"). These reach the automation
-  // fan-in + webhook fan-out through the standard CRM-bus bridge.
+  | 'crm.deal.document_attached'
+  | 'crm.deal.document_detached'
+  // Invoicing — authored billing documents (docs/87 §13). This is the ONE
+  // quote/estimate/invoice/receipt entity; a stage transition is exactly the
+  // kind of event a tenant automation rule gates ("when a Repair Order reaches
+  // Approved, email the customer"). These reach the automation fan-in +
+  // webhook fan-out through the standard CRM-bus bridge.
   | 'crm.billing_document.created'
   | 'crm.billing_document.stage_changed'
   | 'crm.billing_document.finalized'
   | 'crm.billing_document.paid'
-  | 'crm.billing_document.voided';
+  | 'crm.billing_document.voided'
+  | 'crm.billing_document.converted';
 
 export interface Publisher {
   publish(event: CrmEvent): Promise<void>;

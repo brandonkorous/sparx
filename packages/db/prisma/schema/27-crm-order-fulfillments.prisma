@@ -26,12 +26,39 @@ model OrderFulfillment {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  items OrderFulfillmentItem[]
+  items  OrderFulfillmentItem[]
+  labels FulfillmentLabel[]
 
   @@index([tenantId, orderId])
   @@index([tenantId, status])
   @@index([tenantId, trackingNumber])
   @@map("order_fulfillments")
+}
+
+// A purchased outbound carrier label (Commerce → Shipping providers, docs/09).
+// Mirrors ReturnLabel's shape (43-commerce-returns.prisma) for the reverse
+// direction. A fulfillment can carry more than one label over its life (a
+// void + a re-purchase), so this is its own child table rather than columns
+// on OrderFulfillment — labelRef/costCents need to be queryable per-attempt.
+model FulfillmentLabel {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  fulfillmentId  String    @map("fulfillment_id") @db.Uuid
+  providerSlug   String    @map("provider_slug") @db.VarChar(63)
+  labelRef       String    @map("label_ref") @db.VarChar(255)
+  trackingNumber String?   @map("tracking_number") @db.VarChar(127)
+  trackingUrl    String?   @map("tracking_url") @db.VarChar(2048)
+  labelMediaId   String?   @map("label_media_id") @db.Uuid
+  costCents      Int       @default(0) @map("cost_cents")
+  voidedAt       DateTime? @map("voided_at") @db.Timestamptz
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fulfillment OrderFulfillment @relation(fields: [fulfillmentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, fulfillmentId])
+  @@index([tenantId, trackingNumber])
+  @@map("fulfillment_labels")
 }
 
 model OrderFulfillmentItem {

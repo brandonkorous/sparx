@@ -34,8 +34,8 @@
 // ── GLOBAL projection: the public catalog ───────────────────────────────────────
 
 model MarketListing {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
   // The sparx product this listing projects. Stable upsert key (one listing per
   // product); NO FK — this is a global table (cross-tenant readable) kept
   // consistent by the worker, not by a cascade (mirrors channel_shop_links).
@@ -99,18 +99,18 @@ model MarketMerchant {
   tenantId String @map("tenant_id") @db.Uuid
 
   // The tenant slug → `/merchants/{slug}`. Globally unique (tenant slugs already are).
-  slug      String  @db.VarChar(63)
+  slug         String  @db.VarChar(63)
   // The customer-facing merchant name (Property.name — NOT the legal Tenant.name).
-  name      String  @db.VarChar(255)
-  logoUrl   String? @map("logo_url") @db.Text
-  bannerUrl String? @map("banner_url") @db.Text
-  bio       String? @db.VarChar(2000)
-  location  String? @db.VarChar(160)
-  headline  String? @db.VarChar(255)
+  name         String  @db.VarChar(255)
+  logoUrl      String? @map("logo_url") @db.Text
+  bannerUrl    String? @map("banner_url") @db.Text
+  bio          String? @db.VarChar(2000)
+  location     String? @db.VarChar(160)
+  headline     String? @db.VarChar(255)
   // The seller's own storefront URL (their *.sparx.zone or custom primary domain).
-  siteUrl   String? @map("site_url") @db.Text
+  siteUrl      String? @map("site_url") @db.Text
   // Ordered [{ platform, url }] mirror of Tenant.socials, for the profile page.
-  socials   Json    @default("[]")
+  socials      Json    @default("[]")
   // Count of currently-listed, approved products (drives "Browse N products").
   listingCount Int     @default(0) @map("listing_count")
   // Aggregate seller rating (docs/117 S5) — review-count-weighted mean across the
@@ -137,18 +137,18 @@ model MarketMerchantProfile {
 
   // Whether this tenant participates in sparx.market — the first-party channel's
   // "connection" toggle. Off → its products never project, even if flagged.
-  enabled         Boolean @default(false)
-  bio             String? @db.VarChar(2000)
-  location        String? @db.VarChar(160)
-  headline        String? @db.VarChar(255)
-  bannerMediaId   String? @map("banner_media_id") @db.Uuid
+  enabled               Boolean @default(false)
+  bio                   String? @db.VarChar(2000)
+  location              String? @db.VarChar(160)
+  headline              String? @db.VarChar(255)
+  bannerMediaId         String? @map("banner_media_id") @db.Uuid
   // Suggested category when opting a product in (auto-fills the product toggle).
-  defaultCategory String? @map("default_category") @db.VarChar(50)
+  defaultCategory       String? @map("default_category") @db.VarChar(50)
   // Per-tenant commission override in BASIS POINTS (null → the platform default,
   // MARKET_COMMISSION_BPS). Covers "Enterprise: negotiated" WITHOUT a plan tier —
   // commission is a flat platform rate, not plan-based (the platform has modules,
   // not tiers; docs/106 §4.7 correction to docs/72's plan table).
-  commissionBpsOverride Int? @map("commission_bps_override")
+  commissionBpsOverride Int?    @map("commission_bps_override")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -192,8 +192,8 @@ model MarketPayoutAccount {
 // ── TENANT truth: per-order settlement accrual ──────────────────────────────────
 
 model MarketSettlement {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String  @map("tenant_id") @db.Uuid
   // The native sparx order (channel='marketplace', source='sparx_market'). One
   // accrual per order; no FK relation (the order spine is in CRM — kept by the
   // ingest path, like channelFeeCents on the order itself).
@@ -201,15 +201,15 @@ model MarketSettlement {
   // The weekly run this accrual was rolled into; null until settled.
   runId    String? @map("run_id") @db.Uuid
 
-  grossCents      Int    @map("gross_cents")
-  commissionBps   Int    @map("commission_bps")
-  commissionCents Int    @map("commission_cents")
-  refundedCents   Int    @default(0) @map("refunded_cents")
+  grossCents      Int     @map("gross_cents")
+  commissionBps   Int     @map("commission_bps")
+  commissionCents Int     @map("commission_cents")
+  refundedCents   Int     @default(0) @map("refunded_cents")
   // gross − commission − refunds; what the seller is owed for this order.
-  netCents        Int    @map("net_cents")
-  currency        String @default("USD") @db.VarChar(3)
+  netCents        Int     @map("net_cents")
+  currency        String  @default("USD") @db.VarChar(3)
   // accrued | included | settled | reversed
-  status          String @default("accrued") @db.VarChar(20)
+  status          String  @default("accrued") @db.VarChar(20)
   // The sparx platform PaymentIntent id that collected this order — reconciliation.
   paymentRef      String? @map("payment_ref") @db.VarChar(255)
 
@@ -234,14 +234,14 @@ model MarketSettlementRun {
   periodStart DateTime @map("period_start") @db.Timestamptz
   periodEnd   DateTime @map("period_end") @db.Timestamptz
 
-  grossCents      Int    @map("gross_cents")
-  commissionCents Int    @map("commission_cents")
-  refundCents     Int    @default(0) @map("refund_cents")
-  netCents        Int    @map("net_cents")
-  orderCount      Int    @default(0) @map("order_count")
-  currency        String @default("USD") @db.VarChar(3)
+  grossCents           Int       @map("gross_cents")
+  commissionCents      Int       @map("commission_cents")
+  refundCents          Int       @default(0) @map("refund_cents")
+  netCents             Int       @map("net_cents")
+  orderCount           Int       @default(0) @map("order_count")
+  currency             String    @default("USD") @db.VarChar(3)
   // pending | processing | paid | failed
-  status          String @default("pending") @db.VarChar(20)
+  status               String    @default("pending") @db.VarChar(20)
   // Which payout rail disbursed this run ('stripe_ach' | 'manual') + its reference.
   disbursementProvider String?   @map("disbursement_provider") @db.VarChar(40)
   disbursementRef      String?   @map("disbursement_ref") @db.VarChar(255)

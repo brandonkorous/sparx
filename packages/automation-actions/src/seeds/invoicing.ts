@@ -1,9 +1,11 @@
 // Invoicing system-automation seeds (docs/90 §3b). The Managed defaults that ship
-// on Invoicing activation: a task when a user-authored document is approved, plus
-// the dunning ladder for user invoices — a friendly 3-day reminder and three
-// overdue notices (7 / 14 / 30 days). All partitioned to USER workflows
-// (`workflowSlug != 'net-terms-ar'`, the B2B AR substrate) so they never double up
-// with the B2B credit-hold escalation, which owns net-terms AR dunning.
+// on Invoicing activation: a task when a user-authored document is approved, the
+// dunning ladder for user invoices — a friendly 3-day reminder and three
+// overdue notices (7 / 14 / 30 days) — and a payment receipt. The dunning ladder
+// + approval task are partitioned to USER workflows (`workflowSlug !=
+// 'net-terms-ar'`, the B2B AR substrate) so they never double up with the B2B
+// credit-hold escalation, which owns net-terms AR dunning; the receipt fires for
+// every workflow, B2B AR included.
 //
 // Each dunning seed is a daily scan over the `billing_document` scanner; the
 // exact-day predicate (`daysUntilDue == 3`, `overdueDays == 7/14/30`) fires it once
@@ -123,6 +125,25 @@ export const INVOICING_OVERDUE_30: SystemAutomationSpec = {
     {
       type: 'email.send_campaign',
       config: { builderEmailKey: 'invoicing-overdue-final', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Sends the customer a receipt when a document's balance clears in full — any
+ *  workflow, including the B2B AR ledger (a paid net-terms invoice deserves a
+ *  receipt too), which is why this doesn't share the `USER_INVOICE` guard the
+ *  dunning seeds above use. */
+export const INVOICING_RECEIPT_ON_PAID: SystemAutomationSpec = {
+  name: 'Payment received — send receipt',
+  description: 'Emails the customer a receipt when a billing document is paid in full.',
+  trigger: { kind: 'event', eventType: 'crm.billing_document.paid' },
+  conditions: { logic: 'AND', conditions: [HAS_EMAIL] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'invoicing-receipt', emailType: 'transactional' },
     },
   ],
   locked: false,

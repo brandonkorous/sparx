@@ -45,6 +45,10 @@ export * as marketService from './market';
 
 export * as subscriptionService from './subscription-service';
 export * as shippingService from './shipping-service';
+export { dispatchShippingTrackingWebhook } from './shipping-webhook-dispatch';
+export { quoteOutboundRates } from './outbound-shipment-request';
+export { listFulfillmentLabels } from './fulfillment-label-store';
+export type { FulfillmentLabelRow } from './fulfillment-label-store';
 export * as taxService from './tax-service';
 export * as providerService from './provider-service';
 

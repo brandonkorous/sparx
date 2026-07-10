@@ -117,6 +117,7 @@ export function summarizeTrigger(triggerType: string, triggerConfig: unknown): s
 const SCAN_ENTITY_LABEL: Record<string, string> = {
   customer: 'customers',
   b2b_account: 'B2B accounts',
+  billing_document: 'billing documents',
 };
 
 // ─── status badges ───────────────────────────────────────────────────────────

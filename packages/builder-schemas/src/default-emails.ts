@@ -260,6 +260,16 @@ const invoicingOverdueFinal = (): BuilderNode =>
     button('Pay now', '{{invoice.payUrl}}'),
   ]);
 
+const invoicingReceipt = (): BuilderNode =>
+  body([
+    heading('Payment received — thank you!'),
+    para(
+      'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
+    ),
+    lineItems('invoice.items'),
+    para('Total paid: {{invoice.total}}'),
+  ]);
+
 const chatSatisfaction = (): BuilderNode =>
   body([
     heading('How did we do?'),
@@ -556,6 +566,17 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
     tree: invoicingOverdueFinal(),
+  },
+  {
+    key: 'invoicing-receipt',
+    name: 'Payment receipt',
+    type: 'transactional',
+    category: 'invoice',
+    subject: 'Receipt — {{invoice.number}} paid in full',
+    preheader: 'Thank you for your payment.',
+    sources: ['customer', 'invoice', 'tenant'],
+    refs: ['customerId', 'billingDocumentId'],
+    tree: invoicingReceipt(),
   },
   {
     key: 'chat-satisfaction',

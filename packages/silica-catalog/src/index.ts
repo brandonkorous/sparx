@@ -7,6 +7,7 @@
 // render can consume the same factories the editor does — one catalog, no drift.
 
 export * from './types';
+export * from './attr-binding';
 export * from './commerce';
 export * from './catalog';
 export * from './site-chrome';

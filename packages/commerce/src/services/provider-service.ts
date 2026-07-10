@@ -3,9 +3,13 @@
 // via @sparx/integration-framework's registry; this service mediates
 // every read/write a tenant can perform against the marketplace.
 //
-// Encrypted credentials: the `configEncrypted` jsonb column stores
-// Secret-Manager paths only. Secret values are resolved on demand by
-// the worker that consumes the provider — never persisted on the row.
+// Encrypted credentials: fields named in `bundle.metadata.secretFields`
+// (e.g. a Shippo API token) are AES-256-GCM encrypted before they land in
+// the `configEncrypted` jsonb column — the tenant pastes the raw value in
+// the dashboard, never a Secret Manager path. Non-secret config (carrier
+// account ids, preferred service level, ...) round-trips in the clear.
+// Resolved back to plaintext on demand via the SecretReader chain
+// (packages/commerce/src/lib/secret-reader.ts), never persisted decrypted.
 
 import {
   InstallProviderInput,
@@ -20,7 +24,13 @@ import {
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { Prisma, ProviderInstallation, TxClient } from '@sparx/db';
-import { getProvider, listProviders, type ProviderBundle } from '@sparx/integration-framework';
+import {
+  encryptProviderSecret,
+  getProvider,
+  isEncryptedProviderSecretRef,
+  listProviders,
+  type ProviderBundle,
+} from '@sparx/integration-framework';
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
@@ -104,6 +114,35 @@ export async function resolveActive(
   return serializeInstallation(row);
 }
 
+export interface ActiveProviderContext {
+  installationId: string;
+  providerSlug: string;
+  environment: ProviderEnvironment;
+  config: Record<string, unknown>;
+}
+
+/** Like resolveActive(), but also surfaces the decrypted-at-rest config
+ *  (Secret Manager refs, not raw secrets) a ShippingProvider/PaymentProvider
+ *  call needs to build a ProviderRunContext. */
+export async function resolveActiveConfig(
+  ctx: ServiceContext,
+  kind: ProviderKind
+): Promise<ActiveProviderContext> {
+  const row = await withTenant(ctx, async (tx) =>
+    tx.providerInstallation.findFirst({
+      where: { kind, enabled: true, status: 'active', uninstalledAt: null },
+      orderBy: { installedAt: 'desc' },
+    })
+  );
+  if (!row) throw new CommerceNotFoundError('ProviderInstallation', `kind=${kind}`);
+  return {
+    installationId: row.id,
+    providerSlug: row.providerSlug,
+    environment: row.environment as ProviderEnvironment,
+    config: (row.configEncrypted as Record<string, unknown>) ?? {},
+  };
+}
+
 export async function install(
   ctx: ServiceContext,
   rawInput: unknown
@@ -148,7 +187,10 @@ export async function install(
         enabled: true,
         status,
         label: input.label ?? null,
-        configEncrypted: input.config as Prisma.InputJsonValue,
+        configEncrypted: encryptSecretFields(
+          bundle.metadata.secretFields,
+          input.config
+        ) as Prisma.InputJsonValue,
         scopes: bundle.metadata.requiredScopes,
       },
       select: { id: true },
@@ -194,9 +236,22 @@ export async function updateConfig(ctx: ServiceContext, rawInput: unknown): Prom
       where: { id: input.installationId, uninstalledAt: null },
     });
     if (!before) throw new CommerceNotFoundError('ProviderInstallation', input.installationId);
+    const bundle = getProvider(before.providerSlug);
+    // Merge onto the existing row rather than replacing wholesale, so a
+    // partial update (e.g. rotating one field) doesn't blank out secrets
+    // the caller didn't resubmit.
+    const merged = {
+      ...((before.configEncrypted as Record<string, unknown>) ?? {}),
+      ...input.config,
+    };
     await tx.providerInstallation.update({
       where: { id: input.installationId },
-      data: { configEncrypted: input.config as Prisma.InputJsonValue },
+      data: {
+        configEncrypted: encryptSecretFields(
+          bundle?.metadata.secretFields,
+          merged
+        ) as Prisma.InputJsonValue,
+      },
     });
     await writeAuditLog({
       tx,
@@ -443,5 +498,25 @@ function toMetadata(bundle: ProviderBundle): ProviderMetadata {
     configSchemaJson: bundle.metadata.configSchemaJson,
     webhookPathTemplate: bundle.metadata.webhookPathTemplate,
     requiredScopes: bundle.metadata.requiredScopes,
+    secretFields: bundle.metadata.secretFields ?? [],
   };
+}
+
+/** Encrypt whichever of `config`'s keys are named in the provider's
+ *  `secretFields`. Already-encrypted values (an `enc:` ref carried through
+ *  from a prior save — see updateConfig's merge) and empty/non-string
+ *  values pass through untouched. */
+function encryptSecretFields(
+  secretFields: string[] | undefined,
+  config: Record<string, unknown>
+): Record<string, unknown> {
+  if (!secretFields?.length) return config;
+  const result = { ...config };
+  for (const field of secretFields) {
+    const value = result[field];
+    if (typeof value === 'string' && value.length > 0 && !isEncryptedProviderSecretRef(value)) {
+      result[field] = encryptProviderSecret(value);
+    }
+  }
+  return result;
 }

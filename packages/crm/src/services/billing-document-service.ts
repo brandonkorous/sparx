@@ -195,6 +195,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         shippingTotal: input.shippingTotal,
         surchargeTotal: input.surchargeTotal,
         notes: input.notes ?? null,
+        customerNote: input.customerNote ?? null,
         validUntil: input.validUntil ? new Date(input.validUntil) : null,
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
@@ -292,6 +293,8 @@ export async function update(
         ...(input.shippingTotal !== undefined ? { shippingTotal: input.shippingTotal } : {}),
         ...(input.surchargeTotal !== undefined ? { surchargeTotal: input.surchargeTotal } : {}),
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
+        ...(input.customerNote !== undefined ? { customerNote: input.customerNote } : {}),
+        ...(input.declinedReason !== undefined ? { declinedReason: input.declinedReason } : {}),
         ...(input.validUntil !== undefined
           ? { validUntil: input.validUntil ? new Date(input.validUntil) : null }
           : {}),

@@ -31,26 +31,23 @@ export interface VerifiedWebhook {
  * Verify a raw inbound webhook and return the parsed event. Throws
  * WebhookVerificationError when the signature can't be validated, or
  * `ProviderConfigurationError`-equivalent when the bundle doesn't
- * expose any verifier. Only PaymentProvider currently exposes
- * verifyWebhook; tax/shipping verification flows through the kind that
- * sent the event.
+ * expose any verifier. Payment is the predominant webhook source, so it
+ * takes priority; falls through to the shipping verifier for providers
+ * (like Shippo) that only implement that kind.
  */
 export function verifyInboundWebhook(input: InboundWebhook): VerifiedWebhook {
   const bundle = getProvider(input.providerSlug);
   if (!bundle) {
     throw new WebhookVerificationError(input.providerSlug, 'Provider not registered');
   }
-  // Payment is the predominant webhook source; fall through to other
-  // kinds if a future provider implements verifyWebhook on a non-payment
-  // surface.
-  const paymentProvider = bundle.payment;
-  if (!paymentProvider) {
+  const verifier = bundle.payment ?? bundle.shipping;
+  if (!verifier) {
     throw new WebhookVerificationError(
       input.providerSlug,
       'Provider does not implement verifyWebhook'
     );
   }
-  const event = paymentProvider.verifyWebhook({
+  const event = verifier.verifyWebhook({
     rawBody: input.rawBody,
     signature: input.signature,
     secret: input.signingSecret,

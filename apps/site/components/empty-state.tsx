@@ -1,8 +1,6 @@
 // Friendly empty state with an icon, title, copy, and optional CTA.
 
-import Link from 'next/link';
-
-import { Button } from '@wizeworks/silicaui-react';
+import { ButtonLink } from './button-link';
 
 export interface EmptyStateProps {
   icon?: string;
@@ -24,12 +22,9 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       </h3>
       {description ? <p style={{ margin: 0, maxWidth: '40ch' }}>{description}</p> : null}
       {action ? (
-        <Button
-          render={<Link href={action.href} style={{ marginTop: '0.5rem' }} />}
-          color="primary"
-        >
+        <ButtonLink href={action.href} style={{ marginTop: '0.5rem' }} color="primary">
           {action.label}
-        </Button>
+        </ButtonLink>
       ) : null}
     </div>
   );

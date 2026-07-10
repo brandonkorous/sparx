@@ -39,14 +39,14 @@ model Member {
 }
 
 model Invitation {
-  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organizationId String @map("organization_id") @db.Uuid
-  email          String @db.VarChar(255)
-  role           String @default("editor") @db.VarChar(20)
-  memberType     String @default("staff") @map("member_type") @db.VarChar(20)
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  email          String   @db.VarChar(255)
+  role           String   @default("editor") @db.VarChar(20)
+  memberType     String   @default("staff") @map("member_type") @db.VarChar(20)
   // pending | accepted | revoked | expired
-  status         String @default("pending") @db.VarChar(20)
-  inviterId      String @map("inviter_id") @db.Uuid
+  status         String   @default("pending") @db.VarChar(20)
+  inviterId      String   @map("inviter_id") @db.Uuid
   expiresAt      DateTime @map("expires_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz

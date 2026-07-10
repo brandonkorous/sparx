@@ -1,11 +1,13 @@
-// Deal ↔ order / quote join-table operations (locked decision #5).
+// Deal ↔ order / billing-document (quote) join-table operations (locked
+// decision #5). The `/quotes` URL is kept for stability even though the
+// linked entity is now a BillingDocument — quotes ARE billing documents.
 //
 //   GET    /v1/crm/deals/:id/orders               → list attached orders
 //   POST   /v1/crm/deals/:id/orders               → attach order
 //   DELETE /v1/crm/deals/:id/orders/:orderId      → detach order
-//   GET    /v1/crm/deals/:id/quotes               → list attached quotes
-//   POST   /v1/crm/deals/:id/quotes               → attach quote
-//   DELETE /v1/crm/deals/:id/quotes/:quoteId      → detach quote
+//   GET    /v1/crm/deals/:id/quotes               → list attached documents
+//   POST   /v1/crm/deals/:id/quotes               → attach document
+//   DELETE /v1/crm/deals/:id/quotes/:documentId   → detach document
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -19,12 +21,12 @@ const OrderLinkParams = z.object({
   id: z.string().uuid(),
   orderId: z.string().uuid(),
 });
-const QuoteLinkParams = z.object({
+const DocumentLinkParams = z.object({
   id: z.string().uuid(),
-  quoteId: z.string().uuid(),
+  documentId: z.string().uuid(),
 });
 const AttachOrderBody = z.object({ order_id: z.string().uuid() });
-const AttachQuoteBody = z.object({ quote_id: z.string().uuid() });
+const AttachDocumentBody = z.object({ document_id: z.string().uuid() });
 
 const dealAttachmentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/deals/:id/orders', async (request) => {
@@ -60,7 +62,7 @@ const dealAttachmentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const { id } = PathId.parse(request.params);
-    const rows = await dealService.listAttachedQuotes(toCrmContext(request), id);
+    const rows = await dealService.listAttachedDocuments(toCrmContext(request), id);
     return ok(rows);
   });
 
@@ -68,20 +70,20 @@ const dealAttachmentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireCrmModule(request);
     const { id } = PathId.parse(request.params);
-    const body = AttachQuoteBody.parse(request.body);
-    const link = await dealService.attachQuote(toCrmContext(request), {
+    const body = AttachDocumentBody.parse(request.body);
+    const link = await dealService.attachDocument(toCrmContext(request), {
       dealId: id,
-      quoteId: body.quote_id,
+      documentId: body.document_id,
     });
     reply.code(201);
     return ok(link);
   });
 
-  app.delete('/v1/crm/deals/:id/quotes/:quoteId', async (request, reply) => {
+  app.delete('/v1/crm/deals/:id/quotes/:documentId', async (request, reply) => {
     requireRole(request, 'editor');
     await requireCrmModule(request);
-    const { id, quoteId } = QuoteLinkParams.parse(request.params);
-    await dealService.detachQuote(toCrmContext(request), { dealId: id, quoteId });
+    const { id, documentId } = DocumentLinkParams.parse(request.params);
+    await dealService.detachDocument(toCrmContext(request), { dealId: id, documentId });
     reply.code(204);
   });
   return Promise.resolve();

@@ -14,6 +14,9 @@ import { BuilderRenderer } from '@/components/builder-renderer';
 import { PageView } from '@/components/page-view';
 import { getPublishedBuilderCollection } from '@/lib/builder';
 import { loadBuilderData, postToBuilderRecord } from '@/lib/builder-data';
+import { getPublishedSilicaCollection } from '@/lib/silica';
+import { buildSilicaHost } from '@/lib/silica-data';
+import { SilicaBody } from '@/components/silica-chrome';
 import { getBlogPostBySlug } from '@/lib/content';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
@@ -85,6 +88,26 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
     // Last chance before 404: a tenant-managed redirect for this path.
     await applyRedirect(site.slug, `/blog/${slug}`);
     notFound();
+  }
+
+  // The silica engine's published `cms.blog_post` collection template wins first
+  // (docs/118 Stage 6), mirroring the PDP: render through the shared silica walker
+  // with THIS entry injected as the `blog_post` object scope. The record shape
+  // (`title` / `excerpt` / `featuredImage:{url,alt}` / `date`) is the same one the
+  // sparx path binds, so `postToBuilderRecord` serves both. Null → fall through.
+  const silicaTemplate = await getPublishedSilicaCollection(site.slug, 'cms.blog_post', post.id);
+  if (silicaTemplate) {
+    const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
+      record: { key: 'blog_post', value: postToBuilderRecord(post, site.slug) },
+      currency: site.commerce.defaultCurrency,
+      locale: site.commerce.defaultLocale,
+    });
+    return (
+      <>
+        <ArticleJsonLd post={post} site={site} />
+        <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />
+      </>
+    );
   }
 
   // The generic per-record router (docs/44 §3 B): a published `cms.blog_post`

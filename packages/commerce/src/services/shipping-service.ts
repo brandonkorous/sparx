@@ -18,6 +18,21 @@ import type { ShippingProfile, ShippingRate, ShippingZone, TxClient } from '@spa
 import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
+import {
+  buyOutboundLabel,
+  trackOutboundShipment,
+  tryLiveRates,
+  voidOutboundLabel,
+} from './shipping-provider-bridge';
+import type { LabelResult } from './shipping-provider-bridge';
+
+export {
+  isAddressUsableForLiveRating,
+  resolvePackageForItems,
+  resolveShipFromAddress,
+} from './shipping-request-resolver';
+export type { PackagingItem } from './shipping-request-resolver';
+export type { LabelResult } from './shipping-provider-bridge';
 
 // ─── Row shapes ──────────────────────────────────────────────────────
 
@@ -438,11 +453,13 @@ export async function bootstrapDefaults(ctx: ServiceContext): Promise<{ created:
 
 // ─── Real-time rate shopping ─────────────────────────────────────────
 //
-// Real-time provider integration is wired through the provider
-// marketplace; this entry point will iterate active ShippingProvider
-// installations once that bridge lands. Until then it returns the
-// matching manual rates for the destination + cart subtotal so the
-// checkout flow has something to render.
+// Manual zone/rate-band rates are always computed as the guaranteed
+// fallback. When a tenant has an active ShippingProvider installation
+// AND the request carries a real (non-placeholder) fromAddress/toAddress,
+// live carrier rates are fetched and merged in too — tagged with the
+// real provider slug instead of 'sparx-manual'. A carrier outage or an
+// unconfigured warehouse address just means fewer rates, never a broken
+// checkout (see tryLiveRates).
 
 export async function rateShipment(
   ctx: ServiceContext,
@@ -454,15 +471,18 @@ export async function rateShipment(
   const totalWeightGrams = request.packages.reduce((s, p) => s + p.weight, 0);
   const totalItemValueCents = request.packages.reduce((s, p) => s + (p.declaredValueCents ?? 0), 0);
 
-  const matchingZones = await withTenant(ctx, async (tx) => {
-    const zones = await tx.shippingZone.findMany({
-      include: { rates: true },
-      orderBy: { priority: 'desc' },
-    });
-    return zones.filter((z) => zoneMatchesAddress(z.targeting, request.toAddress.country));
-  });
+  const [matchingZones, liveRates] = await Promise.all([
+    withTenant(ctx, async (tx) => {
+      const zones = await tx.shippingZone.findMany({
+        include: { rates: true },
+        orderBy: { priority: 'desc' },
+      });
+      return zones.filter((z) => zoneMatchesAddress(z.targeting, request.toAddress.country));
+    }),
+    tryLiveRates(ctx, request),
+  ]);
 
-  const out: RateOption[] = [];
+  const out: RateOption[] = [...liveRates];
   for (const zone of matchingZones) {
     for (const rate of zone.rates) {
       if (rate.currency !== request.currency) continue;
@@ -488,56 +508,34 @@ export async function rateShipment(
   return out.sort((a, b) => a.amountCents - b.amountCents);
 }
 
-// ─── Label purchase (provider-bridged) ───────────────────────────────
-
-export interface LabelResult {
-  fulfillmentId: string;
-  trackingNumber: string;
-  trackingUrl: string;
-  labelMediaId: string;
-  carrier: string;
-  costCents: number;
-}
+// ─── Label purchase / void / tracking (provider-bridged) ─────────────
+//
+// Delegates to shipping-provider-bridge.ts, which resolves the tenant's
+// active ShippingProvider installation and calls it. Unlike rate
+// quoting, these are hard failures when no provider is installed — a
+// merchant explicitly asked to buy/void/track a specific label.
 
 export function buyLabel(
-  _ctx: ServiceContext,
-  _input: {
-    orderId: string;
-    fulfillmentId: string;
-    providerSlug: string;
-    rateRef: string;
-  }
+  ctx: ServiceContext,
+  input:
+    | { fulfillmentId: string; rateRef: string }
+    | { fulfillmentId: string; request: ShipmentRequest; service: string; carrier: string }
 ): Promise<LabelResult> {
-  // Provider integration lands together with the marketplace UI.
-  // Reject with a typed validation error rather than NOT_IMPLEMENTED so
-  // dashboards can render a clean "configure a carrier first" message.
-  return Promise.reject(
-    new CommerceValidationError(
-      'No ShippingProvider is installed yet — connect a carrier from Commerce → Providers to buy labels.'
-    )
-  );
+  return buyOutboundLabel(ctx, input);
 }
 
 export function voidLabel(
-  _ctx: ServiceContext,
-  _input: { fulfillmentId: string; providerSlug: string; labelRef: string }
+  ctx: ServiceContext,
+  input: { fulfillmentId: string; labelRef: string }
 ): Promise<void> {
-  return Promise.reject(
-    new CommerceValidationError(
-      'No ShippingProvider is installed yet — void labels via the carrier dashboard for now.'
-    )
-  );
+  return voidOutboundLabel(ctx, input);
 }
 
 export function trackShipment(
-  _ctx: ServiceContext,
-  _input: { providerSlug: string; trackingNumber: string; carrier: string }
+  ctx: ServiceContext,
+  input: { trackingNumber: string; carrier: string }
 ): Promise<{ status: string; lastUpdate: string }> {
-  return Promise.reject(
-    new CommerceValidationError(
-      'No ShippingProvider is installed yet — tracking lookup will activate after install.'
-    )
-  );
+  return trackOutboundShipment(ctx, input);
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────

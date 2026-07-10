@@ -229,6 +229,12 @@ const EnvSchema = z
     //                                 (Orders API + a Restricted Data Token for buyer PII); gated
     //                                 additionally on Amazon's restricted-PII security audit.
     CHANNELS_TOKEN_KEY: z.string().optional(),
+    // Provider-installation secret-encryption key (docs/09 provider marketplace) —
+    // AES-256-GCM key encrypting tenant-pasted provider credentials (e.g. a Shippo
+    // API token) at rest, keyed by PROVIDER_SECRET_KEY (32 bytes, base64 or hex;
+    // rotating it invalidates every stored provider secret — tenants reconnect).
+    // Read directly via process.env in @sparx/integration-framework/secret-crypto.
+    PROVIDER_SECRET_KEY: z.string().optional(),
     META_APP_ID: z.string().optional(),
     META_APP_SECRET: z.string().optional(),
     PINTEREST_APP_ID: z.string().optional(),

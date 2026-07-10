@@ -289,10 +289,10 @@ export default function QuickstartPage() {
 
           <Step n={4} title="React to events">
             <p>
-              Creating that order emitted an <InlineCode>order.created</InlineCode> event on the
+              Creating that order emitted an <InlineCode>order.placed</InlineCode> event on the
               internal bus. To receive events in your own app, register a webhook and verify each
-              signed delivery. Today the subscribable events are content, media, and redirect events
-              — the full model is in{' '}
+              signed delivery. Subscribable events span orders, content, media, redirects, and email
+              delivery — the full catalog is in{' '}
               <DocLink href="/docs/guides/webhooks">Webhooks &amp; events</DocLink>:
             </p>
             <CodeBlock tabs={[{ label: 'webhook.ts', code: WEBHOOK_CODE }]} />

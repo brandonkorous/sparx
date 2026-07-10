@@ -41,7 +41,6 @@ model B2BAccount {
   customers  Customer[]
   deals      Deal[]
   activities CrmActivity[]
-  quotes     Quote[]
 
   // Commerce module inverse relations
   priceLists       PriceList[]

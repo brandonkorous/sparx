@@ -587,7 +587,10 @@ async function resolveCart(
   };
 }
 
-// ── quote ──────────────────────────────────────────────────────────────────
+// ── quote (a BillingDocument — quotes are billing documents; `ref.quoteId` is
+// a billing-document id, kept as its own merge source/ref name so "Quote
+// received"/"Quote expiring" templates keep their `{{quote.*}}` merge tags
+// distinct from `{{invoice.*}}`) ──────────────────────────────────────────
 
 async function resolveQuote(
   ctx: ServiceContext,
@@ -595,42 +598,36 @@ async function resolveQuote(
   slug: string
 ): Promise<Record<string, unknown>> {
   if (!ref?.quoteId) return {};
-  const quote = await withTenant(ctx, (tx) =>
-    tx.quote.findUnique({
+  const doc = await withTenant(ctx, (tx) =>
+    tx.billingDocument.findUnique({
       where: { id: ref.quoteId! },
       select: {
-        quoteNumber: true,
+        number: true,
         status: true,
         total: true,
         validUntil: true,
         b2bAccountId: true,
-        items: {
-          orderBy: { createdAt: 'asc' },
-          select: {
-            name: true,
-            description: true,
-            quantity: true,
-            unitPrice: true,
-            lineTotal: true,
-          },
+        lines: {
+          orderBy: { sortOrder: 'asc' },
+          select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
         },
       },
     })
   );
-  if (!quote) return {};
+  if (!doc) return {};
   return {
-    number: quote.quoteNumber,
-    status: quote.status,
-    total: money(quote.total),
-    validUntil: dateLabel(quote.validUntil),
-    reviewUrl: quote.b2bAccountId
-      ? siteLink(slug, `/account/b2b/${quote.b2bAccountId}/quotes`)
+    number: doc.number ?? '',
+    status: doc.status,
+    total: money(doc.total),
+    validUntil: dateLabel(doc.validUntil),
+    reviewUrl: doc.b2bAccountId
+      ? siteLink(slug, `/account/b2b/${doc.b2bAccountId}/quotes`)
       : siteLink(slug, '/account'),
-    items: quote.items.map((i) => ({
-      name: firstText(i.name, i.description),
-      quantity: qty(i.quantity),
-      unitPrice: money(i.unitPrice),
-      lineTotal: money(i.lineTotal),
+    items: doc.lines.map((l) => ({
+      name: l.description,
+      quantity: qty(l.quantity),
+      unitPrice: money(l.unitPrice),
+      lineTotal: money(l.lineTotal),
     })),
   };
 }

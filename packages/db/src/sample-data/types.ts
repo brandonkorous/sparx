@@ -335,9 +335,9 @@ export interface SampleDataCounts {
   reviews: number;
   questions: number;
   bookings: number;
-  quotes: number;
   deals: number;
-  /** Authored billing documents (docs/87 invoicing surface). */
+  /** Authored billing documents (docs/87 invoicing surface) — quotes are
+   *  billing documents on the system b2b-quotes workflow, so this covers both. */
   billingDocuments: number;
   bundles: number;
   movements: number;

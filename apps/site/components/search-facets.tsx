@@ -5,11 +5,12 @@
 // and works without client JS — identical interaction model to FacetPanel.
 //
 // Selecting multiple values within a facet sends repeated params (e.g.
-// ?vendor=Bosch&vendor=Cummins); the search page reads the first today (the
+// ?vendor=Northwind&vendor=Acme); the search page reads the first today (the
 // api-rest filter is single-value per field) but the markup is multi-ready.
 
 import { Button, Input } from '@wizeworks/silicaui-react';
 
+import { ButtonLink } from './button-link';
 import type { SearchFacets } from '@/lib/commerce';
 
 export interface SearchFacetValues {
@@ -114,18 +115,14 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
         <Button type="submit" color="primary" style={{ flex: 1 }}>
           Apply
         </Button>
-        <Button
-          render={
-            <a
-              href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
-              aria-label="Clear filters"
-            />
-          }
+        <ButtonLink
+          href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
+          aria-label="Clear filters"
           color="neutral"
           variant="ghost"
         >
           Clear
-        </Button>
+        </ButtonLink>
       </div>
 
       {!hasAnyFacet ? (

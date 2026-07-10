@@ -22,6 +22,8 @@ import * as documentWorkflowService from '../services/document-workflow-service'
 import * as pipelineService from '../services/pipeline-service';
 import * as segmentService from '../services/segment-service';
 import { captureFormLead } from '../services/lead-service';
+import { bootstrapB2bQuoteWorkflow } from '../services/b2b-quote-service';
+import { bootstrapCustomerEstimateWorkflow } from '../services/customer-estimate-service';
 import type { ConsumerContext } from './registry';
 
 // Bound the one-time backfill so activation (awaited before the PATCH returns)
@@ -73,6 +75,20 @@ export function registerModuleActivationConsumers(ctx: ConsumerContext): (() => 
       const serviceCtx = { tenantId: event.tenantId, userId: undefined };
       await documentWorkflowService.bootstrapDefaultWorkflows(serviceCtx);
       await documentLineTypeService.bootstrapDefaultLineTypes(serviceCtx);
+      // The direct-customer estimate-request surface (docs/87 §15 convergence)
+      // needs its system workflow to exist the moment a customer can reach it.
+      await bootstrapCustomerEstimateWorkflow(serviceCtx);
+    }),
+
+    // B2B quotes (docs/87 §15 convergence): seed the system `b2b-quotes`
+    // workflow on activation so it's visible + customizable immediately,
+    // rather than relying solely on the lazy self-heal on first quote.
+    ctx.bus.subscribe('module.activated', async (event) => {
+      const slug = (event.payload as { module?: string } | null)?.module;
+      if (slug !== 'b2b') return;
+      invalidateModuleCache(event.tenantId, 'b2b');
+      const serviceCtx = { tenantId: event.tenantId, userId: undefined };
+      await bootstrapB2bQuoteWorkflow(serviceCtx);
     }),
   ];
 }

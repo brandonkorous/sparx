@@ -81,6 +81,17 @@ interface ReturnLabel {
   labelRef: string;
   trackingNumber: string | null;
   trackingUrl: string | null;
+  labelMediaId: string | null;
+  costCents: number;
+}
+
+const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3100';
+
+// Mirrors apps/dashboard's other public-media-redirect call sites (product
+// media panel, builder brand lib) — the one resolver that works for both
+// stored uploads and hot-linked keys.
+function labelUrl(mediaAssetId: string, tenantSlug: string): string {
+  return `${PUBLIC_API_URL}/v1/public/media/${encodeURIComponent(mediaAssetId)}?tenant=${encodeURIComponent(tenantSlug)}`;
 }
 
 interface ReturnDetail {
@@ -114,6 +125,7 @@ export async function ReturnDetailContent({ id }: Props) {
     if ((err as ApiRestError).code === 'NOT_FOUND') notFound();
     throw err;
   }
+  const tenant = await api.get<{ slug: string }>('/v1/tenant');
 
   return (
     <div className="flex flex-col gap-6">
@@ -229,6 +241,63 @@ export async function ReturnDetailContent({ id }: Props) {
               </p>
             </div>
             <ReturnRefundForm returnId={ret.id} preferredOutcome={ret.preferredOutcome} />
+          </CardBody>
+        </Card>
+      )}
+
+      {(ret.status === 'approved' ||
+        ret.status === 'awaiting_shipment' ||
+        ret.status === 'in_transit') &&
+        ret.labels.length === 0 && (
+          <Card>
+            <CardBody>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-semibold">Return label</h3>
+                <p className="opacity-70">
+                  No label was auto-purchased — connect a carrier from Commerce → Providers, or
+                  print one manually and email it to the customer.
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+        )}
+
+      {ret.labels.length > 0 && (
+        <Card>
+          <CardBody>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Return label</h3>
+            </div>
+            <div className="flex flex-col gap-2">
+              {ret.labels.map((lbl) => (
+                <div key={lbl.id} className="flex flex-row flex-wrap items-center gap-3 text-sm">
+                  <Badge color="success" variant="soft" size="sm">
+                    ${(lbl.costCents / 100).toFixed(2)}
+                  </Badge>
+                  {lbl.trackingNumber && <code className="text-xs">{lbl.trackingNumber}</code>}
+                  {lbl.labelMediaId && (
+                    <a
+                      href={labelUrl(lbl.labelMediaId, tenant.slug)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-module hover:underline"
+                    >
+                      Print label
+                    </a>
+                  )}
+                  {lbl.trackingUrl && (
+                    <a
+                      href={lbl.trackingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-module hover:underline"
+                    >
+                      Track shipment
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
           </CardBody>
         </Card>
       )}

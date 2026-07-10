@@ -15,7 +15,9 @@
 //               commerce).
 //   inventory → a default operating warehouse (standalone WMS path).
 //   b2b       → a default (inactive) tenant-wide purchase-approval rule, + a
-//               default warehouse (inventory rides free with b2b).
+//               default warehouse (inventory rides free with b2b), + the
+//               system b2b-quotes BillingDocument workflow (quotes are
+//               BillingDocuments — the retired Quote model's consolidation).
 //   chat      → a starter bank of quick replies.
 //
 // Separately, SAVED-VIEW PRESETS (docs/104 §5.A item 5) — a tenant-wide starter
@@ -34,6 +36,7 @@
 import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import { commerceSiteService, shippingService, taxService } from '@sparx/commerce';
 import {
+  b2bQuoteService,
   documentLineTypeService,
   documentWorkflowService,
   getPlatformBus,
@@ -111,6 +114,10 @@ async function provisionForModule(tenantId: string, slug: ProvisionedModule): Pr
         await inventoryService.bootstrapDefaultWarehouse(ctx);
       }
       await bootstrapDefaultApprovalRule(ctx);
+      // Quotes are BillingDocuments on the system b2b-quotes workflow — a tenant
+      // should see + be able to customize it immediately (unlike net-terms-ar,
+      // which stays a hidden substrate).
+      await b2bQuoteService.bootstrapB2bQuoteWorkflow(ctx);
       break;
     }
     case 'chat': {

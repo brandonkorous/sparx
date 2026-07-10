@@ -37,7 +37,6 @@ export async function summarizeSampleDataOnTx(
     reviews,
     questions,
     bookings,
-    quotes,
     deals,
     bundles,
     movements,
@@ -54,7 +53,6 @@ export async function summarizeSampleDataOnTx(
     tx.productReview.count({ where: { tenantId, product: { handle: samplePrefix } } }),
     tx.productQuestion.count({ where: { tenantId, product: { handle: samplePrefix } } }),
     tx.booking.count({ where: { tenantId, service: { settings: sampleMeta } } }),
-    tx.quote.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.deal.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.bundle.count({ where: { tenantId, bundleProduct: { handle: samplePrefix } } }),
     tx.inventoryMovement.count({ where: { tenantId, source: SAMPLE_MOVEMENT_SOURCE } }),
@@ -62,6 +60,8 @@ export async function summarizeSampleDataOnTx(
       where: { tenantId, originalFilename: { startsWith: SAMPLE_MEDIA_FILENAME_PREFIX } },
     }),
   ]);
+  // billingDocuments covers quotes too now (quotes are billing documents on the
+  // system b2b-quotes workflow) — no separate quotes count.
   const [aiPrompts, toolCalls, billingDocuments] = await Promise.all([
     tx.aiPromptTemplate.count({ where: { tenantId, metadata: sampleMeta } }),
     tx.auditLog.count({ where: { tenantId, entityType: 'McpToolCall', diff: sampleMeta } }),
@@ -80,7 +80,6 @@ export async function summarizeSampleDataOnTx(
     reviews,
     questions,
     bookings,
-    quotes,
     deals,
     billingDocuments,
     bundles,
@@ -104,7 +103,6 @@ export function countsTotal(c: SampleDataCounts): number {
     c.reviews +
     c.questions +
     c.bookings +
-    c.quotes +
     c.deals +
     c.billingDocuments +
     c.bundles +

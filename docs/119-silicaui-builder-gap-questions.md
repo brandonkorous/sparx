@@ -1,8 +1,8 @@
 # 119 — silicaui-builder: The Gap Questions (a generic-first evaluation)
 
-**Version:** 1.0
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-09
+**Last Updated:** 2026-07-10
 
 > **Purpose.** [Doc 118](118-builder-silicaui-html-migration.md) chose to **keep sparx's builder engine** and only retarget its rendering — a decision forced by what `@wizeworks/silicaui-builder` (0.8.0) **cannot yet do**. This doc turns those gaps into **open design questions**, framed **generically** — "how should a _domain-blind_ visual builder engine solve X?", with sparx as the _motivating instance_, never the shape of the answer. The goal is to decide whether the better long-term move is **not** re-skinning sparx's editor, but **investing in silicaui-builder** so it becomes the engine any host (sparx first) can adopt — [doc 118's Phase F](118-builder-silicaui-html-migration.md#14-the-destination-adopting-the-engine-later-phase-f-gated), pulled forward.
 >
@@ -208,6 +208,122 @@ silicaui-html **declares** binding/repeat/action in its schema and **lowers** th
 - **Generic problem (the most important).** sparx's builder achieves "what you see is what ships" by having the **canvas and the storefront call the same `renderLeaf`**. silicaui splits rendering into the **engine's canvas renderer** and silicaui-html's **static `toHtml`** — _two_ renderers, and neither resolves published data. Two renderers is a standing drift risk and the reason a host must rebuild the live-render path.
 - **Open questions.** Should silicaui ship **one** framework-neutral, data-capable renderer (Q3) that the editor canvas AND every host's published surface both invoke — making preview==production _structural_? Is the React projection (silicaui-react) a _third_ renderer to keep in sync, or generated from the same walk? How does the behavior runtime (`data-sui-*`) stay identical across editor-preview (autoplay off) and live?
 - **Candidate generic direction.** A single `silicaui-html` renderer (static + optional resolvers) shared by engine-canvas and host-live, with React as a _generated_ projection of the same walk — the design sparx proved with one shared `renderLeaf`. **This is the highest-leverage thing silicaui-builder could adopt from sparx**, and it turns Q1–Q5 from "host rebuilds it" into "the family ships it once."
+
+---
+
+## Part 9 — Concrete defects from the live adoption (2026-07-10)
+
+Unlike Q1–Q19 (design questions), these are **verified defects found while shipping the
+storefront on the family**, each with a reproduction and a minimal fix. They are small,
+and each one forced sparx to carry a bridge it should not own.
+
+**Status against 0.14.0** (verified against the installed tarballs, not the changelog):
+Q20 and Q21 are **resolved**. Q22 is **new**, and it is what still blocks deleting the
+Q20 bridge — the binding Q20 asked for shipped, but the resolver cannot use it on the
+one node shape it exists for.
+
+### Q20 — A bound value could reach text and `src`, but never an arbitrary ATTRIBUTE — ✅ **shipped in 0.14.0**
+
+- **Generic problem.** `DataBinding` was closed to `value | collection | action`, and
+  `fillValue` picked its destination from the node's tag: `img`/`source` → `attrs.src`,
+  `input` → `attrs.value` (0.12), everything else → children (text). There was no way to
+  say "bind this ref into THIS attribute."
+- **Motivating instance (sparx).** A product card must link to its product. Binding an
+  `<a>` replaced its children with the URL string and destroyed the card, so
+  **a data-driven product grid could not navigate** — the single most basic thing a
+  storefront does.
+- **Resolution (0.14.0).** `DataBinding` gained `{ kind: 'value', ref, attr? }`, and
+  `fillValue(node, value, attr)` writes `attrs[attr]` on an element / `props[attr]` on a
+  component, still through `sanitizeElement`'s per-tag allowlist + `isSafeUrl` (confirmed:
+  a `javascript:` payload in host data is dropped). Exactly the proposed shape.
+- **Two follow-ups, both minor:**
+  1. No authoring helper sets it — `bind(node, ref)` still takes no third argument, so a
+     host must assign `node.data = { kind: 'value', ref, attr }` by hand. A `bind(node,
+ref, { attr })` overload would close it.
+  2. An empty value writes an empty attribute: `String(value ?? '')` yields `href=""`, an
+     anchor that silently reloads the current page. Consider omitting the attribute when
+     the resolved value is `''`/nullish (or an explicit `omitWhenEmpty`).
+
+### Q21 — The `render` prop was unusable from a React Server Component — ✅ **resolved (0.13.0), verified on 0.14.0**
+
+- **Generic problem.** `@wizeworks/silicaui-react` is a `'use client'` module. From a
+  Server Component, `render={<Link/>}` is an element crossing the RSC → client boundary;
+  React serializes it and the receiving component saw no `.props` during SSR. Button then
+  did `mergeProps(ownProps, render.props)` → `TypeError: Cannot read properties of
+undefined (reading 'className')`. **It failed at request time only** — `tsc` and `eslint`
+  were perfectly happy. (`children` survives the same boundary because React _renders_ it
+  rather than introspecting it.)
+- **Motivating instance (sparx).** Migrating `apps/site` onto silicaui-react broke five
+  server components at once, including the storefront home page, `/products`, and
+  `/search` — all HTTP 500, all green in CI.
+- **Resolution.** 0.13.0 shipped `mergeProps(ours, theirs = {})`. Verified live on 0.14.0
+  from a throwaway server-component route: `<Button render={<Link href="…"/>}>` renders a
+  correct `<a class="btn btn-primary btn-lg" href="…">`. `.props` is in fact present; the
+  default is a safety net rather than the load-bearing fix.
+- **Also shipped (0.14.0).** `buttonClasses` / `badgeClasses` / `clickableCardClasses` are
+  now exported from `@wizeworks/silicaui-react/server` with no `'use client'` banner, so a
+  Server Component can style a plain element directly:
+  `<Link className={buttonClasses({ color, variant, size })}>`. That keeps `<Button>` out
+  of the client bundle of a page whose only need was a styled anchor. Sparx uses it in
+  `apps/site/components/button-link.tsx`.
+- **Residual nit.** The `= {}` default means a future prop-forwarding regression would drop
+  the `href` **silently** instead of throwing. A dev-mode warning when `render` is an
+  element with no `props` would surface it.
+
+### Q22 — `resolveTree` stops resolving a node's children once it fills that node's binding — 🔴 **open (0.14.0)**
+
+- **Generic problem.** In `resolve.ts`:
+
+  ```js
+  if (node.data?.kind === 'value' && host.resolveBinding) {
+    const resolved = host.resolveBinding(node.data.ref, scope);
+    if (resolved.visible === false) return undefined;
+    const filled = fillValue(node, resolved.value, node.data.attr);
+    const { data: _data, ...rest } = filled;
+    return { ...rest }; // ← returns WITHOUT resolving children
+  }
+  ```
+
+  Early-returning is **correct for a text binding** — `fillValue` just replaced the
+  children with the value, so there is nothing left to walk. It is **wrong for an
+  attribute binding**, where `fillValue` deliberately preserves the children. They are
+  never resolved.
+
+- **Consequence.** Q20's new `attr` binding is unusable on any node that contains other
+  bindings — which is precisely, and only, the shape it was added for. Bind a card's
+  `<a href>` and every binding inside it survives to the HTML as a dead `data-sui-bind`
+  marker over placeholder text.
+
+- **Reproduction** (against installed 0.14.0; grid repeats, card carries the attr binding):
+
+  ```
+  ATTR BINDING:  <a class="card" href="/p/aurora"><h3 data-sui-bind="title">PLACEHOLDER</h3></a>
+  CONTROL:       <a class="card"><h3>Aurora Lamp</h3></a>
+  ```
+
+- **Candidate generic direction.** Recurse when the binding filled an attribute:
+
+  ```js
+  return node.data.attr && rest.children
+    ? { ...rest, children: resolveChildren(rest.children, host, scope) }
+    : { ...rest };
+  ```
+
+- **Sparx's bridge (delete-on-fix).** `@sparx/silica-catalog/src/attr-binding.ts` —
+  `bindAttr(el, 'href', 'url')` tucks a bound `<input type="hidden" name="__sui-attr:href">`
+  **leaf** inside the element (a leaf has no children to lose), and `hoistAttrBindings`
+  lifts the resolved value onto the parent's real attribute and strips the carrier between
+  `resolveTree` and `toHtml`. It composes only documented behavior and grants no sanitiser
+  bypass. It also, incidentally, gets Q20's follow-up (2) right: an empty value emits no
+  attribute at all.
+
+- **Two adjacent sharp edges** found while diagnosing this, worth documenting in the
+  engine's own docs:
+  - `repeat(node, ref)` **overwrites `node.data`**. Marking the same node as both a
+    collection and an attribute binding silently keeps only the collection.
+  - `resolveTree` returns the tree **unchanged** when the host implements neither
+    `resolveBinding` nor `resolveCollection` — a host that supplies a differently-shaped
+    resolver gets a silent no-op rather than an error.
 
 ---
 

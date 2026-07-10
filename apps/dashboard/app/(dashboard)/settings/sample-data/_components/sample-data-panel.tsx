@@ -36,9 +36,9 @@ const COUNT_LABELS: [keyof SampleDataCounts, string, string][] = [
   ['reviews', 'review', 'reviews'],
   ['questions', 'question', 'questions'],
   ['bookings', 'booking', 'bookings'],
-  ['quotes', 'quote', 'quotes'],
   ['deals', 'deal', 'deals'],
-  ['billingDocuments', 'invoice', 'invoices'],
+  // Covers invoices AND quotes — quotes are billing documents too.
+  ['billingDocuments', 'billing document', 'billing documents'],
   ['bundles', 'bundle', 'bundles'],
   ['articles', 'article', 'articles'],
   ['images', 'image', 'images'],

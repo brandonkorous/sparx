@@ -106,35 +106,16 @@ async function resolveContact(
   return {};
 }
 
-// ─── quote ───────────────────────────────────────────────────────────────────
+// ─── billing document (invoicing) — quotes ARE billing documents ─────────────
+//
+// A "quote" is a BillingDocument on the system `b2b-quotes` workflow. Since the
+// engine's resolver registry is one-resolver-per-event-type (registerResolver
+// overwrites, it doesn't compose), `hydrateBillingDocument` produces BOTH the
+// always-present `invoice.*` fields AND, when the document belongs to the
+// b2b-quotes workflow, the `quote.*` fields "Quote received"/"Quote expiring"
+// templates key on — one hydrator per event, two field namespaces.
 
-async function hydrateQuote(ctx: TenantCtx, quoteId: string): Promise<ResolvedFields> {
-  const q = await ctx.tx.quote.findUnique({
-    where: { id: quoteId },
-    select: {
-      id: true,
-      quoteNumber: true,
-      status: true,
-      total: true,
-      currency: true,
-      validUntil: true,
-      customerId: true,
-      b2bAccountId: true,
-    },
-  });
-  if (!q) return {};
-  return {
-    'quote.id': q.id,
-    'quote.number': q.quoteNumber,
-    'quote.status': q.status,
-    'quote.total': num(q.total),
-    'quote.currency': q.currency,
-    'quote.validUntil': q.validUntil,
-    ...(await resolveContact(ctx, { customerId: q.customerId, b2bAccountId: q.b2bAccountId })),
-  };
-}
-
-// ─── billing document (invoicing) ─────────────────────────────────────────────
+const B2B_QUOTES_WORKFLOW_SLUG = 'b2b-quotes';
 
 const BILLING_SELECT = {
   id: true,
@@ -144,11 +125,12 @@ const BILLING_SELECT = {
   balance: true,
   total: true,
   currency: true,
+  validUntil: true,
   assignedUserId: true,
   customerId: true,
   b2bAccountId: true,
   workflow: { select: { slug: true } },
-  stage: { select: { stageType: true } },
+  stage: { select: { stageType: true, name: true } },
 } as const;
 
 interface BillingLike {
@@ -159,11 +141,12 @@ interface BillingLike {
   balance: unknown;
   total: unknown;
   currency: string;
+  validUntil: Date | null;
   assignedUserId: string | null;
   customerId: string | null;
   b2bAccountId: string | null;
   workflow: { slug: string };
-  stage: { stageType: string };
+  stage: { stageType: string; name: string };
 }
 
 /** Field map for a billing document. `overdueDays` / `daysUntilDue` are COMPUTED
@@ -189,6 +172,24 @@ function billingFields(d: BillingLike, now: number): ResolvedFields {
   };
 }
 
+/** `quote.*` fields — same document, a template-facing alias namespace.
+ *  `stageName` is the tenant-renamable-but-system-seeded stage name ("Draft" /
+ *  "Submitted" / "Under Review" / "Quoted" / "Accepted" / "Declined" /
+ *  "Expired") — finer-grained than `stageType`, which several of these stages
+ *  share, so a rule can gate on the exact lifecycle moment (e.g. "Submitted"
+ *  for b2b-quote-received, not just any draft-type stage). */
+function quoteFields(d: BillingLike): ResolvedFields {
+  return {
+    'quote.id': d.id,
+    'quote.number': d.number,
+    'quote.status': d.status,
+    'quote.total': num(d.total),
+    'quote.currency': d.currency,
+    'quote.validUntil': d.validUntil,
+    'quote.stageName': d.stage.name,
+  };
+}
+
 async function hydrateBillingDocument(ctx: TenantCtx, docId: string): Promise<ResolvedFields> {
   const d = await ctx.tx.billingDocument.findUnique({
     where: { id: docId },
@@ -197,6 +198,7 @@ async function hydrateBillingDocument(ctx: TenantCtx, docId: string): Promise<Re
   if (!d) return {};
   return {
     ...billingFields(d, Date.now()),
+    ...(d.workflow.slug === B2B_QUOTES_WORKFLOW_SLUG ? quoteFields(d) : {}),
     ...(await resolveContact(ctx, { customerId: d.customerId, b2bAccountId: d.b2bAccountId })),
   };
 }
@@ -448,22 +450,17 @@ function attachmentNames(value: unknown): string[] {
 
 // ─── registration ─────────────────────────────────────────────────────────────
 
-// Quote lifecycle events (CRM publishes `crm.quote.*`). The seed catalog triggers
-// `b2b-quote-received` off `crm.quote.submitted`; the rest round-trip so an existing
-// rule on any quote event still resolves.
-const QUOTE_EVENTS = [
-  'crm.quote.submitted',
-  'crm.quote.accepted',
-  'crm.quote.declined',
-  'crm.quote.expired',
-];
-
-// Billing-document events (CRM publishes `crm.billing_document.*`).
+// Billing-document events (CRM publishes `crm.billing_document.*`). Quotes are
+// BillingDocuments, so `hydrateBillingDocument` also produces `quote.*` fields
+// for documents on the b2b-quotes workflow (see above) — there is no separate
+// quote event list, the resolver registry is one-resolver-per-event-type.
 const BILLING_EVENTS = [
   'crm.billing_document.created',
   'crm.billing_document.stage_changed',
   'crm.billing_document.finalized',
   'crm.billing_document.paid',
+  'crm.billing_document.voided',
+  'crm.billing_document.converted',
 ];
 
 // B2B account events. A gated apply→approve flow + its `b2b.account.approved`
@@ -485,12 +482,9 @@ export function installEntityResolvers(): void {
   if (installed) return;
   installed = true;
 
-  for (const ev of QUOTE_EVENTS) {
-    registerResolver(ev, (ctx, p) => hydrateQuote(ctx, str(p.quoteId ?? p.id)));
-  }
   for (const ev of BILLING_EVENTS) {
     registerResolver(ev, (ctx, p) =>
-      hydrateBillingDocument(ctx, str(p.documentId ?? p.billingDocumentId ?? p.id))
+      hydrateBillingDocument(ctx, str(p.documentId ?? p.billingDocumentId ?? p.quoteId ?? p.id))
     );
   }
   for (const ev of B2B_ACCOUNT_EVENTS) {
@@ -575,22 +569,25 @@ export function installEntityResolvers(): void {
     }));
   });
 
-  // Quote expiry (interval scan). Submitted (awaiting-decision) quotes whose
-  // `validUntil` falls within the next 48h — the b2b-quote-expiring nudge fans out
-  // over these. The interval cadence's once-per-entity dedupe fires a single
-  // reminder as a quote enters the window; a quote that's accepted/declined/expired
-  // leaves the `submitted` set and stops matching.
+  // Quote expiry (interval scan). Awaiting-decision quotes — BillingDocuments on
+  // the b2b-quotes workflow in a `draft`-type stage (Draft/Submitted/Under
+  // Review/Quoted) — whose `validUntil` falls within the next 48h. The interval
+  // cadence's once-per-entity dedupe fires a single reminder as a quote enters
+  // the window; a quote that's accepted/declined/expired leaves the
+  // `draft`-type set and stops matching.
   registerScanner('quote', async (ctx: TenantCtx): Promise<ScannedRow[]> => {
     const now = Date.now();
     const horizon = new Date(now + 48 * 3_600_000);
-    const rows = await ctx.tx.quote.findMany({
+    const rows = await ctx.tx.billingDocument.findMany({
       where: {
-        status: 'submitted',
+        deletedAt: null,
+        workflow: { slug: B2B_QUOTES_WORKFLOW_SLUG },
+        stage: { stageType: 'draft' },
         validUntil: { not: null, gt: new Date(now), lte: horizon },
       },
       select: {
         id: true,
-        quoteNumber: true,
+        number: true,
         status: true,
         total: true,
         currency: true,
@@ -605,7 +602,7 @@ export function installEntityResolvers(): void {
         id: q.id,
         fields: {
           'quote.id': q.id,
-          'quote.number': q.quoteNumber,
+          'quote.number': q.number,
           'quote.status': q.status,
           'quote.total': num(q.total),
           'quote.currency': q.currency,

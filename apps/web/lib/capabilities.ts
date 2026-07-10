@@ -255,7 +255,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Document tax & surcharges'),
       live('Payments & AR aging'),
       live('Branded, printable documents'),
-      planned('Quote → invoice conversion'),
+      live('Quote → order conversion'),
     ],
   },
   {

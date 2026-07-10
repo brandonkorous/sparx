@@ -20,12 +20,14 @@ interface PageProps {
 export default async function SuppressionsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
   const [prefs, { data: items, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<SuppressionRow[]>(
       `/v1/email/suppressions?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -50,7 +52,7 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
           </p>
           <ListToolbar
             enableViewToggle
-            searchable={false}
+            searchPlaceholder="Search email address…"
             primaryAction={
               <EntityCreateButton
                 entityType="suppression"
@@ -72,8 +74,12 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
           <CardBody className="p-0">
             <EmptyState
               icon={<ShieldOff className="h-5 w-5" />}
-              title="No suppressed addresses"
-              description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually with the New button."
+              title={q ? 'No suppressed addresses match this search' : 'No suppressed addresses'}
+              description={
+                q
+                  ? 'Clear the search to see every suppressed address.'
+                  : 'Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually with the New button.'
+              }
               actions={
                 <EntityCreateButton
                   entityType="suppression"

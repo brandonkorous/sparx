@@ -12,6 +12,9 @@ import { SectionRenderer } from '@/components/section-renderer';
 import { BuilderRenderer } from '@/components/builder-renderer';
 import { getPublishedBuilderCollection } from '@/lib/builder';
 import { loadBuilderData, productToBuilderRecord } from '@/lib/builder-data';
+import { getPublishedSilicaCollection } from '@/lib/silica';
+import { buildSilicaHost, productToSilicaRecord } from '@/lib/silica-data';
+import { SilicaBody } from '@/components/silica-chrome';
 import {
   getProduct,
   listFitmentDomains,
@@ -86,7 +89,32 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     notFound();
   }
 
-  // The generic per-record router (docs/44 §3 B): a published Builder
+  // The silica engine's published `commerce.product` collection template wins over
+  // every path below (docs/118 Stage 6): it renders the PDP through the shared
+  // silica walker — the interactive buy box included — with THIS product injected as
+  // the `product` object scope (a collection-of-one). Null when no silica product
+  // template is published, so the storefront falls through to the sparx builder
+  // collection / legacy section paths unchanged. Sample-data previews keep the
+  // legacy path (they design against fixtures before a real product exists).
+  if (!sample) {
+    const silicaTemplate = await getPublishedSilicaCollection(
+      site.slug,
+      'commerce.product',
+      product.id
+    );
+    if (silicaTemplate) {
+      const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
+        record: { key: 'product', value: productToSilicaRecord(product, site.slug) },
+        currency: site.commerce.defaultCurrency,
+        locale: site.commerce.defaultLocale,
+      });
+      // Bare, like the catch-all route — the root layout's silica chrome frames it
+      // at the Outlet; the template owns its own section widths.
+      return <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />;
+    }
+  }
+
+  // The sparx-builder per-record router (docs/44 §3 B): a published Builder
   // `commerce.product` collection template renders the PDP through the node tree
   // — with the interactive Tier-2 buy-box — binding THIS product as `product`.
   // Falls through to the legacy section template when none is published, so a

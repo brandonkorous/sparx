@@ -54,7 +54,7 @@ model User {
   assignedTasks            Task[]                    @relation("TaskAssignedTo")
   createdTasks             Task[]                    @relation("TaskCreatedBy")
   completedTasks           Task[]                    @relation("TaskCompletedBy")
-  createdQuotes            Quote[]                   @relation("QuoteCreatedBy")
+  billingDocumentsCreated  BillingDocument[]         @relation("BillingDocumentCreatedBy")
   billingDocumentsAssigned BillingDocument[]         @relation("BillingDocumentAssignee")
   billingLinesAsTechnician BillingDocumentLine[]     @relation("BillingLineTechnician")
   billingSnapshotsAuthored BillingDocumentSnapshot[] @relation("BillingSnapshotAuthor")
@@ -84,18 +84,18 @@ model User {
 // stateless; this table backs the rotating refresh token + device tracking.
 
 model Session {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  token     String   @unique @db.VarChar(255) // SHA-256 of refresh token
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  token                String   @unique @db.VarChar(255) // SHA-256 of refresh token
   // Which org the session is currently acting in (docs/114 Part A). NULL → the
   // user's default membership (their own tenant). The JWT `tid` is minted from
   // this (falling back to users.tenant_id during expand); switching org re-mints.
-  activeOrganizationId String? @map("active_organization_id") @db.Uuid
-  expiresAt DateTime @map("expires_at") @db.Timestamptz
-  ipAddress String?  @map("ip_address") @db.Inet
-  userAgent String?  @map("user_agent") @db.Text
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  activeOrganizationId String?  @map("active_organization_id") @db.Uuid
+  expiresAt            DateTime @map("expires_at") @db.Timestamptz
+  ipAddress            String?  @map("ip_address") @db.Inet
+  userAgent            String?  @map("user_agent") @db.Text
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

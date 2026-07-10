@@ -41,14 +41,14 @@ export async function clearSampleDataOnTx(
     await tx.cartItem.deleteMany({ where: { tenantId, variantId: { in: variantIds } } });
   }
 
-  // Orders (cascade items/payments/fulfillments/returns), quotes, deals.
+  // Orders (cascade items/payments/fulfillments/returns), deals.
   await tx.order.deleteMany({ where: { tenantId, metadata: sampleMeta } });
-  await tx.quote.deleteMany({ where: { tenantId, metadata: sampleMeta } });
   await tx.deal.deleteMany({ where: { tenantId, metadata: sampleMeta } });
 
-  // Billing documents (cascade lines/payments/snapshots). The workflow/stages/
-  // line-types are durable config (seeded on activation) — left intact, like
-  // pipelines and warehouses.
+  // Billing documents (cascade lines/payments/snapshots) — quotes are billing
+  // documents too, so this covers both. The workflow/stages/line-types are
+  // durable config (seeded on activation) — left intact, like pipelines and
+  // warehouses.
   await tx.billingDocument.deleteMany({ where: { tenantId, metadata: sampleMeta } });
 
   // The demo B2B account behind the net-terms AR documents above (tagged `sample`);

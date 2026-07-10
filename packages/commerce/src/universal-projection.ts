@@ -435,40 +435,46 @@ const b2bAccountProjector: EntityProjector = {
     }),
 };
 
-// ─── crm: quote (no soft-delete column) ──────────────────────────────
+// ─── invoicing: billing document (quote/estimate/invoice/receipt) ─────
+// (soft-deletable — excludes deletedAt rows, unlike the other CRM projectors
+// above which have no soft-delete column)
 
-const quoteProjector: EntityProjector = {
-  entityType: 'quote',
-  module: 'crm',
+const billingDocumentProjector: EntityProjector = {
+  entityType: 'billing_document',
+  module: 'invoicing',
   listIdsForTenant: (ctx: ProjectorContext) =>
     withTenant(ctx, async (tx) => {
-      const rows = await tx.quote.findMany({ select: { id: true } });
+      const rows = await tx.billingDocument.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
       return rows.map((r) => r.id);
     }),
   project: (ctx: ProjectorContext, id: string) =>
     withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
-      const q = await tx.quote.findFirst({
-        where: { id },
+      const doc = await tx.billingDocument.findFirst({
+        where: { id, deletedAt: null },
         include: {
           customer: { select: { firstName: true, lastName: true, company: true, email: true } },
           b2bAccount: { select: { companyName: true } },
         },
       });
-      if (!q) return null;
-      const who = q.b2bAccount?.companyName ?? (q.customer ? customerName(q.customer) : undefined);
+      if (!doc) return null;
+      const who =
+        doc.b2bAccount?.companyName ?? (doc.customer ? customerName(doc.customer) : undefined);
       return {
-        id: universalId(ctx.tenantId, 'quote', q.id),
+        id: universalId(ctx.tenantId, 'billing_document', doc.id),
         tenant_id: ctx.tenantId,
-        entity_type: 'quote',
-        module: 'crm',
-        record_id: q.id,
-        title: q.quoteNumber,
-        subtitle: who ?? q.status,
-        keywords: keywords([q.quoteNumber, who]),
-        status: q.status,
-        url: `/crm/quotes/${q.id}`,
-        created_at: epoch(q.createdAt),
-        updated_at: epoch(q.updatedAt),
+        entity_type: 'billing_document',
+        module: 'invoicing',
+        record_id: doc.id,
+        title: doc.number ?? 'Untitled document',
+        subtitle: who ?? doc.status,
+        keywords: keywords([doc.number, who]),
+        status: doc.status,
+        url: `/invoicing/documents/${doc.id}`,
+        created_at: epoch(doc.createdAt),
+        updated_at: epoch(doc.updatedAt),
       };
     }),
 };
@@ -807,7 +813,7 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   discountProjector,
   giftCardProjector,
   b2bAccountProjector,
-  quoteProjector,
+  billingDocumentProjector,
   // Phase 2 — breadth (commerce)
   collectionProjector,
   categoryProjector,

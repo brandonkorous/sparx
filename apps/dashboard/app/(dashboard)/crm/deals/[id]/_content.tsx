@@ -47,9 +47,9 @@ interface OrderSummary {
   placedAt: string | null;
 }
 
-interface QuoteSummary {
+interface DocumentSummary {
   id: string;
-  quoteNumber: string;
+  number: string | null;
   status: string;
   currency: string;
   total: string | number;
@@ -91,27 +91,28 @@ export async function DealDetailContent({ id }: Props) {
   }
 
   const customerFilter = deal.customerId ? `&customer_id=${deal.customerId}` : '';
+  const documentCustomerFilter = deal.customerId ? `&customerId=${deal.customerId}` : '';
   const [
     pipeline,
     attachedOrders,
-    attachedQuotes,
+    attachedDocuments,
     activities,
     customer,
     candidateOrdersResp,
-    candidateQuotesResp,
+    candidateDocumentsResp,
   ] = await Promise.all([
     api.get<PipelineDetail>(`/v1/crm/pipelines/${deal.pipelineId}`),
     api.get<OrderSummary[]>(`/v1/crm/deals/${deal.id}/orders`),
-    api.get<QuoteSummary[]>(`/v1/crm/deals/${deal.id}/quotes`),
+    api.get<DocumentSummary[]>(`/v1/crm/deals/${deal.id}/quotes`),
     api.get<ActivityRow[]>(`/v1/crm/activities?deal_id=${deal.id}&limit=20`),
     deal.customerId
       ? api.get<CustomerSummary>(`/v1/crm/customers/${deal.customerId}`).catch(() => null)
       : Promise.resolve(null),
     api.getPaged<OrderSummary[]>(`/v1/crm/orders?take=100&sort_by=placedAt${customerFilter}`),
-    api.getPaged<QuoteSummary[]>(`/v1/crm/quotes?take=100&sort_by=createdAt${customerFilter}`),
+    api.getPaged<DocumentSummary[]>(`/v1/invoicing/documents?limit=100${documentCustomerFilter}`),
   ]);
   const candidateOrders = candidateOrdersResp.data;
-  const candidateQuotes = candidateQuotesResp.data;
+  const candidateDocuments = candidateDocumentsResp.data;
   const stage = pipeline.stages.find((s) => s.id === deal.stageId);
 
   return (
@@ -259,23 +260,23 @@ export async function DealDetailContent({ id }: Props) {
                   <div className="flex flex-row items-center gap-2">
                     <FileText className="h-4 w-4" /> Attached quotes
                     <Badge color="neutral" variant="soft" size="sm">
-                      {attachedQuotes.length}
+                      {attachedDocuments.length}
                     </Badge>
                   </div>
                 </CardTitle>
                 <AttachQuotePopover
                   dealId={deal.id}
-                  attachedIds={attachedQuotes.map((q) => q.id)}
-                  candidates={candidateQuotes.map((q) => ({
-                    id: q.id,
-                    quoteNumber: q.quoteNumber,
-                    status: q.status,
-                    total: q.total.toString(),
-                    currency: q.currency,
+                  attachedIds={attachedDocuments.map((d) => d.id)}
+                  candidates={candidateDocuments.map((d) => ({
+                    id: d.id,
+                    number: d.number,
+                    status: d.status,
+                    total: d.total.toString(),
+                    currency: d.currency,
                   }))}
                 />
               </div>
-              {attachedQuotes.length === 0 ? (
+              {attachedDocuments.length === 0 ? (
                 <EmptyState
                   title="No attached quotes"
                   description="Quotes attached to this deal show up here. Use the Attach quote button above."
@@ -292,31 +293,31 @@ export async function DealDetailContent({ id }: Props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {attachedQuotes.map((q) => (
-                      <tr key={q.id}>
+                    {attachedDocuments.map((d) => (
+                      <tr key={d.id}>
                         <td>
                           <Link
-                            href={`/crm/quotes/${q.id}`}
+                            href={`/invoicing/documents/${d.id}`}
                             className="hover:text-module text-sm font-medium hover:underline"
                           >
-                            {q.quoteNumber}
+                            {d.number ?? '—'}
                           </Link>
                         </td>
                         <td>
-                          <Badge color={statusTone(q.status)} variant="soft" size="sm">
-                            {statusLabel(q.status)}
+                          <Badge color={statusTone(d.status)} variant="soft" size="sm">
+                            {statusLabel(d.status)}
                           </Badge>
                         </td>
                         <td className="text-right tabular-nums">
-                          {q.currency} {Number(q.total).toLocaleString()}
+                          {d.currency} {Number(d.total).toLocaleString()}
                         </td>
                         <td>
                           <p className="text-base-content/70 text-sm">
-                            {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
+                            {d.validUntil ? new Date(d.validUntil).toLocaleDateString() : '—'}
                           </p>
                         </td>
                         <td className="text-right">
-                          <DetachQuoteButton dealId={deal.id} quoteId={q.id} />
+                          <DetachQuoteButton dealId={deal.id} documentId={d.id} />
                         </td>
                       </tr>
                     ))}

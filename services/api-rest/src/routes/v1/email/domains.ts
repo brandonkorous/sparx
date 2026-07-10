@@ -17,6 +17,7 @@ import { requireEmailModule, toEmailContext } from '../../../lib/email-context.j
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListDomainsQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -27,6 +28,7 @@ const emailDomainRoutes: FastifyPluginAsync = (app) => {
     await requireEmailModule(request);
     const q = ListDomainsQuery.parse(request.query);
     const { items, total } = await domainService.list(toEmailContext(request), {
+      q: q.q,
       take: q.take,
       skip: q.skip,
     });

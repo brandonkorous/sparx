@@ -146,10 +146,12 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, ctx } = await publicCommerceContext(request);
     const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
 
-    // Build a ShipmentRequest from the cart: one package summing variant
-    // weights × quantity (defaulting to a nominal weight when unset), plus the
-    // line subtotal as declared value. shippingService.rateShipment matches it
-    // against the tenant's configured zones/rates.
+    // Build a ShipmentRequest from the cart: one consolidated package whose
+    // weight/dimensions fall back variant → product → a nominal default
+    // (resolvePackageForItems), summed against the tenant's real ship-from
+    // warehouse address (resolveShipFromAddress). shippingService.rateShipment
+    // matches this against manual zones/rates AND — when a carrier is
+    // installed and the addresses are real, not placeholders — live rates too.
     const cart = await withTenant({ tenantId }, (tx) =>
       tx.cart.findFirst({
         where: { id: cartId },
@@ -159,7 +161,17 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
             select: {
               quantity: true,
               subtotalCents: true,
-              variant: { select: { weightGrams: true } },
+              variant: {
+                select: {
+                  weightGrams: true,
+                  lengthMm: true,
+                  widthMm: true,
+                  heightMm: true,
+                  product: {
+                    select: { weightGrams: true, lengthMm: true, widthMm: true, heightMm: true },
+                  },
+                },
+              },
             },
           },
         },
@@ -167,24 +179,33 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     );
     if (!cart) throw notFound('Cart', cartId);
 
-    const totalWeight = cart.items.reduce(
-      (sum, it) => sum + (it.variant.weightGrams ?? 500) * it.quantity,
-      0
-    );
     const totalValue = cart.items.reduce((sum, it) => sum + it.subtotalCents, 0);
+    const shipmentPackage = shippingService.resolvePackageForItems(
+      cart.items.map((it) => ({
+        quantity: it.quantity,
+        weightGrams: it.variant.weightGrams,
+        lengthMm: it.variant.lengthMm,
+        widthMm: it.variant.widthMm,
+        heightMm: it.variant.heightMm,
+        productWeightGrams: it.variant.product.weightGrams,
+        productLengthMm: it.variant.product.lengthMm,
+        productWidthMm: it.variant.product.widthMm,
+        productHeightMm: it.variant.product.heightMm,
+      }))
+    );
+    shipmentPackage.declaredValueCents = totalValue;
 
-    // The rate engine matches on destination country + weight/value bands; we
-    // pass a single consolidated package with nominal dimensions and no hazmat
-    // (per-line hazmat handling is a future enhancement). line1/city are
-    // required by ShipmentAddress but unused by the manual-rate matcher, so we
-    // send placeholders for the quote step.
-    // Zone matching only reads toAddress.country; the other address fields are
-    // required by the type but unused for rate selection, so the quote passes
-    // placeholders (the real ship-from/ship-to are captured at the shipping
-    // step). signatureRequired/saturdayDelivery default to false.
-    const placeholderAddress = { line1: '—', city: '—', country: 'US' };
+    // Zone matching + live carrier rating only read toAddress.country/postal;
+    // the destination street/city aren't known until the shipping step, so
+    // this quote step sends placeholders for them — that's fine, it's the
+    // fromAddress (resolved below to the tenant's real warehouse) that live
+    // rating needs to be genuine. signatureRequired/saturdayDelivery default
+    // to false.
+    const fromAddress = await shippingService
+      .resolveShipFromAddress(ctx)
+      .catch(() => ({ line1: '—', city: '—', country: 'US' }));
     const rates = await shippingService.rateShipment(ctx, {
-      fromAddress: placeholderAddress,
+      fromAddress,
       toAddress: {
         line1: '—',
         city: '—',
@@ -194,15 +215,7 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       currency: cart.currency,
       signatureRequired: false,
       saturdayDelivery: false,
-      packages: [
-        {
-          weight: totalWeight,
-          dimensions: { lengthMm: 0, widthMm: 0, heightMm: 0 },
-          containsHazmat: false,
-          hazmatClass: 'none' as const,
-          declaredValueCents: totalValue,
-        },
-      ],
+      packages: [shipmentPackage],
     });
 
     // Map the service RateOption shape → the storefront's ShippingRate shape.

@@ -20,6 +20,7 @@ interface AccountNavItem {
 const NAV: AccountNavItem[] = [
   { label: 'Overview', href: '/account' },
   { label: 'Orders', href: '/account/orders' },
+  { label: 'Estimates', href: '/account/estimates' },
   { label: 'Bookings', href: '/account/bookings' },
   { label: 'Wishlist', href: '/account/wishlist' },
   { label: 'Addresses', href: '/account/addresses' },

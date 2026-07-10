@@ -142,6 +142,19 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     return ok(page);
   });
 
+  app.get('/v1/public/builder/silica/collection', async (request) => {
+    const q = CollectionQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const page = await siteService.getPublishedByRecordType(
+      { tenantId, propertyId },
+      q.recordType,
+      q.recordId
+    );
+    if (!page) throw notFound('Builder collection template', q.recordType);
+    return ok(page);
+  });
+
   // The compiled per-tenant Surface stylesheet (docs/47 §5): the CSS for every
   // class authored across the tenant's published trees. Always 200 (never 404) —
   // `css` is '' until classes are authored, so the storefront can inject

@@ -88,6 +88,7 @@ export interface StageOption {
 export interface WorkflowOption {
   id: string;
   name: string;
+  slug: string;
   isDefault: boolean;
   stages: StageOption[];
 }
@@ -116,6 +117,9 @@ export interface InvoiceWizardProps {
   currentUserId?: string;
   preselectedCustomerId?: string | null;
   preselectedAccountId?: string | null;
+  /** Workflow id to start on, e.g. deep-linking "New Quote" from B2B onto the
+   *  system `b2b-quotes` workflow. Falls back to the tenant's default workflow. */
+  preselectedWorkflowId?: string | null;
 }
 
 // A line composed locally before the document exists. `display` drives the running
@@ -183,6 +187,7 @@ function InvoiceWizardInner({
   currentUserId,
   preselectedCustomerId,
   preselectedAccountId,
+  preselectedWorkflowId,
 }: InvoiceWizardProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -194,9 +199,14 @@ function InvoiceWizardInner({
   const overlayActionsTarget = useDetailFooterNode();
 
   const defaultWorkflow = workflows.find((w) => w.isDefault) ?? workflows[0];
+  const preselectedWorkflow = preselectedWorkflowId
+    ? workflows.find((w) => w.id === preselectedWorkflowId)
+    : undefined;
 
   // Bill to
-  const [workflowId, setWorkflowId] = React.useState(defaultWorkflow?.id ?? '');
+  const [workflowId, setWorkflowId] = React.useState(
+    (preselectedWorkflow ?? defaultWorkflow)?.id ?? ''
+  );
   const [customerId, setCustomerId] = React.useState(preselectedCustomerId ?? '');
   const [b2bAccountId, setB2bAccountId] = React.useState(preselectedAccountId ?? '');
   const [assignToMe, setAssignToMe] = React.useState(false);
@@ -298,7 +308,7 @@ function InvoiceWizardInner({
   // `createdDocId` — the form only offers "Open document".)
   const dirty =
     !createdDocId &&
-    (workflowId !== (defaultWorkflow?.id ?? '') ||
+    (workflowId !== ((preselectedWorkflow ?? defaultWorkflow)?.id ?? '') ||
       customerId !== (preselectedCustomerId ?? '') ||
       b2bAccountId !== (preselectedAccountId ?? '') ||
       assignToMe ||

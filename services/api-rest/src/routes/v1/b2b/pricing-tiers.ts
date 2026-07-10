@@ -12,7 +12,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { prisma, withTenant } from '@sparx/db';
+import { Prisma, prisma, withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
@@ -22,6 +22,7 @@ const PathId = z.object({ id: z.string().uuid() });
 const PathIdOid = z.object({ id: z.string().uuid(), oid: z.string().uuid() });
 
 const ListTiersQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -90,7 +91,18 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
     const take = Math.min(q.take ?? 50, 250);
     const skip = q.skip ?? 0;
 
-    const where = { tenantId: ctx.tenantId, deletedAt: null };
+    const where: Prisma.B2bPricingTierWhereInput = {
+      tenantId: ctx.tenantId,
+      deletedAt: null,
+      ...(q.q
+        ? {
+            OR: [
+              { name: { contains: q.q, mode: 'insensitive' } },
+              { description: { contains: q.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const { tiers, total } = await withTenant(ctx, async (tx) => {
       const [tiers, total] = await Promise.all([
         tx.b2bPricingTier.findMany({

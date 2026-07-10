@@ -26,25 +26,25 @@
 // `redirectUrls` is a comma-joined allowlist; the authorize endpoint requires
 // an EXACT match against it.
 model OauthApplication {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   // Client display name from DCR (`client_name`). Nullable: DCR permits a
   // client to register without one.
-  name         String?  @db.VarChar(255)
-  icon         String?  @db.Text
+  name         String? @db.VarChar(255)
+  icon         String? @db.Text
   // Arbitrary client metadata JSON (stringified) supplied at registration.
-  metadata     String?  @db.Text
-  clientId     String   @unique @map("client_id") @db.VarChar(255)
+  metadata     String? @db.Text
+  clientId     String  @unique @map("client_id") @db.VarChar(255)
   // Confidential clients only; empty/absent for public (PKCE) clients.
-  clientSecret String?  @map("client_secret") @db.Text
+  clientSecret String? @map("client_secret") @db.Text
   // Comma-joined allowlist of exact redirect URIs.
-  redirectUrls String   @map("redirect_urls") @db.Text
+  redirectUrls String  @map("redirect_urls") @db.Text
   // 'web' | 'public' | 'native' | 'user-agent-based'
-  type         String   @db.VarChar(32)
+  type         String  @db.VarChar(32)
   // Kill switch: a disabled client is refused at authorize + token.
-  disabled     Boolean  @default(false)
+  disabled     Boolean @default(false)
   // The staff user who was signed in when the client registered (null for
   // anonymous DCR). onDelete cascade so removing a user reaps their clients.
-  userId       String?  @map("user_id") @db.Uuid
+  userId       String? @map("user_id") @db.Uuid
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -89,11 +89,11 @@ model OauthAccessToken {
 // consent endpoint; our MCP flow drives consent through a first-party page so
 // this may stay sparse, but the table exists for the full plugin contract.
 model OauthConsent {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clientId     String   @map("client_id") @db.VarChar(255)
-  userId       String   @map("user_id") @db.Uuid
-  scopes       String   @db.Text
-  consentGiven Boolean  @map("consent_given")
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId     String  @map("client_id") @db.VarChar(255)
+  userId       String  @map("user_id") @db.Uuid
+  scopes       String  @db.Text
+  consentGiven Boolean @map("consent_given")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

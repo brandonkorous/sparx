@@ -16,7 +16,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { withTenant, type Prisma, type TxClient } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
@@ -65,6 +65,7 @@ const RejectBody = z.object({
 });
 
 const QueueQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   account_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
@@ -209,13 +210,28 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const q = QueueQuery.parse(request.query);
 
-    const where = {
+    const where: Prisma.OrderWhereInput = {
       tenantId: ctx.tenantId,
       status: 'pending_approval',
       channel: 'b2b_portal',
       ...(q.account_id
         ? {
             customer: { b2bAccountId: q.account_id },
+          }
+        : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { orderNumber: { contains: q.q, mode: 'insensitive' } },
+              { customer: { firstName: { contains: q.q, mode: 'insensitive' } } },
+              { customer: { lastName: { contains: q.q, mode: 'insensitive' } } },
+              { customer: { email: { contains: q.q, mode: 'insensitive' } } },
+              {
+                customer: {
+                  b2bAccount: { companyName: { contains: q.q, mode: 'insensitive' } },
+                },
+              },
+            ],
           }
         : {}),
     };

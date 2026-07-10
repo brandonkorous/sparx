@@ -111,6 +111,9 @@ export const CreateBillingDocumentInput = z
     shippingTotal: z.number().min(0).default(0),
     surchargeTotal: z.number().min(0).default(0),
     notes: z.string().max(5000).optional().nullable(),
+    // Customer-visible note — `notes` above stays staff-internal (mirrors the
+    // retired Quote model's internal/customer note split).
+    customerNote: z.string().max(2000).optional().nullable(),
     validUntil: z.string().datetime().optional().nullable(),
     // Net-terms due date. Usually set automatically on finalize from the B2B
     // account's payment terms (§8); settable by hand for an explicit term.
@@ -135,6 +138,10 @@ export const UpdateBillingDocumentInput = z
     shippingTotal: z.number().min(0),
     surchargeTotal: z.number().min(0),
     notes: z.string().max(5000).nullable(),
+    customerNote: z.string().max(2000).nullable(),
+    // Set alongside a `void`-type stage advance (e.g. Declined) — why the
+    // document was rejected. Not stage-driven itself; the caller sets both.
+    declinedReason: z.string().max(500).nullable(),
     validUntil: z.string().datetime().nullable(),
     dueAt: z.string().datetime().nullable(),
     metadata: z.record(z.string(), z.unknown()),

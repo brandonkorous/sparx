@@ -7,6 +7,9 @@ import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-rea
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
+import { FulfillmentLabelPanel } from './_components/fulfillment-label-panel';
+import type { FulfillmentLabelDTO } from '../../order-label-actions';
+
 interface OrderItem {
   id: string;
   sku: string;
@@ -80,12 +83,21 @@ export async function OrderDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [payments, refunds, fulfillments, customer] = await Promise.all([
+  const [payments, refunds, fulfillments, customer, tenant] = await Promise.all([
     api.get<PaymentRow[]>(`/v1/crm/orders/${order.id}/payments`),
     api.get<RefundRow[]>(`/v1/crm/orders/${order.id}/refunds`),
     api.get<FulfillmentRow[]>(`/v1/crm/orders/${order.id}/fulfillments`),
     api.get<CustomerSummary>(`/v1/crm/customers/${order.customerId}`).catch(() => null),
+    api.get<{ slug: string }>('/v1/tenant'),
   ]);
+
+  const fulfillmentLabels = await Promise.all(
+    fulfillments.map((f) =>
+      api
+        .get<FulfillmentLabelDTO[]>(`/v1/crm/orders/${order.id}/fulfillments/${f.id}/labels`)
+        .catch(() => [] as FulfillmentLabelDTO[])
+    )
+  );
 
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
@@ -272,8 +284,8 @@ export async function OrderDetailContent({ id }: Props) {
               <p className="text-base-content/70 text-sm">No fulfillments yet.</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {fulfillments.map((f) => (
-                  <div key={f.id} className="flex flex-col gap-1">
+                {fulfillments.map((f, i) => (
+                  <div key={f.id} className="flex flex-col gap-2">
                     <div className="flex flex-row justify-between">
                       <div className="flex flex-row items-center gap-2">
                         <Badge color={statusTone(f.status)} variant="soft" size="sm">
@@ -286,6 +298,13 @@ export async function OrderDetailContent({ id }: Props) {
                         {f.shippedAt ? new Date(f.shippedAt).toLocaleDateString() : '—'}
                       </p>
                     </div>
+                    <FulfillmentLabelPanel
+                      orderId={order.id}
+                      fulfillmentId={f.id}
+                      fulfillmentStatus={f.status}
+                      tenantSlug={tenant.slug}
+                      initialLabels={fulfillmentLabels[i] ?? []}
+                    />
                   </div>
                 ))}
               </div>

@@ -42,6 +42,7 @@ async function provider<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 export interface ListDomainsQuery {
+  q?: string;
   take?: number;
   skip?: number;
 }
@@ -52,14 +53,18 @@ export async function list(
 ): Promise<{ items: SendingDomain[]; total: number }> {
   const take = Math.min(query.take ?? 50, 250);
   const skip = query.skip ?? 0;
+  const where: Prisma.SendingDomainWhereInput = {
+    ...(query.q ? { domain: { contains: query.q, mode: 'insensitive' } } : {}),
+  };
   return withTenant(ctx, async (tx) => {
     const [items, total] = await Promise.all([
       tx.sendingDomain.findMany({
+        where,
         orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
         take,
         skip,
       }),
-      tx.sendingDomain.count(),
+      tx.sendingDomain.count({ where }),
     ]);
     return { items, total };
   });

@@ -7,15 +7,24 @@
 import { describe, expect, it } from 'vitest';
 import { resolveTree, toHtml, type DataScope, type ResolveHost } from '@wizeworks/silicaui-html';
 
-import { buyBox, collectionHeader, featuredProducts, productCard, productGrid } from './commerce';
+import {
+  buyBox,
+  collectionDetailPage,
+  collectionHeader,
+  featuredProducts,
+  productCard,
+  productDetailPage,
+  productGrid,
+} from './commerce';
 import { COMMERCE_CATALOG } from './catalog';
+import { renderSilicaBody } from './render';
 
 // A trivial host mirroring what @sparx/builder-schemas' resolver does — short refs
 // off the scoped item, `commerce.product`/`product` off fixed data — inline so this
 // package carries no cross-dependency.
 const PRODUCTS = [
-  { image: '/aurora.png', title: 'Aurora Lamp', price: 149 },
-  { image: '/dune.png', title: 'Dune Chair', price: 320 },
+  { image: '/aurora.png', title: 'Aurora Lamp', price: 149, url: '/products/aurora-lamp' },
+  { image: '/dune.png', title: 'Dune Chair', price: 320, url: '/products/dune-chair' },
 ];
 const PRODUCT = {
   image: '/solo.png',
@@ -24,15 +33,26 @@ const PRODUCT = {
   description: 'A tidy desk.',
   variantId: 'var_solo_default',
 };
+// A collection carrying its OWN products (the shape the storefront injects) — its
+// `products` is a scope-relative field, resolved off the in-scope collection item.
+const COLLECTION = {
+  name: 'Lighting',
+  description: 'Warm, sculptural light.',
+  products: PRODUCTS,
+};
 
 const host: ResolveHost = {
   resolveBinding(ref: string, scope: DataScope) {
     const item = scope.item as Record<string, unknown> | undefined;
     return { value: item?.[ref] };
   },
-  resolveCollection(ref: string) {
+  resolveCollection(ref: string, scope: DataScope) {
     if (ref === 'commerce.product') return PRODUCTS;
     if (ref === 'product') return [PRODUCT]; // object source → collection-of-one
+    if (ref === 'collection') return [COLLECTION];
+    // Scope-relative `products` — the collection's own list, off the in-scope item
+    // (mirrors the sparx resolver's `item.products` re-rooting).
+    if (ref === 'products') return (scope.item as { products?: unknown[] })?.products ?? [];
     return [];
   },
 };
@@ -86,6 +106,16 @@ describe('product_grid — data-bound product collection', () => {
     const html = toHtml(resolveTree(productGrid(), host));
     expect(html).toContain('149');
     expect(html).toContain('320');
+  });
+
+  // A grid whose cards navigate nowhere is not a storefront. The card IS the
+  // link: an <a> whose href is bound per-item through the attr-binding bridge.
+  // Rendered via `renderSilicaBody` because that is the seam that hoists.
+  it('renders each card as a link to ITS OWN product', () => {
+    const html = renderSilicaBody(productGrid(), { host });
+    expect(html).toContain('href="/products/aurora-lamp"');
+    expect(html).toContain('href="/products/dune-chair"');
+    expect(html).not.toContain('<input'); // the carrier never ships
   });
 });
 
@@ -154,6 +184,39 @@ describe('buy_box — self-scoping product detail', () => {
     const html = toHtml(resolveTree(buyBox(), noVariant));
     expect(html).toContain('name="variantId"');
     expect(html).toContain('value=""');
+  });
+});
+
+describe('product_detail_page — the composed PDP body', () => {
+  it('renders the buy box for the in-scope product AND the cross-sell rail', () => {
+    // The storefront injects the routed product as the `product` object scope and
+    // the catalog as `commerce.product`; the page composes both — the interactive
+    // buy box (this product) above a rail (the catalog). Through the hoisting seam.
+    const html = renderSilicaBody(productDetailPage(), { host });
+    // buy box: the pinned product, once, with a live add-to-cart form.
+    expect(html).toContain('Solo Desk');
+    expect(html).toMatch(/<form[^>]*data-sui-action="add-to-cart"/);
+    expect(html).toContain('value="var_solo_default"');
+    // rail: the catalog products link to their own PDPs.
+    expect(html).toContain('href="/products/aurora-lamp"');
+    expect(html).toContain('href="/products/dune-chair"');
+    expect(html).not.toContain('<input type="hidden" name="__sui-attr'); // carriers hoisted away
+  });
+});
+
+describe('collection_detail_page — header + the collection’s own products', () => {
+  it('renders the collection name/description AND a card per product IN the collection', () => {
+    const html = renderSilicaBody(collectionDetailPage(), { host });
+    expect(html).toContain('Lighting'); // the collection name (scope-relative to the collection)
+    expect(html).toContain('Warm, sculptural light.'); // its description
+    // the collection's OWN products (a scope-relative `products` repeat, NOT the catalog)
+    expect(html).toContain('Aurora Lamp');
+    expect(html).toContain('Dune Chair');
+    expect((html.match(/Lamp|Chair/g) ?? []).length).toBe(2);
+    // each card links to its product's PDP
+    expect(html).toContain('href="/products/aurora-lamp"');
+    expect(html).toContain('href="/products/dune-chair"');
+    expect(html).not.toContain('<input type="hidden" name="__sui-attr'); // carriers hoisted away
   });
 });
 

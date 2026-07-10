@@ -319,6 +319,15 @@ module "secrets" {
     # meta-app-secret, pinterest-app-secret) land here when each partner app is
     # approved — they don't exist until then.
     "channels-token-key",
+    # Provider-installation secret-encryption key (docs/09) — AES-256-GCM key
+    # encrypting tenant-pasted provider credentials (e.g. a Shippo API token)
+    # stored on provider_installations.configEncrypted. Bound by api-rest only
+    # (packages/commerce/src/lib/secret-reader.ts). NOT gated on any partner
+    # approval — generate + add a version now:
+    #   gcloud secrets versions add provider-secret-key --data-file=- \
+    #     <<< "$(openssl rand -base64 32)"
+    # Rotating it invalidates every stored provider secret (tenants reconnect).
+    "provider-secret-key",
     # WizeWorks operator console (docs/apps/admin/build-plan.md). Synced into the
     # `wize-admin-secrets` k8s Secret by bootstrap.yml (components=wize-admin), NOT
     # into sparx-app-secrets — EXCEPT `sparx-internal-operator-token`, which BOTH

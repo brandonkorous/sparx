@@ -27,11 +27,11 @@ model FeedbackSubmission {
   submitterName  String? @map("submitter_name") @db.VarChar(255)
   submitterEmail String? @map("submitter_email") @db.VarChar(255)
 
-  source   String  @default("button") @db.VarChar(20) // button | pulse | command
-  category String  @db.VarChar(20) // idea | problem | question | praise
-  subject  String? @db.VarChar(160)
-  body     String  @db.Text
-  sentiment Int?   @db.SmallInt // 1..4 from the pulse, null otherwise
+  source    String  @default("button") @db.VarChar(20) // button | pulse | command
+  category  String  @db.VarChar(20) // idea | problem | question | praise
+  subject   String? @db.VarChar(160)
+  body      String  @db.Text
+  sentiment Int?    @db.SmallInt // 1..4 from the pulse, null otherwise
 
   // The captured context payload (docs/112 §4) + the asset ids of any
   // screenshot / file attachments (asset storage; FK-less scalar list).

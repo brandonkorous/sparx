@@ -23,7 +23,12 @@ import {
   type SilicaResolver,
 } from '@sparx/builder-schemas';
 
-import { listProducts, type PublicProductListItem } from './commerce';
+import {
+  listProducts,
+  type PublicCollection,
+  type PublicProduct,
+  type PublicProductListItem,
+} from './commerce';
 import { getEntryById, publicGet, type ApiEntry } from './content';
 import { mediaUrl } from './media';
 
@@ -46,6 +51,57 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     // the hidden input renders `value=""`, the field is `required`, and the
     // browser blocks the submit before silica's form behavior dispatches.
     variantId: p.defaultVariantId ?? '',
+    // The card's destination. `bindAttr` lifts this into the `<a href>`; an empty
+    // value renders an un-clickable card rather than a link to nowhere.
+    url: p.handle ? `/products/${p.handle}` : '',
+  };
+}
+
+/** The single in-scope `product` record a silica `commerce.product` collection
+ *  template (the PDP) binds — the full-product analogue of `toSilicaProduct` (which
+ *  shapes a list card). The buy box resolves `title` / `price` / `compareAtPrice` /
+ *  `description` / `image` for THIS product and rides `variantId` (the default
+ *  variant) in its add-to-cart form's hidden field. `image` is `{ url, alt }`; the
+ *  host `format` unwraps it to `<img src>`. Exported for the PDP route. */
+export function productToSilicaRecord(
+  p: PublicProduct,
+  tenantSlug: string
+): Record<string, unknown> {
+  const primary = p.images[0];
+  const url = primary ? mediaUrl(primary.mediaAssetId, tenantSlug) : null;
+  const defaultVariant = p.variants.find((v) => v.isDefault) ?? p.variants[0];
+  return {
+    id: p.id,
+    handle: p.handle,
+    title: p.title,
+    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
+    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
+    description: p.description ?? '',
+    image: url ? { url, alt: primary?.alt ?? p.title } : null,
+    // The add-to-cart form's hidden field; empty string (not null) when the product
+    // has no live variant, so `onAction`'s empty-variant guard blocks the submit.
+    variantId: defaultVariant?.id ?? '',
+    url: p.handle ? `/products/${p.handle}` : '',
+  };
+}
+
+/** The single in-scope `collection` record a silica `commerce.collection` template
+ *  binds — the collection's own fields PLUS its products pre-shaped onto a `products`
+ *  list, so the detail template's grid repeats a scope-relative `products` ref (only
+ *  THIS collection's items, never the whole catalog). Each product is the list-card
+ *  shape (`toSilicaProduct`) so a card resolves image/title/price and links to its
+ *  PDP. Exported for the collections route. */
+export function collectionToSilicaRecord(
+  collection: PublicCollection,
+  products: PublicProductListItem[],
+  tenantSlug: string
+): Record<string, unknown> {
+  const heroUrl = collection.heroMediaId ? mediaUrl(collection.heroMediaId, tenantSlug) : null;
+  return {
+    name: collection.name,
+    description: collection.description ?? '',
+    image: heroUrl ? { url: heroUrl, alt: collection.name } : null,
+    products: products.map((p) => toSilicaProduct(p, tenantSlug)),
   };
 }
 

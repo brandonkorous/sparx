@@ -13,7 +13,6 @@ import {
   Building2,
   CheckSquare,
   Copy,
-  FileText,
   Filter,
   Receipt,
   UserPlus,
@@ -31,7 +30,6 @@ export const crmManifest: ModuleManifest = {
     { id: 'b2b', label: 'B2B accounts', icon: Building2, href: '/crm/b2b' },
     { id: 'deals', label: 'Deals', icon: Briefcase, href: '/crm/deals' },
     { id: 'pipelines', label: 'Pipelines', icon: Workflow, href: '/crm/pipelines' },
-    { id: 'quotes', label: 'Quotes', icon: FileText, href: '/crm/quotes' },
     { id: 'orders', label: 'Orders', icon: Receipt, href: '/crm/orders' },
     { id: 'segments', label: 'Segments', icon: Filter, href: '/crm/segments' },
     { id: 'tasks', label: 'Tasks', icon: CheckSquare, href: '/crm/tasks' },
@@ -47,7 +45,6 @@ export const crmManifest: ModuleManifest = {
     },
     { id: 'crm.b2b.create', label: 'Create B2B account', icon: Building2, href: '/crm/b2b/new' },
     { id: 'crm.deal.create', label: 'Create deal', icon: Briefcase, href: '/crm/deals/new' },
-    { id: 'crm.quote.create', label: 'Create quote', icon: FileText, href: '/crm/quotes/new' },
     { id: 'crm.order.create', label: 'Create order', icon: Receipt, href: '/crm/orders/new' },
     { id: 'crm.task.create', label: 'Create task', icon: CheckSquare, href: '/crm/tasks/new' },
   ],
@@ -58,7 +55,6 @@ export const crmManifest: ModuleManifest = {
     // Pipeline detail is a full-width Kanban board — leaving hasDetailView
     // off so it always opens full-page instead of in a drawer.
     { id: 'pipeline', label: 'Pipeline', routePrefix: '/crm/pipelines' },
-    { id: 'quote', label: 'Quote', routePrefix: '/crm/quotes', hasDetailView: true },
     { id: 'order', label: 'Order', routePrefix: '/crm/orders', hasDetailView: true },
     { id: 'segment', label: 'Segment', routePrefix: '/crm/segments', hasDetailView: true },
     { id: 'task', label: 'Task', routePrefix: '/crm/tasks' },

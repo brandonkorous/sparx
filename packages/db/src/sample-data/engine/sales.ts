@@ -1,30 +1,47 @@
-// Sales slice — quotes (commerce-gated) and deals (crm-gated).
+// Sales slice — quotes (b2b-gated) and deals (crm-gated).
 //
 // These fill the Quotes surface + the CRM pipeline kanban, which otherwise sit
 // empty on a fresh tenant (exactly the confusion sample data exists to prevent).
 // Both link real persona customers — the cross-module story: a deal/quote names a
-// customer who also has orders + a CRM profile. Deals need a pipeline + stages
-// (CRM activation / the industry starter seed them); if none exist yet, deals are
-// skipped rather than inventing a pipeline.
+// customer who also has orders + a CRM profile. Quotes are BillingDocuments on the
+// system b2b-quotes workflow (seeded on `b2b` module activation —
+// module-provisioning.ts); if it doesn't exist yet (a pre-existing tenant that
+// hasn't re-activated), quotes are skipped rather than inventing the workflow —
+// same convention as applyDeals skipping without a pipeline. Deals need a pipeline
+// + stages (CRM activation / the industry starter seed them); if none exist yet,
+// deals are skipped rather than inventing a pipeline.
 
-import { SAMPLE_QUOTE_PREFIX, withSampleMeta } from '../markers';
+import { withSampleMeta } from '../markers';
 
 import type { SampleDataPack } from '../types';
 import { type ApplyCtx, daysAgo, round2 } from './context';
 
 const TAX_RATE = 0.0825;
+const B2B_QUOTES_WORKFLOW_SLUG = 'b2b-quotes';
+// Sample document numbers live in a high sequence range so they never collide with
+// a tenant's own Q- numbering (which starts at 1); Clear removes them regardless.
+const SAMPLE_SEQ_BASE = 9101;
 
-// Quote lifecycle template — a spread across the funnel.
-const QUOTE_GENS: { status: string; daysAgo: number; lineCount: number }[] = [
-  { status: 'accepted', daysAgo: 20, lineCount: 3 },
-  { status: 'submitted', daysAgo: 6, lineCount: 2 },
-  { status: 'draft', daysAgo: 2, lineCount: 2 },
-  { status: 'declined', daysAgo: 30, lineCount: 1 },
+// Quote lifecycle template — a spread across the funnel, keyed by the system
+// workflow's stage NAME (not the retired Quote model's status enum).
+const QUOTE_GENS: { stageName: string; daysAgo: number; lineCount: number }[] = [
+  { stageName: 'Accepted', daysAgo: 20, lineCount: 3 },
+  { stageName: 'Submitted', daysAgo: 6, lineCount: 2 },
+  { stageName: 'Draft', daysAgo: 2, lineCount: 2 },
+  { stageName: 'Declined', daysAgo: 30, lineCount: 1 },
 ];
 
 export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
-  if (!ctx.isOn('commerce')) return;
+  if (!ctx.isOn('b2b')) return;
   const { tx, tenantId } = ctx;
+
+  const workflow = await tx.documentWorkflow.findUnique({
+    where: { tenantId_slug: { tenantId, slug: B2B_QUOTES_WORKFLOW_SLUG } },
+    include: { stages: true },
+  });
+  if (!workflow) return;
+  const stageByName = new Map(workflow.stages.map((s) => [s.name, s]));
+
   // Prefer B2B personas for quotes (wholesale buyers), else any persona.
   const personas = pack.personas.filter((p) => p.kind === 'b2b').length
     ? pack.personas.filter((p) => p.kind === 'b2b')
@@ -36,6 +53,8 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
 
   for (let i = 0; i < QUOTE_GENS.length; i++) {
     const gen = QUOTE_GENS[i]!;
+    const stage = stageByName.get(gen.stageName);
+    if (!stage) continue; // a tenant renamed/removed the system stage
     const customerId = customerIds[i % customerIds.length]!;
     const createdAt = daysAgo(ctx, gen.daysAgo);
     const lines = Array.from({ length: gen.lineCount }, (_, j) => {
@@ -47,8 +66,7 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
       return {
         productId: v.productId,
         variantId: v.id,
-        sku: v.sku,
-        name: v.title ? `${v.productTitle} — ${v.title}` : v.productTitle,
+        description: v.title ? `${v.productTitle} — ${v.title}` : v.productTitle,
         quantity,
         unitPrice,
         lineSubtotal,
@@ -59,46 +77,44 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
     const subtotal = round2(lines.reduce((s, l) => s + l.lineSubtotal, 0));
     const taxTotal = round2(lines.reduce((s, l) => s + l.taxAmount, 0));
     const total = round2(subtotal + taxTotal);
+    const seq = SAMPLE_SEQ_BASE + i;
 
-    await tx.quote.create({
+    await tx.billingDocument.create({
       data: {
         tenantId,
+        workflowId: workflow.id,
+        stageId: stage.id,
         customerId,
-        quoteNumber: `${SAMPLE_QUOTE_PREFIX}${String(1001 + i)}`,
-        status: gen.status,
+        number: `Q-${seq}`,
+        numberSeq: seq,
         subtotal,
         taxTotal,
         total,
+        balance: total,
         currency: 'USD',
-        paymentTerms: 'net30',
         validUntil: daysAgo(ctx, gen.daysAgo - 30),
-        ...(gen.status !== 'draft' ? { submittedAt: createdAt } : {}),
-        ...(gen.status === 'accepted' ? { acceptedAt: daysAgo(ctx, gen.daysAgo - 2) } : {}),
-        ...(gen.status === 'declined'
-          ? {
-              declinedAt: daysAgo(ctx, gen.daysAgo - 3),
-              declinedReason: 'Went with an existing supplier this cycle.',
-            }
+        ...(gen.stageName === 'Declined'
+          ? { declinedReason: 'Went with an existing supplier this cycle.' }
           : {}),
         metadata: withSampleMeta(),
         createdAt,
-        items: {
-          create: lines.map((l) => ({
+        lines: {
+          create: lines.map((l, idx) => ({
             tenantId,
             productId: l.productId,
             variantId: l.variantId,
-            sku: l.sku,
-            name: l.name,
+            description: l.description,
             quantity: l.quantity,
             unitPrice: l.unitPrice,
             lineSubtotal: l.lineSubtotal,
             taxAmount: l.taxAmount,
             lineTotal: l.lineTotal,
+            sortOrder: idx,
           })),
         },
       },
     });
-    ctx.counts.quotes += 1;
+    ctx.counts.billingDocuments += 1;
   }
 }
 

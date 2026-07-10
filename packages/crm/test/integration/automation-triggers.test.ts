@@ -21,13 +21,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { withTenant } from '@sparx/db';
 
 import * as customerService from '../../src/services/customer-service';
-import {
-  b2bAccountService,
-  dealService,
-  pipelineService,
-  quoteLifecycleService,
-  quoteService,
-} from '../../src/services/index.js';
+import { b2bAccountService, dealService, pipelineService } from '../../src/services/index.js';
 import { runDailyAutomationTriggers } from '../../src/schedulers/automation-triggers';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
@@ -189,24 +183,8 @@ describe('scheduled automation triggers — inactivity (outcome-level)', () => {
     expect(emittedIds('credit_near_limit', 'b2bAccountId')).toContain(account.id);
   });
 
-  it('flags a submitted quote whose validity window is closing', async () => {
-    const customerId = await customerLastOrdered(null);
-    const quote = await quoteService.create(t.ctx, {
-      customerId,
-      items: [{ sku: 'EXP-1', name: 'Expiring item', quantity: 1, unitPrice: 100 }],
-    });
-    // The trigger only considers submitted/accepted quotes — a draft is invisible.
-    await quoteLifecycleService.submit(t.ctx, { quoteId: quote.id });
-    // Pull validUntil into the 7-day default window. Set it directly so the test
-    // doesn't depend on the create-input date format.
-    await withTenant(t.ctx, (tx) =>
-      tx.quote.update({
-        where: { id: quote.id },
-        data: { validUntil: new Date(Date.now() + 3 * DAY) },
-      })
-    );
-
-    await runDailyAutomationTriggers(t.ctx); // default quoteExpirySoonDays = 7
-    expect(emittedIds('expiring_soon', 'quoteId')).toContain(quote.id);
-  });
+  // Quote-expiry moved out of this legacy cron entirely — quotes are now
+  // BillingDocuments, and "expiring soon" is the B2B_QUOTE_EXPIRING system
+  // automation on the unified engine's `billing_document` scanner (docs/81
+  // §3.1: one automation runtime, no parallel hardcoded engine beside it).
 });

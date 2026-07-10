@@ -21,7 +21,7 @@ import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
-import { Button } from '@wizeworks/silicaui-react';
+import { ButtonLink } from '@/components/button-link';
 
 export const dynamic = 'force-dynamic';
 
@@ -124,17 +124,12 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
                 Browse the full catalog, find exactly what fits, and check out in seconds.
               </p>
               <div className="st-hero__cta">
-                <Button render={<Link href="/products" />} color="primary" size="lg">
+                <ButtonLink href="/products" color="primary" size="lg">
                   Shop all products
-                </Button>
-                <Button
-                  render={<Link href="/collections" />}
-                  color="neutral"
-                  variant="outline"
-                  size="lg"
-                >
+                </ButtonLink>
+                <ButtonLink href="/collections" color="neutral" variant="outline" size="lg">
                   Browse collections
-                </Button>
+                </ButtonLink>
               </div>
             </div>
           </div>

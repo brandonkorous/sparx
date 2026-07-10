@@ -23,6 +23,7 @@ import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
+import { attemptReturnLabel } from './return-label-purchase';
 
 /** A restockable return line resolved to its variant + (optional) location. */
 interface RestockLine {
@@ -79,6 +80,8 @@ export interface ReturnDetail extends ReturnSummary {
     labelRef: string;
     trackingNumber: string | null;
     trackingUrl: string | null;
+    labelMediaId: string | null;
+    costCents: number;
   }[];
 }
 
@@ -218,6 +221,8 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
       labelRef: lbl.labelRef,
       trackingNumber: lbl.trackingNumber,
       trackingUrl: lbl.trackingUrl,
+      labelMediaId: lbl.labelMediaId,
+      costCents: lbl.costCents,
     })),
   };
 }
@@ -344,10 +349,14 @@ export async function approve(
     data: { returnId: input.returnId },
   });
 
-  // Label generation lands when the ShippingProvider bridge is live.
-  // For now we return null so callers know to surface a "print label
-  // manually" CTA in the dashboard.
-  return { labelMediaId: null };
+  // Best-effort: auto-purchase a return label from the tenant's connected
+  // carrier (cheapest live rate for the approved items, shipped from the
+  // customer's address back to the tenant's warehouse). Never blocks
+  // approval — no carrier installed, no live rate, or an unconfigured
+  // warehouse address all just mean the dashboard falls back to its
+  // "print label manually" CTA (labelMediaId: null), same as before.
+  const labelMediaId = await attemptReturnLabel(ctx, input.returnId);
+  return { labelMediaId };
 }
 
 export async function deny(ctx: ServiceContext, rawInput: unknown): Promise<void> {

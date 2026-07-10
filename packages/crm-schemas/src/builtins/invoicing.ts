@@ -184,6 +184,160 @@ export const NET_TERMS_AR_WORKFLOW: DocumentWorkflowTemplate = {
   ],
 };
 
+// ── System "B2B Quotes" workflow (Quote → BillingDocument consolidation) ─────
+//
+// Quotes are BillingDocuments — this SYSTEM workflow (gated on the `b2b`
+// module, lazily ensured the same way NET_TERMS_AR_WORKFLOW is) replaces the
+// retired standalone Quote model's lifecycle. `draft`-type stages cover every
+// pre-decision state (a tenant sees them as Draft/Submitted/Under Review/
+// Quoted); `committed` = the customer-approved moment (snapshotOnEnter freezes
+// "the approved quote"); the two `void`-type stages are the terminal
+// non-approval outcomes. There is deliberately no "Converted" stage —
+// conversion to an Order is tracked by Order.convertedFromDocumentId,
+// independent of stage, so an accepted+converted quote simply stays in
+// Accepted.
+export const B2B_QUOTE_WORKFLOW_SLUG = 'b2b-quotes';
+
+export const B2B_QUOTE_WORKFLOW: DocumentWorkflowTemplate = {
+  name: 'B2B Quotes',
+  slug: B2B_QUOTE_WORKFLOW_SLUG,
+  isDefault: false,
+  sortOrder: 101,
+  stages: [
+    {
+      name: 'Draft',
+      customerLabel: 'Draft',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: true,
+      numberPrefix: 'Q-',
+      locksEditing: false,
+      sortOrder: 0,
+      color: '#94A3B8',
+    },
+    {
+      name: 'Submitted',
+      customerLabel: 'Submitted',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 1,
+      color: '#0EA5E9',
+    },
+    {
+      name: 'Under Review',
+      customerLabel: 'Under Review',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 2,
+      color: '#0EA5E9',
+    },
+    {
+      name: 'Quoted',
+      customerLabel: 'Quoted',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 3,
+      color: '#6366F1',
+    },
+    {
+      name: 'Accepted',
+      customerLabel: 'Accepted',
+      stageType: 'committed',
+      snapshotOnEnter: true,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 4,
+      color: '#10B981',
+    },
+    {
+      name: 'Declined',
+      customerLabel: 'Declined',
+      stageType: 'void',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: true,
+      sortOrder: 5,
+      color: '#EF4444',
+    },
+    {
+      name: 'Expired',
+      customerLabel: 'Expired',
+      stageType: 'void',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: true,
+      sortOrder: 6,
+      color: '#94A3B8',
+    },
+  ],
+};
+
+// ── System "Customer Estimates" workflow ─────────────────────────────────────
+//
+// The direct-customer (non-B2B) counterpart to B2B_QUOTE_WORKFLOW — a signed-in
+// storefront customer requests an estimate for work/parts, the merchant prices
+// it, the customer approves or declines. Gated on the `invoicing` module (not
+// `b2b`), lazily ensured the same way — this is a shared system workflow, not a
+// tenant-editable starter like `service-repair`, so a customer request always
+// lands somewhere stable even if a tenant renamed/deleted their own copies.
+export const CUSTOMER_ESTIMATE_WORKFLOW_SLUG = 'customer-estimates';
+
+export const CUSTOMER_ESTIMATE_WORKFLOW: DocumentWorkflowTemplate = {
+  name: 'Customer Estimates',
+  slug: CUSTOMER_ESTIMATE_WORKFLOW_SLUG,
+  isDefault: false,
+  sortOrder: 102,
+  stages: [
+    {
+      name: 'Requested',
+      customerLabel: 'Requested',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: true,
+      numberPrefix: 'EST-',
+      locksEditing: false,
+      sortOrder: 0,
+      color: '#94A3B8',
+    },
+    {
+      name: 'Priced',
+      customerLabel: 'Ready for review',
+      stageType: 'draft',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 1,
+      color: '#6366F1',
+    },
+    {
+      name: 'Approved',
+      customerLabel: 'Approved',
+      stageType: 'committed',
+      snapshotOnEnter: true,
+      numberOnEnter: false,
+      locksEditing: false,
+      sortOrder: 2,
+      color: '#10B981',
+    },
+    {
+      name: 'Declined',
+      customerLabel: 'Declined',
+      stageType: 'void',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: true,
+      sortOrder: 3,
+      color: '#EF4444',
+    },
+  ],
+};
+
 export const DEFAULT_DOCUMENT_LINE_TYPES: DocumentLineTypeTemplate[] = [
   {
     key: 'part',

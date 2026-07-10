@@ -9,8 +9,19 @@
 // Tests inject a mapSecretReader directly. Dev defaults to env-only
 // (`env:STRIPE_SECRET_KEY` style refs), which keeps `pnpm dev` working
 // without any GCP credentials.
+//
+// Every reader set here is wrapped with inline `enc:` decryption — a
+// tenant-pasted provider secret (encrypted by provider-service.ts's
+// install()/updateConfig()) never points AT a store, it CARRIES the
+// ciphertext, so decrypting it needs no I/O and must work the same way
+// regardless of which base reader (env, GSM, ...) is active.
 
-import { SecretNotFoundError, type SecretReader } from '@sparx/integration-framework';
+import {
+  decryptProviderSecret,
+  isEncryptedProviderSecretRef,
+  SecretNotFoundError,
+  type SecretReader,
+} from '@sparx/integration-framework';
 
 export function envSecretReader(): SecretReader {
   return {
@@ -35,10 +46,19 @@ export function mapSecretReader(entries: Record<string, string>): SecretReader {
   };
 }
 
-let activeReader: SecretReader = envSecretReader();
+function withInlineDecryption(base: SecretReader): SecretReader {
+  return {
+    read(ref: string): Promise<string> {
+      if (isEncryptedProviderSecretRef(ref)) return Promise.resolve(decryptProviderSecret(ref));
+      return base.read(ref);
+    },
+  };
+}
+
+let activeReader: SecretReader = withInlineDecryption(envSecretReader());
 
 export function setSecretReader(reader: SecretReader): void {
-  activeReader = reader;
+  activeReader = withInlineDecryption(reader);
 }
 
 export function getSecretReader(): SecretReader {

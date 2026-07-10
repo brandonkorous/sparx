@@ -11,7 +11,10 @@ import { loadInvoiceWizardData } from './wizard-data';
 // preference (the `'overlay'` presentation; see `EntityCreateButton` + the
 // `@detail` create registry). This route is the full-page option that chrome's
 // "open in full page" button, Shift-click, new-tab, and `?customerId=` /
-// `?b2bAccountId=` deep links resolve to.
+// `?b2bAccountId=` / `?workflow=` deep links resolve to — e.g. B2B's "New
+// Quote" button links here with `?workflow=b2b-quotes` to start on the system
+// quotes workflow (the overlay create form has no such preselection — see the
+// comment on `BillingDocumentCreateOverlay` in `detail-slot.tsx`).
 
 export const dynamic = 'force-dynamic';
 
@@ -21,12 +24,17 @@ interface PageProps {
 
 export default async function NewDocumentPage({ searchParams }: PageProps) {
   const [sp, data] = await Promise.all([searchParams, loadInvoiceWizardData()]);
+  const workflowSlug = stringParam(sp.workflow);
+  const preselectedWorkflowId = workflowSlug
+    ? (data.workflows.find((w) => w.slug === workflowSlug)?.id ?? null)
+    : null;
 
   return (
     <InvoiceWizard
       {...data}
       preselectedCustomerId={stringParam(sp.customerId) ?? null}
       preselectedAccountId={stringParam(sp.b2bAccountId) ?? null}
+      preselectedWorkflowId={preselectedWorkflowId}
     />
   );
 }

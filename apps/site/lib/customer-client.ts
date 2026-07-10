@@ -378,14 +378,28 @@ export interface B2bOrderEntry {
   customerEmail: string | null;
 }
 
+// A quote IS a BillingDocument on the system `b2b-quotes` workflow — its state
+// is the stage it's on, not a standalone status enum (docs/87 convergence).
+export interface B2bQuoteStage {
+  name: string;
+  customerLabel: string | null;
+  stageType: string;
+}
+
 export interface B2bQuoteEntry {
   id: string;
-  quoteNumber: string;
-  status: string;
+  number: string | null;
+  stage: B2bQuoteStage;
   totalCents: number;
   currency: string;
   validUntil: string | null;
   createdAt: string;
+}
+
+export interface B2bQuoteLineInput {
+  description: string;
+  quantity: number;
+  variantId?: string;
 }
 
 function b2bPortalUrl(path: string, tenantSlug: string): string {
@@ -466,6 +480,134 @@ export async function getB2bQuotes(
   if (!res.ok || !json || json.success === false)
     throw new AccountError('Could not load quotes.', res.status);
   return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+/** Submit a new RFQ — a draft document + its requested lines, advanced
+ *  straight to "Submitted" so it lands in the merchant's queue immediately. */
+export async function submitB2bQuote(
+  tenantSlug: string,
+  accountId: string,
+  input: { customerNote?: string; lines: B2bQuoteLineInput[] }
+): Promise<{ id: string; number: string | null }> {
+  const res = await fetch(b2bPortalUrl(`/${encodeURIComponent(accountId)}/quotes`, tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return parse<{ id: string; number: string | null }>(res);
+}
+
+export async function acceptB2bQuote(
+  tenantSlug: string,
+  accountId: string,
+  quoteId: string
+): Promise<void> {
+  const res = await fetch(
+    b2bPortalUrl(
+      `/${encodeURIComponent(accountId)}/quotes/${encodeURIComponent(quoteId)}/accept`,
+      tenantSlug
+    ),
+    { method: 'POST', headers: { 'content-type': 'application/json' } }
+  );
+  await parse<{ id: string }>(res);
+}
+
+export async function declineB2bQuote(
+  tenantSlug: string,
+  accountId: string,
+  quoteId: string,
+  reason?: string
+): Promise<void> {
+  const res = await fetch(
+    b2bPortalUrl(
+      `/${encodeURIComponent(accountId)}/quotes/${encodeURIComponent(quoteId)}/decline`,
+      tenantSlug
+    ),
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(reason !== undefined ? { reason } : {}),
+    }
+  );
+  await parse<{ id: string }>(res);
+}
+
+// ── Estimates (direct-customer, non-B2B counterpart to B2B quotes) ───────────
+// An estimate IS a BillingDocument on the system `customer-estimates` workflow
+// — gated on the `invoicing` module. 404 (module disabled or route absent)
+// means "not available to this tenant", not an error — callers treat it as
+// an empty/unavailable state.
+
+export interface EstimateEntry {
+  id: string;
+  number: string | null;
+  stage: B2bQuoteStage;
+  totalCents: number;
+  currency: string;
+  validUntil: string | null;
+  createdAt: string;
+}
+
+export async function getEstimates(
+  tenantSlug: string,
+  skip = 0,
+  take = 20
+): Promise<{ items: EstimateEntry[]; total: number } | null> {
+  const res = await fetch(
+    `${url('/v1/public/commerce/account/estimates', tenantSlug)}&skip=${skip}&take=${take}`,
+    { cache: 'no-store' }
+  );
+  if (res.status === 404) return null;
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: EstimateEntry[];
+    meta?: { total?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false)
+    throw new AccountError('Could not load estimates.', res.status);
+  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+export async function submitEstimate(
+  tenantSlug: string,
+  input: { customerNote?: string; lines: B2bQuoteLineInput[] }
+): Promise<{ id: string; number: string | null }> {
+  const res = await fetch(url('/v1/public/commerce/account/estimates', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return parse<{ id: string; number: string | null }>(res);
+}
+
+export async function acceptEstimate(tenantSlug: string, estimateId: string): Promise<void> {
+  const res = await fetch(
+    url(
+      `/v1/public/commerce/account/estimates/${encodeURIComponent(estimateId)}/accept`,
+      tenantSlug
+    ),
+    { method: 'POST', headers: { 'content-type': 'application/json' } }
+  );
+  await parse<{ id: string }>(res);
+}
+
+export async function declineEstimate(
+  tenantSlug: string,
+  estimateId: string,
+  reason?: string
+): Promise<void> {
+  const res = await fetch(
+    url(
+      `/v1/public/commerce/account/estimates/${encodeURIComponent(estimateId)}/decline`,
+      tenantSlug
+    ),
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(reason !== undefined ? { reason } : {}),
+    }
+  );
+  await parse<{ id: string }>(res);
 }
 
 // ── B2B Appointments ─────────────────────────────────────────────────────────

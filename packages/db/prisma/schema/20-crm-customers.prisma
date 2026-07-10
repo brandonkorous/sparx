@@ -56,9 +56,9 @@ model Customer {
   property    Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   authUser    CustomerUser? @relation(fields: [authUserId], references: [id], onDelete: SetNull)
   b2bAccount  B2BAccount?   @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
-  assignedRep User?             @relation("CustomerAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
-  mergedInto  Customer?         @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
-  mergedFrom  Customer[]        @relation("CustomerMerge")
+  assignedRep User?         @relation("CustomerAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
+  mergedInto  Customer?     @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
+  mergedFrom  Customer[]    @relation("CustomerMerge")
 
   addresses        CustomerAddress[]
   deals            Deal[]
@@ -66,7 +66,6 @@ model Customer {
   tasks            Task[]
   segmentMembers   SegmentMember[]
   orders           Order[]
-  quotes           Quote[]
   billingDocuments BillingDocument[]
 
   // Commerce module inverse relations

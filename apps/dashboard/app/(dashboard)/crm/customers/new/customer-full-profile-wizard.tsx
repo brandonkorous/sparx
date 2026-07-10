@@ -50,7 +50,10 @@ import { UserPlus } from 'lucide-react';
 import { addCustomerAddressAction, createCustomerAction } from '../../customer-actions';
 import { createTaskAction, recordActivityAction } from '../../activity-task-actions';
 import { createDealAction } from '../../deal-actions';
-import { createQuoteAction } from '../../quote-actions';
+import {
+  addLineAction as addDocumentLineAction,
+  createDocumentAction,
+} from '../../../invoicing/document-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
@@ -58,7 +61,6 @@ import { ViewSwitcher } from '../../../_components/detail-panel';
 
 type ActivityKind = 'note' | 'call' | 'meeting';
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
-type QuoteTerms = '' | 'prepay' | 'net15' | 'net30' | 'net60' | 'net90';
 
 // Single-page form = one step, so SurfaceFrame's MiniProgress auto-hides and the
 // toolbar is Cancel + Create (no Back/Continue).
@@ -170,18 +172,6 @@ function parseQuantity(value: string): number {
   return n;
 }
 
-/** Derive a SKU from a line name when the user doesn't supply one — a draft
- *  quote needs a SKU per line; it's editable later on the quote detail. */
-function deriveSku(name: string): string {
-  const slug = name
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 127);
-  return slug || 'ITEM';
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 /** A pipeline + its ordered stages, fetched server-side and passed in so the
@@ -204,6 +194,11 @@ export interface CustomerWizardProps {
   /** The tenant's CRM pipelines (with stages) for the optional deal. Empty when
    *  none exist yet — the deal card then points the user to create one first. */
   pipelines?: PipelineOption[];
+  /** The system `b2b-quotes` BillingDocument workflow id, for the optional
+   *  draft quote (docs/87 §15 convergence). Null when invoicing isn't enabled
+   *  or the workflow hasn't been seeded yet — the quote card then degrades to
+   *  an unavailable hint. */
+  quoteWorkflowId?: string | null;
 }
 
 export function CustomerFullProfileWizard(props: CustomerWizardProps = {}) {
@@ -221,6 +216,7 @@ function CustomerWizardInner({
   presentation = 'page',
   currentUserId,
   pipelines = [],
+  quoteWorkflowId = null,
 }: CustomerWizardProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -251,11 +247,9 @@ function CustomerWizardInner({
   const [dealValue, setDealValue] = React.useState('');
 
   const [quoteItemName, setQuoteItemName] = React.useState('');
-  const [quoteSku, setQuoteSku] = React.useState('');
   const [quoteQuantity, setQuoteQuantity] = React.useState('1');
   const [quoteUnitPrice, setQuoteUnitPrice] = React.useState('');
   const [quoteValidUntil, setQuoteValidUntil] = React.useState('');
-  const [quoteTerms, setQuoteTerms] = React.useState<QuoteTerms>('');
 
   const [contactErrors, setContactErrors] = React.useState<Record<string, string>>({});
   const [addressErrors, setAddressErrors] = React.useState<Record<string, string>>({});
@@ -296,7 +290,6 @@ function CustomerWizardInner({
     dealTitle.trim() !== '' ||
     dealValue.trim() !== '' ||
     quoteItemName.trim() !== '' ||
-    quoteSku.trim() !== '' ||
     quoteUnitPrice.trim() !== '' ||
     quoteValidUntil.trim() !== '';
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'customer' });
@@ -450,26 +443,28 @@ function CustomerWizardInner({
 
       // Optional: start a draft quote with a first line item. The merchant adds
       // more lines and sends it from the quote detail; created only when a line
-      // is named (a quote requires at least one item).
+      // is named (a quote requires at least one item) and the b2b-quotes
+      // workflow is available (docs/87 §15 — a quote IS a BillingDocument).
       const lineName = quoteItemName.trim();
-      if (lineName) {
-        const quoteResult = await createQuoteAction({
+      if (lineName && quoteWorkflowId) {
+        const docResult = await createDocumentAction({
+          workflowId: quoteWorkflowId,
           customerId,
           currency: 'USD',
-          ...(quoteTerms ? { paymentTerms: quoteTerms } : {}),
           ...(quoteValidUntil
             ? { validUntil: new Date(`${quoteValidUntil}T00:00:00Z`).toISOString() }
             : {}),
-          items: [
-            {
-              sku: quoteSku.trim() || deriveSku(lineName),
-              name: lineName,
-              quantity: parseQuantity(quoteQuantity),
-              unitPrice: parseMoney(quoteUnitPrice),
-            },
-          ],
         });
-        if (!quoteResult.ok) failed.push('quote');
+        if (!docResult.ok) {
+          failed.push('quote');
+        } else {
+          const lineResult = await addDocumentLineAction(docResult.data.id, {
+            description: lineName,
+            quantity: parseQuantity(quoteQuantity),
+            unitPrice: parseMoney(quoteUnitPrice),
+          });
+          if (!lineResult.ok) failed.push('quote');
+        }
       }
 
       const qs = failed.length ? `?notice=partial&failed=${failed.join(',')}` : '';
@@ -796,58 +791,53 @@ function CustomerWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Start a draft quote</h3>
-              <div className="flex flex-col gap-3">
+              {!quoteWorkflowId ? (
                 <p className="text-base-content/70 text-sm">
-                  Add a first line item to open a draft quote. You can add more lines and send it
-                  from the quote later. Leave the item blank to skip.
+                  Turn on Invoicing to open draft quotes from here.
                 </p>
-                <Field>
-                  <FieldLabel>Item</FieldLabel>
-                  <FieldControl
-                    name="cw-quote-name"
-                    value={quoteItemName}
-                    onChange={(e) => setQuoteItemName(e.target.value)}
-                    placeholder="e.g. Annual service plan — leave blank to skip"
-                  />
-                </Field>
-                <div className="grid gap-3 sm:grid-cols-3">
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <p className="text-base-content/70 text-sm">
+                    Add a first line item to open a draft quote. You can add more lines and send it
+                    from the quote later. Leave the item blank to skip.
+                  </p>
                   <Field>
-                    <FieldLabel>SKU</FieldLabel>
+                    <FieldLabel>Item</FieldLabel>
                     <FieldControl
-                      name="cw-quote-sku"
-                      value={quoteSku}
-                      onChange={(e) => setQuoteSku(e.target.value)}
-                      placeholder="Auto from item"
+                      name="cw-quote-name"
+                      value={quoteItemName}
+                      onChange={(e) => setQuoteItemName(e.target.value)}
+                      placeholder="e.g. Annual service plan — leave blank to skip"
                     />
                   </Field>
-                  <Field>
-                    <FieldLabel>Quantity</FieldLabel>
-                    <FieldControl
-                      name="cw-quote-qty"
-                      type="number"
-                      min={1}
-                      step={1}
-                      inputMode="numeric"
-                      value={quoteQuantity}
-                      onChange={(e) => setQuoteQuantity(e.target.value)}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Unit price (USD)</FieldLabel>
-                    <FieldControl
-                      name="cw-quote-price"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      inputMode="decimal"
-                      value={quoteUnitPrice}
-                      onChange={(e) => setQuoteUnitPrice(e.target.value)}
-                      placeholder="0.00"
-                    />
-                  </Field>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field>
+                      <FieldLabel>Quantity</FieldLabel>
+                      <FieldControl
+                        name="cw-quote-qty"
+                        type="number"
+                        min={1}
+                        step={1}
+                        inputMode="numeric"
+                        value={quoteQuantity}
+                        onChange={(e) => setQuoteQuantity(e.target.value)}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Unit price (USD)</FieldLabel>
+                      <FieldControl
+                        name="cw-quote-price"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        inputMode="decimal"
+                        value={quoteUnitPrice}
+                        onChange={(e) => setQuoteUnitPrice(e.target.value)}
+                        placeholder="0.00"
+                      />
+                    </Field>
+                  </div>
+                  <Field className="max-w-[12rem]">
                     <FieldLabel>Valid until</FieldLabel>
                     <FieldControl
                       name="cw-quote-valid"
@@ -856,22 +846,8 @@ function CustomerWizardInner({
                       onChange={(e) => setQuoteValidUntil(e.target.value)}
                     />
                   </Field>
-                  <Field>
-                    <FieldLabel>Payment terms</FieldLabel>
-                    <NativeSelect
-                      value={quoteTerms}
-                      onChange={(e) => setQuoteTerms(e.target.value as QuoteTerms)}
-                    >
-                      <option value="">No terms</option>
-                      <option value="prepay">Prepay</option>
-                      <option value="net15">Net 15</option>
-                      <option value="net30">Net 30</option>
-                      <option value="net60">Net 60</option>
-                      <option value="net90">Net 90</option>
-                    </NativeSelect>
-                  </Field>
                 </div>
-              </div>
+              )}
             </CardBody>
           </Card>
 

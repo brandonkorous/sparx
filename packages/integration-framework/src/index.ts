@@ -10,6 +10,7 @@ export * from './metadata';
 export * from './registry';
 export * from './webhook-router';
 export * from './oauth';
+export * from './secret-crypto';
 
 export type {
   PaymentProvider,

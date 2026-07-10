@@ -78,15 +78,22 @@ export const B2B_ACCOUNT_APPROVED: SystemAutomationSpec = {
   status: 'active',
 };
 
-/** Send the quote to the customer when it's submitted for their decision.
+/** Send the quote to the customer when it's submitted for their decision. A
+ *  quote is a BillingDocument on the system `b2b-quotes` workflow (the retired
+ *  Quote model's consolidation); `quote.stageName` is the finer-grained signal
+ *  `stage_changed` needs since several stages share `stageType: 'draft'`.
  *  Transactional. */
 export const B2B_QUOTE_RECEIVED: SystemAutomationSpec = {
   name: 'B2B quote received',
   description: 'Emails the customer their quote details when a quote is submitted.',
-  trigger: { kind: 'event', eventType: 'crm.quote.submitted' },
+  trigger: { kind: 'event', eventType: 'crm.billing_document.stage_changed' },
   conditions: {
     logic: 'AND',
-    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+    conditions: [
+      { field: 'invoice.workflowSlug', operator: 'eq', value: 'b2b-quotes' },
+      { field: 'quote.stageName', operator: 'eq', value: 'Submitted' },
+      { field: 'customer.email', operator: 'is_set' },
+    ],
   },
   actions: [
     {
@@ -132,9 +139,11 @@ export const B2B_INVOICE_DUE_NUDGE: SystemAutomationSpec = {
   status: 'active',
 };
 
-/** Nudge the customer when a submitted quote is within 48h of expiring. A
- *  daily-grain INTERVAL scan over the `quote` scanner (which returns submitted
- *  quotes inside the 48h window) — once-per-entity dedupe sends a single reminder.
+/** Nudge the customer when a submitted-or-quoted quote is within 48h of
+ *  expiring. A daily-grain INTERVAL scan over the `quote` scanner (which
+ *  already returns b2b-quotes-workflow documents inside the 48h window) —
+ *  once-per-entity dedupe sends a single reminder. Excludes a raw, unsent
+ *  Draft (never shown to the customer, so never worth an expiry nudge).
  *  Transactional. */
 export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
   name: 'B2B quote expiring',
@@ -147,7 +156,11 @@ export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
       where: {
         logic: 'AND',
         conditions: [
-          { field: 'quote.status', operator: 'eq', value: 'submitted' },
+          {
+            field: 'quote.stageName',
+            operator: 'in',
+            value: ['Submitted', 'Under Review', 'Quoted'],
+          },
           { field: 'customer.email', operator: 'is_set' },
         ],
       },

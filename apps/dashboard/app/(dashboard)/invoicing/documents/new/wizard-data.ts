@@ -14,6 +14,7 @@ import type { MarkupRuleSummary } from '../_lib/markup';
 interface WorkflowApi {
   id: string;
   name: string;
+  slug: string;
   isDefault: boolean;
   stages: {
     id: string;
@@ -81,6 +82,7 @@ export async function loadInvoiceWizardData(): Promise<InvoiceWizardData> {
     workflows: workflows.map((w) => ({
       id: w.id,
       name: w.name,
+      slug: w.slug,
       isDefault: w.isDefault,
       stages: w.stages.map((s) => ({
         id: s.id,

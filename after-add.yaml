@@ -1,0 +1,213 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - navigation "Primary" [ref=e5]:
+        - link "WizeWorks" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e7]:
+          - generic [ref=e8]:
+            - link "Shop" [ref=e9] [cursor=pointer]:
+              - /url: /shop
+            - link "About" [ref=e10] [cursor=pointer]:
+              - /url: /about
+            - link "Contact" [ref=e11] [cursor=pointer]:
+              - /url: /contact
+          - button "Get in touch" [ref=e12] [cursor=pointer]
+      - main [ref=e13]:
+        - generic [ref=e15]:
+          - generic [ref=e17]:
+            - img "Product image" [ref=e18]
+            - generic [ref=e19]:
+              - heading "Water Pump — 6.6L Duramax" [level=1] [ref=e20]
+              - generic [ref=e22]: $179.99
+              - generic [ref=e23]:
+                - generic [ref=e24]:
+                  - generic [ref=e25]: Quantity
+                  - spinbutton "Quantity" [ref=e26]: "1"
+                - button "Add to cart" [ref=e27] [cursor=pointer]
+          - generic [ref=e28]:
+            - heading "Featured" [level=2] [ref=e29]
+            - generic [ref=e30]:
+              - link "Product image Water Pump — 6.6L Duramax $179.99" [ref=e31] [cursor=pointer]:
+                - /url: /products/inv-demo-water-pump-66
+                - img "Product image" [ref=e32]
+                - generic [ref=e33]:
+                  - heading "Water Pump — 6.6L Duramax" [level=3] [ref=e34]
+                  - paragraph [ref=e35]: $179.99
+              - link "Product image Serpentine Belt — 7.3L Power Stroke $45.99" [ref=e36] [cursor=pointer]:
+                - /url: /products/inv-demo-serpentine-belt-73
+                - img "Product image" [ref=e37]
+                - generic [ref=e38]:
+                  - heading "Serpentine Belt — 7.3L Power Stroke" [level=3] [ref=e39]
+                  - paragraph [ref=e40]: $45.99
+              - link "Product image Heavy-Duty Coolant — Nitrite-Free (1 gal) $19.99" [ref=e41] [cursor=pointer]:
+                - /url: /products/inv-demo-coolant-hd
+                - img "Product image" [ref=e42]
+                - generic [ref=e43]:
+                  - heading "Heavy-Duty Coolant — Nitrite-Free (1 gal)" [level=3] [ref=e44]
+                  - paragraph [ref=e45]: $19.99
+              - link "Product image Diesel Engine Oil 15W-40 (1 gal) $29.99" [ref=e46] [cursor=pointer]:
+                - /url: /products/inv-demo-oil-15w40
+                - img "Product image" [ref=e47]
+                - generic [ref=e48]:
+                  - heading "Diesel Engine Oil 15W-40 (1 gal)" [level=3] [ref=e49]
+                  - paragraph [ref=e50]: $29.99
+              - link "Product image Turbocharger — Duramax LML $1,299.00" [ref=e51] [cursor=pointer]:
+                - /url: /products/inv-demo-turbo-lml
+                - img "Product image" [ref=e52]
+                - generic [ref=e53]:
+                  - heading "Turbocharger — Duramax LML" [level=3] [ref=e54]
+                  - paragraph [ref=e55]: $1,299.00
+              - link "Product image Fuel Injector — 6.7L Cummins $329.00" [ref=e56] [cursor=pointer]:
+                - /url: /products/inv-demo-injector-67-cummins
+                - img "Product image" [ref=e57]
+                - generic [ref=e58]:
+                  - heading "Fuel Injector — 6.7L Cummins" [level=3] [ref=e59]
+                  - paragraph [ref=e60]: $329.00
+              - link "Product image Glow Plug Set (8) — 6.0L Power Stroke $189.99" [ref=e61] [cursor=pointer]:
+                - /url: /products/inv-demo-glow-plug-60
+                - img "Product image" [ref=e62]
+                - generic [ref=e63]:
+                  - heading "Glow Plug Set (8) — 6.0L Power Stroke" [level=3] [ref=e64]
+                  - paragraph [ref=e65]: $189.99
+              - link "Product image Fuel Filter — 6.7L Power Stroke $42.99" [ref=e66] [cursor=pointer]:
+                - /url: /products/inv-demo-fuel-filter-67
+                - img "Product image" [ref=e67]
+                - generic [ref=e68]:
+                  - heading "Fuel Filter — 6.7L Power Stroke" [level=3] [ref=e69]
+                  - paragraph [ref=e70]: $42.99
+              - link "Product image Blue Recovery $8.75" [ref=e71] [cursor=pointer]:
+                - /url: /products/blue-recovery
+                - img "Product image" [ref=e72]
+                - generic [ref=e73]:
+                  - heading "Blue Recovery" [level=3] [ref=e74]
+                  - paragraph [ref=e75]: $8.75
+              - link "Product image Midnight Açaí $11.50" [ref=e76] [cursor=pointer]:
+                - /url: /products/midnight-acai
+                - img "Product image" [ref=e77]
+                - generic [ref=e78]:
+                  - heading "Midnight Açaí" [level=3] [ref=e79]
+                  - paragraph [ref=e80]: $11.50
+              - link "Product image Trust Your Pace T-Shirt | upspired Forward Collection" [ref=e81] [cursor=pointer]:
+                - /url: /products/trust-your-pace-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e82]
+                - generic [ref=e83]:
+                  - heading "Trust Your Pace T-Shirt | upspired Forward Collection" [level=3] [ref=e84]
+                  - paragraph
+              - link "Product image Choose Courage T-Shirt | upspired Forward Collection" [ref=e85] [cursor=pointer]:
+                - /url: /products/choose-courage-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e86]
+                - generic [ref=e87]:
+                  - heading "Choose Courage T-Shirt | upspired Forward Collection" [level=3] [ref=e88]
+                  - paragraph
+              - link "Product image Start Where You Are T-Shirt | upspired Forward Collection" [ref=e89] [cursor=pointer]:
+                - /url: /products/start-where-you-are-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e90]
+                - generic [ref=e91]:
+                  - heading "Start Where You Are T-Shirt | upspired Forward Collection" [level=3] [ref=e92]
+                  - paragraph
+              - link "Product image Become T-Shirt | upspired Forward Collection" [ref=e93] [cursor=pointer]:
+                - /url: /products/become-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e94]
+                - generic [ref=e95]:
+                  - heading "Become T-Shirt | upspired Forward Collection" [level=3] [ref=e96]
+                  - paragraph
+              - link "Product image Let It Matter T-Shirt | upspired Forward Collection" [ref=e97] [cursor=pointer]:
+                - /url: /products/let-it-matter-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e98]
+                - generic [ref=e99]:
+                  - heading "Let It Matter T-Shirt | upspired Forward Collection" [level=3] [ref=e100]
+                  - paragraph
+              - link "Product image Begin Again T-Shirt | upspired Forward Collection" [ref=e101] [cursor=pointer]:
+                - /url: /products/begin-again-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e102]
+                - generic [ref=e103]:
+                  - heading "Begin Again T-Shirt | upspired Forward Collection" [level=3] [ref=e104]
+                  - paragraph
+              - link "Product image Stay Open T-Shirt | upspired Forward Collection" [ref=e105] [cursor=pointer]:
+                - /url: /products/stay-open-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e106]
+                - generic [ref=e107]:
+                  - heading "Stay Open T-Shirt | upspired Forward Collection" [level=3] [ref=e108]
+                  - paragraph
+              - link "Product image Make Room T-Shirt | upspired Forward Collection" [ref=e109] [cursor=pointer]:
+                - /url: /products/make-room-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e110]
+                - generic [ref=e111]:
+                  - heading "Make Room T-Shirt | upspired Forward Collection" [level=3] [ref=e112]
+                  - paragraph
+              - link "Product image Move With Purpose T-Shirt | upspired Forward Collection" [ref=e113] [cursor=pointer]:
+                - /url: /products/move-with-purpose-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e114]
+                - generic [ref=e115]:
+                  - heading "Move With Purpose T-Shirt | upspired Forward Collection" [level=3] [ref=e116]
+                  - paragraph
+              - link "Product image Unisex Heavy Cotton Tee" [ref=e117] [cursor=pointer]:
+                - /url: /products/unisex-heavy-cotton-tee
+                - img "Product image" [ref=e118]
+                - generic [ref=e119]:
+                  - heading "Unisex Heavy Cotton Tee" [level=3] [ref=e120]
+                  - paragraph
+              - link "Product image upspired kiss-cut sticker" [ref=e121] [cursor=pointer]:
+                - /url: /products/upspired-kiss-cut-sticker
+                - img "Product image" [ref=e122]
+                - generic [ref=e123]:
+                  - heading "upspired kiss-cut sticker" [level=3] [ref=e124]
+                  - paragraph
+              - link "Product image Never Quit T-shirt | Motivational Typography Tee" [ref=e125] [cursor=pointer]:
+                - /url: /products/never-quit-t-shirt-motivational-typography-tee
+                - img "Product image" [ref=e126]
+                - generic [ref=e127]:
+                  - heading "Never Quit T-shirt | Motivational Typography Tee" [level=3] [ref=e128]
+                  - paragraph
+              - link "Product image One More Try T-Shirt | UpSpired Forward Collection" [ref=e129] [cursor=pointer]:
+                - /url: /products/one-more-try-t-shirt-upspired-forward-collection
+                - img "Product image" [ref=e130]
+                - generic [ref=e131]:
+                  - heading "One More Try T-Shirt | UpSpired Forward Collection" [level=3] [ref=e132]
+                  - paragraph
+              - link "Product image Kiss-Cut Stickers" [ref=e133] [cursor=pointer]:
+                - /url: /products/kiss-cut-stickers
+                - img "Product image" [ref=e134]
+                - generic [ref=e135]:
+                  - heading "Kiss-Cut Stickers" [level=3] [ref=e136]
+                  - paragraph
+      - contentinfo [ref=e137]:
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - generic [ref=e140]: WizeWorks
+            - paragraph [ref=e141]: Everything you publish and sell, in one place.
+          - generic [ref=e142]:
+            - heading "Explore" [level=3] [ref=e143]
+            - link "Shop" [ref=e144] [cursor=pointer]:
+              - /url: /shop
+            - link "About" [ref=e145] [cursor=pointer]:
+              - /url: /about
+            - link "Contact" [ref=e146] [cursor=pointer]:
+              - /url: /contact
+          - generic [ref=e147]:
+            - heading "Account" [level=3] [ref=e148]
+            - link "Sign in" [ref=e149] [cursor=pointer]:
+              - /url: /account
+            - link "Orders" [ref=e150] [cursor=pointer]:
+              - /url: /account/orders
+            - link "Cart" [ref=e151] [cursor=pointer]:
+              - /url: /cart
+          - generic [ref=e152]:
+            - heading "More" [level=3] [ref=e153]
+            - link "Search" [ref=e154] [cursor=pointer]:
+              - /url: /search
+            - link "Privacy" [ref=e155] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms" [ref=e156] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e158]: WizeWorks
+    - link "Made with sparx" [ref=e159] [cursor=pointer]:
+      - /url: https://sparx.works/?utm_source=powered_by&utm_medium=site_badge&utm_campaign=made_with_sparx
+      - generic [ref=e160]: Made with
+      - generic [ref=e161]: sparx
+    - button "Open chat" [ref=e172] [cursor=pointer]:
+      - img [ref=e173]
+  - button "Open Next.js Dev Tools" [ref=e167] [cursor=pointer]:
+    - img [ref=e168]
+  - alert [ref=e175]

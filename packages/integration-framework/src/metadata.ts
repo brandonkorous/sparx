@@ -20,4 +20,15 @@ export interface ProviderMetadataDescriptor {
   configSchemaJson: string;
   webhookPathTemplate: string;
   requiredScopes: string[];
+  /** Whether the inbound webhook route must resolve a signing secret and
+   *  a signature header before dispatching to `verifyWebhook`. Defaults
+   *  to true (the Stripe-style HMAC model most providers use). Set to
+   *  false for providers whose webhooks aren't signed and instead trust
+   *  the URL-embedded installationId (e.g. Shippo). */
+  webhookRequiresSignature?: boolean;
+  /** Property names within `configSchemaJson` whose values are raw secrets
+   *  (API keys, tokens) the tenant pastes into the install form. providerService
+   *  encrypts these before persisting; the dashboard form renders them masked.
+   *  Everything else in the schema round-trips as plain config. */
+  secretFields?: string[];
 }

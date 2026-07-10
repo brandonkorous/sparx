@@ -20,6 +20,7 @@ interface PageProps {
 export default async function BroadcastsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, { data: broadcasts, meta }] = await Promise.all([
     getUserPreferences(),
@@ -27,6 +28,7 @@ export default async function BroadcastsPage({ searchParams }: PageProps) {
       `/v1/email/broadcasts?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -46,7 +48,7 @@ export default async function BroadcastsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search name or subject…"
           enableViewToggle
           primaryAction={
             <EntityCreateButton
@@ -66,8 +68,12 @@ export default async function BroadcastsPage({ searchParams }: PageProps) {
       {broadcasts.length === 0 ? (
         <EmptyState
           icon={<Send className="h-5 w-5" />}
-          title="No broadcasts yet"
-          description="Compose a campaign, target a CRM segment, and send or schedule it."
+          title={q ? 'No broadcasts match this search' : 'No broadcasts yet'}
+          description={
+            q
+              ? 'Clear the search to see every broadcast.'
+              : 'Compose a campaign, target a CRM segment, and send or schedule it.'
+          }
         />
       ) : (
         <BroadcastsList rows={broadcasts} view={view} />

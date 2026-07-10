@@ -19,12 +19,27 @@
 //   GET /v1/public/b2b/portal/:accountId/orders?tenant=&skip=&take=
 //       → paged order list scoped to this customer's orders on the account
 //
-//   GET /v1/public/b2b/portal/:accountId/quotes?tenant=&skip=&take=
-//       → paged quote list
+//   GET  /v1/public/b2b/portal/:accountId/quotes?tenant=&skip=&take=
+//        → paged quote list (a quote IS a BillingDocument on the system
+//          `b2b-quotes` workflow — docs/87 convergence)
+//   POST /v1/public/b2b/portal/:accountId/quotes?tenant=
+//        → submit a new RFQ (creates a draft document + its lines, then
+//          advances it straight to "Submitted")
+//   POST /v1/public/b2b/portal/:accountId/quotes/:id/accept?tenant=
+//        → customer accepts a merchant-priced quote ("Quoted" → "Accepted")
+//   POST /v1/public/b2b/portal/:accountId/quotes/:id/decline?tenant=
+//        → customer declines a merchant-priced quote ("Quoted" → "Declined")
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
+import {
+  b2bQuoteService,
+  billingDocumentService,
+  billingDocumentStageService,
+  billingLineService,
+} from '@sparx/crm';
+import { B2B_QUOTE_WORKFLOW_SLUG } from '@sparx/crm-schemas/builtins';
 import { inventoryService } from '@sparx/inventory';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { forbidden, notFound } from '@sparx/api-core/errors';
@@ -32,7 +47,18 @@ import { type CustomerAuthContext } from '@sparx/customer-auth';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 import { requireCustomerId } from '../../../lib/customer-session.js';
 
+// Contact roles allowed to submit/accept/decline a quote (docs/64 §5.2) —
+// `approver`/`viewer` are read-only for quotes, same as for orders/invoices.
+const QUOTE_WRITER_ROLES = new Set(['primary_contact', 'buyer']);
+
+function requireQuoteWriter(role: string): void {
+  if (!QUOTE_WRITER_ROLES.has(role)) {
+    throw forbidden('Your role on this account cannot submit or respond to quotes.');
+  }
+}
+
 const PathAccountId = z.object({ accountId: z.string().uuid() });
+const PathAccountQuoteId = z.object({ accountId: z.string().uuid(), id: z.string().uuid() });
 const PagedQuery = z.object({
   take: z.coerce.number().int().min(1).max(100).default(20),
   skip: z.coerce.number().int().min(0).default(0),
@@ -70,6 +96,29 @@ async function requireContactRole(
   );
   if (!contact) throw forbidden('You do not have access to this B2B account.');
   return contact.role;
+}
+
+/** Guard against an IDOR on quote id — confirm `id` is actually a
+ *  `b2b-quotes`-workflow document belonging to `accountId` before any
+ *  lifecycle write, so a contact can't act on another account's document by
+ *  guessing/passing an arbitrary id. */
+async function assertOwnQuote(
+  ctx: CustomerAuthContext,
+  accountId: string,
+  id: string
+): Promise<void> {
+  const doc = await withTenant(ctx, (tx) =>
+    tx.billingDocument.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+        b2bAccountId: accountId,
+        workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
+      },
+      select: { id: true },
+    })
+  );
+  if (!doc) throw notFound('quote');
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
@@ -336,6 +385,8 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── Quotes ────────────────────────────────────────────────────────────────
+  // A quote IS a BillingDocument on the system `b2b-quotes` workflow (docs/87
+  // convergence) — there is no separate quote entity anymore.
   app.get('/v1/public/b2b/portal/:accountId/quotes', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
@@ -344,27 +395,31 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     const role = await requireContactRole(ctx, customerId, accountId);
     const q = PagedQuery.parse(request.query);
 
-    const quoteWhere =
-      role === 'viewer' ? { b2bAccountId: accountId, customerId } : { b2bAccountId: accountId };
+    const quoteWhere = {
+      deletedAt: null,
+      workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
+      b2bAccountId: accountId,
+      ...(role === 'viewer' ? { customerId } : {}),
+    };
 
     const { quoteItems, quoteTotal } = await withTenant(ctx, async (tx) => {
       const [quoteItems, quoteTotal] = await Promise.all([
-        tx.quote.findMany({
+        tx.billingDocument.findMany({
           where: quoteWhere,
           select: {
             id: true,
-            quoteNumber: true,
-            status: true,
+            number: true,
             total: true,
             currency: true,
             validUntil: true,
             createdAt: true,
+            stage: { select: { name: true, customerLabel: true, stageType: true } },
           },
           orderBy: { createdAt: 'desc' },
           take: q.take,
           skip: q.skip,
         }),
-        tx.quote.count({ where: quoteWhere }),
+        tx.billingDocument.count({ where: quoteWhere }),
       ]);
       return { quoteItems, quoteTotal };
     });
@@ -374,8 +429,8 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     return paged(
       quoteItems.map((q2: QuoteRow) => ({
         id: q2.id,
-        quoteNumber: q2.quoteNumber,
-        status: q2.status,
+        number: q2.number,
+        stage: q2.stage,
         totalCents: Math.round(Number(q2.total) * 100),
         currency: q2.currency,
         validUntil: q2.validUntil?.toISOString() ?? null,
@@ -383,6 +438,100 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
       })),
       { total: quoteTotal, skip: q.skip, take: q.take }
     );
+  });
+
+  // Submit a new RFQ — creates a draft document + its requested lines (no
+  // pricing yet; the merchant prices them in the "respond" step on the
+  // dashboard), then advances it straight to "Submitted" so it shows up in the
+  // merchant's queue immediately.
+  const SubmitQuoteBody = z.object({
+    customerNote: z.string().max(2000).optional(),
+    lines: z
+      .array(
+        z.object({
+          description: z.string().min(1).max(500),
+          quantity: z.number().positive().default(1),
+          variantId: z.string().uuid().optional(),
+        })
+      )
+      .min(1)
+      .max(50),
+  });
+
+  app.post('/v1/public/b2b/portal/:accountId/quotes', async (request, reply) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId } = PathAccountId.parse(request.params);
+    const role = await requireContactRole(ctx, customerId, accountId);
+    requireQuoteWriter(role);
+    const body = SubmitQuoteBody.parse(request.body);
+
+    const { draftStage, submittedStage } = await withTenant(ctx, async (tx) => ({
+      draftStage: await b2bQuoteService.b2bQuoteDraftStage(tx, ctx.tenantId),
+      submittedStage: await b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Submitted'),
+    }));
+
+    let doc = await billingDocumentService.create(ctx, {
+      workflowId: draftStage.workflowId,
+      stageId: draftStage.id,
+      customerId,
+      b2bAccountId: accountId,
+      ...(body.customerNote !== undefined ? { customerNote: body.customerNote } : {}),
+    });
+
+    for (const line of body.lines) {
+      doc = await billingLineService.addLine(ctx, doc.id, {
+        description: line.description,
+        quantity: line.quantity,
+        ...(line.variantId ? { variantId: line.variantId } : {}),
+      });
+    }
+
+    doc = await billingDocumentStageService.advance(ctx, doc.id, { stageId: submittedStage.id });
+
+    reply.code(201);
+    return ok({ id: doc.id, number: doc.number });
+  });
+
+  const AcceptDeclineBody = z.object({
+    reason: z.string().max(500).optional(),
+  });
+
+  app.post('/v1/public/b2b/portal/:accountId/quotes/:id/accept', async (request) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId, id } = PathAccountQuoteId.parse(request.params);
+    const role = await requireContactRole(ctx, customerId, accountId);
+    requireQuoteWriter(role);
+    await assertOwnQuote(ctx, accountId, id);
+
+    const acceptedStage = await withTenant(ctx, (tx) =>
+      b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Accepted')
+    );
+    const doc = await billingDocumentStageService.advance(ctx, id, { stageId: acceptedStage.id });
+    return ok({ id: doc.id, stageId: doc.stageId });
+  });
+
+  app.post('/v1/public/b2b/portal/:accountId/quotes/:id/decline', async (request) => {
+    const tenantId = await resolveTenantId(request);
+    const ctx: CustomerAuthContext = { tenantId };
+    const customerId = await requirePortalCustomer(request, ctx);
+    const { accountId, id } = PathAccountQuoteId.parse(request.params);
+    const role = await requireContactRole(ctx, customerId, accountId);
+    requireQuoteWriter(role);
+    await assertOwnQuote(ctx, accountId, id);
+    const body = AcceptDeclineBody.parse(request.body ?? {});
+
+    const declinedStage = await withTenant(ctx, (tx) =>
+      b2bQuoteService.b2bQuoteStageByName(tx, ctx.tenantId, 'Declined')
+    );
+    if (body.reason !== undefined) {
+      await billingDocumentService.update(ctx, id, { declinedReason: body.reason });
+    }
+    const doc = await billingDocumentStageService.advance(ctx, id, { stageId: declinedStage.id });
+    return ok({ id: doc.id, stageId: doc.stageId });
   });
 
   // ── Account-scoped availability (docs/100 P6d) ─────────────────────────────

@@ -212,6 +212,55 @@ export function getPublishedHome(ctx: PropertyContext): Promise<PublishedSilicaP
   });
 }
 
+/** The published silica COLLECTION template for a record type (docs/118 Stage 6 —
+ *  the silica analogue of pageService.getPublishedByRecordType). The generic
+ *  per-record router: the PUBLISHED silica tree that renders a record of
+ *  `recordType` (`commerce.product`, `cms.blog_post`), or null when none resolves.
+ *
+ *  Resolution order (docs/51 §6) — first PUBLISHED candidate wins:
+ *    1. per-record OVERRIDE (BuilderPageAssignment for `recordId`, if given)
+ *    2. the type DEFAULT     (BuilderPage.isDefault for this recordType)
+ *    3. FALLBACK             (lowest-position published)
+ *  An unpublished override/default falls through so the storefront never renders a
+ *  draft. The caller injects the in-scope record (`product`, `blog_post`) — the buy
+ *  box / entry template scopes its descendants to it. Off the `silica_*` published
+ *  column; runs parallel to the sparx read until the storefront flips. */
+export function getPublishedByRecordType(
+  ctx: PropertyContext,
+  recordType: string,
+  recordId?: string
+): Promise<PublishedSilicaPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const [rows, site] = await Promise.all([
+      tx.builderPage.findMany({
+        where: { recordType, kind: 'collection', propertyId: ctx.propertyId },
+        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+      }),
+      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+    ]);
+    if (rows.length === 0) return null;
+
+    // Per-record override (a specific template pinned to this exact record).
+    let overrideId: string | null = null;
+    if (recordId) {
+      const assignment = await tx.builderPageAssignment.findFirst({
+        where: { recordType, itemRef: recordId, propertyId: ctx.propertyId },
+        select: { builderPageId: true },
+      });
+      overrideId = assignment?.builderPageId ?? null;
+    }
+
+    const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
+    const chosen =
+      (override && isSilicaPublished(override) ? override : undefined) ??
+      rows.find((r) => r.isDefault && isSilicaPublished(r)) ??
+      rows.find(isSilicaPublished);
+
+    if (!chosen) return null;
+    return toPublishedPage(chosen, publishedSymbols(site));
+  });
+}
+
 /** The active layout for the property, seeding the starter shell if the property
  *  has none yet (mirrors layoutService.listOrSeed's lazy materialization) so the
  *  frame always has a home. */
@@ -300,6 +349,83 @@ export async function sync(ctx: PropertyContext, rawInput: unknown): Promise<voi
         ...themeData,
         ...symbolsData,
       },
+    });
+  });
+}
+
+/**
+ * Discard the property's silica site so the next `load` returns null and the
+ * editor re-opens on the CURRENT starter seed — the "re-seed, not backfill"
+ * lifecycle (docs/118 Stage 4).
+ *
+ * Why this exists: catalog composites are STAMPED. `productGrid()` runs once, at
+ * insert, and its tree is copied into the page and persisted. Improving the
+ * factory — teaching a product card to link to its product, say — cannot reach a
+ * tree that was already stamped, and there is no migration for that: the stale
+ * tree is perfectly valid JSON. Re-seeding is the answer, and it belongs in the
+ * product as a first-class action rather than a one-off script.
+ *
+ * DESTRUCTIVE for silica content, and deliberately inert for everything else:
+ *   · silica-only page rows (materialized by `sync`, carrying a blank sparx tree)
+ *     are DELETED — exactly as `sync` deletes a page silica dropped.
+ *   · a page row that also carries real legacy sparx content keeps the row and
+ *     loses only its silica columns: a reset must never destroy the tree the
+ *     legacy storefront is still serving during the parallel run.
+ *   · the frame's silica trees and the site-global symbols are cleared.
+ *   · the authored THEME survives. Resetting the pages is not the same as throwing
+ *     away the tenant's brand, and "reset my layout" should not silently force
+ *     them to re-pick a theme.
+ */
+export async function reset(ctx: PropertyContext): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
+    const silicaRows = allPages.filter(isSilica);
+
+    for (const r of silicaRows) {
+      // `publishedTree` is the LEGACY sparx column. A silica-only row never has
+      // one (sync parks a blank `draftTree` there and nothing else), so the row
+      // exists solely to carry the silica body — drop it.
+      if (r.publishedTree == null) {
+        await tx.builderPage.delete({ where: { id: r.id } });
+      } else {
+        await tx.builderPage.update({
+          where: { id: r.id },
+          data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+        });
+      }
+    }
+
+    const layout = await tx.builderLayout.findFirst({
+      where: { propertyId: ctx.propertyId, isActive: true },
+    });
+    if (layout) {
+      await tx.builderLayout.update({
+        where: { id: layout.id },
+        data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+      });
+    }
+
+    const site = await tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } });
+    if (site) {
+      await tx.builderSite.update({
+        where: { propertyId: ctx.propertyId },
+        data: {
+          silicaDraftSymbols: asJson({}),
+          silicaPublishedSymbols: Prisma.DbNull,
+          publishedAt: null,
+        },
+      });
+    }
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.site.reset',
+      entityType: 'Property',
+      entityId: ctx.propertyId,
+      diff: { before: { pages: silicaRows.length } },
     });
   });
 }

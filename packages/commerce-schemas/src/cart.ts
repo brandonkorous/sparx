@@ -41,8 +41,9 @@ export const CreateCartInput = z.object({
   customerId: Uuid.optional(),
   // Cookie-bound guest token; set when no customer is authenticated.
   guestToken: z.string().min(8).max(127).optional(),
-  // Optional carry-over: when a B2B contact starts a cart from a quote.
-  fromQuoteId: Uuid.optional(),
+  // Optional carry-over: when a B2B contact starts a cart from an accepted
+  // billing document (a quote).
+  fromDocumentId: Uuid.optional(),
   fromSubscriptionId: Uuid.optional(),
   // Origin site (docs/58 D1) — the storefront property this cart belongs to, so
   // the order placed from it inherits the site. Omitted for admin / MCP carts.

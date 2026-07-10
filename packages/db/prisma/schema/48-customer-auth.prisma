@@ -135,19 +135,19 @@ model CustomerVerification {
 // tenant-scoping adapter Proxy remaps those to the models below.
 
 model CustomerOauthApplication {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
-  name         String?  @db.VarChar(255)
-  icon         String?  @db.Text
-  metadata     String?  @db.Text
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  name         String? @db.VarChar(255)
+  icon         String? @db.Text
+  metadata     String? @db.Text
   // Global unique so the FK from CustomerOauthAccessToken.clientId can reference
   // it; the DCR client id is a random 32-char string. RLS still scopes reads.
-  clientId     String   @unique @map("client_id") @db.VarChar(255)
-  clientSecret String?  @map("client_secret") @db.Text
-  redirectUrls String   @map("redirect_urls") @db.Text
-  type         String   @db.VarChar(32)
-  disabled     Boolean  @default(false)
-  userId       String?  @map("user_id") @db.Uuid
+  clientId     String  @unique @map("client_id") @db.VarChar(255)
+  clientSecret String? @map("client_secret") @db.Text
+  redirectUrls String  @map("redirect_urls") @db.Text
+  type         String  @db.VarChar(32)
+  disabled     Boolean @default(false)
+  userId       String? @map("user_id") @db.Uuid
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

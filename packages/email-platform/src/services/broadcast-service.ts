@@ -10,7 +10,7 @@
 // joined by the broadcast_id variable the webhook stamps back.
 
 import { withTenant } from '@sparx/db';
-import type { Broadcast } from '@sparx/db';
+import type { Broadcast, Prisma } from '@sparx/db';
 import { renderEmailTree } from '@sparx/email';
 import { treeIsEmailPersonalized, type BuilderNode } from '@sparx/builder-schemas';
 
@@ -53,6 +53,7 @@ async function loadPublishedBuilderEmail(
 }
 
 export interface ListBroadcastsQuery {
+  q?: string;
   take?: number;
   skip?: number;
 }
@@ -63,10 +64,20 @@ export async function list(
 ): Promise<{ items: Broadcast[]; total: number }> {
   const take = Math.min(query.take ?? 50, 250);
   const skip = query.skip ?? 0;
+  const where: Prisma.BroadcastWhereInput = {
+    ...(query.q
+      ? {
+          OR: [
+            { name: { contains: query.q, mode: 'insensitive' } },
+            { subject: { contains: query.q, mode: 'insensitive' } },
+          ],
+        }
+      : {}),
+  };
   return withTenant(ctx, async (tx) => {
     const [items, total] = await Promise.all([
-      tx.broadcast.findMany({ orderBy: { createdAt: 'desc' }, take, skip }),
-      tx.broadcast.count(),
+      tx.broadcast.findMany({ where, orderBy: { createdAt: 'desc' }, take, skip }),
+      tx.broadcast.count({ where }),
     ]);
     return { items, total };
   });

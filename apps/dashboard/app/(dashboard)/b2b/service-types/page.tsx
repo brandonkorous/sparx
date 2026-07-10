@@ -38,6 +38,7 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 export default async function ServiceTypesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, result] = await Promise.all([
     getUserPreferences(),
@@ -45,6 +46,7 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
       `/v1/b2b/service-types?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -64,7 +66,11 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
         />
       }
       toolbar={
-        <ListToolbar enableViewToggle searchable={false} primaryAction={<NewServiceTypeButton />} />
+        <ListToolbar
+          enableViewToggle
+          searchPlaceholder="Search service type name…"
+          primaryAction={<NewServiceTypeButton />}
+        />
       }
       pager={<ListPager total={total} />}
     >
@@ -73,9 +79,13 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
           <CardBody className="p-0">
             <EmptyState
               icon={<Calendar className="h-5 w-5" />}
-              title="No service types yet"
-              description="Add your first service type so B2B accounts can book appointments."
-              actions={<NewServiceTypeButton />}
+              title={q ? 'No service types match this search' : 'No service types yet'}
+              description={
+                q
+                  ? 'Clear the search to see every service type.'
+                  : 'Add your first service type so B2B accounts can book appointments.'
+              }
+              actions={q ? undefined : <NewServiceTypeButton />}
             />
           </CardBody>
         </Card>

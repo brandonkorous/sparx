@@ -2,7 +2,11 @@
 // support for oversized / palletized shipments.
 
 import type { RateOption, ShipmentRequest } from '@sparx/commerce-schemas';
-import { ProviderUnsupportedError, registerProvider } from '@sparx/integration-framework';
+import {
+  ProviderUnsupportedError,
+  registerProvider,
+  WebhookVerificationError,
+} from '@sparx/integration-framework';
 import type {
   ProviderBundle,
   ProviderMetadataDescriptor,
@@ -10,6 +14,7 @@ import type {
   ShippingLabel,
   ShippingProvider,
   TrackingStatus,
+  WebhookEvent,
 } from '@sparx/integration-framework';
 
 const EASYPOST_SLUG = 'easypost';
@@ -68,6 +73,9 @@ const easypostShipping: ShippingProvider = {
   },
   voidLabel(): Promise<void> {
     return unimplemented('voidLabel');
+  },
+  verifyWebhook(): WebhookEvent {
+    throw new WebhookVerificationError('easypost', 'EasyPost webhook verification (Phase 0 stub)');
   },
 };
 

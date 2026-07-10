@@ -115,7 +115,13 @@ export default function ConceptsPage() {
               <td>
                 <code>crm</code>
               </td>
-              <td>Customers, B2B accounts, deals, quotes, and orders.</td>
+              <td>Customers, B2B accounts, deals, and orders.</td>
+            </tr>
+            <tr>
+              <td>
+                <code>invoicing</code>
+              </td>
+              <td>Quotes, estimates, invoices, and payments — one document engine.</td>
             </tr>
             <tr>
               <td>

@@ -101,6 +101,7 @@ const ConfirmBody = z.object({ notes: z.string().max(1000).optional() });
 const CancelBody = z.object({ reason: z.string().max(1000).optional() });
 
 const ListAppointmentsQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   status: z.enum(['requested', 'confirmed', 'in_progress', 'completed', 'cancelled']).optional(),
   account_id: z.string().uuid().optional(),
   from: z.string().datetime().optional(),
@@ -110,6 +111,7 @@ const ListAppointmentsQuery = z.object({
 });
 
 const ListServiceTypesQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -220,7 +222,18 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const take = Math.min(q.take ?? 50, 250);
     const skip = q.skip ?? 0;
 
-    const where = { tenantId: ctx.tenantId, deletedAt: null };
+    const where: Prisma.ServiceTypeWhereInput = {
+      tenantId: ctx.tenantId,
+      deletedAt: null,
+      ...(q.q
+        ? {
+            OR: [
+              { name: { contains: q.q, mode: 'insensitive' } },
+              { description: { contains: q.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const { types, total } = await withTenant(ctx, async (tx) => {
       const [types, total] = await Promise.all([
         tx.serviceType.findMany({ where, orderBy: { name: 'asc' }, take, skip }),
@@ -321,6 +334,16 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
         ...(q.from ? { gte: new Date(q.from) } : {}),
         ...(q.to ? { lte: new Date(q.to) } : {}),
       };
+    }
+    if (q.q) {
+      where.OR = [
+        { serviceType: { name: { contains: q.q, mode: 'insensitive' } } },
+        { b2bAccount: { companyName: { contains: q.q, mode: 'insensitive' } } },
+        { customer: { firstName: { contains: q.q, mode: 'insensitive' } } },
+        { customer: { lastName: { contains: q.q, mode: 'insensitive' } } },
+        { customer: { email: { contains: q.q, mode: 'insensitive' } } },
+        { notes: { contains: q.q, mode: 'insensitive' } },
+      ];
     }
 
     const { items, total } = await withTenant(ctx, async (tx) => {

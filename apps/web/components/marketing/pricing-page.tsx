@@ -734,7 +734,7 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
     price: '$19/mo',
     repl: 'Replaces a standalone invoicing tool',
     feats: [
-      'Quotes that convert to invoices',
+      'Estimates, quotes & invoices — one document',
       'Card & ACH payment links',
       'Recurring & milestone billing',
       'Automatic overdue reminders',

@@ -13,12 +13,17 @@
 //      expand `data:collection` nodes one-clone-per-item, via the host's
 //      SYNCHRONOUS resolver (sparx's `createSilicaResolver` over pre-loaded data).
 //      Absent a host → the tree passes through unchanged (a static page).
-//   4. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
+//   4. hoistAttrBindings — lift each resolved attribute carrier onto its parent
+//      (a product card's bound `href`) and strip the carrier. The host-side
+//      bridge for the attribute binding silica cannot yet resolve on a container;
+//      see `attr-binding.ts`. A no-op on a tree that binds no attributes.
+//   5. toHtml        — the framework-free HTML projection; `data-sui-*` markers on
 //      behavior/action nodes are lowered for the client behavior runtime to wire.
 //
 // Pure + framework-free (silicaui-html only), so it runs on the server (RSC /
 // publish) with no React dependency and stays the single source of render truth.
 
+import { hoistAttrBindings } from './attr-binding';
 import {
   composeFrame,
   flattenSymbols,
@@ -56,7 +61,9 @@ function renderComposedTree(
   const body = flattenSymbols(pageRoot, symbols);
   const composed = frameRoot ? composeFrame(flattenSymbols(frameRoot, symbols), body) : body;
   const resolved = opts.host ? resolveTree(composed, opts.host, opts.scope) : composed;
-  return toHtml(resolved, opts.html);
+  // Always hoist: an UNRESOLVED carrier (static render, no host) must still be
+  // stripped, or a hidden `<input>` leaks into the page's markup.
+  return toHtml(hoistAttrBindings(resolved), opts.html);
 }
 
 /** Render ONE page of a site to the full production HTML a visitor to its route

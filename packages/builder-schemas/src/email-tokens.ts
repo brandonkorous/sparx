@@ -153,7 +153,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     when: 'Jun 14, 2026 at 2:30 PM',
     duration: '60 min',
     status: 'confirmed',
-    vehicle: '2019 Ford F-250',
+    vehicle: '2021 Toyota Corolla',
     cancellationReason: '',
     manageUrl: '#',
   },

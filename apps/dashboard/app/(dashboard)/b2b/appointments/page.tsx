@@ -56,12 +56,14 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
+  const q = stringParam(params.q);
   // account_id stays URL-readable for deep links from an account page; it isn't
   // a toolbar control.
   const accountId = stringParam(params.account_id);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
+  if (q) query.set('q', q);
   if (accountId) query.set('account_id', accountId);
 
   const [prefs, { data: appointments, meta }] = await Promise.all([
@@ -95,7 +97,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search service, account, or customer…"
           filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
           enableViewToggle
         />
@@ -107,10 +109,10 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
           <CardBody className="p-0">
             <EmptyState
               icon={<Calendar className="h-5 w-5" />}
-              title={status ? 'No appointments match this filter' : 'No appointments'}
+              title={status || q ? 'No appointments match these filters' : 'No appointments'}
               description={
-                status
-                  ? 'Clear the status filter to see every appointment.'
+                status || q
+                  ? 'Adjust filters or clear the search to see every appointment.'
                   : 'Appointments booked from the B2B portal or created here will appear in this list.'
               }
             />

@@ -159,25 +159,43 @@ model BillingDocument {
   paidAt      DateTime? @map("paid_at") @db.Timestamptz
   overdueDays Int       @default(0) @map("overdue_days")
 
-  notes       String?   @db.Text
-  validUntil  DateTime? @map("valid_until") @db.Timestamptz
-  finalizedAt DateTime? @map("finalized_at") @db.Timestamptz
-  voidedAt    DateTime? @map("voided_at") @db.Timestamptz
-  metadata    Json      @default("{}")
+  notes          String?   @db.Text
+  // Customer-visible note (mirrors the retired Quote's split of an internal vs.
+  // customer-facing note) — `notes` above stays staff-internal.
+  customerNote   String?   @map("customer_note") @db.Text
+  declinedReason String?   @map("declined_reason") @db.VarChar(500)
+  validUntil     DateTime? @map("valid_until") @db.Timestamptz
+  finalizedAt    DateTime? @map("finalized_at") @db.Timestamptz
+  voidedAt       DateTime? @map("voided_at") @db.Timestamptz
+  metadata       Json      @default("{}")
+
+  // Quote→Order conversion (replaces the retired Quote.convertedToOrderId /
+  // Order.convertedFromQuotes soft/metadata pointer). The FK is a single
+  // physical column on Order (Order.convertedFromDocumentId, 24-crm-orders.prisma)
+  // — `convertedOrder` below is the non-FK reverse side of that same relation, so
+  // a document navigates to its order with no duplicate/redundant column here.
+  // `convertedAt` is just a timestamp, set once inside the conversion transaction.
+  convertedAt     DateTime? @map("converted_at") @db.Timestamptz
+  createdByUserId String?   @map("created_by_user_id") @db.Uuid
 
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant       Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  workflow     DocumentWorkflow          @relation(fields: [workflowId], references: [id])
-  stage        DocumentStage             @relation(fields: [stageId], references: [id])
-  customer     Customer?                 @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  b2bAccount   B2BAccount?               @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
-  assignedUser User?                     @relation("BillingDocumentAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
-  lines        BillingDocumentLine[]
-  snapshots    BillingDocumentSnapshot[]
-  payments     BillingDocumentPayment[]
+  tenant         Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow       DocumentWorkflow          @relation(fields: [workflowId], references: [id])
+  stage          DocumentStage             @relation(fields: [stageId], references: [id])
+  customer       Customer?                 @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  b2bAccount     B2BAccount?               @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  assignedUser   User?                     @relation("BillingDocumentAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  createdBy      User?                     @relation("BillingDocumentCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  // Reverse side of Order.convertedFromDocument — no FK column here, the FK
+  // lives on Order (see comment on `convertedAt` above).
+  convertedOrder Order?                    @relation("DocumentConvertedToOrder")
+  lines          BillingDocumentLine[]
+  snapshots      BillingDocumentSnapshot[]
+  payments       BillingDocumentPayment[]
+  dealLinks      DealBillingDocument[]
 
   @@unique([tenantId, number], map: "billing_documents_tenant_number_unique")
   @@unique([tenantId, numberSeq], map: "billing_documents_tenant_seq_unique")

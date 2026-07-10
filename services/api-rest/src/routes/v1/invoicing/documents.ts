@@ -13,12 +13,15 @@
 //   GET    /v1/invoicing/documents/:id/snapshots/:sid    → one frozen record
 //   POST   /v1/invoicing/documents/:id/payments          → record a payment (§8)
 //   GET    /v1/invoicing/documents/:id/payments          → payment history
+//   POST   /v1/invoicing/documents/:id/convert-to-order  → committed → Order created
 //   GET    /v1/invoicing/documents/:id/pdf               → branded print-HTML (§10)
 //   GET    /v1/invoicing/documents/:id/snapshots/:sid/pdf → print a frozen record
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { withTenant } from '@sparx/db';
 import {
+  billingDocumentConversionService,
   billingDocumentService,
   billingDocumentStageService,
   billingLineService,
@@ -77,8 +80,20 @@ const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents/:id', async (request) => {
     requireRole(request, 'viewer');
     await requireInvoicingModule(request);
+    const ctx = toInvoicingContext(request);
     const { id } = PathId.parse(request.params);
-    return ok(await billingDocumentService.get(toInvoicingContext(request), id));
+    const doc = await billingDocumentService.get(ctx, id);
+    // A quote's conversion to an Order has no column on the document itself —
+    // the FK lives on Order (docs/87 §15 convergence) — so the dashboard needs
+    // this looked up alongside the document to show "Convert to order" vs.
+    // "View order".
+    const convertedOrder = await withTenant(ctx, (tx) =>
+      tx.order.findFirst({
+        where: { convertedFromDocumentId: id },
+        select: { id: true, orderNumber: true },
+      })
+    );
+    return ok({ ...doc, convertedOrder });
   });
 
   app.post('/v1/invoicing/documents', async (request, reply) => {
@@ -180,6 +195,22 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await billingPaymentService.listPayments(toInvoicingContext(request), id));
+  });
+
+  // Convert an accepted quote (a `committed`-stage document) into a real
+  // commerce Order, for fulfillment/shipping/inventory (docs/87 §15
+  // convergence). The document itself stays in its `committed` stage.
+  app.post('/v1/invoicing/documents/:id/convert-to-order', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    const result = await billingDocumentConversionService.convertToOrder(
+      toInvoicingContext(request),
+      id,
+      request.body
+    );
+    reply.code(201);
+    return ok(result);
   });
 
   // Hosted pay-link for the outstanding balance (docs/94 ADR §8). Routes through

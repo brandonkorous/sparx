@@ -268,7 +268,15 @@ export async function update(
     const data: Prisma.BuilderPageUpdateInput = {};
     if (input.name !== undefined) data.name = input.name;
     if (input.tree !== undefined) data.draftTree = asJson(input.tree);
-    if (input.recordType !== undefined) data.recordType = input.recordType;
+    if (input.recordType !== undefined) {
+      data.recordType = input.recordType;
+      // A page WITH a record type IS a collection template; clearing it returns the
+      // page to a routable singleton. This keeps the (kind, recordType) invariant the
+      // storefront's per-record resolver relies on (it filters `kind:'collection'`),
+      // so retargeting a page — including a silica page first materialized as a
+      // singleton — makes it a real product/entry template with no separate control.
+      data.kind = input.recordType ? 'collection' : 'singleton';
+    }
     if (input.slug !== undefined) data.slug = input.slug;
     // SEO — empty strings clear the column (store null), so the storefront falls
     // back to the page name rather than rendering an empty <title>.

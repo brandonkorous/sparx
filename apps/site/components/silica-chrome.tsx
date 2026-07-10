@@ -31,7 +31,7 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { renderSilicaBody } from '@sparx/silica-catalog';
+import { hoistAttrBindings, renderSilicaBody } from '@sparx/silica-catalog';
 
 // ── SilicaBody: a published page body → one resolved HTML string ─────────────
 
@@ -169,5 +169,8 @@ export function SilicaChrome({
 }): React.ReactNode {
   const flat = flattenSymbols(frame, symbols ?? {});
   const resolved = host ? resolveTree(flat, host) : flat;
-  return walk(resolved, 'frame', children);
+  // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
+  // bound logo link), and an unhoisted carrier would render a stray hidden input
+  // into the chrome. Always run — it also strips carriers that never resolved.
+  return walk(hoistAttrBindings(resolved), 'frame', children);
 }

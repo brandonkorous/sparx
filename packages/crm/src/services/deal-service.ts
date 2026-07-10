@@ -1,9 +1,10 @@
 // dealService — sales opportunities (docs/11 §4).
 //
 // Locked decisions in play here:
-//   #5 — deals attach to orders/quotes via join tables (deal_orders /
-//        deal_quotes), never via columns on orders/quotes. attachOrder /
-//        attachQuote are the only paths that write to those tables.
+//   #5 — deals attach to orders/billing documents via join tables
+//        (deal_orders / deal_billing_documents), never via columns on
+//        orders/documents. attachOrder / attachDocument are the only paths
+//        that write to those tables.
 //   #6 — moveStage emits crm.deal.stage_changed; the email module's
 //        automation engine subscribes to this topic to trigger the
 //        documented templates. Going through update() instead of
@@ -336,10 +337,10 @@ export async function moveStage(
 export {
   attachOrder,
   detachOrder,
-  attachQuote,
-  detachQuote,
+  attachDocument,
+  detachDocument,
   listAttachedOrders,
-  listAttachedQuotes,
+  listAttachedDocuments,
 } from './deal-attach-service';
 export {
   forecast,

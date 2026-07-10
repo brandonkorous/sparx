@@ -177,6 +177,30 @@ const PRODUCT_FIELDS: FieldSchema[] = [
   // `fillValue` writes a bound value into an `<input>`'s `value` attribute
   // (silicaui ≥ 0.12). Empty string when the product has no live variant.
   { key: 'variantId', label: 'Default variant ID', kind: 'text', cardinality: 'scalar' },
+  // The product's storefront URL (`/products/<handle>`). A product card binds it
+  // into its `<a href>` via `bindAttr` — without it a product grid renders a wall
+  // of cards that navigate nowhere. Derived, not stored: the data loaders build it
+  // from `handle` so the route shape lives in one place.
+  { key: 'url', label: 'Product URL', kind: 'text', cardinality: 'scalar' },
+];
+
+// A collection's own fields PLUS its `products` — a `list` (repeater) whose items
+// carry the product fields, so a collection-detail template can bind a header to
+// the collection AND a grid to its products in ONE object scope. The storefront
+// collection route injects the collection with its products pre-fetched onto this
+// `products` list (docs/118 collections coverage), so the grid repeats a
+// scope-relative `products` ref — no separate collection-scoped product source.
+const COLLECTION_FIELDS: FieldSchema[] = [
+  { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+  { key: 'description', label: 'Description', kind: 'richtext', cardinality: 'scalar' },
+  { key: 'image', label: 'Hero image', kind: 'image', cardinality: 'scalar' },
+  {
+    key: 'products',
+    label: 'Products',
+    kind: 'list',
+    cardinality: 'array',
+    fields: PRODUCT_FIELDS,
+  },
 ];
 
 export const COMMERCE_SOURCES: DataSource[] = [
@@ -195,6 +219,22 @@ export const COMMERCE_SOURCES: DataSource[] = [
     cardinality: 'object',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+  },
+  {
+    key: 'commerce.collection',
+    label: 'Collections',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'collection',
+    fields: COLLECTION_FIELDS,
+  },
+  {
+    key: 'collection',
+    label: 'Collection',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'collection',
+    fields: COLLECTION_FIELDS,
   },
 ];
 

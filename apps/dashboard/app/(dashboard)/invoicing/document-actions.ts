@@ -109,3 +109,32 @@ export async function recordPaymentAction(
     return { id: doc.id };
   });
 }
+
+// Convert an accepted quote (a `committed`-stage document) into a real Order,
+// for fulfillment/shipping/inventory (docs/87 §15 convergence).
+export async function convertToOrderAction(
+  documentId: string
+): Promise<ActionResult<{ orderId: string; orderNumber: string | null }>> {
+  return restAction(async () => {
+    const result = await api.post<{ order: { id: string; orderNumber: string | null } }>(
+      `/v1/invoicing/documents/${documentId}/convert-to-order`,
+      {}
+    );
+    revalidateDoc(documentId);
+    return { orderId: result.order.id, orderNumber: result.order.orderNumber };
+  });
+}
+
+// Hosted pay-link for the outstanding balance (docs/94 ADR §8).
+export async function paymentLinkAction(
+  documentId: string,
+  successUrl: string
+): Promise<ActionResult<{ url: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ url: string }>(
+      `/v1/invoicing/documents/${documentId}/payment-link`,
+      { successUrl }
+    );
+    return { url: result.url };
+  });
+}

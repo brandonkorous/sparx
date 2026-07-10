@@ -65,6 +65,10 @@ export const ProviderMetadata = z.object({
   webhookPathTemplate: z.string().max(127), // "/webhooks/providers/stripe/:installationId"
   // Required scopes / permissions the merchant must grant.
   requiredScopes: z.array(z.string().min(1).max(127)).default([]),
+  // configSchemaJson property names holding raw secrets (API keys, tokens) —
+  // the install form renders these masked; providerService encrypts them
+  // before they ever reach the row.
+  secretFields: z.array(z.string().min(1).max(127)).default([]),
 });
 export type ProviderMetadata = z.infer<typeof ProviderMetadata>;
 
@@ -75,9 +79,9 @@ export const InstallProviderInput = z.object({
   kind: ProviderKind,
   environment: ProviderEnvironment.default('production'),
   // Configuration values keyed by the JSON Schema's property names; the
-  // service validates this against `metadata.configSchemaJson`. Secrets
-  // (API keys, OAuth tokens) are stored encrypted via Secret Manager —
-  // never in plaintext on the row.
+  // service validates this against `metadata.configSchemaJson`. Fields
+  // named in `metadata.secretFields` are encrypted server-side before
+  // they're stored — never in plaintext on the row.
   config: z.record(z.string(), z.unknown()),
   // Display label so a merchant can disambiguate two installs of the
   // same provider (e.g. "Stripe — US Entity" vs "Stripe — EU Entity").

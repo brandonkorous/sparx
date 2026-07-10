@@ -31,10 +31,10 @@ model BuilderPage {
   slug       String? @db.VarChar(160)
 
   // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
-  draftTree     Json      @map("draft_tree")
+  draftTree           Json      @map("draft_tree")
   // Last published snapshot; null until first publish. No storefront consumer
   // yet (docs/41 §1) — publishing just snapshots draft → published.
-  publishedTree Json?     @map("published_tree")
+  publishedTree       Json?     @map("published_tree")
   // The silica-native page body (`@wizeworks/silicaui-html` `Node`) — the
   // engine-adoption store (docs/118). Runs in PARALLEL with the sparx
   // `draft_tree`/`published_tree` during the cutover: the silica `<Builder>`
@@ -43,9 +43,9 @@ model BuilderPage {
   // until a page is materialized silica-native (lazy re-seed on first load).
   silicaDraftTree     Json?     @map("silica_draft_tree")
   silicaPublishedTree Json?     @map("silica_published_tree")
-  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+  publishedAt         DateTime? @map("published_at") @db.Timestamptz
   // Catalog ordering.
-  position      Int       @default(0)
+  position            Int       @default(0)
 
   // The DEFAULT template for `recordType` — the per-type winner the storefront
   // renders when a record has no per-record override (docs/51 §6). At most one
@@ -190,10 +190,10 @@ model BuilderLayout {
   name String @db.VarChar(255)
 
   // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
-  draftTree     Json      @map("draft_tree")
+  draftTree           Json      @map("draft_tree")
   // Last published snapshot; null until first publish. The storefront renders
   // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
-  publishedTree Json?     @map("published_tree")
+  publishedTree       Json?     @map("published_tree")
   // The silica-native FRAME root (`@wizeworks/silicaui-html` `Node` with the one
   // `Outlet`) — the engine-adoption store (docs/118), parallel-run with the sparx
   // columns. The site-global `theme` + saved-component `symbols` deliberately do
@@ -201,14 +201,14 @@ model BuilderLayout {
   // belong to the property, not the chrome — see BuilderSite.
   silicaDraftTree     Json?     @map("silica_draft_tree")
   silicaPublishedTree Json?     @map("silica_published_tree")
-  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+  publishedAt         DateTime? @map("published_at") @db.Timestamptz
   // The live layout — exactly one per PROPERTY. "At most one active" is enforced
   // in the DB by a partial unique index on (tenant_id, property_id) WHERE is_active
   // (hand-added in the migration; Prisma can't express the predicate). Activation
   // requires a prior publish (the storefront reads the active layout's published tree).
-  isActive      Boolean   @default(false) @map("is_active")
+  isActive            Boolean   @default(false) @map("is_active")
   // Catalog ordering (cf. BuilderPage.position).
-  position      Int       @default(0)
+  position            Int       @default(0)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

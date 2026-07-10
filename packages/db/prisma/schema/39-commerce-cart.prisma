@@ -13,9 +13,12 @@ model Cart {
   channel    String  @db.VarChar(20) // storefront | b2b_portal | admin | mcp
   currency   String  @db.VarChar(3)
 
-  // Source provenance — populated when the cart was bootstrapped from
-  // an existing quote or subscription. Both nullable; CRM owns the rows.
-  fromQuoteId        String? @map("from_quote_id") @db.Uuid
+  // Source provenance — populated when the cart was bootstrapped from an
+  // accepted billing document (a quote) or a subscription. Both nullable, soft
+  // references only (no FK; CRM/invoicing own the rows). Unimplemented as of
+  // the Quote→BillingDocument consolidation — no write path populates either
+  // field yet.
+  fromDocumentId     String? @map("from_document_id") @db.Uuid
   fromSubscriptionId String? @map("from_subscription_id") @db.Uuid
 
   // Cached totals; the deterministic pricing pipeline writes these on

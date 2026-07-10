@@ -19,7 +19,6 @@ export interface SampleDataCounts {
   reviews: number;
   questions: number;
   bookings: number;
-  quotes: number;
   deals: number;
   billingDocuments: number;
   bundles: number;

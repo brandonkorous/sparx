@@ -32,7 +32,7 @@ const FEATURES = [
     icon: <RfqIcon />,
     number: '04',
     title: 'RFQ & quotes',
-    body: 'Buyers request quotes from a product page. You reply with line-item pricing and expiration. Approved quotes convert to orders.',
+    body: 'Buyers request quotes from a product page. You reply with line-item pricing and expiration. Accepted quotes convert to orders.',
   },
   {
     icon: <CatalogIcon />,

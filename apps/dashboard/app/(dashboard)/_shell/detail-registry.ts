@@ -44,10 +44,8 @@ const CREATE_VIEW_TYPES = new Set<string>([
   // Deal creation is the single-step SurfaceFrame (full-bleed below); a created
   // deal opens into its detail view. Full page: /crm/deals/new.
   'deal',
-  // Quote + Order creation are multi-step SurfaceFrames (full-bleed below); a
-  // created record opens into its detail view. Full pages: /crm/quotes/new,
-  // /crm/orders/new.
-  'quote',
+  // Order creation is a multi-step SurfaceFrame (full-bleed below); a created
+  // order opens into its detail view. Full page: /crm/orders/new.
   'order',
   // Purchase order + transfer creation are multi-step SurfaceFrames (full-bleed
   // below); their editors stay full-page. Full pages live under /inventory/.
@@ -129,7 +127,6 @@ const FULL_BLEED_CREATE_TYPES = new Set<string>([
   'deal',
   'content-entry',
   'billing-document',
-  'quote',
   'order',
   'purchase-order',
   'transfer',
@@ -215,13 +212,12 @@ export function isSingleFormDetail(typeId: string): boolean {
 // form-only modal so a lone form never floats in a too-wide dialog. A wizard
 // joins this set ONLY once it actually passes SurfaceFrame a `summary` — otherwise
 // the wide modal would frame a narrow form with empty gutters. The whole
-// line-item document family now carries a live summary: quote / order bill a
-// party and roll up to a total; purchase-order / transfer build against a
-// supplier or route; billing-document mirrors its totals + deposit. Client-safe
-// (no server import).
+// line-item document family now carries a live summary: order bills a party
+// and rolls up to a total; purchase-order / transfer build against a supplier
+// or route; billing-document (which a B2B quote/RFQ also is) mirrors its
+// totals + deposit. Client-safe (no server import).
 const SUMMARY_CREATE_TYPES = new Set<string>([
   'product',
-  'quote',
   'order',
   'purchase-order',
   'transfer',

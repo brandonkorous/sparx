@@ -193,7 +193,7 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
 export function EmailAutomations() {
   const rows: { when: string; title: string; hint: string; on: boolean }[] = [
     {
-      when: 'customer.created',
+      when: 'crm.customer.created',
       title: 'Welcome series',
       hint: 'greets every new customer, immediately',
       on: true,
@@ -205,7 +205,7 @@ export function EmailAutomations() {
       on: true,
     },
     {
-      when: 'fulfillment.created',
+      when: 'order.fulfilled',
       title: 'Order shipped',
       hint: 'sends tracking the moment it ships',
       on: true,

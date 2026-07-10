@@ -9,7 +9,7 @@ import {
   customerService,
   dealService,
   taskService,
-  quoteLifecycleService,
+  billingDocumentConversionService,
 } from '../services';
 
 import type { McpToolDefinition } from './registry';
@@ -143,17 +143,22 @@ export const createDeal: McpToolDefinition = {
   run: (ctx, input) => dealService.create(ctx, input),
 };
 
+// A quote IS a BillingDocument on the system `b2b-quotes` workflow (docs/87
+// convergence) — the tool name/scope stay stable for existing MCP clients.
 export const convertQuote: McpToolDefinition = {
   name: 'convert_quote_to_order',
   description:
-    'Convert an accepted quote into a new Order. Items + header values are snapshotted at conversion time.',
+    'Convert an accepted quote into a new Order. Lines + header values are snapshotted at conversion time.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
     quoteId: z.string().uuid(),
     customerId: z.string().uuid().optional(),
   }),
-  run: (ctx, input) => quoteLifecycleService.convertToOrder(ctx, input),
+  run: (ctx, input) => {
+    const { quoteId, ...rest } = input as { quoteId: string; customerId?: string };
+    return billingDocumentConversionService.convertToOrder(ctx, quoteId, rest);
+  },
 };
 
 export const writeTools = [

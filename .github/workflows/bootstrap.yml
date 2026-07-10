@@ -235,6 +235,7 @@ jobs:
             stripe-secret-key
             stripe-webhook-secret
             channels-token-key
+            provider-secret-key
             godaddy-api-key-ote
             godaddy-api-secret-ote
             godaddy-api-key-prod

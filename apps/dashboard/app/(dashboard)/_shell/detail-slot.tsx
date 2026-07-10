@@ -12,13 +12,12 @@ import {
 import { ProductWizard } from '../commerce/products/_components/product-wizard';
 import { CustomerFullProfileWizard } from '../crm/customers/new/customer-full-profile-wizard';
 import { loadPipelineOptions } from '../crm/customers/new/pipeline-options';
+import { loadQuoteWorkflowId } from '../crm/customers/new/quote-workflow-option';
 import { B2bAccountWizard } from '../b2b/accounts/new/b2b-account-wizard';
 import { ContentEntryWizard } from '../cms/content/new/content-entry-wizard';
 import { loadAuthorOptions } from '../cms/content/new/author-options';
 import { InvoiceWizard } from '../invoicing/documents/new/_components/invoice-wizard';
 import { loadInvoiceWizardData } from '../invoicing/documents/new/wizard-data';
-import { QuoteWizard } from '../crm/quotes/new/_components/quote-wizard';
-import { loadQuoteWizardData } from '../crm/quotes/new/wizard-data';
 import { OrderWizard } from '../crm/orders/new/_components/order-wizard';
 import { loadOrderWizardData } from '../crm/orders/new/wizard-data';
 import { PurchaseOrderWizard } from '../inventory/purchase-orders/new/_components/purchase-order-wizard';
@@ -80,7 +79,6 @@ import { B2bAccountDetailContent } from '../crm/b2b/[id]/_content';
 import { CustomerDetailContent } from '../crm/customers/[id]/_content';
 import { DealDetailContent } from '../crm/deals/[id]/_content';
 import { OrderDetailContent } from '../crm/orders/[id]/_content';
-import { QuoteDetailContent } from '../crm/quotes/[id]/_content';
 import { SegmentDetailContent } from '../crm/segments/[id]/_content';
 import { BundleDetailContent } from '../commerce/bundles/[id]/_content';
 import { CartDetailContent } from '../commerce/carts/[id]/_content';
@@ -128,7 +126,6 @@ const detailComponents: Record<string, DetailComponent> = {
   customer: CustomerDetailContent,
   'b2b-account': B2bAccountDetailContent,
   deal: DealDetailContent,
-  quote: QuoteDetailContent,
   order: OrderDetailContent,
   segment: SegmentDetailContent,
   // Commerce
@@ -184,7 +181,6 @@ const detailModules: Record<string, SparxModule> = {
   customer: 'crm',
   'b2b-account': 'crm',
   deal: 'crm',
-  quote: 'crm',
   order: 'crm',
   segment: 'crm',
   // Task create-only overlay (no detail view) — wears the crm accent.
@@ -273,12 +269,17 @@ interface ContentTypeSummary {
 // the current user and its optional deal needs the tenant's pipelines, so a thin
 // server wrapper resolves the session + pipelines and passes them through.
 async function CustomerCreateOverlay() {
-  const [session, pipelines] = await Promise.all([requireSession(), loadPipelineOptions()]);
+  const [session, pipelines, quoteWorkflowId] = await Promise.all([
+    requireSession(),
+    loadPipelineOptions(),
+    loadQuoteWorkflowId(),
+  ]);
   return (
     <CustomerFullProfileWizard
       presentation="overlay"
       currentUserId={session.user.id}
       pipelines={pipelines}
+      quoteWorkflowId={quoteWorkflowId}
     />
   );
 }
@@ -383,14 +384,6 @@ async function CategoryCreateOverlay() {
 async function BillingDocumentCreateOverlay() {
   const data = await loadInvoiceWizardData();
   return <InvoiceWizard presentation="overlay" {...data} />;
-}
-
-// Quote create is the multi-step SurfaceFrame. Quotes anchor to a customer and/or
-// B2B account, so a thin server wrapper resolves both pickers. No `?customerId=`
-// preselection here — the /new route carries deep-link preselection instead.
-async function QuoteCreateOverlay() {
-  const data = await loadQuoteWizardData();
-  return <QuoteWizard presentation="overlay" {...data} />;
 }
 
 // Order create is the multi-step SurfaceFrame; a created order opens into its
@@ -562,9 +555,8 @@ const createComponents: Record<string, React.ComponentType> = {
   // Pipeline create is single-step with no server data; no detail drawer, so on
   // success it continues to the pipeline's edit screen (to add stages).
   pipeline: () => <NewPipelineForm surface="overlay" />,
-  // Quote + Order create are multi-step SurfaceFrames (full-bleed); their detail
-  // views exist, so a created record opens straight into it.
-  quote: QuoteCreateOverlay,
+  // Order create is a multi-step SurfaceFrame (full-bleed); its detail view
+  // exists, so a created order opens straight into it.
   order: OrderCreateOverlay,
   // Inventory — multi-step SurfaceFrame create overlays (editors stay full-page).
   'purchase-order': PurchaseOrderCreateOverlay,

@@ -4,7 +4,7 @@ import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/buil
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
 
 import { getActiveProperty } from '@/lib/sites';
-import { getBindingCatalog, getBuilderSite } from '../_lib/api';
+import { getBindingCatalog, getBuilderSite, listPages } from '../_lib/api';
 import { getBrand, getConfig } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
@@ -67,12 +67,16 @@ function tenantTheme(brand: BrandDto, config: SiteConfigDto): Theme | undefined 
 }
 
 export default async function SilicaBuilderRoute() {
-  const [catalog, baseBrand, config, activeProperty, storedSite] = await Promise.all([
+  const [catalog, baseBrand, config, activeProperty, storedSite, pages] = await Promise.all([
     getBindingCatalog().catch(() => ({ sources: [] })),
     getBrand().catch(() => FALLBACK_BRAND),
     getConfig().catch(() => FALLBACK_CONFIG),
     getActiveProperty().catch(() => null),
     getBuilderSite().catch(() => null),
+    // The page catalog with domain metadata (recordType / isDefault / SEO) — the
+    // seed for the header page-settings drawer. Empty on failure (drawer still opens,
+    // just without pre-filled values until the first save).
+    listPages().catch(() => []),
   ]);
 
   // The tenant's real binding catalog drives the picker + the resolver root; fall
@@ -102,5 +106,13 @@ export default async function SilicaBuilderRoute() {
   // store (siteService.sync).
   const site: Site = storedSite ? { version: '1.0.0', ...storedSite, theme } : starterSite(theme);
 
-  return <SilicaStudio site={site} root={root} dataSources={dataSources} />;
+  return (
+    <SilicaStudio
+      site={site}
+      root={root}
+      dataSources={dataSources}
+      pages={pages}
+      sources={sources}
+    />
+  );
 }

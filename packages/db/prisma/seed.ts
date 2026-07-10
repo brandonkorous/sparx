@@ -15,7 +15,8 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
-import { PLATFORM_CATALOG } from '@sparx/builder-schemas';
+import { PLATFORM_CATALOG, blankPageTree } from '@sparx/builder-schemas';
+import { collectionDetailPage, productDetailPage } from '@sparx/silica-catalog';
 import { getFitmentDictionary, planFitmentDictionaryRows } from '@sparx/commerce-schemas';
 
 const prisma = new PrismaClient();
@@ -1200,6 +1201,53 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           inStock: anyStock,
           publishedAt: new Date(),
           metadata: { demo: 'inventory' },
+        },
+      });
+
+      // A primary product image so the storefront renders a real tile instead of
+      // the broken-image placeholder. A self-contained `data:image/svg+xml` asset —
+      // no GCS, no network, identical dev/prod — served inline by the public media
+      // route's `data:` branch. Find-or-create by `key` (the SVG embeds the title,
+      // stable per product) so a re-seed reuses the asset rather than accumulating
+      // one each run (product delete cascades the VariantImage but NOT the asset).
+      const label = p.title.replace(/[<&>]/g, ' ');
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">` +
+        `<rect width="600" height="600" fill="#1f2937"/>` +
+        `<text x="300" y="300" font-family="sans-serif" font-size="26" fill="#e5e7eb" ` +
+        `text-anchor="middle" dominant-baseline="middle">${label}</text></svg>`;
+      const key = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+      const existingAsset = await tx.mediaAsset.findFirst({
+        where: { tenantId, key },
+        select: { id: true },
+      });
+      const mediaAssetId =
+        existingAsset?.id ??
+        (
+          await tx.mediaAsset.create({
+            data: {
+              tenantId,
+              key,
+              originalFilename: `${p.handle}.svg`,
+              mimeType: 'image/svg+xml',
+              byteSize: BigInt(0),
+              status: 'ready',
+              width: 600,
+              height: 600,
+              altText: p.title,
+            },
+            select: { id: true },
+          })
+        ).id;
+      await tx.variantImage.create({
+        data: {
+          tenantId,
+          productId: product.id,
+          variantId: null,
+          mediaAssetId,
+          position: 0,
+          isPrimary: true,
+          alt: p.title,
         },
       });
 
@@ -3571,6 +3619,67 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
   });
 }
 
+// A published silica per-record collection template (docs/118 Stage 6) — the
+// storefront renders the matching route through this whenever it exists, injecting
+// the routed record as the object scope (a product for the PDP, a collection for a
+// collection page). Seeded as the type DEFAULT (isDefault) so every record resolves
+// it. Idempotent: find-or-create by (property, recordType, kind); a re-run refreshes
+// the tree so an improved factory reaches the row (silica composites are STAMPED —
+// cf. siteService.reset). The tree is authored id-free (the render walker needs no
+// editor ids); the sparx `draft_tree` column is NOT NULL, so a blank sparx tree
+// parks there (the storefront reads the silica column). FORCE RLS on builder_pages →
+// set the tenant GUC first.
+async function seedSilicaCollectionTemplate(
+  tenantId: string,
+  recordType: string,
+  name: string,
+  buildTree: () => unknown
+): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const property = await tx.property.findFirst({
+      where: { tenantId, isPrimary: true },
+      select: { id: true },
+    });
+    if (!property) return;
+
+    const tree = buildTree() as unknown as Prisma.InputJsonValue;
+    const now = new Date();
+    const existing = await tx.builderPage.findFirst({
+      where: { propertyId: property.id, recordType, kind: 'collection' },
+      select: { id: true },
+    });
+    if (existing) {
+      await tx.builderPage.update({
+        where: { id: existing.id },
+        data: {
+          silicaDraftTree: tree,
+          silicaPublishedTree: tree,
+          isDefault: true,
+          publishedAt: now,
+        },
+      });
+      return;
+    }
+    await tx.builderPage.create({
+      data: {
+        tenantId,
+        propertyId: property.id,
+        name,
+        kind: 'collection',
+        recordType,
+        isDefault: true,
+        draftTree: blankPageTree() as unknown as Prisma.InputJsonValue,
+        silicaDraftTree: tree,
+        silicaPublishedTree: tree,
+        publishedAt: now,
+        position: 100,
+      },
+    });
+  });
+  console.log(`[seed] silica ${recordType} template published`);
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -3733,6 +3842,29 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] demo commerce-ops seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Published silica per-record templates (docs/118 Stage 6) so the storefront PDP
+  // and collection pages render through the silica engine against real records. Runs
+  // after the commerce catalog (the templates bind product data). Idempotent; wrapped
+  // so a hiccup never blocks the rest of the seed.
+  try {
+    await seedSilicaCollectionTemplate(
+      tenant.id,
+      'commerce.product',
+      'Product detail',
+      productDetailPage
+    );
+    await seedSilicaCollectionTemplate(
+      tenant.id,
+      'commerce.collection',
+      'Collection',
+      collectionDetailPage
+    );
+  } catch (err) {
+    console.warn(
+      `[seed] silica template seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 

@@ -24,16 +24,16 @@ model Partner {
   // What best describes the partner (application field): freelance | agency | developer | other.
   kind        String  @default("freelance") @db.VarChar(20)
 
-  locationCity    String? @map("location_city") @db.VarChar(160)
-  locationState   String? @map("location_state") @db.VarChar(120)
-  locationCountry String? @map("location_country") @db.VarChar(2)
-  isRemote        Boolean @default(false) @map("is_remote")
+  locationCity     String?  @map("location_city") @db.VarChar(160)
+  locationState    String?  @map("location_state") @db.VarChar(120)
+  locationCountry  String?  @map("location_country") @db.VarChar(2)
+  isRemote         Boolean  @default(false) @map("is_remote")
   // Filterable specialty tags (ecommerce | b2b | crm | email | design | seo | …).
   // A real Postgres text[] (not JSON) so the directory facet can filter with `&&`.
-  specialties     String[] @default([])
-  photoUrl        String?  @map("photo_url") @db.VarChar(1024)
+  specialties      String[] @default([])
+  photoUrl         String?  @map("photo_url") @db.VarChar(1024)
   // Opt-out of the public directory (still an active partner, still earns).
-  directoryVisible Boolean @default(true) @map("directory_visible")
+  directoryVisible Boolean  @default(true) @map("directory_visible")
 
   // Attribution — the URL-safe code appended to referral links (`?ref=CODE`),
   // minted on activation. Globally unique.
@@ -80,16 +80,16 @@ model PartnerApplication {
   // sign up and the informal tier auto-provisions their partner row.
   applicantTenantId String? @map("applicant_tenant_id") @db.Uuid
 
-  name       String  @db.VarChar(255)
-  email      String  @db.VarChar(255)
-  websiteUrl String? @map("website_url") @db.VarChar(500)
+  name          String  @db.VarChar(255)
+  email         String  @db.VarChar(255)
+  websiteUrl    String? @map("website_url") @db.VarChar(500)
   // freelance | agency | developer | other
-  kind       String  @default("freelance") @db.VarChar(20)
-  note       String? @db.Text
+  kind          String  @default("freelance") @db.VarChar(20)
+  note          String? @db.Text
   // informal | registered | certified — informal auto-approves; the rest queue.
-  requestedTier String @default("informal") @map("requested_tier") @db.VarChar(20)
+  requestedTier String  @default("informal") @map("requested_tier") @db.VarChar(20)
   // pending | approved | rejected
-  status     String  @default("pending") @db.VarChar(20)
+  status        String  @default("pending") @db.VarChar(20)
 
   reviewedAt DateTime? @map("reviewed_at") @db.Timestamptz
   reviewedBy String?   @map("reviewed_by") @db.Uuid
@@ -154,8 +154,8 @@ model PartnerCommission {
   partnerId  String  @map("partner_id") @db.Uuid
   referralId String? @map("referral_id") @db.Uuid
 
-  amountCents Int    @map("amount_cents")
-  currency    String @default("USD") @db.VarChar(3)
+  amountCents Int     @map("amount_cents")
+  currency    String  @default("USD") @db.VarChar(3)
   // Accounting period for ongoing commissions, e.g. `2026-07`; null for one-time.
   period      String? @db.VarChar(7)
   // one_time | ongoing
@@ -163,16 +163,16 @@ model PartnerCommission {
   // pending | approved | paid | forfeited
   status      String  @default("pending") @db.VarChar(20)
 
-  payoutRunId     String?   @map("payout_run_id") @db.Uuid
-  stripeTransferId String?  @map("stripe_transfer_id") @db.VarChar(255)
-  paidAt          DateTime? @map("paid_at") @db.Timestamptz
+  payoutRunId      String?   @map("payout_run_id") @db.Uuid
+  stripeTransferId String?   @map("stripe_transfer_id") @db.VarChar(255)
+  paidAt           DateTime? @map("paid_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  partner  Partner          @relation(fields: [partnerId], references: [id], onDelete: Cascade)
-  referral PartnerReferral? @relation(fields: [referralId], references: [id], onDelete: SetNull)
+  tenant    Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partner   Partner           @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  referral  PartnerReferral?  @relation(fields: [referralId], references: [id], onDelete: SetNull)
   payoutRun PartnerPayoutRun? @relation(fields: [payoutRunId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, status])

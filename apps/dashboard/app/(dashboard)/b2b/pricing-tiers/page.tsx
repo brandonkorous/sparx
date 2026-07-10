@@ -20,6 +20,7 @@ interface PageProps {
 export default async function PricingTiersPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, paged] = await Promise.all([
     getUserPreferences(),
@@ -27,6 +28,7 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
       `/v1/b2b/pricing-tiers?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -37,7 +39,6 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
 
   return (
     <ListPageShell
-      className="mx-auto max-w-screen-xl"
       header={
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
@@ -52,7 +53,11 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
         />
       }
       toolbar={
-        <ListToolbar searchable={false} enableViewToggle primaryAction={<TierCreateButton />} />
+        <ListToolbar
+          searchPlaceholder="Search tier name…"
+          enableViewToggle
+          primaryAction={<TierCreateButton />}
+        />
       }
       pager={<ListPager total={total} />}
     >
@@ -61,9 +66,13 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
           <CardBody className="p-0">
             <EmptyState
               icon={<DollarSign className="h-5 w-5" />}
-              title="No pricing tiers yet"
-              description="Create a pricing tier to apply automatic discounts to wholesale or fleet accounts."
-              actions={<TierCreateButton />}
+              title={q ? 'No pricing tiers match this search' : 'No pricing tiers yet'}
+              description={
+                q
+                  ? 'Clear the search to see every pricing tier.'
+                  : 'Create a pricing tier to apply automatic discounts to wholesale or fleet accounts.'
+              }
+              actions={q ? undefined : <TierCreateButton />}
             />
           </CardBody>
         </Card>

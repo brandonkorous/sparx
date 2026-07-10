@@ -94,13 +94,17 @@ interface TopAccount {
   invoicedCents: number;
 }
 
+// `status` here is actually the quote's workflow-stage name (Draft / Submitted
+// / Under Review / Quoted / Accepted / Declined / Expired) — a quote IS a
+// BillingDocument on the system `b2b-quotes` workflow (docs/87 convergence).
 const QUOTE_STATUS_TONE: Record<string, { tone: string; label: string }> = {
-  draft: { tone: 'neutral', label: 'Draft' },
-  submitted: { tone: 'warning', label: 'Sent' },
-  accepted: { tone: 'success', label: 'Accepted' },
-  declined: { tone: 'danger', label: 'Declined' },
-  expired: { tone: 'neutral', label: 'Expired' },
-  converted: { tone: 'success', label: 'Converted' },
+  Draft: { tone: 'neutral', label: 'Draft' },
+  Submitted: { tone: 'warning', label: 'Sent' },
+  'Under Review': { tone: 'warning', label: 'Under review' },
+  Quoted: { tone: 'module', label: 'Quoted' },
+  Accepted: { tone: 'success', label: 'Accepted' },
+  Declined: { tone: 'danger', label: 'Declined' },
+  Expired: { tone: 'neutral', label: 'Expired' },
 };
 
 function shortDate(iso: string | null): string {
@@ -253,13 +257,14 @@ export default async function B2bPage() {
               >
                 Price lists
               </Button>
-              <Button
+              <EntityCreateButton
+                entityType="billing-document"
+                newHref="/invoicing/documents/new?workflow=b2b-quotes"
                 variant="outline"
-                iconStart={<FileText className="h-4 w-4" />}
-                render={<Link href="/b2b/quotes/new" />}
+                leftIcon={<FileText className="h-4 w-4" />}
               >
                 New quote
-              </Button>
+              </EntityCreateButton>
               <EntityCreateButton
                 entityType="b2b-account"
                 newHref="/b2b/accounts/new"
@@ -483,9 +488,14 @@ export default async function B2bPage() {
                 title="No open quotes"
                 description="Quotes awaiting a buyer response will show here."
                 actions={
-                  <Button variant="outline" size="sm" render={<Link href="/b2b/quotes/new" />}>
+                  <EntityCreateButton
+                    entityType="billing-document"
+                    newHref="/invoicing/documents/new?workflow=b2b-quotes"
+                    variant="outline"
+                    size="sm"
+                  >
                     New quote
-                  </Button>
+                  </EntityCreateButton>
                 }
               />
             )}

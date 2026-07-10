@@ -23,7 +23,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Pub/Sub webhooks',
-    body: 'order.created, customer.updated, email.send. Subscribe; we deliver with retries and signed payloads.',
+    body: 'order.placed, crm.customer.created, email.send. Subscribe; we deliver with retries and signed payloads.',
   },
   {
     icon: (

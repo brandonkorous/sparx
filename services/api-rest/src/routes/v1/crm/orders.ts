@@ -12,6 +12,11 @@
 //   GET    /v1/crm/orders/:id/fulfillments      → list fulfillments
 //   POST   /v1/crm/orders/:id/fulfillments      → create a fulfillment
 //   PATCH  /v1/crm/orders/:id/fulfillments/:fId → update a fulfillment
+//   GET    /v1/crm/orders/:id/fulfillments/:fId/rates       → live carrier rate quotes
+//   GET    /v1/crm/orders/:id/fulfillments/:fId/labels      → purchased labels
+//   POST   /v1/crm/orders/:id/fulfillments/:fId/buy-label   → buy a label from a rate
+//   POST   /v1/crm/orders/:id/fulfillments/:fId/void-label  → void a purchased label
+//   GET    /v1/crm/orders/:id/fulfillments/:fId/track       → live tracking status
 //   GET    /v1/crm/orders/:id/refunds           → list refunds
 //   POST   /v1/crm/orders/:id/refunds           → record a refund
 
@@ -23,9 +28,11 @@ import {
   orderFulfillmentsService,
   orderRefundsService,
 } from '@sparx/crm';
+import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PaymentPath = z.object({
@@ -35,6 +42,12 @@ const PaymentPath = z.object({
 const FulfillmentPath = z.object({
   id: z.string().uuid(),
   fulfillmentId: z.string().uuid(),
+});
+const BuyLabelBody = z.object({ rateRef: z.string().min(1).max(255) });
+const VoidLabelBody = z.object({ labelRef: z.string().min(1).max(255) });
+const TrackQuery = z.object({
+  trackingNumber: z.string().min(1).max(127),
+  carrier: z.string().min(1).max(63),
 });
 
 const ListQuery = z.object({
@@ -179,6 +192,62 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       fulfillmentId,
     });
     return ok(fulfillment);
+  });
+
+  // ── carrier labels (real Shippo integration — docs/09) ────────────────────
+
+  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/rates', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    await requireCommerceModule(request);
+    const { fulfillmentId } = FulfillmentPath.parse(request.params);
+    const rates = await quoteOutboundRates(toCommerceContext(request), fulfillmentId);
+    return ok(rates);
+  });
+
+  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/labels', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    await requireCommerceModule(request);
+    const { fulfillmentId } = FulfillmentPath.parse(request.params);
+    const labels = await listFulfillmentLabels(toCommerceContext(request), fulfillmentId);
+    return ok(labels);
+  });
+
+  app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/buy-label', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    await requireCommerceModule(request);
+    const { fulfillmentId } = FulfillmentPath.parse(request.params);
+    const { rateRef } = BuyLabelBody.parse(request.body);
+    const result = await shippingService.buyLabel(toCommerceContext(request), {
+      fulfillmentId,
+      rateRef,
+    });
+    reply.code(201);
+    return ok(result);
+  });
+
+  app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/void-label', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    await requireCommerceModule(request);
+    const { fulfillmentId } = FulfillmentPath.parse(request.params);
+    const { labelRef } = VoidLabelBody.parse(request.body);
+    await shippingService.voidLabel(toCommerceContext(request), { fulfillmentId, labelRef });
+    return ok({ voided: true });
+  });
+
+  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/track', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    await requireCommerceModule(request);
+    const { trackingNumber, carrier } = TrackQuery.parse(request.query);
+    const status = await shippingService.trackShipment(toCommerceContext(request), {
+      trackingNumber,
+      carrier,
+    });
+    return ok(status);
   });
 
   // ── refunds ─────────────────────────────────────────────────────────────

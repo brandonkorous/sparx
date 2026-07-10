@@ -20,7 +20,6 @@ import { installPlatformBusFanout } from './platform-fanout';
 
 import { registerOrderEventConsumers } from './order-events';
 import { registerEmailEventConsumers } from './email-events';
-import { registerQuoteEventConsumers } from './quote-events';
 import { registerAuthEventConsumers } from './auth-events';
 import { registerSegmentEvaluatorConsumers } from './segment-evaluator';
 import { registerModuleActivationConsumers } from './module-activation';
@@ -52,7 +51,6 @@ export function registerCrmConsumers(opts: RegisterOptions = {}): ConsumerRegist
   const ctx = { bus, gate: gateHandler };
   teardowns.push(...registerOrderEventConsumers(ctx));
   teardowns.push(...registerEmailEventConsumers(ctx));
-  teardowns.push(...registerQuoteEventConsumers(ctx));
   teardowns.push(...registerAuthEventConsumers(ctx));
   teardowns.push(...registerSegmentEvaluatorConsumers(ctx));
   // Site-form lead capture (docs/115) is no longer an in-process consumer: it moved

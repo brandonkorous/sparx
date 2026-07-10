@@ -33,5 +33,4 @@ export { buildSegmentRuleProjection } from './segment-projection';
 
 export { ORDER_CONSUMER_TOPICS, type OrderCreatedEventPayload } from './order-events';
 export { EMAIL_CONSUMER_TOPICS } from './email-events';
-export { QUOTE_CONSUMER_TOPICS } from './quote-events';
 export { AUTH_CONSUMER_TOPICS } from './auth-events';

@@ -77,21 +77,30 @@ model Order {
   internalNote String? @map("internal_note") @db.Text
   metadata     Json    @default("{}")
 
+  // Set when this order was created by accepting a BillingDocument (a quote) —
+  // the real FK replacing the old Quote.convertedToOrderId / metadata-string
+  // pointer. This is the ONE physical column for the relation; BillingDocument's
+  // `convertedOrder` (72-invoicing.prisma) is its non-FK reverse side. Prisma
+  // requires a 1:1 relation's FK to carry a unique constraint matching exactly
+  // its `fields: [...]` — a column-level @unique (like SiteConfig.publishedVersionId)
+  // rather than a tenant-scoped composite, since document ids are globally unique.
+  convertedFromDocumentId String? @unique @map("converted_from_document_id") @db.Uuid
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  tenant                Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer              Customer         @relation(fields: [customerId], references: [id], onDelete: Restrict)
   // Deleting a site must NOT delete its orders (finance / tax history) → SetNull.
-  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  property              Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  convertedFromDocument BillingDocument? @relation("DocumentConvertedToOrder", fields: [convertedFromDocumentId], references: [id], onDelete: SetNull)
 
-  items               OrderItem[]
-  payments            OrderPayment[]
-  refunds             OrderRefund[]
-  fulfillments        OrderFulfillment[]
-  dealLinks           DealOrder[]
-  convertedFromQuotes Quote[]            @relation("QuoteConvertedToOrder")
-  dropshipOrders      DropshipOrder[]
+  items          OrderItem[]
+  payments       OrderPayment[]
+  refunds        OrderRefund[]
+  fulfillments   OrderFulfillment[]
+  dealLinks      DealOrder[]
+  dropshipOrders DropshipOrder[]
 
   @@unique([tenantId, orderNumber], map: "orders_tenant_number_unique")
   @@index([tenantId, customerId, placedAt(sort: Desc)])

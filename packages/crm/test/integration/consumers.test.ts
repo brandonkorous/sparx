@@ -51,17 +51,21 @@ describe('CRM consumers', () => {
 
     // One customer to receive everything. Set authUserId so the auth-event
     // consumer can find them by FK.
-    aliceCustomerAuthId = crypto.randomUUID();
     const created = await customerService.create(aliceCtx, {
       type: 'retail',
       email: 'kira@example.test',
       firstName: 'Kira',
     });
     aliceCustomerId = created.id;
-    // Set authUserId via a tenant-scoped raw update — service-layer create
-    // doesn't expose it on the Zod schema (the field is internal to the
-    // customer↔auth link).
+    // authUserId FKs to CustomerUser (Layer 2 shopper login) — a real row is
+    // required, not just a random UUID. Set via a tenant-scoped raw update —
+    // service-layer create doesn't expose it on the Zod schema (the field is
+    // internal to the customer↔auth link).
     await withTenant(aliceCtx, async (tx) => {
+      const authUser = await tx.customerUser.create({
+        data: { email: 'kira@example.test', name: 'Kira' },
+      });
+      aliceCustomerAuthId = authUser.id;
       await tx.customer.update({
         where: { id: created.id },
         data: { authUserId: aliceCustomerAuthId },

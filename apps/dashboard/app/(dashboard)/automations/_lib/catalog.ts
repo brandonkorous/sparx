@@ -16,7 +16,7 @@
 
 import type { ActionType, ConditionOperator } from '@sparx/automation-schemas';
 
-export type ModuleSlug = 'crm' | 'email' | 'commerce' | 'b2b' | 'platform' | 'cms';
+export type ModuleSlug = 'crm' | 'email' | 'commerce' | 'b2b' | 'platform' | 'cms' | 'invoicing';
 
 const MODULE_LABEL: Record<string, string> = {
   crm: 'CRM',
@@ -26,6 +26,7 @@ const MODULE_LABEL: Record<string, string> = {
   platform: 'Platform',
   cms: 'CMS',
   ai: 'AI',
+  invoicing: 'Invoicing',
 };
 
 export function moduleLabel(slug: string): string {
@@ -66,7 +67,28 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'commerce.order.refunded', label: 'Order refunded', module: 'commerce' },
   { eventType: 'b2b.invoice.overdue', label: 'Invoice overdue', module: 'b2b' },
   { eventType: 'b2b.account.credit_hold', label: 'Account on credit hold', module: 'b2b' },
-  { eventType: 'b2b.quote.approved', label: 'Quote approved', module: 'b2b' },
+  // A quote/RFQ IS a BillingDocument on the system `b2b-quotes` workflow
+  // (docs/87 convergence), so it fires the same document events as any other
+  // invoice/estimate — add a `quote.stageName` / `invoice.workflowSlug`
+  // condition to scope a rule to quotes specifically.
+  {
+    eventType: 'crm.billing_document.created',
+    label: 'Document created (quote, estimate, invoice…)',
+    module: 'invoicing',
+  },
+  {
+    eventType: 'crm.billing_document.stage_changed',
+    label: 'Document stage changed',
+    module: 'invoicing',
+  },
+  { eventType: 'crm.billing_document.finalized', label: 'Document finalized', module: 'invoicing' },
+  { eventType: 'crm.billing_document.paid', label: 'Document paid in full', module: 'invoicing' },
+  { eventType: 'crm.billing_document.voided', label: 'Document voided', module: 'invoicing' },
+  {
+    eventType: 'crm.billing_document.converted',
+    label: 'Quote converted to order',
+    module: 'invoicing',
+  },
   { eventType: 'email.opened', label: 'Email opened', module: 'email' },
   { eventType: 'email.clicked', label: 'Email link clicked', module: 'email' },
   { eventType: 'email.bounced', label: 'Email bounced', module: 'email' },
@@ -85,6 +107,7 @@ export interface ScanEntityDef {
 export const SCAN_ENTITIES: readonly ScanEntityDef[] = [
   { entity: 'customer', label: 'Customers', module: 'crm' },
   { entity: 'b2b_account', label: 'B2B accounts', module: 'b2b' },
+  { entity: 'billing_document', label: 'Billing documents (quotes, invoices…)', module: 'invoicing' },
 ];
 
 export function moduleForScanEntity(entity: string): ModuleSlug {
@@ -112,6 +135,10 @@ export const DAYS_OF_WEEK = [
 /** Map an event type to its owning module by prefix (best-effort, for chrome). */
 export function moduleForEventType(eventType: string): ModuleSlug {
   const head = eventType.split('.')[0] ?? '';
+  // Billing documents live on the CRM customer spine (`crm.billing_document.*`
+  // topics) but are owned by Invoicing, not CRM — check before the generic
+  // `crm` prefix below swallows them.
+  if (eventType.startsWith('crm.billing_document.')) return 'invoicing';
   if (head === 'order') return 'commerce';
   if (head === 'crm' || head === 'customer' || head === 'deal') return 'crm';
   if (head === 'commerce') return 'commerce';

@@ -110,7 +110,7 @@ export default function CreateOrderPage() {
           Creates an order in the CRM, which owns the order spine. Post a customer and one or more
           line items; the service computes <InlineCode>subtotal</InlineCode> and{' '}
           <InlineCode>total</InlineCode> from the items and writes the order transactionally. An{' '}
-          <InlineCode>order.created</InlineCode> event is emitted after commit. Requires the{' '}
+          <InlineCode>order.placed</InlineCode> event is emitted after commit. Requires the{' '}
           <InlineCode>crm</InlineCode> module and an <strong>editor</strong> role.
         </>
       }

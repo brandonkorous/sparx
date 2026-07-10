@@ -1,8 +1,8 @@
 # 89 — sparx Feature Catalog
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-10
 
 The single, exhaustive inventory of **everything sparx does** — every user-facing
 capability across every module, with an honest build status. The per-module PRDs
@@ -290,12 +290,12 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Document workflows** — tenant-configurable ordered stages (Estimate → Approved → In Progress → Invoiced → Paid).
 - ✅ **Stage configuration** — customer label, type, snapshot-on-enter, numbering (EST-/INV-), lock editing.
 - ✅ **Billing line types** — part (markup), labor (rate × hours), sublet, freight, flat, catalog.
-- 🔨 **Billing documents** — authored documents billing Customer/B2BAccount with cost-derived lines.
-- 🔨 **Stage snapshots** — immutable frozen records for reproducibility.
-- 🔨 **Document tax & surcharges** — per-document tax + surcharge engine reuse.
-- 🔨 **Payments & AR** — partial payments, overdue aging, status (unpaid/partial/paid/overdue/void).
+- ✅ **Billing documents** — authored documents billing Customer/B2BAccount with cost-derived lines. The retired standalone CRM `Quote` model has been fully consolidated onto this engine — a quote, estimate, invoice, and receipt are all `BillingDocument` rows on different tenant-configurable workflows, not separate systems.
+- ✅ **Stage snapshots** — immutable frozen records for reproducibility.
+- ✅ **Document tax & surcharges** — per-document tax + surcharge engine reuse.
+- ✅ **Payments & AR** — partial payments, overdue aging, status (unpaid/partial/paid/overdue/void).
 - 🗺️ **Standalone invoices** — invoices outside an order (service/consulting).
-- 🗺️ **Quote → invoice conversion** — one-click convert with lines preserved.
+- ✅ **Quote → order conversion** — an accepted quote (B2B RFQ) converts to an Order with lines preserved, via `billingDocumentConversionService.convertToOrder`. Replaces the old, never-built "quote → invoice conversion" — quotes and invoices are already the same document type, so no separate conversion between them is needed.
 
 ---
 

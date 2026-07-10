@@ -1,23 +1,31 @@
 'use client';
 
 // The silica-engine studio mount (docs/118) — wraps the live `<Builder>` around the
-// sparx `BuilderHost`. The host carries FUNCTIONS (resolveBinding, validateClass…),
-// which can't cross the RSC boundary, so it's assembled HERE, client-side, from the
-// serializable inputs the server route passes (the pre-loaded data root, the silica
-// DataSource catalog, the tenant class allowlist). The starter document is plain,
-// serializable node data, so it's built server-side and handed in.
+// sparx `BuilderHost`. The host carries FUNCTIONS (resolveBinding, validateClass,
+// pickAsset…), which can't cross the RSC boundary, so it's assembled HERE, client-
+// side, from the serializable inputs the server route passes (the pre-loaded data
+// root, the silica DataSource catalog, the tenant class allowlist, the page
+// metadata list). The starter document is plain serializable node data, built
+// server-side and handed in.
 //
 // Additive: this is a NEW surface (/builder/silica) that leaves the existing
 // `SiteStudio` untouched — the engine editor is proven here before the main studio
 // route cuts over to it (and `onChange`/`onPublish` wire to the sparx store).
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder } from '@wizeworks/silicaui-builder/react';
 import type { DataSource as SilicaDataSource, Document, Site } from '@wizeworks/silicaui-html';
-import type { DataSources, SiteSyncInput } from '@sparx/builder-schemas';
+import type {
+  BuilderPageDto,
+  DataSource,
+  DataSources,
+  SiteSyncInput,
+} from '@sparx/builder-schemas';
 
+import { MediaPicker } from '../../cms/_components/media-picker';
 import { publishBuilderSite, syncBuilderSite } from '../_lib/actions';
 import { buildSilicaHost, defaultSilicaFormat } from './silica-host';
+import { SilicaToolbar, type SaveState } from './silica-toolbar';
 
 /** Project silica's extracted `Site` onto the sync wire shape — near-identity:
  *  silica's `Page` is already `{ id, name, slug, root }`; the frame contributes its
@@ -37,6 +45,14 @@ function toSyncInput(site: Site): SiteSyncInput {
  *  edit; one PUT ~700ms after the last keystroke reconciles the site. */
 const AUTOSAVE_MS = 700;
 
+/** The media picker's pending request — the promise `pickAsset` returns, bridged to
+ *  the controlled `<MediaPicker>` dialog: opening it resolves when the user picks
+ *  (or cancels). Silica calls `pickAsset` from an image/video field. */
+interface PickerRequest {
+  accept: string[];
+  resolve: (asset: { url: string; alt?: string } | null) => void;
+}
+
 export interface SilicaStudioProps {
   /** The tenant's silica `Site` — the whole multi-page site (pages + shared frame
    *  + theme), so the engine's native multi-page + frame editing is in play. A
@@ -49,17 +65,52 @@ export interface SilicaStudioProps {
   dataSources: SilicaDataSource[];
   /** The tenant's stored class allowlist (tighten-only over the engine floor). */
   tenantAllowlist?: unknown;
+  /** The tenant's page catalog with domain metadata (recordType / isDefault / SEO)
+   *  — the seed for the header page-settings drawer, keyed by page id. */
+  pages: BuilderPageDto[];
+  /** The binding catalog's sources — the record types a template can render, listed
+   *  in the page-settings "Page type" picker. */
+  sources: DataSource[];
 }
 
-export function SilicaStudio({ site, root, dataSources, tenantAllowlist }: SilicaStudioProps) {
+export function SilicaStudio({
+  site,
+  root,
+  dataSources,
+  tenantAllowlist,
+  pages,
+  sources,
+}: SilicaStudioProps) {
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [picker, setPicker] = useState<PickerRequest | null>(null);
+
+  // The media picker silica invokes when an image/video field asks for a source —
+  // returns a promise that settles when the author picks an asset (or cancels).
+  // Stable identity so the memoized host isn't rebuilt on every render.
+  const pickAsset = useCallback(
+    (kind: 'image' | 'video'): Promise<{ url: string; alt?: string } | null> =>
+      new Promise((resolve) => {
+        setPicker({ accept: [kind === 'video' ? 'video/*' : 'image/*'], resolve });
+      }),
+    []
+  );
+
   const host = useMemo(
-    () => buildSilicaHost({ root, dataSources, tenantAllowlist, formatValue: defaultSilicaFormat }),
-    [root, dataSources, tenantAllowlist]
+    () =>
+      buildSilicaHost({
+        root,
+        dataSources,
+        tenantAllowlist,
+        formatValue: defaultSilicaFormat,
+        pickAsset,
+      }),
+    [root, dataSources, tenantAllowlist, pickAsset]
   );
 
   // Debounced whole-site autosave. The engine fires onChange per edit with the
   // full extracted Site; we coalesce a burst into one reconcile PUT and keep the
-  // latest site pending so a save-in-flight never drops the newest state.
+  // latest site pending so a save-in-flight never drops the newest state. The
+  // save badge in the toolbar reflects the round-trip the engine can't see.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pending = useRef<Site | null>(null);
 
@@ -68,12 +119,23 @@ export function SilicaStudio({ site, root, dataSources, tenantAllowlist }: Silic
     const next = pending.current;
     if (!next) return;
     pending.current = null;
-    void syncBuilderSite(toSyncInput(next));
+    setSaveState('saving');
+    void syncBuilderSite(toSyncInput(next)).then((res) => {
+      if (!res.ok) {
+        // Re-queue the failed payload so the next edit (or unmount flush) retries it.
+        pending.current ??= next;
+        setSaveState('error');
+        return;
+      }
+      // Only claim "saved" if nothing newer arrived while the PUT was in flight.
+      setSaveState(pending.current ? 'unsaved' : 'saved');
+    });
   }, []);
 
   const onChange = useCallback(
     (next: Site) => {
       pending.current = next;
+      setSaveState('unsaved');
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(flush, AUTOSAVE_MS);
     },
@@ -94,7 +156,14 @@ export function SilicaStudio({ site, root, dataSources, tenantAllowlist }: Silic
   const onPublish = useCallback(async ({ site: published }: { site: Site }) => {
     // Persist the just-edited site first (skip the debounce), then snapshot
     // draft → published so the publish reflects the newest state.
-    await syncBuilderSite(toSyncInput(published));
+    setSaveState('saving');
+    const synced = await syncBuilderSite(toSyncInput(published));
+    if (!synced.ok) {
+      setSaveState('error');
+      return;
+    }
+    pending.current = null;
+    setSaveState('saved');
     await publishBuilderSite();
   }, []);
 
@@ -110,6 +179,21 @@ export function SilicaStudio({ site, root, dataSources, tenantAllowlist }: Silic
         persistKey={null}
         onChange={onChange}
         onPublish={onPublish}
+        toolbarSlot={<SilicaToolbar saveState={saveState} pages={pages} sources={sources} />}
+      />
+      <MediaPicker
+        open={picker !== null}
+        accept={picker?.accept}
+        onOpenChange={(next) => {
+          if (!next && picker) {
+            picker.resolve(null);
+            setPicker(null);
+          }
+        }}
+        onPick={(asset) => {
+          picker?.resolve({ url: asset.src, alt: asset.alt });
+          setPicker(null);
+        }}
       />
     </div>
   );

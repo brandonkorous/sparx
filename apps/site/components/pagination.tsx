@@ -2,9 +2,9 @@
 // preserving the current query params. Link-based so it works without JS and
 // every page is independently cacheable.
 
-import Link from 'next/link';
-
 import { Button } from '@wizeworks/silicaui-react';
+
+import { ButtonLink } from './button-link';
 
 export interface PaginationProps {
   basePath: string;
@@ -50,13 +50,13 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       }}
     >
       {page > 1 ? (
-        <Button
-          render={<Link href={hrefFor(basePath, currentParams, page - 1)} />}
+        <ButtonLink
+          href={hrefFor(basePath, currentParams, page - 1)}
           color="neutral"
           variant="ghost"
         >
           ← Prev
-        </Button>
+        </ButtonLink>
       ) : null}
 
       {window.map((p, i) => {
@@ -65,30 +65,33 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
           <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
             {gap ? <span className="st-muted">…</span> : null}
             {p === page ? (
-              <Button render={<span aria-current="page" />} color="primary">
+              // The current page is not a link. A plain <Button> (no `render`)
+              // keeps this a Server Component — see ButtonLink for why passing an
+              // element across the RSC boundary crashes at request time.
+              <Button color="primary" aria-current="page" disabled>
                 {p}
               </Button>
             ) : (
-              <Button
-                render={<Link href={hrefFor(basePath, currentParams, p)} />}
+              <ButtonLink
+                href={hrefFor(basePath, currentParams, p)}
                 color="neutral"
                 variant="ghost"
               >
                 {p}
-              </Button>
+              </ButtonLink>
             )}
           </span>
         );
       })}
 
       {page < totalPages ? (
-        <Button
-          render={<Link href={hrefFor(basePath, currentParams, page + 1)} />}
+        <ButtonLink
+          href={hrefFor(basePath, currentParams, page + 1)}
           color="neutral"
           variant="ghost"
         >
           Next →
-        </Button>
+        </ButtonLink>
       ) : null}
     </nav>
   );

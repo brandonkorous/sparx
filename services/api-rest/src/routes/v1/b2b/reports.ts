@@ -20,6 +20,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant, type TxClient } from '@sparx/db';
+import { B2B_QUOTE_WORKFLOW_SLUG } from '@sparx/crm-schemas/builtins';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
@@ -30,8 +31,11 @@ const TimeseriesQuery = z.object({
   grain: z.enum(['day', 'week', 'month']).optional(),
 });
 
-// Quote statuses that count as "open" (awaiting the buyer / still actionable).
-const OPEN_QUOTE_STATUSES = ['draft', 'submitted'] as const;
+// Quotes are BillingDocuments on the system `b2b-quotes` workflow (docs/87
+// convergence). "Open" = awaiting a decision — any `draft`-type stage (Draft /
+// Submitted / Under Review / Quoted); `committed` (Accepted) and `void`
+// (Declined/Expired) are no longer actionable.
+const OPEN_QUOTE_STAGE_TYPE = 'draft';
 
 // ── UTC-day helpers (live-aggregate twin of the rollup timeseries) ──
 function startOfUtcDay(d: Date): Date {
@@ -138,7 +142,13 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         tx.b2BAccount.count({ where: { deletedAt: null } }),
         tx.b2BAccount.count({ where: { deletedAt: null, status: 'active' } }),
         tx.b2BAccount.count({ where: { deletedAt: null, status: 'credit_hold' } }),
-        tx.quote.count({ where: { status: { in: [...OPEN_QUOTE_STATUSES] } } }),
+        tx.billingDocument.count({
+          where: {
+            deletedAt: null,
+            workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
+            stage: { stageType: OPEN_QUOTE_STAGE_TYPE },
+          },
+        }),
         // Open B2B accounts-receivable — billing_documents scoped to a B2BAccount
         // (docs/87 §15; the legacy b2b_invoices table was retired). `balance` nets
         // out partial payments, so the aging below reflects true outstanding AR.
@@ -283,18 +293,21 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     const ctx = toB2bContext(request);
 
     return withTenant(ctx, async (tx) => {
-      const quotes = await tx.quote.findMany({
-        where: { status: { in: [...OPEN_QUOTE_STATUSES] } },
+      const quotes = await tx.billingDocument.findMany({
+        where: {
+          deletedAt: null,
+          workflow: { slug: B2B_QUOTE_WORKFLOW_SLUG },
+          stage: { stageType: OPEN_QUOTE_STAGE_TYPE },
+        },
         orderBy: { createdAt: 'desc' },
         take: 8,
         select: {
           id: true,
-          quoteNumber: true,
-          status: true,
+          number: true,
           total: true,
           createdAt: true,
-          submittedAt: true,
           validUntil: true,
+          stage: { select: { name: true, customerLabel: true } },
           b2bAccount: { select: { companyName: true } },
           customer: { select: { firstName: true, lastName: true, email: true } },
         },
@@ -307,11 +320,14 @@ const reportRoutes: FastifyPluginAsync = (app) => {
           const customerName = joined.length > 0 ? joined : (c?.email ?? null);
           return {
             id: q.id,
-            quoteNumber: q.quoteNumber,
+            quoteNumber: q.number ?? '',
             account: q.b2bAccount?.companyName ?? customerName ?? '—',
-            status: q.status,
+            // The workflow-stage name (Draft/Submitted/Under Review/Quoted) — the
+            // quote-lifecycle signal, not BillingDocument's coarse AR status
+            // (unpaid/partial/paid/overdue/void), which is meaningless pre-invoice.
+            status: q.stage.name,
             totalCents: decimalToCents(q.total),
-            sentAt: (q.submittedAt ?? q.createdAt).toISOString(),
+            sentAt: q.createdAt.toISOString(),
             expiresAt: q.validUntil?.toISOString() ?? null,
           };
         })

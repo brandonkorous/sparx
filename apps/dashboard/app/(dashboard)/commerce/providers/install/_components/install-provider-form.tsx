@@ -15,6 +15,7 @@ import {
   FieldLabel,
   FieldStatus,
   NativeSelect,
+  PasswordInput,
   Textarea,
 } from '@wizeworks/silicaui-react';
 
@@ -67,6 +68,7 @@ export function InstallProviderForm({
   configSchemaJson,
   sandboxAvailable,
   webhookPathTemplate,
+  secretFields,
 }: {
   providerSlug: string;
   kind: ProviderKind;
@@ -74,7 +76,9 @@ export function InstallProviderForm({
   configSchemaJson: string;
   sandboxAvailable: boolean;
   webhookPathTemplate: string;
+  secretFields: string[];
 }) {
+  const secretFieldSet = React.useMemo(() => new Set(secretFields), [secretFields]);
   const router = useRouter();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [pending, startTransition] = React.useTransition();
@@ -167,7 +171,7 @@ export function InstallProviderForm({
           header={{
             title: 'Configuration',
             supporting:
-              'Secret values (API keys, signing secrets) should reference Google Secret Manager paths — never paste the literal secret here.',
+              'Paste your API keys and other credentials directly — they’re encrypted before they’re stored, and never shown again after you save.',
           }}
           actions={{
             onNext: () => formRef.current?.requestSubmit(),
@@ -231,6 +235,7 @@ export function InstallProviderForm({
                           fieldKey={key}
                           prop={properties[key]!}
                           required={required.has(key)}
+                          isSecret={secretFieldSet.has(key)}
                         />
                       ))
                     )}
@@ -265,10 +270,12 @@ function ConfigField({
   fieldKey,
   prop,
   required,
+  isSecret,
 }: {
   fieldKey: string;
   prop: JsonSchemaProperty;
   required: boolean;
+  isSecret: boolean;
 }) {
   const id = `config:${fieldKey}`;
   const label = prop.title ?? fieldKey;
@@ -281,6 +288,16 @@ function ConfigField({
           <Checkbox color="module" name={id} defaultChecked={prop.default === true} />
           <p className="text-base-content/70 text-sm">{prop.description ?? 'Enable'}</p>
         </label>
+      </Field>
+    );
+  }
+
+  if (isSecret) {
+    return (
+      <Field>
+        <FieldLabel required={required}>{label}</FieldLabel>
+        <FieldControl render={<PasswordInput />} name={id} required={required} autoComplete="off" />
+        {prop.description && <FieldDescription>{prop.description}</FieldDescription>}
       </Field>
     );
   }
