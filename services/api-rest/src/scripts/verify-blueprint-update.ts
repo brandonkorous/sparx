@@ -36,8 +36,6 @@ async function resolveCatalogBlueprint(): Promise<Blueprint> {
   return parsed.data;
 }
 
-/* eslint-disable no-console */
-
 const noop = (): undefined => undefined;
 const log = {
   info: noop,

@@ -64,22 +64,20 @@ export function DocumentActionsBar({
   }
 
   function onPaymentLink() {
-    void (async () => {
-      startTransition(async () => {
-        const successUrl = `${window.location.origin}/invoicing/documents/${documentId}`;
-        const res = await paymentLinkAction(documentId, successUrl);
-        if (!res.ok) {
-          toast.error("Couldn't create a payment link", { description: res.error.message });
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(res.data.url);
-          toast.success('Payment link copied to clipboard');
-        } catch {
-          toast.success('Payment link created', { description: res.data.url });
-        }
-      });
-    })();
+    startTransition(async () => {
+      const successUrl = `${window.location.origin}/invoicing/documents/${documentId}`;
+      const res = await paymentLinkAction(documentId, successUrl);
+      if (!res.ok) {
+        toast.error("Couldn't create a payment link", { description: res.error.message });
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(res.data.url);
+        toast.success('Payment link copied to clipboard');
+      } catch {
+        toast.success('Payment link created', { description: res.data.url });
+      }
+    });
   }
 
   function onDelete() {

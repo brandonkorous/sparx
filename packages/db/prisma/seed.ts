@@ -3643,7 +3643,7 @@ async function seedSilicaCollectionTemplate(
     });
     if (!property) return;
 
-    const tree = buildTree() as unknown as Prisma.InputJsonValue;
+    const tree = buildTree() as Prisma.InputJsonValue;
     const now = new Date();
     const existing = await tx.builderPage.findFirst({
       where: { propertyId: property.id, recordType, kind: 'collection' },

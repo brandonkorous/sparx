@@ -52,7 +52,7 @@ function partyLabel(q: QuoteRow): string {
   if (q.account) return q.account.companyName;
   if (q.customer) {
     const name = [q.customer.firstName, q.customer.lastName].filter(Boolean).join(' ');
-    return name || q.customer.email || '—';
+    return name || (q.customer.email ?? '—');
   }
   return '—';
 }

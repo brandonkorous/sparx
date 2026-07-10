@@ -12,7 +12,8 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { Prisma, prisma, withTenant } from '@sparx/db';
+import type { Prisma } from '@sparx/db';
+import { prisma, withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
