@@ -22,6 +22,25 @@ describe('<TopProgress>', () => {
     expect(root.style.getPropertyValue('--color-module')).toBe('var(--color-module-commerce)');
   });
 
+  it('wears the tenant brand at brand tone, never the platform spectrum', () => {
+    // A tenant storefront route looks like a platform route (no module segment),
+    // so `auto` would fall through to sparx's spectrum. `brand` must not.
+    const { container } = render(<TopProgress route="/products" tone="brand" intercept={false} />);
+    const root = container.querySelector<HTMLElement>('.sx-topbar--module')!;
+    expect(root).not.toBeNull();
+    expect(root.style.getPropertyValue('--color-module')).toBe('var(--color-primary)');
+    expect(container.querySelector('.sx-topbar--spectrum')).toBeNull();
+  });
+
+  it('ignores a module-named route segment at brand tone', () => {
+    // `/b2b/...` exists on a storefront too; it must not tint the bar b2b's hue.
+    const { container } = render(
+      <TopProgress route="/b2b/quotes" tone="brand" intercept={false} />
+    );
+    const root = container.querySelector<HTMLElement>('.sx-topbar--module')!;
+    expect(root.style.getPropertyValue('--color-module')).toBe('var(--color-primary)');
+  });
+
   it('reflects controller activity in the bar width', () => {
     const { container } = render(<TopProgress route="/" intercept={false} />);
     const bar = () => container.querySelector<HTMLElement>('.sx-topbar__bar')!;

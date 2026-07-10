@@ -90,6 +90,10 @@ export interface PublicProductListItem {
   averageRating: number | null;
   reviewCount: number;
   primaryImageId: string | null;
+  /** Variant an add-to-cart defaults to (explicit default, else lowest position).
+   *  Null when the product has no live variant — such a card renders, but its
+   *  add-to-cart must never fire. */
+  defaultVariantId: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   updatedAt: string;

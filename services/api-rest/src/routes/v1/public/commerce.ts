@@ -160,6 +160,7 @@ function publicProduct(row: {
   seoDescription: string | null;
   updatedAt: Date;
   images?: { mediaAssetId: string }[];
+  variants?: { id: string }[];
 }) {
   return {
     id: row.id,
@@ -179,6 +180,12 @@ function publicProduct(row: {
     // Hero thumbnail asset id (primary, else first product-level by position —
     // see productSelect). The storefront resolves it via /v1/public/media/<id>.
     primaryImageId: row.images?.[0]?.mediaAssetId ?? null,
+    // The variant an add-to-cart lands on when the shopper picks no options:
+    // the explicit default, else lowest position (see productSelect). A builder
+    // buy box binds this so its <form> submits a real cart line (docs/118).
+    // Null only for a product with no live variants — such a card can render,
+    // but its add-to-cart must not fire.
+    defaultVariantId: row.variants?.[0]?.id ?? null,
     updatedAt: row.updatedAt.toISOString(),
   };
 }
@@ -785,6 +792,16 @@ function productSelect() {
       take: 1,
       select: { mediaAssetId: true },
     },
+    // The default variant, for `defaultVariantId` (see publicProduct). Explicit
+    // default first, then lowest position — `isDefault` alone leaves ties in a
+    // nondeterministic order, which would make a buy box add a different variant
+    // on different requests.
+    variants: {
+      where: { deletedAt: null },
+      orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
+      take: 1,
+      select: { id: true },
+    },
   };
 }
 
@@ -827,7 +844,11 @@ const FULL_PRODUCT_SELECT = {
   },
   variants: {
     where: { deletedAt: null },
-    orderBy: { isDefault: 'desc' },
+    // Default first, then position — same order as productSelect, so this row's
+    // `variants[0]` is the same variant `publicProduct` reports as
+    // `defaultVariantId` (mapFullProduct spreads it). `isDefault` alone leaves
+    // ties nondeterministic.
+    orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
     select: {
       id: true,
       sku: true,

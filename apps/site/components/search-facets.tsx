@@ -8,7 +8,7 @@
 // ?vendor=Bosch&vendor=Cummins); the search page reads the first today (the
 // api-rest filter is single-value per field) but the markup is multi-ready.
 
-import { SparxButton, SparxInput } from '@sparx/site-ui';
+import { Button, Input } from '@wizeworks/silicaui-react';
 
 import type { SearchFacets } from '@/lib/commerce';
 
@@ -53,7 +53,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <SparxInput
+          <Input
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -64,7 +64,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
             aria-label="Minimum price (dollars)"
           />
           <span className="st-muted">–</span>
-          <SparxInput
+          <Input
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -111,17 +111,21 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       })}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <SparxButton type="submit" color="primary" style={{ flex: 1 }}>
+        <Button type="submit" color="primary" style={{ flex: 1 }}>
           Apply
-        </SparxButton>
-        <SparxButton asChild color="neutral" variant="ghost">
-          <a
-            href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
-            aria-label="Clear filters"
-          >
-            Clear
-          </a>
-        </SparxButton>
+        </Button>
+        <Button
+          render={
+            <a
+              href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
+              aria-label="Clear filters"
+            />
+          }
+          color="neutral"
+          variant="ghost"
+        >
+          Clear
+        </Button>
       </div>
 
       {!hasAnyFacet ? (

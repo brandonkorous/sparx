@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 
-import { SparxButton } from '@sparx/site-ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 export interface PaginationProps {
   basePath: string;
@@ -50,9 +50,13 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       }}
     >
       {page > 1 ? (
-        <SparxButton asChild color="neutral" variant="ghost">
-          <Link href={hrefFor(basePath, currentParams, page - 1)}>← Prev</Link>
-        </SparxButton>
+        <Button
+          render={<Link href={hrefFor(basePath, currentParams, page - 1)} />}
+          color="neutral"
+          variant="ghost"
+        >
+          ← Prev
+        </Button>
       ) : null}
 
       {window.map((p, i) => {
@@ -61,22 +65,30 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
           <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
             {gap ? <span className="st-muted">…</span> : null}
             {p === page ? (
-              <SparxButton asChild color="primary">
-                <span aria-current="page">{p}</span>
-              </SparxButton>
+              <Button render={<span aria-current="page" />} color="primary">
+                {p}
+              </Button>
             ) : (
-              <SparxButton asChild color="neutral" variant="ghost">
-                <Link href={hrefFor(basePath, currentParams, p)}>{p}</Link>
-              </SparxButton>
+              <Button
+                render={<Link href={hrefFor(basePath, currentParams, p)} />}
+                color="neutral"
+                variant="ghost"
+              >
+                {p}
+              </Button>
             )}
           </span>
         );
       })}
 
       {page < totalPages ? (
-        <SparxButton asChild color="neutral" variant="ghost">
-          <Link href={hrefFor(basePath, currentParams, page + 1)}>Next →</Link>
-        </SparxButton>
+        <Button
+          render={<Link href={hrefFor(basePath, currentParams, page + 1)} />}
+          color="neutral"
+          variant="ghost"
+        >
+          Next →
+        </Button>
       ) : null}
     </nav>
   );

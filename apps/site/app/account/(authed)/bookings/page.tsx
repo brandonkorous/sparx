@@ -6,14 +6,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { cancelMyBooking, getMyBookings, type CustomerBooking } from '@/lib/customer-client';
 
 import { AddToCalendar } from '@/components/booking/add-to-calendar';
 
 import { ReschedulePanel } from './reschedule-panel';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 
@@ -97,7 +96,7 @@ export default function BookingsPage() {
 
       <div role="tablist" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
         {(['upcoming', 'past'] as const).map((s) => (
-          <SparxButton
+          <Button
             key={s}
             type="button"
             color="primary"
@@ -105,14 +104,14 @@ export default function BookingsPage() {
             onClick={() => switchScope(s)}
           >
             {s === 'upcoming' ? 'Upcoming' : 'Past'}
-          </SparxButton>
+          </Button>
         ))}
       </div>
 
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : bookings === null ? (
         <div className="st-skeleton" style={{ height: 200 }} />
       ) : bookings.length === 0 ? (
@@ -172,7 +171,7 @@ export default function BookingsPage() {
                       {STATUS_LABEL[b.status] ?? b.status}
                     </span>
                     {b.canReschedule && (
-                      <SparxButton
+                      <Button
                         type="button"
                         color="primary"
                         variant="outline"
@@ -180,10 +179,10 @@ export default function BookingsPage() {
                         onClick={() => setRescheduling(rescheduling === b.id ? null : b.id)}
                       >
                         {rescheduling === b.id ? 'Cancel' : 'Reschedule'}
-                      </SparxButton>
+                      </Button>
                     )}
                     {b.canCancel && (
-                      <SparxButton
+                      <Button
                         type="button"
                         color="neutral"
                         variant="ghost"
@@ -192,7 +191,7 @@ export default function BookingsPage() {
                         onClick={() => void handleCancel(b.id)}
                       >
                         {busy === b.id ? 'Cancelling…' : 'Cancel'}
-                      </SparxButton>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -210,7 +209,7 @@ export default function BookingsPage() {
 
           {totalPages > 1 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <SparxButton
+              <Button
                 type="button"
                 color="primary"
                 variant="outline"
@@ -218,11 +217,11 @@ export default function BookingsPage() {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
                 Previous
-              </SparxButton>
+              </Button>
               <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 Page {page} of {totalPages}
               </span>
-              <SparxButton
+              <Button
                 type="button"
                 color="primary"
                 variant="outline"
@@ -230,7 +229,7 @@ export default function BookingsPage() {
                 onClick={() => setPage((p) => p + 1)}
               >
                 Next
-              </SparxButton>
+              </Button>
             </div>
           )}
         </>

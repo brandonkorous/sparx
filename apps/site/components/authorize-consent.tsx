@@ -12,8 +12,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-
-import { SparxAlert, SparxButton, SparxCheckbox } from '@sparx/site-ui';
+import { Alert, Button, Checkbox } from '@wizeworks/silicaui-react';
 
 const AUTH_PARAM_KEYS = [
   'response_type',
@@ -79,27 +78,38 @@ function ScopeList({
         gap: '0.75rem',
       }}
     >
-      {scopes.map((s) => (
-        <li key={s.scope}>
-          <label
-            htmlFor={`scope-${s.scope}`}
-            className="st-field"
-            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: '0.6rem' }}
-          >
-            <SparxCheckbox
-              id={`scope-${s.scope}`}
-              checked={Boolean(selected[s.scope])}
-              onChange={(e) => onToggle(s.scope, e.target.checked)}
-            />
-            <span>
-              <span style={{ fontWeight: 600, display: 'block' }}>{s.label}</span>
-              <span className="st-muted" style={{ fontSize: '0.85rem' }}>
-                {s.description}
-              </span>
-            </span>
-          </label>
-        </li>
-      ))}
+      {scopes.map((s) => {
+        const id = `scope-${s.scope}`;
+        const descriptionId = `${id}-description`;
+        return (
+          <li key={s.scope}>
+            {/* The description sits OUTSIDE the <label> and is linked with
+                aria-describedby: nesting it would fold the whole paragraph into
+                the checkbox's accessible name, so a screen reader would announce
+                the entire explanation as the control's label. */}
+            <label
+              htmlFor={id}
+              className="st-field"
+              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: '0.6rem' }}
+            >
+              <Checkbox
+                id={id}
+                aria-describedby={descriptionId}
+                checked={Boolean(selected[s.scope])}
+                onChange={(e) => onToggle(s.scope, e.target.checked)}
+              />
+              <span style={{ fontWeight: 600 }}>{s.label}</span>
+            </label>
+            <p
+              id={descriptionId}
+              className="st-muted"
+              style={{ margin: '0.15rem 0 0 1.85rem', fontSize: '0.875rem' }}
+            >
+              {s.description}
+            </p>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -187,7 +197,7 @@ export function AuthorizeConsent(): React.ReactElement {
   if (loadError) {
     return (
       <div className="st-container--prose" style={{ paddingBlock: '2.5rem', maxWidth: 560 }}>
-        <SparxAlert color="danger">{loadError}</SparxAlert>
+        <Alert color="danger">{loadError}</Alert>
       </div>
     );
   }
@@ -197,9 +207,7 @@ export function AuthorizeConsent(): React.ReactElement {
   if (!info.valid) {
     return (
       <div className="st-container--prose" style={{ paddingBlock: '2.5rem', maxWidth: 560 }}>
-        <SparxAlert color="danger">
-          {info.error ?? 'This authorization request is invalid.'}
-        </SparxAlert>
+        <Alert color="danger">{info.error ?? 'This authorization request is invalid.'}</Alert>
       </div>
     );
   }
@@ -231,16 +239,16 @@ export function AuthorizeConsent(): React.ReactElement {
         />
 
         {error ? (
-          <SparxAlert color="danger" role="alert">
+          <Alert color="danger" role="alert">
             {error}
-          </SparxAlert>
+          </Alert>
         ) : null}
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-          <SparxButton type="submit" color="primary" size="lg" disabled={busy}>
+          <Button type="submit" color="primary" size="lg" disabled={busy}>
             {busy ? 'Authorizing…' : 'Authorize'}
-          </SparxButton>
-          <SparxButton
+          </Button>
+          <Button
             type="button"
             color="neutral"
             variant="outline"
@@ -249,7 +257,7 @@ export function AuthorizeConsent(): React.ReactElement {
             onClick={() => void submit('deny')}
           >
             Deny
-          </SparxButton>
+          </Button>
         </div>
       </form>
     </div>

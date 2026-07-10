@@ -6,10 +6,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { requestPasswordReset } from '@/lib/customer-client';
+import { Alert, Button, Input } from '@wizeworks/silicaui-react';
 
 export default function ForgotPasswordPage() {
   const { tenantSlug } = useCustomer();
@@ -30,10 +29,10 @@ export default function ForgotPasswordPage() {
           Reset your password
         </h1>
         {state === 'sent' ? (
-          <SparxAlert color="success" role="status">
+          <Alert color="success" role="status">
             If an account exists for <strong>{email}</strong>, we’ve sent a link to reset your
             password. Check your inbox.
-          </SparxAlert>
+          </Alert>
         ) : (
           <>
             <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
@@ -42,7 +41,7 @@ export default function ForgotPasswordPage() {
             <form onSubmit={submit} className="st-form">
               <label className="st-field">
                 <span>Email</span>
-                <SparxInput
+                <Input
                   type="email"
                   required
                   autoComplete="email"
@@ -50,9 +49,9 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
-              <SparxButton type="submit" color="primary" size="lg" disabled={state === 'busy'}>
+              <Button type="submit" color="primary" size="lg" disabled={state === 'busy'}>
                 {state === 'busy' ? 'Sending…' : 'Send reset link'}
-              </SparxButton>
+              </Button>
             </form>
           </>
         )}

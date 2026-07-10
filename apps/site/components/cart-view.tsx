@@ -6,7 +6,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SparxButton } from '@sparx/site-ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
@@ -35,11 +35,9 @@ export function CartView() {
           Your cart is empty
         </h2>
         <p style={{ margin: 0 }}>Browse the catalog and add something you like.</p>
-        <SparxButton asChild color="primary">
-          <Link href="/products" style={{ marginTop: '0.5rem' }}>
-            Shop all products
-          </Link>
-        </SparxButton>
+        <Button render={<Link href="/products" style={{ marginTop: '0.5rem' }} />} color="primary">
+          Shop all products
+        </Button>
       </div>
     );
   }
@@ -165,12 +163,17 @@ export function CartView() {
         <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
           Shipping &amp; taxes calculated at checkout.
         </p>
-        <SparxButton asChild color="primary" size="lg" className="w-full">
-          <Link href="/checkout">Proceed to checkout</Link>
-        </SparxButton>
-        <SparxButton asChild color="neutral" variant="ghost" className="w-full">
-          <Link href="/products">Continue shopping</Link>
-        </SparxButton>
+        <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">
+          Proceed to checkout
+        </Button>
+        <Button
+          render={<Link href="/products" />}
+          color="neutral"
+          variant="ghost"
+          className="w-full"
+        >
+          Continue shopping
+        </Button>
       </aside>
     </div>
   );

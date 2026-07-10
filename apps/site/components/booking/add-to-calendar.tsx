@@ -4,7 +4,7 @@
 // download (Apple / Outlook desktop / any client) plus Google/Outlook web deep
 // links. Shown on the booking confirmation and on each upcoming portal booking.
 
-import { cx } from '@sparx/site-ui';
+import { cn } from '@/lib/cn';
 
 export interface CalendarLinks {
   ics: string;
@@ -14,7 +14,7 @@ export interface CalendarLinks {
 
 export function AddToCalendar({ links, className }: { links: CalendarLinks; className?: string }) {
   return (
-    <div className={cx('st-add-to-cal', className)}>
+    <div className={cn('st-add-to-cal', className)}>
       <span className="st-add-to-cal__label">Add to calendar</span>
       <a
         className="st-add-to-cal__link"

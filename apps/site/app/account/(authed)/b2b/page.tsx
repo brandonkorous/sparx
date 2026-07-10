@@ -8,10 +8,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { SparxAlert } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bAccounts, type B2bAccountEntry } from '@/lib/customer-client';
+import { Alert } from '@wizeworks/silicaui-react';
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -52,9 +51,9 @@ export default function B2bPortalPage() {
 
   if (error) {
     return (
-      <SparxAlert color="danger" role="alert">
+      <Alert color="danger" role="alert">
         {error}
-      </SparxAlert>
+      </Alert>
     );
   }
 

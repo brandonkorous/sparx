@@ -22,7 +22,7 @@
 //     silica's `fillValue` sets `<img src>` / an `Image` atom's `src` prop from a
 //     string value (an array ref would fill text, not a src).
 
-import { action, atom, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
+import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
 
 // A neutral, self-contained placeholder tile (inline SVG data-URI) — the Image's
 // default `src` so the UNBOUND state (a card just inserted, not yet pinned to a
@@ -100,12 +100,55 @@ export function featuredProducts(): Node {
   });
 }
 
+/** The Add-to-cart FORM — the buy box's interactive half.
+ *
+ *  It is a real `<form>` because silica's `form` behavior is the ONLY thing that
+ *  calls the host's `onAction`: on a valid submit it gathers the form's controls
+ *  via FormData and dispatches `{kind:'submit', values}`. So the cart line's
+ *  identity has to ride in actual form fields, not in the node tree.
+ *
+ *  Two markers, two jobs, both on the `<form>` itself:
+ *    · `behave(…, {type:'form'})` → `data-sui-behavior="form"`, which is what
+ *      `hydrate()` looks for when deciding to wire the submit handler.
+ *    · `action(…, 'add-to-cart')` → `data-sui-action`, the opaque `ref` handed to
+ *      `onAction` so the host knows WHICH action fired.
+ *  They live in different node fields (`behavior` vs `data`), so one node carries both.
+ *
+ *  `variantId` is a bound hidden input: silica's `fillValue` writes a bound value
+ *  into an `<input>`'s `value` attribute (silicaui ≥ 0.12 — before that it wrote
+ *  children, which a void element drops, so the id vanished silently). It resolves
+ *  to '' for a product with no live variant. No `required` guard here, because the
+ *  attribute is inert on a hidden input and `checkValidity()` would pass anyway —
+ *  the storefront's `onAction` is what refuses to add an empty variant. */
+function addToCartForm(): Node {
+  return action(
+    behave(
+      el('form', 'mt-2 flex flex-col gap-3', {
+        children: [
+          bind(el('input', '', { attrs: { type: 'hidden', name: 'variantId' } }), 'variantId'),
+          // The quantity control nests INSIDE its label, so the pair needs no `id`
+          // — a page with two buy boxes would otherwise emit a duplicate id.
+          el('label', 'flex items-center gap-3 text-base text-base-content', {
+            children: [
+              el('span', 'font-medium', { text: 'Quantity' }),
+              el('input', 'input w-24', {
+                attrs: { type: 'number', name: 'quantity', value: '1', min: '1', step: '1' },
+              }),
+            ],
+          }),
+          atom('Button', 'btn btn-primary btn-lg', { type: 'submit' }, ['Add to cart']),
+        ],
+      }),
+      { type: 'form' }
+    ),
+    'add-to-cart'
+  );
+}
+
 /** The product-detail buy box — gallery, title, price (+ compare-at strikethrough),
- *  description, and an Add-to-cart action. Self-scoping: its root repeats over the
+ *  description, and an Add-to-cart form. Self-scoping: its root repeats over the
  *  `product` object source (a collection-of-one), so dropping it on any page and
- *  pinning the product scopes every descendant to `item.*`. The Add-to-cart button
- *  carries an inert `add-to-cart` action marker the storefront behavior wires; the
- *  render engine never touches action nodes. */
+ *  pinning the product scopes every descendant to `item.*`. */
 export function buyBox(): Node {
   return repeat(
     el('div', 'grid gap-8 @2xl:grid-cols-2 @container', {
@@ -136,10 +179,7 @@ export function buyBox(): Node {
               el('div', 'text-base-content/80', { text: 'Product description.' }),
               'description'
             ),
-            action(
-              atom('Button', 'btn btn-primary btn-lg mt-2', { type: 'button' }, ['Add to cart']),
-              'add-to-cart'
-            ),
+            addToCartForm(),
           ],
         }),
       ],

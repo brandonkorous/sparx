@@ -6,11 +6,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bOrders, type B2bOrderEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 
@@ -57,9 +56,9 @@ export default function B2bOrdersPage() {
       </div>
 
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : orders === null ? (
         <div className="st-skeleton" style={{ height: 200 }} />
       ) : orders.length === 0 ? (
@@ -104,7 +103,7 @@ export default function B2bOrdersPage() {
 
           {total > PAGE_SIZE && (
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <SparxButton
+              <Button
                 type="button"
                 color="primary"
                 variant="outline"
@@ -112,11 +111,11 @@ export default function B2bOrdersPage() {
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
-              </SparxButton>
+              </Button>
               <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
-              <SparxButton
+              <Button
                 type="button"
                 color="primary"
                 variant="outline"
@@ -124,7 +123,7 @@ export default function B2bOrdersPage() {
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >
                 Next
-              </SparxButton>
+              </Button>
             </div>
           )}
         </>

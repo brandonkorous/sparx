@@ -7,7 +7,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { cx, SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site-ui';
+import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
+import { cn } from '@/lib/cn';
 
 import type { PublicService } from '../../lib/scheduling';
 import { joinSession, listSessions, type PublicSession } from '../../lib/scheduling-client';
@@ -90,7 +91,7 @@ export function ClassBookingWidget({
   return (
     <form className="st-booking" onSubmit={submit}>
       <div className="st-booking__slots">
-        <SparxLabel>Upcoming sessions</SparxLabel>
+        <Label>Upcoming sessions</Label>
         {sessions === null ? (
           <p className="st-muted">Loading sessions…</p>
         ) : sessions.length === 0 ? (
@@ -101,7 +102,7 @@ export function ClassBookingWidget({
               <button
                 key={s.bookingId}
                 type="button"
-                className={cx('st-booking__session', selected === s.bookingId && 'is-selected')}
+                className={cn('st-booking__session', selected === s.bookingId && 'is-selected')}
                 aria-pressed={selected === s.bookingId}
                 onClick={() => setSelected(s.bookingId)}
               >
@@ -117,17 +118,12 @@ export function ClassBookingWidget({
 
       <div className="st-booking__row">
         <div>
-          <SparxLabel htmlFor="cls-name">Name</SparxLabel>
-          <SparxInput
-            id="cls-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <Label htmlFor="cls-name">Name</Label>
+          <Input id="cls-name" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div>
-          <SparxLabel htmlFor="cls-email">Email</SparxLabel>
-          <SparxInput
+          <Label htmlFor="cls-email">Email</Label>
+          <Input
             id="cls-email"
             type="email"
             value={email}
@@ -138,20 +134,15 @@ export function ClassBookingWidget({
       </div>
 
       <div>
-        <SparxLabel htmlFor="cls-phone">Phone (optional)</SparxLabel>
-        <SparxInput
-          id="cls-phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+        <Label htmlFor="cls-phone">Phone (optional)</Label>
+        <Input id="cls-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
       </div>
 
-      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+      {error ? <Alert color="danger">{error}</Alert> : null}
 
-      <SparxButton type="submit" color="primary" disabled={submitting || !selected}>
+      <Button type="submit" color="primary" disabled={submitting || !selected}>
         {submitting ? 'Reserving…' : 'Reserve my spot'}
-      </SparxButton>
+      </Button>
     </form>
   );
 }

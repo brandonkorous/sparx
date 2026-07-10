@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput, SparxTextarea } from '@sparx/site-ui';
+import { Alert, Button, Input, Textarea } from '@wizeworks/silicaui-react';
 
 const API_BASE = '/api/sparx';
 
@@ -47,17 +47,17 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
 
   if (state === 'done') {
     return (
-      <SparxAlert color="success" role="status">
+      <Alert color="success" role="status">
         Thanks for your question! It’ll appear once it’s answered.
-      </SparxAlert>
+      </Alert>
     );
   }
 
   if (!open) {
     return (
-      <SparxButton type="button" color="neutral" variant="outline" onClick={() => setOpen(true)}>
+      <Button type="button" color="neutral" variant="outline" onClick={() => setOpen(true)}>
         Ask a question
-      </SparxButton>
+      </Button>
     );
   }
 
@@ -65,20 +65,20 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
     <form onSubmit={submit} className="st-form">
       <label className="st-field">
         <span>Name (optional)</span>
-        <SparxInput value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+        <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
       </label>
       <label className="st-field">
         <span>Your question</span>
-        <SparxTextarea required rows={3} value={body} onChange={(e) => setBody(e.target.value)} />
+        <Textarea required rows={3} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
-      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+      {error ? <Alert color="danger">{error}</Alert> : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
+        <Button type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
           Cancel
-        </SparxButton>
-        <SparxButton type="submit" color="primary" disabled={state === 'busy'}>
+        </Button>
+        <Button type="submit" color="primary" disabled={state === 'busy'}>
           {state === 'busy' ? 'Submitting…' : 'Submit question'}
-        </SparxButton>
+        </Button>
       </div>
     </form>
   );

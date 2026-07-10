@@ -52,10 +52,15 @@ export function SilicaBehaviors({
           return;
         }
 
-        // Add-to-cart / buy-now: a buy box authored as a silica form dispatches its
-        // resolved `variantId` (+ optional quantity). The commerce composite emits
-        // those fields once the PDP migration lands (docs/118 Stage 9); the dispatch
-        // is wired here so it works the moment it does.
+        // Add-to-cart / buy-now: the buy box is a silica <form> whose hidden
+        // `variantId` field is bound to the product's default variant, plus a
+        // `quantity` number field (@sparx/silica-catalog `buyBox`).
+        //
+        // The empty-variant guard is load-bearing, not defensive noise: a product
+        // with no live variant resolves `variantId` to '', and `required` is INERT
+        // on a hidden input — so `form.checkValidity()` passes and the submit
+        // dispatches anyway. This is the only thing standing between that and a
+        // cart line for a variant that doesn't exist.
         if (ref === 'add-to-cart' || ref === 'buy-now') {
           const variantId = firstValue(values.variantId);
           if (!variantId) return;

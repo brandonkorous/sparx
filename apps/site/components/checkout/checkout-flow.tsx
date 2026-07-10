@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput, Steps } from '@sparx/site-ui';
+import { Alert, Button, Input, Step, Steps } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import {
@@ -25,11 +25,12 @@ import { AddressForm, EMPTY_ADDRESS } from './address-form';
 import { PaymentStep } from './payment-step';
 import { OrderSummary } from './order-summary';
 
-type Step = 'contact' | 'shipping' | 'payment' | 'done';
+// Named CheckoutStep, not Step: silica's <Step> is the stepper node component.
+type CheckoutStep = 'contact' | 'shipping' | 'payment' | 'done';
 
 export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
   const cart = useCart();
-  const [step, setStep] = useState<Step>('contact');
+  const [step, setStep] = useState<CheckoutStep>('contact');
   const [session, setSession] = useState<CheckoutSession | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -126,9 +127,9 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
           Your cart is empty
         </h2>
-        <SparxButton asChild color="primary">
-          <Link href="/products">Shop all products</Link>
-        </SparxButton>
+        <Button render={<Link href="/products" />} color="primary">
+          Shop all products
+        </Button>
       </div>
     );
   }
@@ -142,14 +143,14 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
       <div className="st-checkout__main">
         <StepIndicator step={step} />
 
-        {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+        {error ? <Alert color="danger">{error}</Alert> : null}
 
         {step === 'contact' ? (
           <form onSubmit={handleContact} className="st-form">
             <h2 className="st-h2">Contact</h2>
             <label className="st-field">
               <span>Email</span>
-              <SparxInput
+              <Input
                 type="email"
                 required
                 value={email}
@@ -166,9 +167,9 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
               />
               Email me with news and offers
             </label>
-            <SparxButton type="submit" color="primary" size="lg" disabled={busy}>
+            <Button type="submit" color="primary" size="lg" disabled={busy}>
               {busy ? 'Saving…' : 'Continue to shipping'}
-            </SparxButton>
+            </Button>
           </form>
         ) : null}
 
@@ -205,27 +206,21 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
             ) : null}
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <SparxButton
+              <Button
                 type="button"
                 color="neutral"
                 variant="ghost"
                 onClick={() => setStep('contact')}
               >
                 ← Back
-              </SparxButton>
-              <SparxButton
-                type="submit"
-                color="primary"
-                size="lg"
-                style={{ flex: 1 }}
-                disabled={busy}
-              >
+              </Button>
+              <Button type="submit" color="primary" size="lg" style={{ flex: 1 }} disabled={busy}>
                 {busy
                   ? 'Loading…'
                   : rates.length === 0
                     ? 'Get shipping rates'
                     : 'Continue to payment'}
-              </SparxButton>
+              </Button>
             </div>
           </form>
         ) : null}
@@ -261,23 +256,31 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
   );
 }
 
-function StepIndicator({ step }: { step: Step }) {
-  const steps: { key: Step; label: string }[] = [
+function StepIndicator({ step }: { step: CheckoutStep }) {
+  const steps: { key: CheckoutStep; label: string }[] = [
     { key: 'contact', label: 'Contact' },
     { key: 'shipping', label: 'Shipping' },
     { key: 'payment', label: 'Payment' },
   ];
-  const order: Step[] = ['contact', 'shipping', 'payment', 'done'];
+  const order: CheckoutStep[] = ['contact', 'shipping', 'payment', 'done'];
   const currentIdx = order.indexOf(step);
+  // silica's Steps track has no per-step `state`: a step is "reached" when it
+  // carries a color, so colouring every step up to and including the current one
+  // paints the track's filled portion. A cleared step swaps its number for a ✓.
   return (
-    <Steps style={{ marginBottom: '1.5rem' }}>
+    <Steps className="mb-6 w-full">
       {steps.map((s) => {
         const idx = order.indexOf(s.key);
-        const state = idx < currentIdx ? 'complete' : idx === currentIdx ? 'active' : 'upcoming';
+        const reached = idx <= currentIdx;
+        const cleared = idx < currentIdx;
         return (
-          <Steps.Step key={s.key} state={state} icon={state === 'complete' ? '✓' : undefined}>
+          <Step
+            key={s.key}
+            {...(reached ? { color: 'primary' as const } : {})}
+            {...(cleared ? { 'data-content': '✓' } : {})}
+          >
             {s.label}
-          </Steps.Step>
+          </Step>
         );
       })}
     </Steps>
@@ -297,11 +300,9 @@ function Confirmation({ orderNumber }: { orderNumber: string }) {
         Thank you! Your order <strong>{orderNumber}</strong> has been placed. A confirmation email
         is on its way.
       </p>
-      <SparxButton asChild color="primary">
-        <Link href="/products" style={{ marginTop: '0.5rem' }}>
-          Continue shopping
-        </Link>
-      </SparxButton>
+      <Button render={<Link href="/products" style={{ marginTop: '0.5rem' }} />} color="primary">
+        Continue shopping
+      </Button>
     </div>
   );
 }

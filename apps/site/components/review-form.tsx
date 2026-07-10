@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput, SparxTextarea } from '@sparx/site-ui';
+import { Alert, Button, Input, Textarea } from '@wizeworks/silicaui-react';
 
 const API_BASE = '/api/sparx';
 
@@ -89,18 +89,14 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
   }
 
   if (state === 'done') {
-    return (
-      <SparxAlert color="success">
-        Thanks for your review! It’ll appear once it’s approved.
-      </SparxAlert>
-    );
+    return <Alert color="success">Thanks for your review! It’ll appear once it’s approved.</Alert>;
   }
 
   if (!open) {
     return (
-      <SparxButton type="button" color="neutral" variant="outline" onClick={() => setOpen(true)}>
+      <Button type="button" color="neutral" variant="outline" onClick={() => setOpen(true)}>
         Write a review
-      </SparxButton>
+      </Button>
     );
   }
 
@@ -110,11 +106,11 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         <label className="st-field" style={{ flex: 1 }}>
           <span>Name</span>
-          <SparxInput required value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
+          <Input required value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
         </label>
         <label className="st-field" style={{ flex: 1 }}>
           <span>Email (optional)</span>
-          <SparxInput
+          <Input
             type="email"
             value={authorEmail}
             onChange={(e) => setAuthorEmail(e.target.value)}
@@ -123,24 +119,24 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
       </div>
       <label className="st-field">
         <span>Title (optional)</span>
-        <SparxInput value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </label>
       <label className="st-field">
         <span>Review</span>
-        <SparxTextarea required rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
+        <Textarea required rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
+        <Button type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
           Cancel
-        </SparxButton>
-        <SparxButton type="submit" color="primary" disabled={state === 'busy'}>
+        </Button>
+        <Button type="submit" color="primary" disabled={state === 'busy'}>
           {state === 'busy' ? 'Submitting…' : 'Submit review'}
-        </SparxButton>
+        </Button>
       </div>
     </form>
   );

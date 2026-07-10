@@ -7,10 +7,11 @@
 
 import { useState } from 'react';
 
-import { cx, SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site-ui';
-
 import { loadSlots, type PublicSlot } from '@/lib/scheduling-client';
 import { rescheduleMyBooking, type CustomerBooking } from '@/lib/customer-client';
+import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
+
+import { cn } from '@/lib/cn';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -90,14 +91,14 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
       </div>
 
       {error && (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       )}
 
       <div>
-        <SparxLabel htmlFor={`reschedule-date-${booking.id}`}>Date</SparxLabel>
-        <SparxInput
+        <Label htmlFor={`reschedule-date-${booking.id}`}>Date</Label>
+        <Input
           id={`reschedule-date-${booking.id}`}
           type="date"
           min={todayLocal()}
@@ -122,7 +123,7 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
             <button
               key={s.startAt}
               type="button"
-              className={cx('st-booking__slot', submitting === s.startAt && 'is-selected')}
+              className={cn('st-booking__slot', submitting === s.startAt && 'is-selected')}
               disabled={submitting !== null}
               onClick={() => void pick(s.startAt)}
             >
@@ -133,9 +134,9 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
       )}
 
       <div>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={onClose}>
+        <Button type="button" color="neutral" variant="ghost" onClick={onClose}>
           Keep current time
-        </SparxButton>
+        </Button>
       </div>
     </div>
   );

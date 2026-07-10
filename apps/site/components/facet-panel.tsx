@@ -13,7 +13,7 @@
 // one + Apply reloads the form with that domain's tree. Vendor/tag facets need
 // an aggregation endpoint to enumerate values and land later.
 
-import { SparxButton, SparxInput, SparxSelect } from '@sparx/site-ui';
+import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import type {
   PublicFitmentDimension,
@@ -73,7 +73,7 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
       <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <SparxInput
+          <Input
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -84,7 +84,7 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
             aria-label="Minimum price (dollars)"
           />
           <span className="st-muted">–</span>
-          <SparxInput
+          <Input
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -108,14 +108,16 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
       <FitmentFacet domains={domains} activeDomain={activeDomain} levels={levels} values={values} />
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <SparxButton type="submit" color="primary" style={{ flex: 1 }}>
+        <Button type="submit" color="primary" style={{ flex: 1 }}>
           Apply
-        </SparxButton>
-        <SparxButton asChild color="neutral" variant="ghost">
-          <a href={action} aria-label="Clear filters">
-            Clear
-          </a>
-        </SparxButton>
+        </Button>
+        <Button
+          render={<a href={action} aria-label="Clear filters" />}
+          color="neutral"
+          variant="ghost"
+        >
+          Clear
+        </Button>
       </div>
     </form>
   );
@@ -146,13 +148,13 @@ function FitmentFacet({
           <span className="st-muted" style={{ fontSize: '0.78rem' }}>
             Type
           </span>
-          <SparxSelect name="fitmentDomain" defaultValue={activeDomain.slug}>
+          <NativeSelect name="fitmentDomain" defaultValue={activeDomain.slug}>
             {domains.map((d) => (
               <option key={d.id} value={d.slug}>
                 {d.displayName}
               </option>
             ))}
-          </SparxSelect>
+          </NativeSelect>
         </label>
       ) : null}
 
@@ -167,14 +169,14 @@ function FitmentFacet({
           <span className="st-muted" style={{ fontSize: '0.78rem' }}>
             {level.dimension.label}
           </span>
-          <SparxSelect name={`fl${i}`} defaultValue={level.selectedId}>
+          <NativeSelect name={`fl${i}`} defaultValue={level.selectedId}>
             <option value="">Any {level.dimension.label.toLowerCase()}</option>
             {level.nodes.map((n) => (
               <option key={n.id} value={n.id}>
                 {n.name}
               </option>
             ))}
-          </SparxSelect>
+          </NativeSelect>
         </label>
       ))}
 
@@ -216,35 +218,35 @@ function RangeWidget({ dim, value }: { dim: PublicFitmentDimension; value?: stri
 
   if (unit === 'year') {
     return (
-      <SparxSelect name={dim.key} defaultValue={value ?? ''}>
+      <NativeSelect name={dim.key} defaultValue={value ?? ''}>
         <option value="">Any {dim.label.toLowerCase()}</option>
         {YEARS.map((y) => (
           <option key={y} value={y}>
             {y}
           </option>
         ))}
-      </SparxSelect>
+      </NativeSelect>
     );
   }
 
   if (unit === 'us_shoe' || unit === 'eu_shoe') {
     const sizes = unit === 'us_shoe' ? US_SHOES : EU_SHOES;
     return (
-      <SparxSelect name={dim.key} defaultValue={value ?? ''}>
+      <NativeSelect name={dim.key} defaultValue={value ?? ''}>
         <option value="">Any {dim.label.toLowerCase()}</option>
         {sizes.map((s) => (
           <option key={s} value={s}>
             {s}
           </option>
         ))}
-      </SparxSelect>
+      </NativeSelect>
     );
   }
 
   // Numeric units (weight, age, dimension) → number input with a unit suffix.
   return (
     <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-      <SparxInput
+      <Input
         type="number"
         name={dim.key}
         inputMode="decimal"

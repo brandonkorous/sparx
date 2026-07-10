@@ -8,13 +8,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { useWishlist } from '@/components/wishlist-provider';
 import { getWishlist, type WishlistItem } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 export default function WishlistPage() {
   const { tenantSlug } = useCustomer();
@@ -46,9 +45,9 @@ export default function WishlistPage() {
       </h1>
 
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : visible === null ? (
         <div className="st-skeleton" style={{ height: 160 }} />
       ) : visible.length === 0 ? (
@@ -56,9 +55,9 @@ export default function WishlistPage() {
           <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t saved anything yet.
           </p>
-          <SparxButton asChild color="primary">
-            <Link href="/products">Browse products</Link>
-          </SparxButton>
+          <Button render={<Link href="/products" />} color="primary">
+            Browse products
+          </Button>
         </div>
       ) : (
         <div
@@ -89,13 +88,9 @@ export default function WishlistPage() {
                   </div>
                 </Link>
                 <div style={{ padding: '0 0.75rem 0.75rem' }}>
-                  <SparxButton
-                    color="neutral"
-                    variant="ghost"
-                    onClick={() => void remove(it.variantId)}
-                  >
+                  <Button color="neutral" variant="ghost" onClick={() => void remove(it.variantId)}>
                     Remove
-                  </SparxButton>
+                  </Button>
                 </div>
               </div>
             );

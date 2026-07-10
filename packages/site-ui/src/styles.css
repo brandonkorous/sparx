@@ -107,7 +107,6 @@
 @import './styles/theme-toggle.css' layer(components);
 @import './styles/toast.css' layer(components);
 @import './styles/tooltip.css' layer(components);
-@import './styles/top-progress.css' layer(components);
 @import './styles/validator.css' layer(components);
 @import './styles/window.css' layer(components);
 @import './styles/wordmark.css' layer(components);

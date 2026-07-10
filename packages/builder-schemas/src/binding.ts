@@ -172,6 +172,11 @@ const PRODUCT_FIELDS: FieldSchema[] = [
   // The preview/live data loaders populate it from `images[0].url`.
   { key: 'image', label: 'Primary image', kind: 'image', cardinality: 'scalar' },
   { key: 'sku', label: 'SKU', kind: 'text', cardinality: 'scalar' },
+  // The variant an add-to-cart lands on with no options picked. Bound by the buy
+  // box's hidden field so its <form> submit carries a real cart line — silica's
+  // `fillValue` writes a bound value into an `<input>`'s `value` attribute
+  // (silicaui ≥ 0.12). Empty string when the product has no live variant.
+  { key: 'variantId', label: 'Default variant ID', kind: 'text', cardinality: 'scalar' },
 ];
 
 export const COMMERCE_SOURCES: DataSource[] = [

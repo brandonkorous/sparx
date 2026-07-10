@@ -8,7 +8,7 @@
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
-import { SparxButton } from '@sparx/site-ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { formatMoney, formatPriceRange } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
@@ -330,7 +330,7 @@ export function ProductDetail({
               +
             </button>
           </div>
-          <SparxButton
+          <Button
             type="button"
             color="primary"
             size="lg"
@@ -345,7 +345,7 @@ export function ProductDetail({
                 : adding
                   ? 'Adding…'
                   : 'Add to cart'}
-          </SparxButton>
+          </Button>
           {(resolvedVariant ?? defaultVariant) ? (
             <WishlistButton variantId={(resolvedVariant ?? defaultVariant)!.id} />
           ) : null}

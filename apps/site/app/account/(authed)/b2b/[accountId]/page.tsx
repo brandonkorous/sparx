@@ -7,11 +7,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bSummary, type B2bPortalSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -40,9 +39,9 @@ export default function B2bAccountPage() {
 
   if (error)
     return (
-      <SparxAlert color="danger" role="alert">
+      <Alert color="danger" role="alert">
         {error}
-      </SparxAlert>
+      </Alert>
     );
   if (!summary) return <div className="st-skeleton" style={{ height: 300 }} />;
 
@@ -113,7 +112,7 @@ export default function B2bAccountPage() {
 
       {/* Invoice alerts */}
       {(invoiceSummary.overdueCount > 0 || invoiceSummary.unpaidCount > 0) && (
-        <SparxAlert color="warning">
+        <Alert color="warning">
           <strong>
             {invoiceSummary.overdueCount > 0
               ? `${invoiceSummary.overdueCount} overdue ${invoiceSummary.overdueCount === 1 ? 'invoice' : 'invoices'}`
@@ -122,30 +121,44 @@ export default function B2bAccountPage() {
           {' — '}
           {formatMoney(overdueAmount, 'USD')} outstanding.{' '}
           <Link href={`/account/b2b/${accountId}/invoices`}>View invoices →</Link>
-        </SparxAlert>
+        </Alert>
       )}
 
       {/* Quick links */}
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <SparxButton asChild color="primary" variant="outline">
-          <Link href={`/account/b2b/${accountId}/invoices`}>
-            Invoices
-            {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
-              <span className="st-badge st-badge--danger" style={{ marginLeft: '0.5rem' }}>
-                {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
-              </span>
-            )}
-          </Link>
-        </SparxButton>
-        <SparxButton asChild color="primary" variant="outline">
-          <Link href={`/account/b2b/${accountId}/orders`}>Orders</Link>
-        </SparxButton>
-        <SparxButton asChild color="primary" variant="outline">
-          <Link href={`/account/b2b/${accountId}/quotes`}>Quotes</Link>
-        </SparxButton>
-        <SparxButton asChild color="primary" variant="outline">
-          <Link href={`/account/b2b/${accountId}/appointments`}>Appointments</Link>
-        </SparxButton>
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/invoices`} />}
+          color="primary"
+          variant="outline"
+        >
+          Invoices
+          {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
+            <span className="st-badge st-badge--danger" style={{ marginLeft: '0.5rem' }}>
+              {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
+            </span>
+          )}
+        </Button>
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/orders`} />}
+          color="primary"
+          variant="outline"
+        >
+          Orders
+        </Button>
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/quotes`} />}
+          color="primary"
+          variant="outline"
+        >
+          Quotes
+        </Button>
+        <Button
+          render={<Link href={`/account/b2b/${accountId}/appointments`} />}
+          color="primary"
+          variant="outline"
+        >
+          Appointments
+        </Button>
       </div>
 
       {/* Recent orders */}

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-import { SparxButton } from '@sparx/site-ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
@@ -64,9 +64,9 @@ export function MiniCart() {
               🛒
             </span>
             <p style={{ margin: 0 }}>Your cart is empty.</p>
-            <SparxButton type="button" color="primary" onClick={closeDrawer}>
+            <Button type="button" color="primary" onClick={closeDrawer}>
               Keep shopping
-            </SparxButton>
+            </Button>
           </div>
         ) : (
           <>
@@ -126,16 +126,22 @@ export function MiniCart() {
               <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
                 Shipping &amp; taxes calculated at checkout.
               </p>
-              <SparxButton asChild color="primary" size="lg" className="w-full">
-                <Link href="/checkout" onClick={closeDrawer}>
-                  Checkout
-                </Link>
-              </SparxButton>
-              <SparxButton asChild color="neutral" variant="outline" className="w-full">
-                <Link href="/cart" onClick={closeDrawer}>
-                  View cart
-                </Link>
-              </SparxButton>
+              <Button
+                render={<Link href="/checkout" onClick={closeDrawer} />}
+                color="primary"
+                size="lg"
+                className="w-full"
+              >
+                Checkout
+              </Button>
+              <Button
+                render={<Link href="/cart" onClick={closeDrawer} />}
+                color="neutral"
+                variant="outline"
+                className="w-full"
+              >
+                View cart
+              </Button>
             </div>
           </>
         )}

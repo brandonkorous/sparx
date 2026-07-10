@@ -331,7 +331,11 @@ export {
   NavigationMenuIndicator,
   navigationMenuTriggerStyle,
 } from './components/navigation/navigation-menu';
-export { TopProgress, type TopProgressProps } from './components/navigation/top-progress';
+export {
+  TopProgress,
+  type TopProgressProps,
+  type TopProgressTone,
+} from './components/navigation/top-progress';
 export {
   topProgress,
   withTopProgress,

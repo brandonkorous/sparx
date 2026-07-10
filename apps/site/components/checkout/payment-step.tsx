@@ -11,7 +11,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import {
@@ -69,10 +69,10 @@ export function PaymentStep({
   if (error) {
     return (
       <div className="st-form">
-        <SparxAlert color="danger">{error}</SparxAlert>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack}>
+        <Alert color="danger">{error}</Alert>
+        <Button type="button" color="neutral" variant="ghost" onClick={onBack}>
           ← Back to shipping
-        </SparxButton>
+        </Button>
       </div>
     );
   }
@@ -94,9 +94,9 @@ export function PaymentStep({
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <SparxAlert color="danger">
+      <Alert color="danger">
         Payments aren’t configured for this store yet (missing Stripe publishable key).
-      </SparxAlert>
+      </Alert>
     );
   }
 
@@ -163,14 +163,14 @@ function RedirectPay({
   return (
     <div className="st-form">
       <h2 className="st-h2">Payment</h2>
-      <SparxAlert color="info">
+      <Alert color="info">
         You’ll finish paying securely on your payment provider’s page, then return here.
-      </SparxAlert>
+      </Alert>
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
-        </SparxButton>
-        <SparxButton
+        </Button>
+        <Button
           type="button"
           color="primary"
           size="lg"
@@ -181,7 +181,7 @@ function RedirectPay({
           {busy
             ? 'Redirecting…'
             : `Continue to pay ${formatMoney(session.totals.totalCents, session.currency)}`}
-        </SparxButton>
+        </Button>
       </div>
     </div>
   );
@@ -239,12 +239,12 @@ function PaymentInner({
     <form onSubmit={pay} className="st-form">
       <h2 className="st-h2">Payment</h2>
       <PaymentElement options={{ layout: 'tabs' }} />
-      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+      {error ? <Alert color="danger">{error}</Alert> : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <SparxButton type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
-        </SparxButton>
-        <SparxButton
+        </Button>
+        <Button
           type="submit"
           color="primary"
           size="lg"
@@ -252,7 +252,7 @@ function PaymentInner({
           disabled={!stripe || busy}
         >
           {busy ? 'Processing…' : `Pay ${formatMoney(session.totals.totalCents, session.currency)}`}
-        </SparxButton>
+        </Button>
       </div>
     </form>
   );

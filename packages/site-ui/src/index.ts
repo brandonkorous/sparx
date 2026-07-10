@@ -240,15 +240,10 @@ export {
   type ToastHorizontal,
   type ToastVertical,
 } from './components/toast';
-export { TopProgress, type TopProgressProps } from './components/top-progress';
-export {
-  siteProgress,
-  withSiteProgress,
-  ROUTE_ID as TOP_PROGRESS_ROUTE_ID,
-  type SiteProgressState,
-  type SiteProgressHandle,
-  type SiteProgressStartOptions,
-} from './components/top-progress-controller';
+// TopProgress + its controller moved to `apps/site/components/top-progress/`
+// at the silica cutover (docs/118 Stage 9): the page-top bar is the storefront's
+// own composition, not a design-system primitive — silica ships no equivalent,
+// and @sparx/ui's bar is the ADMIN one (dashboard module routes, sparx spectrum).
 
 // ── Catalog: display / input ───────────────────────────────
 export { Countdown, type CountdownProps } from './components/countdown';

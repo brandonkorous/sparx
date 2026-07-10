@@ -6,12 +6,11 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxBadge, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { OrderTimeline, orderStatusTone } from '@/components/order-timeline';
 import { getOrder, AccountError, type OrderDetail } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 function titleCase(s: string): string {
   return s
@@ -98,17 +97,17 @@ export default function OrderDetailPage() {
         <p className="st-muted" style={{ marginBottom: '1rem' }}>
           We couldn’t find that order.
         </p>
-        <SparxButton asChild color="neutral" variant="outline">
-          <Link href="/account/orders">← Back to orders</Link>
-        </SparxButton>
+        <Button render={<Link href="/account/orders" />} color="neutral" variant="outline">
+          ← Back to orders
+        </Button>
       </div>
     );
   }
   if (error) {
     return (
-      <SparxAlert color="danger" role="alert">
+      <Alert color="danger" role="alert">
         Could not load this order.
-      </SparxAlert>
+      </Alert>
     );
   }
   if (!order) return <div className="st-skeleton" style={{ height: 320 }} />;
@@ -130,9 +129,9 @@ export default function OrderDetailPage() {
         }}
       >
         <h1 className="st-h2">Order #{order.orderNumber}</h1>
-        <SparxBadge color={orderStatusTone(order.status)} variant="soft">
+        <Badge color={orderStatusTone(order.status)} variant="soft">
           {titleCase(order.status)}
-        </SparxBadge>
+        </Badge>
       </div>
       <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
         Placed {formatDate(order.placedAt)} · Payment {titleCase(order.paymentStatus)}

@@ -5,8 +5,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import {
   createAddress,
@@ -17,6 +15,7 @@ import {
   type Address,
   type AddressInput,
 } from '@/lib/customer-client';
+import { Alert, Button, Input } from '@wizeworks/silicaui-react';
 
 const EMPTY: Partial<AddressInput> = {
   type: 'shipping',
@@ -70,16 +69,16 @@ export default function AddressesPage() {
       >
         <h1 className="st-h2">Addresses</h1>
         {editing === null ? (
-          <SparxButton color="neutral" variant="outline" onClick={() => setEditing('new')}>
+          <Button color="neutral" variant="outline" onClick={() => setEditing('new')}>
             Add address
-          </SparxButton>
+          </Button>
         ) : null}
       </div>
 
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : null}
 
       {editing !== null ? (
@@ -118,12 +117,12 @@ export default function AddressesPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <SparxButton color="neutral" variant="ghost" onClick={() => setEditing(a)}>
+                <Button color="neutral" variant="ghost" onClick={() => setEditing(a)}>
                   Edit
-                </SparxButton>
-                <SparxButton color="neutral" variant="ghost" onClick={() => void remove(a.id)}>
+                </Button>
+                <Button color="neutral" variant="ghost" onClick={() => void remove(a.id)}>
                   Delete
-                </SparxButton>
+                </Button>
               </div>
             </div>
           ))}
@@ -170,7 +169,7 @@ function AddressForm({
     <form onSubmit={submit} className="st-form">
       <label className="st-field">
         <span>Label (optional)</span>
-        <SparxInput
+        <Input
           value={form.label ?? ''}
           onChange={(e) => set('label', e.target.value)}
           placeholder="Home, Work…"
@@ -178,7 +177,7 @@ function AddressForm({
       </label>
       <label className="st-field">
         <span>Recipient name</span>
-        <SparxInput
+        <Input
           autoComplete="name"
           value={form.recipientName ?? ''}
           onChange={(e) => set('recipientName', e.target.value)}
@@ -186,7 +185,7 @@ function AddressForm({
       </label>
       <label className="st-field">
         <span>Address line 1</span>
-        <SparxInput
+        <Input
           required
           autoComplete="address-line1"
           value={form.line1 ?? ''}
@@ -195,7 +194,7 @@ function AddressForm({
       </label>
       <label className="st-field">
         <span>Address line 2 (optional)</span>
-        <SparxInput
+        <Input
           autoComplete="address-line2"
           value={form.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
@@ -204,7 +203,7 @@ function AddressForm({
       <div className="st-addr">
         <label className="st-field">
           <span>City</span>
-          <SparxInput
+          <Input
             required
             autoComplete="address-level2"
             value={form.city ?? ''}
@@ -213,7 +212,7 @@ function AddressForm({
         </label>
         <label className="st-field">
           <span>State / Region</span>
-          <SparxInput
+          <Input
             autoComplete="address-level1"
             value={form.region ?? ''}
             onChange={(e) => set('region', e.target.value)}
@@ -221,7 +220,7 @@ function AddressForm({
         </label>
         <label className="st-field">
           <span>Postal code</span>
-          <SparxInput
+          <Input
             autoComplete="postal-code"
             value={form.postalCode ?? ''}
             onChange={(e) => set('postalCode', e.target.value)}
@@ -229,7 +228,7 @@ function AddressForm({
         </label>
         <label className="st-field">
           <span>Country</span>
-          <SparxInput
+          <Input
             required
             maxLength={2}
             autoComplete="country"
@@ -248,17 +247,17 @@ function AddressForm({
         Set as default address
       </label>
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <SparxButton color="neutral" variant="ghost" onClick={onCancel} disabled={busy}>
+        <Button color="neutral" variant="ghost" onClick={onCancel} disabled={busy}>
           Cancel
-        </SparxButton>
-        <SparxButton type="submit" color="primary" disabled={busy}>
+        </Button>
+        <Button type="submit" color="primary" disabled={busy}>
           {busy ? 'Saving…' : initial ? 'Save address' : 'Add address'}
-        </SparxButton>
+        </Button>
       </div>
     </form>
   );

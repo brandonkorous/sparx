@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { SparxButton } from '@sparx/site-ui';
+import { Button } from '@wizeworks/silicaui-react';
 
 export interface EmptyStateProps {
   icon?: string;
@@ -24,11 +24,12 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       </h3>
       {description ? <p style={{ margin: 0, maxWidth: '40ch' }}>{description}</p> : null}
       {action ? (
-        <SparxButton asChild color="primary">
-          <Link href={action.href} style={{ marginTop: '0.5rem' }}>
-            {action.label}
-          </Link>
-        </SparxButton>
+        <Button
+          render={<Link href={action.href} style={{ marginTop: '0.5rem' }} />}
+          color="primary"
+        >
+          {action.label}
+        </Button>
       ) : null}
     </div>
   );

@@ -6,11 +6,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { getOrders, type OrderSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -42,9 +41,9 @@ export default function OrdersPage() {
       </h1>
 
       {error ? (
-        <SparxAlert color="danger" role="alert">
+        <Alert color="danger" role="alert">
           {error}
-        </SparxAlert>
+        </Alert>
       ) : orders === null ? (
         <div className="st-skeleton" style={{ height: 160 }} />
       ) : orders.length === 0 ? (
@@ -52,9 +51,9 @@ export default function OrdersPage() {
           <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t placed any orders yet.
           </p>
-          <SparxButton asChild color="primary">
-            <Link href="/products">Start shopping</Link>
-          </SparxButton>
+          <Button render={<Link href="/products" />} color="primary">
+            Start shopping
+          </Button>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

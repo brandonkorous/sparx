@@ -10,11 +10,21 @@ export default [
   {
     files: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
     settings: {
-      // Map the site-ui field components to the DOM elements they render, so
-      // jsx-a11y resolves a `<label>` wrapping <SparxInput>/<SparxSelect>/
-      // <SparxTextarea> as associated (the control is nested at runtime).
+      // Map field components to the DOM elements they render, so jsx-a11y
+      // resolves a `<label>` wrapping one as an associated control (the native
+      // control is nested at runtime).
+      //
+      // This RE-LISTS the root config's silica map rather than adding to it:
+      // flat config REPLACES `settings['jsx-a11y']` wholesale instead of
+      // deep-merging, so anything omitted here is silently lost for these files.
+      // The `Sparx*` rows are the legacy @sparx/site-ui components the sections
+      // renderer still uses; they go when that render path retires (docs/118).
       'jsx-a11y': {
         components: {
+          Checkbox: 'input',
+          Input: 'input',
+          NativeSelect: 'select',
+          Textarea: 'textarea',
           SparxInput: 'input',
           SparxSelect: 'select',
           SparxTextarea: 'textarea',

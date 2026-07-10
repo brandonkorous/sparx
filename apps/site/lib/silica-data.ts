@@ -41,6 +41,11 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
     description: p.description ?? '',
     image: url ? { url, alt: p.title } : null,
+    // Bound by the buy box's hidden field, so its <form> submit carries a real
+    // cart line. Empty string (not null) when the product has no live variant:
+    // the hidden input renders `value=""`, the field is `required`, and the
+    // browser blocks the submit before silica's form behavior dispatches.
+    variantId: p.defaultVariantId ?? '',
   };
 }
 

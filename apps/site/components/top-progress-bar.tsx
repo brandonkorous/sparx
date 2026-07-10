@@ -1,11 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { TopProgress } from '@sparx/site-ui';
+import { TopProgress } from '@sparx/ui';
 
-// Storefront page-top loading bar. Wears the TENANT's brand (--st-primary) — the
-// merchant's own color, not sparx's. Feeding `usePathname()` lets the bar
-// complete when a route commits.
+// Storefront page-top loading bar. `tone="brand"` aims the bar's sweep at the
+// TENANT's `--color-primary` — the merchant's own color, never sparx's module
+// spectrum. Feeding `usePathname()` lets the bar complete when a route commits.
 export function TopProgressBar() {
-  return <TopProgress route={usePathname()} />;
+  return <TopProgress route={usePathname()} tone="brand" />;
 }

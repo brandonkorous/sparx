@@ -7,8 +7,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { SparxButton } from '@sparx/site-ui';
-
 import { PageView } from '@/components/page-view';
 import { ProductCard } from '@/components/product-card';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -23,6 +21,7 @@ import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { Button } from '@wizeworks/silicaui-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,12 +124,17 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
                 Browse the full catalog, find exactly what fits, and check out in seconds.
               </p>
               <div className="st-hero__cta">
-                <SparxButton asChild color="primary" size="lg">
-                  <Link href="/products">Shop all products</Link>
-                </SparxButton>
-                <SparxButton asChild color="neutral" variant="outline" size="lg">
-                  <Link href="/collections">Browse collections</Link>
-                </SparxButton>
+                <Button render={<Link href="/products" />} color="primary" size="lg">
+                  Shop all products
+                </Button>
+                <Button
+                  render={<Link href="/collections" />}
+                  color="neutral"
+                  variant="outline"
+                  size="lg"
+                >
+                  Browse collections
+                </Button>
               </div>
             </div>
           </div>

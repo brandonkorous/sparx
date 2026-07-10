@@ -17,7 +17,13 @@ const PRODUCTS = [
   { image: '/aurora.png', title: 'Aurora Lamp', price: 149 },
   { image: '/dune.png', title: 'Dune Chair', price: 320 },
 ];
-const PRODUCT = { image: '/solo.png', title: 'Solo Desk', price: 210, description: 'A tidy desk.' };
+const PRODUCT = {
+  image: '/solo.png',
+  title: 'Solo Desk',
+  price: 210,
+  description: 'A tidy desk.',
+  variantId: 'var_solo_default',
+};
 
 const host: ResolveHost = {
   resolveBinding(ref: string, scope: DataScope) {
@@ -106,6 +112,48 @@ describe('buy_box — self-scoping product detail', () => {
     expect(html).toContain('data-sui-action');
     expect(html).toContain('Add to cart');
     expect((html.match(/Solo Desk/g) ?? []).length).toBe(1);
+  });
+
+  // The add-to-cart contract, end to end through the real engine. Every one of
+  // these was silently broken before silicaui 0.12: `fillValue` wrote a bound
+  // value into an element's CHILDREN, and `input` is a void element, so `toHtml`
+  // dropped it and the form submitted no variant at all.
+  it("resolves the variant id into the hidden input's value attribute", () => {
+    const html = toHtml(resolveTree(buyBox(), host));
+    expect(html).toContain('name="variantId"');
+    expect(html).toContain('value="var_solo_default"');
+    // …and as an ATTRIBUTE, never as text content the browser would ignore.
+    expect(html).not.toContain('>var_solo_default<');
+  });
+
+  it('marks the form as both a form behavior and the add-to-cart action', () => {
+    const html = toHtml(resolveTree(buyBox(), host));
+    // `hydrate()` wires the submit handler off data-sui-behavior; the ref that
+    // reaches the host's onAction comes off data-sui-action. Both must be on the
+    // <form>, or the button is decoration.
+    expect(html).toMatch(/<form[^>]*data-sui-behavior="form"/);
+    expect(html).toMatch(/<form[^>]*data-sui-action="add-to-cart"/);
+    expect(html).toContain('type="submit"');
+  });
+
+  it('submits a quantity field defaulting to 1', () => {
+    const html = toHtml(resolveTree(buyBox(), host));
+    expect(html).toContain('name="quantity"');
+    expect(html).toMatch(/name="quantity"[^>]*value="1"/);
+    expect(html).toMatch(/name="quantity"[^>]*min="1"/);
+  });
+
+  it('resolves an empty value when the product has no live variant', () => {
+    // defaultVariantId === null upstream → '' in scope. The markup still renders;
+    // refusing the empty add is the storefront onAction handler's job (a hidden
+    // input ignores `required`).
+    const noVariant: ResolveHost = {
+      ...host,
+      resolveCollection: (ref) => (ref === 'product' ? [{ ...PRODUCT, variantId: '' }] : []),
+    };
+    const html = toHtml(resolveTree(buyBox(), noVariant));
+    expect(html).toContain('name="variantId"');
+    expect(html).toContain('value=""');
   });
 });
 

@@ -12,7 +12,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useMemo, useState } from 'react';
 
-import { SparxAlert, SparxButton } from '@sparx/site-ui';
+import { Alert, Button } from '@wizeworks/silicaui-react';
 
 import type { DepositType } from '../../lib/scheduling-client';
 
@@ -54,9 +54,9 @@ export function BookingDepositStep({
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <SparxAlert color="danger">
+      <Alert color="danger">
         Payments aren’t configured for this site yet (missing Stripe publishable key).
-      </SparxAlert>
+      </Alert>
     );
   }
 
@@ -116,10 +116,10 @@ function DepositInner({
       <h2 className="st-h3">Secure your booking</h2>
       <p className="st-muted">{lead}</p>
       <PaymentElement options={{ layout: 'tabs' }} />
-      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
-      <SparxButton type="submit" color="primary" disabled={!stripe || busy}>
+      {error ? <Alert color="danger">{error}</Alert> : null}
+      <Button type="submit" color="primary" disabled={!stripe || busy}>
         {busy ? 'Processing…' : `${verb} ${money(amountCents)}`}
-      </SparxButton>
+      </Button>
     </form>
   );
 }

@@ -6,7 +6,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { SparxSelect } from '@sparx/site-ui';
+import { NativeSelect } from '@wizeworks/silicaui-react';
 
 const OPTIONS: { value: string; label: string }[] = [
   { value: 'relevance', label: 'Featured' },
@@ -27,7 +27,7 @@ export function SortSelect({ value }: { value: string }) {
       <span className="st-muted" style={{ fontSize: '0.85rem' }}>
         Sort
       </span>
-      <SparxSelect
+      <NativeSelect
         value={value}
         onChange={(e) => {
           const next = new URLSearchParams(params.toString());
@@ -41,7 +41,7 @@ export function SortSelect({ value }: { value: string }) {
             {o.label}
           </option>
         ))}
-      </SparxSelect>
+      </NativeSelect>
     </label>
   );
 }

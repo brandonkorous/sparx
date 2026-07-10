@@ -188,6 +188,8 @@ export type {
   // Builder
   BuilderPage,
   BuilderLayout,
+  // The per-property silica site record: authored theme + saved-component symbols
+  BuilderSite,
   BuilderEmail,
   BuilderComponent,
   BuilderComponentVersion,

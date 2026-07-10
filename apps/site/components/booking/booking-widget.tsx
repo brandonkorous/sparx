@@ -7,7 +7,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { cx, SparxAlert, SparxButton, SparxInput, SparxLabel } from '@sparx/site-ui';
+import { Alert, Button, Input, Label } from '@wizeworks/silicaui-react';
+import { cn } from '@/lib/cn';
 
 import type { PublicService } from '../../lib/scheduling';
 import {
@@ -227,11 +228,11 @@ export function BookingWidget({
     <form className="st-booking" onSubmit={submit}>
       {isCustomerChoice && providers && providers.length > 0 ? (
         <div className="st-booking__slots">
-          <SparxLabel>Choose your {service.providerLabel}</SparxLabel>
+          <Label>Choose your {service.providerLabel}</Label>
           <div className="st-booking__slot-grid">
             <button
               type="button"
-              className={cx('st-booking__slot', chosenResourceId === null && 'is-selected')}
+              className={cn('st-booking__slot', chosenResourceId === null && 'is-selected')}
               aria-pressed={chosenResourceId === null}
               onClick={() => setChosenResourceId(null)}
             >
@@ -241,7 +242,7 @@ export function BookingWidget({
               <button
                 key={p.id}
                 type="button"
-                className={cx('st-booking__slot', chosenResourceId === p.id && 'is-selected')}
+                className={cn('st-booking__slot', chosenResourceId === p.id && 'is-selected')}
                 aria-pressed={chosenResourceId === p.id}
                 onClick={() => setChosenResourceId(p.id)}
               >
@@ -254,8 +255,8 @@ export function BookingWidget({
 
       <div className="st-booking__row">
         <div>
-          <SparxLabel htmlFor="book-date">Date</SparxLabel>
-          <SparxInput
+          <Label htmlFor="book-date">Date</Label>
+          <Input
             id="book-date"
             type="date"
             min={todayISODate()}
@@ -265,8 +266,8 @@ export function BookingWidget({
         </div>
         {isReservation ? (
           <div>
-            <SparxLabel htmlFor="book-party">Party size</SparxLabel>
-            <SparxInput
+            <Label htmlFor="book-party">Party size</Label>
+            <Input
               id="book-party"
               type="number"
               min={1}
@@ -278,7 +279,7 @@ export function BookingWidget({
       </div>
 
       <div className="st-booking__slots">
-        <SparxLabel>Available times</SparxLabel>
+        <Label>Available times</Label>
         {loadingSlots ? (
           <p className="st-muted">Checking availability…</p>
         ) : slots?.length === 0 ? (
@@ -287,7 +288,7 @@ export function BookingWidget({
               No open times that day — try another date, or join the waitlist and we&rsquo;ll let
               you know the moment a spot opens.
             </p>
-            <SparxButton
+            <Button
               type="button"
               variant="soft"
               color="primary"
@@ -295,7 +296,7 @@ export function BookingWidget({
               onClick={() => void joinWaitlistFlow()}
             >
               {joiningWaitlist ? 'Joining…' : 'Join the waitlist'}
-            </SparxButton>
+            </Button>
           </div>
         ) : (
           <div className="st-booking__slot-grid">
@@ -303,7 +304,7 @@ export function BookingWidget({
               <button
                 key={slot.startAt}
                 type="button"
-                className={cx('st-booking__slot', selected === slot.startAt && 'is-selected')}
+                className={cn('st-booking__slot', selected === slot.startAt && 'is-selected')}
                 aria-pressed={selected === slot.startAt}
                 onClick={() => setSelected(slot.startAt)}
               >
@@ -316,17 +317,12 @@ export function BookingWidget({
 
       <div className="st-booking__row">
         <div>
-          <SparxLabel htmlFor="book-name">Name</SparxLabel>
-          <SparxInput
-            id="book-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <Label htmlFor="book-name">Name</Label>
+          <Input id="book-name" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div>
-          <SparxLabel htmlFor="book-email">Email</SparxLabel>
-          <SparxInput
+          <Label htmlFor="book-email">Email</Label>
+          <Input
             id="book-email"
             type="email"
             value={email}
@@ -337,8 +333,8 @@ export function BookingWidget({
       </div>
 
       <div>
-        <SparxLabel htmlFor="book-phone">Phone (optional)</SparxLabel>
-        <SparxInput
+        <Label htmlFor="book-phone">Phone (optional)</Label>
+        <Input
           id="book-phone"
           type="tel"
           value={phone}
@@ -347,15 +343,15 @@ export function BookingWidget({
       </div>
 
       <div>
-        <SparxLabel htmlFor="book-notes">Anything we should know? (optional)</SparxLabel>
-        <SparxInput id="book-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        <Label htmlFor="book-notes">Anything we should know? (optional)</Label>
+        <Input id="book-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
 
-      {error ? <SparxAlert color="danger">{error}</SparxAlert> : null}
+      {error ? <Alert color="danger">{error}</Alert> : null}
 
-      <SparxButton type="submit" color="primary" disabled={submitting || !selected}>
+      <Button type="submit" color="primary" disabled={submitting || !selected}>
         {submitting ? 'Booking…' : selected ? `Book ${formatTime(selected)}` : 'Choose a time'}
-      </SparxButton>
+      </Button>
     </form>
   );
 }

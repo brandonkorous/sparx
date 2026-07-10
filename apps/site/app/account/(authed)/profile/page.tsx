@@ -5,10 +5,9 @@
 
 import { useEffect, useState } from 'react';
 
-import { SparxAlert, SparxButton, SparxInput } from '@sparx/site-ui';
-
 import { useCustomer } from '@/components/customer-provider';
 import { updateProfile, AccountError } from '@/lib/customer-client';
+import { Alert, Button, Input } from '@wizeworks/silicaui-react';
 
 export default function ProfilePage() {
   const { tenantSlug, customer, refresh } = useCustomer();
@@ -52,12 +51,12 @@ export default function ProfilePage() {
       <form onSubmit={submit} className="st-form">
         <label className="st-field">
           <span>Email</span>
-          <SparxInput value={customer?.email ?? ''} disabled readOnly />
+          <Input value={customer?.email ?? ''} disabled readOnly />
         </label>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <label className="st-field" style={{ flex: 1 }}>
             <span>First name</span>
-            <SparxInput
+            <Input
               autoComplete="given-name"
               value={firstName}
               onChange={(e) => {
@@ -68,7 +67,7 @@ export default function ProfilePage() {
           </label>
           <label className="st-field" style={{ flex: 1 }}>
             <span>Last name</span>
-            <SparxInput
+            <Input
               autoComplete="family-name"
               value={lastName}
               onChange={(e) => {
@@ -80,7 +79,7 @@ export default function ProfilePage() {
         </div>
         <label className="st-field">
           <span>Phone</span>
-          <SparxInput
+          <Input
             type="tel"
             autoComplete="tel"
             value={phone}
@@ -91,14 +90,14 @@ export default function ProfilePage() {
           />
         </label>
         {error ? (
-          <SparxAlert color="danger" role="alert">
+          <Alert color="danger" role="alert">
             {error}
-          </SparxAlert>
+          </Alert>
         ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <SparxButton type="submit" color="primary" disabled={state === 'busy'}>
+          <Button type="submit" color="primary" disabled={state === 'busy'}>
             {state === 'busy' ? 'Saving…' : 'Save changes'}
-          </SparxButton>
+          </Button>
           {state === 'saved' ? (
             <span className="st-muted" role="status">
               Saved.
