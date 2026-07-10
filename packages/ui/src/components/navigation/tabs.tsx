@@ -18,109 +18,109 @@ export const Tabs = TabsPrimitive.Root;
 // product detail in a narrow drawer) so every tab stays visible — never clipped
 // off-screen or stranded behind a hidden scrollbar. Responsive at any width.
 const tabsListVariants = cva('flex w-full flex-wrap items-center', {
-    variants: {
-        variant: {
-            default: 'gap-x-4 gap-y-1 border-b border-base-300',
-            pills: 'gap-x-1 gap-y-1 rounded-md bg-base-200 p-1',
-        },
+  variants: {
+    variant: {
+      default: 'border-base-300 gap-x-4 gap-y-1 border-b',
+      pills: 'bg-base-200 gap-x-1 gap-y-1 rounded-md p-1',
     },
-    defaultVariants: { variant: 'pills' },
+  },
+  defaultVariants: { variant: 'pills' },
 });
 
 type TabsListVariant = NonNullable<VariantProps<typeof tabsListVariants>['variant']>;
 type TabsSize = 'sm' | 'md' | 'lg';
 const TabsListContext = React.createContext<{ variant: TabsListVariant; size: TabsSize }>({
-    variant: 'pills',
-    size: 'md',
+  variant: 'pills',
+  size: 'md',
 });
 
 export interface TabsListProps
-    extends
+  extends
     React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>,
     VariantProps<typeof tabsListVariants> {
-    size?: TabsSize;
+  size?: TabsSize;
 }
 
 export const TabsList = React.forwardRef<
-    React.ElementRef<typeof TabsPrimitive.List>,
-    TabsListProps
+  React.ElementRef<typeof TabsPrimitive.List>,
+  TabsListProps
 >(({ className, variant = 'pills', size = 'md', children, ...props }, ref) => (
-    <TabsListContext.Provider value={{ variant: variant ?? 'pills', size }}>
-        <TabsPrimitive.List
-            ref={ref}
-            className={cn(tabsListVariants({ variant }), className)}
-            {...props}
-        >
-            {children}
-        </TabsPrimitive.List>
-    </TabsListContext.Provider>
+  <TabsListContext.Provider value={{ variant: variant ?? 'pills', size }}>
+    <TabsPrimitive.List
+      ref={ref}
+      className={cn(tabsListVariants({ variant }), className)}
+      {...props}
+    >
+      {children}
+    </TabsPrimitive.List>
+  </TabsListContext.Provider>
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
 
 const SIZE_DEFAULT: Record<TabsSize, string> = {
-    sm: 'h-8 px-2.5 text-xs',
-    md: 'h-9 px-3 text-sm',
-    lg: 'h-10 px-4 text-base',
+  sm: 'h-8 px-2.5 text-xs',
+  md: 'h-9 px-3 text-sm',
+  lg: 'h-10 px-4 text-base',
 };
 const SIZE_PILLS: Record<TabsSize, string> = {
-    sm: 'h-6 px-2.5 text-xs',
-    md: 'h-7 px-3 text-sm',
-    lg: 'h-9 px-4 text-base',
+  sm: 'h-6 px-2.5 text-xs',
+  md: 'h-7 px-3 text-sm',
+  lg: 'h-9 px-4 text-base',
 };
 
 function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
-    if (variant === 'pills') {
-        return cn(
-            'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
-            SIZE_PILLS[size],
-            'text-base-content/70 hover:text-base-content',
-            'transition-colors duration-150',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-            'disabled:pointer-events-none disabled:opacity-40',
-            // Active pill: white surface lift + the module hue on the label, so the
-            // current selection carries the active-module color (DESIGN.md) instead of
-            // a flat neutral.
-            'data-[state=active]:text-module data-[state=active]:bg-base-100 data-[state=active]:shadow-sm'
-        );
-    }
+  if (variant === 'pills') {
     return cn(
-        'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
-        SIZE_DEFAULT[size],
-        'text-base-content/70 hover:text-base-content',
-        'border-b-2 border-transparent transition-colors duration-150',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-        'disabled:pointer-events-none disabled:opacity-40',
-        'data-[state=active]:border-module data-[state=active]:text-module'
+      'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
+      SIZE_PILLS[size],
+      'text-base-content/70 hover:text-base-content',
+      'transition-colors duration-150',
+      'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+      'disabled:pointer-events-none disabled:opacity-40',
+      // Active pill: white surface lift + the module hue on the label, so the
+      // current selection carries the active-module color (DESIGN.md) instead of
+      // a flat neutral.
+      'data-[state=active]:text-module data-[state=active]:bg-base-100 data-[state=active]:shadow-sm'
     );
+  }
+  return cn(
+    'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
+    SIZE_DEFAULT[size],
+    'text-base-content/70 hover:text-base-content',
+    'border-b-2 border-transparent transition-colors duration-150',
+    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+    'disabled:pointer-events-none disabled:opacity-40',
+    'data-[state=active]:border-module data-[state=active]:text-module'
+  );
 }
 
 export const TabsTrigger = React.forwardRef<
-    React.ElementRef<typeof TabsPrimitive.Trigger>,
-    React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => {
-    const { variant, size } = React.useContext(TabsListContext);
-    return (
-        <TabsPrimitive.Trigger
-            ref={ref}
-            className={cn(triggerClasses(variant, size), className)}
-            {...props}
-        />
-    );
+  const { variant, size } = React.useContext(TabsListContext);
+  return (
+    <TabsPrimitive.Trigger
+      ref={ref}
+      className={cn(triggerClasses(variant, size), className)}
+      {...props}
+    />
+  );
 });
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
 export const TabsContent = React.forwardRef<
-    React.ElementRef<typeof TabsPrimitive.Content>,
-    React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
-    <TabsPrimitive.Content
-        ref={ref}
-        className={cn(
-            'mt-4 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-            className
-        )}
-        {...props}
-    />
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      'mt-4 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+      className
+    )}
+    {...props}
+  />
 ));
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 

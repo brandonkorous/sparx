@@ -9,9 +9,9 @@ import { Button, cn, Container, ModuleProvider, Stack } from '@sparx/ui';
 import { findEntityType, isFullBleedDetail } from '../_shell/detail-registry';
 import { ViewSwitcher } from './detail-panel';
 import {
-    DetailChromeProvider,
-    DetailFooterSlotTarget,
-    DetailHeaderSlotTarget,
+  DetailChromeProvider,
+  DetailFooterSlotTarget,
+  DetailHeaderSlotTarget,
 } from './detail-header-slot';
 import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
 
@@ -20,22 +20,22 @@ import { UnsavedGuardProvider, useLeaveGuard } from './unsaved-guard';
 // the unsaved-edits guard first — exactly like the presentation switch beside it.
 // Rendered INSIDE the shell's UnsavedGuardProvider so it can consult the guard.
 function DetailBackLink({ href, label }: { href: string; label: string }) {
-    const router = useRouter();
-    const runGuard = useLeaveGuard();
-    return (
-        <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-                void Promise.resolve(runGuard()).then((ok) => {
-                    if (ok) router.push(href);
-                });
-            }}
-        >
-            <ArrowLeft className="h-4 w-4" />
-            {label}
-        </Button>
-    );
+  const router = useRouter();
+  const runGuard = useLeaveGuard();
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => {
+        void Promise.resolve(runGuard()).then((ok) => {
+          if (ok) router.push(href);
+        });
+      }}
+    >
+      <ArrowLeft className="h-4 w-4" />
+      {label}
+    </Button>
+  );
 }
 
 // Title-case the last path segment of a route for the back-link label
@@ -43,8 +43,8 @@ function DetailBackLink({ href, label }: { href: string; label: string }) {
 // labels, but the back link points at the LIST, so the plural list segment reads
 // better than a naively pluralized singular ("Categorys").
 function listLabelFor(href: string): string {
-    const seg = href.split('/').filter(Boolean).pop() ?? '';
-    return seg.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const seg = href.split('/').filter(Boolean).pop() ?? '';
+  return seg.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // Full-page host for a detail surface. The SAME server-rendered body also mounts
@@ -54,83 +54,83 @@ function listLabelFor(href: string): string {
 // header slot), and the drawer/modal presentation switch — all under the module
 // tint and the unsaved-edits guard the switch consults before it navigates.
 export function DetailPageShell({
-    typeId,
-    entityId,
-    children,
-    listHref: listHrefProp,
-    listLabel: listLabelProp,
+  typeId,
+  entityId,
+  children,
+  listHref: listHrefProp,
+  listLabel: listLabelProp,
 }: {
-    typeId: string;
-    entityId: string;
-    children: React.ReactNode;
-    // Optional back-link overrides for surfaces whose manifest routePrefix isn't the
-    // list route (e.g. CMS `page` has routePrefix '/cms' but its list is
-    // '/cms/content'). Defaults to the routePrefix-derived href + label.
-    listHref?: string;
-    listLabel?: string;
+  typeId: string;
+  entityId: string;
+  children: React.ReactNode;
+  // Optional back-link overrides for surfaces whose manifest routePrefix isn't the
+  // list route (e.g. CMS `page` has routePrefix '/cms' but its list is
+  // '/cms/content'). Defaults to the routePrefix-derived href + label.
+  listHref?: string;
+  listLabel?: string;
 }) {
-    const found = findEntityType(typeId);
-    const moduleId = found?.manifest.id;
-    const listHref = listHrefProp ?? found?.entityType.routePrefix ?? null;
-    const listLabel = listLabelProp ?? (listHref ? listLabelFor(listHref) : null);
+  const found = findEntityType(typeId);
+  const moduleId = found?.manifest.id;
+  const listHref = listHrefProp ?? found?.entityType.routePrefix ?? null;
+  const listLabel = listLabelProp ?? (listHref ? listLabelFor(listHref) : null);
 
-    // A full-bleed detail (a single-form SurfaceFrame edit, or a tabbed view with a
-    // full-height summary aside like product) owns its own scroll + height, so the
-    // page becomes a fixed-height frame and hands it the whole area edge-to-edge —
-    // the same shape the create wizard's `embedded` frame uses. Other details keep
-    // the centered, document-flow Container.
-    const fullBleed = isFullBleedDetail(typeId);
-    const body = (
-        <Stack gap={0} className={cn(fullBleed && 'h-full')}>
-            <div
-                className={cn(
-                    'border-base-300 bg-base-100 @container/toolbar flex h-[52px] shrink-0 items-center gap-2 border-b px-2',
-                    // Reveal the zone-divider only when BOTH the lifecycle and
-                    // form-actions slots are actually populated (pure CSS — neither
-                    // slot's fill state is knowable in JS, they're portal targets).
-                    'has-[[data-slot=lifecycle]:not(:empty)]:has-[[data-slot=formactions]:not(:empty)]:[&>[data-slot=zone-divider]]:flex'
-                )}
-            >
-                {listHref && <DetailBackLink href={listHref} label={listLabel ?? ''} />}
-                <div className="flex-1" />
-                <DetailHeaderSlotTarget className="flex items-center gap-2" />
-                {/* Toolbar zone divider — Lifecycle (persisted-state actions) vs.
+  // A full-bleed detail (a single-form SurfaceFrame edit, or a tabbed view with a
+  // full-height summary aside like product) owns its own scroll + height, so the
+  // page becomes a fixed-height frame and hands it the whole area edge-to-edge —
+  // the same shape the create wizard's `embedded` frame uses. Other details keep
+  // the centered, document-flow Container.
+  const fullBleed = isFullBleedDetail(typeId);
+  const body = (
+    <Stack gap={0} className={cn(fullBleed && 'h-full')}>
+      <div
+        className={cn(
+          'border-base-300 bg-base-100 @container/toolbar flex h-[52px] shrink-0 items-center gap-2 border-b px-2',
+          // Reveal the zone-divider only when BOTH the lifecycle and
+          // form-actions slots are actually populated (pure CSS — neither
+          // slot's fill state is knowable in JS, they're portal targets).
+          'has-[[data-slot=lifecycle]:not(:empty)]:has-[[data-slot=formactions]:not(:empty)]:[&>[data-slot=zone-divider]]:flex'
+        )}
+      >
+        {listHref && <DetailBackLink href={listHref} label={listLabel ?? ''} />}
+        <div className="flex-1" />
+        <DetailHeaderSlotTarget className="flex items-center gap-2" />
+        {/* Toolbar zone divider — Lifecycle (persisted-state actions) vs.
             Form-actions (the open edit's Cancel/Save) are categorically
             different; see the toolbar zone system. */}
-                <div
-                    aria-hidden
-                    data-slot="zone-divider"
-                    className="hidden h-5 w-px shrink-0 bg-base-300"
-                />
-                {/* The body's form teleports its Save here, next to lifecycle actions —
+        <div
+          aria-hidden
+          data-slot="zone-divider"
+          className="bg-base-300 hidden h-5 w-px shrink-0"
+        />
+        {/* The body's form teleports its Save here, next to lifecycle actions —
             top-docked like every other toolbar on the platform, not floored at
             the page bottom. Zero-width until a form supplies one. */}
-                <DetailFooterSlotTarget className="flex items-center gap-2" />
-                <ViewSwitcher typeId={typeId} entityId={entityId} current="page" />
-            </div>
-            {fullBleed ? (
-                <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
-            ) : (
-                <Container size="xl">
-                    <Stack gap={6} className="py-8">
-                        {children}
-                    </Stack>
-                </Container>
-            )}
-        </Stack>
-    );
+        <DetailFooterSlotTarget className="flex items-center gap-2" />
+        <ViewSwitcher typeId={typeId} entityId={entityId} current="page" />
+      </div>
+      {fullBleed ? (
+        <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
+      ) : (
+        <Container size="xl">
+          <Stack gap={6} className="py-8">
+            {children}
+          </Stack>
+        </Container>
+      )}
+    </Stack>
+  );
 
-    return (
-        <UnsavedGuardProvider>
-            <DetailChromeProvider>
-                {moduleId ? (
-                    <ModuleProvider module={moduleId} className={cn(fullBleed && 'h-full')}>
-                        {body}
-                    </ModuleProvider>
-                ) : (
-                    body
-                )}
-            </DetailChromeProvider>
-        </UnsavedGuardProvider>
-    );
+  return (
+    <UnsavedGuardProvider>
+      <DetailChromeProvider>
+        {moduleId ? (
+          <ModuleProvider module={moduleId} className={cn(fullBleed && 'h-full')}>
+            {body}
+          </ModuleProvider>
+        ) : (
+          body
+        )}
+      </DetailChromeProvider>
+    </UnsavedGuardProvider>
+  );
 }

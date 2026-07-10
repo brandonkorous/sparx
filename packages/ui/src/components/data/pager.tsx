@@ -85,7 +85,13 @@ export function Pager({
           </NativeSelect>
         </label>
 
-        <Pagination page={page} count={pageCount} onChange={onPageChange} color="module" size="sm" />
+        <Pagination
+          page={page}
+          count={pageCount}
+          onChange={onPageChange}
+          color="module"
+          size="sm"
+        />
       </div>
     </div>
   );

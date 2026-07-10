@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 import {
-    Dialog,
-    DialogClose,
-    DialogContent as SilicaDialogContent,
-    DialogDescription as SilicaDialogDescription,
-    DialogTitle as SilicaDialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogClose,
+  DialogContent as SilicaDialogContent,
+  DialogDescription as SilicaDialogDescription,
+  DialogTitle as SilicaDialogTitle,
+  DialogTrigger,
 } from '@wizeworks/silicaui-react';
 import { X } from 'lucide-react';
 import { cva, type VariantProps } from '../../utils/cva';
@@ -38,20 +38,20 @@ export const ModalClose = DialogClose;
 // kept only so the export surface doesn't shrink. Base UI's Dialog manages
 // its own portal internally and doesn't expose one to re-target.
 export function ModalPortal({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+  return <>{children}</>;
 }
 
 const modalContentVariants = cva(['max-h-[85vh] w-full overflow-y-auto p-6'], {
-    variants: {
-        size: {
-            sm: 'max-w-sm',
-            md: 'max-w-md',
-            lg: 'max-w-lg',
-            xl: 'max-w-2xl',
-            '2xl': 'max-w-4xl',
-        },
+  variants: {
+    size: {
+      sm: 'max-w-sm',
+      md: 'max-w-md',
+      lg: 'max-w-lg',
+      xl: 'max-w-2xl',
+      '2xl': 'max-w-4xl',
     },
-    defaultVariants: { size: 'md' },
+  },
+  defaultVariants: { size: 'md' },
 });
 
 // Below `md`, anchor the panel to the bottom as a near-full-height sheet
@@ -65,88 +65,88 @@ const modalContentVariants = cva(['max-h-[85vh] w-full overflow-y-auto p-6'], {
 // Tailwind's utilities layer always cascades after the components layer
 // silica's plugin classes live in. Opt-in via `mobileSheet`.
 const MOBILE_SHEET =
-    'max-md:top-auto max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:[transform:none] max-md:h-[92dvh] max-md:max-h-none max-md:w-full max-md:max-w-none max-md:rounded-b-none max-md:rounded-t-2xl';
+  'max-md:top-auto max-md:bottom-0 max-md:left-0 max-md:right-0 max-md:[transform:none] max-md:h-[92dvh] max-md:max-h-none max-md:w-full max-md:max-w-none max-md:rounded-b-none max-md:rounded-t-2xl';
 
 export interface ModalContentProps
-    extends
+  extends
     Omit<React.ComponentPropsWithoutRef<typeof SilicaDialogContent>, 'children'>,
     VariantProps<typeof modalContentVariants> {
-    children?: React.ReactNode;
-    /** Hide the built-in close (X) button in the top-right. */
-    hideClose?: boolean;
-    /** Below `md`, render as a bottom-anchored full-height sheet. Default false. */
-    mobileSheet?: boolean;
+  children?: React.ReactNode;
+  /** Hide the built-in close (X) button in the top-right. */
+  hideClose?: boolean;
+  /** Below `md`, render as a bottom-anchored full-height sheet. Default false. */
+  mobileSheet?: boolean;
 }
 
 export function ModalContent({
-    className,
-    size,
-    hideClose = false,
-    mobileSheet = false,
-    children,
-    ...props
+  className,
+  size,
+  hideClose = false,
+  mobileSheet = false,
+  children,
+  ...props
 }: ModalContentProps) {
-    return (
-        <SilicaDialogContent
-            className={cn(modalContentVariants({ size }), mobileSheet && MOBILE_SHEET, className)}
-            {...props}
-        >
-            {children}
-            {!hideClose && (
-                <DialogClose>
-                    <button
-                        type="button"
-                        aria-label="Close"
-                        className={cn(
-                            'absolute top-3 right-3 rounded-md p-1',
-                            'text-base-content/50 hover:text-base-content hover:bg-base-200',
-                            'transition-colors duration-150',
-                            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
-                        )}
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
-                </DialogClose>
+  return (
+    <SilicaDialogContent
+      className={cn(modalContentVariants({ size }), mobileSheet && MOBILE_SHEET, className)}
+      {...props}
+    >
+      {children}
+      {!hideClose && (
+        <DialogClose>
+          <button
+            type="button"
+            aria-label="Close"
+            className={cn(
+              'absolute top-3 right-3 rounded-md p-1',
+              'text-base-content/50 hover:text-base-content hover:bg-base-200',
+              'transition-colors duration-150',
+              'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
             )}
-        </SilicaDialogContent>
-    );
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </DialogClose>
+      )}
+    </SilicaDialogContent>
+  );
 }
 
 export const ModalHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div className={cn('mb-4 flex flex-col gap-1.5 pr-8', className)} {...props} />
+  <div className={cn('mb-4 flex flex-col gap-1.5 pr-8', className)} {...props} />
 );
 ModalHeader.displayName = 'ModalHeader';
 
 export const ModalFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div
-        className={cn(
-            'mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2',
-            className
-        )}
-        {...props}
-    />
+  <div
+    className={cn(
+      'mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2',
+      className
+    )}
+    {...props}
+  />
 );
 ModalFooter.displayName = 'ModalFooter';
 
 export function ModalTitle({
-    className,
-    ...props
+  className,
+  ...props
 }: React.ComponentPropsWithoutRef<typeof SilicaDialogTitle>) {
-    return (
-        <SilicaDialogTitle
-            className={cn('text-base-content text-lg leading-tight font-medium', className)}
-            {...props}
-        />
-    );
+  return (
+    <SilicaDialogTitle
+      className={cn('text-base-content text-lg leading-tight font-medium', className)}
+      {...props}
+    />
+  );
 }
 
 export function ModalDescription({
-    className,
-    ...props
+  className,
+  ...props
 }: React.ComponentPropsWithoutRef<typeof SilicaDialogDescription>) {
-    return (
-        <SilicaDialogDescription className={cn('text-base-content/70 text-sm', className)} {...props} />
-    );
+  return (
+    <SilicaDialogDescription className={cn('text-base-content/70 text-sm', className)} {...props} />
+  );
 }
 
 export { modalContentVariants };

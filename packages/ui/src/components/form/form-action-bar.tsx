@@ -14,17 +14,17 @@ import { cn } from '../../utils/cn';
 export type FormActionBarProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const FormActionBar = React.forwardRef<HTMLDivElement, FormActionBarProps>(
-    ({ className, children, ...props }, ref) => (
-        <div
-            ref={ref}
-            className={cn(
-                'mt-2 flex items-center justify-end gap-2 border-t border-base-300 pt-4',
-                className
-            )}
-            {...props}
-        >
-            {children}
-        </div>
-    )
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'border-base-300 mt-2 flex items-center justify-end gap-2 border-t pt-4',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 );
 FormActionBar.displayName = 'FormActionBar';

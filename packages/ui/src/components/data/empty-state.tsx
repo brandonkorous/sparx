@@ -5,36 +5,36 @@ import { cn } from '../../utils/cn';
 // Compose with action buttons via children.
 
 export interface EmptyStateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
-    icon?: React.ReactNode;
-    title: React.ReactNode;
-    description?: React.ReactNode;
-    /** Optional action area (typically one or two Buttons). */
-    action?: React.ReactNode;
+  icon?: React.ReactNode;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  /** Optional action area (typically one or two Buttons). */
+  action?: React.ReactNode;
 }
 
 export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
-    ({ className, icon, title, description, action, ...props }, ref) => (
-        <div
-            ref={ref}
-            className={cn(
-                'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed',
-                'border-base-300 bg-base-200',
-                'px-6 py-10 text-center',
-                className
-            )}
-            {...props}
-        >
-            {icon && (
-                <div className="text-base-content/50 flex h-10 w-10 items-center justify-center rounded-full bg-base-100">
-                    {icon}
-                </div>
-            )}
-            <div className="flex flex-col gap-1">
-                <p className="text-base-content text-sm font-medium">{title}</p>
-                {description && <p className="text-base-content/70 max-w-sm text-xs">{description}</p>}
-            </div>
-            {action && <div className="mt-2 flex items-center gap-2">{action}</div>}
+  ({ className, icon, title, description, action, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed',
+        'border-base-300 bg-base-200',
+        'px-6 py-10 text-center',
+        className
+      )}
+      {...props}
+    >
+      {icon && (
+        <div className="text-base-content/50 bg-base-100 flex h-10 w-10 items-center justify-center rounded-full">
+          {icon}
         </div>
-    )
+      )}
+      <div className="flex flex-col gap-1">
+        <p className="text-base-content text-sm font-medium">{title}</p>
+        {description && <p className="text-base-content/70 max-w-sm text-xs">{description}</p>}
+      </div>
+      {action && <div className="mt-2 flex items-center gap-2">{action}</div>}
+    </div>
+  )
 );
 EmptyState.displayName = 'EmptyState';

@@ -18,228 +18,228 @@ import { NativeSelect } from '../form/native-select';
 // params and refetches. Filtering is live — there is no "Apply" button.
 
 export interface ListToolbarOption {
-    value: string;
-    label: string;
+  value: string;
+  label: string;
 }
 
 export interface ListToolbarFilter {
-    /** The query-string key this filter writes (e.g. `status`). */
-    key: string;
-    /** Human label — used for the "All {label}" default option and the chip. */
-    label: string;
-    options: ListToolbarOption[];
-    /** Current value; `''` means no filter applied. */
-    value: string;
+  /** The query-string key this filter writes (e.g. `status`). */
+  key: string;
+  /** Human label — used for the "All {label}" default option and the chip. */
+  label: string;
+  options: ListToolbarOption[];
+  /** Current value; `''` means no filter applied. */
+  value: string;
 }
 
 export interface ListToolbarSort {
-    options: ListToolbarOption[];
-    value: string;
+  options: ListToolbarOption[];
+  value: string;
 }
 
 export type ListToolbarView = 'table' | 'card';
 
 export interface ListToolbarProps {
-    /** Current search text. Omit (with `onSearchChange`) to hide the search box —
-     *  e.g. on lists whose endpoint has no text search. */
-    searchValue?: string;
-    onSearchChange?: (value: string) => void;
-    searchPlaceholder?: string;
+  /** Current search text. Omit (with `onSearchChange`) to hide the search box —
+   *  e.g. on lists whose endpoint has no text search. */
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  searchPlaceholder?: string;
 
-    /** Quick-filter selects, rendered inline after the search box. */
-    filters?: ListToolbarFilter[];
-    onFilterChange?: (key: string, value: string) => void;
+  /** Quick-filter selects, rendered inline after the search box. */
+  filters?: ListToolbarFilter[];
+  onFilterChange?: (key: string, value: string) => void;
 
-    /** Sort control, pinned right. */
-    sort?: ListToolbarSort;
-    onSortChange?: (value: string) => void;
+  /** Sort control, pinned right. */
+  sort?: ListToolbarSort;
+  onSortChange?: (value: string) => void;
 
-    /** Table/Cards toggle, far right. Omit to hide it (single-rendering lists). */
-    view?: ListToolbarView;
-    onViewChange?: (view: ListToolbarView) => void;
+  /** Table/Cards toggle, far right. Omit to hide it (single-rendering lists). */
+  view?: ListToolbarView;
+  onViewChange?: (view: ListToolbarView) => void;
 
-    /** Manual refresh, pinned to the right cluster. Omit to hide the button —
-     *  e.g. lists that already carry their own re-fetch action. The icon spins
-     *  briefly on click for feedback. */
-    onRefresh?: () => void;
+  /** Manual refresh, pinned to the right cluster. Omit to hide the button —
+   *  e.g. lists that already carry their own re-fetch action. The icon spins
+   *  briefly on click for feedback. */
+  onRefresh?: () => void;
 
-    /** Optional leading slot for a saved-views control, rendered first in the row.
-     *  Presentational-agnostic: the dashboard wrapper supplies the control. */
-    views?: React.ReactNode;
+  /** Optional leading slot for a saved-views control, rendered first in the row.
+   *  Presentational-agnostic: the dashboard wrapper supplies the control. */
+  views?: React.ReactNode;
 
-    className?: string;
+  className?: string;
 }
 
 function labelForValue(filter: ListToolbarFilter): string {
-    return filter.options.find((o) => o.value === filter.value)?.label ?? filter.value;
+  return filter.options.find((o) => o.value === filter.value)?.label ?? filter.value;
 }
 
 export function ListToolbar({
-    searchValue,
-    onSearchChange,
-    searchPlaceholder = 'Search…',
-    filters = [],
-    onFilterChange,
-    sort,
-    onSortChange,
-    view,
-    onViewChange,
-    onRefresh,
-    views,
-    className,
+  searchValue,
+  onSearchChange,
+  searchPlaceholder = 'Search…',
+  filters = [],
+  onFilterChange,
+  sort,
+  onSortChange,
+  view,
+  onViewChange,
+  onRefresh,
+  views,
+  className,
 }: ListToolbarProps) {
-    const activeChips = filters.filter((f) => f.value !== '');
+  const activeChips = filters.filter((f) => f.value !== '');
 
-    return (
-        <div className={cn('mb-4 flex flex-col gap-2', className)}>
-            <div role="search" className="flex flex-wrap items-center gap-2">
-                {views}
+  return (
+    <div className={cn('mb-4 flex flex-col gap-2', className)}>
+      <div role="search" className="flex flex-wrap items-center gap-2">
+        {views}
 
-                {onSearchChange && (
-                    <div className="relative min-w-48 flex-1">
-                        <Search
-                            aria-hidden
-                            className="text-base-content/50 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2"
-                        />
-                        <Input
-                            type="search"
-                            className="pl-8"
-                            placeholder={searchPlaceholder}
-                            value={searchValue ?? ''}
-                            onChange={(e) => onSearchChange(e.target.value)}
-                            aria-label="Search"
-                        />
-                    </div>
-                )}
+        {onSearchChange && (
+          <div className="relative min-w-48 flex-1">
+            <Search
+              aria-hidden
+              className="text-base-content/50 pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2"
+            />
+            <Input
+              type="search"
+              className="pl-8"
+              placeholder={searchPlaceholder}
+              value={searchValue ?? ''}
+              onChange={(e) => onSearchChange(e.target.value)}
+              aria-label="Search"
+            />
+          </div>
+        )}
 
-                {filters.map((f) => (
-                    <NativeSelect
-                        key={f.key}
-                        className="w-auto"
-                        aria-label={f.label}
-                        value={f.value}
-                        onChange={(e) => onFilterChange?.(f.key, e.target.value)}
-                    >
-                        <option value="">All {f.label.toLowerCase()}</option>
-                        {f.options.map((o) => (
-                            <option key={o.value} value={o.value}>
-                                {o.label}
-                            </option>
-                        ))}
-                    </NativeSelect>
+        {filters.map((f) => (
+          <NativeSelect
+            key={f.key}
+            className="w-auto"
+            aria-label={f.label}
+            value={f.value}
+            onChange={(e) => onFilterChange?.(f.key, e.target.value)}
+          >
+            <option value="">All {f.label.toLowerCase()}</option>
+            {f.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </NativeSelect>
+        ))}
+
+        {(Boolean(sort) || Boolean(view) || Boolean(onRefresh)) && (
+          <div className="ml-auto flex items-center gap-2">
+            {onRefresh && <RefreshButton onRefresh={onRefresh} />}
+
+            {sort && (
+              <NativeSelect
+                className="w-auto"
+                aria-label="Sort by"
+                value={sort.value}
+                onChange={(e) => onSortChange?.(e.target.value)}
+              >
+                {sort.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
                 ))}
-
-                {(Boolean(sort) || Boolean(view) || Boolean(onRefresh)) && (
-                    <div className="ml-auto flex items-center gap-2">
-                        {onRefresh && <RefreshButton onRefresh={onRefresh} />}
-
-                        {sort && (
-                            <NativeSelect
-                                className="w-auto"
-                                aria-label="Sort by"
-                                value={sort.value}
-                                onChange={(e) => onSortChange?.(e.target.value)}
-                            >
-                                {sort.options.map((o) => (
-                                    <option key={o.value} value={o.value}>
-                                        {o.label}
-                                    </option>
-                                ))}
-                            </NativeSelect>
-                        )}
-
-                        {view && (
-                            <div
-                                role="group"
-                                aria-label="List view"
-                                className="inline-flex shrink-0 rounded-md border border-base-300 p-0.5"
-                            >
-                                <ViewButton
-                                    active={view === 'table'}
-                                    label="Table view"
-                                    onClick={() => onViewChange?.('table')}
-                                >
-                                    <Rows3 className="h-4 w-4" />
-                                </ViewButton>
-                                <ViewButton
-                                    active={view === 'card'}
-                                    label="Card view"
-                                    onClick={() => onViewChange?.('card')}
-                                >
-                                    <LayoutGrid className="h-4 w-4" />
-                                </ViewButton>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {activeChips.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
-                    {activeChips.map((f) => (
-                        <button
-                            key={f.key}
-                            type="button"
-                            onClick={() => onFilterChange?.(f.key, '')}
-                            className="text-base-content/70 hover:text-base-content inline-flex items-center gap-1 rounded-full border border-base-300 bg-base-200 py-1 pr-1.5 pl-2.5 text-xs transition-colors"
-                        >
-                            <span className="text-base-content/50">{f.label}:</span>
-                            <span className="font-medium">{labelForValue(f)}</span>
-                            <X aria-hidden className="h-3.5 w-3.5" />
-                            <span className="sr-only">Remove {f.label} filter</span>
-                        </button>
-                    ))}
-                </div>
+              </NativeSelect>
             )}
+
+            {view && (
+              <div
+                role="group"
+                aria-label="List view"
+                className="border-base-300 inline-flex shrink-0 rounded-md border p-0.5"
+              >
+                <ViewButton
+                  active={view === 'table'}
+                  label="Table view"
+                  onClick={() => onViewChange?.('table')}
+                >
+                  <Rows3 className="h-4 w-4" />
+                </ViewButton>
+                <ViewButton
+                  active={view === 'card'}
+                  label="Card view"
+                  onClick={() => onViewChange?.('card')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </ViewButton>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {activeChips.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {activeChips.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => onFilterChange?.(f.key, '')}
+              className="text-base-content/70 hover:text-base-content border-base-300 bg-base-200 inline-flex items-center gap-1 rounded-full border py-1 pr-1.5 pl-2.5 text-xs transition-colors"
+            >
+              <span className="text-base-content/50">{f.label}:</span>
+              <span className="font-medium">{labelForValue(f)}</span>
+              <X aria-hidden className="h-3.5 w-3.5" />
+              <span className="sr-only">Remove {f.label} filter</span>
+            </button>
+          ))}
         </div>
-    );
+      )}
+    </div>
+  );
 }
 
 function RefreshButton({ onRefresh }: { onRefresh: () => void }) {
-    const [spinning, setSpinning] = React.useState(false);
-    const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [spinning, setSpinning] = React.useState(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
+  React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
 
-    function handleClick() {
-        onRefresh();
-        setSpinning(true);
-        if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => setSpinning(false), 600);
-    }
+  function handleClick() {
+    onRefresh();
+    setSpinning(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setSpinning(false), 600);
+  }
 
-    return (
-        <button
-            type="button"
-            aria-label="Refresh"
-            onClick={handleClick}
-            className="text-base-content/50 hover:text-base-content/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-base-300 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none"
-        >
-            <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />
-        </button>
-    );
+  return (
+    <button
+      type="button"
+      aria-label="Refresh"
+      onClick={handleClick}
+      className="text-base-content/50 hover:text-base-content/70 border-base-300 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none"
+    >
+      <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />
+    </button>
+  );
 }
 
 interface ViewButtonProps {
-    active: boolean;
-    label: string;
-    onClick: () => void;
-    children: React.ReactNode;
+  active: boolean;
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
 }
 
 function ViewButton({ active, label, onClick, children }: ViewButtonProps) {
-    return (
-        <button
-            type="button"
-            aria-label={label}
-            aria-pressed={active}
-            onClick={onClick}
-            className={cn(
-                'flex h-7 w-7 items-center justify-center rounded transition-colors',
-                active ? 'bg-module bg-soft text-module' : 'text-base-content/50 hover:text-base-content/70'
-            )}
-        >
-            {children}
-        </button>
-    );
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        'flex h-7 w-7 items-center justify-center rounded transition-colors',
+        active ? 'bg-module bg-soft text-module' : 'text-base-content/50 hover:text-base-content/70'
+      )}
+    >
+      {children}
+    </button>
+  );
 }
