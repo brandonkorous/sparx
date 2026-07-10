@@ -39,10 +39,9 @@ const AUTOSAVE_MS = 700;
 
 export interface SilicaStudioProps {
   /** The tenant's silica `Site` — the whole multi-page site (pages + shared frame
-   *  + theme). silica's `Editor` accepts a `Document | Site`, but `<Builder>`'s
-   *  prop is narrowly typed `Document`; we pass the `Site` through (cast at the
-   *  mount) so the engine's native multi-page + frame editing is in play. A
-   *  single-page `Document` is still accepted (the legacy one-page shape). */
+   *  + theme), so the engine's native multi-page + frame editing is in play. A
+   *  single-page `Document` is still accepted (the legacy one-page shape); both
+   *  are what `<Builder document>` takes as of silicaui 0.12. */
   site: Site | Document;
   /** The pre-loaded resolver root (`buildPreviewData`) the host reads bindings from. */
   root: DataSources;
@@ -102,10 +101,9 @@ export function SilicaStudio({ site, root, dataSources, tenantAllowlist }: Silic
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
       <Builder
-        // silica's `Editor` constructor accepts `Document | Site`; the `<Builder>`
-        // prop type narrows to `Document`, so we assert the multi-page `Site`
-        // through here (silica should widen the prop — noted for the silica repo).
-        document={site as Document}
+        // `<Builder document>` takes `Document | Site` as of silicaui 0.12, so the
+        // multi-page `Site` passes straight through (this used to need a cast).
+        document={site}
         host={host}
         // Server-authoritative — the debounced onChange is the durable store; no
         // local IndexedDB crash-recovery layer duplicating it.
