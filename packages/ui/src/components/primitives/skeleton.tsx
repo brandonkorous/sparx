@@ -4,13 +4,13 @@ import { cn } from '../../utils/cn';
 export type SkeletonProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      aria-hidden
-      className={cn('animate-pulse rounded-md bg-[var(--color-base-300)]', className)}
-      {...props}
-    />
-  )
+    ({ className, ...props }, ref) => (
+        <div
+            ref={ref}
+            aria-hidden
+            className={cn('animate-pulse rounded-md bg-base-300', className)}
+            {...props}
+        />
+    )
 );
 Skeleton.displayName = 'Skeleton';

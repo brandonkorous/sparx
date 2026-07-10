@@ -10,6 +10,7 @@ import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { ensureProvidersRegistered } from '../../../../../lib/providers-bootstrap';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { ProviderActionsBar } from './_components/provider-actions-bar';
 
@@ -54,6 +55,12 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle controls teleport into the shared detail chrome's header
+          (drawer/modal chrome or the full-page shell), parity with Product. */}
+      <DetailHeaderSlot>
+        <ProviderActionsBar installationId={installation.id} enabled={installation.enabled} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
@@ -78,7 +85,6 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
             <p className="text-base-content/70 text-sm">{installation.label}</p>
           )}
         </div>
-        <ProviderActionsBar installationId={installation.id} enabled={installation.enabled} />
       </div>
 
       <Card>

@@ -45,6 +45,7 @@ import {
 import { createInventoryTransferAction } from '../../../_lib/transfer-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../../_components/detail-panel';
 import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
@@ -90,6 +91,11 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
 
   const [fromId, setFromId] = React.useState(warehouses[0]?.id ?? '');
   const [toId, setToId] = React.useState(warehouses[1]?.id ?? '');
@@ -233,6 +239,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
           <ViewSwitcher typeId="transfer" entityId={CREATE_SENTINEL} current="page" />
         ) : undefined
       }
+      actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

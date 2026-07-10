@@ -5,49 +5,49 @@ import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
 
 const inputVariants = cva(
-  [
-    'flex w-full rounded-md border bg-[var(--color-base-100)]',
-    'text-base-content text-sm',
-    'placeholder:text-base-content/50',
-    'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-    'disabled:cursor-not-allowed disabled:opacity-50',
-    'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-  ],
-  {
-    variants: {
-      variant: {
-        default:
-          'border-[var(--color-base-300)] hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
-        error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
-        success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
-      },
-      size: {
-        sm: 'h-8 px-2.5 py-1.5 text-xs',
-        md: 'h-9 px-3 py-2',
-        lg: 'h-10 px-4 py-2.5 text-base',
-      },
-    },
-    defaultVariants: { variant: 'default', size: 'md' },
-  }
+    [
+        'flex w-full rounded-md border bg-base-100',
+        'text-base-content text-sm',
+        'placeholder:text-base-content/50',
+        'transition-colors duration-150',
+        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        'file:border-0 file:bg-transparent file:text-sm file:font-medium',
+    ],
+    {
+        variants: {
+            variant: {
+                default:
+                    'border-base-300 hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
+                error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
+                success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
+            },
+            size: {
+                sm: 'h-8 px-2.5 py-1.5 text-xs',
+                md: 'h-9 px-3 py-2',
+                lg: 'h-10 px-4 py-2.5 text-base',
+            },
+        },
+        defaultVariants: { variant: 'default', size: 'md' },
+    }
 );
 
 // Native HTML <input> has a numeric `size` attribute — we omit it so our CVA
 // `size` variant ('sm' | 'md' | 'lg') takes precedence with no conflict.
 export interface InputProps
-  extends
+    extends
     Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
-    VariantProps<typeof inputVariants> {}
+    VariantProps<typeof inputVariants> { }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, variant, size, type = 'text', ...props }, ref) => (
-    <input
-      ref={ref}
-      type={type}
-      className={cn(inputVariants({ variant, size }), className)}
-      {...props}
-    />
-  )
+    ({ className, variant, size, type = 'text', ...props }, ref) => (
+        <input
+            ref={ref}
+            type={type}
+            className={cn(inputVariants({ variant, size }), className)}
+            {...props}
+        />
+    )
 );
 Input.displayName = 'Input';
 

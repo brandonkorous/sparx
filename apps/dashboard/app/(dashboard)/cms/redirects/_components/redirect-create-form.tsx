@@ -17,6 +17,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createRedirect } from '../actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
@@ -43,6 +44,11 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -123,6 +129,7 @@ export function RedirectCreateForm({ surface }: RedirectCreateFormProps) {
             <ViewSwitcher typeId="redirect" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={surface === 'page' ? undefined : overlayActionsTarget}
         steps={STEPS}
         current={0}
         onCancel={cancel}

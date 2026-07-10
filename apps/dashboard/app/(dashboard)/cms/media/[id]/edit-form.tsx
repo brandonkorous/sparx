@@ -7,18 +7,21 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, toast, useConfirm } from '@sparx/ui';
 import {
   Button,
   Field,
   FieldControl,
   FieldLabel,
-  FieldStatus,
   Textarea,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { deleteAsset, patchAsset } from '../actions';
+import { DetailFooterSlot, DetailHeaderSlot } from '../../../_components/detail-header-slot';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+
+const FORM_ID = 'media-asset-edit-form';
 
 export interface AssetEditFormProps {
   assetId: string;
@@ -40,8 +43,7 @@ export function AssetEditForm({
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [altText, setAltText] = React.useState(initialAltText ?? '');
   const [caption, setCaption] = React.useState(initialCaption ?? '');
   const [focal, setFocal] = React.useState(initialFocalPoint);
@@ -67,8 +69,7 @@ export function AssetEditForm({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
+    setSavedAt(null);
     startTransition(async () => {
       const result = await patchAsset(assetId, {
         alt_text: altText || null,
@@ -77,10 +78,10 @@ export function AssetEditForm({
         focal_point_y: focal.y,
       });
       if (!result.ok) {
-        setError(result.error);
+        toast.error(result.error ?? 'Could not save changes.');
         return;
       }
-      setMessage('Saved.');
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
@@ -93,12 +94,10 @@ export function AssetEditForm({
       tone: 'danger',
     });
     if (!ok) return;
-    setError(null);
-    setMessage(null);
     startTransition(async () => {
       const result = await deleteAsset(assetId);
       if (!result.ok) {
-        setError(result.error);
+        toast.error(result.error ?? 'Could not delete asset.');
         return;
       }
       router.push('/cms/media');
@@ -107,103 +106,118 @@ export function AssetEditForm({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {isImage && previewUrl ? (
-        <div
-          ref={containerRef}
-          role="button"
-          tabIndex={0}
-          aria-label="Click to set focal point"
-          onClick={onFocalClick}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              setFocal({ x: 0.5, y: 0.5 });
-            }
-          }}
-          className="border-base-300 bg-base-200 relative w-full cursor-crosshair overflow-hidden rounded-md border"
-          style={{ aspectRatio: '16 / 9' }}
-        >
-          <img
-            src={previewUrl}
-            alt={altText || 'Asset preview'}
-            className="h-full w-full object-contain"
-            draggable={false}
-          />
+    <form id={FORM_ID} onSubmit={onSubmit} noValidate>
+      {/* Delete is rare + destructive, so it's demoted the same way Page/Author
+          demote it: icon-only ghost + tooltip in the shared detail chrome's
+          header, rather than a full-width button in the scrolling body. */}
+      <DetailHeaderSlot>
+        <Tooltip content="Delete">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Delete"
+            disabled={pending}
+            onClick={() => void onDelete()}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
+      </DetailHeaderSlot>
+
+      <div className="flex flex-col gap-4">
+        {isImage && previewUrl ? (
           <div
-            className="pointer-events-none absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-lg"
-            style={{
-              left: `${focal.x * 100}%`,
-              top: `${focal.y * 100}%`,
-              backgroundColor: 'var(--color-module)',
+            ref={containerRef}
+            role="button"
+            tabIndex={0}
+            aria-label="Click to set focal point"
+            onClick={onFocalClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setFocal({ x: 0.5, y: 0.5 });
+              }
             }}
-            aria-hidden
-          />
-        </div>
-      ) : (
-        <p className="text-base-content/70 text-sm">
-          {previewUrl ? 'Preview not available for this file type.' : 'No preview available.'}
-        </p>
-      )}
-
-      <form onSubmit={onSubmit} noValidate>
-        <div className="flex flex-col gap-4">
-          <Field>
-            <FieldLabel>Alt text</FieldLabel>
-            <FieldControl
-              name="alt-text"
-              value={altText}
-              onChange={(e) => setAltText(e.target.value)}
-              maxLength={500}
-              placeholder="Describe the image for screen readers and SEO."
+            className="border-base-300 bg-base-200 relative w-full cursor-crosshair overflow-hidden rounded-md border"
+            style={{ aspectRatio: '16 / 9' }}
+          >
+            <img
+              src={previewUrl}
+              alt={altText || 'Asset preview'}
+              className="h-full w-full object-contain"
+              draggable={false}
             />
-          </Field>
-
-          <Field>
-            <FieldLabel>Caption (optional)</FieldLabel>
-            <FieldControl
-              name="caption"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              maxLength={2000}
-              render={<Textarea rows={2} />}
+            <div
+              className="pointer-events-none absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-lg"
+              style={{
+                left: `${focal.x * 100}%`,
+                top: `${focal.y * 100}%`,
+                backgroundColor: 'var(--color-module)',
+              }}
+              aria-hidden
             />
-          </Field>
-
-          {isImage && (
-            <p className="text-base-content/70 text-xs">
-              Focal point: ({focal.x.toFixed(2)}, {focal.y.toFixed(2)})
-            </p>
-          )}
-
-          {error && (
-            <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-              {error}
-            </FieldStatus>
-          )}
-          {message && (
-            <FieldStatus status="success" attached={false} aria-live="polite">
-              {message}
-            </FieldStatus>
-          )}
-
-          <div className="flex flex-row gap-2">
-            <Button type="submit" color="module" disabled={pending} loading={pending}>
-              Save changes
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              iconStart={<Trash2 className="h-4 w-4" />}
-              onClick={() => void onDelete()}
-              disabled={pending}
-            >
-              Delete
-            </Button>
           </div>
+        ) : (
+          <p className="text-base-content/70 text-sm">
+            {previewUrl ? 'Preview not available for this file type.' : 'No preview available.'}
+          </p>
+        )}
+
+        <Field>
+          <FieldLabel>Alt text</FieldLabel>
+          <FieldControl
+            name="alt-text"
+            value={altText}
+            onChange={(e) => setAltText(e.target.value)}
+            maxLength={500}
+            placeholder="Describe the image for screen readers and SEO."
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel>Caption (optional)</FieldLabel>
+          <FieldControl
+            name="caption"
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            maxLength={2000}
+            render={<Textarea rows={2} />}
+          />
+        </Field>
+
+        {isImage && (
+          <p className="text-base-content/70 text-xs">
+            Focal point: ({focal.x.toFixed(2)}, {focal.y.toFixed(2)})
+          </p>
+        )}
+      </div>
+
+      {/* The primary action teleports up into the shared detail chrome's footer
+          (next to Delete), not floored at the bottom of the scrolling body — a
+          failed save surfaces as a toast since there's no room for a persistent
+          error line in the compact shared toolbar row. */}
+      <DetailFooterSlot>
+        <div className="flex items-center gap-2">
+          {savedAt !== null && !dirty && (
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          )}
+          <Button
+            type="submit"
+            form={FORM_ID}
+            size="sm"
+            color="module"
+            disabled={pending || !dirty}
+            loading={pending}
+          >
+            <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
+          </Button>
         </div>
-      </form>
-    </div>
+      </DetailFooterSlot>
+    </form>
   );
 }
 

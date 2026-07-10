@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { ArrowRight, Check, X, Clock, Send } from 'lucide-react';
 
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 import { toast, useConfirm } from '@sparx/ui';
 
 import {
@@ -58,30 +58,33 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
   }
 
   return (
-    <div className="flex flex-row flex-wrap gap-2">
-      {status === 'draft' && (
-        <Button
-          color="module"
-          iconStart={<Send className="h-4 w-4" />}
-          disabled={isPending}
-          onClick={() => run('submitted', () => submitQuoteAction({ quoteId }))}
-        >
-          Submit
-        </Button>
+    <div className="flex flex-row flex-wrap items-center gap-2">
+      {(status === 'submitted' || status === 'draft') && (
+        <Tooltip content="Expire">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Expire"
+            disabled={isPending}
+            onClick={() =>
+              runGuarded(
+                'Expire this quote?',
+                'It’ll be marked expired and can no longer be accepted. This can’t be undone — you’d need to create a new quote to continue the deal.',
+                'expired',
+                () => expireQuoteAction({ quoteId })
+              )
+            }
+          >
+            <Clock className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
       )}
       {status === 'submitted' && (
-        <>
+        <Tooltip content="Decline">
           <Button
-            color="module"
-            iconStart={<Check className="h-4 w-4" />}
-            disabled={isPending}
-            onClick={() => run('accepted', () => acceptQuoteAction({ quoteId }))}
-          >
-            Accept
-          </Button>
-          <Button
-            variant="outline"
-            iconStart={<X className="h-4 w-4" />}
+            variant="ghost"
+            size="sm"
+            aria-label="Decline"
             disabled={isPending}
             onClick={() =>
               runGuarded(
@@ -92,30 +95,39 @@ export function QuoteLifecycleActions({ quoteId, status }: QuoteLifecycleActions
               )
             }
           >
-            Decline
+            <X className="h-3.5 w-3.5" />
           </Button>
-        </>
+        </Tooltip>
       )}
-      {(status === 'submitted' || status === 'draft') && (
+      {status === 'draft' && (
         <Button
-          variant="ghost"
-          iconStart={<Clock className="h-4 w-4" />}
+          variant="solid"
+          color="module"
+          size="sm"
+          iconStart={<Send className="h-4 w-4" />}
           disabled={isPending}
-          onClick={() =>
-            runGuarded(
-              'Expire this quote?',
-              'It’ll be marked expired and can no longer be accepted. This can’t be undone — you’d need to create a new quote to continue the deal.',
-              'expired',
-              () => expireQuoteAction({ quoteId })
-            )
-          }
+          onClick={() => run('submitted', () => submitQuoteAction({ quoteId }))}
         >
-          Expire
+          Submit
+        </Button>
+      )}
+      {status === 'submitted' && (
+        <Button
+          variant="solid"
+          color="module"
+          size="sm"
+          iconStart={<Check className="h-4 w-4" />}
+          disabled={isPending}
+          onClick={() => run('accepted', () => acceptQuoteAction({ quoteId }))}
+        >
+          Accept
         </Button>
       )}
       {status === 'accepted' && (
         <Button
+          variant="solid"
           color="module"
+          size="sm"
           iconEnd={<ArrowRight className="h-4 w-4" />}
           disabled={isPending}
           onClick={() =>

@@ -20,6 +20,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { createTemplateAction } from '../../../configurator-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../../_components/detail-panel';
 
@@ -81,6 +82,11 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   // Pre-select when launched from a product's Configurator tab (?product=<id>),
@@ -193,6 +199,7 @@ export function NewTemplateForm({ products, surface }: NewTemplateFormProps) {
             />
           ) : undefined
         }
+        actionsTarget={surface === 'overlay' ? overlayActionsTarget : undefined}
         steps={STEPS}
         current={0}
         onCancel={cancel}

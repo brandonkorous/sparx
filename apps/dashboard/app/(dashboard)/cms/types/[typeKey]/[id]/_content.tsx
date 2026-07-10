@@ -6,6 +6,7 @@ import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 import { loadRecordPreviewBundle } from '../../../../builder/_lib/record-preview';
+import { DetailPageShell } from '../../../../_components/detail-page-shell';
 import { type EditEntryFormProps } from './edit-entry-form';
 import { EntryEditorWorkspace, type EntryPreview } from './entry-editor-workspace';
 import { type SeoFields } from '../../../[id]/seo-panel';
@@ -158,28 +159,29 @@ export async function ContentEntryDetailContent({
     initialPropertyIds: entry.propertyIds ?? [],
   };
 
-  const heading = (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row items-center gap-2">
-        <h1 className="text-3xl font-semibold">{title || `Untitled ${lowerType}`}</h1>
-        <Badge color="module">{lowerType}</Badge>
-        {/* Live status lives in the editor toolbar's status bar (EntryStatusBar), so
-            the heading carries just the type — no stale duplicate of the status. */}
-      </div>
-      {entry.slug && (
-        <p className="text-base-content/70 text-sm">
-          <code>/{entry.slug}</code>
-        </p>
-      )}
-    </div>
-  );
-
   // Full-page WITH a live preview: the editor IS a builder, so it fills the content
   // area edge-to-edge (docs/51 §6) — a compact heading bar over a workspace that
-  // owns the remaining height (its panes scroll internally, not the page). The
-  // explicit viewport height (shell = h-12 header over the scroll area) sidesteps
-  // the CMS ModuleProvider's broken `h-full` percentage chain.
+  // owns the remaining height (its panes scroll internally, not the page). This
+  // bespoke chrome (not DetailPageShell) is deliberate: the builder-style toolbar
+  // already carries status + Save/Delete (EntryEditorWorkspace → EditEntryForm's
+  // `statusSlot`), and DetailPageShell's padded, max-width container would fight
+  // the edge-to-edge layout the live preview needs. The explicit viewport height
+  // (shell = h-12 header over the scroll area) sidesteps the CMS ModuleProvider's
+  // broken `h-full` percentage chain.
   if (preview) {
+    const heading = (
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <h1 className="text-3xl font-semibold">{title || `Untitled ${lowerType}`}</h1>
+          <Badge color="module">{lowerType}</Badge>
+        </div>
+        {entry.slug && (
+          <p className="text-base-content/70 text-sm">
+            <code>/{entry.slug}</code>
+          </p>
+        )}
+      </div>
+    );
     return (
       <div className="flex h-[calc(100dvh-3rem)] min-h-0 flex-col gap-4 px-6 py-4">
         <div className="shrink-0">{heading}</div>
@@ -190,25 +192,23 @@ export async function ContentEntryDetailContent({
     );
   }
 
-  // Full-page WITHOUT a live preview: width-constrained, scrolling stacked editor.
-  // It KEEPS the heading bar — on a full page that bar is the record's identity
-  // (no drawer chrome to host it), and over this builder-style editor it reads as
-  // editor chrome, not a redundant restatement of a nearby field.
-  if (previewEnabled) {
-    return (
-      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 py-10">
-          <div className="flex flex-col gap-6">
-            {heading}
-            <EntryEditorWorkspace form={formProps} preview={null} />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Drawer / modal: identity (title + slug) lives only in the editable form fields.
-  // The editor teleports its type signal + status/publish bar into the chrome header
-  // (statusInHeader), so there's no in-body heading or Status card.
-  return <EntryEditorWorkspace form={formProps} preview={null} statusInHeader />;
+  // Full-page WITHOUT a live preview, and drawer/modal: the same shared detail
+  // chrome as every other entity (parity with Product/Page) — back-link + the
+  // presentation switch on the full page, the drawer/modal's own chrome
+  // otherwise. EditEntryForm teleports the type badge + status/publish bar into
+  // the header slot and Save/Delete into the footer slot either way, so there's
+  // no in-body heading or Status card to duplicate identity.
+  const entityToken = `${type.key}:${entry.id}`;
+  const body = <EntryEditorWorkspace form={formProps} preview={null} />;
+  if (!previewEnabled) return body;
+  return (
+    <DetailPageShell
+      typeId="content-entry"
+      entityId={entityToken}
+      listHref={`/cms/content?type=${encodeURIComponent(type.key)}`}
+      listLabel={type.plural_name}
+    >
+      {body}
+    </DetailPageShell>
+  );
 }

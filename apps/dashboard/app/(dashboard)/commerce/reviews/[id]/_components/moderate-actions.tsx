@@ -2,20 +2,30 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, Flag, Trash2, X } from 'lucide-react';
+import { Flag, Trash2, X } from 'lucide-react';
 
-import { Button, Dialog, DialogContent, DialogTitle, Textarea } from '@wizeworks/silicaui-react';
-import { useConfirm } from '@sparx/ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Textarea,
+  Tooltip,
+} from '@wizeworks/silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { deleteReviewAction, moderateReviewAction } from '../../../review-actions';
 
 type Status = 'pending' | 'approved' | 'rejected' | 'flagged';
 
+// Lifecycle/moderation controls for a review, teleported into the detail
+// frame's header (drawer/modal chrome or the full-page shell) via the shared
+// header slot — parity with TemplateStatusBar. Errors surface as a toast: the
+// header bar has no room for inline error text.
 export function ModerateActions({ reviewId, status }: { reviewId: string; status: Status }) {
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = React.useState(false);
   const [rejectNote, setRejectNote] = React.useState('');
 
@@ -36,7 +46,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
       startTransition(async () => {
         const result = await moderateReviewAction({ reviewId, status: next });
         if (!result.ok) {
-          setError(result.error.message);
+          toast.error(result.error.message);
           return;
         }
         router.refresh();
@@ -56,7 +66,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
         moderationNote: note,
       });
       if (!result.ok) {
-        setError(result.error.message);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -80,7 +90,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
       startTransition(async () => {
         const result = await deleteReviewAction(reviewId);
         if (!result.ok) {
-          setError(result.error.message);
+          toast.error(result.error.message);
           return;
         }
         router.push('/commerce/reviews');
@@ -90,35 +100,54 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <div className="flex flex-row gap-2">
-        {status !== 'approved' && (
-          <Button color="module" disabled={pending} onClick={() => moderate('approved')}>
-            <Check className="h-4 w-4" />
-            Approve
+    <div className="flex flex-row items-center gap-2">
+      {status !== 'flagged' && (
+        <Tooltip content="Flag">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Flag"
+            disabled={pending}
+            onClick={() => moderate('flagged')}
+          >
+            <Flag className="h-3.5 w-3.5" />
           </Button>
-        )}
-        {status !== 'flagged' && (
-          <Button variant="outline" disabled={pending} onClick={() => moderate('flagged')}>
-            <Flag className="h-4 w-4" />
-            Flag
+        </Tooltip>
+      )}
+      {status !== 'rejected' && (
+        <Tooltip content="Reject">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Reject"
+            disabled={pending}
+            onClick={() => setRejectOpen(true)}
+          >
+            <X className="h-3.5 w-3.5" />
           </Button>
-        )}
-        {status !== 'rejected' && (
-          <Button variant="ghost" disabled={pending} onClick={() => setRejectOpen(true)}>
-            <X className="h-4 w-4" />
-            Reject
-          </Button>
-        )}
-        <Button variant="ghost" disabled={pending} onClick={onDelete}>
-          <Trash2 className="h-4 w-4" />
-          Delete
+        </Tooltip>
+      )}
+      <Tooltip content="Delete">
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label="Delete review"
+          disabled={pending}
+          onClick={onDelete}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
-      </div>
-      {error && (
-        <p className="text-danger text-xs" role="alert" aria-live="polite">
-          {error}
-        </p>
+      </Tooltip>
+      {status !== 'approved' && (
+        <Button
+          variant="solid"
+          color="module"
+          size="sm"
+          disabled={pending}
+          onClick={() => moderate('approved')}
+        >
+          Approve
+        </Button>
       )}
 
       <Dialog

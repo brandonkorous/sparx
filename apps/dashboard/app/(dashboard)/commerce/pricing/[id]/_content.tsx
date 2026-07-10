@@ -5,6 +5,7 @@ import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { PriceListStatusBar } from './_components/price-list-status-bar';
 import { PriceListEntriesEditor } from './_components/price-list-entries-editor';
@@ -75,6 +76,13 @@ export async function PriceListDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle controls teleport into the shared detail chrome's header
+          (drawer/modal chrome or the full-page shell), parity with
+          ConfiguratorTemplate. */}
+      <DetailHeaderSlot>
+        <PriceListStatusBar priceListId={priceList.id} status={priceList.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row flex-wrap items-center gap-3">
@@ -96,7 +104,6 @@ export async function PriceListDetailContent({ id }: Props) {
             Priority {priceList.priority} · {entries.length} entries
           </p>
         </div>
-        <PriceListStatusBar priceListId={priceList.id} status={priceList.status} />
       </div>
 
       {priceList.description && (

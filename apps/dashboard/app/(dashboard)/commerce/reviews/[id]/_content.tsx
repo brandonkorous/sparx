@@ -6,6 +6,7 @@ import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { ModerateActions } from './_components/moderate-actions';
 import { RespondForm } from './_components/respond-form';
@@ -64,6 +65,13 @@ export async function ReviewDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle/moderation controls teleport into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell),
+          parity with ConfiguratorTemplate. */}
+      <DetailHeaderSlot>
+        <ModerateActions reviewId={review.id} status={review.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
@@ -85,7 +93,6 @@ export async function ReviewDetailContent({ id }: Props) {
             </p>
           </div>
         </div>
-        <ModerateActions reviewId={review.id} status={review.status} />
       </div>
 
       <Card>

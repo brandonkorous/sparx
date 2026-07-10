@@ -2,16 +2,27 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Package } from 'lucide-react';
+import { Ban } from 'lucide-react';
 
-import { Button, Dialog, DialogContent, DialogTitle, Textarea } from '@wizeworks/silicaui-react';
+import { toast } from '@sparx/ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Textarea,
+  Tooltip,
+} from '@wizeworks/silicaui-react';
 
 import { denyReturnAction, markReturnReceivedAction } from '../../../return-actions';
 
+// Lifecycle controls for a return, teleported into the detail frame's header
+// (drawer/modal chrome or the full-page shell) via the shared header slot —
+// parity with TemplateStatusBar. Errors surface as a toast: the header bar has
+// no room for inline error text.
 export function ReturnStatusBar({ returnId, status }: { returnId: string; status: string }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [denyOpen, setDenyOpen] = React.useState(false);
   const [reason, setReason] = React.useState('');
 
@@ -19,7 +30,7 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
     startTransition(async () => {
       const result = await markReturnReceivedAction(returnId);
       if (!result.ok) {
-        setError(result.error.message);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -34,7 +45,7 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
     startTransition(async () => {
       const result = await denyReturnAction({ returnId, reason: trimmed });
       if (!result.ok) {
-        setError(result.error.message);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -51,28 +62,30 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
     status === 'approved' || status === 'awaiting_shipment' || status === 'in_transit';
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <div className="flex flex-row gap-2">
-        {canMarkReceived && (
+    <div className="flex flex-row items-center gap-2">
+      {canDeny && (
+        <Tooltip content="Deny">
           <Button
-            variant="outline"
+            variant="ghost"
+            size="sm"
+            aria-label="Deny"
             disabled={pending}
-            onClick={onMarkReceived}
-            iconStart={<Package className="h-4 w-4" />}
+            onClick={() => setDenyOpen(true)}
           >
-            Mark received
+            <Ban className="h-3.5 w-3.5" />
           </Button>
-        )}
-        {canDeny && (
-          <Button variant="ghost" disabled={pending} onClick={() => setDenyOpen(true)}>
-            Deny
-          </Button>
-        )}
-      </div>
-      {error && (
-        <p className="text-danger text-xs" role="alert" aria-live="polite">
-          {error}
-        </p>
+        </Tooltip>
+      )}
+      {canMarkReceived && (
+        <Button
+          variant="solid"
+          color="module"
+          size="sm"
+          disabled={pending}
+          onClick={onMarkReceived}
+        >
+          Mark received
+        </Button>
       )}
 
       <Dialog

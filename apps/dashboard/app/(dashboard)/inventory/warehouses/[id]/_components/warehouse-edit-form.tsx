@@ -2,22 +2,25 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { Check } from 'lucide-react';
 
 import {
   Button,
   Card,
   CardBody,
-  CardActions,
   Checkbox,
   Field,
   FieldControl,
   FieldLabel,
-  FieldStatus,
 } from '@wizeworks/silicaui-react';
+import { AdaptiveLabel, toast } from '@sparx/ui';
 import { rule, useFieldValidation } from '@sparx/forms';
 
 import { updateWarehouseAction } from '../../../_lib/inventory-actions';
+import { DetailFooterSlot } from '../../../../_components/detail-header-slot';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+
+const FORM_ID = 'warehouse-edit-form';
 
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 
@@ -53,8 +56,7 @@ interface WarehouseRow {
 export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
-  const [savedAt, setSavedAt] = React.useState<string | null>(null);
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
 
   const [name, setName] = React.useState(warehouse.name);
   const [line1, setLine1] = React.useState(warehouse.line1 ?? '');
@@ -92,7 +94,6 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     setSavedAt(null);
     if (!v.validate()) return;
 
@@ -114,7 +115,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
     startTransition(async () => {
       const result = await updateWarehouseAction(warehouse.id, input);
       if (!result.ok) {
-        setError(result.error.message);
+        toast.error(result.error.message);
         const map: Partial<Record<keyof typeof values, string>> = {};
         for (const d of result.error.details ?? []) {
           const key = SERVER_FIELD_MAP[d.field];
@@ -123,13 +124,13 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
         v.setServerErrors(map);
         return;
       }
-      setSavedAt(new Date().toLocaleTimeString());
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form id={FORM_ID} onSubmit={onSubmit}>
       <Card>
         <CardBody>
           <div className="flex flex-col gap-1">
@@ -224,20 +225,31 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
             </div>
           </div>
         </CardBody>
-        <CardActions>
-          <div className="flex w-full flex-row items-center justify-between gap-2">
-            {error && (
-              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                {error}
-              </FieldStatus>
-            )}
-            {savedAt && !error && <p className="text-base-content/70 text-xs">Saved {savedAt}</p>}
-            <Button color="module" type="submit" disabled={pending} className="ml-auto">
-              {pending ? 'Saving…' : 'Save'}
-            </Button>
-          </div>
-        </CardActions>
       </Card>
+
+      {/* The primary action teleports up into the shared detail chrome's header
+          (next to Archive), not floored at the bottom — a failed save surfaces
+          as a toast since there's no room for a persistent error line there. */}
+      <DetailFooterSlot>
+        <div className="flex items-center gap-2">
+          {savedAt !== null && !dirty && (
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          )}
+          <Button
+            type="submit"
+            form={FORM_ID}
+            size="sm"
+            color="module"
+            disabled={pending || !dirty}
+            loading={pending}
+          >
+            <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
+          </Button>
+        </div>
+      </DetailFooterSlot>
     </form>
   );
 }

@@ -5,6 +5,7 @@ import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { AnswerForm } from './_components/answer-form';
 import { QuestionModerateActions } from './_components/question-moderate-actions';
@@ -60,6 +61,13 @@ export async function QuestionDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle/moderation controls teleport into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell),
+          parity with ConfiguratorTemplate. */}
+      <DetailHeaderSlot>
+        <QuestionModerateActions questionId={detail.id} status={detail.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold">Question</h1>
@@ -72,7 +80,6 @@ export async function QuestionDetailContent({ id }: Props) {
             </p>
           </div>
         </div>
-        <QuestionModerateActions questionId={detail.id} status={detail.status} />
       </div>
 
       <Card>

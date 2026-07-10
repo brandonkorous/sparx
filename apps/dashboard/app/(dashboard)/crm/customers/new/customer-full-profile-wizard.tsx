@@ -52,6 +52,7 @@ import { createTaskAction, recordActivityAction } from '../../activity-task-acti
 import { createDealAction } from '../../deal-actions';
 import { createQuoteAction } from '../../quote-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 
@@ -224,6 +225,11 @@ function CustomerWizardInner({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
 
   const [contact, setContact] = React.useState<Record<string, unknown>>({});
   const [classify, setClassify] = React.useState<Record<string, unknown>>({ type: 'prospect' });
@@ -539,6 +545,7 @@ function CustomerWizardInner({
           <ViewSwitcher typeId="customer" entityId={CREATE_SENTINEL} current="page" />
         ) : undefined
       }
+      actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
       steps={SINGLE_STEP}
       current={0}
       onCancel={cancel}

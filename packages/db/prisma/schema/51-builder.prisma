@@ -119,6 +119,55 @@ model BuilderPageAssignment {
   @@map("builder_page_assignments")
 }
 
+// The silica SITE record (docs/118) — the per-property, site-GLOBAL half of a
+// silica `Site` that is neither a page nor the chrome: its `theme` and its saved-
+// component `symbols`.
+//
+// silica's `<Builder>` hands the host one `Site = { theme, frame, pages, symbols }`
+// on every edit. Each part is stored by its rightful owner: `pages` are BuilderPage
+// rows (each owns a slug/SEO/recordType/publish state), `frame` is the ACTIVE
+// BuilderLayout's tree — and `theme` + `symbols` are site-global, so they live here.
+// They deliberately do NOT ride on BuilderLayout: a tenant keeps MANY layouts and
+// flips which is active, and neither the theme nor a saved component should move or
+// vanish when the active chrome changes.
+//
+// `theme` is a silica `Theme` (`{ name, tokens, dark?, mode? }` — the `--*` custom
+// properties verbatim), so an author's saved theme renders on the storefront exactly
+// as it previewed on the canvas (`buildSilicaThemeCssFromTheme`). Null until an
+// author edits the theme, in which case the storefront falls back to the tenant's
+// brand-DERIVED theme. `symbols` is silica's `Record<id, SymbolDef>`.
+//
+// Draft/published mirrors BuilderPage + BuilderLayout: `sync` writes the draft,
+// `publish` snapshots draft → published, and the storefront only ever reads the
+// published columns.
+//
+// Tenant-scoped + FORCE RLS, like every other builder_* table. One row per property.
+model BuilderSite {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // One silica site record per web PROPERTY (docs/49). Not a security boundary
+  // (tenant_id is the RLS boundary).
+  propertyId String @unique @map("property_id") @db.Uuid
+
+  // The authored silica `Theme`. Null = never edited → brand-derived theme wins.
+  silicaDraftTheme     Json? @map("silica_draft_theme")
+  silicaPublishedTheme Json? @map("silica_published_theme")
+
+  // The site-global saved-component masters (silica `Site.symbols`).
+  silicaDraftSymbols     Json  @default("{}") @map("silica_draft_symbols")
+  silicaPublishedSymbols Json? @map("silica_published_symbols")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("builder_sites")
+}
+
 // The site LAYOUT — the chrome shell (header / outlet / footer) every page
 // renders inside (docs/45). Same draft/publish lifecycle as BuilderPage. A tenant
 // now keeps MANY layouts (a catalog, like BuilderPage), but exactly one is the
@@ -146,13 +195,12 @@ model BuilderLayout {
   // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
   publishedTree Json?     @map("published_tree")
   // The silica-native FRAME root (`@wizeworks/silicaui-html` `Node` with the one
-  // `Outlet`) — the engine-adoption store (docs/118), parallel-run with the
-  // sparx columns. `silicaSymbols` holds the site-global saved-component masters
-  // (silica `Site.symbols`, a `Record<id, SymbolDef>`) — they live with the
-  // frame record because they're shared across every page + the frame.
+  // `Outlet`) — the engine-adoption store (docs/118), parallel-run with the sparx
+  // columns. The site-global `theme` + saved-component `symbols` deliberately do
+  // NOT live here: a tenant keeps many layouts and flips which is active, so they
+  // belong to the property, not the chrome — see BuilderSite.
   silicaDraftTree     Json?     @map("silica_draft_tree")
   silicaPublishedTree Json?     @map("silica_published_tree")
-  silicaSymbols       Json?     @map("silica_symbols")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
   // The live layout — exactly one per PROPERTY. "At most one active" is enforced
   // in the DB by a partial unique index on (tenant_id, property_id) WHERE is_active

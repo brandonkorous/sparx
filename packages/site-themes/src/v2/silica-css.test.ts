@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { compileTokensV2 } from './compile';
 import {
   buildSilicaThemeCss,
+  buildSilicaThemeCssFromTheme,
   compiledToSilicaTheme,
   silicaColorVars,
   silicaSharedVars,
@@ -128,6 +129,36 @@ describe('buildSilicaThemeCss — the tenant theme file', () => {
 
   it('is entirely free of the old --st-* vocabulary', () => {
     expect(css).not.toContain('--st-');
+  });
+});
+
+describe('buildSilicaThemeCssFromTheme — an AUTHORED silica Theme (docs/118)', () => {
+  const compiled = compileTokensV2(PRESET);
+
+  it('round-trips losslessly: a brand-derived Theme emits the same CSS as the compiled theme', () => {
+    // compiledToSilicaTheme is an exact projection of CompiledThemeV2, so rendering
+    // the projection must equal rendering the source — that equality is what lets an
+    // author's saved theme replace the brand-derived one with no visual change.
+    const viaTheme = buildSilicaThemeCssFromTheme(compiledToSilicaTheme(compiled));
+    expect(viaTheme).toBe(buildSilicaThemeCss(compiled));
+  });
+
+  it('emits an author-edited token verbatim (the edit is what the storefront renders)', () => {
+    const theme = compiledToSilicaTheme(compiled);
+    theme.tokens['--color-primary'] = '#ff0055';
+    const css = buildSilicaThemeCssFromTheme(theme);
+    // The edit lands in the LIGHT (:root) block. The dark ramp is a separate map, so
+    // it legitimately keeps its own primary until the author edits dark mode too.
+    const lightBlock = css.slice(0, css.indexOf(':root[data-theme="dark"]'));
+    expect(lightBlock).toContain('--color-primary:#ff0055');
+    expect(lightBlock).not.toContain('--color-primary:#4f46e5');
+    expect(css).toContain(':root[data-theme="dark"]{');
+  });
+
+  it('omits the dark blocks entirely when the theme carries no dark ramp', () => {
+    const css = buildSilicaThemeCssFromTheme({ name: 't', tokens: { '--color-primary': '#000' } });
+    expect(css).toBe(':root{--color-primary:#000;}');
+    expect(css).not.toContain('prefers-color-scheme');
   });
 });
 

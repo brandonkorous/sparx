@@ -2,11 +2,10 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { toast, useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, toast, useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   Checkbox,
   Field,
@@ -15,10 +14,14 @@ import {
   FieldStatus,
   Label,
   Textarea,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
-import { Save, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { deleteContentType, updateContentType } from '../../actions';
+import { DetailFooterSlot, DetailHeaderSlot } from '../../../../_components/detail-header-slot';
+
+const FORM_ID = 'content-type-schema-form';
 
 export interface SchemaEditorInitial {
   name: string;
@@ -39,7 +42,6 @@ export function SchemaEditor({
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
   const [name, setName] = React.useState(initial.name);
   const [pluralName, setPluralName] = React.useState(initial.pluralName);
   const [schemaText, setSchemaText] = React.useState(initial.schemaText);
@@ -74,7 +76,6 @@ export function SchemaEditor({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     if (!v.validate()) return;
     const data = new FormData(e.currentTarget);
     data.set('schema', schemaText);
@@ -85,7 +86,7 @@ export function SchemaEditor({
     startTransition(async () => {
       const result = await updateContentType(typeKey, data);
       if (!result.ok) {
-        setError(result.error ?? 'Could not save schema.');
+        toast.error(result.error ?? 'Could not save schema.');
         return;
       }
       toast.success('Schema saved.');
@@ -106,11 +107,10 @@ export function SchemaEditor({
       tone: 'danger',
     });
     if (!ok) return;
-    setError(null);
     startTransition(async () => {
       const result = await deleteContentType(typeKey);
       if (!result.ok) {
-        setError(result.error ?? 'Could not delete type.');
+        toast.error(result.error ?? 'Could not delete type.');
         return;
       }
       toast.success(`Deleted content type "${typeKey}".`);
@@ -120,7 +120,25 @@ export function SchemaEditor({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form id={FORM_ID} onSubmit={onSubmit} noValidate>
+      {/* Delete is rare + destructive, so it's demoted the same way Page/Author
+          demote it: icon-only ghost + tooltip in the shared detail chrome's
+          header (drawer/modal chrome or the full-page shell). */}
+      <DetailHeaderSlot>
+        <Tooltip content="Delete type">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Delete type"
+            disabled={pending}
+            onClick={() => void handleDelete()}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
+      </DetailHeaderSlot>
+
       <div className="flex flex-col gap-5">
         <Card>
           <CardBody>
@@ -206,36 +224,25 @@ export function SchemaEditor({
                   </FieldStatus>
                 ))}
             </Field>
-            <CardActions>
-              <div className="flex flex-row items-center gap-3">
-                <Button
-                  type="submit"
-                  color="module"
-                  iconStart={<Save className="h-4 w-4" />}
-                  disabled={pending}
-                  loading={pending}
-                >
-                  Save schema
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  iconStart={<Trash2 className="h-4 w-4" />}
-                  onClick={handleDelete}
-                  disabled={pending}
-                >
-                  Delete type
-                </Button>
-                {error && (
-                  <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                    {error}
-                  </FieldStatus>
-                )}
-              </div>
-            </CardActions>
           </CardBody>
         </Card>
       </div>
+
+      {/* The primary action teleports up into the shared detail chrome's footer
+          (next to Delete), not floored at the bottom — a failed save surfaces as
+          a toast since there's no room for a persistent error line there. */}
+      <DetailFooterSlot>
+        <Button
+          type="submit"
+          form={FORM_ID}
+          size="sm"
+          color="module"
+          disabled={pending}
+          loading={pending}
+        >
+          <AdaptiveLabel label={{ full: 'Save schema', short: 'Save' }} />
+        </Button>
+      </DetailFooterSlot>
     </form>
   );
 }

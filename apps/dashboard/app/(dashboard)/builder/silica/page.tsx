@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import type { Theme } from '@wizeworks/silicaui-html';
+import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
 import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/builder-schemas';
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
 
 import { getActiveProperty } from '@/lib/sites';
-import { getBindingCatalog } from '../_lib/api';
+import { getBindingCatalog, getBuilderSite } from '../_lib/api';
 import { getBrand, getConfig } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
@@ -13,11 +13,11 @@ import { starterSite } from '@sparx/silica-catalog';
 import { buildPreviewData } from '../_builder/binding-catalog';
 import { SilicaStudio } from '../_builder/silica-studio';
 
-// /builder/silica — the engine-adoption studio (docs/118): the SAME editor surface
-// as /builder/studio, but mounted on silica's `<Builder>` engine over the sparx
-// `BuilderHost` (resolver + dataSources + validateClass + the commerce catalog).
-// Additive + provable in isolation — the main /builder/studio route cuts over to
-// this once persistence (onChange/onPublish) + the tenant document load are wired.
+// /builder/silica — the engine-adoption studio (docs/118): silica's `<Builder>`
+// engine over the sparx `BuilderHost` (resolver + dataSources + validateClass +
+// the commerce catalog). Loads the tenant's STORED silica site (siteService) and
+// persists edits back via the debounced site-sync autosave (SilicaStudio). The
+// main /builder/studio route retires once the storefront renders silica too.
 
 export const metadata: Metadata = {
   title: 'Builder · Studio (silica engine)',
@@ -67,11 +67,12 @@ function tenantTheme(brand: BrandDto, config: SiteConfigDto): Theme | undefined 
 }
 
 export default async function SilicaBuilderRoute() {
-  const [catalog, baseBrand, config, activeProperty] = await Promise.all([
+  const [catalog, baseBrand, config, activeProperty, storedSite] = await Promise.all([
     getBindingCatalog().catch(() => ({ sources: [] })),
     getBrand().catch(() => FALLBACK_BRAND),
     getConfig().catch(() => FALLBACK_CONFIG),
     getActiveProperty().catch(() => null),
+    getBuilderSite().catch(() => null),
   ]);
 
   // The tenant's real binding catalog drives the picker + the resolver root; fall
@@ -87,13 +88,19 @@ export default async function SilicaBuilderRoute() {
     (activeProperty?.isPrimary ?? true)
       ? baseBrand
       : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
-  const theme = tenantTheme(effectiveBrand, config);
+  // The theme the canvas opens on: the author's SAVED theme when they have edited
+  // one (siteService round-trips it), else the tenant's brand-derived theme. Brand
+  // stays the default; an authored theme is an explicit override that wins once
+  // saved, and is never discarded (docs/118).
+  const brandTheme = tenantTheme(effectiveBrand, config) ?? THEME_PRESETS[0]!;
+  const theme: Theme = storedSite?.theme ?? brandTheme;
 
-  // The full multi-page silica Site (shared frame + starter pages) in the tenant's
-  // brand — silica's `<Builder>` owns page-switching, the frame/Outlet chrome, and
-  // undo. Until the site-sync persistence lands (onChange/onPublish), this opens on
-  // the starter seed; the re-seed then makes it the tenant's stored Site.
-  const site = theme ? starterSite(theme) : starterSite();
+  // The full multi-page silica Site — silica's `<Builder>` owns page-switching, the
+  // frame/Outlet chrome, symbols, and undo. Load the tenant's STORED silica site
+  // (page bodies + frame + symbols + theme); a property with no silica site yet
+  // opens on the starter seed, and the first autosave materializes it into the
+  // store (siteService.sync).
+  const site: Site = storedSite ? { version: '1.0.0', ...storedSite, theme } : starterSite(theme);
 
   return <SilicaStudio site={site} root={root} dataSources={dataSources} />;
 }

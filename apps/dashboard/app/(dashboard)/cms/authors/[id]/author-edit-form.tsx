@@ -2,23 +2,25 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, toast, useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   Field,
   FieldControl,
   FieldDescription,
   FieldLabel,
-  FieldStatus,
   Textarea,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
-import { Save, Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { deleteAuthor, updateAuthor } from '../actions';
+import { DetailFooterSlot, DetailHeaderSlot } from '../../../_components/detail-header-slot';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+
+const FORM_ID = 'author-edit-form';
 
 export interface EditableAuthor {
   id: string;
@@ -31,8 +33,7 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
 
   // Controlled fields drive live validation via `useFieldValidation`; dirtiness
   // derives from comparing against the saved author. Registering it lets the
@@ -55,8 +56,7 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
+    setSavedAt(null);
     if (!v.validate()) return;
     const data = new FormData();
     data.append('display_name', displayName.trim());
@@ -69,11 +69,11 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
         if (result.field === 'slug' || result.field === 'display_name') {
           v.setServerErrors({ [result.field]: msg });
         } else {
-          setError(msg);
+          toast.error(msg);
         }
         return;
       }
-      setMessage('Saved.');
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
@@ -91,12 +91,10 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
       tone: 'danger',
     });
     if (!ok) return;
-    setError(null);
-    setMessage(null);
     startTransition(async () => {
       const result = await deleteAuthor(author.id);
       if (!result.ok) {
-        setError(result.error ?? 'Could not delete.');
+        toast.error(result.error ?? 'Could not delete.');
         return;
       }
       router.push('/cms/authors');
@@ -105,7 +103,24 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form id={FORM_ID} onSubmit={onSubmit} noValidate>
+      {/* Delete is rare + destructive, so it's demoted the same way Page demotes
+          it: icon-only ghost + tooltip in the shared detail chrome's header. */}
+      <DetailHeaderSlot>
+        <Tooltip content="Delete">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Delete"
+            disabled={pending}
+            onClick={() => void handleDelete()}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
+      </DetailHeaderSlot>
+
       <div className="flex flex-col gap-5">
         <Card>
           <CardBody>
@@ -143,40 +158,32 @@ export function AuthorEditForm({ author }: { author: EditableAuthor }) {
               </Field>
             </div>
           </CardBody>
-          <CardActions>
-            <div className="flex flex-row items-center gap-3">
-              <Button
-                type="submit"
-                color="module"
-                iconStart={<Save className="h-4 w-4" />}
-                disabled={pending}
-                loading={pending}
-              >
-                Save changes
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                iconStart={<Trash2 className="h-4 w-4" />}
-                onClick={handleDelete}
-                disabled={pending}
-              >
-                Delete
-              </Button>
-              {error && (
-                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                  {error}
-                </FieldStatus>
-              )}
-              {message && (
-                <FieldStatus status="success" attached={false} aria-live="polite">
-                  {message}
-                </FieldStatus>
-              )}
-            </div>
-          </CardActions>
         </Card>
       </div>
+
+      {/* The primary action teleports up into the shared detail chrome's footer
+          (next to Delete), not floored at the bottom — a failed save surfaces as
+          a toast since there's no room for a persistent error line there. */}
+      <DetailFooterSlot>
+        <div className="flex items-center gap-2">
+          {savedAt !== null && !dirty && (
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          )}
+          <Button
+            type="submit"
+            form={FORM_ID}
+            size="sm"
+            color="module"
+            disabled={pending || !dirty}
+            loading={pending}
+          >
+            <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
+          </Button>
+        </div>
+      </DetailFooterSlot>
     </form>
   );
 }

@@ -6,6 +6,7 @@ import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/
 import { Stat, statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { RecomputeButton } from '../_components/recompute-button';
 
@@ -58,23 +59,27 @@ export async function SegmentDetailContent({ id }: Props) {
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
     <div className="@container flex flex-col gap-6">
+      {/* Recompute is a lifecycle action — teleports into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell), parity
+          with every other entity's lifecycle controls. */}
+      <DetailHeaderSlot>
+        <RecomputeButton segmentId={segment.id} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-col gap-2">
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-row flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-semibold">{segment.name}</h1>
-            {segment.isBuiltIn && (
-              <Badge color="neutral" variant="soft" size="sm">
-                <Star className="h-3 w-3" /> Built-in
-              </Badge>
-            )}
-            {segment.archivedAt && (
-              <Badge color="warning">
-                <Archive className="h-3 w-3" /> Archived
-              </Badge>
-            )}
-            <code className="text-base-content/50 text-xs">{segment.slug}</code>
-          </div>
-          <RecomputeButton segmentId={segment.id} />
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{segment.name}</h1>
+          {segment.isBuiltIn && (
+            <Badge color="neutral" variant="soft" size="sm">
+              <Star className="h-3 w-3" /> Built-in
+            </Badge>
+          )}
+          {segment.archivedAt && (
+            <Badge color="warning">
+              <Archive className="h-3 w-3" /> Archived
+            </Badge>
+          )}
+          <code className="text-base-content/50 text-xs">{segment.slug}</code>
         </div>
         {segment.description && (
           <p className="text-base-content/70 text-base">{segment.description}</p>

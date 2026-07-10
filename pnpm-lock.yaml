@@ -9,6 +9,9 @@ catalogs:
     '@wizeworks/silicaui':
       specifier: ^0.10.0
       version: 0.10.0
+    '@wizeworks/silicaui-behaviors':
+      specifier: ^0.10.0
+      version: 0.10.1
     '@wizeworks/silicaui-builder':
       specifier: ^0.10.0
       version: 0.10.1
@@ -419,6 +422,9 @@ importers:
       '@sparx/section-template-react':
         specifier: workspace:*
         version: link:../../packages/section-template-react
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../../packages/silica-catalog
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../../packages/site-themes
@@ -437,6 +443,12 @@ importers:
       '@stripe/stripe-js':
         specifier: ^5.10.0
         version: 5.10.0
+      '@wizeworks/silicaui-behaviors':
+        specifier: 'catalog:'
+        version: 0.10.1
+      '@wizeworks/silicaui-html':
+        specifier: 'catalog:'
+        version: 0.10.0
       geist:
         specifier: ^1.3.1
         version: 1.7.1(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
@@ -465,6 +477,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.15)
+      '@wizeworks/silicaui':
+        specifier: 'catalog:'
+        version: 0.10.0(tailwindcss@4.3.0)
       postcss:
         specifier: ^8.4.49
         version: 8.5.15
@@ -6055,6 +6070,9 @@ packages:
 
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
+
+  '@wizeworks/silicaui-behaviors@0.10.1':
+    resolution: {integrity: sha512-BXW84v0cbmFSsSF1y/Hc+WGHHPHhPhLYSoupQqtTpDBOicsZXN8QRTjtKpfd3yS9mfw5FLXGSou6ZFp0pv1z0A==}
 
   '@wizeworks/silicaui-builder@0.10.1':
     resolution: {integrity: sha512-L9chUEbFXbZJ0QKC5m+n0fdRxkWWDjdbgpJV20o2kAUOo942QHLht++RoIB0IQ8r348bO3U2lXzPzpLfcY64AA==}
@@ -12607,6 +12625,8 @@ snapshots:
       '@vitest/pretty-format': 4.1.7
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
+
+  '@wizeworks/silicaui-behaviors@0.10.1': {}
 
   '@wizeworks/silicaui-builder@0.10.1(@wizeworks/silicaui-react@0.10.0(@types/react@19.2.15)(@wizeworks/silicaui@0.10.0(tailwindcss@4.3.0))(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@4.3.0)':
     dependencies:

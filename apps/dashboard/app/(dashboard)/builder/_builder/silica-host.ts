@@ -20,30 +20,16 @@ import type { DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
 import {
   createSilicaClassValidator,
   createSilicaResolver,
+  defaultSilicaFormat,
   type DataSources,
   type NodeBinding,
 } from '@sparx/builder-schemas';
 import { COMMERCE_CATALOG } from '@sparx/silica-catalog';
 
-/** The default host value formatter, covering the two shape gaps between sparx's
- *  resolver data and silica's `fillValue`:
- *   · an image/file field resolves to a `{ url, alt }` OBJECT, but `fillValue` sets
- *     `<img src>` only from a STRING — so unwrap to the url. An EMPTY url returns
- *     `undefined`, which leaves the node's authored `src` (the composite's
- *     placeholder tile) in place rather than blanking it.
- *   · a `price` field resolves to a raw number — render it as currency (formatting
- *     is host territory; the composite binds the number, never a pre-formatted string).
- *  A host can pass its own `formatValue` to override (e.g. locale-aware currency). */
-export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unknown {
-  if (value && typeof value === 'object' && 'url' in (value as Record<string, unknown>)) {
-    const url = (value as { url?: unknown }).url;
-    return typeof url === 'string' && url ? url : undefined;
-  }
-  if (typeof value === 'number' && /price/i.test(binding.path ?? '')) {
-    return `$${value.toFixed(2)}`;
-  }
-  return value;
-}
+// `defaultSilicaFormat` moved to @sparx/builder-schemas (silica-resolve) so the
+// storefront render host and this editor host format identically; re-export it
+// here so the studio mount keeps importing it from the host module.
+export { defaultSilicaFormat };
 
 export interface SilicaHostOptions {
   /** The pre-loaded data root the resolver reads from (`buildPreviewData` in the

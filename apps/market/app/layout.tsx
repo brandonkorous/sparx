@@ -25,106 +25,100 @@ import './globals.css';
 // Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed as
 // --font-wordmark, which the local <Wordmark> consumes.
 const interWordmark = Inter({
-  subsets: ['latin'],
-  weight: ['700'],
-  variable: '--font-wordmark',
-  display: 'swap',
+    subsets: ['latin'],
+    weight: ['700'],
+    variable: '--font-wordmark',
+    display: 'swap',
 });
 
 const DESCRIPTION =
-  'Shop thousands of independent sellers in one place. Real shops, real makers, shipped direct — discover products you won’t find on the big marketplaces.';
+    'Shop thousands of independent sellers in one place. Real shops, real makers, shipped direct — discover products you won’t find on the big marketplaces.';
 
 // Site-wide structured data so search + answer engines attribute the brand and
 // can surface a sitelinks search box pointing at the marketplace catalog.
 const WEBSITE_SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'sparx.market',
-  url: 'https://sparx.market',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://sparx.market/products?q={search_term_string}',
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'sparx.market',
+    url: 'https://sparx.market',
+    potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://sparx.market/products?q={search_term_string}',
+        },
+        'query-input': 'required name=search_term_string',
     },
-    'query-input': 'required name=search_term_string',
-  },
-  publisher: {
-    '@type': 'Organization',
-    name: 'WizeWorks, Inc.',
-    url: 'https://wize.works',
-  },
+    publisher: {
+        '@type': 'Organization',
+        name: 'WizeWorks, Inc.',
+        url: 'https://wize.works',
+    },
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://sparx.market'),
-  title: {
-    default: 'sparx.market — Shop independent sellers',
-    template: '%s · sparx.market',
-  },
-  description: DESCRIPTION,
-  applicationName: 'sparx.market',
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    siteName: 'sparx.market',
-    title: 'sparx.market — Shop independent sellers',
-    description: DESCRIPTION,
-    url: 'https://sparx.market',
-    locale: 'en_US',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'sparx.market — Shop independent sellers',
-    description: 'One destination for thousands of independent sellers.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+    metadataBase: new URL('https://sparx.market'),
+    title: {
+        default: 'sparx.market — Shop independent sellers',
+        template: '%s · sparx.market',
     },
-  },
-  icons: {
-    icon: [
-      { url: '/sparx-icon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: 'any' },
-    ],
-  },
+    description: DESCRIPTION,
+    applicationName: 'sparx.market',
+    alternates: { canonical: '/' },
+    openGraph: {
+        type: 'website',
+        siteName: 'sparx.market',
+        title: 'sparx.market — Shop independent sellers',
+        description: DESCRIPTION,
+        url: 'https://sparx.market',
+        locale: 'en_US',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'sparx.market — Shop independent sellers',
+        description: 'One destination for thousands of independent sellers.',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
+    icons: {
+        icon: [
+            { url: '/sparx-icon.svg', type: 'image/svg+xml' },
+            { url: '/favicon.ico', sizes: 'any' },
+        ],
+    },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html
-      lang="en"
-      data-theme="sparx"
-      suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
-    >
-      <body>
-        {/* Silently recover a shopper's tab whose chunks were purged by a deploy. */}
-        <ChunkReloadGuard />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }}
-        />
-        <div className="flex min-h-screen flex-col">
-          <a
-            href="#main-content"
-            className="focus:bg-base-100 focus:text-base-content sr-only rounded-md px-3.5 py-2 shadow-md focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100]"
-          >
-            Skip to content
-          </a>
-          <SiteHeader />
-          <main className="w-full flex-1" id="main-content" tabIndex={-1}>
-            {children}
-          </main>
-          <SiteFooter />
-        </div>
-      </body>
-    </html>
-  );
+    return (
+        <html
+            lang="en"
+            data-theme="sparx"
+            suppressHydrationWarning
+            className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
+        >
+            <body>
+                {/* Silently recover a shopper's tab whose chunks were purged by a deploy. */}
+                <ChunkReloadGuard />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }}
+                />
+                <div className="flex min-h-screen flex-col">
+                    <SiteHeader />
+                    <main className="w-full flex-1" id="main-content" tabIndex={-1}>
+                        {children}
+                    </main>
+                    <SiteFooter />
+                </div>
+            </body>
+        </html>
+    );
 }

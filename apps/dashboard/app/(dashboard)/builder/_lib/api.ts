@@ -10,6 +10,7 @@ import type {
   BuilderLayoutDto,
   BuilderPageDto,
   ComponentDto,
+  StoredSilicaSite,
 } from '@sparx/builder-schemas';
 
 // The tenant's pages. The list endpoint seeds the curated starter set on the
@@ -33,6 +34,19 @@ export async function listLayouts(): Promise<BuilderLayoutDto[]> {
 // read fails (handled by the caller).
 export async function getActiveLayout(): Promise<BuilderLayoutDto | null> {
   return api.get<BuilderLayoutDto | null>('/v1/builder/layouts/active');
+}
+
+// The property's stored silica-native site (docs/118): page bodies + frame +
+// symbols, theme-less. Null when no silica site is materialized yet — the
+// engine-adoption studio then opens on the in-memory starter seed and the first
+// autosave materializes it. Defensive: a failed read yields null (open on starter).
+export async function getBuilderSite(): Promise<StoredSilicaSite | null> {
+  try {
+    const { site } = await api.get<{ site: StoredSilicaSite | null }>('/v1/builder/site');
+    return site;
+  } catch {
+    return null;
+  }
 }
 
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS

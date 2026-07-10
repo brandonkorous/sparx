@@ -15,24 +15,23 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, toast, useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
-  CardActions,
   CardBody,
   Checkbox,
   Field,
   FieldControl,
   FieldLabel,
-  FieldStatus,
   Label,
   Select,
   SelectItem,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
-import { ChevronDown, ChevronUp, Plus, Save, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { saveMenu } from './menu-actions';
+import { DetailFooterSlot } from '../../_components/detail-header-slot';
 
 export interface EditableMenuItem {
   uid: string;
@@ -124,8 +123,6 @@ export function MenuEditor({
   const [name, setName] = React.useState(initialName);
   const [items, setItems] = React.useState<EditableMenuItem[]>(initialItems);
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
 
   const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
 
@@ -208,8 +205,6 @@ export function MenuEditor({
   }
 
   function onSave() {
-    setError(null);
-    setMessage(null);
     if (!v.validate()) return;
     startTransition(async () => {
       const result = await saveMenu(location, {
@@ -217,10 +212,10 @@ export function MenuEditor({
         items: toWireItems(items) as never,
       });
       if (!result.ok) {
-        setError(result.error ?? 'Could not save menu.');
+        toast.error(result.error ?? 'Could not save menu.');
         return;
       }
-      setMessage('Saved.');
+      toast.success('Menu saved.');
       router.refresh();
     });
   }
@@ -279,31 +274,23 @@ export function MenuEditor({
             />
           )}
         </CardBody>
-        <CardActions className="justify-start">
-          <div className="flex flex-row items-center gap-3">
-            <Button
-              type="button"
-              color="module"
-              iconStart={<Save className="h-4 w-4" />}
-              onClick={onSave}
-              disabled={pending}
-              loading={pending}
-            >
-              Save menu
-            </Button>
-            {error && (
-              <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                {error}
-              </FieldStatus>
-            )}
-            {message && (
-              <FieldStatus status="success" attached={false} aria-live="polite">
-                {message}
-              </FieldStatus>
-            )}
-          </div>
-        </CardActions>
       </Card>
+
+      {/* The primary action teleports up into the shared detail chrome's footer,
+          not floored at the bottom — a failed save surfaces as a toast since
+          there's no room for a persistent error line there. */}
+      <DetailFooterSlot>
+        <Button
+          type="button"
+          size="sm"
+          color="module"
+          onClick={onSave}
+          disabled={pending}
+          loading={pending}
+        >
+          <AdaptiveLabel label={{ full: 'Save menu', short: 'Save' }} />
+        </Button>
+      </DetailFooterSlot>
     </div>
   );
 }

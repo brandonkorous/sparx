@@ -26,6 +26,7 @@ import type {
 } from '@sparx/builder-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 import { boxAxesFor, type BoxAxis, type PropSpec } from '../../_builder/registry';
 import {
   CARDINALITY_LABELS,
@@ -370,6 +371,22 @@ function CustomComponentDetail({
 
   return (
     <Stack gap={6}>
+      {/* Edit + Delete are lifecycle actions — teleport into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell), parity
+          with every other entity's Edit/Archive/Delete controls. */}
+      <DetailHeaderSlot>
+        <Button asChild size="sm" variant="soft">
+          <a href={`/builder/components/${component.key}/edit`}>
+            <Pencil className="h-3.5 w-3.5" /> Edit
+          </a>
+        </Button>
+        <DeleteComponentButton
+          componentKey={component.key}
+          name={component.name}
+          redirectTo="/builder/components"
+        />
+      </DetailHeaderSlot>
+
       <Stack direction="row" align="start" justify="between" gap={3} wrap>
         <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
           <LucideByName name={component.icon} className="text-module h-7 w-7 shrink-0" />
@@ -388,18 +405,6 @@ function CustomComponentDetail({
             </Stack>
             <Text variant="muted">{component.description ?? 'A component you built.'}</Text>
           </Stack>
-        </Stack>
-        <Stack direction="row" align="center" gap={2}>
-          <Button asChild size="sm" variant="soft">
-            <a href={`/builder/components/${component.key}/edit`}>
-              <Pencil className="h-3.5 w-3.5" /> Edit
-            </a>
-          </Button>
-          <DeleteComponentButton
-            componentKey={component.key}
-            name={component.name}
-            redirectTo="/builder/components"
-          />
         </Stack>
       </Stack>
 

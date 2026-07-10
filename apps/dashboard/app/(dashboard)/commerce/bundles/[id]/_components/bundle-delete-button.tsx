@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
 
-import { useConfirm } from '@sparx/ui';
-import { Button } from '@wizeworks/silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 
 import { deleteBundleAction } from '../../../configurator-actions';
 
@@ -27,7 +27,7 @@ export function BundleDeleteButton({ bundleId }: { bundleId: string }) {
       startTransition(async () => {
         const result = await deleteBundleAction(bundleId);
         if (!result.ok) {
-          console.error('Failed to delete bundle', result.error);
+          toast.error(result.error.message);
           return;
         }
         router.push('/commerce/bundles');
@@ -36,13 +36,10 @@ export function BundleDeleteButton({ bundleId }: { bundleId: string }) {
   }
 
   return (
-    <Button
-      variant="ghost"
-      onClick={onDelete}
-      disabled={pending}
-      iconStart={<Trash2 className="h-4 w-4" />}
-    >
-      Delete
-    </Button>
+    <Tooltip content="Delete">
+      <Button variant="ghost" size="sm" aria-label="Delete" onClick={onDelete} disabled={pending}>
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
+    </Tooltip>
   );
 }

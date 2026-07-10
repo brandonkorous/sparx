@@ -10,10 +10,13 @@ import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
+import { getPublishedSilicaPage } from '@/lib/silica';
+import { buildSilicaHost } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
 import { BuilderRenderer } from '@/components/builder-renderer';
+import { SilicaBody } from '@/components/silica-chrome';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +36,35 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   const sp = await searchParams;
   const previewToken = sp?.sparxPreview;
   const sitePreview = sp?.sparxSitePreview;
+
+  // The silica engine's published page owns this slug (docs/118 Stage 6) — title it
+  // from its name / SEO, and skip the paths below. Per-page silica SEO lands with
+  // the inspector (docs/118 Stage 10); until then it falls back to the page name.
+  const silicaPage = await getPublishedSilicaPage(site.slug, slug);
+  if (silicaPage) {
+    const clean = (v: string | null): string | undefined => {
+      const t = v?.trim();
+      return t && t.length > 0 ? t : undefined;
+    };
+    const title = clean(silicaPage.seoTitle) ?? `${silicaPage.name} · ${site.name}`;
+    const description = clean(silicaPage.seoDescription);
+    const canonical = clean(silicaPage.canonical);
+    const ogImage =
+      clean(silicaPage.ogImage) ??
+      ogImageUrl({
+        title: clean(silicaPage.seoTitle) ?? silicaPage.name,
+        eyebrow: 'Page',
+        brand: site.name,
+        accent: site.theme?.colorPrimary,
+      });
+    return {
+      title,
+      ...(description ? { description } : {}),
+      ...(canonical ? { alternates: { canonical } } : {}),
+      openGraph: { title, ...(description ? { description } : {}), images: [{ url: ogImage }] },
+      robots: silicaPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
+    };
+  }
 
   // A Builder page owns its slug — title it from the page name (docs/44). Under a
   // site-preview token, the DRAFT page's name.
@@ -114,6 +146,20 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   const slug = buildSlug((await params).slug);
   const sp = (await searchParams) ?? {};
   const previewToken = sp.sparxPreview;
+
+  // The silica engine's published page owns this slug (docs/118 Stage 6) and wins
+  // over every path below. Rendered end to end through `renderSilicaBody`, its
+  // bindings resolved against the sparx host built over its data needs. Null when
+  // no silica page owns the slug — the storefront falls through to the sparx builder
+  // page / CMS / sections paths unchanged.
+  const silicaPage = await getPublishedSilicaPage(site.slug, slug);
+  if (silicaPage) {
+    const host = await buildSilicaHost(site.slug, silicaPage.root, {
+      currency: site.commerce.defaultCurrency,
+      locale: site.commerce.defaultLocale,
+    });
+    return <SilicaBody root={silicaPage.root} symbols={silicaPage.symbols} host={host} />;
+  }
 
   // A published Builder page owns its slug (docs/44 §2.5): if one exists, render
   // it and skip the legacy Site-Builder-sections + CMS-page paths entirely. Its

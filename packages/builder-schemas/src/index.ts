@@ -27,6 +27,8 @@ export * from './binding-ref';
 export * from './silica-resolve';
 export * from './silica-data-sources';
 export * from './silica-class-policy';
+export * from './site-sync';
+export * from './silica-data-needs';
 export * from './import-export';
 export * from './catalog';
 export * from './platform-catalog';

@@ -1,3 +1,4 @@
+import { DetailPageShell } from '../../../_components/detail-page-shell';
 import { MenuDetailContent } from '../menu-detail';
 
 export const dynamic = 'force-dynamic';
@@ -9,8 +10,10 @@ interface PageParams {
 export default async function EditNavigationMenuPage({ params }: PageParams) {
   const { location } = await params;
   return (
-    <div className="flex flex-col gap-5">
-      <MenuDetailContent id={location} />
-    </div>
+    <DetailPageShell typeId="menu" entityId={location}>
+      <div className="flex flex-col gap-5">
+        <MenuDetailContent id={location} />
+      </div>
+    </DetailPageShell>
   );
 }

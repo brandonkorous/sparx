@@ -22,7 +22,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '@sparx/db';
-import { pageService, layoutService, surfaceCssService } from '@sparx/builder';
+import { pageService, layoutService, siteService, surfaceCssService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { tryVerifySitePreview } from '../../../lib/preview.js';
@@ -108,6 +108,38 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const layout = await layoutService.getPublished({ tenantId, propertyId });
     if (!layout) throw notFound('Builder layout', q.tenant);
     return ok(layout);
+  });
+
+  // ── silica-native published reads (docs/118 Stage 6, the render cutover) ─────
+  // The storefront renders these through `renderSilicaBody` (silicaui-html toHtml).
+  // The frame is read ONCE by the site layout; each route reads its page body.
+  // Always 200 for the frame (`frame` is null until a silica layout is published,
+  // so the storefront can decide chrome unconditionally); page/home 404 when the
+  // property has published no silica page owning that slug (storefront falls back).
+
+  app.get('/v1/public/builder/silica/frame', async (request) => {
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    return ok(await siteService.getPublishedFrame({ tenantId, propertyId }));
+  });
+
+  app.get('/v1/public/builder/silica/home', async (request) => {
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const page = await siteService.getPublishedHome({ tenantId, propertyId });
+    if (!page) throw notFound('Builder home', q.tenant);
+    return ok(page);
+  });
+
+  app.get('/v1/public/builder/silica/page', async (request) => {
+    const q = PageQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const page = await siteService.getPublishedPageBySlug({ tenantId, propertyId }, q.slug);
+    if (!page) throw notFound('Builder page', q.slug);
+    return ok(page);
   });
 
   // The compiled per-tenant Surface stylesheet (docs/47 §5): the CSS for every

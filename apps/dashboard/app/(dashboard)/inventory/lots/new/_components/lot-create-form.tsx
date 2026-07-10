@@ -24,6 +24,7 @@ import { createLotBatchAction } from '../../../_lib/lot-actions';
 import { lookupVariantBySkuAction } from '../../../_lib/supplier-actions';
 import { HAZMAT_OPTIONS } from '../../_components/types';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../../_components/detail-panel';
 import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
 
@@ -72,6 +73,11 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [variant, setVariant] = React.useState<PickedVariant | null>(null);
 
   const [warehouseId, setWarehouseId] = React.useState(warehouses[0]?.id ?? '');
@@ -184,6 +190,7 @@ export function LotCreateForm({ surface, warehouses }: LotCreateFormProps) {
             <ViewSwitcher typeId="lot" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={surface === 'overlay' ? overlayActionsTarget : undefined}
         steps={STEPS}
         current={0}
         onCancel={cancel}

@@ -3621,16 +3621,17 @@ async function main(): Promise<void> {
 
   // Every tenant HAS exactly one PRIMARY web property (docs/49). Seed it
   // explicitly (idempotent on tenant_id+slug) so a fresh dev DB matches the
-  // prod sign-up path instead of leaning on the one-time backfill migration.
-  // The display name is "Default" (a tenant is a workspace that HAS sites);
-  // slug 'primary' is reserved and keeps the bare subdomain. properties is
-  // FORCE RLS, so set the tenant context for the WITH CHECK.
+  // prod sign-up path. The display name is the CUSTOMER-FACING site name every
+  // storefront/email surface reads (nav wordmark, footer, page titles), so it must
+  // be a real brand from the start — never "Default" — exactly like provision-tenant
+  // seeds `input.name`. slug 'primary' is reserved and keeps the bare subdomain.
+  // properties is FORCE RLS, so set the tenant context for the WITH CHECK.
   await prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
     await tx.property.upsert({
       where: { tenantId_slug: { tenantId: tenant.id, slug: 'primary' } },
-      update: { name: 'Default' },
-      create: { tenantId: tenant.id, slug: 'primary', name: 'Default', isPrimary: true },
+      update: { name: 'WizeWorks' },
+      create: { tenantId: tenant.id, slug: 'primary', name: 'WizeWorks', isPrimary: true },
     });
   });
 

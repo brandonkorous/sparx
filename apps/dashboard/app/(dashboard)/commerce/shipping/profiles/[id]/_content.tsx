@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../../_components/detail-header-slot';
 
 import { ProfileDeleteButton } from './_components/profile-delete-button';
 
@@ -37,12 +38,18 @@ export async function ShippingProfileDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Delete is a lifecycle action — teleports into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell), parity
+          with every other entity's Archive/Delete control. */}
+      <DetailHeaderSlot>
+        <ProfileDeleteButton profileId={profile.id} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold">{profile.name}</h1>
           {profile.description && <p className="text-base-content/70">{profile.description}</p>}
         </div>
-        <ProfileDeleteButton profileId={profile.id} />
       </div>
 
       <Card>

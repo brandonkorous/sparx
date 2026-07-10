@@ -3,6 +3,26 @@
 
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
+/* silicaui component layer (docs/118 Stage 6, the render cutover). The Tailwind v4
+   plugin emits silica's semantic component classes (`.btn`, `.card`, `.navbar`,
+   `.badge`, the universal `soft` treatment, …) that a published silica page/frame
+   wears — reading the `--color-*` vars already bridged to the tenant theme below
+   (and, when a silica frame is live, the per-tenant `--color-*` silica theme the
+   layout injects, docs/118 §1.0). Coexists with the legacy `--st-*` path during the
+   parallel run: the plugin only ADDS unprefixed component classes (the storefront's
+   own vocabulary is `st-*`), so nothing collides. `highlight` = sparx's Nth
+   attention hue; `error` = silica's built-in status name (paired with `danger`). */
+@plugin '@wizeworks/silicaui' {
+  colors: primary, secondary, accent, neutral, info, success, warning, error, danger, highlight;
+}
+
+/* Safelist the layout/utility classes the silica blocks + sparx composites author
+   as LITERAL strings, so a published silica tree's classes (grid-cols-*, @container,
+   aspect-square, snap-x, object-cover, …) emit into this bundle. Explicit @source
+   overrides Tailwind's node_modules ignore (mirrors the dashboard canvas setup). */
+@source '../../../packages/silica-catalog/src/**/*.{ts,tsx}';
+@source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
+
 @theme {
   /* Brand + base colors bridge to the tenant's compiled --st-x theme, so the
      Tailwind utilities the Builder emits (bg-primary, bg-accent, bg-base-100,

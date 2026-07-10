@@ -1,3 +1,4 @@
+import { DetailPageShell } from '../../../_components/detail-page-shell';
 import { PriceListDetailContent } from './_content';
 
 export const dynamic = 'force-dynamic';
@@ -9,10 +10,12 @@ interface PageProps {
 export default async function PriceListDetailPage({ params }: PageProps) {
   const { id } = await params;
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
-        <PriceListDetailContent id={id} />
+    <DetailPageShell typeId="price-list" entityId={id}>
+      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 py-10">
+          <PriceListDetailContent id={id} />
+        </div>
       </div>
-    </div>
+    </DetailPageShell>
   );
 }

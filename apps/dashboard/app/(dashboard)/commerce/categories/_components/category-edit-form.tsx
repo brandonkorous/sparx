@@ -29,6 +29,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
@@ -80,6 +81,11 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save (docs/86); handing it to SurfaceFrame merges the frame's own
+  // toolbar into THAT row instead of stacking a second one underneath it —
+  // null until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [savedAt, setSavedAt] = React.useState<string | null>(null);
@@ -229,6 +235,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
             <ViewSwitcher typeId="category" entityId={category.id} current="page" />
           ) : undefined
         }
+        actionsTarget={surface === 'overlay' ? overlayActionsTarget : undefined}
         steps={STEPS}
         current={0}
         onCancel={cancel}

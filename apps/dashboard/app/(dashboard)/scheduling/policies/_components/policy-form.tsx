@@ -27,6 +27,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 import type { BookingPolicy, DepositType, FeeType } from '../../_lib/types';
 import { createBookingPolicyAction, updateBookingPolicyAction } from '../../_lib/actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 
@@ -67,6 +68,11 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // Overlay only: the drawer/modal host's own toolbar row, already rendered by
+  // `detail-panel.tsx`'s `DetailHeader`. Handing it to `SurfaceFrame` merges the
+  // form's own toolbar into THAT row instead of stacking a second one underneath
+  // it — null until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState(policy?.name ?? '');
   const [depositType, setDepositType] = useState<DepositType>(policy?.depositType ?? 'none');
@@ -341,6 +347,7 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
             <ViewSwitcher typeId="booking-policy" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
         steps={STEPS}
         current={0}
         onCancel={cancel}

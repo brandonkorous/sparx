@@ -3,6 +3,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 
 import pageRoutes from './pages.js';
+import siteRoutes from './site.js';
 import assignmentRoutes from './assignments.js';
 import layoutRoutes from './layout.js';
 import emailRoutes from './emails.js';
@@ -16,6 +17,7 @@ import analyticsRoutes from './analytics.js';
 
 const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(pageRoutes);
+  await app.register(siteRoutes);
   await app.register(assignmentRoutes);
   await app.register(layoutRoutes);
   await app.register(emailRoutes);

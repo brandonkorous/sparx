@@ -16,8 +16,11 @@ import { encodeBindingRef } from './binding-ref';
 import { PINS_ROOT, SOURCES_ROOT, entityPinKey, collectionSourceKey } from './runtime';
 
 /** A minimal silica ancestor node that establishes a `collection` scope on `ref`. */
-const scopeNode = (ref: string): Node =>
-  ({ kind: 'element', tag: 'div', data: { kind: 'collection', ref } }) as Node;
+const scopeNode = (ref: string): Node => ({
+  kind: 'element',
+  tag: 'div',
+  data: { kind: 'collection', ref },
+});
 
 describe('toSilicaDataSources — the picker/engine catalog', () => {
   const sources = toSilicaDataSources([...COMMERCE_SOURCES, ...SITE_SOURCES]);

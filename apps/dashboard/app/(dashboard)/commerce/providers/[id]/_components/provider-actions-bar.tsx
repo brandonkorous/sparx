@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Power, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
-import { useConfirm } from '@sparx/ui';
-import { Button } from '@wizeworks/silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 
 import {
   setProviderEnabledAction,
@@ -13,6 +13,10 @@ import {
   uninstallProviderAction,
 } from '../../../provider-actions';
 
+// Lifecycle controls for a provider installation, teleported into the detail
+// frame's header (drawer/modal chrome or the full-page shell) via the shared
+// header slot — parity with TemplateStatusBar. Errors + test results surface
+// as toasts: the header bar has no room for inline status text.
 export function ProviderActionsBar({
   installationId,
   enabled,
@@ -23,13 +27,12 @@ export function ProviderActionsBar({
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [testResult, setTestResult] = React.useState<string | null>(null);
 
   function onToggle() {
     startTransition(async () => {
       const result = await setProviderEnabledAction({ installationId, enabled: !enabled });
       if (!result.ok) {
-        console.error('Failed to toggle provider', result.error);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -37,16 +40,17 @@ export function ProviderActionsBar({
   }
 
   function onTest() {
-    setTestResult(null);
     startTransition(async () => {
       const result = await testProviderAction(installationId);
       if (!result.ok) {
-        setTestResult(`Failed: ${result.error.message}`);
+        toast.error(result.error.message);
         return;
       }
-      setTestResult(
-        result.data.ok ? `OK — ${result.data.details}` : `Test failed: ${result.data.details}`
-      );
+      if (result.data.ok) {
+        toast.success(`OK — ${result.data.details}`);
+      } else {
+        toast.error(`Test failed: ${result.data.details}`);
+      }
     });
   }
 
@@ -63,7 +67,7 @@ export function ProviderActionsBar({
       startTransition(async () => {
         const result = await uninstallProviderAction(installationId);
         if (!result.ok) {
-          console.error('Failed to uninstall', result.error);
+          toast.error(result.error.message);
           return;
         }
         router.push('/commerce/providers');
@@ -72,32 +76,29 @@ export function ProviderActionsBar({
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <div className="flex flex-row gap-2">
-        <Button variant="ghost" disabled={pending} onClick={onTest}>
-          Test
-        </Button>
+    <div className="flex flex-row items-center gap-2">
+      <Button variant="ghost" size="sm" disabled={pending} onClick={onTest}>
+        Test
+      </Button>
+      <Tooltip content="Uninstall">
         <Button
           variant="ghost"
-          disabled={pending}
-          onClick={onToggle}
-          iconStart={<Power className="h-4 w-4" />}
-        >
-          {enabled ? 'Disable' : 'Enable'}
-        </Button>
-        <Button
-          variant="ghost"
+          size="sm"
+          aria-label="Uninstall"
           disabled={pending}
           onClick={onUninstall}
-          iconStart={<Trash2 className="h-4 w-4" />}
         >
-          Uninstall
+          <Trash2 className="h-3.5 w-3.5" />
         </Button>
-      </div>
-      {testResult && (
-        <p className="text-base-content/70 text-xs" role="status" aria-live="polite">
-          {testResult}
-        </p>
+      </Tooltip>
+      {enabled ? (
+        <Button variant="ghost" size="sm" disabled={pending} onClick={onToggle}>
+          Disable
+        </Button>
+      ) : (
+        <Button variant="solid" color="module" size="sm" disabled={pending} onClick={onToggle}>
+          Enable
+        </Button>
       )}
     </div>
   );

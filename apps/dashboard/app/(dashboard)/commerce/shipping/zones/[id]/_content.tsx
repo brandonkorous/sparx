@@ -6,6 +6,7 @@ import { Badge, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-re
 import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../../_components/detail-header-slot';
 
 import { NewRateForm } from './_components/new-rate-form';
 import { RateDeleteButton } from './_components/rate-delete-button';
@@ -77,6 +78,13 @@ export async function ShippingZoneDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Delete is a lifecycle action — teleports into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell), parity
+          with every other entity's Archive/Delete control. */}
+      <DetailHeaderSlot>
+        <ZoneDeleteButton zoneId={zone.id} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold">{zone.name}</h1>
@@ -91,7 +99,6 @@ export async function ShippingZoneDetailContent({ id }: Props) {
             </p>
           </div>
         </div>
-        <ZoneDeleteButton zoneId={zone.id} />
       </div>
 
       <Card>
@@ -133,73 +140,12 @@ export async function ShippingZoneDetailContent({ id }: Props) {
         </CardBody>
       </Card>
 
-      <Card>
-        <CardBody>
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-row items-center gap-2">
-              <Plus className="h-4 w-4" />
-              <h3 className="text-xl font-semibold">Manual rates</h3>
-            </div>
-            <p className="opacity-70">
-              Storefront uses these when no carrier provider is installed, or as a fallback if
-              provider rates time out.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
-            {rates.length === 0 ? (
-              <EmptyState
-                icon={<Plus className="h-5 w-5" />}
-                title="No rates yet"
-                description="Add a flat, by-weight, by-price, by-item-count, or free-above-threshold rate."
-              />
-            ) : (
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Profile</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Carrier</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rates.map((r) => (
-                    <tr key={r.id}>
-                      <td>{r.name}</td>
-                      <td>
-                        <p className="text-base-content/70 text-xs">
-                          {profileById.get(r.profileId)?.name ?? r.profileId.slice(0, 8)}
-                        </p>
-                      </td>
-                      <td>
-                        <Badge color="info" variant="soft" size="sm">
-                          {statusLabel(r.type)}
-                        </Badge>
-                      </td>
-                      <td>
-                        {r.amountCents != null
-                          ? `${(r.amountCents / 100).toFixed(2)} ${r.currency}`
-                          : r.bands && r.bands.length > 0
-                            ? `${r.bands.length} bands`
-                            : '—'}
-                      </td>
-                      <td>{r.carrier ?? '—'}</td>
-                      <td>
-                        <RateDeleteButton rateId={r.id} zoneId={zone.id} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-
-            <h4 className="text-lg font-semibold">Add a rate</h4>
-            <NewRateForm zoneId={zone.id} profiles={profiles} />
-          </div>
-        </CardBody>
-      </Card>
+      <ManualRatesCard
+        zoneId={zone.id}
+        rates={rates}
+        profiles={profiles}
+        profileById={profileById}
+      />
     </div>
   );
 }
@@ -210,5 +156,87 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <p className="text-base-content/70 text-xs">{label}</p>
       {children}
     </div>
+  );
+}
+
+function ManualRatesCard({
+  zoneId,
+  rates,
+  profiles,
+  profileById,
+}: {
+  zoneId: string;
+  rates: ShippingRateRow[];
+  profiles: ShippingProfileRow[];
+  profileById: Map<string, ShippingProfileRow>;
+}) {
+  return (
+    <Card>
+      <CardBody>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <Plus className="h-4 w-4" />
+            <h3 className="text-xl font-semibold">Manual rates</h3>
+          </div>
+          <p className="opacity-70">
+            Storefront uses these when no carrier provider is installed, or as a fallback if
+            provider rates time out.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4">
+          {rates.length === 0 ? (
+            <EmptyState
+              icon={<Plus className="h-5 w-5" />}
+              title="No rates yet"
+              description="Add a flat, by-weight, by-price, by-item-count, or free-above-threshold rate."
+            />
+          ) : (
+            <Table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Profile</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Carrier</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rates.map((r) => (
+                  <tr key={r.id}>
+                    <td>{r.name}</td>
+                    <td>
+                      <p className="text-base-content/70 text-xs">
+                        {profileById.get(r.profileId)?.name ?? r.profileId.slice(0, 8)}
+                      </p>
+                    </td>
+                    <td>
+                      <Badge color="info" variant="soft" size="sm">
+                        {statusLabel(r.type)}
+                      </Badge>
+                    </td>
+                    <td>
+                      {r.amountCents != null
+                        ? `${(r.amountCents / 100).toFixed(2)} ${r.currency}`
+                        : r.bands && r.bands.length > 0
+                          ? `${r.bands.length} bands`
+                          : '—'}
+                    </td>
+                    <td>{r.carrier ?? '—'}</td>
+                    <td>
+                      <RateDeleteButton rateId={r.id} zoneId={zoneId} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+
+          <h4 className="text-lg font-semibold">Add a rate</h4>
+          <NewRateForm zoneId={zoneId} profiles={profiles} />
+        </div>
+      </CardBody>
+    </Card>
   );
 }

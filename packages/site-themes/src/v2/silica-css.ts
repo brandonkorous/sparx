@@ -178,3 +178,30 @@ export function buildSilicaThemeCss(
     `@media (prefers-color-scheme:dark){${root}:not([data-theme="light"]){${dark}}}`,
   ].join('');
 }
+
+/**
+ * Build the tenant theme stylesheet from an AUTHORED silica `Theme` — the theme the
+ * builder round-trips through `onChange` (docs/118). A silica `Theme`'s `tokens` /
+ * `dark` maps are ALREADY the `--*` custom properties this stylesheet declares, so
+ * this is a direct projection: no inverse token mapping, nothing lost, and an author
+ * edit renders on the storefront exactly as it previewed on the canvas.
+ *
+ * This is the counterpart to `buildSilicaThemeCss` (which projects a brand-DERIVED
+ * `CompiledThemeV2`). A property that has never had its theme edited in the builder
+ * renders through that one; once an author saves a theme, the stored `Theme` wins
+ * and renders through this one. Same selectors, same dark-mode rules, so switching
+ * between them is invisible.
+ */
+export function buildSilicaThemeCssFromTheme(
+  theme: SilicaTheme,
+  opts: BuildSilicaThemeCssOptions = {}
+): string {
+  const root = opts.rootSelector ?? ':root';
+  const out = [`${root}{${declBlock(theme.tokens)}}`];
+  if (theme.dark && Object.keys(theme.dark).length > 0) {
+    const dark = declBlock(theme.dark);
+    out.push(`${root}[data-theme="dark"]{${dark}}`);
+    out.push(`@media (prefers-color-scheme:dark){${root}:not([data-theme="light"]){${dark}}}`);
+  }
+  return out.join('');
+}

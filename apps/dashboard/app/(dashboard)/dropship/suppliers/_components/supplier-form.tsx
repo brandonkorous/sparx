@@ -22,6 +22,7 @@ import { rule, useFieldValidation } from '@sparx/forms';
 import { createSupplier, updateSupplier } from '../_lib/actions';
 import { VendorPicker } from './vendor-picker';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
@@ -127,6 +128,11 @@ export function SupplierForm({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const isEdit = Boolean(supplier);
 
   const [step, setStep] = useState(isEdit ? 1 : 0);
@@ -613,6 +619,7 @@ export function SupplierForm({
             <ViewSwitcher typeId="dropship-supplier" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
         steps={steps}
         current={isEdit ? 0 : step}
         onCancel={cancel}

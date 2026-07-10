@@ -6,6 +6,7 @@ import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-rea
 import { Stat, statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { QuoteLifecycleActions } from './_components/quote-lifecycle-actions';
 
@@ -77,32 +78,36 @@ export async function QuoteDetailContent({ id }: Props) {
     // @container so the body responds to its OWN width — full-page (wide) vs. the
     // detail drawer (narrow), where viewport breakpoints would crush the columns.
     <div className="@container flex flex-col gap-6">
+      {/* Lifecycle controls teleport into the shared detail chrome's header
+          (drawer/modal chrome or the full-page shell), parity with Bundle/
+          ConfiguratorTemplate. */}
+      <DetailHeaderSlot>
+        <QuoteLifecycleActions quoteId={quote.id} status={quote.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-col gap-2">
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-row flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-semibold">{quote.quoteNumber}</h1>
-            <Badge color={statusTone(quote.status)} variant="soft">
-              {statusLabel(quote.status)}
-            </Badge>
-            {customer && (
-              <Link
-                href={`/crm/customers/${customer.id}`}
-                className="hover:text-module text-sm hover:underline"
-              >
-                {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
-                  (customer.company ?? customer.email)}
-              </Link>
-            )}
-            {quote.convertedToOrderId && (
-              <Link
-                href={`/crm/orders/${quote.convertedToOrderId}`}
-                className="hover:text-module text-sm hover:underline"
-              >
-                → Converted order
-              </Link>
-            )}
-          </div>
-          <QuoteLifecycleActions quoteId={quote.id} status={quote.status} />
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{quote.quoteNumber}</h1>
+          <Badge color={statusTone(quote.status)} variant="soft">
+            {statusLabel(quote.status)}
+          </Badge>
+          {customer && (
+            <Link
+              href={`/crm/customers/${customer.id}`}
+              className="hover:text-module text-sm hover:underline"
+            >
+              {[customer.firstName, customer.lastName].filter(Boolean).join(' ') ||
+                (customer.company ?? customer.email)}
+            </Link>
+          )}
+          {quote.convertedToOrderId && (
+            <Link
+              href={`/crm/orders/${quote.convertedToOrderId}`}
+              className="hover:text-module text-sm hover:underline"
+            >
+              → Converted order
+            </Link>
+          )}
         </div>
       </div>
 

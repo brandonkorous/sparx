@@ -17,12 +17,11 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { toast, useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, toast, useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardActions,
   CardBody,
   DatePicker,
   Dialog,
@@ -33,8 +32,9 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
-import { Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { type FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 import type { Property } from '@/lib/sites';
@@ -42,10 +42,12 @@ import { ContentEntryForm, missingRequiredFields } from '../../../_components/co
 import { SiteScopeField } from '../../../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
 import { EntryStatusBar } from './entry-status-bar';
-import { DetailHeaderSlot } from '../../../../_components/detail-header-slot';
+import { DetailFooterSlot, DetailHeaderSlot } from '../../../../_components/detail-header-slot';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
 import { EntryTemplatePicker } from './entry-template-picker';
 import { deleteEntry, saveEntry, scheduleEntryPublish, setEntryStatus } from '../../actions';
+
+const FORM_ID = 'content-entry-edit-form';
 
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 
@@ -91,15 +93,11 @@ export interface EditEntryFormProps {
    *  body; the workspace only observes it. Omitted ⇒ no preview. */
   onBody?: (body: Record<string, unknown>) => void;
   /** When the editor workspace hosts a builder-style toolbar (the live-preview
-   *  surface), it passes a DOM slot here and the status + publish actions render
-   *  INTO it (the 'bar' layout) instead of as the standalone Status card. The form
-   *  still owns all the state — only the DOM location moves. Undefined ⇒ the card. */
+   *  surface), it passes a DOM slot here and status + Save/Delete portal INTO it,
+   *  alongside the view controls. Undefined ⇒ no live-preview toolbar — status
+   *  and Save/Delete instead portal into the shared detail chrome's header/footer
+   *  slots (drawer/modal, or the full-page shell for a type with no template). */
   statusSlot?: HTMLElement | null;
-  /** Drawer/modal surfaces (no live-preview toolbar) route the status bar into the
-   *  detail chrome header instead of the standalone Status card. Full-page surfaces
-   *  with no chrome header (a type with no builder template) leave this false and keep
-   *  the card. */
-  statusInHeader?: boolean;
 }
 
 export function EditEntryForm({
@@ -112,7 +110,6 @@ export function EditEntryForm({
   initialBody,
   initialSeo,
   initialStatus,
-  publishedAt,
   scheduledAt,
   tenantSlug,
   templateOptions,
@@ -121,7 +118,6 @@ export function EditEntryForm({
   initialPropertyIds,
   onBody,
   statusSlot,
-  statusInHeader,
 }: EditEntryFormProps) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -130,9 +126,13 @@ export function EditEntryForm({
   const multiSite = sites.length > 1;
   const lowerType = typeName.toLowerCase();
 
+  // Scoped to the schedule dialog only now — it has room for an inline error.
+  // The main Save/Publish/Delete actions surface failures as a toast: neither the
+  // builder toolbar nor the shared detail chrome's header/footer slots have room
+  // for a persistent error line, matching the Page/Product edit forms.
   const [error, setError] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
 
   const [body, setBody] = React.useState<Record<string, unknown>>(initialBody);
   const [seo, setSeo] = React.useState<SeoFields>(initialSeo);
@@ -173,11 +173,10 @@ export function EditEntryForm({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
+    setSavedAt(null);
     const missing = missingRequiredFields({ fields: schema.fields }, body);
     if (missing.length) {
-      setError(`Required: ${missing.join(', ')}.`);
+      toast.error(`Required: ${missing.join(', ')}.`);
       return;
     }
     startTransition(async () => {
@@ -188,29 +187,27 @@ export function EditEntryForm({
         propertyIds: multiSite ? propertyIds : undefined,
       });
       if (!result.ok) {
-        setError(result.error ?? 'Could not save changes.');
+        toast.error(result.error ?? 'Could not save changes.');
         return;
       }
       // Advance the saved snapshot to what we just persisted, so the guard reads
       // clean immediately (independent of how the refetch serializes the body).
       savedRef.current = { body, seo, propertyIds };
-      setMessage('Saved.');
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
 
   function onTogglePublish() {
-    setError(null);
-    setMessage(null);
     const target = status === 'published' ? 'draft' : 'published';
     startTransition(async () => {
       const result = await setEntryStatus(id, typeKey, target);
       if (!result.ok) {
-        setError(result.error ?? 'Could not update status.');
+        toast.error(result.error ?? 'Could not update status.');
         return;
       }
       setStatus(target);
-      setMessage(target === 'published' ? 'Published.' : 'Reverted to draft.');
+      toast.success(target === 'published' ? 'Published.' : 'Reverted to draft.');
       router.refresh();
     });
   }
@@ -225,7 +222,6 @@ export function EditEntryForm({
       return;
     }
     setError(null);
-    setMessage(null);
     const target = scheduleAt;
     startTransition(async () => {
       const result = await scheduleEntryPublish(id, typeKey, target.toISOString());
@@ -235,7 +231,6 @@ export function EditEntryForm({
       }
       setScheduleOpen(false);
       setStatus('scheduled');
-      setMessage(`Scheduled for ${target.toLocaleString()}.`);
       toast.success(`Scheduled for ${target.toLocaleString()}`);
       router.refresh();
     });
@@ -262,12 +257,10 @@ export function EditEntryForm({
       tone: 'danger',
     });
     if (!ok) return;
-    setError(null);
-    setMessage(null);
     startTransition(async () => {
       const result = await deleteEntry(id, typeKey);
       if (!result.ok) {
-        setError(result.error ?? 'Could not delete entry.');
+        toast.error(result.error ?? 'Could not delete entry.');
         return;
       }
       // Back to this type's items on the unified content list (/cms/types/<key>
@@ -278,9 +271,10 @@ export function EditEntryForm({
   }
 
   // The status + publish actions are one cohesive unit (EntryStatusBar) that the
-  // form owns but renders in one of two places: the standalone Status card, or — on
-  // the live-preview surface — PORTALED into the workspace's builder-style toolbar.
-  // All the state stays here; `statusSlot` only moves where the DOM lands.
+  // form owns but renders in one of two places: PORTALED into the live-preview
+  // workspace's builder-style toolbar, or into the shared detail chrome's header
+  // slot (drawer/modal, or the full-page shell for a type with no template). All
+  // the state stays here; `statusSlot` only moves where the DOM lands.
   const embedded = statusSlot !== undefined;
   const statusBarProps = {
     status,
@@ -290,30 +284,70 @@ export function EditEntryForm({
     slug,
     typeKey,
     tenantSlug,
-    publishedAt,
-    scheduledAt,
     onTogglePublish,
     onSchedule: () => setScheduleOpen(true),
   };
 
+  // Delete + Save travel together with status, into whichever chrome hosts it —
+  // the builder toolbar's status slot when embedded, or the shared footer slot
+  // otherwise. Rare + destructive, so Delete is demoted the same way Product
+  // demotes Archive: icon-only ghost + tooltip, ahead of the primary Save.
+  const formActions = (
+    <div className="flex items-center gap-2">
+      <Tooltip content="Delete">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-label="Delete"
+          disabled={pending}
+          onClick={() => void handleDelete()}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </Tooltip>
+      {savedAt !== null && !dirty && (
+        <span className="text-success flex items-center gap-1 text-xs">
+          <Check className="h-3.5 w-3.5" />
+          Saved
+        </span>
+      )}
+      <Button
+        type="submit"
+        form={FORM_ID}
+        size="sm"
+        color="module"
+        disabled={pending || !dirty}
+        loading={pending}
+      >
+        <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
+      </Button>
+    </div>
+  );
+
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form id={FORM_ID} onSubmit={onSubmit} noValidate>
       <div className="flex flex-col gap-6">
-        {/* Live-preview surface: status + actions live in the toolbar (portaled into
-            the workspace's slot). Otherwise the standalone Status card. */}
+        {/* Live-preview surface: status + Save/Delete live in the toolbar
+            (portaled into the workspace's slot). Otherwise both teleport into
+            the shared detail chrome's header + footer slots. */}
         {embedded ? (
-          statusSlot ? (
-            createPortal(<EntryStatusBar layout="bar" {...statusBarProps} />, statusSlot)
-          ) : null
-        ) : statusInHeader ? (
-          // Drawer/modal: the type signal + status/publish bar teleport into the
-          // detail chrome header (parity with Product), not a Status card atop the form.
-          <DetailHeaderSlot>
-            <Badge color="module">{lowerType}</Badge>
-            <EntryStatusBar layout="bar" {...statusBarProps} />
-          </DetailHeaderSlot>
+          statusSlot &&
+          createPortal(
+            <>
+              <EntryStatusBar {...statusBarProps} />
+              {formActions}
+            </>,
+            statusSlot
+          )
         ) : (
-          <EntryStatusBar layout="card" {...statusBarProps} />
+          <>
+            <DetailHeaderSlot>
+              <Badge color="module">{lowerType}</Badge>
+              <EntryStatusBar {...statusBarProps} />
+            </DetailHeaderSlot>
+            <DetailFooterSlot>{formActions}</DetailFooterSlot>
+          </>
         )}
 
         <Card>
@@ -363,37 +397,6 @@ export function EditEntryForm({
             current={currentTemplateId ?? null}
           />
         )}
-
-        <Card>
-          <CardBody>
-            <div className="flex flex-col gap-2">
-              {error && (
-                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                  {error}
-                </FieldStatus>
-              )}
-              {message && (
-                <FieldStatus status="success" attached={false} aria-live="polite">
-                  {message}
-                </FieldStatus>
-              )}
-            </div>
-            <CardActions>
-              <Button
-                type="button"
-                variant="ghost"
-                iconStart={<Trash2 className="h-4 w-4" />}
-                onClick={handleDelete}
-                disabled={pending}
-              >
-                Delete
-              </Button>
-              <Button type="submit" color="module" disabled={pending} loading={pending}>
-                Save changes
-              </Button>
-            </CardActions>
-          </CardBody>
-        </Card>
       </div>
 
       <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>

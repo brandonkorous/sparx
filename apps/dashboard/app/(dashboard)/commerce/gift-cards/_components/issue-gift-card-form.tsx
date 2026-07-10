@@ -16,6 +16,7 @@ import { useFieldValidation } from '@sparx/forms';
 
 import { issueGiftCardAction } from '../../discount-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 
@@ -42,6 +43,11 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [issuedCode, setIssuedCode] = React.useState<string | null>(null);
@@ -154,6 +160,7 @@ export function IssueGiftCardForm({ surface }: IssueGiftCardFormProps) {
             <ViewSwitcher typeId="gift-card" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={surface === 'overlay' ? overlayActionsTarget : undefined}
         steps={STEPS}
         current={0}
         onCancel={cancel}

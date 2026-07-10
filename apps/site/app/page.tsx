@@ -16,6 +16,9 @@ import { BuilderRenderer } from '@/components/builder-renderer';
 import { listCollections, listProducts } from '@/lib/commerce';
 import { getPageBySlug } from '@/lib/content';
 import { getPublishedBuilderHome, getPublishedBuilderStyles } from '@/lib/builder';
+import { getPublishedSilicaHome } from '@/lib/silica';
+import { buildSilicaHost } from '@/lib/silica-data';
+import { SilicaBody } from '@/components/silica-chrome';
 import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
@@ -32,6 +35,19 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   if (!site) notFound();
 
   const sp = (await searchParams) ?? {};
+
+  // The silica engine's published HOME body (docs/118 Stage 6) owns `/` and wins
+  // over every path below — the same additive rule, one layer up. Rendered end to
+  // end through `renderSilicaBody` (SilicaBody), bindings resolved against the sparx
+  // host built over its data needs. Null until a silica home is published.
+  const silicaHome = await getPublishedSilicaHome(site.slug);
+  if (silicaHome) {
+    const host = await buildSilicaHost(site.slug, silicaHome.root, {
+      currency: site.commerce.defaultCurrency,
+      locale: site.commerce.defaultLocale,
+    });
+    return <SilicaBody root={silicaHome.root} symbols={silicaHome.symbols} host={host} />;
+  }
 
   // A published Builder HOME page (the slugless singleton) owns `/` and wins over
   // every legacy path — the same additive "Builder owns it, else fall through"

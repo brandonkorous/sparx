@@ -37,7 +37,10 @@ export async function AuthorDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-semibold">Edit author</h1>
+      {/* No in-body heading — "Display name" is the editable identity field
+          (parity with Page/Product: identity shows once), and the shared detail
+          chrome (back-link on the full page, window controls in drawer/modal)
+          already supplies the "you're editing an author" context. */}
       <AuthorEditForm
         author={{
           id: author.id,

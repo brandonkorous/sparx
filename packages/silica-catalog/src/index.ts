@@ -9,5 +9,6 @@
 export * from './types';
 export * from './commerce';
 export * from './catalog';
+export * from './site-chrome';
 export * from './site';
 export * from './render';

@@ -329,6 +329,8 @@ model Tenant {
   builderPages             BuilderPage[]
   // Builder module — the site layout / chrome shell (docs/45)
   builderLayouts           BuilderLayout[]
+  // Builder module — the per-property silica site record: theme + symbols (docs/118)
+  builderSites             BuilderSite[]
   // Builder module — per-record template overrides (docs/51 §6)
   builderPageAssignments   BuilderPageAssignment[]
   // Builder module — the Email Builder's emails (docs/52)

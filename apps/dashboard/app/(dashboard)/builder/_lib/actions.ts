@@ -18,6 +18,7 @@ import type {
   BuilderNode,
   BuilderPageDto,
   BuilderPageKind,
+  SiteSyncInput,
 } from '@sparx/builder-schemas';
 
 export interface ActionResult<T = void> {
@@ -58,6 +59,33 @@ export async function savePageTree(
   tree: BuilderNode
 ): Promise<ActionResult<BuilderPageDto>> {
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { tree }), false);
+}
+
+// ── silica-native site (docs/118) ────────────────────────────────────────────
+// The silica `<Builder>` autosaves the WHOLE extracted site on every edit (its
+// engine owns the multi-page model), so persistence is one whole-site reconcile,
+// not the per-page PATCH above.
+
+/** The silica autosave path — reconcile the whole extracted `Site` into the
+ *  store. No revalidate (the client holds the live site; see file header). */
+export async function syncBuilderSite(
+  input: SiteSyncInput
+): Promise<ActionResult<{ saved: boolean }>> {
+  return run(
+    () => api.put<{ saved: boolean }>('/v1/builder/site', input),
+    false,
+    '/builder/silica'
+  );
+}
+
+/** Publish the silica site — snapshot every draft tree → published. Revalidates
+ *  the silica studio route so a fresh load reflects the published state. */
+export async function publishBuilderSite(): Promise<ActionResult<{ published: boolean }>> {
+  return run(
+    () => api.post<{ published: boolean }>('/v1/builder/site/publish'),
+    true,
+    '/builder/silica'
+  );
 }
 
 export async function renamePage(id: string, name: string): Promise<ActionResult<BuilderPageDto>> {

@@ -71,6 +71,27 @@ function scopeRelative(binding: NodeBinding, hasItem: boolean): NodeBinding {
   return { ...binding, path: `item.${path}` };
 }
 
+/** The default host value formatter, covering the two shape gaps between sparx's
+ *  resolver data and silica's `fillValue` — shared by the dashboard editor host
+ *  AND the storefront render host so they format identically (docs/118 §4):
+ *   · an image/file field resolves to a `{ url, alt }` OBJECT, but `fillValue` sets
+ *     `<img src>` only from a STRING — so unwrap to the url. An EMPTY url returns
+ *     `undefined`, leaving the node's authored `src` (the composite's placeholder
+ *     tile) in place rather than blanking it.
+ *   · a `price` field resolves to a raw number — render it as currency (formatting
+ *     is host territory; a composite binds the number, never a pre-formatted string).
+ *  A host can wrap this to add locale/currency awareness. */
+export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unknown {
+  if (value && typeof value === 'object' && 'url' in (value as Record<string, unknown>)) {
+    const url = (value as { url?: unknown }).url;
+    return typeof url === 'string' && url ? url : undefined;
+  }
+  if (typeof value === 'number' && /price/i.test(binding.path ?? '')) {
+    return `$${value.toFixed(2)}`;
+  }
+  return value;
+}
+
 /** Build a synchronous sparx resolver over a pre-loaded data root. */
 export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolver {
   const { root, format, label } = opts;

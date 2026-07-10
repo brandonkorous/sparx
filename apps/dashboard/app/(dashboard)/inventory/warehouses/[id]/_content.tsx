@@ -6,6 +6,7 @@ import { Badge, Button, Card, CardBody } from '@wizeworks/silicaui-react';
 import { statusLabel } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { WarehouseEditForm } from './_components/warehouse-edit-form';
 import { WarehouseArchiveButton } from './_components/warehouse-archive-button';
@@ -74,6 +75,13 @@ export async function WarehouseDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Archive is a lifecycle action — teleports into the shared detail chrome's
+          header (drawer/modal chrome or the full-page shell), parity with every
+          other entity's Archive/Delete control. */}
+      <DetailHeaderSlot>
+        <WarehouseArchiveButton warehouseId={warehouse.id} isActive={warehouse.isActive} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-3">
@@ -99,7 +107,6 @@ export async function WarehouseDetailContent({ id }: Props) {
             {[warehouse.city, warehouse.region, warehouse.country].filter(Boolean).join(', ')}
           </p>
         </div>
-        <WarehouseArchiveButton warehouseId={warehouse.id} isActive={warehouse.isActive} />
       </div>
 
       <div className="flex flex-row flex-wrap gap-4">

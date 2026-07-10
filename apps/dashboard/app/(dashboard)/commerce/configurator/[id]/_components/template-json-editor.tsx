@@ -2,10 +2,13 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { Check } from 'lucide-react';
 
 import { Button, FieldStatus, Textarea } from '@wizeworks/silicaui-react';
+import { AdaptiveLabel } from '@sparx/ui';
 
 import { updateTemplateAction } from '../../../configurator-actions';
+import { DetailFooterSlot } from '../../../../_components/detail-header-slot';
 
 interface InitialPayload {
   name: string;
@@ -26,10 +29,14 @@ export function TemplateJsonEditor({
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [json, setJson] = React.useState<string>(() => JSON.stringify(initial, null, 2));
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
+  const initialJson = React.useMemo(() => JSON.stringify(initial, null, 2), [initial]);
+  const [json, setJson] = React.useState<string>(initialJson);
+  const dirty = json !== initialJson;
 
   function onSave() {
     setError(null);
+    setSavedAt(null);
     let parsed: unknown;
     try {
       parsed = JSON.parse(json);
@@ -43,6 +50,7 @@ export function TemplateJsonEditor({
         setError(result.error.message);
         return;
       }
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
@@ -60,11 +68,29 @@ export function TemplateJsonEditor({
           {error}
         </FieldStatus>
       )}
-      <div className="flex flex-row justify-end gap-2">
-        <Button color="module" type="button" disabled={pending} onClick={onSave}>
-          {pending ? 'Saving…' : 'Save definition'}
-        </Button>
-      </div>
+
+      {/* The primary action teleports up into the shared detail chrome's
+          footer, not floored at the bottom of the page. */}
+      <DetailFooterSlot>
+        <div className="flex items-center gap-2">
+          {savedAt !== null && !dirty && (
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          )}
+          <Button
+            color="module"
+            size="sm"
+            type="button"
+            disabled={pending || !dirty}
+            loading={pending}
+            onClick={onSave}
+          >
+            <AdaptiveLabel label={{ full: 'Save definition', short: 'Save' }} />
+          </Button>
+        </div>
+      </DetailFooterSlot>
     </div>
   );
 }

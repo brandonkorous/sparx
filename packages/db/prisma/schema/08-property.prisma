@@ -72,6 +72,9 @@ model Property {
   builderPages       BuilderPage[]
   builderLayouts     BuilderLayout[]
   builderAssignments BuilderPageAssignment[]
+  // The silica site record (docs/118): this site's authored theme + saved-component
+  // symbols. Site-global, so it hangs off the property — never off a layout.
+  builderSite        BuilderSite?
   // Per-site email overrides (docs/49 Phase 7b / docs/91 §6) — a site's fork of a
   // provisioned default, or a site-specific custom email. null-property emails are
   // tenant-wide (the 13 defaults + tenant custom emails). SetNull on delete.

@@ -2,9 +2,15 @@
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 
-import { ModuleProvider, SurfaceFrame, SurfaceStep, type SurfaceStepDef } from '@sparx/ui';
+import {
+  AdaptiveLabel,
+  ModuleProvider,
+  SurfaceFrame,
+  SurfaceStep,
+  type SurfaceStepDef,
+} from '@sparx/ui';
 import {
   Badge,
   Button,
@@ -25,8 +31,11 @@ import { useFieldValidation } from '@sparx/forms';
 
 import { createBundleAction, updateBundleAction } from '../../configurator-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { DetailFooterSlot, useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../_components/detail-panel';
+
+const EDIT_FORM_ID = 'bundle-edit-form';
 
 export interface BundleProductOption {
   id: string;
@@ -87,8 +96,14 @@ export function BundleEditor({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isEdit = Boolean(bundleId);
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [bundleProductId, setBundleProductId] = React.useState(initialBundleProductId ?? '');
   const [pricingMode, setPricingMode] = React.useState<
     'sum_of_components' | 'fixed' | 'percent_off_sum'
@@ -215,6 +230,7 @@ export function BundleEditor({
 
   function submit() {
     setError(null);
+    setSavedAt(null);
 
     if (components.length === 0) {
       setError('Add at least one component');
@@ -253,6 +269,7 @@ export function BundleEditor({
           setError(result.error.message);
           return;
         }
+        setSavedAt(Date.now());
         router.refresh();
       } else {
         const result = await createBundleAction({ ...payload, bundleProductId });
@@ -396,6 +413,7 @@ export function BundleEditor({
   if (isEdit) {
     return (
       <form
+        id={EDIT_FORM_ID}
         onSubmit={(e) => {
           e.preventDefault();
           submit();
@@ -482,13 +500,30 @@ export function BundleEditor({
               {error}
             </FieldStatus>
           )}
+        </div>
 
-          <div className="flex flex-row justify-end gap-2">
-            <Button color="module" type="submit" disabled={pending}>
-              {pending ? 'Saving…' : 'Save bundle'}
+        {/* The primary action teleports up into the shared detail chrome's
+            footer (next to Delete), not floored at the bottom of the page. */}
+        <DetailFooterSlot>
+          <div className="flex items-center gap-2">
+            {savedAt !== null && !dirty && (
+              <span className="text-success flex items-center gap-1 text-xs">
+                <Check className="h-3.5 w-3.5" />
+                Saved
+              </span>
+            )}
+            <Button
+              type="submit"
+              form={EDIT_FORM_ID}
+              size="sm"
+              color="module"
+              disabled={pending || !dirty}
+              loading={pending}
+            >
+              <AdaptiveLabel label={{ full: 'Save bundle', short: 'Save' }} />
             </Button>
           </div>
-        </div>
+        </DetailFooterSlot>
       </form>
     );
   }
@@ -507,6 +542,7 @@ export function BundleEditor({
             <ViewSwitcher typeId="bundle" entityId={CREATE_SENTINEL} current="page" />
           ) : undefined
         }
+        actionsTarget={surface === 'overlay' ? overlayActionsTarget : undefined}
         steps={CREATE_STEPS}
         current={0}
         onCancel={cancel}

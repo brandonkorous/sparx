@@ -2,6 +2,7 @@
 // Server Actions). Mirrors packages/sitebuilder/src/services/index.ts.
 
 export * as pageService from './page-service';
+export * as siteService from './site-service';
 export * as assignmentService from './assignment-service';
 export * as layoutService from './layout-service';
 export * as formService from './form-submit-service';

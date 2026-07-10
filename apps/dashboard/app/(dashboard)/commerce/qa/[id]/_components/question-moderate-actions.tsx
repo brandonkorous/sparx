@@ -2,13 +2,17 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
-import { Button } from '@wizeworks/silicaui-react';
-import { useConfirm } from '@sparx/ui';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
 
 import { moderateQuestionAction } from '../../../review-actions';
 
+// Lifecycle/moderation controls for a Q&A question, teleported into the
+// detail frame's header (drawer/modal chrome or the full-page shell) via the
+// shared header slot — parity with TemplateStatusBar. Errors surface as a
+// toast: the header bar has no room for inline error text.
 export function QuestionModerateActions({
   questionId,
   status,
@@ -19,7 +23,6 @@ export function QuestionModerateActions({
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
 
   function decide(next: 'published' | 'rejected') {
     void (async () => {
@@ -36,7 +39,7 @@ export function QuestionModerateActions({
       startTransition(async () => {
         const result = await moderateQuestionAction({ questionId, status: next });
         if (!result.ok) {
-          setError(result.error.message);
+          toast.error(result.error.message);
           return;
         }
         router.refresh();
@@ -45,25 +48,30 @@ export function QuestionModerateActions({
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <div className="flex flex-row gap-2">
-        {status !== 'published' && (
-          <Button color="module" disabled={pending} onClick={() => decide('published')}>
-            <Check className="h-4 w-4" />
-            Publish
+    <div className="flex flex-row items-center gap-2">
+      {status !== 'rejected' && (
+        <Tooltip content="Reject">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Reject"
+            disabled={pending}
+            onClick={() => decide('rejected')}
+          >
+            <X className="h-3.5 w-3.5" />
           </Button>
-        )}
-        {status !== 'rejected' && (
-          <Button variant="ghost" disabled={pending} onClick={() => decide('rejected')}>
-            <X className="h-4 w-4" />
-            Reject
-          </Button>
-        )}
-      </div>
-      {error && (
-        <p className="text-danger text-xs" role="alert" aria-live="polite">
-          {error}
-        </p>
+        </Tooltip>
+      )}
+      {status !== 'published' && (
+        <Button
+          variant="solid"
+          color="module"
+          size="sm"
+          disabled={pending}
+          onClick={() => decide('published')}
+        >
+          Publish
+        </Button>
       )}
     </div>
   );

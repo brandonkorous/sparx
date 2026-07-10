@@ -43,6 +43,7 @@ import { createEntry, getTypeSchema } from '../../types/actions';
 import { createAuthor } from '../../authors/actions';
 import { ContentEntryForm } from '../../_components/content-entry-form';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../_components/detail-panel';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 
@@ -151,6 +152,11 @@ function ContentEntryWizardInner({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // The overlay host (drawer/modal) already renders a footer-slot row for
+  // Cancel/Save; handing it to SurfaceFrame merges the frame's own toolbar
+  // into THAT row instead of stacking a second one underneath it — null
+  // until the host mounts.
+  const overlayActionsTarget = useDetailFooterNode();
 
   // If a type was pre-selected, skip the Type step.
   const hasTypeStep = !preselectedType;
@@ -666,6 +672,7 @@ function ContentEntryWizardInner({
           <ViewSwitcher typeId="content-entry" entityId={CREATE_SENTINEL} current="page" />
         ) : undefined
       }
+      actionsTarget={presentation === 'page' ? undefined : overlayActionsTarget}
       steps={steps}
       current={current}
       context={RAIL[stepKey].context}

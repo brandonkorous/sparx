@@ -8,12 +8,11 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { statusLabel, statusTone, toast, useConfirm } from '@sparx/ui';
+import { AdaptiveLabel, statusLabel, statusTone, toast, useConfirm } from '@sparx/ui';
 import {
   Badge,
   Button,
   Card,
-  CardActions,
   CardBody,
   DatePicker,
   Dialog,
@@ -26,17 +25,18 @@ import {
   FieldLabel,
   FieldStatus,
   Label,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
-import { CalendarClock, History, Trash2 } from 'lucide-react';
+import { CalendarClock, Check, History, Trash2 } from 'lucide-react';
 import type { Property } from '@/lib/sites';
 import { deletePage, schedulePagePublish, setPageStatus, updatePage } from '../actions';
 import { SiteScopeField } from '../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from './seo-panel';
 import { PreviewButton } from './preview-button';
-import { DetailHeaderSlot } from '../../_components/detail-header-slot';
+import { DetailFooterSlot, DetailHeaderSlot } from '../../_components/detail-header-slot';
 import { useUnsavedGuard } from '../../_components/unsaved-guard';
 
 export interface EditableTenantPage {
@@ -76,9 +76,13 @@ export function EditPageForm({
   const router = useRouter();
   const confirm = useConfirm();
   const multiSite = sites.length > 1;
+  // Scoped to the schedule dialog only now — it has room for an inline error.
+  // The main Save/Publish/Delete actions surface failures as a toast (see
+  // below): the header lifecycle zone and the compact footer Save slot have no
+  // room for a persistent error line, matching the Product edit form.
   const [error, setError] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+  const [savedAt, setSavedAt] = React.useState<number | null>(null);
   const [doc, setDoc] = React.useState<CmsDoc>(page.body ?? EMPTY_DOC);
   const [title, setTitle] = React.useState(page.title);
   const [slug, setSlug] = React.useState(page.slug);
@@ -121,8 +125,7 @@ export function EditPageForm({
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
+    setSavedAt(null);
     if (!v.validate()) return;
     const formData = new FormData(e.currentTarget);
     formData.set('content', JSON.stringify(doc));
@@ -139,29 +142,27 @@ export function EditPageForm({
     startTransition(async () => {
       const result = await updatePage(page.id, formData);
       if (!result.ok) {
-        setError(result.error ?? 'Could not save changes.');
+        toast.error(result.error ?? 'Could not save changes.');
         return;
       }
       // Advance the saved snapshot to what we just persisted, so the guard reads
       // clean immediately (independent of how the refetch serializes the body).
       savedRef.current = { title, slug, doc, seo, propertyIds };
-      setMessage('Saved.');
+      setSavedAt(Date.now());
       router.refresh();
     });
   }
 
   function onTogglePublish() {
-    setError(null);
-    setMessage(null);
     const target = page.status === 'published' ? 'draft' : 'published';
 
     startTransition(async () => {
       const result = await setPageStatus(page.id, target);
       if (!result.ok) {
-        setError(result.error ?? 'Could not update status.');
+        toast.error(result.error ?? 'Could not update status.');
         return;
       }
-      setMessage(target === 'published' ? 'Published.' : 'Reverted to draft.');
+      toast.success(target === 'published' ? 'Published.' : 'Reverted to draft.');
       router.refresh();
     });
   }
@@ -176,7 +177,6 @@ export function EditPageForm({
       return;
     }
     setError(null);
-    setMessage(null);
     const target = scheduleAt;
 
     startTransition(async () => {
@@ -186,7 +186,6 @@ export function EditPageForm({
         return;
       }
       setScheduleOpen(false);
-      setMessage(`Scheduled for ${target.toLocaleString()}.`);
       toast.success(`Scheduled for ${target.toLocaleString()}`);
       router.refresh();
     });
@@ -213,12 +212,10 @@ export function EditPageForm({
       tone: 'danger',
     });
     if (!ok) return;
-    setError(null);
-    setMessage(null);
     startTransition(async () => {
       const result = await deletePage(page.id);
       if (!result.ok) {
-        setError(result.error ?? 'Could not delete page.');
+        toast.error(result.error ?? 'Could not delete page.');
         return;
       }
       router.push('/cms');
@@ -227,7 +224,7 @@ export function EditPageForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate>
+    <form id="cms-page-edit-form" onSubmit={onSubmit} noValidate>
       {/* Lifecycle controls live in the detail frame's header (drawer chrome or
           the full-page shell), not a bespoke Status card atop the form — parity
           with Product. The form still owns all the state + handlers; this just
@@ -253,6 +250,21 @@ export function EditPageForm({
         >
           <History className="h-3.5 w-3.5" />
         </Button>
+        {/* Delete is rare + destructive (soft-delete), so it's demoted the same
+            way Product demotes Archive: icon-only ghost + tooltip, placed before
+            the primary forward action (Publish). */}
+        <Tooltip content="Delete">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-label="Delete"
+            disabled={pending}
+            onClick={() => void handleDelete()}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
         {page.status !== 'published' && (
           <Button
             type="button"
@@ -337,38 +349,33 @@ export function EditPageForm({
           fallbackTitle={title}
           entryId={page.id}
         />
-
-        <Card>
-          <CardBody>
-            <div className="flex flex-col gap-2">
-              {error && (
-                <FieldStatus status="error" attached={false} role="alert" aria-live="polite">
-                  {error}
-                </FieldStatus>
-              )}
-              {message && (
-                <FieldStatus status="success" attached={false} aria-live="polite">
-                  {message}
-                </FieldStatus>
-              )}
-            </div>
-          </CardBody>
-          <CardActions>
-            <Button
-              type="button"
-              variant="ghost"
-              iconStart={<Trash2 className="h-4 w-4" />}
-              onClick={handleDelete}
-              disabled={pending}
-            >
-              Delete
-            </Button>
-            <Button type="submit" color="module" disabled={pending} loading={pending}>
-              Save changes
-            </Button>
-          </CardActions>
-        </Card>
       </div>
+
+      {/* The primary action teleports up into the frame's top toolbar (next to
+          lifecycle actions), not floored at the bottom — it renders OUTSIDE the
+          scrolling body, portaled out of this <form>, so it re-associates by id.
+          A failed save surfaces as a toast — there's no room for a persistent
+          error line in the compact shared toolbar row. */}
+      <DetailFooterSlot>
+        <div className="flex items-center gap-2">
+          {savedAt !== null && !dirty && (
+            <span className="text-success flex items-center gap-1 text-xs">
+              <Check className="h-3.5 w-3.5" />
+              Saved
+            </span>
+          )}
+          <Button
+            type="submit"
+            form="cms-page-edit-form"
+            size="sm"
+            color="module"
+            disabled={pending || !dirty}
+            loading={pending}
+          >
+            <AdaptiveLabel label={{ full: 'Save changes', short: 'Save' }} />
+          </Button>
+        </div>
+      </DetailFooterSlot>
 
       <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
         <DialogContent>

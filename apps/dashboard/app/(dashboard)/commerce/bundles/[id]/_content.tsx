@@ -5,6 +5,7 @@ import { statusLabel } from '@sparx/ui';
 import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import {
   BundleEditor,
@@ -86,6 +87,13 @@ export async function BundleDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Delete is a lifecycle action — teleports into the shared detail
+          chrome's header (drawer/modal chrome or the full-page shell), parity
+          with every other entity's Archive/Delete control. */}
+      <DetailHeaderSlot>
+        <BundleDeleteButton bundleId={bundle.id} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-3">
@@ -103,7 +111,6 @@ export async function BundleDetailContent({ id }: Props) {
             {new Date(bundle.updatedAt).toLocaleDateString()}
           </p>
         </div>
-        <BundleDeleteButton bundleId={bundle.id} />
       </div>
 
       <Card>

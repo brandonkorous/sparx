@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Pause, Play, SkipForward, X } from 'lucide-react';
+import { SkipForward, X } from 'lucide-react';
 
-import { useConfirm } from '@sparx/ui';
-import { Button } from '@wizeworks/silicaui-react';
+import { toast, useConfirm } from '@sparx/ui';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 
 import {
   cancelSubscriptionAction,
@@ -14,6 +14,10 @@ import {
   skipNextOccurrenceAction,
 } from '../../../subscription-actions';
 
+// Lifecycle controls for a subscription, teleported into the detail frame's
+// header (drawer/modal chrome or the full-page shell) via the shared header
+// slot — parity with TemplateStatusBar. Errors surface as a toast: the header
+// bar has no room for inline error text.
 export function SubscriptionActionsBar({
   subscriptionId,
   status,
@@ -29,7 +33,7 @@ export function SubscriptionActionsBar({
     startTransition(async () => {
       const result = await pauseSubscriptionAction({ subscriptionId });
       if (!result.ok) {
-        console.error('Pause failed', result.error);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -40,7 +44,7 @@ export function SubscriptionActionsBar({
     startTransition(async () => {
       const result = await resumeSubscriptionAction({ subscriptionId });
       if (!result.ok) {
-        console.error('Resume failed', result.error);
+        toast.error(result.error.message);
         return;
       }
       router.refresh();
@@ -60,7 +64,7 @@ export function SubscriptionActionsBar({
       startTransition(async () => {
         const result = await skipNextOccurrenceAction({ subscriptionId });
         if (!result.ok) {
-          console.error('Skip failed', result.error);
+          toast.error(result.error.message);
           return;
         }
         router.refresh();
@@ -84,7 +88,7 @@ export function SubscriptionActionsBar({
           atPeriodEnd: true,
         });
         if (!result.ok) {
-          console.error('Cancel failed', result.error);
+          toast.error(result.error.message);
           return;
         }
         router.refresh();
@@ -93,46 +97,42 @@ export function SubscriptionActionsBar({
   }
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row items-center gap-2">
+      {(status === 'active' || status === 'trialing') && (
+        <Tooltip content="Skip next occurrence">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Skip next occurrence"
+            disabled={pending}
+            onClick={onSkip}
+          >
+            <SkipForward className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
+      )}
+      {status !== 'cancelled' && (
+        <Tooltip content="Cancel">
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Cancel"
+            disabled={pending}
+            onClick={onCancel}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </Tooltip>
+      )}
       {status === 'active' || status === 'trialing' ? (
-        <Button
-          variant="ghost"
-          disabled={pending}
-          onClick={onPause}
-          iconStart={<Pause className="h-4 w-4" />}
-        >
+        <Button variant="ghost" size="sm" disabled={pending} onClick={onPause}>
           Pause
         </Button>
       ) : status === 'paused' ? (
-        <Button
-          variant="outline"
-          disabled={pending}
-          onClick={onResume}
-          iconStart={<Play className="h-4 w-4" />}
-        >
+        <Button variant="solid" color="module" size="sm" disabled={pending} onClick={onResume}>
           Resume
         </Button>
       ) : null}
-      {(status === 'active' || status === 'trialing') && (
-        <Button
-          variant="ghost"
-          disabled={pending}
-          onClick={onSkip}
-          iconStart={<SkipForward className="h-4 w-4" />}
-        >
-          Skip next
-        </Button>
-      )}
-      {status !== 'cancelled' && (
-        <Button
-          variant="ghost"
-          disabled={pending}
-          onClick={onCancel}
-          iconStart={<X className="h-4 w-4" />}
-        >
-          Cancel
-        </Button>
-      )}
     </div>
   );
 }

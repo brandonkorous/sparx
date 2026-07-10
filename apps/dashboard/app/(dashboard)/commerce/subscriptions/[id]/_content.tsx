@@ -4,6 +4,7 @@ import { statusLabel, statusTone } from '@sparx/ui';
 import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { SubscriptionActionsBar } from './_components/subscription-actions-bar';
 
@@ -61,6 +62,12 @@ export async function SubscriptionDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle controls teleport into the shared detail chrome's header
+          (drawer/modal chrome or the full-page shell), parity with Product. */}
+      <DetailHeaderSlot>
+        <SubscriptionActionsBar subscriptionId={sub.id} status={sub.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
@@ -75,7 +82,6 @@ export async function SubscriptionDetailContent({ id }: Props) {
             {sub.intervalCount > 1 ? 's' : ''} · {sub.deliveriesPerCycle} per cycle
           </p>
         </div>
-        <SubscriptionActionsBar subscriptionId={sub.id} status={sub.status} />
       </div>
 
       <div className="flex flex-row flex-wrap gap-4">

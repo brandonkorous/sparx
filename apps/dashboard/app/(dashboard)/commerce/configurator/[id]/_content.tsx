@@ -6,6 +6,7 @@ import { Badge, Card, CardBody, Table } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { TemplateStatusBar } from './_components/template-status-bar';
 import { TemplateJsonEditor } from './_components/template-json-editor';
@@ -102,6 +103,12 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Lifecycle controls teleport into the shared detail chrome's header
+          (drawer/modal chrome or the full-page shell), parity with Product. */}
+      <DetailHeaderSlot>
+        <TemplateStatusBar templateId={template.id} status={template.status} />
+      </DetailHeaderSlot>
+
       <div className="flex flex-row flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex flex-row flex-wrap items-center gap-3">
@@ -122,7 +129,6 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
             {template.description ? ` · ${template.description}` : ''}
           </p>
         </div>
-        <TemplateStatusBar templateId={template.id} status={template.status} />
       </div>
 
       <Card>
