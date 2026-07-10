@@ -47,6 +47,7 @@ export async function listPurchaseOrders(
             OR: [
               { number: { contains: filter.search, mode: 'insensitive' } },
               { reference: { contains: filter.search, mode: 'insensitive' } },
+              { supplier: { name: { contains: filter.search, mode: 'insensitive' } } },
             ],
           }
         : {}),

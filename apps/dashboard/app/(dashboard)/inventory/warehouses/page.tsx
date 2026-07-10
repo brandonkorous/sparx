@@ -25,6 +25,7 @@ interface PageProps {
 export default async function WarehousesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
   const [prefs, { data: warehouses, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<WarehouseRow[]>(
@@ -32,6 +33,7 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
         include_archived: 'true',
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -62,7 +64,7 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
       toolbar={
         <ListToolbar
           enableViewToggle
-          searchable={false}
+          searchPlaceholder="Search name or code…"
           primaryAction={
             <EntityCreateButton
               entityType="warehouse"
@@ -82,17 +84,29 @@ export default async function WarehousesPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<WarehouseIcon className="h-5 w-5" />}
-            title={total === 0 ? 'No warehouses yet' : 'No warehouses on this page'}
-            description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
+            title={
+              q
+                ? 'No warehouses match this search'
+                : total === 0
+                  ? 'No warehouses yet'
+                  : 'No warehouses on this page'
+            }
+            description={
+              q
+                ? 'Try a different name or code.'
+                : 'Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="warehouse"
-                newHref="/inventory/warehouses/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              q ? undefined : (
+                <EntityCreateButton
+                  entityType="warehouse"
+                  newHref="/inventory/warehouses/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              )
             }
           />
         </Card>

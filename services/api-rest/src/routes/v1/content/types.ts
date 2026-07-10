@@ -31,6 +31,8 @@ import { publish } from '@sparx/api-core/pubsub';
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  kind: z.enum(['built_in', 'custom']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -89,14 +91,25 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
     );
     // A tenant fork (is_built_in=false) shadows the platform built-in of the
     // same key — list the fork, drop the shadowed built-in. Dedup runs BEFORE
-    // paging so `total` and the window both reflect the post-dedup set (a
-    // shadowed built-in must not inflate the count or consume a page slot). The
-    // type catalog is a small, bounded set, so in-memory paging is correct.
+    // filtering/paging so `total` and the window both reflect the post-dedup
+    // set (a shadowed built-in must not inflate the count or consume a page
+    // slot). The type catalog is a small, bounded set, so in-memory
+    // filter/paging is correct — there's no Prisma `where` to push this into.
     const deduped = dedupeByKey(rows);
-    const total = deduped.length;
+    const needle = q.q?.toLowerCase();
+    const filtered = deduped.filter((r) => {
+      if (q.kind === 'built_in' && !r.isBuiltIn) return false;
+      if (q.kind === 'custom' && r.isBuiltIn) return false;
+      if (needle) {
+        const haystack = `${r.name} ${r.pluralName} ${r.description ?? ''}`.toLowerCase();
+        if (!haystack.includes(needle)) return false;
+      }
+      return true;
+    });
+    const total = filtered.length;
     const skip = q.skip ?? 0;
     const take = Math.min(q.take ?? 50, 250);
-    const window = deduped.slice(skip, skip + take);
+    const window = filtered.slice(skip, skip + take);
     return paged(window.map(serializeContentType), { total, per_page: q.take ?? 50 });
   });
 

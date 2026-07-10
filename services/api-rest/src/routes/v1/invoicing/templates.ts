@@ -30,6 +30,7 @@ const PreviewQuery = z.object({ documentId: z.string().uuid().optional() });
 // (and lazily seeds the built-in default on first use); the window is applied here
 // so the seed-on-first-use contract other callers depend on stays unchanged.
 const ListTemplatesQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -85,13 +86,15 @@ const templateRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const q = ListTemplatesQuery.parse(request.query);
     const all = await billingTemplateService.listOrSeed(toInvoicingContext(request));
-    const total = all.length;
+    const needle = q.q?.toLowerCase();
+    const filtered = needle ? all.filter((t) => t.name.toLowerCase().includes(needle)) : all;
+    const total = filtered.length;
     const skip = q.skip ?? 0;
-    // Window only when asked — an un-paged caller still gets the whole set.
+    // Window only when asked — an un-paged caller still gets the whole (filtered) set.
     const items =
       q.take !== undefined || q.skip !== undefined
-        ? all.slice(skip, skip + (q.take ?? total))
-        : all;
+        ? filtered.slice(skip, skip + (q.take ?? total))
+        : filtered;
     return paged(items, { total, skip, per_page: q.take ?? 50 });
   });
 

@@ -38,6 +38,7 @@ const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() 
 // Offset pagination + the passthrough filters the service understands. `take`/`skip`
 // match the platform list convention; they map onto the service's `limit`/`offset`.
 const ListDocumentsQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   workflowId: z.string().uuid().optional(),
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
@@ -59,6 +60,7 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const q = ListDocumentsQuery.parse(request.query);
     const { items, total } = await billingDocumentService.list(toInvoicingContext(request), {
+      q: q.q,
       workflowId: q.workflowId,
       stageId: q.stageId,
       customerId: q.customerId,

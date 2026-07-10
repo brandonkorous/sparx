@@ -11,7 +11,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { Booking, BookingSeries } from '@sparx/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { CancelBookingSeriesInput, CreateBookingSeriesInput } from '@sparx/scheduling-schemas';
 import {
@@ -27,6 +27,12 @@ import { requireSchedulingModule, toSchedulingContext } from '../../../lib/sched
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  status: z.string().max(20).optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 function seriesView(s: BookingSeries) {
   return {
@@ -70,8 +76,9 @@ const schedulingSeriesRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/series', async (request) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
-    const rows = await listBookingSeries(tenantId);
-    return ok(rows.map(summaryView));
+    const query = ListQuery.parse(request.query);
+    const { items, total } = await listBookingSeries(tenantId, query);
+    return paged(items.map(summaryView), { total, per_page: query.take ?? 50 });
   });
 
   app.post('/v1/scheduling/series', async (request, reply) => {

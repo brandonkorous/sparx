@@ -9,9 +9,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Table,
 } from '@wizeworks/silicaui-react';
-import { toast, useConfirm } from '@sparx/ui';
+import {
+  SelectionList,
+  toast,
+  useConfirm,
+  type SelectionCard,
+  type SelectionColumn,
+} from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { SchedulingService } from '../../_lib/types';
@@ -19,7 +24,16 @@ import { BOOKING_TYPE_LABEL, duration, money } from '../../_lib/format';
 import { deleteServiceAction } from '../../_lib/actions';
 import { ServiceForm } from './service-form';
 
-export function ServicesList({ services }: { services: SchedulingService[] }) {
+// Services index list — rendered through the shared `SelectionList` dual-view
+// substrate (docs/34 §7) so it gains the Table/Cards toggle. Read-only
+// selection: each row's actions (edit / delete) live in a dropdown.
+
+interface ServicesListProps {
+  services: SchedulingService[];
+  view: 'table' | 'card';
+}
+
+export function ServicesList({ services, view }: ServicesListProps) {
   const router = useRouter();
   const confirm = useConfirm();
   const [editing, setEditing] = useState<SchedulingService | null>(null);
@@ -42,56 +56,75 @@ export function ServicesList({ services }: { services: SchedulingService[] }) {
     }
   }
 
+  const priceLabel = (svc: SchedulingService) =>
+    svc.priceCents > 0 ? money(svc.priceCents, svc.currency) : '—';
+
+  const statusBadge = (svc: SchedulingService) => (
+    <Badge color={svc.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
+      {svc.isActive ? 'Active' : 'Inactive'}
+    </Badge>
+  );
+
+  const actionsMenu = (svc: SchedulingService) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="ghost" shape="square" size="sm" aria-label="Service actions">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setEditing(svc)}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void remove(svc)} className="text-danger">
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const columns: SelectionColumn<SchedulingService>[] = [
+    { header: 'Name', cell: (svc) => <span className="font-medium">{svc.name}</span> },
+    { header: 'Type', cell: (svc) => BOOKING_TYPE_LABEL[svc.bookingType] },
+    { header: 'Duration', cell: (svc) => duration(svc.durationMinutes) },
+    { header: 'Price', cell: priceLabel },
+    { header: 'Capacity', cell: (svc) => svc.capacity },
+    { header: 'Status', cell: statusBadge },
+    { header: '', align: 'right', cell: actionsMenu },
+  ];
+
+  const card: SelectionCard<SchedulingService> = {
+    title: (svc) => <p className="font-medium">{svc.name}</p>,
+    subtitle: (svc) => (
+      <p className="text-base-content/70 text-xs">
+        {BOOKING_TYPE_LABEL[svc.bookingType]} · {duration(svc.durationMinutes)}
+      </p>
+    ),
+    badge: statusBadge,
+    body: (svc) => (
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-sm">
+          {priceLabel(svc)} · capacity {svc.capacity}
+        </p>
+        {actionsMenu(svc)}
+      </div>
+    ),
+  };
+
   return (
     <>
-      <Table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Duration</th>
-            <th>Price</th>
-            <th>Capacity</th>
-            <th>Status</th>
-            <th className="w-10" />
-          </tr>
-        </thead>
-        <tbody>
-          {services.map((svc) => (
-            <tr key={svc.id}>
-              <td className="font-medium">{svc.name}</td>
-              <td>{BOOKING_TYPE_LABEL[svc.bookingType]}</td>
-              <td>{duration(svc.durationMinutes)}</td>
-              <td>{svc.priceCents > 0 ? money(svc.priceCents, svc.currency) : '—'}</td>
-              <td>{svc.capacity}</td>
-              <td>
-                <Badge color={svc.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
-                  {svc.isActive ? 'Active' : 'Inactive'}
-                </Badge>
-              </td>
-              <td>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" shape="square" size="sm" aria-label="Service actions">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setEditing(svc)}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => void remove(svc)} className="text-danger">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <SelectionList
+        items={services}
+        view={view}
+        getId={(svc) => svc.id}
+        getRowLabel={(svc) => svc.name}
+        entityLabelPlural="services"
+        selectable={false}
+        columns={columns}
+        card={card}
+      />
 
       {editing ? (
         <ServiceForm

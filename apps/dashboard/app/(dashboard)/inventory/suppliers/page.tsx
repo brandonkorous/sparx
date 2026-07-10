@@ -25,6 +25,7 @@ interface PageProps {
 export default async function SuppliersPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
   const [prefs, { data: suppliers, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<SupplierRow[]>(
@@ -32,6 +33,7 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
         include_archived: 'true',
         take: String(take),
         skip: String(skip),
+        ...(q ? { search: q } : {}),
       }).toString()}`
     ),
   ]);
@@ -58,7 +60,7 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
       toolbar={
         <ListToolbar
           enableViewToggle
-          searchable={false}
+          searchPlaceholder="Search name or code…"
           primaryAction={
             <EntityCreateButton
               entityType="supplier"
@@ -78,17 +80,29 @@ export default async function SuppliersPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<Truck className="h-5 w-5" />}
-            title={total === 0 ? 'No suppliers yet' : 'No suppliers on this page'}
-            description="Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers."
+            title={
+              q
+                ? 'No suppliers match this search'
+                : total === 0
+                  ? 'No suppliers yet'
+                  : 'No suppliers on this page'
+            }
+            description={
+              q
+                ? 'Try a different name or code.'
+                : 'Add your first supplier to start tracking who you buy from. Purchase orders and receiving build on suppliers.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="supplier"
-                newHref="/inventory/suppliers/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              q ? undefined : (
+                <EntityCreateButton
+                  entityType="supplier"
+                  newHref="/inventory/suppliers/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              )
             }
           />
         </Card>

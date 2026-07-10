@@ -9,15 +9,24 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Table,
 } from '@wizeworks/silicaui-react';
-import { toast, useConfirm } from '@sparx/ui';
+import {
+  SelectionList,
+  toast,
+  useConfirm,
+  type SelectionCard,
+  type SelectionColumn,
+} from '@sparx/ui';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import type { BookingPolicy, FeeType } from '../../_lib/types';
 import { money } from '../../_lib/format';
 import { deleteBookingPolicyAction } from '../../_lib/actions';
 import { PolicyForm } from './policy-form';
+
+// Policies index list — rendered through the shared `SelectionList` dual-view
+// substrate (docs/34 §7) so it gains the Table/Cards toggle. Read-only
+// selection: each row's actions (edit / delete) live in a dropdown.
 
 const DEPOSIT_LABEL: Record<string, string> = {
   none: 'None',
@@ -40,7 +49,12 @@ function feeSummary(type: FeeType | null, value: number | null): string {
   return type === 'fixed' ? money(value, 'usd') : `${value}%`;
 }
 
-export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
+interface PoliciesListProps {
+  policies: BookingPolicy[];
+  view: 'table' | 'card';
+}
+
+export function PoliciesList({ policies, view }: PoliciesListProps) {
   const router = useRouter();
   const confirm = useConfirm();
   const [editing, setEditing] = useState<BookingPolicy | null>(null);
@@ -63,62 +77,77 @@ export function PoliciesList({ policies }: { policies: BookingPolicy[] }) {
     }
   }
 
+  const depositBadge = (p: BookingPolicy) =>
+    p.depositType === 'none' ? (
+      <span className="text-base-content/70">—</span>
+    ) : (
+      <Badge color="module" variant="soft" size="sm">
+        {depositSummary(p)}
+      </Badge>
+    );
+
+  const actionsMenu = (p: BookingPolicy) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="ghost" shape="square" size="sm" aria-label="Policy actions">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => setEditing(p)}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void remove(p)} className="text-danger">
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const columns: SelectionColumn<BookingPolicy>[] = [
+    { header: 'Name', cell: (p) => <span className="font-medium">{p.name}</span> },
+    { header: 'Deposit', cell: depositBadge },
+    { header: 'Notice', cell: (p) => `${p.cancellationWindowHours}h` },
+    { header: 'Late fee', cell: (p) => feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue) },
+    { header: 'No-show fee', cell: (p) => feeSummary(p.noShowFeeType, p.noShowFeeValue) },
+    {
+      header: 'Reminders',
+      cell: (p) => (p.reminderOffsetsMin.length ? `${p.reminderOffsetsMin.join(', ')} min` : '—'),
+    },
+    { header: '', align: 'right', cell: actionsMenu },
+  ];
+
+  const card: SelectionCard<BookingPolicy> = {
+    title: (p) => <p className="font-medium">{p.name}</p>,
+    subtitle: (p) => (
+      <p className="text-base-content/70 text-xs">{p.cancellationWindowHours}h notice</p>
+    ),
+    badge: depositBadge,
+    body: (p) => (
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-sm">
+          Late {feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue)} · No-show{' '}
+          {feeSummary(p.noShowFeeType, p.noShowFeeValue)}
+        </p>
+        {actionsMenu(p)}
+      </div>
+    ),
+  };
+
   return (
     <>
-      <Table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Deposit</th>
-            <th>Notice</th>
-            <th>Late fee</th>
-            <th>No-show fee</th>
-            <th>Reminders</th>
-            <th className="w-10" />
-          </tr>
-        </thead>
-        <tbody>
-          {policies.map((p) => (
-            <tr key={p.id}>
-              <td className="font-medium">{p.name}</td>
-              <td>
-                {p.depositType === 'none' ? (
-                  <span className="text-base-content/70">—</span>
-                ) : (
-                  <Badge color="module" variant="soft" size="sm">
-                    {depositSummary(p)}
-                  </Badge>
-                )}
-              </td>
-              <td>{p.cancellationWindowHours}h</td>
-              <td>{feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue)}</td>
-              <td>{feeSummary(p.noShowFeeType, p.noShowFeeValue)}</td>
-              <td>
-                {p.reminderOffsetsMin.length ? `${p.reminderOffsetsMin.join(', ')} min` : '—'}
-              </td>
-              <td>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" shape="square" size="sm" aria-label="Policy actions">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setEditing(p)}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => void remove(p)} className="text-danger">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <SelectionList
+        items={policies}
+        view={view}
+        getId={(p) => p.id}
+        getRowLabel={(p) => p.name}
+        entityLabelPlural="policies"
+        selectable={false}
+        columns={columns}
+        card={card}
+      />
 
       {editing ? (
         <PolicyForm

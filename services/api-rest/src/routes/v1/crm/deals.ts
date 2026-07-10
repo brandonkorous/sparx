@@ -20,6 +20,7 @@ import dealAttachmentRoutes from './deal-attachments.js';
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   pipeline_id: z.string().uuid().optional(),
   stage_id: z.string().uuid().optional(),
   customer_id: z.string().uuid().optional(),
@@ -42,6 +43,7 @@ const dealRoutes: FastifyPluginAsync = async (app) => {
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await dealService.list(toCrmContext(request), {
+      q: q.q,
       pipelineId: q.pipeline_id,
       stageId: q.stage_id,
       customerId: q.customer_id,

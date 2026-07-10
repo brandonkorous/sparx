@@ -18,6 +18,7 @@ import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
 
 export interface ListTasksFilter {
+  q?: string;
   assignedToUserId?: string;
   customerId?: string;
   dealId?: string;
@@ -32,7 +33,8 @@ export async function list(
   filter: ListTasksFilter = {}
 ): Promise<{ items: Task[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where = {
+    const where: Prisma.TaskWhereInput = {
+      ...(filter.q ? { title: { contains: filter.q, mode: 'insensitive' } } : {}),
       ...(filter.assignedToUserId ? { assignedToUserId: filter.assignedToUserId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
       ...(filter.dealId ? { dealId: filter.dealId } : {}),
@@ -235,7 +237,7 @@ export async function complete(ctx: ServiceContext, rawInput: unknown): Promise<
  *  omitted). The Phase 5 overdue-reminder worker calls this. */
 export async function getOverdue(
   ctx: ServiceContext,
-  args: { userId?: string } = {}
+  args: { q?: string; userId?: string } = {}
 ): Promise<Task[]> {
   return withTenant(ctx, (tx) =>
     tx.task.findMany({
@@ -243,6 +245,7 @@ export async function getOverdue(
         status: 'open',
         dueAt: { lt: new Date() },
         ...(args.userId ? { assignedToUserId: args.userId } : {}),
+        ...(args.q ? { title: { contains: args.q, mode: 'insensitive' } } : {}),
       },
       orderBy: { dueAt: 'asc' },
     })

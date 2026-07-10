@@ -3,7 +3,7 @@
 // bookings is ON DELETE SET NULL, so removing a policy just detaches it (history
 // keeps its denormalized fields). Tenant-scoped via withTenant (FORCE RLS).
 
-import { withTenant, type BookingPolicy } from '@sparx/db';
+import { withTenant, type BookingPolicy, type Prisma } from '@sparx/db';
 import type { CreateBookingPolicyInput, UpdateBookingPolicyInput } from '@sparx/scheduling-schemas';
 
 import { BookingPolicyNotFoundError } from './errors';
@@ -77,8 +77,30 @@ export async function getBookingPolicy(tenantId: string, id: string): Promise<Bo
   });
 }
 
-export async function listBookingPolicies(tenantId: string): Promise<BookingPolicy[]> {
-  return withTenant({ tenantId }, (tx) => tx.bookingPolicy.findMany({ orderBy: { name: 'asc' } }));
+export async function listBookingPolicies(
+  tenantId: string,
+  opts: { q?: string; take?: number; skip?: number } = {}
+): Promise<{ items: BookingPolicy[]; total: number }> {
+  return withTenant({ tenantId }, async (tx) => {
+    const where: Prisma.BookingPolicyWhereInput = opts.q
+      ? {
+          OR: [
+            { name: { contains: opts.q, mode: 'insensitive' } },
+            { policyText: { contains: opts.q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+    const [items, total] = await Promise.all([
+      tx.bookingPolicy.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        take: Math.min(opts.take ?? 50, 250),
+        skip: opts.skip ?? 0,
+      }),
+      tx.bookingPolicy.count({ where }),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function deleteBookingPolicy(tenantId: string, id: string): Promise<void> {

@@ -59,10 +59,18 @@ export {
   updateResource,
   getResource,
   listResources,
+  listResourcesPaged,
   listBookableResourcesForService,
   deleteResource,
 } from './resources';
-export { createService, updateService, getService, listServices, deleteService } from './services';
+export {
+  createService,
+  updateService,
+  getService,
+  listServices,
+  listServicesPaged,
+  deleteService,
+} from './services';
 export {
   createBookingPolicy,
   updateBookingPolicy,

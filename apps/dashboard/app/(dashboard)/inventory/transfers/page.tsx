@@ -28,9 +28,11 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status) ?? '';
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
+  if (q) query.set('q', q);
 
   const [prefs, { data: transfers, meta }] = await Promise.all([
     getUserPreferences(),
@@ -78,7 +80,7 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
 
           <ListToolbar
             enableViewToggle
-            searchable={false}
+            searchPlaceholder="Search transfer number or warehouse…"
             primaryAction={
               <EntityCreateButton
                 entityType="transfer"
@@ -99,17 +101,29 @@ export default async function InventoryTransfersPage({ searchParams }: PageProps
         <Card>
           <EmptyState
             icon={<ArrowLeftRight className="h-5 w-5" />}
-            title={status ? `No ${status.replace('_', ' ')} transfers` : 'No transfers yet'}
-            description="Move stock between two warehouses. Build the lines, ship to send the units into transit, then receive them at the destination — every leg is recorded in the movement ledger."
+            title={
+              q
+                ? 'No transfers match this search'
+                : status
+                  ? `No ${status.replace('_', ' ')} transfers`
+                  : 'No transfers yet'
+            }
+            description={
+              q
+                ? 'Try a different transfer number or warehouse name.'
+                : 'Move stock between two warehouses. Build the lines, ship to send the units into transit, then receive them at the destination — every leg is recorded in the movement ledger.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="transfer"
-                newHref="/inventory/transfers/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New transfer
-              </EntityCreateButton>
+              q ? undefined : (
+                <EntityCreateButton
+                  entityType="transfer"
+                  newHref="/inventory/transfers/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New transfer
+                </EntityCreateButton>
+              )
             }
           />
         </Card>

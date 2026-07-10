@@ -26,6 +26,7 @@ const ItemPath = z.object({
 });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   customer_id: z.string().uuid().optional(),
   b2b_account_id: z.string().uuid().optional(),
   status: z.string().optional(),
@@ -40,6 +41,7 @@ const quoteRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await quoteService.list(toCrmContext(request), {
+      q: q.q,
       customerId: q.customer_id,
       b2bAccountId: q.b2b_account_id,
       status: q.status,

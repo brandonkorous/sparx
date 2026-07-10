@@ -9,7 +9,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import type { SchedulingService } from '@sparx/db';
 import { CreateServiceInput, UpdateServiceInput } from '@sparx/scheduling-schemas';
@@ -17,15 +17,18 @@ import {
   createService,
   updateService,
   getService,
-  listServices,
+  listServicesPaged,
   deleteService,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   bookingType: z.enum(['appointment', 'class', 'reservation', 'rental']).optional(),
   activeOnly: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
@@ -34,8 +37,8 @@ const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
     const query = ListQuery.parse(request.query);
-    const rows = await listServices(tenantId, query);
-    return ok(rows.map(serviceView));
+    const { items, total } = await listServicesPaged(tenantId, query);
+    return paged(items.map(serviceView), { total, per_page: query.take ?? 50 });
   });
 
   app.post('/v1/scheduling/services', async (request, reply) => {

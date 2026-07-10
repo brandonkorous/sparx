@@ -19,6 +19,7 @@ import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   include_archived: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -34,6 +35,7 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await segmentService.list(toCrmContext(request), {
+      q: q.q,
       includeArchived: q.include_archived,
       take: q.take,
       skip: q.skip,

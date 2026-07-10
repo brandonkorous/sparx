@@ -79,6 +79,48 @@ export async function listResources(
   );
 }
 
+// Paginated/searchable variant for the dashboard's Resources list page — kept
+// separate from `listResources()` above (other callers depend on it returning
+// a bare, unpaginated array) rather than changing that function's shape.
+export async function listResourcesPaged(
+  tenantId: string,
+  opts: {
+    q?: string;
+    kind?: string;
+    locationId?: string;
+    activeOnly?: boolean;
+    take?: number;
+    skip?: number;
+  } = {}
+): Promise<{ items: SchedulingResource[]; total: number }> {
+  return withTenant({ tenantId }, async (tx) => {
+    const where: Prisma.SchedulingResourceWhereInput = {
+      deletedAt: null,
+      ...(opts.kind ? { kind: opts.kind } : {}),
+      ...(opts.locationId ? { locationId: opts.locationId } : {}),
+      ...(opts.activeOnly ? { isActive: true } : {}),
+      ...(opts.q
+        ? {
+            OR: [
+              { name: { contains: opts.q, mode: 'insensitive' } },
+              { description: { contains: opts.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await Promise.all([
+      tx.schedulingResource.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        take: Math.min(opts.take ?? 50, 250),
+        skip: opts.skip ?? 0,
+      }),
+      tx.schedulingResource.count({ where }),
+    ]);
+    return { items, total };
+  });
+}
+
 export async function deleteResource(tenantId: string, id: string): Promise<void> {
   await withTenant({ tenantId }, async (tx) => {
     const existing = await tx.schedulingResource.findFirst({ where: { id, deletedAt: null } });

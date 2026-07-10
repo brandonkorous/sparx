@@ -55,6 +55,10 @@ export async function getBooking(tenantId: string, id: string) {
 }
 
 export interface ListBookingsOptions {
+  /** Free-text search — notes, staff notes, and guest name (there's no
+   *  denormalized customer name on Booking; a linked-account customer's name
+   *  isn't searchable here without a Customer join). */
+  q?: string;
   status?: string;
   /** Any of these statuses (takes precedence over `status`). */
   statusIn?: string[];
@@ -91,6 +95,15 @@ function buildWhere(opts: ListBookingsOptions): Record<string, unknown> {
     ...(opts.locationId ? { locationId: opts.locationId } : {}),
     ...(opts.resourceId ? { resources: { some: { resourceId: opts.resourceId } } } : {}),
     ...(Object.keys(startAt).length ? { startAt } : {}),
+    ...(opts.q
+      ? {
+          OR: [
+            { notes: { contains: opts.q, mode: 'insensitive' } },
+            { staffNotes: { contains: opts.q, mode: 'insensitive' } },
+            { attendees: { some: { guestName: { contains: opts.q, mode: 'insensitive' } } } },
+          ],
+        }
+      : {}),
   };
 }
 

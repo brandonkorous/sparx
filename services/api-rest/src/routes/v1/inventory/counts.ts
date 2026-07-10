@@ -28,6 +28,7 @@ const PathId = z.object({ id: z.string().uuid() });
 const PathLine = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   status: InventoryCountStatus.optional(),
   warehouse_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -43,6 +44,7 @@ const inventoryCountRoutes: FastifyPluginAsync = async (app) => {
     const { items, total } = await inventoryService.listInventoryCounts(
       toInventoryContext(request),
       {
+        ...(q.q !== undefined ? { q: q.q } : {}),
         ...(q.status !== undefined ? { status: q.status } : {}),
         ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
         ...(q.take !== undefined ? { take: q.take } : {}),

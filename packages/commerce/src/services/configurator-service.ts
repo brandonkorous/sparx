@@ -65,11 +65,27 @@ export interface BundleDetail extends BundleRow {
 
 export async function listBundles(
   ctx: ServiceContext,
-  filter: { take?: number; skip?: number } = {}
+  filter: {
+    q?: string;
+    pricingMode?: string;
+    inventoryMode?: string;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: BundleRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
+    // Bundle has no name/title of its own — the display name is the linked
+    // wrapper product's title, so text search filters on that relation.
+    const where: Prisma.BundleWhereInput = {
+      ...(filter.pricingMode ? { pricingMode: filter.pricingMode } : {}),
+      ...(filter.inventoryMode ? { inventoryMode: filter.inventoryMode } : {}),
+      ...(filter.q
+        ? { bundleProduct: { title: { contains: filter.q, mode: 'insensitive' } } }
+        : {}),
+    };
     const [rows, total] = await Promise.all([
       tx.bundle.findMany({
+        where,
         include: {
           bundleProduct: { select: { title: true } },
           _count: { select: { components: true } },
@@ -78,7 +94,7 @@ export async function listBundles(
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
-      tx.bundle.count(),
+      tx.bundle.count({ where }),
     ]);
     return {
       items: rows.map((r) => ({
@@ -347,10 +363,20 @@ export async function listTemplatesForProduct(
 
 export async function listAllTemplates(
   ctx: ServiceContext,
-  filter: { status?: string; take?: number; skip?: number } = {}
+  filter: { q?: string; status?: string; take?: number; skip?: number } = {}
 ): Promise<{ items: ConfigurationTemplateRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where = { ...(filter.status ? { status: filter.status } : {}) };
+    const where: Prisma.ConfigurationTemplateWhereInput = {
+      ...(filter.status ? { status: filter.status } : {}),
+      ...(filter.q
+        ? {
+            OR: [
+              { name: { contains: filter.q, mode: 'insensitive' } },
+              { description: { contains: filter.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const [rows, total] = await Promise.all([
       tx.configurationTemplate.findMany({
         where,

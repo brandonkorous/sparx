@@ -21,14 +21,26 @@ interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+const KIND_OPTIONS = [
+  { value: 'hierarchical', label: 'Hierarchical' },
+  { value: 'flat', label: 'Flat' },
+];
+
 export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
+  const kind = stringParam(params.kind);
 
   const [prefs, { data: taxonomies, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<TaxonomyListItem[]>(
-      `/v1/taxonomies?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+      `/v1/taxonomies?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+        ...(q ? { q } : {}),
+        ...(kind ? { kind } : {}),
+      }).toString()}`
     ),
   ]);
   const total = (meta?.total as number | undefined) ?? taxonomies.length;
@@ -52,7 +64,8 @@ export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search name or key…"
+          filters={[{ key: 'kind', label: 'Kinds', options: KIND_OPTIONS }]}
           enableViewToggle
           primaryAction={
             <EntityCreateButton
@@ -73,18 +86,24 @@ export default async function TaxonomyIndexPage({ searchParams }: PageProps) {
         <Card className="bg-module bg-soft">
           <EmptyState
             icon={<Tag className="h-5 w-5" />}
-            title="No taxonomies yet"
-            description="Add your first taxonomy with the New button. Tags and categories group entries on storefront index pages and feeds."
+            title={total === 0 ? 'No taxonomies yet' : 'No taxonomies match these filters'}
+            description={
+              total === 0
+                ? 'Add your first taxonomy with the New button. Tags and categories group entries on storefront index pages and feeds.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="taxonomy"
-                newHref="/cms/taxonomy/new"
-                variant="outline"
-                size="sm"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="taxonomy"
+                  newHref="/cms/taxonomy/new"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
             }
           />
         </Card>

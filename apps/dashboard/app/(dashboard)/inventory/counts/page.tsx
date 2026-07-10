@@ -29,9 +29,11 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status) ?? '';
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
+  if (q) query.set('q', q);
 
   const [prefs, { data: counts, meta }] = await Promise.all([
     getUserPreferences(),
@@ -77,7 +79,7 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
 
           <ListToolbar
             enableViewToggle
-            searchable={false}
+            searchPlaceholder="Search count number or warehouse…"
             primaryAction={
               <EntityCreateButton
                 entityType="count"
@@ -98,17 +100,25 @@ export default async function InventoryCountsPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<ClipboardCheck className="h-5 w-5" />}
-            title={status ? `No ${status} counts` : 'No counts yet'}
-            description="Start a cycle count of a few SKUs or a full physical count of a warehouse. Enter the counted quantities, then post to correct stock with an audit trail."
+            title={
+              q ? 'No counts match this search' : status ? `No ${status} counts` : 'No counts yet'
+            }
+            description={
+              q
+                ? 'Try a different count number or warehouse name.'
+                : 'Start a cycle count of a few SKUs or a full physical count of a warehouse. Enter the counted quantities, then post to correct stock with an audit trail.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="count"
-                newHref="/inventory/counts/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New count
-              </EntityCreateButton>
+              q ? undefined : (
+                <EntityCreateButton
+                  entityType="count"
+                  newHref="/inventory/counts/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New count
+                </EntityCreateButton>
+              )
             }
           />
         </Card>

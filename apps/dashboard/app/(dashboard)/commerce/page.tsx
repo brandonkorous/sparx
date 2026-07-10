@@ -14,8 +14,18 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { AreaChart, ModuleProvider, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState } from '@wizeworks/silicaui-react';
+import { AreaChart, ModuleProvider, PageHeader } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -285,40 +295,56 @@ export default async function CommercePage() {
         />
 
         {/* Headline KPIs — live */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Revenue · 30d"
-            value={fmtMoneyCents(revenue?.netRevenueCents, currency)}
-            hint={
-              revenue
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Revenue · 30d</StatTitle>
+            <StatValue>{fmtMoneyCents(revenue?.netRevenueCents, currency)}</StatValue>
+            <StatDesc>
+              {revenue
                 ? `${fmtNumber(revenue.ordersCount)} orders · AOV ${fmtMoneyCents(revenue.averageOrderValueCents, currency)}`
-                : 'Awaiting your first order'
-            }
-          />
-          <Stat
-            icon={<ShoppingCart className="h-4 w-4" />}
-            label="Orders · 30d"
-            value={fmtNumber(revenue?.ordersCount)}
-            hint="Paid orders, last 30 days"
-          />
-          <Stat
-            icon={<Package className="h-4 w-4" />}
-            label="Avg. order value"
-            value={fmtMoneyCents(revenue?.averageOrderValueCents, currency)}
-            hint="Across paid orders"
-          />
-          <Stat
-            icon={<Percent className="h-4 w-4" />}
-            label="Conversion"
-            value={funnel ? fmtPercentRatio(funnel.overallConversion, 2) : '—'}
-            hint={
-              funnel
+                : 'Awaiting your first order'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <ShoppingCart className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Orders · 30d</StatTitle>
+            <StatValue>{fmtNumber(revenue?.ordersCount)}</StatValue>
+            <StatDesc>Paid orders, last 30 days</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Package className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Avg. order value</StatTitle>
+            <StatValue>{fmtMoneyCents(revenue?.averageOrderValueCents, currency)}</StatValue>
+            <StatDesc>Across paid orders</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Percent className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Conversion</StatTitle>
+            <StatValue>{funnel ? fmtPercentRatio(funnel.overallConversion, 2) : '—'}</StatValue>
+            <StatDesc>
+              {funnel
                 ? `${fmtNumber(funnel.sessions)} sessions → ${fmtNumber(funnel.ordersPlaced)} orders`
-                : 'Sessions not yet tracked'
-            }
-          />
-        </div>
+                : 'Sessions not yet tracked'}
+            </StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Revenue + payouts */}
         <div className={TWO_COL}>

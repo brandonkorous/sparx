@@ -68,7 +68,7 @@ export default async function QuotesPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search quote number…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           enableViewToggle
           primaryAction={
@@ -90,8 +90,12 @@ export default async function QuotesPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<FileText className="h-5 w-5" />}
-            title="No quotes match"
-            description="Quotes appear here once created. Start one from a deal or directly here."
+            title={total === 0 ? 'No quotes yet' : 'No quotes match these filters'}
+            description={
+              total === 0
+                ? 'Quotes appear here once created. Start one from a deal or directly here.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
           />
         </Card>
       ) : (

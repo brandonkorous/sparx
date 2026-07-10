@@ -3,7 +3,7 @@
 
 import { CreateWarehouseInput, UpdateWarehouseInput } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
-import type { Warehouse } from '@sparx/db';
+import type { Prisma, Warehouse } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import {
@@ -36,15 +36,29 @@ export interface WarehouseRow {
 
 export async function listWarehouses(
   ctx: ServiceContext,
-  filter: { includeInactive?: boolean; includeSystem?: boolean; take?: number; skip?: number } = {}
+  filter: {
+    q?: string;
+    includeInactive?: boolean;
+    includeSystem?: boolean;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: WarehouseRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where = {
+    const where: Prisma.WarehouseWhereInput = {
       deletedAt: null,
       ...(filter.includeInactive ? {} : { isActive: true }),
       // The in-transit holding location is a system warehouse — keep it out of the
       // ordinary list/pickers unless a caller explicitly opts in.
       ...(filter.includeSystem ? {} : { isSystem: false }),
+      ...(filter.q
+        ? {
+            OR: [
+              { name: { contains: filter.q, mode: 'insensitive' } },
+              { code: { contains: filter.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
     };
     const [rows, total] = await Promise.all([
       tx.warehouse.findMany({

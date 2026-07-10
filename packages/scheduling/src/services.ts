@@ -89,6 +89,47 @@ export async function listServices(
   );
 }
 
+// Paginated/searchable variant for the dashboard's Services list page — kept
+// separate from `listServices()` above (an MCP tool + the public storefront
+// route depend on it returning a bare, unpaginated array) rather than
+// changing that function's shape.
+export async function listServicesPaged(
+  tenantId: string,
+  opts: {
+    q?: string;
+    bookingType?: string;
+    activeOnly?: boolean;
+    take?: number;
+    skip?: number;
+  } = {}
+): Promise<{ items: SchedulingService[]; total: number }> {
+  return withTenant({ tenantId }, async (tx) => {
+    const where: Prisma.SchedulingServiceWhereInput = {
+      deletedAt: null,
+      ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
+      ...(opts.activeOnly ? { isActive: true } : {}),
+      ...(opts.q
+        ? {
+            OR: [
+              { name: { contains: opts.q, mode: 'insensitive' } },
+              { description: { contains: opts.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await Promise.all([
+      tx.schedulingService.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        take: Math.min(opts.take ?? 50, 250),
+        skip: opts.skip ?? 0,
+      }),
+      tx.schedulingService.count({ where }),
+    ]);
+    return { items, total };
+  });
+}
+
 export async function deleteService(tenantId: string, id: string): Promise<void> {
   await withTenant({ tenantId }, async (tx) => {
     const existing = await tx.schedulingService.findFirst({ where: { id, deletedAt: null } });

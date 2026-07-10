@@ -21,6 +21,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   include_archived: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -39,6 +40,7 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
     const { items, total } = await inventoryService.listWarehouses(toInventoryContext(request), {
+      q: q.q,
       includeInactive: q.include_archived === true,
       ...(q.take !== undefined ? { take: q.take } : {}),
       ...(q.skip !== undefined ? { skip: q.skip } : {}),

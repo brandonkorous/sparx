@@ -17,6 +17,17 @@ import { BundlesList, type BundleRow } from './_components/bundles-list';
 
 export const dynamic = 'force-dynamic';
 
+const PRICING_MODE_OPTIONS = [
+  { value: 'sum_of_components', label: 'Sum of components' },
+  { value: 'fixed', label: 'Fixed price' },
+  { value: 'percent_off_sum', label: 'Percent off sum' },
+];
+
+const INVENTORY_MODE_OPTIONS = [
+  { value: 'decrement_components', label: 'Decrement components' },
+  { value: 'decrement_bundle_sku', label: 'Decrement bundle SKU' },
+];
+
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
@@ -24,6 +35,9 @@ interface PageProps {
 export default async function BundlesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
+  const pricingMode = stringParam(params.pricing_mode);
+  const inventoryMode = stringParam(params.inventory_mode);
 
   const [prefs, { data: bundles, meta }] = await Promise.all([
     getUserPreferences(),
@@ -31,6 +45,9 @@ export default async function BundlesPage({ searchParams }: PageProps) {
       `/v1/commerce/bundles?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
+        ...(pricingMode ? { pricing_mode: pricingMode } : {}),
+        ...(inventoryMode ? { inventory_mode: inventoryMode } : {}),
       }).toString()}`
     ),
   ]);
@@ -52,7 +69,11 @@ export default async function BundlesPage({ searchParams }: PageProps) {
       toolbar={
         <ListToolbar
           enableViewToggle
-          searchable={false}
+          searchPlaceholder="Search bundles by wrapper product…"
+          filters={[
+            { key: 'pricing_mode', label: 'Pricing modes', options: PRICING_MODE_OPTIONS },
+            { key: 'inventory_mode', label: 'Inventory modes', options: INVENTORY_MODE_OPTIONS },
+          ]}
           primaryAction={
             <EntityCreateButton
               entityType="bundle"
@@ -72,17 +93,23 @@ export default async function BundlesPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<Package2 className="h-5 w-5" />}
-            title="No bundles yet"
-            description="Create a wrapper product first (e.g. ‘Starter Beauty Kit’), then bundle its components here."
+            title={total === 0 ? 'No bundles yet' : 'No bundles match these filters'}
+            description={
+              total === 0
+                ? 'Create a wrapper product first (e.g. ‘Starter Beauty Kit’), then bundle its components here.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="bundle"
-                newHref="/commerce/bundles/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New bundle
-              </EntityCreateButton>
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="bundle"
+                  newHref="/commerce/bundles/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New bundle
+                </EntityCreateButton>
+              ) : undefined
             }
           />
         </Card>

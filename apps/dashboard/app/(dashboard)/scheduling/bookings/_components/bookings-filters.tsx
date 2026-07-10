@@ -3,9 +3,12 @@
 // Bookings-list filters (docs/79 §12) — narrow to one person's or one service's
 // bookings, composing with the status chips (status is preserved). Both map to the
 // list API's existing `resourceId` / `serviceId` params; "All …" clears the filter.
+// The search box maps to `q` (notes / staff notes / guest name — see
+// `packages/scheduling/src/booking-queries.ts`).
 
+import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { NativeSelect } from '@wizeworks/silicaui-react';
+import { NativeSelect, SearchInput } from '@wizeworks/silicaui-react';
 
 export interface BookingsFilterResource {
   id: string;
@@ -17,30 +20,53 @@ export function BookingsFilters({
   status,
   resource,
   service,
+  q,
   resources,
   services,
 }: {
   status: string;
   resource: string;
   service: string;
+  q: string;
   resources: BookingsFilterResource[];
   services: { id: string; name: string }[];
 }) {
   const router = useRouter();
+  const [search, setSearch] = React.useState(q);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function go(next: { resource?: string; service?: string }): void {
+  React.useEffect(() => setSearch(q), [q]);
+  React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
+
+  function go(next: { resource?: string; service?: string; q?: string }): void {
     const params = new URLSearchParams();
     if (status) params.set('status', status);
     const r = next.resource ?? resource;
     const s = next.service ?? service;
+    const query = next.q ?? q;
     if (r) params.set('resource', r);
     if (s) params.set('service', s);
+    if (query) params.set('q', query);
     const qs = params.toString();
     router.push(qs ? `/scheduling/bookings?${qs}` : '/scheduling/bookings');
   }
 
+  function onSearchChange(value: string): void {
+    setSearch(value);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => go({ q: value }), 250);
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-2">
+      <div className="min-w-48">
+        <SearchInput
+          placeholder="Search notes or guest name…"
+          value={search}
+          onValueChange={onSearchChange}
+          aria-label="Search"
+        />
+      </div>
       <NativeSelect
         aria-label="Filter by resource"
         value={resource}

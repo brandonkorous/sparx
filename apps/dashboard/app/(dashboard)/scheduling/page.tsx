@@ -12,8 +12,20 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
-import { ActionQueue, ActionTile, BarList, PageHeader, Stat } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+} from '@wizeworks/silicaui-react';
+import { ActionQueue, ActionTile, BarList, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { CardLink, OverviewCard, fmtMoneyCents, fmtNumber } from '../_components/overview-bits';
@@ -166,32 +178,48 @@ export default async function SchedulingOverviewPage() {
         ) : (
           <>
             {/* Headline KPIs — operational counts (live) + 30-day performance. */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Stat
-                icon={<CalendarClock className="h-4 w-4" />}
-                label="Today"
-                value={fmtNumber(todayCount)}
-                hint="bookings today"
-              />
-              <Stat
-                icon={<CalendarDays className="h-4 w-4" />}
-                label="Next 7 days"
-                value={fmtNumber(weekCount)}
-                hint="upcoming bookings"
-              />
-              <Stat
-                icon={<CircleDollarSign className="h-4 w-4" />}
-                label="Revenue · 30d"
-                value={report ? fmtMoneyCents(report.revenueCents) : '—'}
-                hint="completed bookings"
-              />
-              <Stat
-                icon={<AlertTriangle className="h-4 w-4" />}
-                label="No-show rate"
-                value={report ? `${report.noShowRatePct}%` : '—'}
-                hint="last 30 days"
-              />
-            </div>
+            <Stats className="w-full flex-wrap [&>*]:flex-1">
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <CalendarClock className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Today</StatTitle>
+                <StatValue>{fmtNumber(todayCount)}</StatValue>
+                <StatDesc>bookings today</StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <CalendarDays className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Next 7 days</StatTitle>
+                <StatValue>{fmtNumber(weekCount)}</StatValue>
+                <StatDesc>upcoming bookings</StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <CircleDollarSign className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Revenue · 30d</StatTitle>
+                <StatValue>{report ? fmtMoneyCents(report.revenueCents) : '—'}</StatValue>
+                <StatDesc>completed bookings</StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <AlertTriangle className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>No-show rate</StatTitle>
+                <StatValue>{report ? `${report.noShowRatePct}%` : '—'}</StatValue>
+                <StatDesc>last 30 days</StatDesc>
+              </Stat>
+            </Stats>
 
             {/* Needs attention — confirmations + waitlist, wired to live counts. */}
             {(pending > 0 || waitlistCount > 0) && (

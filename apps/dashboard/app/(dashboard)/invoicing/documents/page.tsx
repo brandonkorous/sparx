@@ -54,10 +54,12 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
   const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const workflowId = stringParam(params.workflowId);
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (workflowId) query.set('workflowId', workflowId);
+  if (q) query.set('q', q);
 
   // The list returns { items, total }; workflows give us the stage label per row
   // (the document's customer-facing noun — Estimate / Invoice / Work Order).
@@ -92,7 +94,7 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search document number, customer, or account…"
           filters={[
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
             { key: 'workflowId', label: 'Workflows', options: workflowOptions },
@@ -118,8 +120,12 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
           <CardBody className="p-0">
             <EmptyState
               icon={<FileText className="h-5 w-5" />}
-              title="No documents match"
-              description="Create an estimate, invoice or work order to get started."
+              title={total === 0 ? 'No documents yet' : 'No documents match these filters'}
+              description={
+                total === 0
+                  ? 'Create an estimate, invoice or work order to get started.'
+                  : 'Adjust filters or clear the search to broaden the results.'
+              }
             />
           </CardBody>
         </Card>

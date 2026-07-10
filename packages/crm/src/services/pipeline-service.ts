@@ -14,7 +14,7 @@ import {
 } from '@sparx/crm-schemas';
 import { DEFAULT_PIPELINE_TEMPLATE } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { Pipeline, PipelineStage } from '@sparx/db';
+import type { Pipeline, PipelineStage, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -27,10 +27,13 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
 ): Promise<{ items: (Pipeline & { stages: PipelineStage[] })[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where = args.includeArchived ? {} : { archivedAt: null };
+    const where: Prisma.PipelineWhereInput = {
+      ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.q ? { name: { contains: args.q, mode: 'insensitive' } } : {}),
+    };
     const [items, total] = await Promise.all([
       tx.pipeline.findMany({
         where,

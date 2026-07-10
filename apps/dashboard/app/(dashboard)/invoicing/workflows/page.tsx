@@ -1,36 +1,58 @@
-import Link from 'next/link';
 import { GitBranch, Plus } from 'lucide-react';
 
-import { PageHeader } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState } from '@wizeworks/silicaui-react';
+import { ListPageShell, PageHeader } from '@sparx/ui';
+import { Badge, Card, EmptyState } from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { getUserPreferences } from '../../_shell/preferences';
+import { WorkflowsList, type WorkflowRow } from './_components/workflows-list';
+
+// Workflows index — a standard docs/34 List surface: a ListToolbar with search
+// + an archived filter + Table/Cards toggle on top of the shared SelectionList,
+// mirroring `/crm/pipelines` (the invoicing analogue of a sales pipeline).
 
 export const dynamic = 'force-dynamic';
 
-interface StageLite {
-  id: string;
-  customerLabel: string;
-  stageType: string;
-  sortOrder: number;
-}
-interface WorkflowRow {
-  id: string;
-  name: string;
-  slug: string;
-  isDefault: boolean;
-  stages: StageLite[];
+const ARCHIVED_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+  { value: 'all', label: 'All' },
+];
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function InvoicingWorkflowsPage() {
-  const workflows = await api.get<WorkflowRow[]>('/v1/invoicing/workflows');
+export default async function InvoicingWorkflowsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
+  const archived = parseArchived(stringParam(params.archived));
+  const q = stringParam(params.q);
+
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (archived !== 'active') query.set('include_archived', 'true');
+  if (q) query.set('q', q);
+
+  const [prefs, { data: fetched, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<WorkflowRow[]>(`/v1/invoicing/workflows?${query.toString()}`),
+  ]);
+  const total = (meta?.total as number | undefined) ?? fetched.length;
+
+  // `archived` narrows the all-inclusive fetch to just archived rows.
+  const workflows = archived === 'archived' ? fetched.filter((w) => w.archivedAt) : fetched;
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
-    <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-6 py-10">
+    <ListPageShell
+      header={
         <PageHeader
+          className="mb-0"
           icon={<GitBranch className="h-5 w-5" />}
           title="Workflows"
           badge={
@@ -39,85 +61,81 @@ export default async function InvoicingWorkflowsPage() {
             </Badge>
           }
           description="A workflow is a document's lifecycle — the ordered stages it moves through (Estimate → Approved → Invoiced → Paid). Each stage carries the customer-facing label and the behavior: when to mint a number, freeze a snapshot, or lock editing. One engine, your labels."
-          actions={
+        />
+      }
+      toolbar={
+        <ListToolbar
+          searchPlaceholder="Search name or slug…"
+          filters={[
+            { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
+          ]}
+          enableViewToggle
+          primaryAction={
             <EntityCreateButton
               entityType="workflow"
               newHref="/invoicing/workflows/new"
               color="module"
+              size="sm"
               leftIcon={<Plus className="h-4 w-4" />}
             >
-              New workflow
+              New
             </EntityCreateButton>
           }
         />
+      }
+      pager={<ListPager total={total} />}
+    >
+      {workflows.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<GitBranch className="h-5 w-5" />}
+            title={
+              q
+                ? 'No workflows match this search'
+                : archived === 'archived'
+                  ? 'No archived workflows'
+                  : 'No workflows yet'
+            }
+            description={
+              q
+                ? 'Try a different name or slug.'
+                : archived === 'archived'
+                  ? 'Archived workflows stay out of the active list. Switch the filter to Active or All to see the rest.'
+                  : 'Create a workflow to define the stages your documents move through.'
+            }
+            actions={
+              archived === 'archived' || q ? undefined : (
+                <EntityCreateButton
+                  entityType="workflow"
+                  newHref="/invoicing/workflows/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New workflow
+                </EntityCreateButton>
+              )
+            }
+          />
+        </Card>
+      ) : (
+        <WorkflowsList workflows={workflows} view={view} />
+      )}
 
-        {workflows.length === 0 ? (
-          <Card>
-            <CardBody className="p-0">
-              <EmptyState
-                icon={<GitBranch className="h-5 w-5" />}
-                title="No workflows yet"
-                description="Create a workflow to define the stages your documents move through."
-              />
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {workflows.map((wf) => {
-              const stages = wf.stages.slice().sort((a, b) => a.sortOrder - b.sortOrder);
-              return (
-                <Card key={wf.id}>
-                  <CardBody className="py-4">
-                    <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-                      <div className="flex min-w-0 flex-col gap-2">
-                        <div className="flex flex-row flex-wrap items-center gap-2">
-                          <p className="font-medium">{wf.name}</p>
-                          {wf.isDefault && (
-                            <Badge color="module" variant="soft" className="text-xs">
-                              Default
-                            </Badge>
-                          )}
-                          <p className="text-base-content/70 text-xs">{wf.slug}</p>
-                        </div>
-                        <div className="flex flex-row flex-wrap items-center gap-2">
-                          {stages.length === 0 ? (
-                            <p className="text-base-content/70 text-xs">No stages yet</p>
-                          ) : (
-                            stages.map((s, i) => (
-                              <div key={s.id} className="flex flex-row items-center gap-2">
-                                <Badge color="neutral" variant="soft" size="sm">
-                                  {s.customerLabel}
-                                </Badge>
-                                {i < stages.length - 1 && (
-                                  <span className="text-base-content/50">→</span>
-                                )}
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        color="module"
-                        render={<Link href={`/invoicing/workflows/${wf.id}/edit`} />}
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                  </CardBody>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-
-        <p className="text-base-content/70 text-xs">
-          Stages key off a semantic <strong>type</strong> (draft, open, committed, final, paid,
-          void) that drives behavior — the label stays yours, so the same engine serves estimates,
-          work orders, invoices and tickets.
-        </p>
-      </div>
-    </div>
+      <p className="text-base-content/70 text-xs">
+        Stages key off a semantic <strong>type</strong> (draft, open, committed, final, paid, void)
+        that drives behavior — the label stays yours, so the same engine serves estimates, work
+        orders, invoices and tickets.
+      </p>
+    </ListPageShell>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+function parseArchived(v: string | undefined): 'active' | 'archived' | 'all' {
+  return v === 'archived' || v === 'all' ? v : 'active';
 }

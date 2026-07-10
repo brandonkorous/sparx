@@ -37,9 +37,11 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const archived = parseArchived(stringParam(params.archived));
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (archived !== 'active') query.set('include_archived', 'true');
+  if (q) query.set('q', q);
   const [prefs, { data: fetched, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<PipelineRow[]>(`/v1/crm/pipelines?${query.toString()}`),
@@ -67,7 +69,7 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search pipeline name…"
           filters={[
             { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
           ]}
@@ -91,11 +93,19 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<KanbanSquare className="h-5 w-5" />}
-            title={archived === 'archived' ? 'No archived pipelines' : 'No pipelines yet'}
+            title={
+              q
+                ? 'No pipelines match this search'
+                : archived === 'archived'
+                  ? 'No archived pipelines'
+                  : 'No pipelines yet'
+            }
             description={
-              archived === 'archived'
-                ? 'Archived pipelines stay out of the active list. Switch the filter to Active or All to see the rest.'
-                : 'A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured.'
+              q
+                ? 'Try a different pipeline name.'
+                : archived === 'archived'
+                  ? 'Archived pipelines stay out of the active list. Switch the filter to Active or All to see the rest.'
+                  : 'A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured.'
             }
           />
         </Card>

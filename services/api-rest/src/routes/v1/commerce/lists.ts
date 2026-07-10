@@ -21,6 +21,8 @@ import { requireCommerceModule } from '../../../lib/commerce-context.js';
 const PathId = z.object({ id: z.string().uuid() });
 
 const AccountCreditQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  currency: z.string().optional(),
   min_balance_cents: z.coerce.number().int().optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -104,7 +106,22 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const take = Math.min(q.take ?? 100, 500);
     const skip = q.skip ?? 0;
     const minBalance = q.min_balance_cents ?? 1;
-    const where = { balanceCents: { gte: minBalance } };
+    const where: Prisma.AccountCreditWhereInput = {
+      balanceCents: { gte: minBalance },
+      ...(q.currency ? { currency: q.currency } : {}),
+      ...(q.q
+        ? {
+            customer: {
+              OR: [
+                { firstName: { contains: q.q, mode: 'insensitive' } },
+                { lastName: { contains: q.q, mode: 'insensitive' } },
+                { email: { contains: q.q, mode: 'insensitive' } },
+                { company: { contains: q.q, mode: 'insensitive' } },
+              ],
+            },
+          }
+        : {}),
+    };
 
     const { rows, total } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([

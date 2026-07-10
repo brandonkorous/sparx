@@ -15,8 +15,19 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../_components/entity-create-button';
@@ -262,32 +273,50 @@ export default async function B2bPage() {
         />
 
         {/* Headline KPIs — live from the B2B reporting summary + timeseries */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Wholesale revenue · 30d"
-            value={ts ? fmtMoneyCents(ts.totals.revenueCents) : '—'}
-            hint="Net B2B-portal sales"
-          />
-          <Stat
-            icon={<Building2 className="h-4 w-4" />}
-            label="Active accounts"
-            value={summary ? fmtNumber(summary.accounts.active) : '—'}
-            hint={summary ? `${fmtNumber(summary.accounts.total)} total` : 'Wholesale accounts'}
-          />
-          <Stat
-            icon={<FileText className="h-4 w-4" />}
-            label="Open quotes"
-            value={summary ? fmtNumber(summary.openQuotes) : '—'}
-            hint="Awaiting buyer response"
-          />
-          <Stat
-            icon={<Package className="h-4 w-4" />}
-            label="Avg. order value · 30d"
-            value={aov30 > 0 ? fmtMoneyCents(aov30) : '—'}
-            hint="Across wholesale orders"
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Wholesale revenue · 30d</StatTitle>
+            <StatValue>{ts ? fmtMoneyCents(ts.totals.revenueCents) : '—'}</StatValue>
+            <StatDesc>Net B2B-portal sales</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Building2 className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Active accounts</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.accounts.active) : '—'}</StatValue>
+            <StatDesc>
+              {summary ? `${fmtNumber(summary.accounts.total)} total` : 'Wholesale accounts'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <FileText className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Open quotes</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.openQuotes) : '—'}</StatValue>
+            <StatDesc>Awaiting buyer response</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Package className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Avg. order value · 30d</StatTitle>
+            <StatValue>{aov30 > 0 ? fmtMoneyCents(aov30) : '—'}</StatValue>
+            <StatDesc>Across wholesale orders</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Daily action queue — live counts */}
         <ActionQueue title="Needs attention" icon={<AlertTriangle className="h-4 w-4" />}>

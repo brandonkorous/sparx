@@ -20,13 +20,23 @@ import {
   BarList,
   DonutChart,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -281,32 +291,48 @@ export default async function ChatPage() {
         />
 
         {/* KPI strip — conversation counts live, quality metrics sample */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<MessagesSquare className="h-4 w-4" />}
-            label="Open conversations"
-            value={fmtNumber(openCount)}
-            hint={`${fmtNumber(unassigned)} unassigned · ${fmtNumber(activeCount)} active`}
-          />
-          <Stat
-            icon={<Clock className="h-4 w-4" />}
-            label="Avg. first response"
-            value={avgFirstResponse}
-            hint="First staff/AI reply · 30d"
-          />
-          <Stat
-            icon={<Bot className="h-4 w-4" />}
-            label="AI-handled"
-            value={aiHandled}
-            hint="Of resolved conversations"
-          />
-          <Stat
-            icon={<Star className="h-4 w-4" />}
-            label="CSAT"
-            value="—"
-            hint="No ratings captured yet"
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <MessagesSquare className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Open conversations</StatTitle>
+            <StatValue>{fmtNumber(openCount)}</StatValue>
+            <StatDesc>{`${fmtNumber(unassigned)} unassigned · ${fmtNumber(activeCount)} active`}</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Clock className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Avg. first response</StatTitle>
+            <StatValue>{avgFirstResponse}</StatValue>
+            <StatDesc>First staff/AI reply · 30d</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Bot className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>AI-handled</StatTitle>
+            <StatValue>{aiHandled}</StatValue>
+            <StatDesc>Of resolved conversations</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Star className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>CSAT</StatTitle>
+            <StatValue>—</StatValue>
+            <StatDesc>No ratings captured yet</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Needs attention — unassigned + active open conversations, both live */}
         <ActionQueue

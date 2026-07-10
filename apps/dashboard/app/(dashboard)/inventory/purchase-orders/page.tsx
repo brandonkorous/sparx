@@ -28,9 +28,11 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status) ?? '';
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
+  if (q) query.set('search', q);
 
   const [prefs, { data: orders, meta }] = await Promise.all([
     getUserPreferences(),
@@ -78,7 +80,7 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
 
           <ListToolbar
             enableViewToggle
-            searchable={false}
+            searchPlaceholder="Search PO number, reference, or supplier…"
             primaryAction={
               <EntityCreateButton
                 entityType="purchase-order"
@@ -99,17 +101,29 @@ export default async function PurchaseOrdersPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<ClipboardList className="h-5 w-5" />}
-            title={status ? `No ${status} purchase orders` : 'No purchase orders yet'}
-            description="Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive."
+            title={
+              q
+                ? 'No purchase orders match this search'
+                : status
+                  ? `No ${status} purchase orders`
+                  : 'No purchase orders yet'
+            }
+            description={
+              q
+                ? 'Try a different PO number, reference, or supplier name.'
+                : 'Draft your first purchase order to restock from a supplier. Add lines, submit, then receive as goods arrive.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="purchase-order"
-                newHref="/inventory/purchase-orders/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              q ? undefined : (
+                <EntityCreateButton
+                  entityType="purchase-order"
+                  newHref="/inventory/purchase-orders/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              )
             }
           />
         </Card>

@@ -46,9 +46,16 @@ function stringParam(v: string | string[] | undefined): string | undefined {
   return undefined;
 }
 
+const KIND_OPTIONS = [
+  { value: 'built_in', label: 'Built-in' },
+  { value: 'custom', label: 'Custom' },
+];
+
 export default async function ContentTypesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
+  const kind = stringParam(params.kind);
 
   const [prefs, { data: types, meta }, entries] = await Promise.all([
     getUserPreferences(),
@@ -56,6 +63,8 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
       `/v1/content/types?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
+        ...(kind ? { kind } : {}),
       }).toString()}`
     ),
     // Per-type entry counts: a bounded sample of recent entries (the column is an
@@ -88,7 +97,8 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
       toolbar={
         <ListToolbar
           enableViewToggle
-          searchable={false}
+          searchPlaceholder="Search name or description…"
+          filters={[{ key: 'kind', label: 'Kinds', options: KIND_OPTIONS }]}
           primaryAction={
             <EntityCreateButton
               entityType="content-type"
@@ -108,17 +118,23 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
         <Card className="bg-module bg-soft">
           <EmptyState
             icon={<Database className="h-5 w-5" />}
-            title="No content types yet"
-            description="Define a custom authoring shape — testimonials, case studies, events — with its own field schema."
+            title={total === 0 ? 'No content types yet' : 'No content types match these filters'}
+            description={
+              total === 0
+                ? 'Define a custom authoring shape — testimonials, case studies, events — with its own field schema.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="content-type"
-                newHref="/cms/types/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="content-type"
+                  newHref="/cms/types/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
             }
           />
         </Card>

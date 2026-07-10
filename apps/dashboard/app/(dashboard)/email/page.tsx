@@ -23,13 +23,23 @@ import {
   ActionQueue,
   ActionTile,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTitle,
   TimelineTime,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -270,36 +280,56 @@ export default async function EmailPage() {
 
         {/* Headline KPIs — subscribers, open & click rate live; revenue from
             email has no attribution endpoint yet, so it shows "—". */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<Users className="h-4 w-4" />}
-            label="Subscribers"
-            value={subGrowth ? fmtNumber(subGrowth.currentSubscribers) : '—'}
-            hint={
-              subGrowth
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Users className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Subscribers</StatTitle>
+            <StatValue>{subGrowth ? fmtNumber(subGrowth.currentSubscribers) : '—'}</StatValue>
+            <StatDesc>
+              {subGrowth
                 ? `${subGrowth.totals.net >= 0 ? '+' : ''}${fmtNumber(subGrowth.totals.net)} net · last 30d`
-                : 'Mailable contacts'
-            }
-          />
-          <Stat
-            icon={<Eye className="h-4 w-4" />}
-            label="Open rate"
-            value={openRate}
-            hint={counts ? 'Opened ÷ delivered, last 30d' : 'No sends in the last 30 days'}
-          />
-          <Stat
-            icon={<MousePointerClick className="h-4 w-4" />}
-            label="Click rate"
-            value={clickRate}
-            hint={counts ? 'Clicked ÷ delivered, last 30d' : 'No sends in the last 30 days'}
-          />
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Revenue from email · 30d"
-            value="—"
-            hint="Attributed to email campaigns"
-          />
-        </div>
+                : 'Mailable contacts'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Eye className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Open rate</StatTitle>
+            <StatValue>{openRate}</StatValue>
+            <StatDesc>
+              {counts ? 'Opened ÷ delivered, last 30d' : 'No sends in the last 30 days'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <MousePointerClick className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Click rate</StatTitle>
+            <StatValue>{clickRate}</StatValue>
+            <StatDesc>
+              {counts ? 'Clicked ÷ delivered, last 30d' : 'No sends in the last 30 days'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Revenue from email · 30d</StatTitle>
+            <StatValue>—</StatValue>
+            <StatDesc>Attributed to email campaigns</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Daily action queue — wired to broadcast statuses; only rendered when
             something actually needs attention. */}

@@ -13,24 +13,31 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { documentWorkflowService } from '@sparx/crm';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const StagePathIds = z.object({ id: z.string().uuid(), stageId: z.string().uuid() });
-const ListQuery = z.object({ include_archived: z.coerce.boolean().optional() });
+const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  include_archived: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 const workflowRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/workflows', async (request) => {
     requireRole(request, 'viewer');
     await requireInvoicingModule(request);
     const q = ListQuery.parse(request.query);
-    return ok(
-      await documentWorkflowService.list(toInvoicingContext(request), {
-        includeArchived: q.include_archived,
-      })
-    );
+    const { items, total } = await documentWorkflowService.listPaged(toInvoicingContext(request), {
+      q: q.q,
+      includeArchived: q.include_archived,
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/invoicing/workflows/:id', async (request) => {

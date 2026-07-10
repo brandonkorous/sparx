@@ -13,14 +13,24 @@ import {
   DialogContent,
   DialogTitle,
   Loading,
-  Table,
 } from '@wizeworks/silicaui-react';
-import { toast, useConfirm } from '@sparx/ui';
+import {
+  SelectionList,
+  toast,
+  useConfirm,
+  type SelectionCard,
+  type SelectionColumn,
+} from '@sparx/ui';
 import { CalendarRange, MoreHorizontal, XCircle } from 'lucide-react';
 
 import type { BookingSeriesDetail, BookingSeriesSummary } from '../../_lib/types';
 import { formatDateTime } from '../../_lib/format';
 import { cancelBookingSeriesAction, getBookingSeriesAction } from '../../_lib/actions';
+
+// Recurring-series index list — rendered through the shared `SelectionList`
+// dual-view substrate (docs/34 §7) so it gains the Table/Cards toggle.
+// Read-only selection: each row's actions (view occurrences / cancel) live
+// in a dropdown.
 
 const DAY_NAME: Record<string, string> = {
   SU: 'Sun',
@@ -58,19 +68,24 @@ function describeRrule(rrule: string): string {
   return out;
 }
 
-const STATUS_COLOR: Record<string, string> = {
+const STATUS_COLOR: Record<string, 'success' | 'neutral' | 'danger'> = {
   active: 'success',
   completed: 'neutral',
   cancelled: 'danger',
 };
 
-export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
+interface SeriesListProps {
+  series: BookingSeriesSummary[];
+  view: 'table' | 'card';
+}
+
+export function SeriesList({ series, view }: SeriesListProps) {
   const router = useRouter();
   const confirm = useConfirm();
   const [detail, setDetail] = useState<BookingSeriesDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
-  async function view(id: string) {
+  async function viewOccurrences(id: string) {
     setLoadingDetail(true);
     const result = await getBookingSeriesAction(id);
     setLoadingDetail(false);
@@ -100,68 +115,81 @@ export function SeriesList({ series }: { series: BookingSeriesSummary[] }) {
     }
   }
 
+  const statusBadge = (s: BookingSeriesSummary) => (
+    <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft">
+      {s.status}
+    </Badge>
+  );
+
+  const actionsMenu = (s: BookingSeriesSummary) => (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="ghost" shape="square" size="sm" aria-label="Series actions">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => void viewOccurrences(s.id)}>
+          <CalendarRange className="mr-2 h-4 w-4" />
+          View occurrences
+        </DropdownMenuItem>
+        {s.status === 'active' ? (
+          <>
+            <DropdownMenuItem onClick={() => void cancel(s, 'future')} className="text-danger">
+              <XCircle className="mr-2 h-4 w-4" />
+              Cancel future occurrences
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void cancel(s, 'all')} className="text-danger">
+              <XCircle className="mr-2 h-4 w-4" />
+              Cancel entire series
+            </DropdownMenuItem>
+          </>
+        ) : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const columns: SelectionColumn<BookingSeriesSummary>[] = [
+    {
+      header: 'Service',
+      cell: (s) => <span className="font-medium">{s.serviceName ?? 'Service'}</span>,
+    },
+    {
+      header: 'Pattern',
+      cell: (s) => <span className="text-base-content/70">{describeRrule(s.rrule)}</span>,
+    },
+    { header: 'Status', cell: statusBadge },
+    { header: 'Upcoming', cell: (s) => s.upcomingBookings },
+    { header: 'Total', cell: (s) => s.totalBookings },
+    { header: '', align: 'right', cell: actionsMenu },
+  ];
+
+  const card: SelectionCard<BookingSeriesSummary> = {
+    title: (s) => <p className="font-medium">{s.serviceName ?? 'Service'}</p>,
+    subtitle: (s) => <p className="text-base-content/70 text-xs">{describeRrule(s.rrule)}</p>,
+    badge: statusBadge,
+    body: (s) => (
+      <div className="flex flex-row items-center justify-between gap-2">
+        <p className="text-base-content/70 text-sm">
+          {s.upcomingBookings} upcoming · {s.totalBookings} total
+        </p>
+        {actionsMenu(s)}
+      </div>
+    ),
+  };
+
   return (
     <>
-      <Table>
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th>Pattern</th>
-            <th>Status</th>
-            <th>Upcoming</th>
-            <th>Total</th>
-            <th className="w-10" />
-          </tr>
-        </thead>
-        <tbody>
-          {series.map((s) => (
-            <tr key={s.id}>
-              <td className="font-medium">{s.serviceName ?? 'Service'}</td>
-              <td className="text-base-content/70">{describeRrule(s.rrule)}</td>
-              <td>
-                <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft">
-                  {s.status}
-                </Badge>
-              </td>
-              <td>{s.upcomingBookings}</td>
-              <td>{s.totalBookings}</td>
-              <td>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" shape="square" size="sm" aria-label="Series actions">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => void view(s.id)}>
-                      <CalendarRange className="mr-2 h-4 w-4" />
-                      View occurrences
-                    </DropdownMenuItem>
-                    {s.status === 'active' ? (
-                      <>
-                        <DropdownMenuItem
-                          onClick={() => void cancel(s, 'future')}
-                          className="text-danger"
-                        >
-                          <XCircle className="mr-2 h-4 w-4" />
-                          Cancel future occurrences
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => void cancel(s, 'all')}
-                          className="text-danger"
-                        >
-                          <XCircle className="mr-2 h-4 w-4" />
-                          Cancel entire series
-                        </DropdownMenuItem>
-                      </>
-                    ) : null}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <SelectionList
+        items={series}
+        view={view}
+        getId={(s) => s.id}
+        getRowLabel={(s) => s.serviceName ?? 'Series'}
+        entityLabelPlural="series"
+        selectable={false}
+        columns={columns}
+        card={card}
+      />
 
       <Dialog open={detail !== null || loadingDetail} onOpenChange={(o) => !o && setDetail(null)}>
         <DialogContent className="max-w-lg">

@@ -32,11 +32,13 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
   const status = typeof params.status === 'string' ? params.status : undefined;
   const resource = typeof params.resource === 'string' ? params.resource : undefined;
   const service = typeof params.service === 'string' ? params.service : undefined;
+  const q = typeof params.q === 'string' ? params.q : undefined;
 
   const qs = new URLSearchParams({ take: String(take), skip: String(skip), order: 'desc' });
   if (status) qs.set('status', status);
   if (resource) qs.set('resourceId', resource);
   if (service) qs.set('serviceId', service);
+  if (q) qs.set('q', q);
 
   const [{ data: bookings, meta }, services, resources] = await Promise.all([
     api
@@ -48,12 +50,13 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
       .catch(() => [] as BookingsFilterResource[]),
   ]);
 
-  // Preserve the resource/service filters when switching status chips.
+  // Preserve the resource/service/search filters when switching status chips.
   const chipHref = (nextStatus?: string): string => {
     const p = new URLSearchParams();
     if (nextStatus) p.set('status', nextStatus);
     if (resource) p.set('resource', resource);
     if (service) p.set('service', service);
+    if (q) p.set('q', q);
     const s = p.toString();
     return s ? `/scheduling/bookings?${s}` : '/scheduling/bookings';
   };
@@ -93,6 +96,7 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
             status={status ?? ''}
             resource={resource ?? ''}
             service={service ?? ''}
+            q={q ?? ''}
             resources={resources}
             services={services.map((s) => ({ id: s.id, name: s.name }))}
           />
@@ -104,13 +108,21 @@ export default async function SchedulingBookingsPage({ searchParams }: Props) {
         <Card>
           <CardBody className="p-0">
             <EmptyState
-              title={status ? `No ${status.replace('_', ' ')} bookings` : 'No bookings yet'}
-              description={
-                services.length === 0
-                  ? 'Create a service and set availability, then take your first booking.'
-                  : 'New bookings will appear here. Create one to get started.'
+              title={
+                q
+                  ? 'No bookings match this search'
+                  : status
+                    ? `No ${status.replace('_', ' ')} bookings`
+                    : 'No bookings yet'
               }
-              actions={services.length > 0 ? <NewBookingButton /> : undefined}
+              description={
+                q
+                  ? 'Try a different note or guest name.'
+                  : services.length === 0
+                    ? 'Create a service and set availability, then take your first booking.'
+                    : 'New bookings will appear here. Create one to get started.'
+              }
+              actions={q || services.length === 0 ? undefined : <NewBookingButton />}
             />
           </CardBody>
         </Card>

@@ -55,6 +55,20 @@ export async function list(
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
       ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
       ...(filter.status ? { status: filter.status } : {}),
+      // No denormalized customer/account name column (bill-to/ship-to are
+      // frozen JSON, not queryable) — search the document number directly and
+      // fall back to the live customer/B2B-account relations.
+      ...(filter.q
+        ? {
+            OR: [
+              { number: { contains: filter.q, mode: 'insensitive' } },
+              { customer: { firstName: { contains: filter.q, mode: 'insensitive' } } },
+              { customer: { lastName: { contains: filter.q, mode: 'insensitive' } } },
+              { customer: { email: { contains: filter.q, mode: 'insensitive' } } },
+              { b2bAccount: { companyName: { contains: filter.q, mode: 'insensitive' } } },
+            ],
+          }
+        : {}),
     };
     const [items, total] = await Promise.all([
       tx.billingDocument.findMany({

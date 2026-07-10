@@ -14,7 +14,18 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 import {
   ActionQueue,
   ActionTile,
@@ -22,7 +33,6 @@ import {
   BarList,
   DonutChart,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTime,
@@ -239,36 +249,54 @@ export default async function InventoryPage() {
         />
 
         {/* KPI strip — live from the inventory reporting summary */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<Box className="h-4 w-4" />}
-            label="SKUs tracked"
-            value={summary ? fmtNumber(summary.stockStatus.skuCount) : '—'}
-            hint="Variant × location rows"
-          />
-          <Stat
-            icon={<Package className="h-4 w-4" />}
-            label="Units in stock"
-            value={summary ? fmtNumber(summary.valuation.totalUnits) : '—'}
-            hint="On hand, all locations"
-          />
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Inventory value"
-            value={summary ? fmtMoneyCents(summary.valuation.totalCostCents, currency) : '—'}
-            hint="At cost"
-          />
-          <Stat
-            icon={<MapPin className="h-4 w-4" />}
-            label="Locations"
-            value={fmtNumber(locationCount)}
-            hint={
-              sourceCount != null
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Box className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>SKUs tracked</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.stockStatus.skuCount) : '—'}</StatValue>
+            <StatDesc>Variant × location rows</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Package className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Units in stock</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.valuation.totalUnits) : '—'}</StatValue>
+            <StatDesc>On hand, all locations</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Inventory value</StatTitle>
+            <StatValue>
+              {summary ? fmtMoneyCents(summary.valuation.totalCostCents, currency) : '—'}
+            </StatValue>
+            <StatDesc>At cost</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <MapPin className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Locations</StatTitle>
+            <StatValue>{fmtNumber(locationCount)}</StatValue>
+            <StatDesc>
+              {sourceCount != null
                 ? `${fmtNumber(sourceCount)} feed${sourceCount === 1 ? '' : 's'}${pausedSources ? ` · ${pausedSources} paused` : ''}`
-                : 'Stocking locations'
-            }
-          />
-        </div>
+                : 'Stocking locations'}
+            </StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Needs attention — all live from the reporting summary */}
         {summary && (

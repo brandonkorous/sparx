@@ -12,6 +12,7 @@ import {
   CardBody,
   Checkbox,
   Input,
+  Table,
 } from '@wizeworks/silicaui-react';
 
 import { draftReorderAction } from '../../_lib/reorder-actions';
@@ -181,18 +182,30 @@ function GroupCard({
             {selectedTotal > 0 ? formatMoney(selectedTotal, g.currency) : '—'} selected
           </p>
         </div>
-        <div className="flex flex-col gap-2">
-          {g.lines.map((l) => (
-            <LineRow
-              key={l.variantId}
-              line={l}
-              currency={g.currency}
-              row={rows[lineKey(g.supplierId, l)]}
-              lineId={lineKey(g.supplierId, l)}
-              onPatch={onPatch}
-            />
-          ))}
-        </div>
+        <Table size="sm">
+          <thead>
+            <tr>
+              <th aria-label="Include in draft" />
+              <th>Item</th>
+              <th />
+              <th>Order qty</th>
+              <th className="text-right">Unit cost</th>
+              <th className="text-right">Line cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {g.lines.map((l) => (
+              <LineRow
+                key={l.variantId}
+                line={l}
+                currency={g.currency}
+                row={rows[lineKey(g.supplierId, l)]}
+                lineId={lineKey(g.supplierId, l)}
+                onPatch={onPatch}
+              />
+            ))}
+          </tbody>
+        </Table>
         <CardActions>
           <Button color="module" className="ml-auto" disabled={pending} onClick={onDraft}>
             {pending ? 'Drafting…' : 'Draft purchase order'}
@@ -222,39 +235,47 @@ function LineRow({
     l.unitCostCents !== null && Number(qty) > 0 ? l.unitCostCents * Number(qty) : null;
 
   return (
-    <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
-      <Checkbox
-        color="module"
-        checked={selected}
-        onChange={(e) => onPatch(lineId, 'selected', e.target.checked)}
-        aria-label="Include in draft"
-      />
-      <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
+    <tr>
+      <td>
+        <Checkbox
+          color="module"
+          checked={selected}
+          onChange={(e) => onPatch(lineId, 'selected', e.target.checked)}
+          aria-label="Include in draft"
+        />
+      </td>
+      <td>
         <p className="text-sm font-medium">{l.title ?? l.sku ?? l.variantId.slice(0, 8)}</p>
         <p className="text-base-content/70 font-mono text-xs">
           {l.sku ?? l.variantId} · {l.available}/{l.reorderPoint} reorder pt
         </p>
-      </div>
-      {l.onOrder > 0 ? (
-        <Badge color="info" variant="soft">
-          {l.onOrder} on order
-        </Badge>
-      ) : null}
-      <div className="flex w-[5.5rem] flex-col gap-0">
+      </td>
+      <td>
+        {l.onOrder > 0 ? (
+          <Badge color="info" variant="soft">
+            {l.onOrder} on order
+          </Badge>
+        ) : null}
+      </td>
+      <td className="w-[6.5rem]">
         <Input
           type="number"
           value={qty}
           aria-label="Order quantity"
           onChange={(e) => onPatch(lineId, 'qty', e.target.value)}
         />
-      </div>
-      <p className="text-base-content/70 w-[6rem] text-right text-sm">
-        {l.unitCostCents !== null ? formatMoney(l.unitCostCents, currency) : '—'}
-      </p>
-      <p className="w-[6rem] text-right text-sm font-medium">
-        {lineCost !== null ? formatMoney(lineCost, currency) : '—'}
-      </p>
-    </div>
+      </td>
+      <td className="text-right">
+        <p className="text-base-content/70 text-sm">
+          {l.unitCostCents !== null ? formatMoney(l.unitCostCents, currency) : '—'}
+        </p>
+      </td>
+      <td className="text-right">
+        <p className="text-sm font-medium">
+          {lineCost !== null ? formatMoney(lineCost, currency) : '—'}
+        </p>
+      </td>
+    </tr>
   );
 }
 

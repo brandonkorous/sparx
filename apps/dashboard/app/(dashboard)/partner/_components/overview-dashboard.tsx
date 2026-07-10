@@ -9,8 +9,16 @@ import {
   UserRound,
   Users,
 } from 'lucide-react';
-import { Badge } from '@wizeworks/silicaui-react';
-import { ModuleProvider, PageHeader, Stat, statusLabel, statusTone } from '@sparx/ui';
+import {
+  Badge,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+} from '@wizeworks/silicaui-react';
+import { ModuleProvider, PageHeader, statusLabel, statusTone } from '@sparx/ui';
 
 import {
   CardLink,
@@ -167,31 +175,47 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
 
 function PartnerKpis({ overview }: { overview: PartnerOverview }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Stat
-        icon={<TrendingUp className="h-4 w-4" />}
-        label="Lifetime earned"
-        value={fmtMoneyCents(overview.lifetimeCents)}
-        hint="Commissions paid out"
-      />
-      <Stat
-        icon={<Coins className="h-4 w-4" />}
-        label="Pending"
-        value={fmtMoneyCents(overview.pendingCents)}
-        hint="Accrued, not yet paid"
-      />
-      <Stat
-        icon={<Users className="h-4 w-4" />}
-        label="Active referrals"
-        value={fmtNumber(overview.activeReferrals)}
-        hint="Paying accounts you referred"
-      />
-      <Stat
-        icon={<Share2 className="h-4 w-4" />}
-        label="Total referrals"
-        value={fmtNumber(overview.referralCount)}
-        hint="Signups under your link"
-      />
-    </div>
+    <Stats className="w-full flex-wrap [&>*]:flex-1">
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <TrendingUp className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Lifetime earned</StatTitle>
+        <StatValue>{fmtMoneyCents(overview.lifetimeCents)}</StatValue>
+        <StatDesc>Commissions paid out</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <Coins className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Pending</StatTitle>
+        <StatValue>{fmtMoneyCents(overview.pendingCents)}</StatValue>
+        <StatDesc>Accrued, not yet paid</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <Users className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Active referrals</StatTitle>
+        <StatValue>{fmtNumber(overview.activeReferrals)}</StatValue>
+        <StatDesc>Paying accounts you referred</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <Share2 className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Total referrals</StatTitle>
+        <StatValue>{fmtNumber(overview.referralCount)}</StatValue>
+        <StatDesc>Signups under your link</StatDesc>
+      </Stat>
+    </Stats>
   );
 }

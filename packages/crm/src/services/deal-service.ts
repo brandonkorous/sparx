@@ -20,6 +20,7 @@ import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 
 export interface ListDealsFilter {
+  q?: string;
   pipelineId?: string;
   stageId?: string;
   assignedRepId?: string | null;
@@ -38,6 +39,7 @@ export async function list(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DealWhereInput = {
       deletedAt: null,
+      ...(filter.q ? { title: { contains: filter.q, mode: 'insensitive' } } : {}),
       ...(filter.pipelineId ? { pipelineId: filter.pipelineId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),

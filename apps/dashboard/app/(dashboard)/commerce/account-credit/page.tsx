@@ -20,6 +20,7 @@ interface PageProps {
 export default async function AccountCreditPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, balancesPaged] = await Promise.all([
     getUserPreferences(),
@@ -27,6 +28,7 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
       `/v1/commerce/account-credit?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -55,7 +57,7 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
           <h3 className="text-xl font-semibold">Outstanding balances</h3>
           <ListToolbar
             enableViewToggle
-            searchable={false}
+            searchPlaceholder="Search by customer name, email, or company…"
             primaryAction={
               <EntityCreateButton
                 entityType="account-credit"
@@ -76,14 +78,25 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<CircleDollarSign className="h-5 w-5" />}
-            title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
-            description="Grant credit with the New button, or have it auto-issued from a refund."
+            title={
+              total === 0
+                ? 'No account credit issued yet'
+                : q
+                  ? 'No balances match this search'
+                  : 'No balances on this page'
+            }
+            description={
+              q
+                ? 'Try a different name, email, or company.'
+                : 'Grant credit with the New button, or have it auto-issued from a refund.'
+            }
             actions={
               total === 0 ? (
                 <EntityCreateButton
                   entityType="account-credit"
                   newHref="/commerce/account-credit/new"
-                  variant="outline"
+                  color="module"
+                  variant="solid"
                   size="sm"
                   leftIcon={<Plus className="h-4 w-4" />}
                 >

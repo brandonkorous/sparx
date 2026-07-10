@@ -14,8 +14,19 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
-import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader, Stat } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import { ActionQueue, ActionTile, AreaChart, BarList, PageHeader } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { AR_STATUS_VARIANT, formatMoney } from './_components/format';
@@ -273,48 +284,66 @@ export default async function InvoicingPage() {
         />
 
         {/* Headline KPIs — outstanding & overdue live from the aging report */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Outstanding A/R"
-            value={fmtMoney(outstanding, currency)}
-            hint={
-              aging
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Outstanding A/R</StatTitle>
+            <StatValue>{fmtMoney(outstanding, currency)}</StatValue>
+            <StatDesc>
+              {aging
                 ? `Across ${fmtNumber(aging.totalCount)} open document${aging.totalCount === 1 ? '' : 's'}`
-                : 'No open balances yet'
-            }
-          />
-          <Stat
-            icon={<AlertTriangle className="h-4 w-4" />}
-            label="Overdue"
-            value={fmtMoney(overdue, currency)}
-            hint={
-              overdueCount != null
+                : 'No open balances yet'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Overdue</StatTitle>
+            <StatValue>{fmtMoney(overdue, currency)}</StatValue>
+            <StatDesc>
+              {overdueCount != null
                 ? `${fmtNumber(overdueCount)} past-due document${overdueCount === 1 ? '' : 's'}`
-                : 'Nothing past due'
-            }
-          />
-          <Stat
-            icon={<TrendingUp className="h-4 w-4" />}
-            label="Collected · 30d"
-            value={fmtMoneyCents(collected30?.totals.collectedCents, currency)}
-            hint={
-              collected30 && collected30.totals.collectedCents > 0
+                : 'Nothing past due'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <TrendingUp className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Collected · 30d</StatTitle>
+            <StatValue>{fmtMoneyCents(collected30?.totals.collectedCents, currency)}</StatValue>
+            <StatDesc>
+              {collected30 && collected30.totals.collectedCents > 0
                 ? `${fmtNumber(collected30.totals.paymentsCount)} payment${collected30.totals.paymentsCount === 1 ? '' : 's'} · last 30 days`
-                : 'No payments received yet'
-            }
-          />
-          <Stat
-            icon={<CalendarClock className="h-4 w-4" />}
-            label="Avg. days to pay"
-            value={collections?.avgDaysToPay != null ? `${collections.avgDaysToPay} days` : '—'}
-            hint={
-              collections && collections.paidCount > 0
+                : 'No payments received yet'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <CalendarClock className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Avg. days to pay</StatTitle>
+            <StatValue>
+              {collections?.avgDaysToPay != null ? `${collections.avgDaysToPay} days` : '—'}
+            </StatValue>
+            <StatDesc>
+              {collections && collections.paidCount > 0
                 ? `Median ${collections.medianDaysToPay ?? '—'} days · ${fmtNumber(collections.paidCount)} paid`
-                : 'From finalize to payment'
-            }
-          />
-        </div>
+                : 'From finalize to payment'}
+            </StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Daily action queue — what's blocking the next dollar, every tile live */}
         <ActionQueue title="Needs attention" icon={<AlertTriangle className="h-4 w-4" />}>

@@ -78,12 +78,22 @@ type ReceiptWithLines = Prisma.GoodsReceiptGetPayload<{ include: typeof DETAIL_I
 
 export async function listGoodsReceipts(
   ctx: ServiceContext,
-  filter: { purchaseOrderId?: string; take?: number; skip?: number } = {}
+  filter: { q?: string; purchaseOrderId?: string; take?: number; skip?: number } = {}
 ): Promise<{ items: GoodsReceiptRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where: Prisma.GoodsReceiptWhereInput = filter.purchaseOrderId
-      ? { purchaseOrderId: filter.purchaseOrderId }
-      : {};
+    const where: Prisma.GoodsReceiptWhereInput = {
+      ...(filter.purchaseOrderId ? { purchaseOrderId: filter.purchaseOrderId } : {}),
+      ...(filter.q
+        ? {
+            OR: [
+              { number: { contains: filter.q, mode: 'insensitive' } },
+              { reference: { contains: filter.q, mode: 'insensitive' } },
+              { purchaseOrder: { number: { contains: filter.q, mode: 'insensitive' } } },
+              { warehouse: { name: { contains: filter.q, mode: 'insensitive' } } },
+            ],
+          }
+        : {}),
+    };
     const [rows, total] = await Promise.all([
       tx.goodsReceipt.findMany({
         where,

@@ -86,6 +86,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   const { skip, take } = parsePageParams(params);
   const warehouseFilter = pickString(params.warehouse);
   const lowStockOnly = pickString(params.low) === '1';
+  const q = pickString(params.q);
 
   const lowStockQuery = new URLSearchParams({ take: '50' });
   if (warehouseFilter) lowStockQuery.set('warehouse_id', warehouseFilter);
@@ -106,6 +107,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   if (fallbackWarehouse) {
     const enrichedQuery = new URLSearchParams({ take: String(take), skip: String(skip) });
     if (lowStockOnly) enrichedQuery.set('low_stock_only', 'true');
+    if (q) enrichedQuery.set('q', q);
     const { data, meta } = await api.getPaged<EnrichedLevelRow[]>(
       `/v1/inventory/levels/warehouse/${fallbackWarehouse.id}/enriched?${enrichedQuery.toString()}`
     );
@@ -158,7 +160,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
       toolbar={
         warehouses.length === 0 ? undefined : (
           <ListToolbar
-            searchable={false}
+            searchPlaceholder="Search SKU or product…"
             filters={[{ key: 'warehouse', label: 'Warehouses', options: warehouseOptions }]}
             enableViewToggle
           />
@@ -248,8 +250,14 @@ export default async function InventoryPage({ searchParams }: PageProps) {
               <Card className="bg-module bg-soft">
                 <EmptyState
                   icon={<Boxes className="h-5 w-5" />}
-                  title="No stock tracked at this warehouse"
-                  description="As soon as a variant is reserved, sold, or manually adjusted at this warehouse, a row appears here."
+                  title={
+                    q ? 'No stock rows match this search' : 'No stock tracked at this warehouse'
+                  }
+                  description={
+                    q
+                      ? 'Try a different SKU or product name.'
+                      : 'As soon as a variant is reserved, sold, or manually adjusted at this warehouse, a row appears here.'
+                  }
                 />
               </Card>
             ) : (

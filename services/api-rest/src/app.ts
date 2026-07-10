@@ -14,6 +14,7 @@ import Fastify, {
   type FastifyServerOptions,
 } from 'fastify';
 import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
 import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '@sparx/crm';
 import {
   SitebuilderConflictError,
@@ -736,6 +737,14 @@ export async function createApp(): Promise<FastifyInstance> {
   );
   await app.register(openapiPlugin);
   await app.register(rateLimitPlugin);
+  // Every tenant/custom domain (and api.sparx.works itself) is a distinct
+  // origin from the browser's perspective — there is no fixed allowlist to
+  // write, so reflect the request Origin rather than enumerate one. Safe
+  // because no public route reads an auth cookie directly (the one
+  // cookie-based session, sparx_customer_session, is only ever read via
+  // apps/site's own same-origin proxy route, never a direct cross-origin
+  // fetch), so credentials stay off.
+  await app.register(cors, { origin: true, credentials: false });
   // Cookie support — used by the storefront customer session (httpOnly
   // sparx_customer_session). Unsigned: the session token is already a
   // high-entropy opaque value stored only as a SHA-256 hash server-side.

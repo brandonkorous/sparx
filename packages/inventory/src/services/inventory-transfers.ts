@@ -34,15 +34,39 @@ import type { InventoryTransferDetail, InventoryTransferRow } from './inventory-
 
 export async function listInventoryTransfers(
   ctx: ServiceContext,
-  filter: { status?: string; warehouseId?: string; take?: number; skip?: number } = {}
+  filter: {
+    q?: string;
+    status?: string;
+    warehouseId?: string;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: InventoryTransferRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.InventoryTransferWhereInput = {
       ...(filter.status ? { status: filter.status } : {}),
       // A warehouse filter matches either leg — stock leaving or arriving here.
+      // AND'd (via separate keys, not merged into one OR) with the text search
+      // below so the two conditions narrow independently rather than either
+      // one satisfying the whole where clause.
       ...(filter.warehouseId
         ? {
             OR: [{ fromWarehouseId: filter.warehouseId }, { toWarehouseId: filter.warehouseId }],
+          }
+        : {}),
+      ...(filter.q
+        ? {
+            AND: [
+              {
+                OR: [
+                  { number: { contains: filter.q, mode: 'insensitive' } },
+                  { fromWarehouse: { name: { contains: filter.q, mode: 'insensitive' } } },
+                  { fromWarehouse: { code: { contains: filter.q, mode: 'insensitive' } } },
+                  { toWarehouse: { name: { contains: filter.q, mode: 'insensitive' } } },
+                  { toWarehouse: { code: { contains: filter.q, mode: 'insensitive' } } },
+                ],
+              },
+            ],
           }
         : {}),
     };

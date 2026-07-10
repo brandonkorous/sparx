@@ -32,6 +32,7 @@ const LevelsQuery = z.object({
 });
 
 const EnrichedLevelsQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   low_stock_only: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(1000).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -75,7 +76,18 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
     const take = Math.min(q.take ?? 200, 1000);
     const skip = q.skip ?? 0;
     const lowStockOnly = q.low_stock_only === true;
-    const where = { warehouseId };
+    const where = {
+      warehouseId,
+      ...(q.q
+        ? {
+            OR: [
+              { variant: { sku: { contains: q.q, mode: 'insensitive' as const } } },
+              { variant: { title: { contains: q.q, mode: 'insensitive' as const } } },
+              { variant: { product: { title: { contains: q.q, mode: 'insensitive' as const } } } },
+            ],
+          }
+        : {}),
+    };
 
     const { rows, total } = await withRequestTenant(request, async (tx) => {
       const [rows, total] = await Promise.all([

@@ -1,6 +1,6 @@
 // Media assets — read, edit metadata, soft-delete.
 //
-//   GET    /v1/media/assets                 → list (cursor-paged)
+//   GET    /v1/media/assets                 → list (offset-paged)
 //   GET    /v1/media/assets/:id             → detail with variants
 //   PATCH  /v1/media/assets/:id             → alt text, caption, focal point
 //   DELETE /v1/media/assets/:id             → soft delete (rejects when in use)
@@ -11,6 +11,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -26,8 +27,12 @@ const ListQuery = z.object({
   // "video", "audio") so the dashboard's asset picker can scope to type
   // without doing the substring match client-side.
   type: z.string().max(63).optional(),
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(250).default(50),
+  // `limit` is a legacy alias for `take`, still used by the asset-picker
+  // modal's single bulk fetch — offset pagination (`take`/`skip` + `total`)
+  // is what the media library list page uses, matching every other list.
+  limit: z.coerce.number().int().min(1).max(250).optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -123,32 +128,35 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/media/assets', async (request) => {
     requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
+    const take = Math.min(q.take ?? q.limit ?? 50, 250);
+    const skip = q.skip ?? 0;
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.mediaAsset.findMany({
-        where: {
-          deletedAt: null,
-          ...(q.status ? { status: q.status } : {}),
-          ...(q.type ? { mimeType: { startsWith: q.type } } : {}),
-          ...(q.q
-            ? {
-                OR: [
-                  { originalFilename: { contains: q.q, mode: 'insensitive' } },
-                  { altText: { contains: q.q, mode: 'insensitive' } },
-                  { caption: { contains: q.q, mode: 'insensitive' } },
-                ],
-              }
-            : {}),
-        },
-        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
-        take: q.limit + 1,
-        ...(q.cursor ? { cursor: { id: q.cursor }, skip: 1 } : {}),
-      })
+    const where: Prisma.MediaAssetWhereInput = {
+      deletedAt: null,
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.type ? { mimeType: { startsWith: q.type } } : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { originalFilename: { contains: q.q, mode: 'insensitive' } },
+              { altText: { contains: q.q, mode: 'insensitive' } },
+              { caption: { contains: q.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
+
+    const [page, total] = await withRequestTenant(request, (tx) =>
+      Promise.all([
+        tx.mediaAsset.findMany({
+          where,
+          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          take,
+          skip,
+        }),
+        tx.mediaAsset.count({ where }),
+      ])
     );
-
-    const hasMore = rows.length > q.limit;
-    const page = hasMore ? rows.slice(0, q.limit) : rows;
-    const nextCursor = hasMore ? (page[page.length - 1]?.id ?? null) : null;
 
     // Variants for the whole page in one query (not per-row), so the asset
     // picker + media library can render real thumbnails. Without this the list
@@ -171,7 +179,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
 
     return paged(
       page.map((row) => serializeAsset(row, variantsByAsset.get(row.id) ?? [])),
-      { per_page: q.limit, next_cursor: nextCursor }
+      { total, per_page: take }
     );
   });
 

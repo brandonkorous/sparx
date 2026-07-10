@@ -10,7 +10,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { BookingPolicy } from '@sparx/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { CreateBookingPolicyInput, UpdateBookingPolicyInput } from '@sparx/scheduling-schemas';
 import {
@@ -23,14 +23,20 @@ import {
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
 const schedulingPolicyRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/policies', async (request) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
-    const rows = await listBookingPolicies(tenantId);
-    return ok(rows.map(policyView));
+    const query = ListQuery.parse(request.query);
+    const { items, total } = await listBookingPolicies(tenantId, query);
+    return paged(items.map(policyView), { total, per_page: query.take ?? 50 });
   });
 
   app.post('/v1/scheduling/policies', async (request, reply) => {

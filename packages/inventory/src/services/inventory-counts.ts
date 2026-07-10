@@ -34,12 +34,27 @@ import type { InventoryCountDetail, InventoryCountRow } from './inventory-count-
 
 export async function listInventoryCounts(
   ctx: ServiceContext,
-  filter: { status?: string; warehouseId?: string; take?: number; skip?: number } = {}
+  filter: {
+    q?: string;
+    status?: string;
+    warehouseId?: string;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: InventoryCountRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.InventoryCountWhereInput = {
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
+      ...(filter.q
+        ? {
+            OR: [
+              { number: { contains: filter.q, mode: 'insensitive' } },
+              { warehouse: { name: { contains: filter.q, mode: 'insensitive' } } },
+              { warehouse: { code: { contains: filter.q, mode: 'insensitive' } } },
+            ],
+          }
+        : {}),
     };
     const [rows, total] = await Promise.all([
       tx.inventoryCount.findMany({

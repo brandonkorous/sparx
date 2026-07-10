@@ -19,6 +19,7 @@ interface PageProps {
 export default async function InvoicingTemplatesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
   // listOrSeed lazily materializes the built-in default on first visit.
   const [prefs, { data: templates, meta }] = await Promise.all([
     getUserPreferences(),
@@ -26,6 +27,7 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
       `/v1/invoicing/templates?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
       }).toString()}`
     ),
   ]);
@@ -44,7 +46,7 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
           className="mb-0"
         />
       }
-      toolbar={<ListToolbar enableViewToggle searchable={false} />}
+      toolbar={<ListToolbar enableViewToggle searchPlaceholder="Search template name…" />}
       pager={<ListPager total={total} />}
     >
       <div className="flex flex-col gap-6">

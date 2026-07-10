@@ -21,13 +21,23 @@ import {
   BarList,
   DonutChart,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -253,32 +263,48 @@ export default async function CmsPage() {
         />
 
         {/* Headline KPIs — live counts from the content catalog */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<FileText className="h-4 w-4" />}
-            label="Published · 30d"
-            value={summary ? fmtNumber(summary.publishedLast30d) : '—'}
-            hint="Posts & pages gone live"
-          />
-          <Stat
-            icon={<Pencil className="h-4 w-4" />}
-            label="Drafts"
-            value={summary ? fmtNumber(summary.byStatus.draft) : '—'}
-            hint="Work in progress"
-          />
-          <Stat
-            icon={<Calendar className="h-4 w-4" />}
-            label="Scheduled"
-            value={summary ? fmtNumber(summary.scheduledUpcoming) : '—'}
-            hint="Queued to publish"
-          />
-          <Stat
-            icon={<Layers className="h-4 w-4" />}
-            label="Total content"
-            value={summary ? fmtNumber(summary.total) : '—'}
-            hint="Entries across all types"
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <FileText className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Published · 30d</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.publishedLast30d) : '—'}</StatValue>
+            <StatDesc>Posts & pages gone live</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Pencil className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Drafts</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.byStatus.draft) : '—'}</StatValue>
+            <StatDesc>Work in progress</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Calendar className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Scheduled</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.scheduledUpcoming) : '—'}</StatValue>
+            <StatDesc>Queued to publish</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Layers className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Total content</StatTitle>
+            <StatValue>{summary ? fmtNumber(summary.total) : '—'}</StatValue>
+            <StatDesc>Entries across all types</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Needs attention — both tiles wired to live status counts */}
         {showActionQueue && (

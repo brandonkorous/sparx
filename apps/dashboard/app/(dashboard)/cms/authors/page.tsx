@@ -24,11 +24,16 @@ interface PageProps {
 export default async function AuthorsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
 
   const [prefs, { data: authors, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<AuthorListItem[]>(
-      `/v1/authors?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+      `/v1/authors?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+        ...(q ? { q } : {}),
+      }).toString()}`
     ),
   ]);
   const total = (meta?.total as number | undefined) ?? authors.length;
@@ -51,7 +56,7 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search name, slug, or bio…"
           enableViewToggle
           primaryAction={
             <EntityCreateButton
@@ -72,18 +77,24 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
         <Card className="bg-module bg-soft">
           <EmptyState
             icon={<Users className="h-5 w-5" />}
-            title="No authors yet"
-            description="Add your first author to start attributing blog posts and editorial entries."
+            title={total === 0 ? 'No authors yet' : 'No authors match this search'}
+            description={
+              total === 0
+                ? 'Add your first author to start attributing blog posts and editorial entries.'
+                : 'Try a different name, slug, or bio keyword.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="author"
-                newHref="/cms/authors/new"
-                variant="outline"
-                size="sm"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="author"
+                  newHref="/cms/authors/new"
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              ) : undefined
             }
           />
         </Card>

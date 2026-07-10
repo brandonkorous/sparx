@@ -18,6 +18,12 @@ import { ConfiguratorList, type ConfigurationTemplateRow } from './_components/c
 
 export const dynamic = 'force-dynamic';
 
+const STATUS_OPTIONS = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+];
+
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
@@ -25,6 +31,8 @@ interface PageProps {
 export default async function ConfiguratorPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
+  const q = stringParam(params.q);
+  const status = stringParam(params.status);
 
   const [prefs, { data: templates, meta }] = await Promise.all([
     getUserPreferences(),
@@ -32,6 +40,8 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
       `/v1/commerce/configurator-templates?${new URLSearchParams({
         take: String(take),
         skip: String(skip),
+        ...(q ? { q } : {}),
+        ...(status ? { status } : {}),
       }).toString()}`
     ),
   ]);
@@ -53,7 +63,8 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
       toolbar={
         <ListToolbar
           enableViewToggle
-          searchable={false}
+          searchPlaceholder="Search templates by name…"
+          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
           primaryAction={
             <EntityCreateButton
               entityType="configurator-template"
@@ -73,17 +84,23 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<Settings2 className="h-5 w-5" />}
-            title="No configurators yet"
-            description="Open any configurable product (e.g. a play structure or gift-set) and add a configurator template from its detail page."
+            title={total === 0 ? 'No configurators yet' : 'No templates match these filters'}
+            description={
+              total === 0
+                ? 'Open any configurable product (e.g. a play structure or gift-set) and add a configurator template from its detail page.'
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
             actions={
-              <EntityCreateButton
-                entityType="configurator-template"
-                newHref="/commerce/configurator/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New template
-              </EntityCreateButton>
+              total === 0 ? (
+                <EntityCreateButton
+                  entityType="configurator-template"
+                  newHref="/commerce/configurator/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New template
+                </EntityCreateButton>
+              ) : undefined
             }
           />
         </Card>

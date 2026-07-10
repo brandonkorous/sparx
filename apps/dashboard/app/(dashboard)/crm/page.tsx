@@ -14,16 +14,19 @@ import {
 } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
+import { ActionQueue, ActionTile, AreaChart, BarList, DonutChart, PageHeader } from '@sparx/ui';
 import {
-  ActionQueue,
-  ActionTile,
-  AreaChart,
-  BarList,
-  DonutChart,
-  PageHeader,
+  Badge,
+  Button,
+  EmptyState,
   Stat,
-} from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -364,32 +367,50 @@ export default async function CrmOverviewPage() {
 
         {/* Headline KPIs — all live: customers + open pipeline from the snapshot,
             new·30d from acquisition, win rate from the win/loss report. */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<Users className="h-4 w-4" />}
-            label="Customers"
-            value={fmtNumber(snapshot?.customers)}
-            hint="Across all types"
-          />
-          <Stat
-            icon={<Plus className="h-4 w-4" />}
-            label="New · 30d"
-            value={newThisMonth}
-            hint="Newest month of acquisition"
-          />
-          <Stat
-            icon={<Filter className="h-4 w-4" />}
-            label="Open pipeline"
-            value={snapshot ? fmtMoney(snapshot.pipelineValue) : '—'}
-            hint={snapshot ? `${fmtNumber(snapshot.openDeals)} active deals` : 'No open deals yet'}
-          />
-          <Stat
-            icon={<Target className="h-4 w-4" />}
-            label="Win rate"
-            value={winRate}
-            hint="Won ÷ closed deals"
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Users className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Customers</StatTitle>
+            <StatValue>{fmtNumber(snapshot?.customers)}</StatValue>
+            <StatDesc>Across all types</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Plus className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>New · 30d</StatTitle>
+            <StatValue>{newThisMonth}</StatValue>
+            <StatDesc>Newest month of acquisition</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Filter className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Open pipeline</StatTitle>
+            <StatValue>{snapshot ? fmtMoney(snapshot.pipelineValue) : '—'}</StatValue>
+            <StatDesc>
+              {snapshot ? `${fmtNumber(snapshot.openDeals)} active deals` : 'No open deals yet'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Target className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Win rate</StatTitle>
+            <StatValue>{winRate}</StatValue>
+            <StatDesc>Won ÷ closed deals</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Needs attention — wired to the live task metrics. */}
         {taskStats && (

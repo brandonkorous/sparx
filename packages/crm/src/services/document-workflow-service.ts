@@ -16,7 +16,7 @@ import {
 } from '@sparx/crm-schemas';
 import { DEFAULT_DOCUMENT_WORKFLOWS } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { DocumentStage, DocumentWorkflow } from '@sparx/db';
+import type { DocumentStage, DocumentWorkflow, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -39,6 +39,39 @@ export async function list(
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
     })
   );
+}
+
+// Paginated/searchable variant for the dashboard's Workflows list page — kept
+// separate from `list()` above (which several MCP tools + tests depend on
+// returning a bare array) rather than changing that function's shape.
+export async function listPaged(
+  ctx: ServiceContext,
+  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+): Promise<{ items: WorkflowWithStages[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const where: Prisma.DocumentWorkflowWhereInput = {
+      ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.q
+        ? {
+            OR: [
+              { name: { contains: args.q, mode: 'insensitive' } },
+              { slug: { contains: args.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
+    const [items, total] = await Promise.all([
+      tx.documentWorkflow.findMany({
+        where,
+        orderBy: [{ isDefault: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'asc' }],
+        include: { stages: { orderBy: { sortOrder: 'asc' } } },
+        take: Math.min(args.take ?? 50, 250),
+        skip: args.skip ?? 0,
+      }),
+      tx.documentWorkflow.count({ where }),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(ctx: ServiceContext, workflowId: string): Promise<WorkflowWithStages> {

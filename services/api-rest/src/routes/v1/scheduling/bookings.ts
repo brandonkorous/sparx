@@ -51,6 +51,7 @@ import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   status: z.string().max(20).optional(),
   bookingType: z.enum(['appointment', 'class', 'reservation', 'rental']).optional(),
   serviceId: z.string().uuid().optional(),

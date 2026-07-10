@@ -182,6 +182,7 @@ export const AdvanceBillingDocumentInput = z.object({
 export type AdvanceBillingDocumentInput = z.infer<typeof AdvanceBillingDocumentInput>;
 
 export const ListBillingDocumentsInput = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   workflowId: z.string().uuid().optional(),
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),

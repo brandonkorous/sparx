@@ -19,13 +19,25 @@ import {
   AreaChart,
   BarList,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';
@@ -323,32 +335,50 @@ export default async function SeoPage() {
           <>
             {/* KPI strip — pages scored + issues live; organic live once Search
                 Console is connected, else em dashes */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Stat
-                icon={<Globe className="h-4 w-4" />}
-                label="Pages scored"
-                value={fmtNumber(count)}
-                hint={avg != null ? `Average ${avg}/100` : 'Across your site'}
-              />
-              <Stat
-                icon={<TrendingUp className="h-4 w-4" />}
-                label="Organic clicks · 28d"
-                value={organicKpis.clicks}
-                hint={organicLive ? 'Clicks from search' : 'Connect Search Console'}
-              />
-              <Stat
-                icon={<Target className="h-4 w-4" />}
-                label="Avg. position"
-                value={organicKpis.position}
-                hint={organicLive ? 'Across ranked queries' : 'Connect Search Console'}
-              />
-              <Stat
-                icon={<AlertTriangle className="h-4 w-4" />}
-                label="Issues to fix"
-                value={fmtNumber(issuesTotal)}
-                hint={issuesTotal ? 'Pages with a top fix' : 'No outstanding fixes'}
-              />
-            </div>
+            <Stats className="w-full flex-wrap [&>*]:flex-1">
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <Globe className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Pages scored</StatTitle>
+                <StatValue>{fmtNumber(count)}</StatValue>
+                <StatDesc>{avg != null ? `Average ${avg}/100` : 'Across your site'}</StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Organic clicks · 28d</StatTitle>
+                <StatValue>{organicKpis.clicks}</StatValue>
+                <StatDesc>{organicLive ? 'Clicks from search' : 'Connect Search Console'}</StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <Target className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Avg. position</StatTitle>
+                <StatValue>{organicKpis.position}</StatValue>
+                <StatDesc>
+                  {organicLive ? 'Across ranked queries' : 'Connect Search Console'}
+                </StatDesc>
+              </Stat>
+              <Stat>
+                <StatFigure>
+                  <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                    <AlertTriangle className="h-4 w-4" />
+                  </div>
+                </StatFigure>
+                <StatTitle>Issues to fix</StatTitle>
+                <StatValue>{fmtNumber(issuesTotal)}</StatValue>
+                <StatDesc>{issuesTotal ? 'Pages with a top fix' : 'No outstanding fixes'}</StatDesc>
+              </Stat>
+            </Stats>
 
             {/* Needs attention — live top fixes */}
             {issues.length > 0 && (

@@ -20,13 +20,23 @@ import {
   AreaChart,
   DonutChart,
   PageHeader,
-  Stat,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -301,32 +311,48 @@ export default async function DropshipPage() {
 
         {/* Headline KPIs — revenue, orders, margin from the analytics summary;
             on-time from the supplier-SLA report. */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<DollarSign className="h-4 w-4" />}
-            label="Dropship revenue · 30d"
-            value={fmtMoneyCents(revenueCents)}
-            hint="Across routed orders"
-          />
-          <Stat
-            icon={<Route className="h-4 w-4" />}
-            label="Orders routed · 30d"
-            value={fmtNumber(ordersRouted)}
-            hint="Routed to suppliers"
-          />
-          <Stat
-            icon={<Percent className="h-4 w-4" />}
-            label="Avg. margin"
-            value={marginPct != null ? `${marginPct}%` : '—'}
-            hint="Net of supplier cost"
-          />
-          <Stat
-            icon={<Truck className="h-4 w-4" />}
-            label="On-time delivery"
-            value={onTimeValue}
-            hint={onTimeHint}
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <DollarSign className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Dropship revenue · 30d</StatTitle>
+            <StatValue>{fmtMoneyCents(revenueCents)}</StatValue>
+            <StatDesc>Across routed orders</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Route className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Orders routed · 30d</StatTitle>
+            <StatValue>{fmtNumber(ordersRouted)}</StatValue>
+            <StatDesc>Routed to suppliers</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Percent className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Avg. margin</StatTitle>
+            <StatValue>{marginPct != null ? `${marginPct}%` : '—'}</StatValue>
+            <StatDesc>Net of supplier cost</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Truck className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>On-time delivery</StatTitle>
+            <StatValue>{onTimeValue}</StatValue>
+            <StatDesc>{onTimeHint}</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Routing / exception queue — the one wireable tile is failed routes
             from the supplier-SLA report; it only renders once any have failed. */}

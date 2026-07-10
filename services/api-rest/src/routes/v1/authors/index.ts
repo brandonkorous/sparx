@@ -14,6 +14,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -24,6 +25,7 @@ import { writeAudit } from '@sparx/api-core/audit';
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -81,14 +83,24 @@ const authorRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/authors', async (request) => {
     requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
+    const where: Prisma.AuthorWhereInput = q.q
+      ? {
+          OR: [
+            { displayName: { contains: q.q, mode: 'insensitive' } },
+            { slug: { contains: q.q, mode: 'insensitive' } },
+            { bio: { contains: q.q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
     const [rows, total] = await withRequestTenant(request, (tx) =>
       Promise.all([
         tx.author.findMany({
+          where,
           orderBy: { displayName: 'asc' },
           take: Math.min(q.take ?? 50, 250),
           skip: q.skip ?? 0,
         }),
-        tx.author.count(),
+        tx.author.count({ where }),
       ])
     );
     return paged(rows.map(serialize), { total, per_page: q.take ?? 50 });

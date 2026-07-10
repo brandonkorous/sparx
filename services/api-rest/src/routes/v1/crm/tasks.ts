@@ -18,6 +18,7 @@ import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   assigned_to_user_id: z.string().uuid().optional(),
   customer_id: z.string().uuid().optional(),
   deal_id: z.string().uuid().optional(),
@@ -27,7 +28,10 @@ const ListQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
-const OverdueQuery = z.object({ user_id: z.string().uuid().optional() });
+const OverdueQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  user_id: z.string().uuid().optional(),
+});
 
 const taskRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/tasks', async (request) => {
@@ -35,6 +39,7 @@ const taskRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await taskService.list(toCrmContext(request), {
+      q: q.q,
       assignedToUserId: q.assigned_to_user_id,
       customerId: q.customer_id,
       dealId: q.deal_id,
@@ -50,7 +55,10 @@ const taskRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = OverdueQuery.parse(request.query);
-    const rows = await taskService.getOverdue(toCrmContext(request), { userId: q.user_id });
+    const rows = await taskService.getOverdue(toCrmContext(request), {
+      q: q.q,
+      userId: q.user_id,
+    });
     return ok(rows);
   });
 

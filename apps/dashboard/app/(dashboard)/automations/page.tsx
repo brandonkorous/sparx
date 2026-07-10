@@ -28,8 +28,20 @@ import {
 } from 'lucide-react';
 
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import { Badge, Button, Card, EmptyState, Table } from '@wizeworks/silicaui-react';
-import { ActionQueue, ActionTile, AreaChart, DonutChart, PageHeader, Stat } from '@sparx/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+  Table,
+} from '@wizeworks/silicaui-react';
+import { ActionQueue, ActionTile, AreaChart, DonutChart, PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { AutomationDto } from './_lib/types';
@@ -243,40 +255,56 @@ export default async function AutomationsPage() {
         />
 
         {/* Headline KPIs — live from the rule set */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<PlayCircle className="h-4 w-4" />}
-            label="Active automations"
-            value={fmtNumber(activeCount)}
-            hint={
-              rules.length
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <PlayCircle className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Active automations</StatTitle>
+            <StatValue>{fmtNumber(activeCount)}</StatValue>
+            <StatDesc>
+              {rules.length
                 ? `${fmtNumber(rules.length)} total · ${fmtNumber(pausedCount)} paused`
-                : 'No rules authored yet'
-            }
-          />
-          <Stat
-            icon={<Zap className="h-4 w-4" />}
-            label="Runs · all time"
-            value={fmtNumber(totalRuns)}
-            hint="Across every automation"
-          />
-          <Stat
-            icon={<XCircle className="h-4 w-4" />}
-            label="Failures"
-            value={fmtNumber(totalErrors)}
-            hint={
-              failing.length
+                : 'No rules authored yet'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Zap className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Runs · all time</StatTitle>
+            <StatValue>{fmtNumber(totalRuns)}</StatValue>
+            <StatDesc>Across every automation</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <XCircle className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Failures</StatTitle>
+            <StatValue>{fmtNumber(totalErrors)}</StatValue>
+            <StatDesc>
+              {failing.length
                 ? `${fmtNumber(failing.length)} automation${failing.length === 1 ? '' : 's'} affected`
-                : 'No failed runs'
-            }
-          />
-          <Stat
-            icon={<ShieldCheck className="h-4 w-4" />}
-            label="Success rate"
-            value={overallRate == null ? '—' : fmtPercentRatio(overallRate, 1)}
-            hint={totalRuns ? 'Completed ÷ total runs' : 'Awaiting first run'}
-          />
-        </div>
+                : 'No failed runs'}
+            </StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Success rate</StatTitle>
+            <StatValue>{overallRate == null ? '—' : fmtPercentRatio(overallRate, 1)}</StatValue>
+            <StatDesc>{totalRuns ? 'Completed ÷ total runs' : 'Awaiting first run'}</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* Needs attention — failures to review (live) */}
         <OverviewCard

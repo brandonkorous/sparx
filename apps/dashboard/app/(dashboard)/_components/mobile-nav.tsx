@@ -64,7 +64,12 @@ export function MobileNav({
 }: MobileNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
-  const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
+  // A module with no sections (e.g. AI, overview-only for now) has nothing to
+  // list beside "Overview" itself — mirrors the desktop contextual panel.
+  const activeModule =
+    manifest && manifest.sections.length > 0 && enabledModules.includes(manifest.id)
+      ? manifest
+      : undefined;
   const inSettings = pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
   const inFinance = pathname === '/finance' || (pathname?.startsWith('/finance/') ?? false);
   const inPartner = pathname === '/partner' || (pathname?.startsWith('/partner/') ?? false);

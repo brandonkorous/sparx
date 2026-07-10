@@ -18,14 +18,23 @@ import {
   AreaChart,
   DonutChart,
   PageHeader,
-  Stat,
   StatusDot,
   Timeline,
   TimelineItem,
   TimelineTime,
   TimelineTitle,
 } from '@sparx/ui';
-import { Badge, Button, EmptyState } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+} from '@wizeworks/silicaui-react';
 
 import { api } from '@/lib/api-rest-client';
 import {
@@ -224,32 +233,48 @@ export default async function AiPage() {
         />
 
         {/* Headline KPIs — MCP usage + success from the summary, all live. */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            icon={<Server className="h-4 w-4" />}
-            label="MCP requests · 30d"
-            value={mcpRequestsKpi}
-            hint="Across all assistants"
-          />
-          <Stat
-            icon={<CheckCircle2 className="h-4 w-4" />}
-            label="Tool success"
-            value={successRateLabel}
-            hint="Last 30 days"
-          />
-          <Stat
-            icon={<Bot className="h-4 w-4" />}
-            label="Tools used"
-            value={toolsUsedKpi}
-            hint="Distinct MCP tools · 30d"
-          />
-          <Stat
-            icon={<Key className="h-4 w-4" />}
-            label="API keys"
-            value={apiKeysKpi}
-            hint={apiKeysHint}
-          />
-        </div>
+        <Stats className="w-full flex-wrap [&>*]:flex-1">
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Server className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>MCP requests · 30d</StatTitle>
+            <StatValue>{mcpRequestsKpi}</StatValue>
+            <StatDesc>Across all assistants</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Tool success</StatTitle>
+            <StatValue>{successRateLabel}</StatValue>
+            <StatDesc>Last 30 days</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Bot className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>Tools used</StatTitle>
+            <StatValue>{toolsUsedKpi}</StatValue>
+            <StatDesc>Distinct MCP tools · 30d</StatDesc>
+          </Stat>
+          <Stat>
+            <StatFigure>
+              <div className="bg-module bg-soft text-module rounded-md p-1.5">
+                <Key className="h-4 w-4" />
+              </div>
+            </StatFigure>
+            <StatTitle>API keys</StatTitle>
+            <StatValue>{apiKeysKpi}</StatValue>
+            <StatDesc>{apiKeysHint}</StatDesc>
+          </Stat>
+        </Stats>
 
         {/* MCP server status (signature, tinted) + AI activity chart */}
         <div className={MCP_ROW}>

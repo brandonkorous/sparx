@@ -14,9 +14,8 @@ import { DealsList, type DealRow } from './_components/deals-list';
 
 // Deals index — the flat, cross-pipeline list landing for the "Deals" nav item
 // (the per-pipeline Kanban / list / forecast live under /crm/pipelines/[id]).
-// A standard docs/34 List surface: ListToolbar (state + pipeline filters,
-// Table/Cards toggle) over the shared SelectionList. The deals endpoint has no
-// text search, so the search box is suppressed.
+// A standard docs/34 List surface: ListToolbar (search + state + pipeline
+// filters, Table/Cards toggle) over the shared SelectionList.
 //
 // The endpoint returns raw `pipelineId` / `stageId`; the human names + stage
 // color live on the pipelines, so we fetch those once and fold the resolved
@@ -65,10 +64,12 @@ export default async function DealsPage({ searchParams }: PageProps) {
   const { skip, take } = parsePageParams(params);
   const state = stringParam(params.state);
   const pipeline = stringParam(params.pipeline);
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (state === 'open' || state === 'closed') query.set('state', state);
   if (pipeline) query.set('pipeline_id', pipeline);
+  if (q) query.set('q', q);
 
   // `include_archived` so deals on an archived pipeline still resolve a name +
   // stage rather than falling back to a dash.
@@ -112,7 +113,7 @@ export default async function DealsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search deal title…"
           filters={[
             { key: 'state', label: 'States', options: STATE_OPTIONS },
             { key: 'pipeline', label: 'Pipelines', options: pipelineOptions },
@@ -137,8 +138,12 @@ export default async function DealsPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<Briefcase className="h-5 w-5" />}
-            title="No deals match"
-            description="Deals appear here as opportunities are created. Start one with New, or from a pipeline's Kanban board."
+            title={total === 0 ? 'No deals yet' : 'No deals match these filters'}
+            description={
+              total === 0
+                ? "Deals appear here as opportunities are created. Start one with New, or from a pipeline's Kanban board."
+                : 'Adjust filters or clear the search to broaden the results.'
+            }
           />
         </Card>
       ) : (

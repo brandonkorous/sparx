@@ -50,9 +50,11 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const { skip, take } = parsePageParams(params);
   const archived = parseArchived(stringParam(params.archived));
+  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (archived !== 'active') query.set('include_archived', 'true');
+  if (q) query.set('q', q);
   const [prefs, { data: fetched, meta }] = await Promise.all([
     getUserPreferences(),
     api.getPaged<SegmentRow[]>(`/v1/crm/segments?${query.toString()}`),
@@ -94,7 +96,7 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search name or description…"
           filters={[
             { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
           ]}
@@ -119,14 +121,22 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
         <Card>
           <EmptyState
             icon={<Layers className="h-5 w-5" />}
-            title={archived === 'archived' ? 'No archived segments' : 'No segments yet'}
+            title={
+              q
+                ? 'No segments match this search'
+                : archived === 'archived'
+                  ? 'No archived segments'
+                  : 'No segments yet'
+            }
             description={
-              archived === 'archived'
-                ? 'Archived segments stay out of the active list. Switch the filter to Active or All to see the rest.'
-                : "Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
+              q
+                ? 'Try a different name or description keyword.'
+                : archived === 'archived'
+                  ? 'Archived segments stay out of the active list. Switch the filter to Active or All to see the rest.'
+                  : "Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
             }
             actions={
-              archived === 'archived' ? undefined : (
+              archived === 'archived' || q ? undefined : (
                 <EntityCreateButton
                   entityType="segment"
                   newHref="/crm/segments/new"

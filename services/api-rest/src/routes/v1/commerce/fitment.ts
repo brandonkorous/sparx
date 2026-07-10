@@ -26,11 +26,15 @@ const ProductIdParam = z.object({ productId: z.string().uuid() });
 const FitmentParam = z.object({ fitmentId: z.string().uuid() });
 
 const ListBundlesQuery = z.object({
+  q: z.string().optional(),
+  pricing_mode: z.string().optional(),
+  inventory_mode: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
 
 const ListTemplatesQuery = z.object({
+  q: z.string().optional(),
   status: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -174,6 +178,9 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = ListBundlesQuery.parse(request.query);
     const { items, total } = await configuratorService.listBundles(toCommerceContext(request), {
+      q: q.q,
+      pricingMode: q.pricing_mode,
+      inventoryMode: q.inventory_mode,
       take: q.take,
       skip: q.skip,
     });
@@ -221,6 +228,7 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     const { items, total } = await configuratorService.listAllTemplates(
       toCommerceContext(request),
       {
+        ...(q.q ? { q: q.q } : {}),
         ...(q.status ? { status: q.status } : {}),
         take: q.take,
         skip: q.skip,

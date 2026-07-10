@@ -206,11 +206,17 @@ export interface BookingSeriesSummary {
   upcomingBookings: number;
 }
 
-export async function listBookingSeries(tenantId: string): Promise<BookingSeriesSummary[]> {
+export async function listBookingSeries(
+  tenantId: string,
+  opts: { q?: string; status?: string; take?: number; skip?: number } = {}
+): Promise<{ items: BookingSeriesSummary[]; total: number }> {
   return withTenant({ tenantId }, async (tx) => {
-    const rows = await tx.bookingSeries.findMany({ orderBy: { createdAt: 'desc' } });
+    const rows = await tx.bookingSeries.findMany({
+      where: opts.status ? { status: opts.status } : {},
+      orderBy: { createdAt: 'desc' },
+    });
     const now = new Date();
-    return Promise.all(
+    const enriched = await Promise.all(
       rows.map(async (series) => {
         const [service, totalBookings, upcomingBookings] = await Promise.all([
           tx.schedulingService.findUnique({
@@ -230,6 +236,22 @@ export async function listBookingSeries(tenantId: string): Promise<BookingSeries
         return { series, serviceName: service?.name ?? null, totalBookings, upcomingBookings };
       })
     );
+    // The catalog is small and bounded (recurring series definitions, not
+    // occurrences), so text filtering + paging run in-memory after the
+    // per-row service-name enrichment above rather than pushing `q` into the
+    // initial `where` (there's no denormalized searchable name on the row).
+    const needle = opts.q?.toLowerCase();
+    const filtered = needle
+      ? enriched.filter(
+          (r) =>
+            (r.serviceName ?? '').toLowerCase().includes(needle) ||
+            r.series.rrule.toLowerCase().includes(needle)
+        )
+      : enriched;
+    const total = filtered.length;
+    const skip = opts.skip ?? 0;
+    const take = Math.min(opts.take ?? 50, 250);
+    return { items: filtered.slice(skip, skip + take), total };
   });
 }
 

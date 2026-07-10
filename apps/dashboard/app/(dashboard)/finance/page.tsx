@@ -11,8 +11,16 @@ import {
   Wallet,
 } from 'lucide-react';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
-import { Badge } from '@wizeworks/silicaui-react';
-import { AreaChart, ModuleProvider, PageHeader, Stat, statusLabel, statusTone } from '@sparx/ui';
+import {
+  Badge,
+  Stat,
+  StatDesc,
+  StatFigure,
+  Stats,
+  StatTitle,
+  StatValue,
+} from '@wizeworks/silicaui-react';
+import { AreaChart, ModuleProvider, PageHeader, statusLabel, statusTone } from '@sparx/ui';
 
 import {
   CardLink,
@@ -170,38 +178,60 @@ function FinanceKpis({ o, currency }: { o: FinanceOverview; currency: string }) 
   const nextBilling = fmtDate(sub?.currentPeriodEnd ?? null);
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Stat
-        icon={<TrendingUp className="h-4 w-4" />}
-        label="Revenue · 30d"
-        value={moneyInCents != null ? fmtMoneyCents(moneyInCents, currency) : '—'}
-        hint={revenueHint}
-      />
-      <Stat
-        icon={<Banknote className="h-4 w-4" />}
-        label="Available to pay out"
-        value={availableCents != null ? fmtMoneyCents(availableCents, currency) : '—'}
-        hint={availableHint}
-      />
-      <Stat
-        icon={<ReceiptText className="h-4 w-4" />}
-        label="Outstanding AR"
-        value={arDollars != null ? fmtMoneyCents(Math.round(arDollars * 100), currency) : '—'}
-        hint={arHint}
-      />
-      <Stat
-        icon={<CreditCard className="h-4 w-4" />}
-        label="You pay sparx"
-        value={sub ? `${fmtMoneyCents(sub.planTotalCents, currency)}${interval}` : '—'}
-        hint={
-          sub
+    <Stats className="w-full flex-wrap [&>*]:flex-1">
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <TrendingUp className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Revenue · 30d</StatTitle>
+        <StatValue>{moneyInCents != null ? fmtMoneyCents(moneyInCents, currency) : '—'}</StatValue>
+        <StatDesc>{revenueHint}</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <Banknote className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Available to pay out</StatTitle>
+        <StatValue>
+          {availableCents != null ? fmtMoneyCents(availableCents, currency) : '—'}
+        </StatValue>
+        <StatDesc>{availableHint}</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <ReceiptText className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>Outstanding AR</StatTitle>
+        <StatValue>
+          {arDollars != null ? fmtMoneyCents(Math.round(arDollars * 100), currency) : '—'}
+        </StatValue>
+        <StatDesc>{arHint}</StatDesc>
+      </Stat>
+      <Stat>
+        <StatFigure>
+          <div className="bg-module bg-soft text-module rounded-md p-1.5">
+            <CreditCard className="h-4 w-4" />
+          </div>
+        </StatFigure>
+        <StatTitle>You pay sparx</StatTitle>
+        <StatValue>
+          {sub ? `${fmtMoneyCents(sub.planTotalCents, currency)}${interval}` : '—'}
+        </StatValue>
+        <StatDesc>
+          {sub
             ? nextBilling
               ? `Next billing ${nextBilling}`
               : 'Modules you have on today'
-            : 'Activate a module to see your plan'
-        }
-      />
-    </div>
+            : 'Activate a module to see your plan'}
+        </StatDesc>
+      </Stat>
+    </Stats>
   );
 }
 

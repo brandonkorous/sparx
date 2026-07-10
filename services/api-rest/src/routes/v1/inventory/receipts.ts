@@ -18,6 +18,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
   purchase_order_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -30,6 +31,7 @@ const inventoryReceiptRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
     const { items, total } = await inventoryService.listGoodsReceipts(toInventoryContext(request), {
+      ...(q.q !== undefined ? { q: q.q } : {}),
       ...(q.purchase_order_id !== undefined ? { purchaseOrderId: q.purchase_order_id } : {}),
       ...(q.take !== undefined ? { take: q.take } : {}),
       ...(q.skip !== undefined ? { skip: q.skip } : {}),

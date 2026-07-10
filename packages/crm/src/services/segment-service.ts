@@ -11,7 +11,7 @@
 import { CreateSegmentInput, UpdateSegmentInput } from '@sparx/crm-schemas';
 import { BUILT_IN_SEGMENT_TEMPLATES } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { Customer, Segment, SegmentMember } from '@sparx/db';
+import type { Customer, Prisma, Segment, SegmentMember } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -20,10 +20,20 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
 ): Promise<{ items: Segment[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const where = args.includeArchived ? {} : { archivedAt: null };
+    const where: Prisma.SegmentWhereInput = {
+      ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.q
+        ? {
+            OR: [
+              { name: { contains: args.q, mode: 'insensitive' } },
+              { description: { contains: args.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const [items, total] = await Promise.all([
       tx.segment.findMany({
         where,

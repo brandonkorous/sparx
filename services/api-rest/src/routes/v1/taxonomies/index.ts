@@ -15,6 +15,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -24,6 +25,8 @@ import { slugify } from '@sparx/api-core/slug';
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
 
 const ListQuery = z.object({
+  q: z.string().trim().min(1).max(200).optional(),
+  kind: z.enum(['hierarchical', 'flat']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -69,15 +72,28 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/taxonomies', async (request) => {
     requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
+    const where: Prisma.TaxonomyWhereInput = {
+      ...(q.kind ? { hierarchical: q.kind === 'hierarchical' } : {}),
+      ...(q.q
+        ? {
+            OR: [
+              { name: { contains: q.q, mode: 'insensitive' } },
+              { pluralName: { contains: q.q, mode: 'insensitive' } },
+              { key: { contains: q.q, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    };
     const [rows, total] = await withRequestTenant(request, (tx) =>
       Promise.all([
         tx.taxonomy.findMany({
+          where,
           orderBy: { name: 'asc' },
           include: { _count: { select: { terms: true } } },
           take: Math.min(q.take ?? 50, 250),
           skip: q.skip ?? 0,
         }),
-        tx.taxonomy.count(),
+        tx.taxonomy.count({ where }),
       ])
     );
     return paged(
