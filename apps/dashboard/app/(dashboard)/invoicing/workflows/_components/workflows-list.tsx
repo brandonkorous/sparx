@@ -9,7 +9,7 @@
 // click-through; the table view mirrors it as its own column.
 
 import Link from 'next/link';
-import { Archive, Settings } from 'lucide-react';
+import { Archive } from 'lucide-react';
 import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { SelectionList, type SelectionCard, type SelectionColumn } from '@sparx/ui';
 
