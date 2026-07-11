@@ -161,6 +161,32 @@ export interface OperatorTenantActivity {
   createdAt: string;
 }
 
+/** One of a tenant's team members, for the tenant-detail Team card (links into
+ *  the user surface). Identity is resolved cross-tenant so consultant members
+ *  (whose home tenant differs) still show a name. */
+export interface OperatorTenantMember {
+  userId: string;
+  name: string | null;
+  email: string | null;
+  /** Per-membership role. */
+  role: string;
+  /** owner | staff | consultant. */
+  memberType: string;
+  /** active | invited | suspended. */
+  status: string;
+}
+
+/** One of a tenant's sites, for the tenant-detail Sites card (links into the site
+ *  surface). */
+export interface OperatorTenantSite {
+  id: string;
+  name: string;
+  slug: string;
+  /** active | paused | archived. */
+  status: string;
+  isPrimary: boolean;
+}
+
 /** Full tenant detail — everything the operator console's tenant page renders. */
 export interface OperatorTenantDetail {
   id: string;
@@ -186,6 +212,10 @@ export interface OperatorTenantDetail {
   domains: OperatorTenantDomain[];
   storage: OperatorTenantStorage;
   recentActivity: OperatorTenantActivity[];
+  /** The tenant's team (staff + consultants), for the Team card. */
+  members: OperatorTenantMember[];
+  /** The tenant's sites, for the Sites card. */
+  sites: OperatorTenantSite[];
 }
 
 // ─── Slice 3: platform metrics ───────────────────────────────────────────────
@@ -976,4 +1006,182 @@ export interface OperatorBootcampCard {
 export interface OperatorBootcampListResult {
   items: OperatorBootcampCard[];
   total: number;
+}
+
+// ─── Users & Sites (docs/apps/admin — user & site management) ─────────────────
+// Cross-tenant STAFF-user (User/Member) + SITE (Property) administration. The
+// fleet-wide lists read under `withSystem` (the operator/system context exposed by
+// the additive `*_operator_read` visibility policies); per-membership/site WRITES
+// stay tenant-scoped under `withTenant`. NOT shopper accounts (CustomerUser —
+// those live in each tenant's CRM).
+
+/** One row in the cross-tenant staff-user roster. Identity from `users`; the home
+ *  tenant is `users.tenant_id` resolved to a name via the non-RLS dispatch table. */
+export interface OperatorUserListItem {
+  id: string;
+  email: string;
+  name: string | null;
+  emailVerified: boolean;
+  /** The user's HOME tenant (users.tenant_id) — where they were provisioned. */
+  homeTenantId: string;
+  homeTenantName: string | null;
+  homeTenantSlug: string | null;
+  /** Legacy single-role column (superseded per-membership, kept for the list). */
+  role: string;
+  /** Count of org memberships (a consultant belongs to several tenants). */
+  membershipCount: number;
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
+export interface OperatorUserListResult {
+  users: OperatorUserListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+/** Query parameters for the user list. */
+export interface OperatorUserListParams {
+  /** Case-insensitive search across email / name. */
+  q?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/** One of a user's org memberships, with the org resolved to a name. */
+export interface OperatorUserMembership {
+  tenantId: string;
+  tenantName: string | null;
+  tenantSlug: string | null;
+  /** Per-membership role — owner | admin | editor | builder | marketing | support | viewer. */
+  role: string;
+  /** owner | staff | consultant. */
+  memberType: string;
+  /** active | invited | suspended. */
+  status: string;
+  createdAt: string;
+}
+
+/** Full staff-user detail for the operator console. */
+export interface OperatorUserDetail {
+  id: string;
+  email: string;
+  name: string | null;
+  emailVerified: boolean;
+  image: string | null;
+  role: string;
+  homeTenantId: string;
+  homeTenantName: string | null;
+  homeTenantSlug: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** Every org this user belongs to (docs/114 Part A). */
+  memberships: OperatorUserMembership[];
+}
+
+/** Suspend / reactivate a user's membership in a specific tenant (Member.status). */
+export interface OperatorMembershipStatusInput {
+  tenantId: string;
+  suspended: boolean;
+}
+
+/** Change a user's role within a specific tenant (Member.role). */
+export interface OperatorMembershipRoleInput {
+  tenantId: string;
+  role: string;
+}
+
+/** Remove a user's membership from a specific tenant. */
+export interface OperatorMembershipRemoveInput {
+  tenantId: string;
+}
+
+/** The user's memberships after a write — the detail re-renders from these. */
+export interface OperatorUserMembershipsResult {
+  memberships: OperatorUserMembership[];
+}
+
+/** Result of triggering a password reset for a user (Better Auth
+ *  requestPasswordReset via the dashboard reverse seam). */
+export interface OperatorPasswordResetResult {
+  /** Whether the reset email was dispatched. */
+  sent: boolean;
+}
+
+/** One hostname pointing at a site (subset of the tenant-domain shape). */
+export interface OperatorSiteDomain {
+  host: string;
+  /** subdomain | custom | purchased. */
+  type: string;
+  /** pending | verifying | verified | active | failed. */
+  status: string;
+  isCanonical: boolean;
+  verifiedAt: string | null;
+  createdAt: string;
+}
+
+/** One row in the cross-tenant site roster. `properties` read under `withSystem`;
+ *  the owning tenant resolved to a name via the non-RLS dispatch table. */
+export interface OperatorSiteListItem {
+  id: string;
+  /** The CUSTOMER-FACING site name (Property.name). */
+  name: string;
+  slug: string;
+  tenantId: string;
+  tenantName: string | null;
+  tenantSlug: string | null;
+  isPrimary: boolean;
+  /** active | paused | archived (properties.status). */
+  status: string;
+  /** Count of hostnames pointing at this site. */
+  domainCount: number;
+  createdAt: string;
+}
+
+export interface OperatorSiteListResult {
+  sites: OperatorSiteListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+/** Query parameters for the site list. */
+export interface OperatorSiteListParams {
+  /** Case-insensitive search across site name / slug. */
+  q?: string;
+  /** Exact-match filter on properties.status. */
+  status?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/** Full site detail for the operator console. */
+export interface OperatorSiteDetail {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
+  isPrimary: boolean;
+  /** Whether the "Made with sparx" credit badge shows on this site. */
+  showSparxCredit: boolean;
+  /** Module slugs DISABLED for this site only (can only narrow the tenant set). */
+  moduleScope: string[];
+  tenantId: string;
+  tenantName: string | null;
+  tenantSlug: string | null;
+  domains: OperatorSiteDomain[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Pause / archive / reactivate a site (properties.status). */
+export interface OperatorSiteStatusInput {
+  /** active | paused | archived. */
+  status: string;
+}
+
+export interface OperatorSiteStatusResult {
+  status: string;
 }

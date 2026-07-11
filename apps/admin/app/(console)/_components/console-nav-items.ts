@@ -6,9 +6,11 @@ import {
   GraduationCap,
   Handshake,
   Home,
+  LayoutGrid,
   LifeBuoy,
   MessageSquare,
   TrendingUp,
+  Users,
 } from 'lucide-react';
 import type { OperatorCapability } from '@sparx/operator';
 
@@ -51,6 +53,20 @@ export const CONSOLE_NAV_GROUPS: ConsoleNavGroup[] = [
         label: 'Tenants',
         icon: Building2,
         capability: 'support:read',
+        prefix: true,
+      },
+      {
+        href: '/sparx/users',
+        label: 'Users',
+        icon: Users,
+        capability: 'user:read',
+        prefix: true,
+      },
+      {
+        href: '/sparx/sites',
+        label: 'Sites',
+        icon: LayoutGrid,
+        capability: 'site:read',
         prefix: true,
       },
     ],

@@ -28,7 +28,7 @@
 // reach; the admin app audits each read at the action level before calling here.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma, withTenant, type Prisma } from '@sparx/db';
+import { prisma, withTenant, withSystem, type Prisma } from '@sparx/db';
 import { deriveModuleStates, blockingDependents, type ModuleSlug } from '@sparx/modules';
 import { getBillingState, MODULE_MONTHLY_CENTS } from '@sparx/billing';
 import type {
@@ -263,11 +263,39 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
             createdAt: true,
           },
         });
-        return { assets, variants, activity };
+        // The tenant's team + sites (both FORCE-RLS on tenant_id; readable under
+        // the tenant's own GUC). Member USER identity is resolved separately below
+        // (a consultant's user row lives in ANOTHER tenant, hidden here).
+        const members = await tx.member.findMany({
+          where: { organizationId: id },
+          orderBy: { createdAt: 'asc' },
+          select: { userId: true, role: true, memberType: true, status: true },
+        });
+        const properties = await tx.property.findMany({
+          where: { tenantId: id },
+          orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+          select: { id: true, name: true, slug: true, status: true, isPrimary: true },
+        });
+        return { assets, variants, activity, members, properties };
       });
 
       const assetBytes = Number(scoped.assets._sum.byteSize ?? 0n);
       const variantBytes = Number(scoped.variants._sum.byteSize ?? 0n);
+
+      // Resolve member identities cross-tenant (users_operator_read visibility
+      // policy exposes rows in the no-tenant system context) so consultant members
+      // still show a name/email.
+      const memberUserIds = scoped.members.map((m) => m.userId);
+      const memberUsers =
+        memberUserIds.length > 0
+          ? await withSystem((tx) =>
+              tx.user.findMany({
+                where: { id: { in: memberUserIds } },
+                select: { id: true, name: true, email: true },
+              })
+            )
+          : [];
+      const userMap = new Map(memberUsers.map((u) => [u.id, u]));
 
       const detail: OperatorTenantDetail = {
         id: tenant.id,
@@ -320,6 +348,24 @@ const operatorInternalRoutes: FastifyPluginAsync = async (app) => {
           entityType: a.entityType,
           entityId: a.entityId,
           createdAt: a.createdAt.toISOString(),
+        })),
+        members: scoped.members.map((m) => {
+          const u = userMap.get(m.userId);
+          return {
+            userId: m.userId,
+            name: u?.name ?? null,
+            email: u?.email ?? null,
+            role: m.role,
+            memberType: m.memberType,
+            status: m.status,
+          };
+        }),
+        sites: scoped.properties.map((p) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          status: p.status,
+          isPrimary: p.isPrimary,
         })),
       };
       return detail;

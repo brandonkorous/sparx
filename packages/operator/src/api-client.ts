@@ -63,6 +63,19 @@ import type {
   OperatorPayoutRunResult,
   OperatorCommissionApproveResult,
   OperatorBootcampListResult,
+  OperatorUserListParams,
+  OperatorUserListResult,
+  OperatorUserDetail,
+  OperatorMembershipStatusInput,
+  OperatorMembershipRoleInput,
+  OperatorMembershipRemoveInput,
+  OperatorUserMembershipsResult,
+  OperatorPasswordResetResult,
+  OperatorSiteListParams,
+  OperatorSiteListResult,
+  OperatorSiteDetail,
+  OperatorSiteStatusInput,
+  OperatorSiteStatusResult,
 } from './types';
 
 /** Shared-secret header — mirrors the existing `X-sparx-Internal-*-Token`
@@ -327,6 +340,61 @@ export interface OperatorApiClient {
   runPartnerPayouts(operatorId: string, signal?: AbortSignal): Promise<OperatorPayoutRunResult>;
   /** The cross-partner published-bootcamp overview (read-only). */
   listBootcamps(operatorId: string, signal?: AbortSignal): Promise<OperatorBootcampListResult>;
+  // ── Users (staff/team members) ──
+  /** Cross-tenant staff-user roster, filtered + paginated. */
+  listUsers(
+    params: OperatorUserListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorUserListResult>;
+  /** One staff user's full detail + every org membership. Throws `OperatorApiError`
+   *  404 when the id is unknown. */
+  getUser(userId: string, operatorId: string, signal?: AbortSignal): Promise<OperatorUserDetail>;
+  /** Suspend / reactivate a user's membership in one tenant (Member.status). */
+  setMembershipStatus(
+    userId: string,
+    input: OperatorMembershipStatusInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorUserMembershipsResult>;
+  /** Change a user's role within one tenant (Member.role). */
+  setMembershipRole(
+    userId: string,
+    input: OperatorMembershipRoleInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorUserMembershipsResult>;
+  /** Remove a user's membership from one tenant. Throws 409 when it would strip a
+   *  tenant's last owner. */
+  removeMembership(
+    userId: string,
+    input: OperatorMembershipRemoveInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorUserMembershipsResult>;
+  /** Send the user a password-reset email (Better Auth, via the dashboard seam). */
+  resetUserPassword(
+    userId: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPasswordResetResult>;
+  // ── Sites (web properties) ──
+  /** Cross-tenant site roster, filtered + paginated. */
+  listSites(
+    params: OperatorSiteListParams,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorSiteListResult>;
+  /** One site's full detail (+ hostnames). Throws `OperatorApiError` 404 when the
+   *  id is unknown. */
+  getSite(siteId: string, operatorId: string, signal?: AbortSignal): Promise<OperatorSiteDetail>;
+  /** Pause / archive / reactivate a site (properties.status). */
+  setSiteStatus(
+    siteId: string,
+    input: OperatorSiteStatusInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorSiteStatusResult>;
 }
 
 export function createOperatorApiClient(config: OperatorApiClientConfig): OperatorApiClient {
@@ -592,6 +660,70 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
       }),
     listBootcamps: (operatorId, signal) =>
       request<OperatorBootcampListResult>('/internal/operator/bootcamps', { operatorId, signal }),
+    listUsers: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.q) qs.set('q', params.q);
+      if (params.limit !== undefined) qs.set('limit', String(params.limit));
+      if (params.offset !== undefined) qs.set('offset', String(params.offset));
+      const query = qs.toString();
+      return request<OperatorUserListResult>(
+        `/internal/operator/users${query ? `?${query}` : ''}`,
+        {
+          operatorId,
+          signal,
+        }
+      );
+    },
+    getUser: (userId, operatorId, signal) =>
+      request<OperatorUserDetail>(`/internal/operator/users/${encodeURIComponent(userId)}`, {
+        operatorId,
+        signal,
+      }),
+    setMembershipStatus: (userId, input, operatorId, signal) =>
+      request<OperatorUserMembershipsResult>(
+        `/internal/operator/users/${encodeURIComponent(userId)}/membership-status`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    setMembershipRole: (userId, input, operatorId, signal) =>
+      request<OperatorUserMembershipsResult>(
+        `/internal/operator/users/${encodeURIComponent(userId)}/membership-role`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
+    removeMembership: (userId, input, operatorId, signal) =>
+      request<OperatorUserMembershipsResult>(
+        `/internal/operator/users/${encodeURIComponent(userId)}/membership`,
+        { method: 'DELETE', body: input, operatorId, signal }
+      ),
+    resetUserPassword: (userId, operatorId, signal) =>
+      request<OperatorPasswordResetResult>(
+        `/internal/operator/users/${encodeURIComponent(userId)}/password-reset`,
+        { method: 'POST', operatorId, signal }
+      ),
+    listSites: (params, operatorId, signal) => {
+      const qs = new URLSearchParams();
+      if (params.q) qs.set('q', params.q);
+      if (params.status) qs.set('status', params.status);
+      if (params.limit !== undefined) qs.set('limit', String(params.limit));
+      if (params.offset !== undefined) qs.set('offset', String(params.offset));
+      const query = qs.toString();
+      return request<OperatorSiteListResult>(
+        `/internal/operator/sites${query ? `?${query}` : ''}`,
+        {
+          operatorId,
+          signal,
+        }
+      );
+    },
+    getSite: (siteId, operatorId, signal) =>
+      request<OperatorSiteDetail>(`/internal/operator/sites/${encodeURIComponent(siteId)}`, {
+        operatorId,
+        signal,
+      }),
+    setSiteStatus: (siteId, input, operatorId, signal) =>
+      request<OperatorSiteStatusResult>(
+        `/internal/operator/sites/${encodeURIComponent(siteId)}/status`,
+        { method: 'PATCH', body: input, operatorId, signal }
+      ),
   };
 }
 

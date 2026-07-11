@@ -11,8 +11,10 @@ import {
   ActivityCard,
   DomainsCard,
   ModulesCard,
+  SitesCard,
   StorageCard,
   SubscriptionCard,
+  TeamCard,
 } from '../_components/tenant-detail-sections';
 import { ModuleSwitchboard } from './_components/module-switchboard';
 import { SuspendControl } from './_components/suspend-control';
@@ -147,6 +149,11 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
       {canSuspend ? (
         <StorageLimitControl tenantId={id} currentLimitBytes={tenant.storage.storageLimitBytes} />
       ) : null}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <TeamCard members={tenant.members} />
+        <SitesCard sites={tenant.sites} />
+      </div>
 
       <DomainsCard domains={tenant.domains} />
       <ActivityCard activity={tenant.recentActivity} />

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   Badge,
   Card,
@@ -12,11 +13,15 @@ import type {
   OperatorTenantActivity,
   OperatorTenantBilling,
   OperatorTenantDomain,
+  OperatorTenantMember,
   OperatorTenantModule,
+  OperatorTenantSite,
   OperatorTenantStorage,
 } from '@sparx/operator';
 import { moduleColor, moduleLabel } from '@/lib/modules';
 import { formatBytes, formatDate, formatDateTime, formatMoneyCents } from '@/lib/format';
+import { memberTypeLabel, membershipStatusTone, roleLabel, roleTone } from '@/lib/users';
+import { siteStatusLabel, siteStatusTone } from '@/lib/sites';
 
 // The tenant-detail sections — each renders one facet of a tenant's account the
 // same way the tenant's own dashboard shows it (representation parity, D7): the
@@ -201,6 +206,104 @@ export function DomainsCard({ domains }: { domains: OperatorTenantDomain[] }) {
                 </Stack>
                 <Badge color={statusTone(d.status)} variant="soft">
                   {statusLabel(d.status)}
+                </Badge>
+              </Stack>
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    </Card>
+  );
+}
+
+export function TeamCard({ members }: { members: OperatorTenantMember[] }) {
+  return (
+    <Card>
+      <Stack gap={3}>
+        <Stack direction="row" align="center" justify="between">
+          <Heading level={3}>Team</Heading>
+          <Text size="sm" variant="muted">
+            {members.length} {members.length === 1 ? 'member' : 'members'}
+          </Text>
+        </Stack>
+        {members.length === 0 ? (
+          <Text variant="muted">No team members.</Text>
+        ) : (
+          <Stack gap={2}>
+            {members.map((m) => (
+              <Stack
+                key={m.userId}
+                direction="row"
+                align="center"
+                justify="between"
+                className={rowClass}
+              >
+                <Stack gap={0}>
+                  <Link
+                    href={`/sparx/users/${m.userId}`}
+                    className="text-base-content text-sm font-medium hover:underline"
+                  >
+                    {m.name ?? m.email ?? m.userId}
+                  </Link>
+                  <Text size="xs" variant="muted">
+                    {[m.email, memberTypeLabel(m.memberType)].filter(Boolean).join(' · ')}
+                  </Text>
+                </Stack>
+                <Stack direction="row" align="center" gap={2}>
+                  <Badge color={roleTone(m.role)} variant="soft" size="sm">
+                    {roleLabel(m.role)}
+                  </Badge>
+                  {m.status !== 'active' ? (
+                    <Badge color={membershipStatusTone(m.status)} variant="soft" size="sm">
+                      {m.status}
+                    </Badge>
+                  ) : null}
+                </Stack>
+              </Stack>
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    </Card>
+  );
+}
+
+export function SitesCard({ sites }: { sites: OperatorTenantSite[] }) {
+  return (
+    <Card>
+      <Stack gap={3}>
+        <Stack direction="row" align="center" justify="between">
+          <Heading level={3}>Sites</Heading>
+          <Text size="sm" variant="muted">
+            {sites.length} {sites.length === 1 ? 'site' : 'sites'}
+          </Text>
+        </Stack>
+        {sites.length === 0 ? (
+          <Text variant="muted">No sites.</Text>
+        ) : (
+          <Stack gap={2}>
+            {sites.map((s) => (
+              <Stack
+                key={s.id}
+                direction="row"
+                align="center"
+                justify="between"
+                className={rowClass}
+              >
+                <Stack gap={0}>
+                  <Link
+                    href={`/sparx/sites/${s.id}`}
+                    className="text-base-content text-sm font-medium hover:underline"
+                  >
+                    {s.name}
+                    {s.isPrimary ? ' · primary' : ''}
+                  </Link>
+                  <Text size="xs" variant="muted">
+                    {s.slug}
+                  </Text>
+                </Stack>
+                <Badge color={siteStatusTone(s.status)} variant="soft" size="sm">
+                  {siteStatusLabel(s.status)}
                 </Badge>
               </Stack>
             ))}

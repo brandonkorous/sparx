@@ -29,6 +29,16 @@ export const OPERATOR_CAPABILITIES = [
   // Manually activate / deactivate a module for a tenant (publishes
   // `module.activated`; never an inline flag write).
   'module:toggle',
+  // Cross-tenant staff-user (team member) administration — read the fleet-wide
+  // user roster + a user's memberships; act = suspend/reactivate a membership,
+  // change a member's role, remove a membership, resend/revoke an invite, trigger
+  // a password reset. NOT shopper accounts (those live in each tenant's CRM).
+  'user:read',
+  'user:act',
+  // Cross-tenant site (web property) administration — read the fleet-wide site
+  // roster + a site's detail; act = pause / archive / reactivate a site.
+  'site:read',
+  'site:act',
   // Custom-domain + SSL operations across tenants (force re-verify, view
   // GoDaddy history).
   'domain:manage',
@@ -64,6 +74,10 @@ export const OPERATOR_CAPABILITY_LABELS: Record<OperatorCapability, string> = {
   'acquisition:read': 'Growth — acquisition reporting',
   'tenant:suspend': 'Tenants — suspend / unsuspend',
   'module:toggle': 'Tenants — activate / deactivate modules',
+  'user:read': 'Users — read the staff-user roster & memberships',
+  'user:act': 'Users — suspend, change role, remove & reset password',
+  'site:read': 'Sites — read the site roster & detail',
+  'site:act': 'Sites — pause / archive / reactivate',
   'domain:manage': 'Domains — manage custom domains & SSL',
   'partner:read': 'Partners — read applications, roster & commissions',
   'partner:act': 'Partners — approve, tier, suspend & pay out',
@@ -85,8 +99,15 @@ export const CAPABILITY_BUNDLES = {
   sparx_admin: OPERATOR_CAPABILITIES.filter((c) => c !== 'operator:admin'),
   // Financial data only, all products.
   billing_admin: ['billing:read', 'billing:act'] satisfies OperatorCapability[],
-  // Read + bounded support actions + feedback replies; no billing, no suspend.
-  support: ['support:read', 'support:act', 'feedback:respond'] satisfies OperatorCapability[],
+  // Read + bounded support actions + feedback replies; read (not act) on the
+  // user + site rosters for lookups. No billing, no suspend.
+  support: [
+    'support:read',
+    'support:act',
+    'feedback:respond',
+    'user:read',
+    'site:read',
+  ] satisfies OperatorCapability[],
   // Read-only introspection for engineers mining reports + support state.
   developer: ['support:read', 'acquisition:read'] satisfies OperatorCapability[],
 } as const satisfies Record<string, readonly OperatorCapability[]>;
