@@ -43,6 +43,11 @@ export interface StoredSilicaSite {
   frame?: SilicaFrame;
   symbols?: Record<string, SilicaSymbolDef>;
   theme?: SilicaTheme;
+  /** The site's saved-theme LIBRARY (silica `Site.savedThemes`, silicaui 0.16) —
+   *  the author's "This site" theme presets. Authoring state only (the storefront
+   *  renders just the active `theme`), so it's persisted as a draft and never
+   *  published. Absent until the author saves their first theme. */
+  savedThemes?: SilicaTheme[];
 }
 
 /** A silica node tree, validated structurally (a non-null object carrying a
@@ -84,6 +89,9 @@ export const SiteSyncInput = z.object({
   frame: z.object({ root: SilicaTreeInput }).nullish(),
   symbols: z.record(z.string(), z.unknown()).nullish(),
   theme: SilicaThemeInput.nullish(),
+  // The saved-theme library (silicaui 0.16). Structural per-theme validation via
+  // the same opaque `SilicaThemeInput`; persisted as draft-only authoring state.
+  savedThemes: z.array(SilicaThemeInput).nullish(),
 });
 export type SiteSyncInput = z.infer<typeof SiteSyncInput>;
 

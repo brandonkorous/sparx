@@ -181,16 +181,17 @@ export function SiteGeneralTab({
             <div className="flex min-w-0 flex-1 flex-col gap-0">
               <p className="text-sm font-medium">Look &amp; branding</p>
               <p className="text-base-content/70 text-sm">
-                Colours, fonts, and theme for this site are set on the Brand page.
+                Name, logo, and links for this site are set in Site settings; colours and fonts are
+                set in the Builder.
               </p>
             </div>
             <Button
               variant="outline"
               size="sm"
               iconEnd={<ArrowRight className="h-4 w-4" />}
-              render={<Link href="/builder/brand" />}
+              render={<Link href="/builder/site" />}
             >
-              Open Brand
+              Open Site settings
             </Button>
           </div>
         </CardBody>

@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, Inbox, LayoutTemplate, Mail, Palette, Pencil } from 'lucide-react';
+import { Boxes, Component, Globe, Inbox, LayoutTemplate, Mail, Pencil } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -26,13 +26,13 @@ export const builderManifest: ModuleManifest = {
     // /builder/blueprints links out to it. Placed under the auto-injected Overview,
     // above Brand & Theme. Its href is inside `routePrefix`, so it claims the active panel.
     { id: 'blueprints', label: 'Blueprints', icon: LayoutTemplate, href: '/builder/blueprints' },
-    // Brand & Theme — the site's identity + presentation, on its OWN surface (not a
-    // zone of the editor). The full ThemeCenter (variant="page"): a controls column
-    // beside a live preview that toggles between the component showcase and the real
-    // site iframe — a richer surface than the editor canvas can host. Authors the
-    // active site's name, socials, brand colours/type/logo, and theme; Publish pushes
-    // the theme across the site (docs/49 per-site brand).
-    { id: 'brand', label: 'Brand & Theme', icon: Palette, href: '/builder/brand' },
+    // Site — the active web property's IDENTITY, on its own surface (docs/49): the
+    // customer-facing name, tagline, light/dark logo, favicon, and social links —
+    // the fields the silica frame binds through `site.identity` / `site.social`.
+    // Theme (colours/type/shape) is now owned by the silica builder itself, so the
+    // former "Brand & Theme" surface was split: identity landed here, theme moved
+    // into the editor. `/builder/brand` redirects here.
+    { id: 'site', label: 'Site', icon: Globe, href: '/builder/site' },
     // Editor — the unified studio (docs/builder/03): site layout › the active page,
     // on one live canvas. Theme editing lives on its own Brand & Theme surface
     // (above); the editor canvas still PREVIEWS the saved theme but doesn't edit it.

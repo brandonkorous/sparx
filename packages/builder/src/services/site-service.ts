@@ -64,6 +64,7 @@ function rowsToStoredSite(
 ): StoredSilicaSite {
   const symbols = symbolsOf(site?.silicaDraftSymbols);
   const theme = site?.silicaDraftTheme as SilicaTheme | null | undefined;
+  const savedThemes = site?.silicaDraftSavedThemes as SilicaTheme[] | null | undefined;
   return {
     ...(layout?.silicaDraftTree != null
       ? { frame: { root: layout.silicaDraftTree as unknown as SilicaNode, editable: true } }
@@ -76,6 +77,7 @@ function rowsToStoredSite(
     })),
     ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
     ...(theme ? { theme } : {}),
+    ...(savedThemes && savedThemes.length > 0 ? { savedThemes } : {}),
   };
 }
 
@@ -335,18 +337,24 @@ export async function sync(ctx: PropertyContext, rawInput: unknown): Promise<voi
       });
     }
 
-    // Site-global theme + symbols → the property's silica site record (docs/118).
-    // `theme` is only written when the payload carries one, so a tenant on the
-    // brand-derived theme never has a null stomped over an authored theme.
+    // Site-global theme + symbols + saved-theme library → the property's silica
+    // site record (docs/118). `theme` and `savedThemes` are only written when the
+    // payload carries them, so a tenant on the brand-derived theme never has a null
+    // stomped over an authored theme, and a load that didn't send the library never
+    // wipes it. An empty `savedThemes: []` IS present (the author cleared it) and is
+    // stored as such.
     const themeData = input.theme ? { silicaDraftTheme: asJson(input.theme) } : {};
+    const savedThemesData =
+      input.savedThemes != null ? { silicaDraftSavedThemes: asJson(input.savedThemes) } : {};
     const symbolsData = { silicaDraftSymbols: asJson(input.symbols ?? {}) };
     await tx.builderSite.upsert({
       where: { propertyId: ctx.propertyId },
-      update: { ...themeData, ...symbolsData },
+      update: { ...themeData, ...savedThemesData, ...symbolsData },
       create: {
         tenantId: ctx.tenantId,
         propertyId: ctx.propertyId,
         ...themeData,
+        ...savedThemesData,
         ...symbolsData,
       },
     });

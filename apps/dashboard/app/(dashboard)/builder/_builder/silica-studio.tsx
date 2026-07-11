@@ -29,15 +29,17 @@ import { SilicaToolbar, type SaveState } from './silica-toolbar';
 
 /** Project silica's extracted `Site` onto the sync wire shape — near-identity:
  *  silica's `Page` is already `{ id, name, slug, root }`; the frame contributes its
- *  root, and the site-global `symbols` + `theme` ride along. The engine hands back
- *  the WHOLE document on every edit, so all four parts are persisted (docs/118) —
- *  a theme or symbol edit must never be dropped on the floor here. */
+ *  root, and the site-global `symbols` + `theme` + saved-theme `library` ride along.
+ *  The engine hands back the WHOLE site on every edit, so every part is persisted
+ *  (docs/118) — a theme, symbol, or saved-theme edit must never be dropped on the
+ *  floor here (silicaui 0.16 rounds `savedThemes` through `onChange`). */
 function toSyncInput(site: Site): SiteSyncInput {
   return {
     pages: site.pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
     ...(site.symbols ? { symbols: site.symbols } : {}),
     ...(site.theme ? { theme: site.theme } : {}),
+    ...(site.savedThemes ? { savedThemes: site.savedThemes } : {}),
   };
 }
 

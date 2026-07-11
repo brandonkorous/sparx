@@ -157,6 +157,12 @@ model BuilderSite {
   silicaDraftSymbols     Json  @default("{}") @map("silica_draft_symbols")
   silicaPublishedSymbols Json? @map("silica_published_symbols")
 
+  // The site's saved THEME LIBRARY (silica `Site.savedThemes`) — the "This site"
+  // presets the author snapshots in the Themes panel. Authoring state only: the
+  // storefront renders just the active `theme`, so there is no published copy.
+  // Null until the author saves their first theme (silica seeds it on load).
+  silicaDraftSavedThemes Json? @map("silica_draft_saved_themes")
+
   publishedAt DateTime? @map("published_at") @db.Timestamptz
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
