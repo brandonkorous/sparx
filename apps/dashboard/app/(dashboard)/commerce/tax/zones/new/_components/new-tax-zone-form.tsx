@@ -128,7 +128,8 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
     // reading of two adjacent fields) shouldn't have to know to repeat the
     // country prefix themselves.
     const rawRegion = region.toUpperCase().trim();
-    const trimmedRegion = rawRegion && !rawRegion.includes('-') ? `${trimmedCountry}-${rawRegion}` : rawRegion;
+    const trimmedRegion =
+      rawRegion && !rawRegion.includes('-') ? `${trimmedCountry}-${rawRegion}` : rawRegion;
 
     startTransition(async () => {
       const result = await createTaxZoneAction({

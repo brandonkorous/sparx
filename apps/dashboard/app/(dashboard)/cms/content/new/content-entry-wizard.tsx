@@ -415,7 +415,8 @@ function ContentEntryWizardInner({
     <SurfaceStep
       header={{
         title: `${typeSchema.name} details`,
-        supporting: 'Fill in what you know now — every field stays editable after the entry exists.',
+        supporting:
+          'Fill in what you know now — every field stays editable after the entry exists.',
       }}
       actions={{
         onBack: hasTypeStep ? () => goToStep('type') : undefined,

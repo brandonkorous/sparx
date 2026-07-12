@@ -231,10 +231,12 @@ export async function addItem(
     // reserving against a local warehouse would auto-vivify a phantom
     // inventory_levels row for a product the warehouse never actually carries.
     const isDropshipVariant = Boolean(
-      (await tx.productVariant.findFirst({
-        where: { id: variantId },
-        select: { dropshipSourceId: true },
-      }))?.dropshipSourceId
+      (
+        await tx.productVariant.findFirst({
+          where: { id: variantId },
+          select: { dropshipSourceId: true },
+        })
+      )?.dropshipSourceId
     );
     if (inventoryActive && !isDropshipVariant) {
       const hold = await inventoryService.reserveOnTx(tx, ctx, {
