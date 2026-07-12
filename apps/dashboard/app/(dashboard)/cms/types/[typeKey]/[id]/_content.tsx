@@ -9,6 +9,7 @@ import { loadRecordPreviewBundle } from '../../../../builder/_lib/record-preview
 import { DetailPageShell } from '../../../../_components/detail-page-shell';
 import { type EditEntryFormProps } from './edit-entry-form';
 import { EntryEditorWorkspace, type EntryPreview } from './entry-editor-workspace';
+import { PreviewEditorShell } from './preview-editor-shell';
 import { type SeoFields } from '../../../[id]/seo-panel';
 
 // Detail content for one content-type entry. Used by both:
@@ -183,12 +184,13 @@ export async function ContentEntryDetailContent({
       </div>
     );
     return (
-      <div className="flex h-[calc(100dvh-3rem)] min-h-0 flex-col gap-4 px-6 py-4">
-        <div className="shrink-0">{heading}</div>
-        <div className="min-h-0 flex-1">
-          <EntryEditorWorkspace form={formProps} preview={preview} />
-        </div>
-      </div>
+      <PreviewEditorShell
+        listHref={`/cms/content?type=${encodeURIComponent(type.key)}`}
+        listLabel={type.plural_name}
+        heading={heading}
+      >
+        <EntryEditorWorkspace form={formProps} preview={preview} />
+      </PreviewEditorShell>
     );
   }
 

@@ -35,20 +35,37 @@ interface ApiEntry {
   created_at: string;
 }
 
+// A dotted field path ("featuredImage", "seo.title") into a human label —
+// used only when the underlying Zod issue is a raw type-mismatch message
+// ("Invalid input: expected string, received object"), which is never
+// business-owner-readable. Custom messages (e.g. the slug regex) already
+// read fine and pass through untouched.
+function humanizePath(path: string): string {
+  const last = path.split('.').at(-1) ?? path;
+  const spaced = last.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 function friendly(err: unknown): string {
   const e = err as ApiRestError;
   if (e?.code === 'VALIDATION_ERROR' && Array.isArray(e.details) && e.details.length) {
-    const first = e.details[0] as { path?: string; message?: string };
+    const first = e.details[0] as { path?: string; message?: string; code?: string };
+    if (first.code === 'invalid_type' && first.path) {
+      return `"${humanizePath(first.path)}" has an invalid value — try re-entering or re-selecting it.`;
+    }
     return first.message ?? e.message ?? 'Invalid input.';
   }
   return e?.message ?? 'An error occurred.';
 }
 
+const StatusSchema = z.enum(['draft', 'scheduled', 'published', 'archived']);
+
 export async function createEntry(
   typeKey: string,
   body: Record<string, unknown>,
   slug?: string,
-  authorId?: string
+  authorId?: string,
+  status?: string
 ): Promise<ActionResult<{ id: string }>> {
   const typeParsed = TypeKeySchema.safeParse(typeKey);
   if (!typeParsed.success) return { ok: false, error: 'Invalid content type.' };
@@ -61,6 +78,10 @@ export async function createEntry(
     const slugParsed = SlugSchema.safeParse(slug);
     if (!slugParsed.success) return { ok: false, error: slugParsed.error.issues[0]?.message };
     payload.slug = slugParsed.data;
+  }
+  if (status) {
+    const statusParsed = StatusSchema.safeParse(status);
+    if (statusParsed.success) payload.status = statusParsed.data;
   }
   // Author attribution sets content_entries.author_id (outside body). A UUID
   // from the wizard's author picker; the entries route validates it.

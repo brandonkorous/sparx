@@ -5,9 +5,13 @@
 // AND everything that usually rides with it, without leaving the flow.
 // Steps:
 //   1. Type     — pick a content type (skipped when a type is pre-supplied)
-//   2. Fields   — fill required fields via ContentEntryForm (controlled)
+//   2. Fields   — fill every non-asset field (required + optional) via
+//                  ContentEntryForm (controlled) — optional fields are still
+//                  editable later, but surfacing them up front means an entry
+//                  doesn't ship half-empty by default (docs/68 UX note, 2026-07-12)
 //   3. Author & media — attribute to an author (pick or create on the fly) +
-//                  add the type's optional images (upload or pick existing)
+//                  add the type's optional images (upload or pick existing) —
+//                  required asset fields stay in step 2's essentials
 //   4. Publish  — status (draft / published / scheduled) + slug
 //
 // Presentation: the `/new` route renders the full-screen `page` variant; the
@@ -338,7 +342,8 @@ function ContentEntryWizardInner({
         selectedTypeKey,
         finalBody,
         submitSlug,
-        authorId || undefined
+        authorId || undefined,
+        status
       );
       if (result.ok && result.data?.id) {
         router.push(`/cms/types/${selectedTypeKey}/${result.data.id}`);
@@ -396,12 +401,21 @@ function ContentEntryWizardInner({
     </SurfaceStep>
   );
 
+  // Every field EXCEPT an optional asset field — those are surfaced in the
+  // Author & media step instead (see `assetFields` below), so a field never
+  // renders twice. Required asset fields stay here with everything else.
+  // Boolean OR is deliberate below: `f.required === false` must still fall through to the
+  // type check, which `??` (nullish-only) would skip.
+  const fieldsStepFields = (typeSchema?.schema_json.fields ?? []).filter(
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    (f) => f.required || f.type !== 'asset'
+  );
+
   const fieldsStep = typeSchema && (
     <SurfaceStep
       header={{
         title: `${typeSchema.name} details`,
-        supporting:
-          'Fill in the required fields. You can add or edit every field after the entry exists.',
+        supporting: 'Fill in what you know now — every field stays editable after the entry exists.',
       }}
       actions={{
         onBack: hasTypeStep ? () => goToStep('type') : undefined,
@@ -411,17 +425,17 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-4">
-        {typeSchema.schema_json.fields.filter((f) => f.required).length === 0 && (
+        {fieldsStepFields.length === 0 && (
           <div className="bg-success bg-soft flex flex-row items-center gap-2 rounded-md px-3 py-2">
             <CheckCircle2 className="text-success h-4 w-4" />
             <p className="text-sm">
-              This content type has no required fields — continue to publish settings.
+              This content type has no fields to fill in here — continue to publish settings.
             </p>
           </div>
         )}
 
         <ContentEntryForm
-          schema={{ fields: typeSchema.schema_json.fields.filter((f) => f.required) }}
+          schema={{ fields: fieldsStepFields }}
           body={body}
           onBodyChange={(next) => setBody(next)}
           autoDeriveSlugs

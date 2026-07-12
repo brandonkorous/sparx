@@ -516,16 +516,13 @@ function AssetFieldR({
       })();
 
   const handlePick = (picked: PickedAsset) => {
-    const ref: AssetRef = {
-      assetId: picked.assetId,
-      src: picked.src,
-      alt: picked.alt,
-      caption: picked.caption,
-    };
+    // The stored body value is a bare asset-id string (or array of ids) per
+    // the content-entry schema (packages/cms-schemas/src/validate.ts) — never
+    // the richer {assetId, src, alt} ref `toRef` also accepts for display.
     if (isMultiple) {
-      onChange([...refs, ref]);
+      onChange([...refs.map((r) => r.assetId), picked.assetId]);
     } else {
-      onChange(ref);
+      onChange(picked.assetId);
     }
     setOpen(false);
   };
