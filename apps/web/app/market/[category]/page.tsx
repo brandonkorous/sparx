@@ -7,8 +7,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Button, Input } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
 import { fetchCategory, signUpHref } from '@/lib/marketplace';
 import { getCategory, type MarketplaceCategory } from '@/lib/marketplace-registry';
@@ -81,119 +79,113 @@ export default async function CategoryBrowsePage({
   const showing = page.items.length;
 
   return (
-    <>
-      <Nav />
-
-      <Section surface="page" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <a
-              href="/market"
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                textDecoration: 'none',
-              }}
-            >
-              ← Marketplace
-            </a>
-            <SectionHeader
-              accent={cat.accent}
-              headlineSize={56}
-              headline={cat.label}
-              lede={cat.tagline}
-            />
-            {/* Search-within */}
-            <form
-              method="get"
-              action={`/market/${cat.id}`}
-              className="mkt-cluster"
-              style={{ gap: '8px' }}
-            >
-              {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
-              <Input
-                type="search"
-                name="q"
-                defaultValue={current.q ?? ''}
-                placeholder={`Search ${cat.label.toLowerCase()}…`}
-                style={{ maxWidth: '320px' }}
-              />
-              <Button type="submit" variant="outline">
-                Search
-              </Button>
-            </form>
-          </div>
-
-          {/* Facets */}
-          <FacetBar category={cat} facetCounts={page.facets} current={current} />
-
-          {/* Result count + sort */}
-          <div
+    <Section surface="page" padding="lg">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <a
+            href="/market"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              flexWrap: 'wrap',
-              borderTop: '1px solid var(--color-base-300)',
-              paddingTop: '20px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+              textDecoration: 'none',
             }}
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {page.total} {page.total === 1 ? cat.singular : cat.label.toLowerCase()}
-            </span>
-            <div className="mkt-cluster" style={{ gap: '14px' }}>
-              {cat.sorts.map((s) => {
-                const isOn = activeSort === s.key;
-                return (
-                  <a
-                    key={s.key}
-                    href={sortHref(cat, current, s.key)}
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '13px',
-                      fontWeight: isOn ? 500 : 400,
-                      color: isOn
-                        ? 'var(--color-base-content)'
-                        : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    {s.label}
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Grid + load more, or empty state */}
-          {showing > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div className="mkt-grid-3-2-1">
-                {page.items.map((item) => (
-                  <ListingCard key={item.id} item={item} />
-                ))}
-              </div>
-              {page.next_cursor ? (
-                <LoadMore category={cat.id} query={current} initialCursor={page.next_cursor} />
-              ) : null}
-            </div>
-          ) : (
-            <EmptyState cat={cat} filtered={Object.keys(current).length > 0} />
-          )}
+            ← Marketplace
+          </a>
+          <SectionHeader
+            accent={cat.accent}
+            headlineSize={56}
+            headline={cat.label}
+            lede={cat.tagline}
+          />
+          {/* Search-within */}
+          <form
+            method="get"
+            action={`/market/${cat.id}`}
+            className="mkt-cluster"
+            style={{ gap: '8px' }}
+          >
+            {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
+            <Input
+              type="search"
+              name="q"
+              defaultValue={current.q ?? ''}
+              placeholder={`Search ${cat.label.toLowerCase()}…`}
+              style={{ maxWidth: '320px' }}
+            />
+            <Button type="submit" variant="outline">
+              Search
+            </Button>
+          </form>
         </div>
-      </Section>
 
-      <Footer />
-    </>
+        {/* Facets */}
+        <FacetBar category={cat} facetCounts={page.facets} current={current} />
+
+        {/* Result count + sort */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+            borderTop: '1px solid var(--color-base-300)',
+            paddingTop: '20px',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '14px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
+          >
+            {page.total} {page.total === 1 ? cat.singular : cat.label.toLowerCase()}
+          </span>
+          <div className="mkt-cluster" style={{ gap: '14px' }}>
+            {cat.sorts.map((s) => {
+              const isOn = activeSort === s.key;
+              return (
+                <a
+                  key={s.key}
+                  href={sortHref(cat, current, s.key)}
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '13px',
+                    fontWeight: isOn ? 500 : 400,
+                    color: isOn
+                      ? 'var(--color-base-content)'
+                      : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {s.label}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Grid + load more, or empty state */}
+        {showing > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="mkt-grid-3-2-1">
+              {page.items.map((item) => (
+                <ListingCard key={item.id} item={item} />
+              ))}
+            </div>
+            {page.next_cursor ? (
+              <LoadMore category={cat.id} query={current} initialCursor={page.next_cursor} />
+            ) : null}
+          </div>
+        ) : (
+          <EmptyState cat={cat} filtered={Object.keys(current).length > 0} />
+        )}
+      </div>
+    </Section>
   );
 }
 
@@ -232,72 +224,68 @@ function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boo
 
 function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
   return (
-    <>
-      <Nav />
-      <Section surface="page" padding="xl">
-        <div
+    <Section surface="page" padding="xl">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '28px',
+          alignItems: 'flex-start',
+        }}
+      >
+        <a
+          href="/market"
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '28px',
-            alignItems: 'flex-start',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '13px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            textDecoration: 'none',
           }}
         >
-          <a
-            href="/market"
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textDecoration: 'none',
-            }}
-          >
-            ← Marketplace
+          ← Marketplace
+        </a>
+        <span
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
+            fontSize: '11px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: cat.accent,
+          }}
+        >
+          Coming soon
+        </span>
+        <Display as="h1" size={72}>
+          {cat.label}
+          <Spark color={cat.accent} />
+        </Display>
+        <p
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '18px',
+            lineHeight: '30px',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            maxWidth: '560px',
+            margin: 0,
+          }}
+        >
+          {cat.tagline} This category is landing next — start with a blueprint today and add{' '}
+          {cat.label.toLowerCase()} when they go live.
+        </p>
+        <div className="mkt-cluster" style={{ gap: '12px' }}>
+          <a href="/market/blueprints">
+            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+              Browse blueprints
+            </Button>
           </a>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '11px',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: cat.accent,
-            }}
-          >
-            Coming soon
-          </span>
-          <Display as="h1" size={72}>
-            {cat.label}
-            <Spark color={cat.accent} />
-          </Display>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '560px',
-              margin: 0,
-            }}
-          >
-            {cat.tagline} This category is landing next — start with a blueprint today and add{' '}
-            {cat.label.toLowerCase()} when they go live.
-          </p>
-          <div className="mkt-cluster" style={{ gap: '12px' }}>
-            <a href="/market/blueprints">
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
-                Browse blueprints
-              </Button>
-            </a>
-            <a href={signUpHref()}>
-              <Button size="lg" variant="outline">
-                Start free
-              </Button>
-            </a>
-          </div>
+          <a href={signUpHref()}>
+            <Button size="lg" variant="outline">
+              Start free
+            </Button>
+          </a>
         </div>
-      </Section>
-      <Footer />
-    </>
+      </div>
+    </Section>
   );
 }

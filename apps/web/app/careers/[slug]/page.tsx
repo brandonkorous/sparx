@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Badge } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
 import { ROLES, OPEN_APPLICATION, getRole, type Role } from '../roles';
 import { ApplyForm } from './apply-form';
@@ -159,8 +157,6 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <>
-      <Nav />
-
       <Section surface="page" padding="xl">
         <RoleHeader role={role} />
       </Section>
@@ -207,8 +203,6 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
           />
         </div>
       </Section>
-
-      <Footer />
     </>
   );
 }

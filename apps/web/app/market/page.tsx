@@ -6,8 +6,6 @@
 
 import type { Metadata } from 'next';
 import { Button } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
 import { fetchCategory, signUpHref } from '@/lib/marketplace';
 import { ListingCard } from './_components/listing-card';
@@ -30,8 +28,6 @@ export default async function MarketplaceHomePage() {
 
   return (
     <>
-      <Nav />
-
       <Section surface="page" padding="xl">
         <div
           style={{
@@ -156,8 +152,6 @@ export default async function MarketplaceHomePage() {
           </a>
         </div>
       </Section>
-
-      <Footer />
     </>
   );
 }

@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { ModuleProvider } from '@sparx/ui';
-import { Nav } from '../nav';
-import { Footer } from '../footer';
 import { Section, Display, Spark, getModuleColor } from '../primitives';
 import type { ToolMeta } from './registry';
 import { ToolLadder } from './tool-ladder';
@@ -12,10 +10,11 @@ import { RelatedTools } from './related-tools';
 import { TrustRow } from './trust-row';
 
 /**
- * Shared page frame for every tool. Server-rendered chrome (Nav, hero, ladder
- * CTA, related strip, Footer) wraps the interactive client tool passed as
- * `children`. The tool area is wrapped in <ModuleProvider> so @sparx/ui controls
- * (and the FileUpload/ColorPicker active states) adopt this tool's module color.
+ * Shared page frame for every tool. Server-rendered chrome (hero, ladder CTA,
+ * related strip) wraps the interactive client tool passed as `children`; Nav/
+ * Footer come from the root layout. The tool area is wrapped in
+ * <ModuleProvider> so @sparx/ui controls (and the FileUpload/ColorPicker
+ * active states) adopt this tool's module color.
  */
 export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.ReactNode }) {
   const color = getModuleColor(tool.module);
@@ -24,7 +23,6 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
   return (
     <>
       <ToolJsonLd tool={tool} />
-      <Nav />
       <main>
         <Section surface="page" padding="md">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -104,7 +102,6 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
         <ToolUpsell tool={tool} />
         <RelatedTools currentSlug={tool.slug} />
       </main>
-      <Footer />
     </>
   );
 }

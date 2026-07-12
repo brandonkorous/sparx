@@ -81,6 +81,8 @@ export function Faq({
   lede,
   id,
   accent = 'var(--color-primary)',
+  headlineSize,
+  headlineLineHeight,
 }: {
   /** Page-specific Q&A. Defaults to the homepage set. */
   items?: FaqItem[];
@@ -90,6 +92,13 @@ export function Faq({
   id?: string;
   /** Section accent — the active rail dot + the "?" punctuation. Defaults to indigo. */
   accent?: string;
+  /** Override the headline's Display size (defaults to SectionHeader's own
+   *  56px). Callers on a bigger-type page can pass a larger value so this
+   *  section's type matches the rest of that page. The interactive
+   *  FaqSpread accordion + the server-rendered FAQPage JSON-LD stay shared
+   *  either way, so there's only ever one source of that structured data. */
+  headlineSize?: number;
+  headlineLineHeight?: number;
 } = {}) {
   // FAQPage structured data (docs/50) — lets Google render rich FAQ results and
   // gives answer engines clean question/answer pairs to cite. Emitted server-side
@@ -129,6 +138,8 @@ export function Faq({
               </>
             )
           }
+          headlineSize={headlineSize}
+          headlineLineHeight={headlineLineHeight}
         />
         <FaqSpread items={items} accent={accent} />
       </div>

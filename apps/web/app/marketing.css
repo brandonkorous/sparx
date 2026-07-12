@@ -438,54 +438,7 @@ a.mkt-module-tile:hover {
   z-index: 49;
 }
 
-/* ── PRICING: switchboard, ledger, feature accordion ─────────── */
-
-/* Hero two-column: module rail + sticky plan panel → stacks on tablet. */
-.mkt-switchboard {
-  display: flex;
-  align-items: flex-start;
-  gap: 56px;
-}
-@media (max-width: 1024px) {
-  .mkt-switchboard {
-    flex-direction: column;
-    gap: 36px;
-  }
-}
-.mkt-pricing-plan {
-  width: 412px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 88px;
-}
-@media (max-width: 1024px) {
-  .mkt-pricing-plan {
-    width: 100%;
-    position: static;
-  }
-}
-
-/* The big switchboard CTA — a bespoke pricing control, not a re-skinned Button. */
-.mkt-launch {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 15px;
-  background-color: var(--color-primary);
-  border: none;
-  border-radius: 10px;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 16px;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.mkt-launch:hover {
-  background-color: #4f46e5;
-}
+/* ── PRICING: ledger, feature accordion ──────────────────────── */
 
 /* Native <details> disclosure — hide default marker, pointer cursor. */
 .mkt-summary {
@@ -1006,6 +959,9 @@ a.mkt-module-tile:hover {
   left: 24px;
   bottom: 24px;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   padding: 8px 14px;
   font-family: var(--font-sans);
   font-size: 12.5px;
@@ -1022,6 +978,9 @@ a.mkt-module-tile:hover {
 .mkt-consent-pill:hover {
   color: #18181b;
   border-color: #d4d4d8;
+}
+.mkt-consent-pill__icon {
+  flex-shrink: 0;
 }
 
 .mkt-consent-overlay {
@@ -1137,6 +1096,13 @@ a.mkt-module-tile:hover {
   .mkt-consent-pill {
     left: 12px;
     bottom: 12px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .mkt-consent-pill__label {
+    display: none;
   }
 }
 

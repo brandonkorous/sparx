@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { PricingPage } from '@/components/marketing/pricing-page';
 
 export const metadata: Metadata = {
@@ -11,11 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Pricing() {
-  return (
-    <>
-      <Nav />
-      <PricingPage />
-      <Footer />
-    </>
-  );
+  return <PricingPage />;
 }

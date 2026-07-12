@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -13,15 +11,11 @@ export const metadata: Metadata = {
 
 export default function HostingPage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Platform"
-        title="Managed hosting"
-        description="WizeWorks operates your sparx infrastructure end-to-end: GKE, Postgres, Postal, Redis, monitoring, backups, 24/7 on-call. $750/mo flat, no per-resource surprise billing. Gillett Diesel is the reference customer."
-        contact="hosting@sparx.works"
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Platform"
+      title="Managed hosting"
+      description="WizeWorks operates your sparx infrastructure end-to-end: GKE, Postgres, Postal, Redis, monitoring, backups, 24/7 on-call. $750/mo flat, no per-resource surprise billing. Gillett Diesel is the reference customer."
+      contact="hosting@sparx.works"
+    />
   );
 }

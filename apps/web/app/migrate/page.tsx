@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -13,15 +11,11 @@ export const metadata: Metadata = {
 
 export default function MigratePage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Platform"
-        title="Migration tools"
-        description="Native importers for Shopify (products, customers, orders, themes), HubSpot (contacts, deals, lists), Mailchimp (audiences, automations), and WordPress (posts, media, redirects). Most SMB migrations finish in under a week."
-        contact="migrate@sparx.works"
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Platform"
+      title="Migration tools"
+      description="Native importers for Shopify (products, customers, orders, themes), HubSpot (contacts, deals, lists), Mailchimp (audiences, automations), and WordPress (posts, media, redirects). Most SMB migrations finish in under a week."
+      contact="migrate@sparx.works"
+    />
   );
 }

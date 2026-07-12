@@ -184,12 +184,15 @@ export function Dot({
 export function Container({
   children,
   style,
+  className,
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
     <div
+      className={className}
       style={{
         maxWidth: 'var(--container-max)',
         marginLeft: 'auto',

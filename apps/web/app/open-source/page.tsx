@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -13,15 +11,11 @@ export const metadata: Metadata = {
 
 export default function OpenSourcePage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Developers"
-        title="Open source"
-        description="The sparx Builder SDK, the MCP server reference implementation, theme starter kits, and a handful of internal tools. All on github.com/wizeworks under permissive licenses."
-        contact="oss@sparx.works"
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Developers"
+      title="Open source"
+      description="The sparx Builder SDK, the MCP server reference implementation, theme starter kits, and a handful of internal tools. All on github.com/wizeworks under permissive licenses."
+      contact="oss@sparx.works"
+    />
   );
 }

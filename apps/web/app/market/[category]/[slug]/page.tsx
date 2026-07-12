@@ -9,8 +9,6 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { Button } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark } from '@/components/marketing/primitives';
 import {
   fetchListing,
@@ -112,258 +110,252 @@ export default async function ListingDetailPage({
   const showChat = Boolean(chatSlug && chatAvailable && chatApiUrl);
 
   return (
-    <>
-      <Nav />
+    <Section surface="page" padding="lg">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <a
+          href={`/market/${cat.id}`}
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '13px',
+            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+            textDecoration: 'none',
+          }}
+        >
+          ← {cat.label}
+        </a>
 
-      <Section surface="page" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <a
-            href={`/market/${cat.id}`}
+        <div className="mkt-stack-on-tablet" style={{ gap: '40px', alignItems: 'flex-start' }}>
+          {/* Gallery + description */}
+          <div
             style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textDecoration: 'none',
+              flex: '2 1 0',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
             }}
           >
-            ← {cat.label}
-          </a>
+            {hero ? (
+              /* Hot-linked preview (docs/54). */
+              <img
+                src={hero}
+                alt={`${item.name} preview`}
+                style={{
+                  width: '100%',
+                  borderRadius: '12px',
+                  border: '1px solid var(--color-base-300)',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  aspectRatio: '16 / 10',
+                  width: '100%',
+                  borderRadius: '12px',
+                  border: '1px solid var(--color-base-300)',
+                  backgroundColor: 'var(--color-base-100)',
+                }}
+              />
+            )}
 
-          <div className="mkt-stack-on-tablet" style={{ gap: '40px', alignItems: 'flex-start' }}>
-            {/* Gallery + description */}
-            <div
-              style={{
-                flex: '2 1 0',
-                minWidth: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-              }}
-            >
-              {hero ? (
-                /* Hot-linked preview (docs/54). */
-                <img
-                  src={hero}
-                  alt={`${item.name} preview`}
-                  style={{
-                    width: '100%',
-                    borderRadius: '12px',
-                    border: '1px solid var(--color-base-300)',
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    aspectRatio: '16 / 10',
-                    width: '100%',
-                    borderRadius: '12px',
-                    border: '1px solid var(--color-base-300)',
-                    backgroundColor: 'var(--color-base-100)',
-                  }}
-                />
-              )}
+            {images.length > 1 ? (
+              <div className="mkt-cluster" style={{ gap: '10px' }}>
+                {images.slice(1, 5).map((m) => (
+                  /* Hot-linked preview (docs/54). */
+                  <img
+                    key={m.url}
+                    src={m.url}
+                    alt={m.alt ?? `${item.name} preview`}
+                    style={{
+                      width: '120px',
+                      height: '76px',
+                      objectFit: 'cover',
+                      borderRadius: '8px',
+                      border: '1px solid var(--color-base-300)',
+                    }}
+                  />
+                ))}
+              </div>
+            ) : null}
 
-              {images.length > 1 ? (
-                <div className="mkt-cluster" style={{ gap: '10px' }}>
-                  {images.slice(1, 5).map((m) => (
-                    /* Hot-linked preview (docs/54). */
-                    <img
-                      key={m.url}
-                      src={m.url}
-                      alt={m.alt ?? `${item.name} preview`}
-                      style={{
-                        width: '120px',
-                        height: '76px',
-                        objectFit: 'cover',
-                        borderRadius: '8px',
-                        border: '1px solid var(--color-base-300)',
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : null}
+            {item.description ? (
+              <p
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '16px',
+                  lineHeight: '26px',
+                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                  margin: 0,
+                  paddingTop: '8px',
+                }}
+              >
+                {item.description}
+              </p>
+            ) : null}
+          </div>
 
-              {item.description ? (
+          {/* Action panel */}
+          <aside
+            style={{
+              flex: '1 1 320px',
+              maxWidth: '380px',
+              width: '100%',
+              position: 'sticky',
+              top: '96px',
+              // The one lead panel on the detail page carries the soft 12%
+              // module wash (the sanctioned single tinted card), no stripe.
+              backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-base-100))`,
+              border: '1px solid var(--color-base-300)',
+              borderRadius: '12px',
+              padding: '28px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+            }}
+          >
+            {tag ? (
+              <span
+                style={{
+                  alignSelf: 'flex-start',
+                  padding: '4px 10px',
+                  borderRadius: '9999px',
+                  backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 500,
+                  fontSize: '11px',
+                  color: accent,
+                }}
+              >
+                {tag}
+              </span>
+            ) : null}
+
+            <div>
+              <h1
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 500,
+                  fontSize: '26px',
+                  letterSpacing: '-0.02em',
+                  lineHeight: '32px',
+                  color: 'var(--color-base-content)',
+                  margin: 0,
+                }}
+              >
+                {item.name}
+              </h1>
+              {item.tagline ? (
                 <p
                   style={{
                     fontFamily: 'var(--font-sans)',
-                    fontSize: '16px',
-                    lineHeight: '26px',
+                    fontSize: '14px',
+                    lineHeight: '21px',
                     color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    margin: 0,
                     paddingTop: '8px',
+                    margin: 0,
                   }}
                 >
-                  {item.description}
+                  {item.tagline}
                 </p>
               ) : null}
             </div>
 
-            {/* Action panel */}
-            <aside
-              style={{
-                flex: '1 1 320px',
-                maxWidth: '380px',
-                width: '100%',
-                position: 'sticky',
-                top: '96px',
-                // The one lead panel on the detail page carries the soft 12%
-                // module wash (the sanctioned single tinted card), no stripe.
-                backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-base-100))`,
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                padding: '28px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-              }}
-            >
-              {tag ? (
-                <span
-                  style={{
-                    alignSelf: 'flex-start',
-                    padding: '4px 10px',
-                    borderRadius: '9999px',
-                    backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '11px',
-                    color: accent,
-                  }}
-                >
-                  {tag}
-                </span>
-              ) : null}
-
-              <div>
-                <h1
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '26px',
-                    letterSpacing: '-0.02em',
-                    lineHeight: '32px',
-                    color: 'var(--color-base-content)',
-                    margin: 0,
-                  }}
-                >
-                  {item.name}
-                </h1>
-                {item.tagline ? (
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '14px',
-                      lineHeight: '21px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      paddingTop: '8px',
-                      margin: 0,
-                    }}
-                  >
-                    {item.tagline}
-                  </p>
-                ) : null}
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 500,
+                  fontSize: '20px',
+                  color: 'var(--color-base-content)',
+                }}
+              >
+                {priceLabel(item.price)}
+              </span>
+              {item.installCount > 0 ? (
                 <span
                   style={{
                     fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '20px',
-                    color: 'var(--color-base-content)',
+                    fontSize: '13px',
+                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
                   }}
                 >
-                  {priceLabel(item.price)}
+                  {item.installCount} installs
                 </span>
-                {item.installCount > 0 ? (
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '13px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    }}
-                  >
-                    {item.installCount} installs
-                  </span>
-                ) : null}
-              </div>
-
-              <a href={ctaHref} style={{ display: 'block' }}>
-                <Button size="lg" style={{ width: '100%', backgroundColor: '#0A0A0A' }}>
-                  {ctaLabel}
-                </Button>
-              </a>
-
-              {showChat && chatSlug ? (
-                <MarketChatCta
-                  apiUrl={chatApiUrl}
-                  tenantSlug={chatSlug}
-                  publisherName={item.publisher.displayName}
-                  accentColor={accent}
-                />
               ) : null}
-
-              {included.length > 0 ? (
-                <Detail label="What's included">
-                  {included.map((line) => (
-                    <Row key={line}>{line}</Row>
-                  ))}
-                </Detail>
-              ) : null}
-
-              {requires.length > 0 ? (
-                <Detail label="Requires">
-                  <div className="mkt-cluster" style={{ gap: '8px' }}>
-                    {requires.map((m) => (
-                      <span
-                        key={m}
-                        style={{
-                          padding: '3px 9px',
-                          borderRadius: '9999px',
-                          border: '1px solid var(--color-base-300)',
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '12px',
-                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                        }}
-                      >
-                        {m}
-                      </span>
-                    ))}
-                  </div>
-                </Detail>
-              ) : null}
-
-              <Detail label="Details">
-                <Row>Version {item.version}</Row>
-                <Row>
-                  By {item.publisher.displayName}
-                  {item.publisher.verified ? <span style={{ color: accent }}> ✓</span> : null}
-                </Row>
-              </Detail>
-            </aside>
-          </div>
-
-          {related.length > 0 ? (
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingTop: '24px' }}
-            >
-              <Display as="h2" size={32}>
-                More {cat.label.toLowerCase()}
-                <Spark color={accent} />
-              </Display>
-              <div className="mkt-grid-3-2-1">
-                {related.map((r) => (
-                  <ListingCard key={r.id} item={r} />
-                ))}
-              </div>
             </div>
-          ) : null}
-        </div>
-      </Section>
 
-      <Footer />
-    </>
+            <a href={ctaHref} style={{ display: 'block' }}>
+              <Button size="lg" style={{ width: '100%', backgroundColor: '#0A0A0A' }}>
+                {ctaLabel}
+              </Button>
+            </a>
+
+            {showChat && chatSlug ? (
+              <MarketChatCta
+                apiUrl={chatApiUrl}
+                tenantSlug={chatSlug}
+                publisherName={item.publisher.displayName}
+                accentColor={accent}
+              />
+            ) : null}
+
+            {included.length > 0 ? (
+              <Detail label="What's included">
+                {included.map((line) => (
+                  <Row key={line}>{line}</Row>
+                ))}
+              </Detail>
+            ) : null}
+
+            {requires.length > 0 ? (
+              <Detail label="Requires">
+                <div className="mkt-cluster" style={{ gap: '8px' }}>
+                  {requires.map((m) => (
+                    <span
+                      key={m}
+                      style={{
+                        padding: '3px 9px',
+                        borderRadius: '9999px',
+                        border: '1px solid var(--color-base-300)',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '12px',
+                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                      }}
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </Detail>
+            ) : null}
+
+            <Detail label="Details">
+              <Row>Version {item.version}</Row>
+              <Row>
+                By {item.publisher.displayName}
+                {item.publisher.verified ? <span style={{ color: accent }}> ✓</span> : null}
+              </Row>
+            </Detail>
+          </aside>
+        </div>
+
+        {related.length > 0 ? (
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingTop: '24px' }}
+          >
+            <Display as="h2" size={32}>
+              More {cat.label.toLowerCase()}
+              <Spark color={accent} />
+            </Display>
+            <div className="mkt-grid-3-2-1">
+              {related.map((r) => (
+                <ListingCard key={r.id} item={r} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </Section>
   );
 }
 

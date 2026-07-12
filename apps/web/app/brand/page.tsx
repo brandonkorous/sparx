@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { BrandHero } from '@/components/marketing/brand/brand-hero';
 import { WordmarkSection } from '@/components/marketing/brand/wordmark-section';
 import { MonogramSection } from '@/components/marketing/brand/monogram-section';
@@ -31,7 +29,6 @@ export const metadata: Metadata = {
 export default function BrandPage() {
   return (
     <main>
-      <Nav />
       <BrandHero />
       <WordmarkSection />
       <MonogramSection />
@@ -44,7 +41,6 @@ export default function BrandPage() {
       <VoiceSection />
       <NotSection />
       <DownloadsSection />
-      <Footer />
     </main>
   );
 }

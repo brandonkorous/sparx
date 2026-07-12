@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
-import { ChunkReloadGuard } from '@sparx/ui';
+import { ChunkReloadGuard, Toaster } from '@sparx/ui';
 import { PostHogProvider } from '../components/posthog-provider';
 import { TopProgressBar } from '../components/top-progress-bar';
 import { AttributionCapture } from '../components/attribution-capture';
 import { ConsentBanner } from '../components/consent-banner';
+import { Nav } from '../components/marketing/nav';
+import { Footer } from '../components/marketing/footer';
 
 // Inter powers the sparx wordmark (bold, to match the monogram mark). Exposed
 // as --font-wordmark, which @sparx/ui's <Wordmark> consumes.
@@ -145,8 +147,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }}
           />
+          <Nav />
           {children}
+          <Footer />
           <ConsentBanner />
+          <Toaster />
         </PostHogProvider>
       </body>
     </html>

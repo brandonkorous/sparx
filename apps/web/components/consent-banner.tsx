@@ -10,6 +10,7 @@
 // Renders nothing until mounted to avoid an SSR flash / hydration mismatch.
 
 import { useEffect, useState } from 'react';
+import { Cookie } from 'lucide-react';
 import { Button, Checkbox } from '@wizeworks/silicaui-react';
 import {
   ALL_GRANTED,
@@ -116,7 +117,8 @@ export function ConsentBanner() {
           }}
           aria-label="Cookie preferences"
         >
-          Cookie preferences
+          <Cookie className="mkt-consent-pill__icon" size={15} aria-hidden />
+          <span className="mkt-consent-pill__label">Cookie preferences</span>
         </button>
       )}
 

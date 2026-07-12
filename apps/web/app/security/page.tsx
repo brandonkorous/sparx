@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Container, Eyebrow, Display, Spark } from '@/components/marketing/primitives';
 import { LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
@@ -14,7 +12,6 @@ export const metadata: Metadata = {
 export default function SecurityPage() {
   return (
     <>
-      <Nav />
       <section
         style={{
           paddingTop: 'clamp(96px, 11vw, 150px)',
@@ -107,7 +104,6 @@ export default function SecurityPage() {
           </div>
         </Container>
       </section>
-      <Footer />
     </>
   );
 }

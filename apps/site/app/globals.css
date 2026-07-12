@@ -2,6 +2,7 @@
 @import '@sparx/ui/tokens.css';
 
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
+@source '../../../packages/chat-widget/src/**/*.{ts,tsx}';
 
 /* silicaui component layer (docs/118 Stage 6, the render cutover). The Tailwind v4
    plugin emits silica's semantic component classes (`.btn`, `.card`, `.navbar`,

@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -12,14 +10,10 @@ export const metadata: Metadata = {
 
 export default function ChangelogPage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Platform"
-        title="Changelog"
-        description="Every release, every breaking change, every deprecation — published the moment it ships. RSS feed and email digest go live with v1.0."
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Platform"
+      title="Changelog"
+      description="Every release, every breaking change, every deprecation — published the moment it ships. RSS feed and email digest go live with v1.0."
+    />
   );
 }

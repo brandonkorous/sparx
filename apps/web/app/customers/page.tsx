@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { CustomersPage } from '@/components/marketing/customers-page';
 
 export const metadata: Metadata = {
@@ -11,11 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Customers() {
-  return (
-    <>
-      <Nav />
-      <CustomersPage />
-      <Footer />
-    </>
-  );
+  return <CustomersPage />;
 }

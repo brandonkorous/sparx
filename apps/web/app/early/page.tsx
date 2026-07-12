@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Container, Display, Dot, Spark } from '@/components/marketing/primitives';
 import { EarlyAccessForm } from './early-access-form';
 
@@ -27,129 +25,125 @@ const PERKS = [
 
 export default function EarlyAccessPage() {
   return (
-    <>
-      <Nav />
-      <section
-        style={{
-          paddingTop: 'clamp(72px, 10vw, 140px)',
-          paddingBottom: 'clamp(72px, 10vw, 140px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <Container>
+    <section
+      style={{
+        paddingTop: 'clamp(72px, 10vw, 140px)',
+        paddingBottom: 'clamp(72px, 10vw, 140px)',
+        paddingLeft: 'var(--gutter-page)',
+        paddingRight: 'var(--gutter-page)',
+        backgroundColor: 'var(--color-base-200)',
+      }}
+    >
+      <Container>
+        <div
+          className="mkt-stack-on-tablet"
+          style={{ alignItems: 'flex-start', gap: 'clamp(40px, 6vw, 80px)' }}
+        >
+          {/* ── Left: the pitch ─────────────────────────────────── */}
           <div
-            className="mkt-stack-on-tablet"
-            style={{ alignItems: 'flex-start', gap: 'clamp(40px, 6vw, 80px)' }}
+            style={{
+              flex: '1 1 420px',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '28px',
+            }}
           >
-            {/* ── Left: the pitch ─────────────────────────────────── */}
-            <div
+            <Display as="h1" size={80} lineHeight={76}>
+              Be first on sparx
+              <Spark />
+            </Display>
+
+            <p
               style={{
-                flex: '1 1 420px',
-                minWidth: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '28px',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '19px',
+                lineHeight: '31px',
+                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                maxWidth: '560px',
+                margin: 0,
               }}
             >
-              <Display as="h1" size={80} lineHeight={76}>
-                Be first on sparx
-                <Spark />
-              </Display>
+              sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B,
+              and AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
+              gradually. Join the list and we&rsquo;ll bring you in.
+            </p>
 
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '19px',
-                  lineHeight: '31px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  maxWidth: '560px',
-                  margin: 0,
-                }}
-              >
-                sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B,
-                and AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
-                gradually. Join the list and we&rsquo;ll bring you in.
-              </p>
-
-              <ul
-                style={{
-                  listStyle: 'none',
-                  margin: 0,
-                  padding: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '14px',
-                }}
-              >
-                {PERKS.map((perk) => (
-                  <li
-                    key={perk}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '12px',
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '15px',
-                      lineHeight: '24px',
-                      color: 'var(--color-base-content)',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', paddingTop: '9px', flexShrink: 0 }}>
-                      <Dot />
-                    </span>
-                    {perk}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* ── Right: the form card ────────────────────────────── */}
-            <div style={{ width: '100%', maxWidth: '440px', flexShrink: 0 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '20px',
-                  padding: 'clamp(24px, 4vw, 36px)',
-                  backgroundColor: 'var(--color-base-100)',
-                  border: '1px solid var(--color-base-300)',
-                  borderRadius: '16px',
-                  boxShadow: '0 12px 40px rgba(9, 9, 11, 0.06)',
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '20px',
-                      letterSpacing: '-0.015em',
-                      color: 'var(--color-base-content)',
-                    }}
-                  >
-                    Join the waitlist
+            <ul
+              style={{
+                listStyle: 'none',
+                margin: 0,
+                padding: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+              }}
+            >
+              {PERKS.map((perk) => (
+                <li
+                  key={perk}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '15px',
+                    lineHeight: '24px',
+                    color: 'var(--color-base-content)',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', paddingTop: '9px', flexShrink: 0 }}>
+                    <Dot />
                   </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '14px',
-                      lineHeight: '21px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    Takes ten seconds. We&rsquo;ll only reach out when it matters.
-                  </span>
-                </div>
+                  {perk}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                <EarlyAccessForm />
+          {/* ── Right: the form card ────────────────────────────── */}
+          <div style={{ width: '100%', maxWidth: '440px', flexShrink: 0 }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                padding: 'clamp(24px, 4vw, 36px)',
+                backgroundColor: 'var(--color-base-100)',
+                border: '1px solid var(--color-base-300)',
+                borderRadius: '16px',
+                boxShadow: '0 12px 40px rgba(9, 9, 11, 0.06)',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 500,
+                    fontSize: '20px',
+                    letterSpacing: '-0.015em',
+                    color: 'var(--color-base-content)',
+                  }}
+                >
+                  Join the waitlist
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '14px',
+                    lineHeight: '21px',
+                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                  }}
+                >
+                  Takes ten seconds. We&rsquo;ll only reach out when it matters.
+                </span>
               </div>
+
+              <EarlyAccessForm />
             </div>
           </div>
-        </Container>
-      </section>
-      <Footer />
-    </>
+        </div>
+      </Container>
+    </section>
   );
 }

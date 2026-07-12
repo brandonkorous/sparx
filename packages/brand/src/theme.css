@@ -89,7 +89,7 @@
   --color-danger-content: #ffffff;
 
   /* ── silicaui shape + type tokens ────────────────────────────────────────── */
-  --radius-box: 8px; /* cards, alerts, larger surfaces (rounded-box) */
+  --radius-box: 1.5rem; /* cards, alerts, larger surfaces (rounded-box) */
   --radius-field: 6px; /* inputs, buttons (rounded-field) */
   --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
 
@@ -136,7 +136,7 @@
   --color-danger: #f87171;
   --color-danger-content: #2a0a0a;
 
-  --radius-box: 8px;
+  --radius-box: 1.5rem; /* cards, alerts, larger surfaces (rounded-box) */
   --radius-field: 6px;
   --radius-selector: 9999px;
 

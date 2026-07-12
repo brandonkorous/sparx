@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { PartnersPage } from '@/components/marketing/partners-page';
 import { fetchPartners } from '@/lib/partners';
 
@@ -28,11 +26,5 @@ export default async function PartnersRoute() {
   const total = page.facets.tier.reduce((sum, f) => sum + (f.count ?? 0), 0);
   const partnerCount = total > 0 ? total : undefined;
 
-  return (
-    <>
-      <Nav />
-      <PartnersPage partnerCount={partnerCount} />
-      <Footer />
-    </>
-  );
+  return <PartnersPage partnerCount={partnerCount} />;
 }

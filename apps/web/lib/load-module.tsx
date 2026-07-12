@@ -10,8 +10,6 @@
 //   export default makePage('builder');
 
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ModulePage } from '@/components/marketing/module-page';
 import { loadModuleData } from '@/lib/load-module-data';
 import type { ModulePageSlug } from '@/lib/modules';
@@ -44,12 +42,6 @@ export function makeMetadata(slug: ModuleKey) {
 export function makePage(slug: ModuleKey) {
   return function ModulePageRoute() {
     const meta = loadModuleData(slug);
-    return (
-      <>
-        <Nav />
-        <ModulePage meta={meta} />
-        <Footer />
-      </>
-    );
+    return <ModulePage meta={meta} />;
   };
 }

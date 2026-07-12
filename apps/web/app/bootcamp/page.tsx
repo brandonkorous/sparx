@@ -5,8 +5,6 @@
 // a platform program, not the commerce module.
 
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Faq } from '@/components/marketing/faq';
 import { Spark } from '@/components/marketing/primitives';
 import { BootcampArc } from '@/components/marketing/bootcamp-arc';
@@ -83,7 +81,6 @@ export default async function BootcampPage({
 
   return (
     <>
-      <Nav />
       <BootcampHero />
       <BootcampArc />
       <BootcampWhoFor />
@@ -102,7 +99,6 @@ export default async function BootcampPage({
         }
         lede="What you'll build, what it costs, and how registration works — before you sign up."
       />
-      <Footer />
     </>
   );
 }

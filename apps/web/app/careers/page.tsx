@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
 import { ROLES, OPEN_APPLICATION, CAREERS_COPY, type Role } from './roles';
 
@@ -129,8 +127,6 @@ function StepRow({ index, text }: { index: number; text: string }) {
 export default function CareersPage() {
   return (
     <>
-      <Nav />
-
       <Section surface="page" padding="xl">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', maxWidth: '900px' }}>
           <Display as="h1" size={76} lineHeight={78}>
@@ -227,8 +223,6 @@ export default function CareersPage() {
           {CAREERS_COPY.entityNote}
         </p>
       </Section>
-
-      <Footer />
     </>
   );
 }

@@ -99,17 +99,24 @@ function observeWebVitals(report: (vitals: Record<string, number>) => void): () 
   };
 }
 
-// POST a collect payload, preferring sendBeacon (survives an immediate
-// navigation) and falling back to keepalive fetch. Never throws.
+// POST a collect payload via keepalive fetch (survives an immediate
+// navigation almost as well as sendBeacon). Deliberately NOT navigator.
+// sendBeacon: the Beacon API always sends the browser's cookies for the
+// target origin with no way to opt out, which — since apiUrl is a different
+// origin from the site in both dev and prod — turns every hit into a
+// credentialed cross-origin request. api-rest's CORS reflects the origin but
+// (correctly) doesn't allow credentials, so the browser blocks the beacon
+// outright instead of just dropping the cookie. This endpoint is cookieless
+// by design (see file header), so `credentials: 'omit'` is the honest fetch
+// option, not a workaround. Never throws.
 function postBeacon(url: string, payload: string): void {
   try {
-    const blob = new Blob([payload], { type: 'application/json' });
-    if (typeof navigator !== 'undefined' && navigator.sendBeacon?.(url, blob)) return;
     void fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: payload,
       keepalive: true,
+      credentials: 'omit',
     }).catch(() => undefined);
   } catch {
     // Analytics must never break a page render.

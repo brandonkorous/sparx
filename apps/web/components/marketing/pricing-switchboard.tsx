@@ -1,880 +1,178 @@
 'use client';
 
 /**
- * The pricing switchboard — the page's interactive centerpiece. Flip a module
- * on/off and the sticky plan panel recomputes the live bill, breakdown, and
- * savings. Every module is an independent toggle (no locked base). The only
- * 'use client' island on the pricing page; everything around it is static.
+ * The pricing switchboard — the page's interactive centerpiece. A card grid
+ * (one tile per module) with a fixed "Your stack" summary card in the 4th
+ * column, recomputing the live bill, breakdown, and savings the instant a
+ * module flips — the same card pattern proven on the homepage's switchboard,
+ * built on the same shared ModuleToggleCard / StackSummaryCard.
  *
- * Per-module `elsewhere` is the real, published 2026 price of the named tool
- * each module replaces (see the cost-savings ledger on the page for sources).
+ * Dependency graph (REQUIRES / BUNDLED_FREE) is derived from the module
+ * catalog's own `requires` / `includedWith` fields — mirrors the server
+ * (@sparx/modules): only B2B requires Commerce (auto co-enabled + locked
+ * on); Invoicing and Inventory ride free ($0, locked) while Commerce or B2B
+ * is active.
+ *
+ * `elsewhere` is the real, published 2026 price of the tool each module
+ * replaces — the same figures as the CostSavings ledger below, so the
+ * switchboard and the ledger never disagree about what a stitched-together
+ * stack costs.
  */
-import { Fragment, useState } from 'react';
-import { Display, Spark } from './primitives';
-
-interface Mod {
-  key: string;
-  name: string;
-  desc: string;
-  price: number;
-  /** Real monthly cost of the named tool this module replaces. */
-  elsewhere: number;
-  color: string;
-  long: string;
-  feats: string[];
-  replaces: string;
-  /** Add-ons render below the core modules under an "Add-ons" divider; they are
-   *  priced on top, never part of the headline module story. */
-  addon?: boolean;
-}
-
-const MODULES: Mod[] = [
-  {
-    key: 'builder',
-    name: 'Builder',
-    desc: 'Themes, pages, live URLs',
-    price: 10,
-    elsewhere: 39,
-    color: 'var(--color-module-builder)',
-    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
-    feats: [
-      'Theme-first, customize what matters',
-      'Custom domain + automatic SSL',
-      'CDN-cached, stale-while-revalidate',
-      'Headless SDK for Next, Remix, Astro',
-    ],
-    replaces: 'Webflow + hosting + a CDN',
-  },
-  {
-    key: 'commerce',
-    name: 'Commerce',
-    desc: 'Cart, checkout, orders',
-    price: 49,
-    elsewhere: 399,
-    color: 'var(--color-module-commerce)',
-    long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.',
-    feats: [
-      'Variants, bundles, real-time inventory',
-      'Apple Pay + one-tap checkout',
-      'Stripe, PayPal, Klarna, Affirm',
-      'Avalara/TaxJar tax · Shippo/EasyPost',
-    ],
-    replaces: 'Shopify Advanced + tax & shipping apps',
-  },
-  {
-    key: 'cms',
-    name: 'CMS',
-    desc: 'Words, media, SEO',
-    price: 49,
-    elsewhere: 99,
-    color: 'var(--color-module-cms)',
-    long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
-    feats: [
-      'Block editor, autosave + revisions',
-      'Structured content types + typed API',
-      'Auto WebP/AVIF media library',
-      'Per-page SEO + JSON-LD',
-    ],
-    replaces: 'a headless CMS like Storyblok + a media CDN',
-  },
-  {
-    key: 'crm',
-    name: 'CRM',
-    desc: 'Customers, pipeline, signal',
-    price: 49,
-    elsewhere: 300,
-    color: 'var(--color-module-crm)',
-    long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
-    feats: [
-      'One record, no deduping',
-      'Dynamic segments from any signal',
-      'Pipeline tied to order status',
-      'Automations + activity timeline',
-    ],
-    replaces: 'HubSpot Sales Pro + an automation seat',
-  },
-  {
-    key: 'email',
-    name: 'Email',
-    desc: 'Transactional + marketing',
-    price: 29,
-    elsewhere: 165,
-    color: 'var(--color-module-email)',
-    long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.',
-    feats: [
-      'Transactional wired into every module',
-      'Campaigns + A/B testing',
-      'Your domain, your reputation',
-      'No per-email pricing, ever',
-    ],
-    replaces: 'Klaviyo + a transactional email service',
-  },
-  {
-    key: 'b2b',
-    name: 'B2B · Fleet',
-    desc: 'Wholesale, net terms, fleet',
-    price: 99,
-    elsewhere: 2400,
-    color: 'var(--color-module-b2b)',
-    long: 'Wholesale pricing, net terms, purchase orders, RFQ, and fleet accounts — natively, not a bolt-on. Built for how industrial actually works.',
-    feats: [
-      'Account-tier + contract pricing',
-      'Net 15 / 30 / 60 / 90 + PO checkout',
-      'Fleet: vehicles, VIN, cost centers',
-      'RFQ → quote → order, buyer portal',
-    ],
-    replaces: 'Shopify Plus for native B2B',
-  },
-  {
-    key: 'ai',
-    name: 'AI · MCP',
-    desc: 'Native MCP server',
-    price: 49,
-    elsewhere: 103,
-    color: 'var(--color-module-ai)',
-    long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.',
-    feats: [
-      'First-class MCP server, per-tenant',
-      'Read & write everything the API can',
-      'Per-agent keys, per-tool scopes',
-      'Claude, ChatGPT, Copilot, Cursor',
-    ],
-    replaces: 'Zapier Team + custom integration work',
-  },
-  {
-    key: 'dropship',
-    name: 'Dropship',
-    desc: 'Suppliers, sync, fulfillment',
-    price: 29,
-    elsewhere: 60,
-    color: 'var(--color-module-dropship)',
-    long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
-    feats: [
-      'Supplier connectors + CSV/FTP/API',
-      'Per-supplier margin rules',
-      'Automated multi-supplier routing',
-      'Real-time stock sync',
-    ],
-    replaces: 'a dropshipping app like Spocket',
-  },
-  {
-    key: 'scheduling',
-    name: 'Scheduling',
-    desc: 'Appointments, classes, bookings',
-    price: 29,
-    elsewhere: 61,
-    color: 'var(--color-module-scheduling)',
-    long: 'Appointments, classes, reservations, and rentals on one engine, with deposits, reminders, waitlists, and calendar sync. Unlimited staff, resources, and bookings — no per-seat or per-cover fee, ever.',
-    feats: [
-      'Appointments, classes, reservations, rentals',
-      'Deposits, no-show & cancellation policies',
-      'Reminders + auto-promoting waitlists',
-      'Calendar sync — iCal feed + busy import',
-    ],
-    replaces: 'an appointments tool like Acuity',
-  },
-  {
-    key: 'invoicing',
-    name: 'Invoicing',
-    desc: 'Estimates, invoices, AR',
-    price: 19,
-    elsewhere: 30,
-    color: 'var(--color-module-invoicing)',
-    long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
-    feats: [
-      'Estimate → invoice workflows you name',
-      'Parts, labor, sublet & flat-fee lines',
-      'Deposits, partial payments, AR aging',
-      'Branded, printable documents',
-    ],
-    replaces: 'a billing tool like FreshBooks',
-    addon: true,
-  },
-  {
-    key: 'inventory',
-    name: 'Inventory',
-    desc: 'Stock, warehouses, ledger',
-    price: 29,
-    elsewhere: 99,
-    color: 'var(--color-module-inventory)',
-    long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
-    feats: [
-      'Multi-warehouse on-hand / allocated / available',
-      'Audited movement ledger — every change attributable',
-      'Lots, serials, expiry & recalls',
-      'Reorder points + low-stock alerts',
-    ],
-    replaces: 'a WMS/IMS add-on like inFlow or Katana',
-    addon: true,
-  },
-  {
-    key: 'chat',
-    name: 'Live Chat',
-    desc: 'Widget, AI replies, inbox',
-    price: 19,
-    elsewhere: 74,
-    color: 'var(--color-module-chat)',
-    long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
-    feats: [
-      'On-site widget in your theme',
-      'AI answers from your own catalog',
-      'Staff inbox — assign, reply, resolve',
-      'Web-push + email notifications',
-    ],
-    replaces: 'a live-chat + AI inbox like Intercom',
-    addon: true,
-  },
-];
+import { useState } from 'react';
+import { Display } from './primitives';
+import { MODULES, MODULE_HEX, MODULE_ICON } from './modules-catalog';
+import { ModuleToggleCard } from './module-toggle-card';
+import { StackSummaryCard, type StackLineItem } from './stack-summary-card';
 
 const DEFAULT_ON = new Set(['builder', 'commerce', 'cms']);
 
-// Dependency graph — mirrors the server (@sparx/modules). REQUIRES co-enables +
-// locks a separately-billed provider (only B2B needs Commerce). Builder is NOT
-// required by Commerce/CMS/Email — they run headless against the API; Builder is
-// the optional hosted-site module. BUNDLED_FREE makes a capability $0 while a
-// provider is on (Invoicing rides with Commerce/B2B).
-const REQUIRES: Record<string, string[]> = {
-  b2b: ['commerce'],
+const ELSEWHERE_MONTHLY: Record<string, number> = {
+  builder: 39,
+  commerce: 399,
+  cms: 99,
+  crm: 300,
+  invoicing: 30,
+  email: 165,
+  b2b: 2400,
+  dropship: 60,
+  inventory: 99,
+  chat: 74,
+  scheduling: 61,
+  ai: 103,
 };
-const BUNDLED_FREE: Record<string, string[]> = {
-  invoicing: ['b2b', 'commerce'],
-  inventory: ['commerce', 'b2b'],
-};
-const moduleName = (key: string): string => MODULES.find((x) => x.key === key)?.name ?? key;
-const activeBundlers = (on: Record<string, boolean>, key: string): string[] =>
-  (BUNDLED_FREE[key] ?? []).filter((p) => on[p]);
-const activeRequirers = (on: Record<string, boolean>, key: string): string[] =>
-  Object.keys(REQUIRES).filter((k) => (REQUIRES[k] ?? []).includes(key) && on[k]);
-const requiredKeys = (key: string): string[] => {
+
+const idByLabel = new Map(MODULES.map((m) => [m.label, m.id]));
+const REQUIRES: Record<string, string> = Object.fromEntries(
+  MODULES.filter((m) => m.requires).map((m) => [m.id, idByLabel.get(m.requires!)!])
+);
+const BUNDLED_FREE: Record<string, string[]> = Object.fromEntries(
+  MODULES.filter((m) => (m.includedWith?.length ?? 0) > 0).map((m) => [
+    m.id,
+    m.includedWith!.map((label) => idByLabel.get(label)!),
+  ])
+);
+const moduleName = (id: string): string => MODULES.find((m) => m.id === id)?.label ?? id;
+const activeBundlers = (on: Record<string, boolean>, id: string): string[] =>
+  (BUNDLED_FREE[id] ?? []).filter((p) => on[p]);
+const activeRequirers = (on: Record<string, boolean>, id: string): string[] =>
+  Object.keys(REQUIRES).filter((k) => REQUIRES[k] === id && on[k]);
+const requiredIds = (id: string): string[] => {
   const out = new Set<string>();
   const visit = (k: string): void => {
-    for (const dep of REQUIRES[k] ?? []) {
-      if (!out.has(dep)) {
-        out.add(dep);
-        visit(dep);
-      }
+    const dep = REQUIRES[k];
+    if (dep && !out.has(dep)) {
+      out.add(dep);
+      visit(dep);
     }
   };
-  visit(key);
+  visit(id);
   return [...out];
 };
-const joinNames = (slugs: string[]): string => {
-  const names = slugs.map(moduleName);
+const joinNames = (ids: string[]): string => {
+  const names = ids.map(moduleName);
   return names.length <= 1
     ? (names[0] ?? '')
     : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
 };
-const lockOfState = (on: Record<string, boolean>, key: string): 'included' | 'required' | null => {
-  if (activeBundlers(on, key).length > 0) return 'included';
-  if (activeRequirers(on, key).length > 0) return 'required';
+const lockOfState = (on: Record<string, boolean>, id: string): 'included' | 'required' | null => {
+  if (activeBundlers(on, id).length > 0) return 'included';
+  if (activeRequirers(on, id).length > 0) return 'required';
   return null;
 };
 
 export function PricingSwitchboard() {
   const [on, setOn] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(MODULES.map((m) => [m.key, DEFAULT_ON.has(m.key)]))
+    Object.fromEntries(MODULES.map((m) => [m.id, DEFAULT_ON.has(m.id)]))
   );
-  const [openKey, setOpenKey] = useState<string | null>(null);
 
-  // Dependency model mirrors the server (@sparx/modules graph): only B2B requires
-  // Commerce; a required provider is co-enabled, billed, and locked on. Builder is
-  // NOT required by Commerce/CMS/Email — they run headless. Invoicing is
-  // BUNDLED_FREE with Commerce/B2B — $0 ("Included") while either is on, else $19.
-  const effectiveOn = (key: string): boolean =>
-    !!on[key] || activeBundlers(on, key).length > 0 || activeRequirers(on, key).length > 0;
-  const lockOf = (key: string): 'included' | 'required' | null => lockOfState(on, key);
-  // The reason a row is locked, naming its providers — mirrors Settings → Modules.
-  const reasonOf = (key: string): string | null => {
-    const lock = lockOf(key);
-    if (lock === 'included') return `Included with ${joinNames(activeBundlers(on, key))}`;
-    if (lock === 'required') return `Required by ${joinNames(activeRequirers(on, key))}`;
+  // Dependency model mirrors the server (@sparx/modules graph): only B2B
+  // requires Commerce; a required provider is co-enabled, billed, and locked
+  // on. Invoicing/Inventory are BUNDLED_FREE with Commerce/B2B — $0
+  // ("Included") while either is on, else their normal price.
+  const effectiveOn = (id: string): boolean =>
+    !!on[id] || activeBundlers(on, id).length > 0 || activeRequirers(on, id).length > 0;
+  const lockOf = (id: string): 'included' | 'required' | null => lockOfState(on, id);
+  const reasonOf = (id: string): string | null => {
+    const lock = lockOf(id);
+    if (lock === 'included') return `Included with ${joinNames(activeBundlers(on, id))}`;
+    if (lock === 'required') return `Required by ${joinNames(activeRequirers(on, id))}`;
     return null;
   };
-  // Bundled invoicing contributes $0 to both the bill and the savings ledger —
-  // it's a free rider, not part of the comparison.
-  const billed = (m: Mod): number => (lockOf(m.key) === 'included' ? 0 : m.price);
-  const elsewhereOf = (m: Mod): number => (lockOf(m.key) === 'included' ? 0 : m.elsewhere);
+  const billed = (id: string, price: number): number => (lockOf(id) === 'included' ? 0 : price);
+  const elsewhereOf = (id: string): number =>
+    lockOf(id) === 'included' ? 0 : (ELSEWHERE_MONTHLY[id] ?? 0);
 
-  const toggle = (key: string): void =>
+  const toggle = (id: string): void =>
     setOn((s) => {
-      if (lockOfState(s, key) !== null) return s; // bundled or required — locked on
-      const next = { ...s, [key]: !s[key] };
-      if (next[key]) for (const dep of requiredKeys(key)) next[dep] = true; // co-enable requirements
+      if (lockOfState(s, id) !== null) return s; // bundled or required — locked on
+      const next = { ...s, [id]: !s[id] };
+      if (next[id]) for (const dep of requiredIds(id)) next[dep] = true; // co-enable requirements
       return next;
     });
 
-  const active = MODULES.filter((m) => effectiveOn(m.key));
-  const total = active.reduce((s, m) => s + billed(m), 0);
-  const elsewhere = active.reduce((s, m) => s + elsewhereOf(m), 0);
-  const save = Math.max(0, elsewhere - total);
+  const activeModules = MODULES.filter((m) => effectiveOn(m.id));
+  const total = activeModules.reduce((sum, m) => sum + billed(m.id, m.price), 0);
+  const elsewhereTotal = activeModules.reduce((sum, m) => sum + elsewhereOf(m.id), 0);
+  const lineItems: StackLineItem[] = activeModules.map((m) => ({
+    id: m.id,
+    label: m.label,
+    icon: MODULE_ICON[m.id],
+    color: MODULE_HEX[m.id],
+    price: billed(m.id, m.price),
+    included: lockOf(m.id) === 'included',
+  }));
 
   return (
-    <div className="mkt-switchboard">
-      {/* Left rail: heading + module toggles */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div>
-          <Display as="h1" size={60} lineHeight={60}>
-            Switch on
-            <br />
-            what you use
-            <Spark />
-          </Display>
-          <p
-            style={{
-              margin: '18px 0 0',
-              maxWidth: '480px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '17px',
-              lineHeight: '27px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            Every module is one toggle. Flip it and the bill on the right changes the instant you do
-            — one platform, one invoice, nothing you&apos;re not using. Tap a row for the details.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {MODULES.map((m, i) => {
-            const isOn = effectiveOn(m.key);
-            const lock = lockOf(m.key);
-            const reason = reasonOf(m.key);
-            const isOpen = openKey === m.key;
-            const firstAddon = !!m.addon && (i === 0 || !MODULES[i - 1]?.addon);
-            return (
-              <Fragment key={m.key}>
-                {firstAddon ? (
-                  <div
-                    style={{
-                      padding: '16px 4px 6px',
-                      marginTop: '8px',
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '13px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    }}
-                  >
-                    Add-ons
-                  </div>
-                ) : null}
-                <div
-                  style={{
-                    borderBottom:
-                      i === MODULES.length - 1 ? undefined : '1px solid var(--color-base-300)',
-                  }}
-                >
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={isOpen}
-                    onClick={() => setOpenKey(isOpen ? null : m.key)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setOpenKey(isOpen ? null : m.key);
-                      }
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                      padding: '16px 4px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 9999,
-                        backgroundColor: m.color,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '2px',
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span
-                          style={{
-                            fontFamily: 'var(--font-sans)',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            color: 'var(--color-base-content)',
-                          }}
-                        >
-                          {m.name}
-                        </span>
-                        <Chevron open={isOpen} />
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '13px',
-                          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                        }}
-                      >
-                        {m.desc}
-                      </span>
-                      {reason ? (
-                        <span
-                          style={{
-                            alignSelf: 'flex-start',
-                            marginTop: '4px',
-                            padding: '2px 8px',
-                            borderRadius: 9999,
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: '11px',
-                            fontWeight: 500,
-                            lineHeight: '16px',
-                            backgroundColor:
-                              lock === 'included'
-                                ? 'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))'
-                                : 'var(--color-base-300)',
-                            color:
-                              lock === 'included'
-                                ? '#065F46'
-                                : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                          }}
-                        >
-                          {reason}
-                        </span>
-                      ) : null}
-                    </div>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontWeight: isOn ? 500 : 400,
-                        fontSize: lock === 'included' ? '13px' : '15px',
-                        width: '78px',
-                        flexShrink: 0,
-                        textAlign: 'right',
-                        color:
-                          lock === 'included'
-                            ? 'var(--color-success)'
-                            : isOn
-                              ? 'var(--color-base-content)'
-                              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      }}
-                    >
-                      {lock === 'included' ? 'Included' : `+ $${m.price}`}
-                    </span>
-                    {lock === 'included' ? (
-                      // Bundled — nothing to toggle. Hold the switch's width so the
-                      // price column stays aligned with the rows above and below.
-                      <span style={{ width: 44, flexShrink: 0 }} aria-hidden />
-                    ) : (
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={isOn}
-                        aria-disabled={lock ? true : undefined}
-                        aria-label={m.name}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggle(m.key);
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: isOn ? 'flex-end' : 'flex-start',
-                          width: 44,
-                          height: 26,
-                          borderRadius: 9999,
-                          padding: '0 3px',
-                          border: 'none',
-                          background: isOn ? m.color : '#e4e4e7',
-                          cursor: lock ? 'not-allowed' : 'pointer',
-                          opacity: lock ? 0.55 : 1,
-                          flexShrink: 0,
-                          transition: 'background 0.15s ease',
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: 9999,
-                            backgroundColor: '#fff',
-                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)',
-                          }}
-                        />
-                      </button>
-                    )}
-                  </div>
-
-                  {isOpen ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '15px',
-                        padding: '2px 4px 24px 30px',
-                      }}
-                    >
-                      <p
-                        style={{
-                          margin: 0,
-                          maxWidth: '580px',
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '14px',
-                          lineHeight: '22px',
-                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                        }}
-                      >
-                        {m.long}
-                      </p>
-                      <ul
-                        style={{
-                          listStyle: 'none',
-                          margin: 0,
-                          padding: 0,
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          gap: '10px 28px',
-                        }}
-                      >
-                        {m.feats.map((f) => (
-                          <li
-                            key={f}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '9px',
-                              width: '260px',
-                              maxWidth: '100%',
-                              fontFamily: 'var(--font-sans)',
-                              fontSize: '13.5px',
-                              color:
-                                'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                            }}
-                          >
-                            <span
-                              style={{
-                                width: 5,
-                                height: 5,
-                                borderRadius: 9999,
-                                backgroundColor: m.color,
-                                flexShrink: 0,
-                              }}
-                            />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                      <div
-                        style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontSize: '13px',
-                          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                        }}
-                      >
-                        Replaces {m.replaces} — about{' '}
-                        <b
-                          style={{
-                            fontWeight: 500,
-                            color:
-                              'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                          }}
-                        >
-                          ${m.elsewhere}/mo
-                        </b>{' '}
-                        bought separately.
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </Fragment>
-            );
-          })}
-        </div>
+    <div className="flex flex-col gap-14">
+      <div className="max-w-2xl">
+        <Display as="h1" size={60} lineHeight={60}>
+          Switch on what you use
+        </Display>
+        <p
+          style={{
+            margin: '18px 0 0',
+            maxWidth: '480px',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '17px',
+            lineHeight: '27px',
+            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          }}
+        >
+          Every module is one switch. Flip it and the stack summary recomputes the instant you do —
+          one platform, one invoice, nothing you&apos;re not using.
+        </p>
       </div>
 
-      {/* Sticky plan panel */}
-      <aside
-        className="mkt-pricing-plan"
-        style={{
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '16px',
-          boxShadow: '0 16px 44px rgba(15, 15, 20, 0.08)',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            padding: '28px 26px 22px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '15px',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              Your plan
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                color: '#4338CA',
-                backgroundColor: '#EEF2FF',
-                padding: '3px 9px',
-                borderRadius: 9999,
-              }}
-            >
-              {active.length} {active.length === 1 ? 'module on' : 'modules on'}
-            </span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '84px',
-                lineHeight: '80px',
-                letterSpacing: '-0.04em',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              ${total}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
-          </div>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            Billed monthly · one invoice for everything
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '13px',
-            padding: '20px 26px',
-            borderTop: '1px solid #F1F1F3',
-            backgroundColor: '#FCFCFD',
-          }}
-        >
-          {active.length === 0 ? (
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              Flip on a module to start.
-            </span>
-          ) : (
-            active.map((m) => (
-              <div
-                key={m.key}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <span
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '14px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 9999,
-                      backgroundColor: m.color,
-                      flexShrink: 0,
-                    }}
-                  />
-                  {m.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    color:
-                      lockOf(m.key) === 'included'
-                        ? 'var(--color-success)'
-                        : 'var(--color-base-content)',
-                  }}
-                >
-                  {lockOf(m.key) === 'included' ? 'Included' : `$${m.price}`}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '11px',
-            padding: '18px 26px',
-            borderTop: '1px solid #F1F1F3',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              Same stack, stitched together
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                textDecoration: 'line-through',
-              }}
-            >
-              ${elsewhere}/mo
-            </span>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '9px',
-              padding: '10px 12px',
-              backgroundColor:
-                'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
-              borderRadius: '8px',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '13px',
-              color: '#065F46',
-            }}
-          >
-            <CheckIcon />
-            You save ${save}/mo on one bill
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            padding: '8px 26px 26px',
-          }}
-        >
-          <button type="button" className="mkt-launch">
-            Start 14-day free trial
-            <ArrowIcon />
-          </button>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textAlign: 'center',
-            }}
-          >
-            No card to start · cancel anytime
-          </span>
-        </div>
-      </aside>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {MODULES.map((m) => {
+          const isOn = effectiveOn(m.id);
+          const lock = lockOf(m.id);
+          return (
+            <ModuleToggleCard
+              key={m.id}
+              icon={MODULE_ICON[m.id]}
+              color={MODULE_HEX[m.id]}
+              label={m.label}
+              title={m.title}
+              active={isOn}
+              disabled={lock !== null}
+              onToggle={() => toggle(m.id)}
+              badgeText={lock === 'included' ? 'Included' : `$${m.price}/mo`}
+              badgeColor={lock === 'included' ? 'success' : isOn ? 'primary' : 'neutral'}
+              reason={reasonOf(m.id) ?? undefined}
+            />
+          );
+        })}
+        <StackSummaryCard
+          className="lg:col-start-4 lg:row-span-4 lg:row-start-1"
+          activeCount={activeModules.length}
+          totalModules={MODULES.length}
+          lineItems={lineItems}
+          total={total}
+          elsewhereTotal={elsewhereTotal}
+          ctaRef="pricing-switchboard"
+        />
+      </div>
     </div>
-  );
-}
-
-function Chevron({ open }: { open: boolean }) {
-  return (
-    <svg
-      width={18}
-      height={18}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      style={{
-        color: '#c4c4cc',
-        flexShrink: 0,
-        transform: open ? 'rotate(180deg)' : 'none',
-        transition: 'transform 0.2s ease',
-      }}
-    >
-      <path
-        d="M6 9L12 15L18 9"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width={15}
-      height={15}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#059669"
-      strokeWidth={2.4}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="#fff"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
   );
 }

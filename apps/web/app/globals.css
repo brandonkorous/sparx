@@ -30,6 +30,14 @@
    Phase 3 with @sparx/ui itself. silicaui-react emits only plugin classes. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
+/* @sparx/web-chrome (the shared SiteHeader) ships raw Tailwind utility
+   classes with no CSS of its own — same reasoning as @sparx/ui above. */
+@source '../../../packages/web-chrome/src/**/*.{ts,tsx}';
+
+/* @sparx/chat-widget (the marketplace "Chat with {publisher}" CTA panel) —
+   same reasoning: raw Tailwind utilities, no CSS of its own. */
+@source '../../../packages/chat-widget/src/**/*.{ts,tsx}';
+
 /* Colors are owned entirely by silicaui (the @plugin registers the semantic +
    module palette, reading @sparx/brand/theme.css); this @theme carries only the
    non-color tokens Tailwind needs (font, radius). */
@@ -41,6 +49,8 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+
+  --depth: 0;
 }
 
 html {

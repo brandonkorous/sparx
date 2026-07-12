@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A narrative landing-page concept for Sparx — the operating system for independent businesses."
+    />
+    <title>Sparx — Run the business, not the software</title>
+    <style>
+      :root {
+        --ink: #171713;
+        --paper: #f3efe4;
+        --paper-2: #e7e0d1;
+        --acid: #d8ff3e;
+        --orange: #ff5d2e;
+        --purple: #7847ff;
+        --blue: #4da7ff;
+        --line: rgba(23, 23, 19, 0.17);
+        --muted: #6f6c62;
+        --white: #fffdf5;
+        --shadow: 0 24px 70px rgba(23, 23, 19, 0.15);
+        --radius: 26px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        overflow-x: hidden;
+      }
+      button,
+      a,
+      input {
+        font: inherit;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        cursor: pointer;
+      }
+      .wrap {
+        width: min(1180px, calc(100% - 40px));
+        margin: auto;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-size: 0.76rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        font-weight: 800;
+      }
+      .eyebrow:before {
+        content: '';
+        width: 26px;
+        height: 2px;
+        background: currentColor;
+      }
+      .nav {
+        position: fixed;
+        z-index: 50;
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(1180px, calc(100% - 28px));
+        height: 68px;
+        padding: 0 12px 0 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 18px;
+        color: white;
+        background: rgba(23, 23, 19, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.16);
+      }
+      .brand {
+        font-weight: 950;
+        font-size: 1.35rem;
+        letter-spacing: -0.08em;
+      }
+      .brand span {
+        color: var(--acid);
+      }
+      .navlinks {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        font-weight: 650;
+        font-size: 0.9rem;
+      }
+      .navcta,
+      .primary {
+        border: 0;
+        border-radius: 13px;
+        background: var(--acid);
+        color: var(--ink);
+        padding: 14px 20px;
+        font-weight: 850;
+        box-shadow: inset 0 -2px rgba(0, 0, 0, 0.12);
+        transition:
+          0.25s transform,
+          0.25s box-shadow;
+      }
+      .navcta:hover,
+      .primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(216, 255, 62, 0.22);
+      }
+      .secondary {
+        border: 1px solid currentColor;
+        border-radius: 13px;
+        background: transparent;
+        padding: 13px 20px;
+        font-weight: 800;
+        color: inherit;
+      }
+
+      /* HERO */
+      .hero {
+        min-height: 100vh;
+        background: var(--ink);
+        color: white;
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 135px 0 70px;
+        overflow: hidden;
+      }
+      .hero:before {
+        content: '';
+        position: absolute;
+        inset: -25%;
+        background:
+          radial-gradient(circle at 76% 35%, rgba(120, 71, 255, 0.43), transparent 20%),
+          radial-gradient(circle at 66% 66%, rgba(255, 93, 46, 0.35), transparent 22%),
+          radial-gradient(circle at 30% 15%, rgba(216, 255, 62, 0.12), transparent 15%);
+        filter: blur(12px);
+      }
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.19;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.23'/%3E%3C/svg%3E");
+      }
+      .hero-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1.02fr 0.98fr;
+        gap: 70px;
+        align-items: center;
+      }
+      .hero h1 {
+        font-size: clamp(4rem, 8.6vw, 8.2rem);
+        line-height: 0.82;
+        letter-spacing: -0.085em;
+        margin: 22px 0 30px;
+        max-width: 780px;
+      }
+      .hero h1 em {
+        font-style: normal;
+        color: var(--acid);
+        display: block;
+      }
+      .hero-copy p {
+        max-width: 620px;
+        font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+        line-height: 1.55;
+        color: #d8d5cc;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 13px;
+        margin-top: 34px;
+        flex-wrap: wrap;
+      }
+      .hero .secondary {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.38);
+      }
+      .micro {
+        margin-top: 18px;
+        color: #9c998f;
+        font-size: 0.82rem;
+      }
+      .hero-card {
+        position: relative;
+        min-height: 610px;
+        border-radius: 34px;
+        background: #f7f2e7;
+        color: var(--ink);
+        box-shadow: 0 48px 120px rgba(0, 0, 0, 0.45);
+        padding: 18px;
+        transform: rotate(1deg);
+      }
+      .windowbar {
+        height: 43px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 10px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #c9c1b2;
+      }
+      .window-title {
+        margin-left: auto;
+        font-size: 0.72rem;
+        font-weight: 750;
+        color: var(--muted);
+      }
+      .business-demo {
+        padding: 24px;
+      }
+      .demo-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+      }
+      .demo-top h3 {
+        font-size: 1.3rem;
+        margin: 0;
+      }
+      .status {
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #e1f6c9;
+        font-size: 0.7rem;
+        font-weight: 800;
+      }
+      .demo-question {
+        margin-top: 32px;
+        font-size: 2.15rem;
+        line-height: 1.04;
+        letter-spacing: -0.055em;
+        max-width: 430px;
+      }
+      .reply {
+        margin-top: 24px;
+        padding: 18px;
+        border-radius: 18px;
+        background: white;
+        border: 1px solid var(--line);
+        font-size: 0.96rem;
+        line-height: 1.5;
+        box-shadow: 0 14px 30px rgba(23, 23, 19, 0.08);
+      }
+      .reply strong {
+        display: block;
+        margin-bottom: 7px;
+      }
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .action {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 13px;
+        background: #f7f2e7;
+        font-weight: 750;
+        text-align: left;
+      }
+      .action span {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--muted);
+        font-weight: 600;
+        margin-top: 3px;
+      }
+      .activity {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .activity-label {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.67rem;
+        font-weight: 850;
+        color: var(--muted);
+      }
+      .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 13px;
+        font-size: 0.82rem;
+      }
+      .activity-icon {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: var(--acid);
+        font-weight: 900;
+      }
+      .floating-note {
+        position: absolute;
+        right: -55px;
+        bottom: 55px;
+        width: 195px;
+        background: var(--orange);
+        color: white;
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+        transform: rotate(-4deg);
+      }
+      .floating-note b {
+        font-size: 1.8rem;
+        display: block;
+        letter-spacing: -0.04em;
+      }
+
+      /* STORY */
+      section {
+        padding: 120px 0;
+      }
+      .story {
+        background: var(--paper);
+      }
+      .story-grid {
+        display: grid;
+        grid-template-columns: 0.72fr 1.28fr;
+        gap: 70px;
+        align-items: start;
+      }
+      .sticky {
+        position: sticky;
+        top: 118px;
+      }
+      .sticky h2,
+      .section-head h2 {
+        font-size: clamp(3rem, 6vw, 6.5rem);
+        line-height: 0.88;
+        letter-spacing: -0.075em;
+        margin: 18px 0 0;
+      }
+      .pain-list {
+        border-top: 1px solid var(--line);
+      }
+      .pain {
+        display: grid;
+        grid-template-columns: 55px 1fr;
+        gap: 18px;
+        padding: 30px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .pain-num {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-weight: 850;
+        padding-top: 6px;
+      }
+      .pain h3 {
+        font-size: clamp(1.55rem, 2.5vw, 2.5rem);
+        letter-spacing: -0.045em;
+        margin: 0 0 10px;
+      }
+      .pain p {
+        font-size: 1.03rem;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0;
+        max-width: 650px;
+      }
+
+      /* REVEAL */
+      .reveal {
+        background: var(--acid);
+        border-radius: 42px 42px 0 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .reveal .section-head {
+        max-width: 950px;
+      }
+      .reveal h2 span {
+        display: block;
+        color: rgba(23, 23, 19, 0.34);
+      }
+      .switchboard {
+        margin-top: 70px;
+        background: var(--ink);
+        border-radius: 28px;
+        color: white;
+        padding: 18px;
+        box-shadow: 0 36px 80px rgba(23, 23, 19, 0.24);
+      }
+      .switch-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 10px 23px;
+      }
+      .switch-top strong {
+        font-size: 1.1rem;
+      }
+      .switch-top small {
+        color: #9f9c91;
+      }
+      .modules {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .module {
+        min-height: 170px;
+        border-radius: 18px;
+        padding: 18px;
+        background: #282823;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition:
+          0.3s transform,
+          0.3s background;
+      }
+      .module:hover {
+        transform: translateY(-6px);
+        background: #32322c;
+      }
+      .module-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: var(--module);
+        color: var(--ink);
+        font-weight: 950;
+      }
+      .module h3 {
+        margin: 0 0 5px;
+        font-size: 1rem;
+      }
+      .module p {
+        margin: 0;
+        color: #9f9c91;
+        font-size: 0.77rem;
+        line-height: 1.45;
+      }
+      .toggle {
+        width: 38px;
+        height: 22px;
+        border-radius: 999px;
+        background: #4a4a43;
+        padding: 3px;
+        margin-left: auto;
+      }
+      .toggle:after {
+        content: '';
+        display: block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #aaa;
+        transition: 0.25s;
+      }
+      .module.active .toggle {
+        background: var(--acid);
+      }
+      .module.active .toggle:after {
+        transform: translateX(16px);
+        background: var(--ink);
+      }
+      .module-cost {
+        font-size: 0.73rem;
+        font-weight: 800;
+        color: #c5c2b8;
+      }
+
+      /* DAY */
+      .day {
+        background: var(--ink);
+        color: white;
+      }
+      .day .section-head {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: end;
+      }
+      .day .section-head p {
+        font-size: 1.15rem;
+        color: #aaa69c;
+        line-height: 1.6;
+      }
+      .timeline {
+        margin-top: 75px;
+        position: relative;
+      }
+      .timeline:before {
+        content: '';
+        position: absolute;
+        left: 28px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .moment {
+        display: grid;
+        grid-template-columns: 58px 110px 1fr;
+        gap: 22px;
+        padding: 0 0 55px;
+        position: relative;
+      }
+      .moment-dot {
+        width: 58px;
+        height: 58px;
+        border-radius: 17px;
+        background: var(--moment);
+        color: var(--ink);
+        display: grid;
+        place-items: center;
+        font-weight: 950;
+        z-index: 1;
+      }
+      .time {
+        font-size: 0.8rem;
+        font-weight: 850;
+        color: #88857e;
+        padding-top: 19px;
+      }
+      .moment-card {
+        border-radius: 22px;
+        background: #252520;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+      }
+      .moment-card h3 {
+        margin: 0 0 8px;
+        font-size: 1.35rem;
+      }
+      .moment-card p {
+        margin: 0;
+        color: #aaa69c;
+        line-height: 1.55;
+        max-width: 650px;
+      }
+      .moment-result {
+        white-space: nowrap;
+        align-self: center;
+        color: var(--moment);
+        font-weight: 900;
+      }
+
+      /* PROOF */
+      .proof {
+        background: #e8e1d3;
+      }
+      .proof-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 14px;
+        margin-top: 70px;
+      }
+      .proof-card {
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        background: var(--paper);
+        padding: 36px;
+        min-height: 300px;
+        position: relative;
+        overflow: hidden;
+      }
+      .proof-card.big {
+        grid-row: span 2;
+        min-height: 615px;
+        background: var(--orange);
+        color: white;
+      }
+      .proof-card h3 {
+        font-size: clamp(2rem, 4vw, 4.6rem);
+        line-height: 0.94;
+        letter-spacing: -0.065em;
+        margin: 15px 0;
+      }
+      .proof-card p {
+        line-height: 1.6;
+        color: inherit;
+        opacity: 0.75;
+        max-width: 540px;
+      }
+      .number {
+        font-size: clamp(4rem, 8vw, 8rem);
+        font-weight: 950;
+        line-height: 0.8;
+        letter-spacing: -0.08em;
+      }
+      .receipt {
+        position: absolute;
+        right: 28px;
+        bottom: -30px;
+        width: 66%;
+        padding: 24px;
+        background: #fffef8;
+        color: var(--ink);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        transform: rotate(-4deg);
+      }
+      .receipt-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #c8c2b8;
+        font-size: 0.78rem;
+      }
+      .receipt-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 900;
+        font-size: 1.15rem;
+        padding-top: 18px;
+      }
+
+      /* CTA */
+      .cta {
+        padding: 0;
+        background: #e8e1d3;
+      }
+      .cta-box {
+        border-radius: 38px 38px 0 0;
+        background: var(--purple);
+        color: white;
+        padding: 100px 60px;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+      }
+      .cta-box:before {
+        content: '';
+        position: absolute;
+        width: 460px;
+        height: 460px;
+        border: 90px solid rgba(216, 255, 62, 0.75);
+        border-radius: 50%;
+        left: -240px;
+        top: -160px;
+      }
+      .cta-box:after {
+        content: '';
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border: 70px solid rgba(255, 93, 46, 0.65);
+        border-radius: 50%;
+        right: -180px;
+        bottom: -190px;
+      }
+      .cta-box > * {
+        position: relative;
+        z-index: 1;
+      }
+      .cta-box h2 {
+        font-size: clamp(3.4rem, 7.8vw, 8rem);
+        line-height: 0.82;
+        letter-spacing: -0.08em;
+        margin: 0 auto 30px;
+        max-width: 1000px;
+      }
+      .cta-box p {
+        font-size: 1.15rem;
+        max-width: 620px;
+        margin: 0 auto 32px;
+        color: #ddd6ff;
+        line-height: 1.6;
+      }
+      .cta-box .primary {
+        font-size: 1.05rem;
+        padding: 17px 25px;
+      }
+
+      footer {
+        background: var(--ink);
+        color: white;
+        padding: 34px 0;
+      }
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #8e8b82;
+        font-size: 0.82rem;
+      }
+      .footer-row .brand {
+        color: white;
+      }
+      .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: 0.75s ease;
+      }
+      .reveal-on-scroll.visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      @media (max-width: 900px) {
+        .navlinks a {
+          display: none;
+        }
+        .hero-grid,
+        .story-grid,
+        .day .section-head,
+        .proof-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-card {
+          min-height: 540px;
+        }
+        .floating-note {
+          right: -8px;
+        }
+        .sticky {
+          position: relative;
+          top: 0;
+        }
+        .modules {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .proof-card.big {
+          grid-row: auto;
+        }
+        .moment {
+          grid-template-columns: 48px 1fr;
+        }
+        .moment .time {
+          display: none;
+        }
+        .moment-dot {
+          width: 48px;
+          height: 48px;
+        }
+        .moment-card {
+          display: block;
+        }
+        .moment-result {
+          margin-top: 18px;
+        }
+      }
+      @media (max-width: 560px) {
+        .wrap {
+          width: min(100% - 24px, 1180px);
+        }
+        section {
+          padding: 85px 0;
+        }
+        .hero {
+          padding-top: 112px;
+        }
+        .nav {
+          height: 60px;
+        }
+        .navcta {
+          padding: 11px 14px;
+        }
+        .hero h1 {
+          font-size: 4rem;
+        }
+        .hero-actions > * {
+          width: 100%;
+        }
+        .hero-card {
+          min-height: 510px;
+          padding: 10px;
+        }
+        .business-demo {
+          padding: 17px;
+        }
+        .demo-question {
+          font-size: 1.65rem;
+        }
+        .floating-note {
+          display: none;
+        }
+        .modules {
+          grid-template-columns: 1fr;
+        }
+        .cta-box {
+          padding: 80px 22px;
+        }
+        .proof-card {
+          padding: 25px;
+        }
+        .footer-row {
+          align-items: flex-start;
+          gap: 20px;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <a class="brand" href="#">spar<span>x</span></a>
+      <div class="navlinks">
+        <a href="#why">Why Sparx</a>
+        <a href="#platform">Platform</a>
+        <a href="#day">A day on Sparx</a>
+        <a class="navcta" href="#start">Start free</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <div class="grain"></div>
+        <div class="wrap hero-grid">
+          <div class="hero-copy reveal-on-scroll">
+            <span class="eyebrow">The business OS for people who make things happen</span>
+            <h1>Run the business.<em>Not the software.</em></h1>
+            <p>
+              You started a business to make, sell, serve, teach, grow—or finally work for yourself.
+              Sparx brings your website, customers, sales, email, scheduling and AI into one place
+              that grows with you.
+            </p>
+            <div class="hero-actions">
+              <a class="primary" href="#start">Build my business free</a>
+              <a class="secondary" href="#day">See a day on Sparx ↓</a>
+            </div>
+            <div class="micro">
+              No credit card · Live in minutes · Start with only what you need
+            </div>
+          </div>
+
+          <div class="hero-card reveal-on-scroll">
+            <div class="windowbar">
+              <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+              <span class="window-title">Maya's Strawberry Stand · Sparx Assistant</span>
+            </div>
+            <div class="business-demo">
+              <div class="demo-top">
+                <h3>Good morning, Maya.</h3>
+                <span class="status">Business online</span>
+              </div>
+              <div class="demo-question">“What needs my attention today?”</div>
+              <div class="reply">
+                <strong>Three things. I’ve already handled two.</strong>
+                Your Saturday inventory is running low, a restaurant asked about wholesale pricing,
+                and yesterday’s abandoned carts are ready for a follow-up.
+                <div class="action-row">
+                  <button class="action">Review inventory<span>12 flats remaining</span></button>
+                  <button class="action">
+                    Open wholesale lead<span>$840 potential order</span>
+                  </button>
+                </div>
+              </div>
+              <div class="activity">
+                <div class="activity-label">Handled by Sparx</div>
+                <div class="activity-item">
+                  <span class="activity-icon">✓</span> Sent pickup reminders to 18 customers
+                </div>
+                <div class="activity-item">
+                  <span class="activity-icon">✓</span> Published today’s availability to your site
+                </div>
+              </div>
+            </div>
+            <div class="floating-note">
+              <span>This week</span><b>+27%</b><span>online orders</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="story" id="why">
+        <div class="wrap story-grid">
+          <div class="reveal-on-scroll sticky">
+            <span class="eyebrow">The part nobody tells you</span>
+            <h2>Your business grew. So did the mess.</h2>
+          </div>
+          <div class="pain-list">
+            <article class="pain reveal-on-scroll">
+              <span class="pain-num">01</span>
+              <div>
+                <h3>Your customer lives in one app. Their order lives in another.</h3>
+                <p>
+                  Every disconnected tool creates another place to search, another bill to pay, and
+                  another chance for something important to fall through.
+                </p>
+              </div>
+            </article>
+            <article class="pain reveal-on-scroll">
+              <span class="pain-num">02</span>
+              <div>
+                <h3>“Simple” software made you the systems administrator.</h3>
+                <p>
+                  You spend your evening syncing lists, fixing automations, updating inventory, and
+                  trying to understand which report is telling the truth.
+                </p>
+              </div>
+            </article>
+            <article class="pain reveal-on-scroll">
+              <span class="pain-num">03</span>
+              <div>
+                <h3>Growth means buying another tool—and another problem.</h3>
+                <p>
+                  Your business should become more capable as it grows, not more fragmented. Sparx
+                  replaces the stack with one connected operating system.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal" id="platform">
+        <div class="wrap">
+          <header class="section-head reveal-on-scroll">
+            <span class="eyebrow">One connected system</span>
+            <h2>Start with a spark. <span>Switch on the rest when you’re ready.</span></h2>
+          </header>
+          <div class="switchboard reveal-on-scroll">
+            <div class="switch-top">
+              <strong>Your Sparx workspace</strong><small>Click a module to switch it on</small>
+            </div>
+            <div class="modules">
+              <button class="module active" style="--module: var(--acid)">
+                <span class="toggle"></span><span class="module-icon">B</span>
+                <div>
+                  <h3>Builder</h3>
+                  <p>Your site, pages and brand.</p>
+                </div>
+                <span class="module-cost">$10/mo</span>
+              </button>
+              <button class="module active" style="--module: var(--orange)">
+                <span class="toggle"></span><span class="module-icon">C</span>
+                <div>
+                  <h3>Commerce</h3>
+                  <p>Products, checkout and orders.</p>
+                </div>
+                <span class="module-cost">$49/mo</span>
+              </button>
+              <button class="module active" style="--module: var(--blue)">
+                <span class="toggle"></span><span class="module-icon">R</span>
+                <div>
+                  <h3>CRM</h3>
+                  <p>Every customer, one record.</p>
+                </div>
+                <span class="module-cost">$49/mo</span>
+              </button>
+              <button class="module" style="--module: #ffcf52">
+                <span class="toggle"></span><span class="module-icon">E</span>
+                <div>
+                  <h3>Email</h3>
+                  <p>Campaigns and automations.</p>
+                </div>
+                <span class="module-cost">$29/mo</span>
+              </button>
+              <button class="module" style="--module: #ff8cba">
+                <span class="toggle"></span><span class="module-icon">S</span>
+                <div>
+                  <h3>Scheduling</h3>
+                  <p>Appointments and bookings.</p>
+                </div>
+                <span class="module-cost">$29/mo</span>
+              </button>
+              <button class="module" style="--module: #81e6d9">
+                <span class="toggle"></span><span class="module-icon">I</span>
+                <div>
+                  <h3>Inventory</h3>
+                  <p>Stock across every location.</p>
+                </div>
+                <span class="module-cost">Included</span>
+              </button>
+              <button class="module" style="--module: #c8a9ff">
+                <span class="toggle"></span><span class="module-icon">A</span>
+                <div>
+                  <h3>AI / MCP</h3>
+                  <p>Your AI can operate the business.</p>
+                </div>
+                <span class="module-cost">$49/mo</span>
+              </button>
+              <button class="module" style="--module: #b6d4ff">
+                <span class="toggle"></span><span class="module-icon">+</span>
+                <div>
+                  <h3>More modules</h3>
+                  <p>B2B, dropship, CMS and more.</p>
+                </div>
+                <span class="module-cost">When needed</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="day" id="day">
+        <div class="wrap">
+          <header class="section-head reveal-on-scroll">
+            <div>
+              <span class="eyebrow">Not another feature list</span>
+              <h2>One ordinary day. One extraordinary advantage.</h2>
+            </div>
+            <p>
+              Sparx is most valuable in the moments that used to steal your attention. Here is what
+              it feels like when your whole business shares one brain.
+            </p>
+          </header>
+          <div class="timeline">
+            <article class="moment reveal-on-scroll" style="--moment: var(--acid)">
+              <div class="moment-dot">01</div>
+              <div class="time">7:12 AM</div>
+              <div class="moment-card">
+                <div>
+                  <h3>A customer orders before you open.</h3>
+                  <p>
+                    Inventory updates, payment clears, the customer record updates, and a pickup
+                    message is scheduled. No integration required.
+                  </p>
+                </div>
+                <div class="moment-result">Order handled ✓</div>
+              </div>
+            </article>
+            <article class="moment reveal-on-scroll" style="--moment: var(--orange)">
+              <div class="moment-dot">02</div>
+              <div class="time">10:40 AM</div>
+              <div class="moment-card">
+                <div>
+                  <h3>A wholesale buyer asks for pricing.</h3>
+                  <p>
+                    Sparx recognizes the company, applies their price list and net terms, and
+                    prepares a quote from the same product catalog.
+                  </p>
+                </div>
+                <div class="moment-result">Quote ready ✓</div>
+              </div>
+            </article>
+            <article class="moment reveal-on-scroll" style="--moment: #8d68ff">
+              <div class="moment-dot">03</div>
+              <div class="time">2:05 PM</div>
+              <div class="moment-card">
+                <div>
+                  <h3>You ask your AI what is changing.</h3>
+                  <p>
+                    Because Sparx exposes live business capabilities through MCP, your assistant can
+                    answer with real orders, customers and inventory—not copied data.
+                  </p>
+                </div>
+                <div class="moment-result">Answer grounded ✓</div>
+              </div>
+            </article>
+            <article class="moment reveal-on-scroll" style="--moment: #56b4ff">
+              <div class="moment-dot">04</div>
+              <div class="time">6:18 PM</div>
+              <div class="moment-card">
+                <div>
+                  <h3>You go home without doing software chores.</h3>
+                  <p>
+                    Your reports already agree. Your customer list is current. Tomorrow’s reminders
+                    are queued. The business closes; the system keeps working.
+                  </p>
+                </div>
+                <div class="moment-result">Evening reclaimed ✓</div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="proof">
+        <div class="wrap">
+          <header class="section-head reveal-on-scroll">
+            <span class="eyebrow">The business case</span>
+            <h2>Less software. More company.</h2>
+          </header>
+          <div class="proof-grid">
+            <article class="proof-card big reveal-on-scroll">
+              <span class="eyebrow">The cost of disconnected tools</span>
+              <h3>Stop paying for the seams.</h3>
+              <p>
+                Sparx puts the website, commerce, customer data, marketing and operations on one
+                shared foundation—so you pay for capability instead of integrations.
+              </p>
+              <div class="receipt">
+                <div class="receipt-line"><span>Online store</span><b>$399</b></div>
+                <div class="receipt-line"><span>CRM + marketing</span><b>$1,600</b></div>
+                <div class="receipt-line"><span>Email platform</span><b>$350</b></div>
+                <div class="receipt-line"><span>CMS + automation</span><b>$420</b></div>
+                <div class="receipt-total">
+                  <span>Your software stack</span><span>$2,769/mo</span>
+                </div>
+              </div>
+            </article>
+            <article class="proof-card reveal-on-scroll">
+              <span class="number">5</span>
+              <h3>minutes to begin</h3>
+              <p>
+                Launch a site, choose the next module, and build forward without a platform
+                migration later.
+              </p>
+            </article>
+            <article class="proof-card reveal-on-scroll">
+              <span class="number">1</span>
+              <h3>honest data layer</h3>
+              <p>
+                One customer, product and activity record powers every active part of your business.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" id="start">
+        <div class="wrap">
+          <div class="cta-box reveal-on-scroll">
+            <h2>Your business already has the spark.</h2>
+            <p>
+              Give it an operating system built to keep up. Start with the website. Add commerce,
+              customers, email, scheduling and AI when the business asks for them.
+            </p>
+            <a class="primary" href="https://app.sparx.works">Build on Sparx free →</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap footer-row">
+        <div class="brand">spar<span>x</span></div>
+        <div>One platform. One bill. One business that finally feels connected.</div>
+        <div>Concept landing page · 2026</div>
+      </div>
+    </footer>
+
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          });
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+
+      document.querySelectorAll('.module').forEach((module) => {
+        module.addEventListener('click', () => module.classList.toggle('active'));
+      });
+    </script>
+  </body>
+</html>

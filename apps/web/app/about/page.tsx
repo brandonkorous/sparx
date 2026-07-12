@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -13,15 +11,11 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Company"
-        title="About WizeWorks"
-        description="WizeWorks is a Visalia, California software studio founded by Brandon Korous. sparx is our flagship content and commerce platform; kanNINJA (project management) and HelpNinja (AI support) are also ours. wize.works for the full portfolio."
-        contact="hello@sparx.works"
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Company"
+      title="About WizeWorks"
+      description="WizeWorks is a Visalia, California software studio founded by Brandon Korous. sparx is our flagship content and commerce platform; kanNINJA (project management) and HelpNinja (AI support) are also ours. wize.works for the full portfolio."
+      contact="hello@sparx.works"
+    />
   );
 }

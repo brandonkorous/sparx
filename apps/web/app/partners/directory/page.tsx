@@ -6,8 +6,6 @@
 
 import type { Metadata } from 'next';
 import { Button, Input } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { SectionHeader } from '@/components/marketing/primitives';
 import { fetchPartners } from '@/lib/partners';
 import { PartnerDirectoryCard } from './_components/partner-card';
@@ -47,105 +45,99 @@ export default async function PartnerDirectoryPage({
   const filtered = Object.keys(current).length > 0;
 
   return (
-    <>
-      <Nav />
-      <section
-        style={{
-          paddingTop: 'var(--section-py-lg)',
-          paddingBottom: 'var(--section-py-lg)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <a
-                href="/partners"
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  textDecoration: 'none',
-                }}
-              >
-                ← Partner program
-              </a>
-              <SectionHeader
-                accent="var(--color-primary)"
-                headlineSize={56}
-                headline="Find a sparx partner"
-                lede="Consultants, agencies, and developers who build and manage businesses on sparx. Certified partners first."
-              />
-              <form
-                method="get"
-                action="/partners/directory"
-                className="mkt-cluster"
-                style={{ gap: '8px' }}
-              >
-                {current.tier ? <input type="hidden" name="tier" value={current.tier} /> : null}
-                {current.specialty ? (
-                  <input type="hidden" name="specialty" value={current.specialty} />
-                ) : null}
-                {current.remote ? (
-                  <input type="hidden" name="remote" value={current.remote} />
-                ) : null}
-                <Input
-                  type="search"
-                  name="q"
-                  defaultValue={current.q ?? ''}
-                  placeholder="Search partners…"
-                  style={{ maxWidth: '260px' }}
-                />
-                <Input
-                  type="text"
-                  name="location"
-                  defaultValue={current.location ?? ''}
-                  placeholder="City or state"
-                  style={{ maxWidth: '200px' }}
-                />
-                <Button type="submit" variant="outline">
-                  Search
-                </Button>
-              </form>
-            </div>
-
-            <PartnerFacetBar facets={page.facets} current={current} />
-
-            <div
+    <section
+      style={{
+        paddingTop: 'var(--section-py-lg)',
+        paddingBottom: 'var(--section-py-lg)',
+        paddingLeft: 'var(--gutter-page)',
+        paddingRight: 'var(--gutter-page)',
+        backgroundColor: 'var(--color-base-200)',
+      }}
+    >
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <a
+              href="/partners"
               style={{
-                borderTop: '1px solid var(--color-base-300)',
-                paddingTop: '20px',
                 fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+                fontSize: '13px',
+                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
+                textDecoration: 'none',
               }}
             >
-              {showing > 0
-                ? `${showing}${page.next_cursor ? '+' : ''} partner${showing === 1 ? '' : 's'}`
-                : 'No partners yet'}
-            </div>
-
-            {showing > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div className="mkt-grid-3-2-1">
-                  {page.items.map((p) => (
-                    <PartnerDirectoryCard key={p.id} partner={p} />
-                  ))}
-                </div>
-                {page.next_cursor ? (
-                  <LoadMorePartners query={current} initialCursor={page.next_cursor} />
-                ) : null}
-              </div>
-            ) : (
-              <EmptyState filtered={filtered} />
-            )}
+              ← Partner program
+            </a>
+            <SectionHeader
+              accent="var(--color-primary)"
+              headlineSize={56}
+              headline="Find a sparx partner"
+              lede="Consultants, agencies, and developers who build and manage businesses on sparx. Certified partners first."
+            />
+            <form
+              method="get"
+              action="/partners/directory"
+              className="mkt-cluster"
+              style={{ gap: '8px' }}
+            >
+              {current.tier ? <input type="hidden" name="tier" value={current.tier} /> : null}
+              {current.specialty ? (
+                <input type="hidden" name="specialty" value={current.specialty} />
+              ) : null}
+              {current.remote ? <input type="hidden" name="remote" value={current.remote} /> : null}
+              <Input
+                type="search"
+                name="q"
+                defaultValue={current.q ?? ''}
+                placeholder="Search partners…"
+                style={{ maxWidth: '260px' }}
+              />
+              <Input
+                type="text"
+                name="location"
+                defaultValue={current.location ?? ''}
+                placeholder="City or state"
+                style={{ maxWidth: '200px' }}
+              />
+              <Button type="submit" variant="outline">
+                Search
+              </Button>
+            </form>
           </div>
+
+          <PartnerFacetBar facets={page.facets} current={current} />
+
+          <div
+            style={{
+              borderTop: '1px solid var(--color-base-300)',
+              paddingTop: '20px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '14px',
+              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+            }}
+          >
+            {showing > 0
+              ? `${showing}${page.next_cursor ? '+' : ''} partner${showing === 1 ? '' : 's'}`
+              : 'No partners yet'}
+          </div>
+
+          {showing > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className="mkt-grid-3-2-1">
+                {page.items.map((p) => (
+                  <PartnerDirectoryCard key={p.id} partner={p} />
+                ))}
+              </div>
+              {page.next_cursor ? (
+                <LoadMorePartners query={current} initialCursor={page.next_cursor} />
+              ) : null}
+            </div>
+          ) : (
+            <EmptyState filtered={filtered} />
+          )}
         </div>
-      </section>
-      <Footer />
-    </>
+      </div>
+    </section>
   );
 }
 

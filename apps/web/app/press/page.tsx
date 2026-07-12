@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
@@ -12,15 +10,11 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Company"
-        title="Press"
-        description="Press inquiries, founder bio, brand assets, hi-res screenshots, and the latest sparx announcements. We respond within one business day."
-        contact="press@sparx.works"
-      />
-      <Footer />
-    </>
+    <ComingSoon
+      eyebrow="Company"
+      title="Press"
+      description="Press inquiries, founder bio, brand assets, hi-res screenshots, and the latest sparx announcements. We respond within one business day."
+      contact="press@sparx.works"
+    />
   );
 }

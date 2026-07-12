@@ -1,9 +1,9 @@
 /**
  * Marketing-side layout for sparx's OWN platform legal documents (docs/42 §6)
  * — Terms, Privacy, DPA, Acceptable Use. Replaces the per-page ComingSoon
- * stub with a real, versioned, indexable page: Nav + an editorial header
- * (eyebrow, title, version + effective date) + a readable prose column +
- * Footer.
+ * stub with a real, versioned, indexable page: an editorial header (eyebrow,
+ * title, version + effective date) + a readable prose column. Nav/Footer come
+ * from the root layout.
  *
  * Content is authored per page from the small helpers exported here
  * (`LegalSection` / `LegalP` / `LegalList` / `LegalSubhead`) so every doc
@@ -11,8 +11,6 @@
  * styles reference CSS variables from packages/ui/src/tokens.css.
  */
 import type { ReactNode } from 'react';
-import { Nav } from './nav';
-import { Footer } from './footer';
 import { Container, Eyebrow, Display, Spark } from './primitives';
 
 const PROSE_MAX = '760px';
@@ -37,7 +35,6 @@ export function LegalDoc({
 }) {
   return (
     <>
-      <Nav />
       <section
         style={{
           paddingTop: 'clamp(96px, 11vw, 150px)',
@@ -102,7 +99,6 @@ export function LegalDoc({
           </div>
         </Container>
       </section>
-      <Footer />
     </>
   );
 }

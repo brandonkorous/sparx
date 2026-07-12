@@ -9,8 +9,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Badge, Button } from '@wizeworks/silicaui-react';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { Display, Spark } from '@/components/marketing/primitives';
 import { TIER_META } from '@/lib/partners';
 import {
@@ -113,7 +111,6 @@ export default async function BootcampDetailPage({
 
   return (
     <>
-      <Nav />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd(b)) }}
@@ -213,8 +210,6 @@ export default async function BootcampDetailPage({
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }

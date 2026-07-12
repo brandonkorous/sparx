@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { PlatformPage } from '@/components/marketing/platform-page';
 
 export const metadata: Metadata = {
@@ -11,11 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Platform() {
-  return (
-    <>
-      <Nav />
-      <PlatformPage />
-      <Footer />
-    </>
-  );
+  return <PlatformPage />;
 }

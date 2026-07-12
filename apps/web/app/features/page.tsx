@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
 import { FeaturesPage } from '@/components/marketing/features-page';
 import { capabilityCounts } from '@/lib/capabilities';
 
@@ -43,11 +41,5 @@ export const metadata: Metadata = {
 };
 
 export default function Features() {
-  return (
-    <>
-      <Nav />
-      <FeaturesPage />
-      <Footer />
-    </>
-  );
+  return <FeaturesPage />;
 }
