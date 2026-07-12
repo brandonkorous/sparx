@@ -820,3 +820,96 @@ module "domain_worker_cloudrun" {
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }
+
+# ─── dropship-worker ───────────────────────────────────────────────────────
+#
+# Catalog sync + order routing for connected dropship suppliers (docs/14).
+# Fans in three topics: dropship.supplier.sync_started (pull a supplier's
+# catalog), dropship.order.route (submit an order's dropship line items to
+# their suppliers), and order.placed (the automatic trigger for the latter —
+# see the order.placed comment in main.tf). Publishes sync/order outcomes
+# (dropship.supplier.sync_completed/error, dropship.order.submitted/failed,
+# variant.cost.updated) back to Pub/Sub.
+#
+# Found completely undeployed 2026-07-12 during the pre-launch e2e sweep: the
+# service, its topics, and this module block never existed — the dropship
+# code was fully built but had zero production footprint.
+
+resource "google_service_account" "dropship_worker" {
+  account_id   = "sparx-dropship-worker"
+  display_name = "Sparx dropship-worker (Cloud Run)"
+  description  = "Runtime SA for the dropship-worker Cloud Run service. Reads the DB URL from Secret Manager, syncs supplier catalogs, routes orders to suppliers, and publishes sync/order outcome events."
+}
+
+# pubsub.publisher because this worker PUBLISHES — dropship.supplier.sync_completed
+# / dropship.supplier.error / dropship.order.submitted / dropship.order.failed /
+# variant.cost.updated (markup recompute fan-out on a supplier cost move).
+resource "google_project_iam_member" "dropship_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    "roles/pubsub.publisher",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.dropship_worker.email}"
+}
+
+module "dropship_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "dropship-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/dropship-worker:latest"
+  service_account_email = google_service_account.dropship_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  min_instance_count    = 0
+  max_instance_count    = 10
+  container_concurrency = 4
+  cpu                   = "1"
+  memory                = "512Mi"
+  # A full supplier catalog sync pages through every product with a DB
+  # upsert each — give it real room. Must be >= pubsub_ack_deadline_seconds.
+  timeout_seconds = 300
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "dropship-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+    # Set so downstream events (sync/order outcomes, variant.cost.updated) publish.
+    GCP_PROJECT_ID = var.project_id
+  }
+
+  secrets = [
+    {
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
+    },
+  ]
+
+  # Primary subscription = dropship.supplier.sync_started. order.placed +
+  # dropship.order.route (both route to the same handler — see
+  # services/dropship-worker/src/handler.ts) attach as additional subscriptions.
+  pubsub_topic                 = "dropship.supplier.sync_started"
+  pubsub_subscription_name     = "dropship.supplier.sync_started.dropship-worker-cloudrun"
+  pubsub_ack_deadline_seconds  = 300
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  additional_subscriptions = [
+    { topic = "dropship.order.route", subscription_name = "dropship.order.route.dropship-worker-cloudrun" },
+    { topic = "order.placed", subscription_name = "order.placed.dropship-worker-cloudrun" },
+  ]
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.dropship_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}

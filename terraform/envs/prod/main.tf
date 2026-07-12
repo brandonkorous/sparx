@@ -119,6 +119,19 @@ module "pubsub" {
     "order.delivered"        = []
     "order.refunded"         = []
 
+    # Commerce checkout — the "customer-facing checkout completed" signal,
+    # DISTINCT from the CRM-bridged "order.created" above (that one fires when
+    # the Order row is created; this one fires from checkout-service.complete()
+    # once payment has cleared). dropship-worker consumes it via a Cloud Run
+    # PUSH subscription in serverless.tf to route dropship line items to
+    # suppliers; it's also the automation engine's "Order placed" trigger
+    # (teed to automation.trigger by every publish() call). Found missing here
+    # 2026-07-12 — checkout-service had been publishing to this topic since it
+    # shipped, but the topic itself was never provisioned, so every
+    # order.placed publish (and its automation-trigger tee) silently failed in
+    # production.
+    "order.placed" = []
+
     # CRM customers — the CRM bus (crm.customer.*) bridged to Pub/Sub.
     # commerce-indexer consumes via push subscriptions in serverless.tf.
     "crm.customer.created" = []
@@ -214,6 +227,25 @@ module "pubsub" {
     # Redirects (Phase 4 — edge cache invalidation workers)
     "redirect.added"   = []
     "redirect.removed" = []
+
+    # Dropship (docs/14). dropship-worker (Cloud Run) consumes
+    # dropship.supplier.sync_started + dropship.order.route + order.placed via
+    # its push subscriptions in serverless.tf — topic-only here (empty list =
+    # no idle pull subscription). The remaining dropship.* topics are ones the
+    # worker PUBLISHES (sync/order-routing outcomes); topic-only until a
+    # notification/analytics consumer subscribes. Found entirely missing
+    # 2026-07-12 — dropship-worker's code was fully built but never deployed,
+    # so no dropship.* topic existed at all; every publish call had been
+    # silently failing.
+    "dropship.supplier.connected"      = []
+    "dropship.supplier.sync_started"   = []
+    "dropship.supplier.sync_completed" = []
+    "dropship.supplier.error"          = []
+    "dropship.order.route"             = []
+    "dropship.order.submitted"         = []
+    "dropship.order.shipped"           = []
+    "dropship.order.delivered"         = []
+    "dropship.order.failed"            = []
   }
 
   # Per-subscription tuning. Anything not listed here uses the module
