@@ -32,7 +32,7 @@ import {
   toBuilderTenantContext,
 } from '../../../lib/builder-context.js';
 import { requireTenantProperty } from '../../../lib/property.js';
-import { emailDataResolver } from '../../../lib/email-data.js';
+import { emailDataResolver, silicaEmailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
@@ -124,6 +124,27 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     return ok(email);
   });
 
+  // ── Silica-authored email (docs/120) ─────────────────────────────────────────
+  // The silica `<EmailBuilder>` persistence seam: PUT the whole `EmailDocument` on
+  // every debounced edit; POST to snapshot draft → published. Body validated by the
+  // service (SyncSilicaEmailInput). Tenant-scoped — an email is tenant-wide; only
+  // the per-site fork (`/site/...`) is property-aware.
+  app.put('/v1/builder/emails/:id/silica', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.syncSilica(toBuilderTenantContext(request), id, request.body);
+    return ok(email);
+  });
+
+  app.post('/v1/builder/emails/:id/silica/publish', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.publishSilica(toBuilderTenantContext(request), id);
+    return ok(email);
+  });
+
   // Render the DRAFT body to inlined HTML + plain text for the editor preview.
   // `emailService.get` returns the draft tree (and throws a mapped 404 if the
   // email doesn't exist); builderEmailService resolves the brand + renders. We use
@@ -139,9 +160,15 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const email = await emailService.get(ctx, id);
     const preview = await builderEmailService.renderPreview(
       ctx,
-      { tree: email.tree, subject: email.subject, preheader: email.preheader },
+      {
+        tree: email.tree,
+        subject: email.subject,
+        preheader: email.preheader,
+        silicaDoc: email.silicaDoc,
+      },
       emailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId
+      ctx.propertyId,
+      silicaEmailDataResolver(ctx, ctx.propertyId)
     );
     return ok(preview);
   });
@@ -160,10 +187,16 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const email = await emailService.get(ctx, id);
     const prepared = await builderEmailService.prepareTestSend(
       ctx,
-      { tree: email.tree, subject: email.subject, preheader: email.preheader },
+      {
+        tree: email.tree,
+        subject: email.subject,
+        preheader: email.preheader,
+        silicaDoc: email.silicaDoc,
+      },
       request.body,
       emailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId
+      ctx.propertyId,
+      silicaEmailDataResolver(ctx, ctx.propertyId)
     );
     await publish(request.log, 'email.send', ctx.tenantId, null, {
       kind: 'raw',

@@ -50,6 +50,27 @@ export interface SilicaResolverOptions {
   format?: (value: unknown, binding: NodeBinding) => unknown;
   /** Optional "bound" chip label for the inspector, keyed by binding. */
   label?: (binding: NodeBinding) => string | undefined;
+  /** Drop a bound node whose value resolves to nothing, via silica's `visible:false`
+   *  (the engine's one conditional-visibility primitive — no expression language).
+   *
+   *  This is the EMAIL path's conditional (docs/120): it's what replaces sparx's old
+   *  `conditional_block` node, so "Shipping to: {{…}}" / "Reason: {{…}}" / "Your credit
+   *  line is {{…}}" appear only when that data exists — a bound section with no `attr`
+   *  fills no field, so it acts as a pure show/hide wrapper.
+   *
+   *  OPT-IN, and off by default, because the live SITE builder relies on the opposite:
+   *  a bound node whose value is empty keeps its authored placeholder (a composite's
+   *  fallback tile / copy) rather than vanishing from the page. Turning this on
+   *  globally would silently delete content from published sites. */
+  hideWhenEmpty?: boolean;
+}
+
+/** "Resolved to nothing" for `hideWhenEmpty`. Deliberately narrow: `0` and `'0'` are
+ *  real values a merchant may want shown (a $0 balance, a zero count), so only
+ *  nullish / empty-string / explicit-false / empty-array count as absent. */
+function isEmptyValue(value: unknown): boolean {
+  if (value == null || value === '' || value === false) return true;
+  return Array.isArray(value) && value.length === 0;
 }
 
 /** The two required `ResolveHost` primitives, ready to spread into a `BuilderHost`
@@ -94,7 +115,7 @@ export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unkno
 
 /** Build a synchronous sparx resolver over a pre-loaded data root. */
 export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolver {
-  const { root, format, label } = opts;
+  const { root, format, label, hideWhenEmpty } = opts;
   const scopeOf = (s: DataScope): Scope => ({ root, item: s.item, index: s.index });
   const bindingOf = (ref: string, scope: DataScope): NodeBinding =>
     scopeRelative(decodeBindingRef(ref), scope.item !== undefined);
@@ -105,7 +126,11 @@ export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolve
       const raw = resolveSparxBinding(scopeOf(scope), binding);
       const value = format ? format(raw, binding) : raw;
       const chip = label?.(binding);
-      return chip === undefined ? { value } : { value, label: chip };
+      return {
+        value,
+        ...(chip === undefined ? {} : { label: chip }),
+        ...(hideWhenEmpty && isEmptyValue(value) ? { visible: false } : {}),
+      };
     },
 
     resolveCollection(ref: string, scope: DataScope): readonly unknown[] {

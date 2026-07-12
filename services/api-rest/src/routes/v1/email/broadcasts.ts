@@ -17,7 +17,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
-import { emailDataResolver } from '../../../lib/email-data.js';
+import { emailDataResolver, silicaEmailDataResolver } from '../../../lib/email-data.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -46,9 +46,16 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireEmailModule(request);
     const q = EstimateQuery.parse(request.query);
-    return ok(
-      await broadcastService.estimateRecipients(toEmailContext(request), q.segment_id ?? null)
+    const ctx = toEmailContext(request);
+    // Estimate against the SAME site the send will target (docs/49 Phase 7), so the
+    // count the composer shows is the audience the broadcast actually reaches — a
+    // tenant-wide count here would promise Site B's customers to a Site A campaign.
+    const requested = request.headers['x-sparx-property-id'];
+    const propertyId = await resolvePropertyId(
+      ctx.tenantId,
+      typeof requested === 'string' ? requested : null
     );
+    return ok(await broadcastService.estimateRecipients(ctx, q.segment_id ?? null, propertyId));
   });
 
   app.post('/v1/email/broadcasts', async (request, reply) => {
@@ -97,7 +104,9 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     // The broadcast body is a published Builder email (docs/52); emailDataResolver
     // resolves its bound sources — once for a per-send body, per recipient (at
     // dispatch) for a personalized one.
-    return ok(await broadcastService.sendNow(ctx, id, emailDataResolver(ctx)));
+    return ok(
+      await broadcastService.sendNow(ctx, id, emailDataResolver(ctx), silicaEmailDataResolver(ctx))
+    );
   });
 
   app.post('/v1/email/broadcasts/:id/schedule', async (request) => {
@@ -106,7 +115,15 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    return ok(await broadcastService.schedule(ctx, id, request.body, emailDataResolver(ctx)));
+    return ok(
+      await broadcastService.schedule(
+        ctx,
+        id,
+        request.body,
+        emailDataResolver(ctx),
+        silicaEmailDataResolver(ctx)
+      )
+    );
   });
 
   app.post('/v1/email/broadcasts/:id/cancel', async (request) => {

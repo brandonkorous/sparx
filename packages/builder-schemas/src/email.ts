@@ -11,6 +11,7 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
+import { SilicaEmailDocumentInput, type SilicaEmailDocument } from './email-silica';
 
 /** The shape the API returns. `tree` is always the DRAFT tree (what the editor
  *  edits); `published`/`publishedAt` describe the last snapshot. */
@@ -20,6 +21,11 @@ export interface BuilderEmailDto {
   subject: string;
   preheader: string | null;
   tree: BuilderNode;
+  /** The silica-native DRAFT document (docs/120) — what the silica `<EmailBuilder>`
+   *  mounts and edits. Null on a row not yet authored on silica; the editor then
+   *  seeds an empty document. The legacy `tree` above is the parallel-run fallback
+   *  (it still SENDS until a silica document is published). */
+  silicaDoc: SilicaEmailDocument | null;
   published: boolean;
   publishedAt: string | null;
   position: number;
@@ -43,6 +49,11 @@ export interface PublishedEmailDto {
   subject: string;
   preheader: string | null;
   tree: BuilderNode;
+  /** The PUBLISHED silica document (docs/120), when this email has been authored
+   *  and published on silica. The send path renders THIS via `renderSilicaEmail`
+   *  when present, falling back to `tree` via `renderEmailTree` when null — the
+   *  parallel-run branch that never breaks an un-migrated email. */
+  silicaDoc: SilicaEmailDocument | null;
   publishedAt: string | null;
 }
 
@@ -77,3 +88,11 @@ export const ReorderEmailsInput = z.object({
   orderedIds: z.array(z.string().uuid()).min(1),
 });
 export type ReorderEmailsInput = z.infer<typeof ReorderEmailsInput>;
+
+/** Persist a silica-authored email (docs/120) — the `<EmailBuilder>` `onChange`
+ *  payload. The document carries its own subject/preheader (silica owns them now),
+ *  which the service mirrors onto the row so the catalog list + send read them. */
+export const SyncSilicaEmailInput = z.object({
+  doc: SilicaEmailDocumentInput,
+});
+export type SyncSilicaEmailInput = z.infer<typeof SyncSilicaEmailInput>;

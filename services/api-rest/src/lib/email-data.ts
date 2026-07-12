@@ -21,7 +21,13 @@
 
 import { withTenant } from '@sparx/db';
 import { discountService, productService } from '@sparx/commerce';
-import { collectEmailSourceKeys, type BuilderNode, type DataSources } from '@sparx/builder-schemas';
+import {
+  collectEmailSourceKeys,
+  collectSilicaEmailSourceKeys,
+  type BuilderNode,
+  type DataSources,
+  type SilicaEmailDocument,
+} from '@sparx/builder-schemas';
 import type { ServiceContext } from '@sparx/email-platform';
 
 import { resolveActivePropertyName } from './property.js';
@@ -793,19 +799,16 @@ async function resolveCmsCollection(
 
 // ── Entry point ─────────────────────────────────────────────────────────────
 
-/** Resolve only the sources an email tree references — both node bindings and
- *  `{{token}}` merge paths (`collectEmailSourceKeys`), plus any source named only
- *  in `extraStrings` (the subject / preheader) — into the nested `DataSources` the
- *  renderer reads. `ref` carries the send's entity ids for the entity-scoped
- *  sources; absent → per-recipient sources resolve empty (render-once / preview). */
-export async function resolveEmailData(
+/** Load the named sources into the nested `DataSources` the renderers read. The
+ *  shared body behind BOTH the sparx-tree resolver and the silica-document resolver
+ *  (docs/120) — they differ only in how they COLLECT the source keys, never in how
+ *  the data is fetched, so a silica email and a legacy tree see identical data. */
+async function loadEmailSources(
   ctx: ServiceContext,
-  tree: BuilderNode,
+  keys: Set<string>,
   ref?: EmailRecipientRef,
-  extraStrings: string[] = [],
   propertyId?: string | null
 ): Promise<DataSources> {
-  const keys = collectEmailSourceKeys(tree, extraStrings);
   if (keys.size === 0) return {};
 
   // Any URL-bearing or per-tenant source needs the slug + tenant identity.
@@ -890,6 +893,35 @@ export async function resolveEmailData(
   return out;
 }
 
+/** Resolve only the sources an email tree references — both node bindings and
+ *  `{{token}}` merge paths (`collectEmailSourceKeys`), plus any source named only
+ *  in `extraStrings` (the subject / preheader). `ref` carries the send's entity ids
+ *  for the entity-scoped sources; absent → per-recipient sources resolve empty
+ *  (render-once / preview). */
+export async function resolveEmailData(
+  ctx: ServiceContext,
+  tree: BuilderNode,
+  ref?: EmailRecipientRef,
+  extraStrings: string[] = [],
+  propertyId?: string | null
+): Promise<DataSources> {
+  return loadEmailSources(ctx, collectEmailSourceKeys(tree, extraStrings), ref, propertyId);
+}
+
+/** The silica twin (docs/120): resolve only the sources a silica `EmailDocument`
+ *  references — its `data` binding markers plus the `{{token}}` paths in its copy
+ *  (`collectSilicaEmailSourceKeys`). Same loader, same data; only the collection
+ *  differs, because a silica document expresses its bindings differently. */
+export async function resolveSilicaEmailData(
+  ctx: ServiceContext,
+  doc: SilicaEmailDocument,
+  ref?: EmailRecipientRef,
+  extraStrings: string[] = [],
+  propertyId?: string | null
+): Promise<DataSources> {
+  return loadEmailSources(ctx, collectSilicaEmailSourceKeys(doc, extraStrings), ref, propertyId);
+}
+
 /** Overlay an automation's flat trigger-time snapshot (`{ "invoice.number": … }`)
  *  as a FALLBACK onto the live-resolved nested data: a scalar token whose live
  *  value is missing/empty falls back to the value captured when the automation
@@ -933,4 +965,16 @@ export function emailDataResolver(ctx: ServiceContext, boundPropertyId?: string 
     propertyId?: string | null
   ): Promise<DataSources> =>
     resolveEmailData(ctx, tree, ref, undefined, propertyId ?? boundPropertyId);
+}
+
+/** The silica twin of `emailDataResolver` (docs/120) — the callback the broadcast
+ *  path, the dispatch tick, and the editor preview inject so @sparx/email-platform
+ *  resolves a silica document's data without a @sparx/commerce dependency. */
+export function silicaEmailDataResolver(ctx: ServiceContext, boundPropertyId?: string | null) {
+  return (
+    doc: SilicaEmailDocument,
+    ref?: EmailRecipientRef,
+    propertyId?: string | null
+  ): Promise<DataSources> =>
+    resolveSilicaEmailData(ctx, doc, ref, undefined, propertyId ?? boundPropertyId);
 }

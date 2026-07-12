@@ -26,6 +26,8 @@
 // automation module published.
 
 import { seedNode, type BoxStyle, type LayoutStyle } from './box-to-class';
+import { silicaDefaultEmail } from './default-emails-silica';
+import type { SilicaEmailDocument } from './email-silica';
 import type { BuilderNode } from './node';
 
 // Authored + deterministic ids (a `def-` prefix keeps them clear of the editor's
@@ -427,14 +429,20 @@ export interface DefaultEmailTemplate {
   sources: string[];
   /** Entity ids the trigger event must supply. */
   refs: string[];
+  /** The LEGACY sparx body tree. Still provisioned, and still what a send renders for
+   *  a tenant whose row predates the silica document (docs/120 parallel-run). */
   tree: BuilderNode;
+  /** The SILICA body — the same copy on silicaui's email schema, and what a send
+   *  renders once the row carries it. Derived from `key` + `subject` + `preheader`
+   *  below, never authored per entry (silica owns subject/preheader, docs/120 D3). */
+  doc: SilicaEmailDocument;
 }
 
 /** The default email templates (docs/91 §4 + docs/93 §4) — the original 13 plus the
  *  commerce/scheduling emails folded in from coded templates so every tenant→customer
  *  email is Builder-authored. Built once at module load so the node id sequence is
  *  stable across reads (cf. STARTER_PAGES). */
-export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
+const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   {
     key: 'welcome-customer',
     name: 'Welcome',
@@ -700,6 +708,15 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     tree: waitlistOffer(),
   },
 ];
+
+/** Each template with its silica body attached. Derived rather than authored per entry
+ *  so subject/preheader exist in exactly one place — and so `silicaDefaultEmail`'s
+ *  throw fires at MODULE LOAD for any template missing a silica body, rather than
+ *  letting it provision silently as a legacy-only email. */
+export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = TEMPLATES.map((t) => ({
+  ...t,
+  doc: silicaDefaultEmail(t.key, t.subject, t.preheader),
+}));
 
 /** Lookup a default template by key (the provisioning + override-resolution path). */
 export function getDefaultEmailTemplate(key: string): DefaultEmailTemplate | undefined {

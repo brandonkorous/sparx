@@ -12,17 +12,29 @@
 import { withTenant } from '@sparx/db';
 import type { Broadcast, Prisma } from '@sparx/db';
 import { renderEmailTree } from '@sparx/email';
-import { treeIsEmailPersonalized, type BuilderNode } from '@sparx/builder-schemas';
+import { renderSilicaEmail } from '@sparx/email/silica';
+import {
+  silicaEmailIsPersonalized,
+  treeIsEmailPersonalized,
+  type BuilderNode,
+  type SilicaEmailDocument,
+} from '@sparx/builder-schemas';
 
 import { writeAuditLog } from '../audit';
 import { publishEmailEvent } from '../events';
 import { EmailNotFoundError, EmailValidationError, type ServiceContext } from '../errors';
-import { noEmailDataResolver, type ResolveEmailData } from './builder-email-service';
+import {
+  noEmailDataResolver,
+  noSilicaEmailDataResolver,
+  type ResolveEmailData,
+  type ResolveSilicaEmailData,
+} from './builder-email-service';
 import {
   CreateBroadcastInput,
   ScheduleBroadcastInput,
   UpdateBroadcastInput,
 } from '../schemas/broadcasts';
+import { audienceScope } from './audience-scope';
 import { resolveEmailBrand } from './brand-service';
 import { get as getSettings } from './settings-service';
 
@@ -40,15 +52,26 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
 async function loadPublishedBuilderEmail(
   ctx: ServiceContext,
   builderEmailId: string
-): Promise<{ tree: BuilderNode; subject: string; preheader: string | null } | null> {
+): Promise<{
+  tree: BuilderNode;
+  subject: string;
+  preheader: string | null;
+  silicaDoc: SilicaEmailDocument | null;
+} | null> {
   const row = await withTenant(ctx, (tx) =>
     tx.builderEmail.findUnique({ where: { id: builderEmailId } })
   );
-  if (row?.publishedTree == null) return null;
+  if (!row) return null;
+  // Published on EITHER path (docs/120 parallel-run). A silica-authored email has
+  // no `publishedTree`, so `tree` falls back to the draft as an unused placeholder —
+  // the render branches on `silicaDoc` first and never reads it.
+  const silicaDoc = (row.silicaPublishedDocument as SilicaEmailDocument | null) ?? null;
+  if (row.publishedTree == null && silicaDoc == null) return null;
   return {
-    tree: row.publishedTree as unknown as BuilderNode,
+    tree: (row.publishedTree ?? row.draftTree) as unknown as BuilderNode,
     subject: row.subject,
     preheader: row.preheader,
+    silicaDoc,
   };
 }
 
@@ -156,14 +179,19 @@ export async function update(
   );
 }
 
-/** Estimated audience size (segment members). The actual send additionally
- *  removes suppressed addresses. */
+/** Estimated audience size (segment members on this site). The actual send additionally
+ *  removes suppressed addresses. Scoped by the SAME predicate the send uses — an
+ *  estimate that counted the whole tenant would promise an audience the send won't
+ *  mail. */
 export async function estimateRecipients(
   ctx: ServiceContext,
-  segmentId: string | null
+  segmentId: string | null,
+  propertyId: string | null = null
 ): Promise<{ count: number }> {
   if (!segmentId) return { count: 0 };
-  const count = await withTenant(ctx, (tx) => tx.segmentMember.count({ where: { segmentId } }));
+  const count = await withTenant(ctx, (tx) =>
+    tx.segmentMember.count({ where: { segmentId, ...audienceScope(propertyId) } })
+  );
   return { count };
 }
 
@@ -179,7 +207,9 @@ async function expandRecipients(ctx: ServiceContext, broadcast: Broadcast): Prom
   return withTenant(ctx, async (tx) => {
     const [members, suppressions] = await Promise.all([
       tx.segmentMember.findMany({
-        where: { segmentId: broadcast.segmentId! },
+        // Scoped to the broadcast's site — a Segment spans the tenant, its audience
+        // must not (see `audienceScope`).
+        where: { segmentId: broadcast.segmentId!, ...audienceScope(broadcast.propertyId) },
         select: { customerId: true, customer: { select: { email: true, doNotContact: true } } },
       }),
       tx.emailSuppression.findMany({
@@ -205,7 +235,8 @@ async function enqueueAndMark(
   id: string,
   dueAt: Date,
   finalStatus: 'sent' | 'scheduled',
-  resolveEmailData: ResolveEmailData
+  resolveEmailData: ResolveEmailData,
+  resolveSilicaEmailData: ResolveSilicaEmailData
 ): Promise<Broadcast> {
   const broadcast = await get(ctx, id);
   if (broadcast.status !== 'draft' && broadcast.status !== 'scheduled') {
@@ -229,27 +260,51 @@ async function enqueueAndMark(
   //     tick reloads the published tree, resolves THIS recipient's data, renders.
   //   · static / per-send (products/promotion/posts) → resolve once, render once,
   //     fan the same body out as `raw`.
-  const personalized = treeIsEmailPersonalized(doc.tree);
+  // A silica-authored email (docs/120) decides + renders through the silica path;
+  // an un-migrated one keeps the legacy tree path. Both reach the same dispatch
+  // shape, so everything below is unchanged.
+  const silicaDoc = doc.silicaDoc;
+  const personalized = silicaDoc
+    ? silicaEmailIsPersonalized(silicaDoc, [broadcast.subject, broadcast.preheader ?? ''])
+    : treeIsEmailPersonalized(doc.tree);
+
   let body: { subject: string; html: string; text: string } | null = null;
   if (!personalized) {
     // Render once, in THIS broadcast's site brand (docs/49 Phase 7) — the site's
     // brand_override merged over the tenant brand; null property → primary brand.
     // The same propertyId scopes `{{tenant.name}}` so body copy matches the brand.
-    const [data, brand] = await Promise.all([
-      resolveEmailData(doc.tree, undefined, broadcast.propertyId),
-      resolveEmailBrand(ctx, broadcast.propertyId),
-    ]);
-    const rendered = await renderEmailTree(
-      {
-        tree: doc.tree,
-        to: 'broadcast@example.com',
-        subject: broadcast.subject,
-        preheader: broadcast.preheader ?? undefined,
-        data,
-      },
-      { brand: brand ?? undefined }
-    );
-    body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
+    const brand = await resolveEmailBrand(ctx, broadcast.propertyId);
+    if (silicaDoc) {
+      const data = await resolveSilicaEmailData(silicaDoc, undefined, broadcast.propertyId);
+      // `marketing: true` injects the legal footer. The unsubscribe URL is
+      // per-recipient and a render-once body has no recipient, so it falls back to
+      // `#` — exactly what the legacy `unsubscribe_link` node did on this same path.
+      const rendered = renderSilicaEmail(
+        {
+          doc: silicaDoc,
+          to: 'broadcast@example.com',
+          subject: broadcast.subject,
+          preheader: broadcast.preheader,
+          data,
+          marketing: true,
+        },
+        { brand: brand ?? undefined }
+      );
+      body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
+    } else {
+      const data = await resolveEmailData(doc.tree, undefined, broadcast.propertyId);
+      const rendered = await renderEmailTree(
+        {
+          tree: doc.tree,
+          to: 'broadcast@example.com',
+          subject: broadcast.subject,
+          preheader: broadcast.preheader ?? undefined,
+          data,
+        },
+        { brand: brand ?? undefined }
+      );
+      body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
+    }
   }
 
   const campaignTag = `bcast_${id}`;
@@ -263,6 +318,14 @@ async function enqueueAndMark(
             builderEmailId: broadcast.builderEmailId!,
             subject: broadcast.subject,
             ...(broadcast.preheader ? { preheader: broadcast.preheader } : {}),
+            // A silica email (docs/120) has no `unsubscribe_link` node for the
+            // dispatch tick to infer marketing-ness from — the legal footer is
+            // COMPOSED at send instead. So declare the intent explicitly: a
+            // broadcast IS marketing, and the footer + List-Unsubscribe headers
+            // depend on that flag. Legacy trees keep the existing tree-inference
+            // (declaring it for them would newly refuse any broadcast whose author
+            // never placed the node — a behaviour change we don't want here).
+            ...(silicaDoc ? { emailType: 'marketing' as const } : {}),
           },
           from,
           variables,
@@ -332,23 +395,25 @@ async function enqueueAndMark(
 export async function sendNow(
   ctx: ServiceContext,
   id: string,
-  resolveEmailData: ResolveEmailData = noEmailDataResolver
+  resolveEmailData: ResolveEmailData = noEmailDataResolver,
+  resolveSilicaEmailData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<Broadcast> {
-  return enqueueAndMark(ctx, id, new Date(), 'sent', resolveEmailData);
+  return enqueueAndMark(ctx, id, new Date(), 'sent', resolveEmailData, resolveSilicaEmailData);
 }
 
 export async function schedule(
   ctx: ServiceContext,
   id: string,
   rawInput: unknown,
-  resolveEmailData: ResolveEmailData = noEmailDataResolver
+  resolveEmailData: ResolveEmailData = noEmailDataResolver,
+  resolveSilicaEmailData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<Broadcast> {
   const { scheduledAt } = ScheduleBroadcastInput.parse(rawInput);
   const dueAt = new Date(scheduledAt);
   if (dueAt.getTime() <= Date.now()) {
     throw new EmailValidationError('Scheduled time must be in the future.');
   }
-  return enqueueAndMark(ctx, id, dueAt, 'scheduled', resolveEmailData);
+  return enqueueAndMark(ctx, id, dueAt, 'scheduled', resolveEmailData, resolveSilicaEmailData);
 }
 
 export async function cancel(ctx: ServiceContext, id: string): Promise<Broadcast> {

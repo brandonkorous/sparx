@@ -18,6 +18,7 @@ import type {
   BuilderNode,
   BuilderPageDto,
   BuilderPageKind,
+  SilicaEmailDocument,
   SiteSyncInput,
 } from '@sparx/builder-schemas';
 
@@ -287,6 +288,26 @@ export async function deleteEmail(id: string): Promise<ActionResult<{ id: string
 export async function publishEmail(id: string): Promise<ActionResult<BuilderEmailDto>> {
   return run(
     () => api.post<BuilderEmailDto>(`/v1/builder/emails/${id}/publish`),
+    true,
+    '/builder/email'
+  );
+}
+
+/** The silica autosave path (docs/120) — persist the `<EmailBuilder>` document on
+ *  every debounced edit. No revalidate; the editor is authoritative. Mirrors the
+ *  site builder's `syncBuilderSite`. */
+export async function syncSilicaEmail(
+  id: string,
+  doc: SilicaEmailDocument
+): Promise<ActionResult<BuilderEmailDto>> {
+  return run(() => api.put<BuilderEmailDto>(`/v1/builder/emails/${id}/silica`, { doc }), false);
+}
+
+/** Snapshot a silica email's draft → published (docs/120). Revalidates the catalog
+ *  route so the published badge refreshes. */
+export async function publishSilicaEmail(id: string): Promise<ActionResult<BuilderEmailDto>> {
+  return run(
+    () => api.post<BuilderEmailDto>(`/v1/builder/emails/${id}/silica/publish`),
     true,
     '/builder/email'
   );

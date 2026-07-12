@@ -1,8 +1,8 @@
 # 119 — silicaui-builder: The Gap Questions (a generic-first evaluation)
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-10
+**Last Updated:** 2026-07-11
 
 > **Purpose.** [Doc 118](118-builder-silicaui-html-migration.md) chose to **keep sparx's builder engine** and only retarget its rendering — a decision forced by what `@wizeworks/silicaui-builder` (0.8.0) **cannot yet do**. This doc turns those gaps into **open design questions**, framed **generically** — "how should a _domain-blind_ visual builder engine solve X?", with sparx as the _motivating instance_, never the shape of the answer. The goal is to decide whether the better long-term move is **not** re-skinning sparx's editor, but **investing in silicaui-builder** so it becomes the engine any host (sparx first) can adopt — [doc 118's Phase F](118-builder-silicaui-html-migration.md#14-the-destination-adopting-the-engine-later-phase-f-gated), pulled forward.
 >
@@ -327,6 +327,135 @@ undefined (reading 'className')`. **It failed at request time only** — `tsc` a
 
 ---
 
+## Part 10 — The email editor: the same dynamic-content gap, one level deeper (2026-07-11)
+
+Unlike Q1–Q19 (the _site_ editor) and Q20–Q22 (concrete site-render defects), this part
+evaluates the **second editor the family ships** — `@wizeworks/silicaui-builder/email` +
+`/email/react` (the `<EmailBuilder>` shell + the `toEmailHtml` projector). It is a real,
+capable editor, and it is a peer of the site `Builder` in chrome and interaction. But it is
+a **static** editor, and sparx's email builder is a **data-bound** one — so adopting it
+today would strand exactly the emails that matter most, for the same reason doc 118 kept
+sparx's site engine.
+
+**What silica 0.16 ships (verified against the installed tarball, not the changelog).** A
+full embeddable `<EmailBuilder>` (Insert · Canvas · Design rails, Navigator, undo/redo);
+a multi-template `EmailProject` that mirrors the site engine's multi-page `Site` (the
+template switcher = the page switcher); `subject` + `preheader` on the document; a live
+brand `Theme` prop resolved to email-safe hex; `onChange(project)` / `onExport(html)` /
+`onSendTest({to, html, subject})` host seams; saved blocks; and — genuinely valuable — its
+own **Outlook-safe, table-based, fully-inline-styled `toEmailHtml` projector**, a separate
+contract from `silicaui-html`'s class-based `toHtml`. For a **marketing / broadcast** email
+(hand-authored, no per-recipient data), this is production-ready and sparx would happily
+delete its own table renderer to adopt it.
+
+**Why it can't replace sparx's email builder yet.** The email schema is **closed and
+shallow** by design — `body → section → columns/column → 8 leaf content kinds` — and,
+unlike the site schema (which at least _declares_ `bind`/`repeat`/`action` markers and
+lowers them to `data-sui-*`), the email schema has **no data layer at all**. There is no
+`bind`, no `repeat`, no `ref` anywhere in `EmailNode`. The _only_ dynamic path is the
+`HtmlNode` raw passthrough, whose doc comment notes merge tags "pass through untouched since
+the projector never parses this string." That means:
+
+- **Merge tokens are unstructured.** An author can type `{{customer.firstName}}` as literal
+  text and it will survive projection — but there is **no token catalog, no `{{`
+  autocomplete, no validation, no reference panel**. sparx has all four today
+  ([merge-tags.ts](../packages/builder-schemas/src/merge-tags.ts): the inline autocomplete,
+  the "Merge tags" panel, and the MCP `list_merge_tags` tool all read one vocabulary).
+- **Iteration is structurally impossible.** The closed schema cannot express "render this
+  subtree once per order line item / product / post." sparx's email builder does exactly
+  this through a **repeater binding** resolved at send by `resolveEmailData`
+  ([builder-email-service.ts](../packages/email-platform/src/services/builder-email-service.ts)) —
+  so an order-confirmation line-item table, an abandoned-cart product list, and a digest of
+  posts are all authored visually. In silica's schema there is no node that repeats, so
+  every one of those emails is unbuildable.
+
+This is the **email analog of the load-bearing five** (Q1 bind, Q2 repeat, Q3 the resolving
+renderer). The generic-first test applies unchanged: the answer must let a _non-sparx_ host
+(a CRM's email tool, a newsletter product) supply its own token vocabulary and its own
+collections, with the engine staying blind to what a "product" or an "order" is.
+
+### Q23 — How does the email editor author a bound scalar token without knowing the data model?
+
+- **Generic problem.** An author must be able to say "this text / this button href / this
+  image src comes from data," pick _what_ from a host-supplied vocabulary, and see it
+  presented as a token — and the projector must emit it so a downstream resolver
+  (the host's, or an ESP's `%recipient.*%`) can substitute it at send.
+- **Contract stance / shipped.** No email binding contract exists. Shipped reality: merge
+  tokens survive **only** as raw literal text (in a `TextNode.html`, a `ButtonNode.href`, or
+  the `HtmlNode` passthrough) — functional for delivery, but with zero authoring support.
+- **Motivating instance (sparx).** `emailMergeTags()` flattens the `BindingCatalog`'s
+  OBJECT sources to `{{source.field}}` tokens; `findTokenQuery`/`insertMergeTag` drive the
+  inline `{{` autocomplete; the "Merge tags" panel + MCP tool present the same list.
+- **Open questions.** Does the engine take a host-supplied token list (`host.mergeTokens()`
+  → `{ token, label, group }[]`) and render a generic insert affordance + `{{`
+  autocomplete over it, writing the token as literal text the projector never parses? Is the
+  token a first-class inline mark (styled "chip" in the canvas) or just text? Does
+  `toEmailHtml` guarantee `{{…}}` is emitted verbatim (never HTML-escaped or URL-encoded)
+  inside text, `href`, and `src`?
+- **Candidate generic direction.** `host.mergeTokens()` supplies the vocabulary; the engine
+  renders a domain-blind picker + autocomplete and writes the opaque token string; the
+  projector emits it untouched. Zero engine domain knowledge — the exact shape of Q6, scaled
+  to email.
+
+### Q24 — How does the email editor repeat a subtree once per item in an opaque collection?
+
+- **Generic problem (the keystone for email).** Transactional email _is_ iteration: order
+  line items, invoice rows, a cart's products, a digest's posts. A domain-blind editor must
+  let an author mark a subtree "repeat per row" and thread an item scope to descendants,
+  without knowing what a row is.
+- **Contract stance / shipped.** Not expressible. `EmailNode` is a closed union with no
+  repeat kind and no `children`-carrying content node that could hold a per-item template;
+  `canHold` enforces the fixed structure.
+- **Motivating instance (sparx).** An array-bound container maps `value.map((item,i) => …)`
+  and descendants bind `item.title` / `item.price` — the same `runtime.ts` primitive the
+  site builder uses, shared verbatim by the email render path.
+- **Open questions.** Where does repeat live in a _closed_ schema — a new `repeat` wrapper
+  content kind whose single child is the per-item template, resolved via
+  `host.resolveCollection(ref)`? How is the item scope threaded (a structural
+  `{ path: string[] }` token, as in Q2)? How does the canvas render an empty collection at
+  author time (one placeholder row)? Does `toEmailHtml` expand the repeat, or does a host
+  resolver run before projection (Q25)?
+- **Candidate generic direction.** A single `repeat` node kind + `host.resolveCollection` —
+  engine owns repetition, host owns data. sparx's email repeater is the reference that this
+  generalizes. **This is the gap that blocks adoption**; without it the editor is
+  marketing-only.
+
+### Q25 — Should `toEmailHtml` resolve host data, so preview == send is one projector?
+
+- **Generic problem.** sparx renders a builder email through ONE path (`renderEmailTree`)
+  for the canvas preview, the staff test-send, and the real broadcast — so what you author
+  is what ships. silica splits this: the canvas is a flexbox _approximation_, `toEmailHtml`
+  is the static projector, and neither resolves tokens or collections. A host adopting it
+  must bolt its own resolve pass onto the projector's output.
+- **Contract stance / shipped.** `toEmailHtml(doc)` takes no data. `onSendTest` hands the
+  host the already-projected static HTML + subject — so per-recipient resolution is entirely
+  the host's, downstream of a projector that can't see it.
+- **Motivating instance (sparx).** `renderPreview` / `prepareTestSend` resolve the tree's
+  bound sources (`resolveEmailData`) and the tenant/site brand _before_ rendering, so a
+  personalized, per-site email smoke-tests end-to-end from the editor.
+- **Open questions.** Should `toEmailHtml(doc, { resolveBinding?, resolveCollection? })`
+  accept optional host resolvers (absent ⇒ today's static projection, so a static host is
+  unaffected), making the same projector serve preview and send? Where does the legal /
+  CAN-SPAM frame (unsubscribe, physical address) compose — a host-injected footer section,
+  or host post-processing of the projected string? How does a plain-text alternative get
+  generated (sparx relies on React Email's `render({ plainText: true })`)?
+- **Candidate generic direction.** A resolver-accepting `toEmailHtml` (the email twin of the
+  site's Q3/Q19 single data-capable renderer) collapses preview and send to one code path;
+  the legal frame and plain-text body stay host concerns. This is the highest-leverage email
+  investment, exactly as Q19 is for the site.
+
+**Verdict for the email editor.** Keep sparx's email builder for now — the doc-118 call,
+applied to email: silica's email editor is a strong _static_ builder, but sparx's email
+builder is a _data-bound_ one, and the closed email schema cannot express bindings or
+repeats at all. The cutover (a "Phase F for email") is gated on Q23–Q25 landing in the
+family: a host merge-token vocabulary + insert affordance (Q23), a repeat primitive over a
+host-resolved collection (Q24), and a resolver-accepting `toEmailHtml` (Q25). Until then the
+two builders diverge in chrome — the site builder on silica's `<Builder>`, the email builder
+on sparx's `.bx-*` `BuilderWorkspace` — which is itself a reason to want the email data layer
+sooner, so both surfaces are one product again.
+
+---
+
 ## 10. Synthesis — which answers unlock "adopt the engine"
 
 Grouping the 19 questions by _what they decide_:
@@ -339,6 +468,15 @@ Grouping the 19 questions by _what they decide_:
 | **Contribute sparx's proven solution upstream**                       | Q2/Q3 (`runtime.ts`), Q13 (design-surface widgets), Q15 (`element.ts`), Q19 (shared renderer)         | sparx has _reference implementations_ of these. The generic move is to lift them into the family, not keep them sparx-only.                                     |
 
 **The load-bearing five (Q1, Q2, Q3, Q10, Q19).** If silicaui-builder grows an opaque three-primitive data layer resolved through host callbacks (Q1/Q2/Q4), a host-supplied catalog (Q10), a host-supplied class policy + inspector panels (Q14/Q12), and — the keystone — **one data-capable renderer shared by canvas and live site (Q3/Q19)**, then adopting the engine deletes sparx's editor chrome _and_ its bespoke render seam, and the family gains the exact capabilities that make it a real product rather than a demo. That is the strongest version of Phase F.
+
+**The email editor is the same seam, a second time (Q23–Q25).** silicaui ships a _second_
+editor with the _same_ shortfall: a static email builder that lacks the bind (Q23), repeat
+(Q24), and resolving-projector (Q25) layer that sparx's data-bound email builder depends on.
+The generic answer is identical in shape — a host token vocabulary + insert affordance, a
+repeat primitive over a host-resolved collection, and a resolver-accepting `toEmailHtml`. So
+the load-bearing five aren't a site-only investment: closing Q1/Q2/Q3 _generically_ (opaque
+ref + `host.resolveBinding`/`resolveCollection` + a data-capable renderer) is the same design
+that unblocks BOTH editors. Fund it once, adopt it twice.
 
 ---
 
@@ -359,6 +497,7 @@ So: **we may indeed not have picked the best approach — but only for the edito
 - [ ] Every gap in silicaui-builder 0.8.0 vs sparx's needs is captured as a **generic** question (host-reusable answer, not a sparx fit).
 - [ ] Each question names its generic problem, the contract's stance, the shipped reality, sparx as the motivating instance, and a candidate generic direction.
 - [ ] The **load-bearing five** (Q1, Q2, Q3, Q10, Q19) are identified as the seam that unlocks Phase F.
+- [ ] The **email editor** (Q23–Q25) is evaluated as the second surface with the same dynamic-content gap; its cutover is gated on the same generic bind/repeat/resolving-projector answers.
 - [ ] sparx's **reference implementations** to contribute upstream are called out (`runtime.ts`, the design-surface widgets, `element.ts`, the shared renderer).
 - [ ] The doc-118 approach is re-evaluated against the answers, with a clear conditional recommendation.
 - [ ] Intended to be **contributed to the silicaui repo** as the builder engine's roadmap input.

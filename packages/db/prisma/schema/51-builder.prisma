@@ -270,6 +270,15 @@ model BuilderEmail {
   // references this email renders its published tree (docs/52 §6).
   publishedTree Json?     @map("published_tree")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
+
+  // The silica-native email (docs/120) — a silicaui `EmailDocument` (subject +
+  // preheader + closed `body` tree), stored PARALLEL to the sparx trees above.
+  // NULL until the author saves/publishes this email on the silica editor; a row
+  // WITH a silica document renders through `renderSilicaEmail`, a row WITHOUT one
+  // falls back to `renderEmailTree` over the sparx tree (D1). The whole override +
+  // keyed-default machinery is unchanged — this is the same row, silica-shaped.
+  silicaDraftDocument     Json? @map("silica_draft_document")
+  silicaPublishedDocument Json? @map("silica_published_document")
   // Catalog ordering (cf. BuilderPage.position).
   position      Int       @default(0)
 

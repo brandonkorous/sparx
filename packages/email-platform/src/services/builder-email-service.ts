@@ -12,7 +12,8 @@
 // reuses renderEmailTree the same way.
 
 import { renderEmailTree } from '@sparx/email';
-import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
+import { renderSilicaEmail } from '@sparx/email/silica';
+import type { BuilderNode, DataSources, SilicaEmailDocument } from '@sparx/builder-schemas';
 
 import { TestSendInput } from '../schemas/templates';
 import type { ServiceContext } from '../errors';
@@ -45,12 +46,29 @@ export type ResolveEmailData = (
 // render empty). Used by callers without commerce wiring (e.g. the MCP tool).
 export const noEmailDataResolver: ResolveEmailData = () => Promise.resolve({});
 
+/** The silica twin (docs/120) — resolves a silica `EmailDocument`'s bound sources.
+ *  Injected the same way (api-rest's `silicaEmailDataResolver`), so this package
+ *  stays commerce-free. */
+export type ResolveSilicaEmailData = (
+  doc: SilicaEmailDocument,
+  recipient?: { email: string; customerId?: string | null },
+  propertyId?: string | null
+) => Promise<DataSources>;
+
+export const noSilicaEmailDataResolver: ResolveSilicaEmailData = () => Promise.resolve({});
+
 /** A Builder email reduced to what the render needs — the published or draft body
- *  tree plus its document fields. The caller loads this from @sparx/builder. */
+ *  plus its document fields. The caller loads this from @sparx/builder.
+ *
+ *  `silicaDoc` is the parallel-run branch (docs/120): present ⇒ this email was
+ *  authored on silica and renders through `renderSilicaEmail`; absent ⇒ it renders
+ *  through the legacy `renderEmailTree` over `tree`. Both produce the same
+ *  `SendableEmail`, so no caller downstream cares which path ran. */
 export interface BuilderEmailDoc {
   tree: BuilderNode;
   subject: string;
   preheader: string | null;
+  silicaDoc?: SilicaEmailDocument | null;
 }
 
 export interface RenderedPreview {
@@ -72,8 +90,30 @@ export async function renderPreview(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
   resolveData: ResolveEmailData = noEmailDataResolver,
-  propertyId?: string | null
+  propertyId?: string | null,
+  resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<RenderedPreview> {
+  // Silica-authored (docs/120): render through silica's projector, with the same
+  // per-site brand the send resolves — so the preview can't diverge from the send.
+  const silicaDoc = doc.silicaDoc;
+  if (silicaDoc) {
+    const [brand, data] = await Promise.all([
+      resolveEmailBrand(ctx, propertyId),
+      resolveSilicaData(silicaDoc),
+    ]);
+    const rendered = renderSilicaEmail(
+      {
+        doc: silicaDoc,
+        to: 'preview@example.com',
+        subject: doc.subject,
+        preheader: doc.preheader,
+        data,
+      },
+      { brand: brand ?? undefined }
+    );
+    return { subject: rendered.subject, html: rendered.html, text: rendered.text };
+  }
+
   const [brand, data] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
     resolveData(doc.tree),
@@ -116,18 +156,40 @@ export async function prepareTestSend(
   doc: BuilderEmailDoc,
   rawInput: unknown,
   resolveData: ResolveEmailData = noEmailDataResolver,
-  propertyId?: string | null
+  propertyId?: string | null,
+  resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<PreparedTestSend> {
   const { to } = TestSendInput.parse(rawInput);
-  const [brand, settings, data] = await Promise.all([
+  const silicaDoc = doc.silicaDoc;
+  const [brand, settings] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
     getSettings(ctx),
-    resolveData(doc.tree, { email: to }),
   ]);
-  const rendered = await renderEmailTree(
-    { tree: doc.tree, subject: doc.subject, preheader: doc.preheader ?? undefined, to, data },
-    { brand: brand ?? undefined }
-  );
+
+  // Silica-authored (docs/120) — the test copy is rendered by the SAME projector +
+  // frame the real send uses, so it's a true smoke test.
+  const rendered = silicaDoc
+    ? renderSilicaEmail(
+        {
+          doc: silicaDoc,
+          to,
+          subject: doc.subject,
+          preheader: doc.preheader,
+          data: await resolveSilicaData(silicaDoc, { email: to }),
+        },
+        { brand: brand ?? undefined }
+      )
+    : await renderEmailTree(
+        {
+          tree: doc.tree,
+          subject: doc.subject,
+          preheader: doc.preheader ?? undefined,
+          to,
+          data: await resolveData(doc.tree, { email: to }),
+        },
+        { brand: brand ?? undefined }
+      );
+
   return {
     from: buildFrom(settings.fromName, settings.fromAddress),
     to,

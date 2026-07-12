@@ -177,11 +177,18 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           // send) otherwise. CAN-SPAM/CASL: no marketing mail without a working
           // opt-out. With no declared intent (the legacy broadcast id path)
           // marketing-ness is inferred from the tree, so there is nothing to refuse.
+          //
+          // A SILICA email (docs/120) carries no `unsubscribe_link` node to sniff —
+          // the platform COMPOSES the legal footer into every marketing send — so it
+          // can never be "missing" the opt-out. Its intent is always DECLARED by the
+          // enqueuer (the broadcast path stamps `emailType: 'marketing'`), never
+          // inferred, which is why the legacy tree inference below is left untouched.
           const treeHasUnsub = treeHasNodeType(doc.tree, 'unsubscribe_link');
+          const canOptOut = doc.silicaDoc != null || treeHasUnsub;
           const marketing = payload.defer.emailType
             ? payload.defer.emailType === 'marketing'
             : treeHasUnsub;
-          if (marketing && !treeHasUnsub) {
+          if (marketing && !canOptOut) {
             logger.warn(
               { sendId: row.id, builderEmailKey: payload.defer.builderEmailKey },
               'email-dispatch: marketing email missing unsubscribe node — refused (compliance)'

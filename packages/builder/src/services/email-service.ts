@@ -15,6 +15,7 @@ import {
   DEFAULT_EMAIL_TEMPLATES,
   ReorderEmailsInput,
   STARTER_EMAILS,
+  SyncSilicaEmailInput,
   UpdateEmailInput,
   blankEmailTree,
   getDefaultEmailTemplate,
@@ -22,6 +23,7 @@ import {
   type BuilderEmailDto,
   type BuilderNode,
   type PublishedEmailDto,
+  type SilicaEmailDocument,
 } from '@sparx/builder-schemas';
 import type { BuilderEmail, Prisma } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -42,7 +44,12 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     // first node (docs/52 §1) — legacy rows authored before it get it injected, and
     // the next save persists it. Idempotent for already-normalized trees.
     tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
-    published: row.publishedTree != null,
+    // The silica DRAFT document (docs/120) — what the silica editor mounts. Null
+    // until the row is authored on silica.
+    silicaDoc: (row.silicaDraftDocument as SilicaEmailDocument | null) ?? null,
+    // An email is "published" once EITHER the legacy sparx tree OR a silica
+    // document has been snapshotted (parallel-run).
+    published: row.publishedTree != null || row.silicaPublishedDocument != null,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     key: row.key,
@@ -56,15 +63,23 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
 const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
   tree as unknown as Prisma.InputJsonValue;
 
+const asDocJson = (doc: SilicaEmailDocument): Prisma.InputJsonValue =>
+  doc as unknown as Prisma.InputJsonValue;
+
 /** The send/preview projection (PublishedEmailDto) of a row, or null when it has
  *  no published snapshot. Shared by getPublishedById / getPublishedByKey. */
 function toPublished(row: BuilderEmail): PublishedEmailDto | null {
-  if (row.publishedTree == null) return null;
+  const silicaDoc = (row.silicaPublishedDocument as SilicaEmailDocument | null) ?? null;
+  // Published once EITHER path has a snapshot (parallel-run, docs/120). A
+  // silica-only email has no `publishedTree`, so `tree` falls back to the draft
+  // (a valid placeholder the send never renders — it branches on `silicaDoc`).
+  if (row.publishedTree == null && silicaDoc == null) return null;
   return {
     name: row.name,
     subject: row.subject,
     preheader: row.preheader,
-    tree: normalizeEmailTree(row.publishedTree as unknown as BuilderNode),
+    tree: normalizeEmailTree((row.publishedTree ?? row.draftTree) as unknown as BuilderNode),
+    silicaDoc,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
   };
 }
@@ -88,6 +103,10 @@ function defaultPublished(key: string): PublishedEmailDto | null {
     subject: def.subject,
     preheader: def.preheader,
     tree: normalizeEmailTree(def.tree),
+    // The code-shipped fallback renders on SILICA (docs/120): a tenant with no row for
+    // this key still gets the modern engine, not the legacy one. `tree` stays as the
+    // second fallback for any caller that ignores `silicaDoc`.
+    silicaDoc: def.doc,
     publishedAt: null,
   };
 }
@@ -265,6 +284,70 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderE
   return dto;
 }
 
+/** Persist a silica-authored email's DRAFT document (docs/120) — the editor's
+ *  `<EmailBuilder onChange>` seam. The document carries its own subject/preheader
+ *  (silica owns them), which we mirror onto the row so the catalog list, the send
+ *  subject, and `{{token}}` interpolation in the subject all read the current
+ *  value. NOT audited (high-frequency autosave path, like `update`). */
+export async function syncSilica(
+  ctx: ServiceContext,
+  id: string,
+  rawInput: unknown
+): Promise<BuilderEmailDto> {
+  const { doc } = SyncSilicaEmailInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.builderEmail.findUnique({ where: { id }, select: { id: true } });
+    if (!existing) throw new BuilderNotFoundError('BuilderEmail', id);
+    const updated = await tx.builderEmail.update({
+      where: { id },
+      data: {
+        silicaDraftDocument: asDocJson(doc),
+        subject: doc.subject,
+        preheader: emptyToNull(doc.preheader),
+      },
+    });
+    return toDto(updated);
+  });
+}
+
+/** Snapshot a silica email's DRAFT document into its PUBLISHED document (docs/120)
+ *  — the silica counterpart of `publish`. The send path (`getPublishedByKey` /
+ *  `getPublishedById`) then renders the silica document via `renderSilicaEmail`.
+ *  Throws if nothing has been authored on silica yet. Emits builder.email.published. */
+export async function publishSilica(ctx: ServiceContext, id: string): Promise<BuilderEmailDto> {
+  const dto = await withTenant(ctx, async (tx) => {
+    const existing = await tx.builderEmail.findUnique({ where: { id } });
+    if (!existing) throw new BuilderNotFoundError('BuilderEmail', id);
+    if (existing.silicaDraftDocument == null) {
+      throw new BuilderNotFoundError('BuilderEmail', `${id} (no silica draft to publish)`);
+    }
+    const updated = await tx.builderEmail.update({
+      where: { id },
+      data: {
+        silicaPublishedDocument: existing.silicaDraftDocument,
+        publishedAt: new Date(),
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.email.published',
+      entityType: 'BuilderEmail',
+      entityId: id,
+      diff: { after: { name: updated.name, silica: true } },
+    });
+    return toDto(updated);
+  });
+  await publishBuilderEvent({
+    tenantId: ctx.tenantId,
+    topic: 'builder.email.published',
+    payload: { emailId: dto.id, name: dto.name },
+  });
+  return dto;
+}
+
 /** The send/preview read (docs/52 §6): the PUBLISHED tree of an email by id, or
  *  null when it hasn't been published. Used by the broadcast render path. The
  *  DRAFT counterpart (for the editor's live preview) is `getDraftById`. */
@@ -347,6 +430,14 @@ export function provisionDefaultEmails(ctx: ServiceContext): Promise<{ provision
           preheader: t.preheader,
           draftTree: asJson(t.tree),
           publishedTree: asJson(t.tree),
+          // Provision BOTH engines (docs/120 parallel-run): the silica document is
+          // what every send now renders, and the legacy tree stays as the fallback
+          // that keeps already-provisioned tenants — whose rows have no silica
+          // document — sending unchanged. Published immediately, like the tree: a
+          // default has to work the moment the module activates, with no visit to
+          // the editor.
+          silicaDraftDocument: asDocJson(t.doc),
+          silicaPublishedDocument: asDocJson(t.doc),
           publishedAt: now,
           position,
         },
@@ -417,6 +508,10 @@ export function customizeForSite(
       orderBy: { position: 'desc' },
       select: { position: true },
     });
+    // Fork the base's published look into the new draft — for BOTH the legacy tree
+    // and (docs/120) the silica document, so a fork of a silica-authored default
+    // opens with the default's content rather than an empty canvas.
+    const baseSilica = base.silicaPublishedDocument ?? base.silicaDraftDocument;
     const created = await tx.builderEmail.create({
       data: {
         tenantId: ctx.tenantId,
@@ -426,6 +521,7 @@ export function customizeForSite(
         subject: base.subject,
         preheader: base.preheader,
         draftTree: (base.publishedTree ?? base.draftTree) as Prisma.InputJsonValue,
+        ...(baseSilica != null ? { silicaDraftDocument: baseSilica } : {}),
         position: last ? last.position + 1 : 0,
       },
     });
@@ -455,6 +551,8 @@ export function getDraftById(ctx: ServiceContext, id: string): Promise<Published
       subject: row.subject,
       preheader: row.preheader,
       tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
+      // Draft preview reads the DRAFT silica document (docs/120).
+      silicaDoc: (row.silicaDraftDocument as SilicaEmailDocument | null) ?? null,
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });
