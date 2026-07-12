@@ -1,0 +1,1190 @@
+<!doctype html>
+<!--
+  pricing-v2 — a narrative pricing page, story-flow like landing-v3.
+  Purpose of this mockup: validate the arc + the color/imagery BAND RHYTHM
+  before porting. Every device is proven on landing-v3 / pricing-v1; the new
+  work is the ORDER (switchboard demoted to beat 3, after the stakes), the hero,
+  the receipt-vs-answer money confrontation, and a saturated-band rhythm that
+  matches landing-v3's density (four color bands + a real product screenshot,
+  not one lone colored block among white sections).
+
+  Arc / device per beat:
+   1 HERO (dark)          — the promise. Headline + fact chips (from $10/mo · one
+                             invoice · 14-day trial) + a floating "starter tag".
+   2 STAKES (light)       — the money beat. 3 oversized savings numerals, then a
+                             dominant confrontation: a torn-paper receipt of the
+                             twelve stitched-together tools (total struck in red)
+                             vs. one giant MAGENTA sparx answer panel.
+   3 SWITCHBOARD (violet) — the interactive centerpiece on a full-bleed bg-accent
+                             band. Placed AFTER the stakes; the shared component's
+                             dark-ink heading reads on violet, white cards pop.
+   3b DASHBOARD (indigo)  — the one imagery beat: the real DashboardFrame product
+                             screenshot on a bg-primary band, "one bill, one login".
+   4 FOUNDATION (slate)   — the platform floor as bedrock on a bg-neutral band.
+   5 FEATURES (light)     — sticky headline + per-module accordion.
+   6 PRINCIPLES (light)   — three numbered "no asterisks" cards.
+   7 ENTERPRISE (indigo)  — feats + two CTAs (near-black in the React port).
+   8 FAQ (light)          — sticky headline + accordion (emits FAQPage JSON-LD).
+   9 FINAL CTA (near-black)— closing offer.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pricing (v2) — sparx</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --page: #fafafa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --ink: #18181b;
+        --ink-60: #52525b;
+        --ink-45: #a1a1aa;
+        --border: #e4e4e7;
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --neutral: #171717;
+        --neutral-content: #e5e5e5;
+        --success: #16a34a;
+        --success-soft: #dcfce7;
+        /* module hues */
+        --m-builder: #6366f1;
+        --m-commerce: #f97316;
+        --m-cms: #14b8a6;
+        --m-crm: #06b6d4;
+        --m-invoicing: #65a30d;
+        --m-email: #0ea5e9;
+        --m-b2b: #475569;
+        --m-dropship: #10b981;
+        --m-inventory: #f59e0b;
+        --m-chat: #8b5cf6;
+        --m-scheduling: #f43f5e;
+        --m-ai: #ec4899;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, sans-serif;
+        background: var(--page);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      section {
+        padding: 96px 0;
+      }
+      @media (min-width: 1024px) {
+        section {
+          padding: 128px 0;
+        }
+      }
+      h1,
+      h2,
+      h3 {
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 0.95;
+      }
+      .display {
+        font-size: clamp(44px, 7vw, 88px);
+      }
+      .h2 {
+        font-size: clamp(38px, 5.2vw, 72px);
+      }
+      .lead {
+        font-size: clamp(18px, 2.2vw, 24px);
+        line-height: 1.4;
+        color: var(--ink-60);
+        max-width: 34ch;
+      }
+      .mono {
+        font-family: 'Geist Mono', monospace;
+      }
+      .spark {
+        color: var(--primary);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        flex: none;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 12px;
+        padding: 14px 22px;
+        font-size: 16px;
+        font-weight: 500;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+      }
+      .btn-outline {
+        border-color: var(--border);
+        color: var(--ink);
+        background: transparent;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+      }
+      .cardbody {
+        padding: 24px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 3px 11px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .badge-primary {
+        background: color-mix(in oklab, var(--primary) 12%, transparent);
+        color: var(--primary);
+      }
+      .island {
+        margin: 24px;
+        border-radius: 32px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      /* ---------- 1 HERO ---------- */
+      .hero {
+        background: #1a1a1a;
+        color: #fafafa;
+      }
+      .hero .lead {
+        color: rgba(250, 250, 250, 0.78);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 56px;
+        align-items: center;
+      }
+      @media (min-width: 900px) {
+        .hero-grid {
+          grid-template-columns: 1.1fr 0.9fr;
+        }
+      }
+      .hero-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .hero-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .hero-chip b {
+        color: var(--primary);
+        font-weight: 600;
+      }
+      /* starter price tag device */
+      .tag {
+        background: var(--surface);
+        color: var(--ink);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        position: relative;
+        max-width: 380px;
+        margin-inline: auto;
+      }
+      .tag .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 13px 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .tag .row:last-of-type {
+        border-bottom: 0;
+      }
+      .tag .name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+      }
+      .tag .price {
+        font-variant-numeric: tabular-nums;
+        color: var(--ink-60);
+      }
+      .tag .total {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 16px;
+        margin-top: 6px;
+        border-top: 2px solid var(--ink);
+      }
+      .tag .total b {
+        font-size: 40px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--primary);
+      }
+
+      /* ---------- 2 STAKES ---------- */
+      /* editorial giant-numeral row, hairline-divided (no boxes) */
+      .bignums {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .bignums .cell {
+        padding: 32px 28px 32px 0;
+        border-right: 1px solid var(--border);
+      }
+      .bignums .cell:last-child {
+        border-right: 0;
+        padding-right: 0;
+      }
+      @media (max-width: 760px) {
+        .bignums {
+          grid-template-columns: 1fr;
+        }
+        .bignums .cell {
+          border-right: 0;
+          border-bottom: 1px solid var(--border);
+          padding: 24px 0;
+        }
+        .bignums .cell:last-child {
+          border-bottom: 0;
+        }
+      }
+      .stat-num {
+        font-size: clamp(56px, 8vw, 104px);
+        font-weight: 600;
+        letter-spacing: -0.045em;
+        line-height: 0.82;
+        color: var(--primary);
+      }
+      .stat-num small {
+        font-size: 0.38em;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        color: var(--ink-45);
+      }
+      .bignums .cell p {
+        margin-top: 18px;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--ink-60);
+        max-width: 30ch;
+      }
+
+      /* the confrontation: dark receipt panel vs the sparx answer */
+      .confront {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        align-items: stretch;
+      }
+      @media (min-width: 900px) {
+        .confront {
+          grid-template-columns: 0.92fr 1.08fr;
+        }
+      }
+      .oldway {
+        background: var(--neutral);
+        color: var(--neutral-content);
+        border-radius: 24px;
+        padding: 40px 36px 44px;
+        min-height: 520px;
+        position: relative;
+        overflow: hidden;
+      }
+      .oldway .kick {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: rgba(229, 229, 229, 0.55);
+      }
+      .oldway h3 {
+        font-size: 30px;
+        margin: 10px 0 26px;
+        color: #fff;
+        letter-spacing: -0.03em;
+      }
+      /* torn-paper thermal receipt */
+      .receipt {
+        background: #fbfbf7;
+        color: #1a1a1a;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        padding: 22px 22px 30px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+        transform: rotate(-1.4deg);
+        clip-path: polygon(
+          0 0, 100% 0, 100% 97%, 96% 100%, 92% 97%, 88% 100%, 84% 97%, 80% 100%,
+          76% 97%, 72% 100%, 68% 97%, 64% 100%, 60% 97%, 56% 100%, 52% 97%,
+          48% 100%, 44% 97%, 40% 100%, 36% 97%, 32% 100%, 28% 97%, 24% 100%,
+          20% 97%, 16% 100%, 12% 97%, 8% 100%, 4% 97%, 0 100%
+        );
+      }
+      .receipt .rhead {
+        text-align: center;
+        letter-spacing: 0.2em;
+        font-size: 11px;
+        color: #6b6b6b;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #cfcfc7;
+      }
+      .receipt .ritem {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 7px 0;
+        border-bottom: 1px dashed #deded6;
+      }
+      .receipt .ritem span:first-child {
+        color: #4a4a4a;
+      }
+      .receipt .rtotal {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 14px;
+        margin-top: 4px;
+      }
+      .receipt .rtotal b {
+        font-size: 26px;
+        font-weight: 700;
+        color: #b91c1c;
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+      }
+      .barcode {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 2px;
+        height: 40px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px dashed #cfcfc7;
+      }
+      .barcode span {
+        background: #1a1a1a;
+        height: 100%;
+      }
+      .barcode-cap {
+        text-align: center;
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: #8a8a8a;
+        margin-top: 8px;
+      }
+      /* the sparx answer */
+      .answer {
+        background: #db2777;
+        color: #fff;
+        border-radius: 24px;
+        padding: 48px 44px;
+        min-height: 520px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+      }
+      .answer .kick {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .answer .now {
+        font-size: clamp(72px, 11vw, 132px);
+        font-weight: 600;
+        letter-spacing: -0.05em;
+        line-height: 0.82;
+      }
+      .answer .now small {
+        font-size: 0.32em;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .answer .keep {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 14px;
+      }
+      .answer .also {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.22);
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.5;
+      }
+      .answer .also b {
+        color: #fff;
+        font-weight: 600;
+      }
+      .caption {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--ink-45);
+      }
+
+      /* ---------- 3 SWITCHBOARD placeholder (violet full-bleed band) ---------- */
+      .stage {
+        background: #8b5cf6;
+      }
+      .stage h2 {
+        color: #1a1030;
+      }
+      .stage .lead {
+        color: rgba(26, 16, 48, 0.72);
+      }
+      .sb-note {
+        border: 2px dashed rgba(255, 255, 255, 0.55);
+        background: #fff;
+        border-radius: 18px;
+        padding: 48px;
+        text-align: center;
+        color: var(--ink-60);
+      }
+
+      /* ---------- 3b DASHBOARD (indigo band, product screenshot beat) ---------- */
+      .dash {
+        background: var(--primary);
+        color: #fff;
+      }
+      .dash h2 {
+        color: #fff;
+      }
+      .dash .lead {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .dashframe {
+        margin-top: 48px;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 40px 90px rgba(0, 0, 0, 0.35);
+      }
+      .dashframe .bar {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dashframe .bar i {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+      .dashframe .body {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        min-height: 380px;
+      }
+      .dashframe .side {
+        background: #fafafa;
+        border-right: 1px solid var(--border);
+        padding: 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .dashframe .nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 11px;
+        border-radius: 9px;
+        font-size: 14px;
+        color: var(--ink-60);
+      }
+      .dashframe .nav.active {
+        background: color-mix(in oklab, var(--primary) 12%, #fff);
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .dashframe .main {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .dashframe .kpis {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .dashframe .kpi {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .dashframe .kpi .n {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .dashframe .kpi .l {
+        font-size: 12px;
+        color: var(--ink-45);
+        margin-top: 4px;
+      }
+      .dashframe .rowline {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--ink-60);
+      }
+
+      /* ---------- 4 FOUNDATION (slate bedrock band) ---------- */
+      .foundation {
+        background: #1f2937;
+        color: #fff;
+      }
+      .foundation h2 {
+        color: #fff;
+      }
+      .foundation .lead {
+        color: rgba(229, 229, 229, 0.7);
+      }
+      .fcard {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 22px;
+      }
+      .fcard .ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(99, 102, 241, 0.18);
+        color: #a5b4fc;
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+      .fcard h3 {
+        font-size: 16px;
+        margin-bottom: 6px;
+        color: #fff;
+      }
+      .fcard p {
+        font-size: 14px;
+        color: rgba(229, 229, 229, 0.66);
+        line-height: 1.5;
+      }
+
+      /* ---------- 5 FEATURES ---------- */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      @media (min-width: 1024px) {
+        .split {
+          grid-template-columns: 0.85fr 1.15fr;
+          gap: 56px;
+        }
+      }
+      .sticky {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+      }
+      .acc {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .acc-item {
+        border-bottom: 1px solid var(--border);
+      }
+      .acc-item:last-child {
+        border-bottom: 0;
+      }
+      .acc-trigger {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 18px 22px;
+        cursor: pointer;
+      }
+      .acc-trigger .mname {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 150px;
+        font-weight: 500;
+      }
+      .acc-trigger .repl {
+        flex: 1;
+        color: var(--ink-60);
+        font-size: 14px;
+      }
+      .acc-panel {
+        padding: 4px 22px 22px 44px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 32px;
+      }
+      @media (max-width: 640px) {
+        .acc-panel {
+          grid-template-columns: 1fr;
+        }
+        .acc-trigger .repl {
+          display: none;
+        }
+      }
+      .acc-panel span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        color: var(--ink-60);
+      }
+
+      /* ---------- 6 PRINCIPLES ---------- */
+      .pcard .pnum {
+        display: inline-flex;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: color-mix(in oklab, var(--primary) 12%, transparent);
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 14px;
+      }
+      .pcard h3 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+      .pcard p {
+        color: var(--ink-60);
+        line-height: 1.55;
+      }
+
+      /* ---------- 7 ENTERPRISE ---------- */
+      .ent {
+        background: var(--primary);
+        color: #fff;
+      }
+      .ent-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+        align-items: center;
+      }
+      @media (min-width: 900px) {
+        .ent-grid {
+          grid-template-columns: 1.3fr 0.7fr;
+        }
+      }
+      .ent h2 {
+        color: #fff;
+      }
+      .ent .lead {
+        color: rgba(255, 255, 255, 0.82);
+        max-width: 46ch;
+      }
+      .ent-feats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 26px;
+        margin-top: 26px;
+        max-width: 560px;
+      }
+      @media (max-width: 640px) {
+        .ent-feats {
+          grid-template-columns: 1fr;
+        }
+      }
+      .ent-feats span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .ent .btn-primary {
+        background: #fff;
+        color: var(--primary);
+      }
+      .ent .btn-outline {
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+      }
+
+      /* ---------- 9 FINAL ---------- */
+      .final {
+        background: #131316;
+        color: #fafafa;
+      }
+      .final .lead {
+        color: rgba(250, 250, 250, 0.7);
+      }
+      .final-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        align-items: end;
+      }
+      @media (min-width: 900px) {
+        .final-grid {
+          grid-template-columns: 1.4fr 0.6fr;
+        }
+      }
+
+      .eyebrowless-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink-60);
+        margin-bottom: 18px;
+      }
+      .mt40 {
+        margin-top: 40px;
+      }
+      .mt24 {
+        margin-top: 24px;
+      }
+      .mb14 {
+        margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ 1 HERO ============ -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <h1 class="display">
+              Pay for what you<br />use. Nothing else<span class="spark">.</span>
+            </h1>
+            <p class="lead mt24">
+              Flat pricing, one module at a time. Switch on only the parts you need, get one
+              invoice, and change your mind whenever the business does.
+            </p>
+            <div class="hero-chips mt40">
+              <span class="hero-chip">from <b>$10</b>/mo</span>
+              <span class="hero-chip">one invoice</span>
+              <span class="hero-chip"><b>14-day</b> free trial</span>
+              <span class="hero-chip">no card to start</span>
+            </div>
+            <div class="hero-chips mt24">
+              <a class="btn btn-primary" href="#">Start free &rarr;</a>
+              <a class="btn btn-outline" style="color: #fff" href="#sb">Price your stack &darr;</a>
+            </div>
+          </div>
+          <!-- starter tag device -->
+          <div class="tag">
+            <div style="font-size: 13px; letter-spacing: 0.14em; color: var(--ink-45)" class="mono">
+              START HERE
+            </div>
+            <div class="row" style="margin-top: 10px">
+              <span class="name"
+                ><span class="dot" style="background: var(--m-builder)"></span>Builder</span
+              >
+              <span class="price">$10/mo</span>
+            </div>
+            <div class="row">
+              <span class="name"
+                ><span class="dot" style="background: var(--m-commerce)"></span>Commerce</span
+              >
+              <span class="price">+ $49/mo</span>
+            </div>
+            <div class="row">
+              <span class="name"
+                ><span class="dot" style="background: var(--m-email)"></span>Email</span
+              >
+              <span class="price">+ $29/mo</span>
+            </div>
+            <div class="total">
+              <span style="color: var(--ink-60); font-size: 14px">Your monthly bill</span>
+              <b>$88<small style="font-size: 20px; color: var(--ink-45)">/mo</small></b>
+            </div>
+            <div style="margin-top: 12px; font-size: 13px; color: var(--ink-45)">
+              Add or drop a module any time — the bill follows.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2 STAKES / MONEY BEAT ============ -->
+    <section>
+      <div class="wrap" style="display: flex; flex-direction: column; gap: 48px">
+        <div style="max-width: 46ch">
+          <h2 class="h2">What the same stack<br />costs in pieces<span class="spark">.</span></h2>
+          <p class="lead mt24" style="max-width: 56ch">
+            Every module replaces a tool you&rsquo;d otherwise pay for on its own. Here&rsquo;s the
+            real, published 2026 price of the whole pile, and the one number it becomes on sparx.
+          </p>
+        </div>
+
+        <!-- giant editorial numerals -->
+        <div class="bignums">
+          <div class="cell">
+            <div class="stat-num">$41k<small>+/yr</small></div>
+            <p>Kept by running all twelve capabilities as sparx instead of twelve separate subscriptions.</p>
+          </div>
+          <div class="cell">
+            <div class="stat-num">12&rarr;1</div>
+            <p>Twelve logins, renewal dates, and support queues collapse into a single monthly invoice.</p>
+          </div>
+          <div class="cell">
+            <div class="stat-num">0%</div>
+            <p>Extra on every sale, versus the 0.6&ndash;2% surcharge hosted stores add to use your own processor.</p>
+          </div>
+        </div>
+
+        <!-- the confrontation: torn receipt (old stack) vs the sparx answer -->
+        <div class="confront">
+          <div class="oldway">
+            <div class="kick">THE OLD WAY</div>
+            <h3>Twelve tools. Twelve bills.</h3>
+            <div class="receipt">
+              <div class="rhead">★ YOUR STACK, STITCHED TOGETHER ★</div>
+              <div class="ritem"><span>Webflow — Premium</span><span>$39</span></div>
+              <div class="ritem"><span>Shopify — Advanced</span><span>$399</span></div>
+              <div class="ritem"><span>Storyblok — Growth</span><span>$99</span></div>
+              <div class="ritem"><span>HubSpot — Sales Pro ×3</span><span>$300</span></div>
+              <div class="ritem"><span>Klaviyo + transactional</span><span>$165</span></div>
+              <div class="ritem"><span>Shopify Plus — B2B</span><span>$2,400</span></div>
+              <div class="ritem"><span>Zapier Team + glue</span><span>$103</span></div>
+              <div class="ritem"><span>Spocket — Pro</span><span>$60</span></div>
+              <div class="ritem"><span>Acuity — Powerhouse</span><span>$61</span></div>
+              <div class="ritem"><span>FreshBooks — Plus</span><span>$33</span></div>
+              <div class="ritem"><span>Zoho Inventory — Pro</span><span>$99</span></div>
+              <div class="ritem"><span>Intercom — live chat</span><span>$74</span></div>
+              <div class="rtotal">
+                <span style="color: #4a4a4a">TOTAL / MONTH</span><b>$3,832</b>
+              </div>
+              <div class="barcode">
+                <span style="width: 2px"></span><span style="width: 1px"></span
+                ><span style="width: 3px"></span><span style="width: 1px"></span
+                ><span style="width: 2px"></span><span style="width: 4px"></span
+                ><span style="width: 1px"></span><span style="width: 1px"></span
+                ><span style="width: 3px"></span><span style="width: 2px"></span
+                ><span style="width: 1px"></span><span style="width: 4px"></span
+                ><span style="width: 1px"></span><span style="width: 2px"></span
+                ><span style="width: 3px"></span><span style="width: 1px"></span
+                ><span style="width: 2px"></span><span style="width: 1px"></span
+                ><span style="width: 4px"></span><span style="width: 2px"></span
+                ><span style="width: 1px"></span><span style="width: 3px"></span
+                ><span style="width: 1px"></span><span style="width: 2px"></span>
+              </div>
+              <div class="barcode-cap">B E F O R E &nbsp; S P A R X</div>
+            </div>
+          </div>
+
+          <div class="answer">
+            <div class="kick">The same twelve capabilities, on sparx</div>
+            <div class="now">$411<small>/mo</small></div>
+            <span class="keep">✓ You keep $3,421/mo — about $41,000 a year</span>
+            <div class="also">
+              Just getting going? A growing site — <b>Builder, Commerce, CMS, CRM &amp; Email</b> —
+              runs <b>$186/mo</b> instead of $1,002, keeping $816 every month.
+            </div>
+          </div>
+        </div>
+
+        <p class="caption" style="max-width: 80ch">
+          Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of
+          the tools each module replaces. Those prices scale up with seats, contacts, and usage, so a
+          real-world stack usually costs more. Invoicing and Inventory come free with Commerce or
+          B2B, so they add $0. sparx is flat — the module price is the price.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 3 SWITCHBOARD ============ -->
+    <section id="sb" class="stage island">
+      <div class="wrap">
+        <div style="max-width: 40ch; margin-bottom: 40px">
+          <h2 class="h2">Now price your own stack.</h2>
+          <p class="lead mt24">
+            Every module is one switch. Flip it and the stack summary recomputes the instant you do —
+            one platform, one invoice, nothing you&rsquo;re not using.
+          </p>
+        </div>
+        <div class="sb-note">
+          &lt;PricingSwitchboard /&gt; — the real interactive card grid + live bill calculator drops
+          in here, reused byte-for-byte.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3b DASHBOARD (product screenshot beat) ============ -->
+    <section class="dash island">
+      <div class="wrap">
+        <div style="max-width: 46ch">
+          <h2 class="h2">One bill. One login.<br />One place<span style="color: #fff">.</span></h2>
+          <p class="lead mt24">
+            Whatever you switch on shows up in the same dashboard — no extra seats, no new logins,
+            no tab-hopping. This is the product every module lives inside.
+          </p>
+        </div>
+        <div class="dashframe">
+          <div class="bar">
+            <i style="background: #ff5f57"></i><i style="background: #febc2e"></i
+            ><i style="background: #28c840"></i>
+            <span style="margin-left: 10px; font-size: 12px; color: var(--ink-45)"
+              >app.sparx.works</span
+            >
+          </div>
+          <div class="body">
+            <div class="side">
+              <div class="nav active"><span class="dot" style="background: var(--m-builder)"></span>Overview</div>
+              <div class="nav"><span class="dot" style="background: var(--m-commerce)"></span>Commerce</div>
+              <div class="nav"><span class="dot" style="background: var(--m-cms)"></span>Content</div>
+              <div class="nav"><span class="dot" style="background: var(--m-crm)"></span>Customers</div>
+              <div class="nav"><span class="dot" style="background: var(--m-email)"></span>Email</div>
+              <div class="nav"><span class="dot" style="background: var(--m-b2b)"></span>Wholesale</div>
+            </div>
+            <div class="main">
+              <div class="kpis">
+                <div class="kpi"><div class="n">$12,480</div><div class="l">Revenue · 30 days</div></div>
+                <div class="kpi"><div class="n">318</div><div class="l">Orders</div></div>
+                <div class="kpi"><div class="n">1,204</div><div class="l">Customers</div></div>
+              </div>
+              <div class="rowline"><span>Order #10482 — paid</span><span>$149.00</span></div>
+              <div class="rowline"><span>Newsletter — sent to 1,204</span><span>62% open</span></div>
+              <div class="rowline"><span>Low stock — Ceramic mug</span><span>4 left</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4 FOUNDATION ============ -->
+    <section class="foundation island">
+      <div class="wrap">
+        <div style="max-width: 46ch; margin-bottom: 48px">
+          <h2 class="h2">Under every module,<br />the same platform<span style="color: #a78bfa">.</span></h2>
+          <p class="lead mt24">
+            You pay for modules. Everything underneath them — the hosting, the security, the API — is
+            included on every plan, from one module to all twelve.
+          </p>
+        </div>
+        <div class="grid" style="grid-template-columns: repeat(4, 1fr)">
+          <div class="fcard"><div class="ico">◍</div><h3>Hosting + global CDN</h3><p>Edge-cached pages, fast TTFB worldwide. No separate hosting bill.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>SSL + custom domains</h3><p>Bring your domain; certificates issue and renew automatically.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>The unified dashboard</h3><p>One admin for every module you turn on — no extra logins.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>REST + GraphQL API</h3><p>Every feature is an endpoint first. Build anything on the same API.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>Multi-tenant security</h3><p>Row-level isolation in the database — your data is fenced off by default.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>Unlimited team members</h3><p>Invite the whole team. No per-seat pricing, ever.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>Automatic updates</h3><p>New features and fixes ship to your tenant — no upgrades to run.</p></div>
+          <div class="fcard"><div class="ico">◍</div><h3>Export anytime</h3><p>Your data is yours. Full export, no lock-in, leave whenever you want.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5 FEATURES ============ -->
+    <section>
+      <div class="wrap">
+        <div class="split">
+          <div class="sticky">
+            <h2 class="h2">Every feature,<br />by module<span class="spark">.</span></h2>
+            <p class="lead mt24">
+              The complete list — what each module includes and what it replaces. Open any module;
+              the platform underneath comes with every plan.
+            </p>
+          </div>
+          <div class="acc">
+            <div class="acc-item">
+              <div class="acc-trigger">
+                <span class="mname"><span class="dot" style="background: var(--m-builder)"></span>Builder</span>
+                <span class="badge badge-primary">$10/mo</span>
+                <span class="repl">Replaces a website builder like Webflow</span>
+              </div>
+              <div class="acc-panel">
+                <span><span class="dot" style="background: var(--m-builder)"></span>Theme-first editor, block editing</span>
+                <span><span class="dot" style="background: var(--m-builder)"></span>Custom domain + automatic SSL</span>
+                <span><span class="dot" style="background: var(--m-builder)"></span>Global edge CDN</span>
+                <span><span class="dot" style="background: var(--m-builder)"></span>Draft → preview → publish</span>
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger">
+                <span class="mname"><span class="dot" style="background: var(--m-commerce)"></span>Commerce</span>
+                <span class="badge badge-primary">+ $49/mo</span>
+                <span class="repl">Replaces Shopify + checkout, tax & shipping apps</span>
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger">
+                <span class="mname"><span class="dot" style="background: var(--m-crm)"></span>CRM</span>
+                <span class="badge badge-primary">+ $49/mo</span>
+                <span class="repl">Replaces HubSpot + an automation seat</span>
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger">
+                <span class="mname"><span class="dot" style="background: var(--m-b2b)"></span>B2B · Fleet</span>
+                <span class="badge badge-primary">+ $99/mo</span>
+                <span class="repl">Replaces Shopify Plus for native B2B</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6 PRINCIPLES ============ -->
+    <section>
+      <div class="wrap" style="display: flex; flex-direction: column; gap: 48px">
+        <h2 class="h2">Pricing without<br />the asterisks<span class="spark">.</span></h2>
+        <div class="grid" style="grid-template-columns: repeat(3, 1fr)">
+          <div class="card"><div class="cardbody pcard"><span class="pnum">01</span><h3>Flat per module</h3><p>A fixed monthly price for each module you switch on. No per-seat tax, no per-record metering, no usage cliffs.</p></div></div>
+          <div class="card"><div class="cardbody pcard"><span class="pnum">02</span><h3>Off means off</h3><p>Turn a module off and it stops billing the same day. It goes quiet, your data stays, and it picks back up if you return.</p></div></div>
+          <div class="card"><div class="cardbody pcard"><span class="pnum">03</span><h3>One invoice</h3><p>Every active module on a single monthly bill — not five subscriptions, five renewal dates, and five support queues.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7 ENTERPRISE ============ -->
+    <section class="ent island">
+      <div class="wrap">
+        <div class="ent-grid">
+          <div>
+            <h2 class="h2">Bigger needs?<br />Let&rsquo;s talk.</h2>
+            <p class="lead mt24">
+              For teams with security reviews, procurement, and uptime commitments. Custom pricing
+              that still bills the way the switchboard does — pay for the modules you run.
+            </p>
+            <div class="ent-feats">
+              <span>✓ SSO / SAML + SCIM</span>
+              <span>✓ Custom SLA with credits</span>
+              <span>✓ Dedicated support + onboarding</span>
+              <span>✓ SOC 2 review + custom MSA</span>
+              <span>✓ Volume pricing</span>
+              <span>✓ Migration assistance</span>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-start">
+            <a class="btn btn-primary" href="#">Talk to sales</a>
+            <a class="btn btn-outline" href="#">See the platform &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 8 FAQ ============ -->
+    <section>
+      <div class="wrap">
+        <div class="split">
+          <div class="sticky">
+            <h2 class="h2">Questions<br />about the bill<span class="spark">.</span></h2>
+            <p class="lead mt24">
+              Still curious? Read the platform docs, browse the API spec, or book a 20-min call. We
+              don&rsquo;t do high-pressure demos.
+            </p>
+          </div>
+          <div class="acc">
+            <div class="acc-item">
+              <div class="acc-trigger" style="font-size: 18px; font-weight: 500">
+                What counts as a module?
+              </div>
+              <div style="padding: 0 22px 22px; color: var(--ink-60); line-height: 1.6">
+                The twelve capabilities in the switchboard — each a flat monthly price you switch on
+                or off independently. Invoicing and Inventory come free with Commerce or B2B.
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger" style="font-size: 18px; font-weight: 500">
+                Do I have to start with Builder?
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger" style="font-size: 18px; font-weight: 500">
+                Are there per-seat or usage fees?
+              </div>
+            </div>
+            <div class="acc-item">
+              <div class="acc-trigger" style="font-size: 18px; font-weight: 500">
+                Is there a free trial?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 9 FINAL CTA ============ -->
+    <section class="final island">
+      <div class="wrap">
+        <div class="final-grid">
+          <div>
+            <h2 class="display">Light the spark<span class="spark">.</span></h2>
+            <p class="lead mt24" style="max-width: 52ch">
+              Sign up free. Switch on the modules you need. One invoice, no card, cancel any time.
+            </p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-start">
+            <a class="btn btn-primary" href="#">Start your site &rarr;</a>
+            <a class="btn btn-outline" style="color: #fff" href="#">Book a 20-min call</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
