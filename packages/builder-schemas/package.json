@@ -21,6 +21,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@wizeworks/silicaui-builder": "catalog:",
     "@wizeworks/silicaui-html": "catalog:",
     "zod": "^4.4.3"
   },

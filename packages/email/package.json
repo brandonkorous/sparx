@@ -16,6 +16,10 @@
     "./providers": {
       "types": "./src/providers/index.ts",
       "default": "./src/providers/index.ts"
+    },
+    "./silica": {
+      "types": "./src/silica/index.ts",
+      "default": "./src/silica/index.ts"
     }
   },
   "files": [
@@ -32,6 +36,7 @@
     "@react-email/render": "^2.0.8",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
+    "@wizeworks/silicaui-builder": "catalog:",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

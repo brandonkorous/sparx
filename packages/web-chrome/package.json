@@ -4,15 +4,11 @@
   "private": true,
   "description": "Shared marketing/site chrome — the site header (nav + modules megamenu). Used by apps/web and the apps/dashboard auth pages so both render one header.",
   "type": "module",
-  "sideEffects": [
-    "**/*.css"
-  ],
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    },
-    "./chrome.css": "./src/chrome.css"
+    }
   },
   "files": [
     "src"
@@ -23,7 +19,8 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@sparx/ui": "workspace:*"
+    "@sparx/ui": "workspace:*",
+    "@wizeworks/silicaui-react": "catalog:"
   },
   "peerDependencies": {
     "react": "^19.0.0",
