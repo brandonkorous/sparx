@@ -405,7 +405,7 @@ export default async function CommercePage() {
           <OverviewCard
             title="Recent orders"
             icon={<ShoppingCart className="h-4 w-4" />}
-            right={<CardLink href="/commerce/orders">All orders</CardLink>}
+            right={<CardLink href="/crm/orders">All orders</CardLink>}
             plain
           >
             <EmptyState

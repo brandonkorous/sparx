@@ -30,7 +30,7 @@ export function buildKpis(raw: Raw, m: ReadonlySet<string>): Kpi[] {
       value: fmtNumber(raw.revCur.ordersCount),
       delta: computeDelta(raw.revCur.ordersCount, raw.revPrev?.ordersCount),
       spark: raw.revTs?.points.map((p) => p.ordersCount),
-      href: '/commerce/orders',
+      href: '/crm/orders',
     });
   }
 
