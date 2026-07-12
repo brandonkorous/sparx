@@ -18,11 +18,23 @@ import { ModuleUpsell } from './module-upsell';
 // its own data fetching before deciding what to render (e.g. the Site Builder
 // editor, which would otherwise fetch editor state for a tenant that can't see
 // it). For the common "just gate these children" case, prefer <ModuleGate>.
-export async function requireModuleOrUpsell(module: ModuleSlug): Promise<React.ReactNode | null> {
+//
+// `module` accepts an array for routes that legitimately belong to more than
+// one module (e.g. CRM's Orders section, which a commerce-only tenant without
+// CRM must still be able to reach) — passes if ANY listed module is enabled.
+// The upsell shown on failure names the first module in the list.
+export async function requireModuleOrUpsell(
+  module: ModuleSlug | ModuleSlug[]
+): Promise<React.ReactNode | null> {
   const session = await requireSession();
-  if (await isModuleEnabled(session.user.tenantId, module)) return null;
+  const modules = Array.isArray(module) ? module : [module];
+  for (const m of modules) {
+    if (await isModuleEnabled(session.user.tenantId, m)) return null;
+  }
   const canActivate = session.user.role === 'owner' || session.user.role === 'admin';
-  return <ModuleUpsell module={module} canActivate={canActivate} />;
+  // `modules` is built from `[module]` or the caller's array — call sites never
+  // pass an empty array, so index 0 always exists despite noUncheckedIndexedAccess.
+  return <ModuleUpsell module={modules[0]!} canActivate={canActivate} />;
 }
 
 // Component form — renders `children` when the module is active, otherwise the
@@ -32,7 +44,7 @@ export async function ModuleGate({
   module,
   children,
 }: {
-  module: ModuleSlug;
+  module: ModuleSlug | ModuleSlug[];
   children: React.ReactNode;
 }) {
   return (await requireModuleOrUpsell(module)) ?? <>{children}</>;
