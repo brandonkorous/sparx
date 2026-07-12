@@ -51,14 +51,17 @@ const config = {
       // onboarding hand-off working.
       { source: '/settings/payments', destination: '/finance/payments', permanent: true },
       { source: '/settings/billing', destination: '/finance/subscription', permanent: true },
-      // Builder cutover (docs/builder/07 §2.2): the split page/layout editors are
-      // now zones of the one unified editor at /builder/studio. /builder/page carries
-      // its `?page=<id>` deep link through automatically (no query on the
-      // destination); site opens the layout zone. Brand & Theme is its OWN surface
-      // again (/builder/brand) — no redirect. Keeps external links, bookmarks, and
-      // the onboarding hand-off working.
+      // Builder cutover (docs/builder/07 §2.2): the old split page editor is now the
+      // one unified editor at /builder/studio, and /builder/page carries its
+      // `?page=<id>` deep link through automatically (no query on the destination).
+      //
+      // There is NO /builder/site rule. There used to be — back when "site" meant the
+      // site-LAYOUT editor — but /builder/site was repurposed as the site IDENTITY
+      // surface (name, tagline, logo, favicon, socials) when theme moved into the
+      // silica editor, and /builder/brand now redirects TO it. The stale rule made
+      // those two fight: /builder/brand → /builder/site → /builder/studio, so the
+      // identity page was unreachable from anywhere.
       { source: '/builder/page', destination: '/builder/studio', permanent: true },
-      { source: '/builder/site', destination: '/builder/studio?zone=layout', permanent: true },
     ];
   },
   async rewrites() {

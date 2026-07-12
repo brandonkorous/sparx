@@ -93,12 +93,18 @@ export async function createEntryTx(
     slug = slugify(input.slug);
   }
 
+  const status = input.status ?? 'draft';
   const entry = await tx.contentEntry.create({
     data: {
       tenantId: ctx.tenantId,
       typeKey: type.key,
       slug,
-      status: input.status ?? 'draft',
+      status,
+      // Mirrors the publish transition below (nextStatus === 'published' → now)
+      // — a status set directly at create time needs the same real timestamp,
+      // not a null that public listing's `orderBy publishedAt desc` and any
+      // "published on" display would otherwise mishandle.
+      publishedAt: status === 'published' ? new Date() : null,
       body: body as Json,
       seoJson: seo as Json,
       authorId: input.authorId ?? null,

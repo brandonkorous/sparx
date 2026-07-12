@@ -175,7 +175,8 @@ async function call<T>(
     );
   } catch (error) {
     const cause = describeFetchError(error);
-    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+    console.error(`api-rest request failed: ${method} ${path}`, cause);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', 'Could not reach the server. Please try again.', {
       target,
       cause: cause.message,
       rootCause: cause.rootCause,
@@ -192,15 +193,20 @@ async function call<T>(
 
   if (!res.ok) {
     if ('error' in json) {
+      // `json.error.message` is api-rest's own human-authored, non-technical
+      // message (docs/16 error envelope) — surface it as-is. A raw
+      // "api-rest request failed: METHOD /path (...)" wrapper here used to
+      // leak straight into toasts the non-technical dashboard audience sees.
       throw makeError(
         res.status,
         json.error.code,
-        `api-rest request failed: ${method} ${path} (${json.error.message})`,
+        json.error.message,
         json.error.details,
         json.error.request_id
       );
     }
-    throw makeError(res.status, 'UNKNOWN', `api-rest request failed: ${method} ${path}`);
+    console.error(`api-rest request failed: ${method} ${path}`, res.status);
+    throw makeError(res.status, 'UNKNOWN', 'Something went wrong. Please try again.');
   }
   const success = json as SuccessEnvelope<T>;
   return { data: success.data, etag, meta: success.meta ?? null };
@@ -229,7 +235,8 @@ async function callRaw(session: SparxSession, method: string, path: string): Pro
     );
   } catch (error) {
     const cause = describeFetchError(error);
-    throw makeError(503, 'UPSTREAM_FETCH_FAILED', `api-rest request failed: ${method} ${path}`, {
+    console.error(`api-rest request failed: ${method} ${path}`, cause);
+    throw makeError(503, 'UPSTREAM_FETCH_FAILED', 'Could not reach the server. Please try again.', {
       target,
       cause: cause.message,
       rootCause: cause.rootCause,
