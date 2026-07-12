@@ -1,8 +1,39 @@
 # 120 — Email builder → silicaui adoption (the second engine cutover)
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-11
+**Last Updated:** 2026-07-12
+
+> **STATUS (2026-07-12) — DONE. There is ONE email engine.** Slice 7 landed: `renderEmailTree`
+> (583 lines + 378 of tests), the legacy `EmailBuilderApp` + its preview modal + merge-tags panel,
+> `email-surface-data.ts`, the tree-shaped `resolveEmailData` / `emailDataResolver`, and the
+> parallel-run branch in all four send callers are **deleted**. Every email — transactional,
+> broadcast, preview, test-send — renders through `renderSilicaEmail` and only that.
+>
+> **The parallel run ended with a CONVERSION, not a reset.** The blocker was the ~260 rows
+> authored on the sparx engine: 231 keyed and, critically, **30 custom-key** ones, which have no
+> code default to fall back to. Resetting them to defaults would have silently destroyed edits and
+> had no answer at all for the custom emails. So `emailTreeToSilica`
+> ([packages/builder-schemas/src/email-legacy-to-silica.ts](../packages/builder-schemas/src/email-legacy-to-silica.ts))
+> converts each row **from its own tree** — total over the ten node types the live table actually
+> contains, with the ten mapping cleanly onto the slice-6 authoring kit (`conditional_block` →
+> `when()`, `line_item_table` → `itemsTable()`, and the wordmark / unsubscribe / postal-address
+> nodes → **nothing**, because the send now COMPOSES those). It runs in two places: on READ
+> (`emailService`, so `silicaDoc` is never null and no send can break mid-deploy), and as a
+> persisting **repair pass** inside `provisionDefaultEmails` — the per-tenant reconcile that
+> already runs on module activation and every 6 hours, which makes it the only deployable place to
+> land a backfill without a one-off DB script.
+>
+> **Two behaviour changes, both improvements, both deliberate.** (1) A broadcast now always
+> DECLARES `emailType: 'marketing'`, so the CAN-SPAM postal-address gate applies to every one of
+> them. (2) The "marketing email must contain an `unsubscribe_link` node" gate is **gone** — it
+> existed because the sparx builder made the opt-out an optional node an author had to remember to
+> place, i.e. an author could opt out of the opt-out. silica composes the legal footer into every
+> marketing send, so the requirement is now satisfied structurally and cannot be authored away.
+>
+> **Still open (one deploy behind).** `builder_emails.draft_tree` / `published_tree` still exist as
+> the conversion source. They get dropped — along with `emailTreeToSilica` and the sparx email node
+> schema — once the repair pass has run for every tenant. Nothing reads them today.
 
 > **What this is.** The design for migrating sparx's Email Builder from its own
 > `.bx-*` engine onto `@wizeworks/silicaui-builder/email` (the `<EmailBuilder>` shell +
@@ -181,18 +212,24 @@ marketing send with no configured `physicalAddress`/unsubscribe still refuses, u
    - **The `??` fallback.** `{{customer.firstName ?? "there"}}` still works: silica's native token
      regex only matches bare paths, so a token with a fallback passes through projection untouched
      and is then interpolated by sparx's own pass over the projected HTML, which understands it.
-7. **Flip + delete.** Once every path + every provisioned default is silica and proven: default
-   new emails to silica, drop the sparx `draftTree`/`publishedTree` render path, delete
-   `renderEmailTree` + the old `EmailBuilderApp` + the email leaf renderer. `@sparx/email`'s
-   atomic components stay (the injected frame sections still use them / their tokens).
+7. **Flip + delete — ✅ DONE (2026-07-12).** Every path is silica. `renderEmailTree`, the email
+   leaf renderer, `EmailBuilderApp` (+ preview modal + merge-tags panel), `email-surface-data.ts`,
+   and the tree-shaped `resolveEmailData`/`emailDataResolver` are deleted; the parallel-run branch
+   is gone from all four send callers and the dispatch tick. `@sparx/email`'s atomic components
+   stay (the injected frame sections still use them / their tokens). Pre-cutover rows are
+   CONVERTED, not reset — see `emailTreeToSilica` + the repair pass in `provisionDefaultEmails`.
+   The `draft_tree`/`published_tree` columns survive one more deploy as the conversion source.
 
 ---
 
 ## 5. Risks & how they're contained
 
-- **Transactional email is the highest-stakes surface.** Parallel-run (D1/slice 5) means order
-  confirmations etc. keep rendering through `renderEmailTree` until their specific default is
-  re-authored AND the silica render is proven for that key — never a blind cutover.
+- **Transactional email is the highest-stakes surface.** Parallel-run (D1/slice 5) held it open
+  until every default was silica and proven. Closing it (slice 7) kept the same discipline: the
+  conversion runs on READ as well as in the repair pass, so an order confirmation cannot break in
+  the window between deploy and reconcile, and it is covered by render tests that assert the
+  tenant's own copy, tokens, `??` fallbacks, line-item repeat, conditional drop, and the composed
+  footer all survive the move — not just that the node shapes are right.
 - **Merge-token regression.** Scalars stay `{{token}}` (D2.3) rendered by the same
   `interpolateEmailTokens` — no author relearns syntax, and existing copy is untouched.
 - **Plain-text fidelity.** New html-to-text pass replaces React Email's `plainText` render;
@@ -245,11 +282,16 @@ upstream they'd become Q26–Q27. Neither changes the slice plan.
 
 ## 7. Definition of done
 
-- [ ] All four render callers + the dispatch tick route silica-documented emails through one
-      `renderSilicaEmail`; un-migrated emails still render via `renderEmailTree` (parallel-run).
-- [ ] Line-item tables, product/post grids, conditionals, `{{token}}` scalars, the legal
+- [x] All four render callers + the dispatch tick route EVERY email through one `renderSilicaEmail`.
+- [x] Line-item tables, product/post grids, conditionals, `{{token}}` scalars, the legal
       footer, and plain-text all verified on the silica path.
-- [ ] The email builder is `<EmailBuilder>` on silica; the site + email builders are one engine.
-- [ ] The 13 provisioned defaults are silica `EmailDocument`s; provisioning writes silica.
-- [ ] Legacy `renderEmailTree` + `EmailBuilderApp` deleted; `@sparx/email` atomic components kept.
-- [ ] Per-site override + keyed-default + compliance-gate behavior unchanged end-to-end.
+- [x] The email builder is `<EmailBuilder>` on silica; the site + email builders are one engine.
+- [x] The provisioned defaults are silica `EmailDocument`s; provisioning writes silica.
+- [x] Legacy `renderEmailTree` + `EmailBuilderApp` deleted; `@sparx/email` atomic components kept.
+- [x] Pre-cutover rows CONVERTED from their own trees (never reset), on read + via a persisting
+      repair pass; proven by unit tests on the mapping and render tests on the resulting email.
+- [x] Per-site override + keyed-default behavior unchanged end-to-end. Compliance changed
+      DELIBERATELY: marketing intent is declared, not sniffed, and the opt-out is composed rather
+      than author-placed — so it can no longer be omitted.
+- [ ] `draft_tree` / `published_tree` dropped + `emailTreeToSilica` deleted (one deploy behind:
+      gated on the repair pass having run for every tenant).

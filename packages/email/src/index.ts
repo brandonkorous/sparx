@@ -36,16 +36,6 @@ export {
   type AuthoredEmailInput,
 } from './send';
 
-// Builder email node-tree render (docs/52): walk a BuilderNode tree → branded,
-// table-based React Email. The successor to the retired section composer
-// (docs/52 §8) — marketing emails are authored in the Builder.
-export {
-  renderEmailTree,
-  composeEmailTree,
-  type RenderEmailTreeInput,
-  type RenderEmailTreeOptions,
-} from './builder/render-email-tree';
-
 export {
   PasswordResetEmail,
   WelcomeMerchantEmail,

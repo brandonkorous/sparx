@@ -1,43 +1,34 @@
 import type { Metadata } from 'next';
-import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
+import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
+import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/builder-schemas';
+import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
+import { starterSite } from '@sparx/silica-catalog';
 
-import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
-import { applyBrandOverride } from '../_brand/lib/site-brand';
-import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveProperty } from '@/lib/sites';
-import {
-  getBindingCatalog,
-  listArchetypes,
-  listComponentsFull,
-  listLayouts,
-  listPages,
-} from '../_lib/api';
-import { canvasThemeCss } from '../_lib/canvas-theme';
+import { getBindingCatalog, getBuilderSite, listPages } from '../_lib/api';
+import { getBrand, getConfig } from '../_brand/lib/api';
+import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
-import { StudioApp } from '../_builder/studio-app';
-import '../builder.css';
-// The Surface RECIPE — @sparx/site-ui's `st-*` classes pre-scoped to `.bx-canvas`,
-// so the live chrome + page render exactly as the published site (docs/47 §5).
-import '@sparx/site-ui/styles.canvas.css';
 
-// /builder/studio — the UNIFIED builder shell (docs/builder/03): one editor whose
-// canvas is the live stack (site layout › active page at the Outlet), themed by the
-// SAVED brand theme (compiled server-side into a static `.bx-canvas` style). It
-// composes the page/site catalog + binding sources into one studio. The Phase-7
-// cutover (docs/builder/07) made this THE site editor: /builder/page · /site
-// redirect here (to the matching zone via `?zone=` / `?page=`). BRAND & THEME are
-// edited on their own surface, /builder/brand, and EMAIL on /builder/email — neither
-// is a surface of this studio. `?page=<id>` opens that page in the Outlet on mount.
+import { buildPreviewData } from '../_builder/binding-catalog';
+import { SilicaStudio } from '../_builder/silica-studio';
+
+// /builder/studio — THE site editor, on the silica `<Builder>` engine (docs/118).
+// The engine owns the canvas, page switching, the frame/Outlet chrome, symbols,
+// theme, and undo; sparx supplies the HOST (binding resolver + the tenant's data
+// sources) and the page-domain drawer, and persists the whole extracted `Site`
+// through the debounced sync. The hand-rolled `.bx-*` `SiteStudio` it replaced is
+// deleted — this route WAS a parallel-run proof surface at /builder/silica, and
+// that route is gone now that the storefront renders silica end-to-end
+// (apps/site/lib/silica.ts) with the code starter as the universal fallback.
+//
+// `?page=<id>` opens that page on mount (the silica page id IS the BuilderPage row
+// id) — the deep link the CMS entry editor, the SEO surface, and a blueprint
+// install use to jump straight to a template.
 
 export const metadata: Metadata = {
   title: 'Builder · Studio',
 };
-
-const FALLBACK_TENANT = {
-  id: '',
-  name: 'Workspace',
-  slug: '',
-} as const;
 
 const FALLBACK_BRAND: BrandDto = {
   tenantId: '',
@@ -67,27 +58,18 @@ const FALLBACK_CONFIG: SiteConfigDto = {
   updatedAt: '',
 };
 
-async function loadLayouts(): Promise<BuilderLayoutDto[]> {
+/** The tenant's compiled brand as a silica `Theme`, so the canvas previews the real
+ *  brand (colors, type, rounding). Degrades to the starter's preset on any failure. */
+function tenantTheme(brand: BrandDto, config: SiteConfigDto): Theme | undefined {
   try {
-    return await listLayouts();
+    const compiled = compileThemeForTenant({
+      themeKey: config.themeKey,
+      brand,
+      presentation: config.draftSettings.presentation ?? null,
+    });
+    return compiledToSilicaTheme(compiled, config.themeKey);
   } catch {
-    return [];
-  }
-}
-
-async function loadPages(): Promise<BuilderPageDto[]> {
-  try {
-    return await listPages();
-  } catch {
-    return [];
-  }
-}
-
-async function loadCatalog(): Promise<BindingCatalog> {
-  try {
-    return await getBindingCatalog();
-  } catch {
-    return { sources: [] };
+    return undefined;
   }
 }
 
@@ -96,70 +78,61 @@ interface BuilderStudioRouteProps {
 }
 
 export default async function BuilderStudioRoute({ searchParams }: BuilderStudioRouteProps) {
-  const [
-    sp,
-    baseBrand,
-    config,
-    activeProperty,
-    tenant,
-    layouts,
-    pages,
-    pageCatalog,
-    components,
-    archetypes,
-  ] = await Promise.all([
+  const [sp, catalog, baseBrand, config, activeProperty, storedSite, pages] = await Promise.all([
     searchParams,
+    getBindingCatalog().catch(() => ({ sources: [] })),
     getBrand().catch(() => FALLBACK_BRAND),
     getConfig().catch(() => FALLBACK_CONFIG),
     getActiveProperty().catch(() => null),
-    getTenant().catch(() => FALLBACK_TENANT),
-    loadLayouts(),
-    loadPages(),
-    loadCatalog(),
-    listComponentsFull(),
-    listArchetypes(),
+    getBuilderSite().catch(() => null),
+    // The page catalog with domain metadata (recordType / isDefault / SEO) — the
+    // seed for the header page-settings drawer. Empty on failure (drawer still opens,
+    // just without pre-filled values until the first save).
+    listPages().catch(() => []),
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
-  // The cutover redirects /builder/site → ?zone=layout (docs/builder/07 §2.2); the
-  // studio opens on that zone. (/builder/brand is its own surface — no redirect.)
-  const initialZone = sp.zone === 'layout' ? 'layout' : undefined;
 
-  // The brand the canvas previews: the tenant base for the primary site, else the
-  // base with this site's override applied (so a non-primary site shows ITS look).
-  // Compiled to a static `.bx-canvas` style below — the editor doesn't edit it.
-  const isPrimary = activeProperty?.isPrimary ?? true;
-  const effectiveBrand = isPrimary
-    ? baseBrand
-    : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
+  // The tenant's real binding catalog drives the picker + the resolver root; fall
+  // back to the code-defined commerce + site sources when the fetch fails so the
+  // editor always opens with a working binding picker.
+  const sources = catalog.sources.length ? catalog.sources : [...COMMERCE_SOURCES, ...SITE_SOURCES];
+  const root = buildPreviewData(sources, null);
+  const dataSources = toSilicaDataSources(sources);
 
-  const siteOrigin = tenant.slug ? propertyOrigin(tenant.slug, activeProperty) : undefined;
-  const sitePreview = await getSitePreviewData(activeProperty?.slug);
-  const themeCss = canvasThemeCss(effectiveBrand, config);
+  // Preview in this site's brand: the tenant base for the primary site, else the
+  // base with this site's override applied (docs/49), so a non-primary site's
+  // canvas opens on ITS look.
+  const effectiveBrand =
+    (activeProperty?.isPrimary ?? true)
+      ? baseBrand
+      : applyBrandOverride(baseBrand, activeProperty?.brandOverride);
+  // The theme the canvas opens on: the author's SAVED theme when they have edited
+  // one (siteService round-trips it), else the tenant's brand-derived theme. Brand
+  // stays the default; an authored theme is an explicit override that wins once
+  // saved, and is never discarded (docs/118).
+  const brandTheme = tenantTheme(effectiveBrand, config) ?? THEME_PRESETS[0]!;
+  const theme: Theme = storedSite?.theme ?? brandTheme;
+
+  // The full multi-page silica Site — the engine owns page-switching, the
+  // frame/Outlet chrome, symbols, and undo. A property with no silica site yet
+  // opens on the starter seed, and the first autosave materializes it into the
+  // store (siteService.sync).
+  const site: Site = storedSite ? { version: '1.0.0', ...storedSite, theme } : starterSite(theme);
 
   return (
-    <>
-      {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      {/* Key on the active site id so switching sites (the breadcrumb switcher does a
-          soft router.refresh()) REMOUNTS the studio with the new site's identity —
-          its layouts + pages. Without it, the client useState initializers keep the
-          prior site's catalog even though the server passes fresh props (docs/49). */}
-      <StudioApp
-        key={activeProperty?.id ?? 'no-site'}
-        site={{
-          initialLayouts: layouts,
-          initialPages: pages,
-          pageCatalog,
-          components,
-          archetypes,
-          siteOrigin,
-          sitePreview,
-          initialPageId,
-          initialZone,
-          tenantSlug: tenant.slug,
-          previewPropertySlug: activeProperty?.slug,
-        }}
-      />
-    </>
+    <SilicaStudio
+      // Key on the active site id so switching sites (the breadcrumb switcher does a
+      // soft router.refresh()) REMOUNTS the studio with the new site's document —
+      // the engine reads `document` once at mount, so without this the prior site's
+      // tree would stay on the canvas even though the server passed a fresh one.
+      key={activeProperty?.id ?? 'no-site'}
+      site={site}
+      root={root}
+      dataSources={dataSources}
+      pages={pages}
+      sources={sources}
+      initialPageId={initialPageId}
+    />
   );
 }

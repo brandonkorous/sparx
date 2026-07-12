@@ -22,9 +22,7 @@
 import { withTenant } from '@sparx/db';
 import { discountService, productService } from '@sparx/commerce';
 import {
-  collectEmailSourceKeys,
   collectSilicaEmailSourceKeys,
-  type BuilderNode,
   type DataSources,
   type SilicaEmailDocument,
 } from '@sparx/builder-schemas';
@@ -893,25 +891,11 @@ async function loadEmailSources(
   return out;
 }
 
-/** Resolve only the sources an email tree references — both node bindings and
- *  `{{token}}` merge paths (`collectEmailSourceKeys`), plus any source named only
- *  in `extraStrings` (the subject / preheader). `ref` carries the send's entity ids
- *  for the entity-scoped sources; absent → per-recipient sources resolve empty
- *  (render-once / preview). */
-export async function resolveEmailData(
-  ctx: ServiceContext,
-  tree: BuilderNode,
-  ref?: EmailRecipientRef,
-  extraStrings: string[] = [],
-  propertyId?: string | null
-): Promise<DataSources> {
-  return loadEmailSources(ctx, collectEmailSourceKeys(tree, extraStrings), ref, propertyId);
-}
-
-/** The silica twin (docs/120): resolve only the sources a silica `EmailDocument`
- *  references — its `data` binding markers plus the `{{token}}` paths in its copy
- *  (`collectSilicaEmailSourceKeys`). Same loader, same data; only the collection
- *  differs, because a silica document expresses its bindings differently. */
+/** Resolve only the sources a silica `EmailDocument` references — its `data` binding
+ *  markers plus the `{{token}}` paths in its copy (`collectSilicaEmailSourceKeys`) —
+ *  plus any source named only in `extraStrings` (the subject / preheader). `ref` carries
+ *  the send's entity ids for the entity-scoped sources; absent → per-recipient sources
+ *  resolve empty (render-once / preview). */
 export async function resolveSilicaEmailData(
   ctx: ServiceContext,
   doc: SilicaEmailDocument,
@@ -950,26 +934,13 @@ export function applyEntitySnapshot(
   return data;
 }
 
-/** A `resolveEmailData` callback bound to a request's context — what the broadcast
- *  send path, the dispatch tick, and the editor preview inject so
- *  @sparx/email-platform resolves email data without a @sparx/commerce dependency
- *  (docs/52 §6). `boundPropertyId` scopes `{{tenant.name}}` to the active site for
- *  callers that know the site at injection time (preview/test-send pass
- *  `ctx.propertyId`); a per-call `propertyId` lets a caller that learns the site
- *  later override it (the broadcast send path passes `broadcast.propertyId`). Absent
- *  → tenant-level, unchanged for single-site tenants. */
-export function emailDataResolver(ctx: ServiceContext, boundPropertyId?: string | null) {
-  return (
-    tree: BuilderNode,
-    ref?: EmailRecipientRef,
-    propertyId?: string | null
-  ): Promise<DataSources> =>
-    resolveEmailData(ctx, tree, ref, undefined, propertyId ?? boundPropertyId);
-}
-
-/** The silica twin of `emailDataResolver` (docs/120) — the callback the broadcast
- *  path, the dispatch tick, and the editor preview inject so @sparx/email-platform
- *  resolves a silica document's data without a @sparx/commerce dependency. */
+/** The resolver callback bound to a request's context — what the broadcast send path,
+ *  the dispatch tick, and the editor preview inject so @sparx/email-platform resolves
+ *  email data without a @sparx/commerce dependency (docs/52 §6). `boundPropertyId`
+ *  scopes `{{tenant.name}}` to the active site for callers that know the site at
+ *  injection time (preview/test-send pass `ctx.propertyId`); a per-call `propertyId`
+ *  lets a caller that learns the site later override it (the broadcast send path passes
+ *  `broadcast.propertyId`). Absent → tenant-level, unchanged for single-site tenants. */
 export function silicaEmailDataResolver(ctx: ServiceContext, boundPropertyId?: string | null) {
   return (
     doc: SilicaEmailDocument,

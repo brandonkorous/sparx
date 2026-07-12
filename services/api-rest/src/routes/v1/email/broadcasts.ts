@@ -17,7 +17,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
-import { emailDataResolver, silicaEmailDataResolver } from '../../../lib/email-data.js';
+import { silicaEmailDataResolver } from '../../../lib/email-data.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -101,12 +101,10 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    // The broadcast body is a published Builder email (docs/52); emailDataResolver
-    // resolves its bound sources — once for a per-send body, per recipient (at
-    // dispatch) for a personalized one.
-    return ok(
-      await broadcastService.sendNow(ctx, id, emailDataResolver(ctx), silicaEmailDataResolver(ctx))
-    );
+    // The broadcast body is a published Builder email (docs/52);
+    // silicaEmailDataResolver resolves its bound sources — once for a per-send body,
+    // per recipient (at dispatch) for a personalized one.
+    return ok(await broadcastService.sendNow(ctx, id, silicaEmailDataResolver(ctx)));
   });
 
   app.post('/v1/email/broadcasts/:id/schedule', async (request) => {
@@ -115,15 +113,7 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    return ok(
-      await broadcastService.schedule(
-        ctx,
-        id,
-        request.body,
-        emailDataResolver(ctx),
-        silicaEmailDataResolver(ctx)
-      )
-    );
+    return ok(await broadcastService.schedule(ctx, id, request.body, silicaEmailDataResolver(ctx)));
   });
 
   app.post('/v1/email/broadcasts/:id/cancel', async (request) => {

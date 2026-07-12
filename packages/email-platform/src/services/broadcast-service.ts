@@ -11,11 +11,10 @@
 
 import { withTenant } from '@sparx/db';
 import type { Broadcast, Prisma } from '@sparx/db';
-import { renderEmailTree } from '@sparx/email';
 import { renderSilicaEmail } from '@sparx/email/silica';
 import {
+  emailTreeToSilica,
   silicaEmailIsPersonalized,
-  treeIsEmailPersonalized,
   type BuilderNode,
   type SilicaEmailDocument,
 } from '@sparx/builder-schemas';
@@ -23,12 +22,7 @@ import {
 import { writeAuditLog } from '../audit';
 import { publishEmailEvent } from '../events';
 import { EmailNotFoundError, EmailValidationError, type ServiceContext } from '../errors';
-import {
-  noEmailDataResolver,
-  noSilicaEmailDataResolver,
-  type ResolveEmailData,
-  type ResolveSilicaEmailData,
-} from './builder-email-service';
+import { noSilicaEmailDataResolver, type ResolveSilicaEmailData } from './builder-email-service';
 import {
   CreateBroadcastInput,
   ScheduleBroadcastInput,
@@ -45,33 +39,38 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
 }
 
-/** The published body of a Builder email (docs/52 §6). Read straight from the
- *  shared `builder_emails` table (RLS-scoped) — no @sparx/builder dependency, the
- *  same way this service reads broadcasts / templates / segments. Null when the
- *  email doesn't exist or hasn't been published. */
+/** The published body of a Builder email (docs/52 §6, docs/120). Read straight from
+ *  the shared `builder_emails` table (RLS-scoped) — no @sparx/builder dependency, the
+ *  same way this service reads broadcasts / templates / segments. Null when the email
+ *  doesn't exist or hasn't been published.
+ *
+ *  Always yields a SILICA document: a row authored on the retired sparx builder stores
+ *  only a tree, so it converts here — the same conversion `emailService.toPublished`
+ *  does, because this service reads the table directly rather than going through it. */
 async function loadPublishedBuilderEmail(
   ctx: ServiceContext,
   builderEmailId: string
 ): Promise<{
-  tree: BuilderNode;
   subject: string;
   preheader: string | null;
-  silicaDoc: SilicaEmailDocument | null;
+  silicaDoc: SilicaEmailDocument;
 } | null> {
   const row = await withTenant(ctx, (tx) =>
     tx.builderEmail.findUnique({ where: { id: builderEmailId } })
   );
   if (!row) return null;
-  // Published on EITHER path (docs/120 parallel-run). A silica-authored email has
-  // no `publishedTree`, so `tree` falls back to the draft as an unused placeholder —
-  // the render branches on `silicaDoc` first and never reads it.
-  const silicaDoc = (row.silicaPublishedDocument as SilicaEmailDocument | null) ?? null;
-  if (row.publishedTree == null && silicaDoc == null) return null;
+  if (row.publishedTree == null && row.silicaPublishedDocument == null) return null;
+  const stored = row.silicaPublishedDocument as SilicaEmailDocument | null;
   return {
-    tree: (row.publishedTree ?? row.draftTree) as unknown as BuilderNode,
     subject: row.subject,
     preheader: row.preheader,
-    silicaDoc,
+    silicaDoc:
+      stored ??
+      emailTreeToSilica(
+        (row.publishedTree ?? row.draftTree) as unknown as BuilderNode,
+        row.subject,
+        row.preheader
+      ),
   };
 }
 
@@ -235,7 +234,6 @@ async function enqueueAndMark(
   id: string,
   dueAt: Date,
   finalStatus: 'sent' | 'scheduled',
-  resolveEmailData: ResolveEmailData,
   resolveSilicaEmailData: ResolveSilicaEmailData
 ): Promise<Broadcast> {
   const broadcast = await get(ctx, id);
@@ -257,16 +255,14 @@ async function enqueueAndMark(
 
   // The body decides the dispatch shape (docs/52 §6):
   //   · per-recipient binding (recipient/order/cart/loyalty) → defer; the dispatch
-  //     tick reloads the published tree, resolves THIS recipient's data, renders.
+  //     tick reloads the published document, resolves THIS recipient's data, renders.
   //   · static / per-send (products/promotion/posts) → resolve once, render once,
   //     fan the same body out as `raw`.
-  // A silica-authored email (docs/120) decides + renders through the silica path;
-  // an un-migrated one keeps the legacy tree path. Both reach the same dispatch
-  // shape, so everything below is unchanged.
   const silicaDoc = doc.silicaDoc;
-  const personalized = silicaDoc
-    ? silicaEmailIsPersonalized(silicaDoc, [broadcast.subject, broadcast.preheader ?? ''])
-    : treeIsEmailPersonalized(doc.tree);
+  const personalized = silicaEmailIsPersonalized(silicaDoc, [
+    broadcast.subject,
+    broadcast.preheader ?? '',
+  ]);
 
   let body: { subject: string; html: string; text: string } | null = null;
   if (!personalized) {
@@ -274,37 +270,22 @@ async function enqueueAndMark(
     // brand_override merged over the tenant brand; null property → primary brand.
     // The same propertyId scopes `{{tenant.name}}` so body copy matches the brand.
     const brand = await resolveEmailBrand(ctx, broadcast.propertyId);
-    if (silicaDoc) {
-      const data = await resolveSilicaEmailData(silicaDoc, undefined, broadcast.propertyId);
-      // `marketing: true` injects the legal footer. The unsubscribe URL is
-      // per-recipient and a render-once body has no recipient, so it falls back to
-      // `#` — exactly what the legacy `unsubscribe_link` node did on this same path.
-      const rendered = renderSilicaEmail(
-        {
-          doc: silicaDoc,
-          to: 'broadcast@example.com',
-          subject: broadcast.subject,
-          preheader: broadcast.preheader,
-          data,
-          marketing: true,
-        },
-        { brand: brand ?? undefined }
-      );
-      body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
-    } else {
-      const data = await resolveEmailData(doc.tree, undefined, broadcast.propertyId);
-      const rendered = await renderEmailTree(
-        {
-          tree: doc.tree,
-          to: 'broadcast@example.com',
-          subject: broadcast.subject,
-          preheader: broadcast.preheader ?? undefined,
-          data,
-        },
-        { brand: brand ?? undefined }
-      );
-      body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
-    }
+    const data = await resolveSilicaEmailData(silicaDoc, undefined, broadcast.propertyId);
+    // `marketing: true` injects the legal footer. The unsubscribe URL is per-recipient
+    // and a render-once body has no recipient, so it falls back to `#` — exactly what
+    // the retired `unsubscribe_link` node did on this same path.
+    const rendered = renderSilicaEmail(
+      {
+        doc: silicaDoc,
+        to: 'broadcast@example.com',
+        subject: broadcast.subject,
+        preheader: broadcast.preheader,
+        data,
+        marketing: true,
+      },
+      { brand: brand ?? undefined }
+    );
+    body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
   }
 
   const campaignTag = `bcast_${id}`;
@@ -318,14 +299,15 @@ async function enqueueAndMark(
             builderEmailId: broadcast.builderEmailId!,
             subject: broadcast.subject,
             ...(broadcast.preheader ? { preheader: broadcast.preheader } : {}),
-            // A silica email (docs/120) has no `unsubscribe_link` node for the
-            // dispatch tick to infer marketing-ness from — the legal footer is
-            // COMPOSED at send instead. So declare the intent explicitly: a
-            // broadcast IS marketing, and the footer + List-Unsubscribe headers
-            // depend on that flag. Legacy trees keep the existing tree-inference
-            // (declaring it for them would newly refuse any broadcast whose author
-            // never placed the node — a behaviour change we don't want here).
-            ...(silicaDoc ? { emailType: 'marketing' as const } : {}),
+            // A silica email has no `unsubscribe_link` node for the dispatch tick to
+            // infer marketing-ness from — the legal footer is COMPOSED at send
+            // instead. So the intent is DECLARED: a broadcast is marketing, always,
+            // and the footer + List-Unsubscribe headers depend on that flag. This is
+            // now unconditional (docs/120 slice 7): every broadcast is silica, so the
+            // compliance gate applies to every one of them — a broadcast from a tenant
+            // with no postal address on file is refused, which is the CAN-SPAM rule the
+            // old tree-inference could be authored around by omitting a node.
+            emailType: 'marketing' as const,
           },
           from,
           variables,
@@ -395,17 +377,15 @@ async function enqueueAndMark(
 export async function sendNow(
   ctx: ServiceContext,
   id: string,
-  resolveEmailData: ResolveEmailData = noEmailDataResolver,
   resolveSilicaEmailData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<Broadcast> {
-  return enqueueAndMark(ctx, id, new Date(), 'sent', resolveEmailData, resolveSilicaEmailData);
+  return enqueueAndMark(ctx, id, new Date(), 'sent', resolveSilicaEmailData);
 }
 
 export async function schedule(
   ctx: ServiceContext,
   id: string,
   rawInput: unknown,
-  resolveEmailData: ResolveEmailData = noEmailDataResolver,
   resolveSilicaEmailData: ResolveSilicaEmailData = noSilicaEmailDataResolver
 ): Promise<Broadcast> {
   const { scheduledAt } = ScheduleBroadcastInput.parse(rawInput);
@@ -413,7 +393,7 @@ export async function schedule(
   if (dueAt.getTime() <= Date.now()) {
     throw new EmailValidationError('Scheduled time must be in the future.');
   }
-  return enqueueAndMark(ctx, id, dueAt, 'scheduled', resolveEmailData, resolveSilicaEmailData);
+  return enqueueAndMark(ctx, id, dueAt, 'scheduled', resolveSilicaEmailData);
 }
 
 export async function cancel(ctx: ServiceContext, id: string): Promise<Broadcast> {

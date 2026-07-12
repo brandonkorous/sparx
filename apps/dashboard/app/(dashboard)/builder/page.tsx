@@ -97,27 +97,24 @@ export const dynamic = 'force-dynamic';
 const TWO_COL = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.9fr_1fr]';
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
 
-// The build-it-yourself entry points. Brand / Site / Page open the unified editor
-// at the matching zone (docs/builder/07 §2.1 — the three split routes redirect
-// here); Email and Components keep their own surfaces.
+// The build-it-yourself entry points. The silica editor (docs/118) owns THEME,
+// LAYOUT, and PAGE as three modes of one canvas, switched in its own header — it
+// takes no initial-mode prop, so these cards open the editor rather than promising
+// a zone the URL can't reach. Site identity, Email, and Components keep their own
+// surfaces. (Restore per-zone deep links when silicaui adds `initialMode`.)
 const SURFACES = [
   {
-    href: '/builder/studio?zone=theme',
+    href: '/builder/site',
     icon: Fingerprint,
-    title: 'Brand',
-    description: 'Your identity — colors, type, logo, and rounding the whole site renders in.',
-  },
-  {
-    href: '/builder/studio?zone=layout',
-    icon: Globe,
-    title: 'Site',
-    description: 'The site shell: header, footer, navigation, and page layouts.',
+    title: 'Site identity',
+    description: 'Your name, tagline, logo, favicon, and social links.',
   },
   {
     href: '/builder/studio',
     icon: File,
-    title: 'Page',
-    description: 'Design page templates on the visual canvas, bound to your content and catalog.',
+    title: 'Editor',
+    description:
+      'One canvas for the whole site — your colors and type, the shell (header, footer, navigation), and every page.',
   },
   {
     href: '/builder/email',
@@ -463,7 +460,7 @@ export default async function BuilderOverviewPage() {
             actions={
               <>
                 <Button asChild variant="outline" leftIcon={<Eye className="h-4 w-4" />}>
-                  <Link href="/builder/studio?zone=layout">Preview</Link>
+                  <Link href="/builder/studio">Preview</Link>
                 </Button>
                 <Button asChild color="module" leftIcon={<Pencil className="h-4 w-4" />}>
                   <Link href="/builder/studio">Open editor</Link>
@@ -799,7 +796,7 @@ export default async function BuilderOverviewPage() {
                     tone="module"
                     title="Theme"
                     hint="Your site's colors, type & rounding"
-                    right={<CardLink href="/builder/studio?zone=theme">Edit</CardLink>}
+                    right={<CardLink href="/builder/studio">Edit</CardLink>}
                   />
                   <OverviewRow
                     icon={<Component className="h-4 w-4" />}

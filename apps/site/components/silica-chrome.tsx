@@ -96,6 +96,7 @@ interface DataMarker {
 }
 interface WalkNode {
   kind: string;
+  id?: string;
   tag?: string;
   class?: string;
   attrs?: Record<string, string | number | boolean>;
@@ -105,11 +106,16 @@ interface WalkNode {
   part?: string;
 }
 
-/** The `data-sui-*` markers a resolved node still carries — action + behavior +
+/** The `data-sui-*` markers a resolved node still carries — id + action + behavior +
  *  part (value/collection binds are stripped by resolveTree). Mirrors toHtml's
  *  `metaAttrs`, so the same runtime wires chrome and page bodies alike. */
 function metaProps(node: WalkNode): Record<string, unknown> {
   const out: Record<string, unknown> = {};
+  // The node's own id. `toHtml` emits this and this walker did not, which meant a
+  // hydrated element could not say WHICH authored node it came from. That is fine for
+  // a carousel (it only acts on itself) and fatal for a FORM: the submit has to name
+  // the form node so the server can verify it exists and look up where it routes.
+  if (node.id) out['data-sui-id'] = node.id;
   const d = node.data;
   if (d?.kind === 'action') {
     out['data-sui-action'] = d.ref;

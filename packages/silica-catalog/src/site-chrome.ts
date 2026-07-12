@@ -108,8 +108,8 @@ export function siteFooter(): Node {
           ]),
           footerColumn('More', [
             ['Search', '/search'],
-            ['Privacy', '/privacy'],
-            ['Terms', '/terms'],
+            ['Privacy', '/privacy-policy'],
+            ['Terms', '/terms-of-service'],
           ]),
         ],
       }),

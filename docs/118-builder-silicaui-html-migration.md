@@ -1,11 +1,17 @@
 # 118 — Builder → silicaui-html Migration Plan
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-10
+**Last Updated:** 2026-07-12
 
-> **STATUS (2026-07-10) — engine adoption SHIPPED; storefront on silica for four routes; legacy deletion GATED.**
-> The silica `<Builder>` engine is the studio (`/builder/silica`), and the storefront renders silica end-to-end for the **home, catch-all page, product detail (PDP), and blog** routes — each path being: silica-published-tree → shared host resolver → `renderSilicaBody`, winning over the sparx-builder + legacy-section fallbacks. Landed this pass:
+> **STATUS (2026-07-12) — the ROUTE CUTOVER is done: `/builder/studio` IS the silica editor.**
+> The parallel-run proof route (`/builder/silica`) and the hand-rolled `.bx-*` site editor behind it are **deleted** — 15 files / ~4,500 lines, including `site-studio.tsx` (1,275), `use-studio-editor.ts` (917), the HTML/fields/import-export panels, and the three no-selection settings panels in `inspector.tsx`. `/builder/studio` now loads the tenant's stored silica `Site` and mounts `<Builder>`; the Builder nav row, the overview cards, and every deep link point at it. The gate that held this open — "the storefront must render silica for every tenant first" — **closed** when `apps/site/lib/silica.ts` made the code starter the universal fallback: a published silica tree always wins, and a tenant who has published nothing still renders silica (starter frame + home/shop/about/contact + the PDP/collection composites), which is what makes the legacy tiers unreachable.
+>
+> **What did NOT die with it, and this is the part that matters:** the `.bx-*` engine (`canvas.tsx`, `inspector.tsx`, `registry.tsx`, `model.ts`, `builder.css`, ~45 files) is still reachable from **two surfaces that are staying** — the **component builder** (`/builder/components/[type]/edit`) and the **CMS entry editor's embedded record preview**. Deleting the site studio freed ~4.5k lines, not the whole engine. Retiring `.bx-*` entirely is a separate decision about those two surfaces, not a leftover of this one. No `@sparx/*` package became unreferenced (`@sparx/builder-render` + `surface-compile/allowlist` are still live); only two subpath entrypoints lost their last dashboard importer.
+>
+> **One regression, upstream-blocked:** the old editor honored `?zone=theme` / `?zone=layout` deep links. silica's `<Builder>` holds its editor **mode** in private local state with no `initialMode` / controlled `mode` prop, so a host can only ever land the author on **Page**. (`?page=<id>` still works — the active page IS public engine state, applied from the `toolbarSlot`.) The dead query params are removed rather than left lying; the ask is [119](119-silicaui-builder-gap-questions.md) **Q26**, and it is ~3 lines upstream.
+>
+> **Earlier (2026-07-10) — engine adoption + the storefront render cutover.** The storefront renders silica end-to-end for the **home, catch-all page, product detail (PDP), and blog** routes — each path being: silica-published-tree → shared host resolver → `renderSilicaBody`, winning over the sparx-builder + legacy-section fallbacks. Landed that pass:
 >
 > - **Render cutover (Stage 6).** All four routes resolve a published silica tree first. A silica `commerce.product` / `cms.blog_post` **collection template** renders per-record with the routed record injected as the object scope (a collection-of-one); the interactive buy box adds to cart through `hydrate() → onAction`. New seam: `siteService.getPublishedByRecordType` (silica) → `/v1/public/builder/silica/collection` → `getPublishedSilicaCollection` → the PDP/blog silica branches.
 > - **Editor host completeness (Stage 10).** The studio host now carries a **media picker** (`pickAsset`, bridged to the asset library), a header **save/changed indicator** + **page-settings** surface (silicaui's v0.14 `toolbarSlot`, reading the active page via `useEditor()` since the slot renders inside `EditorProvider`), and page-level **SEO + record-type** authoring persisted to the `BuilderPage` row columns — silica's flat `Page` (`{id,name,slug,root}`) has no home for domain metadata, so it lives on the row, edited through the same page endpoints (the silica page id IS the row id). Setting a record type flips a page to a collection template (kind derived from recordType).

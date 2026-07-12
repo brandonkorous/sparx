@@ -22,10 +22,10 @@ export interface BuilderEmailDto {
   preheader: string | null;
   tree: BuilderNode;
   /** The silica-native DRAFT document (docs/120) — what the silica `<EmailBuilder>`
-   *  mounts and edits. Null on a row not yet authored on silica; the editor then
-   *  seeds an empty document. The legacy `tree` above is the parallel-run fallback
-   *  (it still SENDS until a silica document is published). */
-  silicaDoc: SilicaEmailDocument | null;
+   *  mounts and edits. Never null: a row authored on the retired sparx builder is
+   *  converted from its `tree` on read (`emailTreeToSilica`), so the editor always
+   *  opens on the author's real content rather than a blank document. */
+  silicaDoc: SilicaEmailDocument;
   published: boolean;
   publishedAt: string | null;
   position: number;
@@ -48,12 +48,12 @@ export interface PublishedEmailDto {
   name: string;
   subject: string;
   preheader: string | null;
-  tree: BuilderNode;
-  /** The PUBLISHED silica document (docs/120), when this email has been authored
-   *  and published on silica. The send path renders THIS via `renderSilicaEmail`
-   *  when present, falling back to `tree` via `renderEmailTree` when null — the
-   *  parallel-run branch that never breaks an un-migrated email. */
-  silicaDoc: SilicaEmailDocument | null;
+  /** The PUBLISHED silica document — the ONE thing the send renders (docs/120
+   *  slice 7). Never null: an email authored on the retired sparx engine is
+   *  converted from its stored tree on read (`emailTreeToSilica`), so the send path
+   *  has a single branch instead of two engines. The legacy `tree` field is gone
+   *  with `renderEmailTree`. */
+  silicaDoc: SilicaEmailDocument;
   publishedAt: string | null;
 }
 

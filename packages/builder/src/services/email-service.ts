@@ -18,6 +18,7 @@ import {
   SyncSilicaEmailInput,
   UpdateEmailInput,
   blankEmailTree,
+  emailTreeToSilica,
   getDefaultEmailTemplate,
   normalizeEmailTree,
   type BuilderEmailDto,
@@ -25,8 +26,8 @@ import {
   type PublishedEmailDto,
   type SilicaEmailDocument,
 } from '@sparx/builder-schemas';
-import type { BuilderEmail, Prisma } from '@sparx/db';
-import { withTenant } from '@sparx/db';
+import type { BuilderEmail } from '@sparx/db';
+import { Prisma, withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
@@ -44,9 +45,12 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     // first node (docs/52 §1) — legacy rows authored before it get it injected, and
     // the next save persists it. Idempotent for already-normalized trees.
     tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
-    // The silica DRAFT document (docs/120) — what the silica editor mounts. Null
-    // until the row is authored on silica.
-    silicaDoc: (row.silicaDraftDocument as SilicaEmailDocument | null) ?? null,
+    // The silica DRAFT document (docs/120) — what the silica editor mounts. ALWAYS
+    // present: a row authored before the cutover has no silica document, so it is
+    // converted from its own sparx tree on read (docs/120 slice 7). The repair pass
+    // in `provisionDefaultEmails` persists that conversion, after which this branch
+    // stops firing and the legacy columns can be dropped.
+    silicaDoc: silicaDraft(row),
     // An email is "published" once EITHER the legacy sparx tree OR a silica
     // document has been snapshotted (parallel-run).
     published: row.publishedTree != null || row.silicaPublishedDocument != null,
@@ -66,20 +70,46 @@ const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
 const asDocJson = (doc: SilicaEmailDocument): Prisma.InputJsonValue =>
   doc as unknown as Prisma.InputJsonValue;
 
+// ── The legacy bridge (docs/120 slice 7 — delete with the tree columns) ───────
+// The send renders silica and ONLY silica; `renderEmailTree` is gone. A row authored
+// on the sparx engine still has only a tree, so these two convert it on read. They
+// are the reason `silicaDoc` is never null anywhere downstream — every caller gets a
+// document, whether the row was authored on silica or converted into it.
+
+/** This row's silica DRAFT document — stored, else converted from its sparx tree. */
+function silicaDraft(row: BuilderEmail): SilicaEmailDocument {
+  const stored = row.silicaDraftDocument as SilicaEmailDocument | null;
+  if (stored) return stored;
+  return emailTreeToSilica(
+    normalizeEmailTree(row.draftTree as unknown as BuilderNode),
+    row.subject,
+    row.preheader
+  );
+}
+
+/** This row's silica PUBLISHED document — stored, else converted from its published
+ *  sparx tree (falling back to the draft, which is what the legacy renderer did). */
+function silicaPublished(row: BuilderEmail): SilicaEmailDocument {
+  const stored = row.silicaPublishedDocument as SilicaEmailDocument | null;
+  if (stored) return stored;
+  return emailTreeToSilica(
+    normalizeEmailTree((row.publishedTree ?? row.draftTree) as unknown as BuilderNode),
+    row.subject,
+    row.preheader
+  );
+}
+
 /** The send/preview projection (PublishedEmailDto) of a row, or null when it has
  *  no published snapshot. Shared by getPublishedById / getPublishedByKey. */
 function toPublished(row: BuilderEmail): PublishedEmailDto | null {
-  const silicaDoc = (row.silicaPublishedDocument as SilicaEmailDocument | null) ?? null;
-  // Published once EITHER path has a snapshot (parallel-run, docs/120). A
-  // silica-only email has no `publishedTree`, so `tree` falls back to the draft
-  // (a valid placeholder the send never renders — it branches on `silicaDoc`).
-  if (row.publishedTree == null && silicaDoc == null) return null;
+  // Published once EITHER path has a snapshot (a pre-cutover row published its tree;
+  // a silica-authored one publishes its document). Unpublished ⇒ nothing to send.
+  if (row.publishedTree == null && row.silicaPublishedDocument == null) return null;
   return {
     name: row.name,
     subject: row.subject,
     preheader: row.preheader,
-    tree: normalizeEmailTree((row.publishedTree ?? row.draftTree) as unknown as BuilderNode),
-    silicaDoc,
+    silicaDoc: silicaPublished(row),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
   };
 }
@@ -102,10 +132,8 @@ function defaultPublished(key: string): PublishedEmailDto | null {
     name: def.name,
     subject: def.subject,
     preheader: def.preheader,
-    tree: normalizeEmailTree(def.tree),
-    // The code-shipped fallback renders on SILICA (docs/120): a tenant with no row for
-    // this key still gets the modern engine, not the legacy one. `tree` stays as the
-    // second fallback for any caller that ignores `silicaDoc`.
+    // The code-shipped fallback is a silica document (docs/120) — a tenant with no row
+    // for this key renders through the same engine as everyone else.
     silicaDoc: def.doc,
     publishedAt: null,
   };
@@ -393,24 +421,68 @@ export function getPublishedByKey(
 }
 
 /**
- * Provision the tenant's default email templates (docs/91) — the 13 keyed,
- * tenant-wide (`property_id = null`) Builder emails that back the platform
- * automations. Published immediately (draft == published) so they're send-ready.
- * Idempotent: only the keys not already present are created (the
- * `(tenant, key) WHERE property_id IS NULL` partial unique is the backstop), so a
- * re-activation or duplicate `module.activated(email)` event is a safe no-op. Runs
- * alongside the automation module's own seed of the automation rows — different
- * tables, same event.
+ * Convert every row that predates the silica cutover — one that stores only a sparx
+ * tree — into a silica document, IN PLACE (docs/120 slice 7).
+ *
+ * Each row is converted from its OWN tree, not reset to the code default: a tenant who
+ * edited their welcome email keeps those edits, and a CUSTOM-key email (which has no
+ * default to fall back to) converts at all. Idempotent — a row that already carries a
+ * silica document is skipped, so this is a no-op on every run after the first.
+ *
+ * `published_at` is untouched: publish state is what it was. A row whose tree was
+ * published gets a published document; a draft-only row gets only a draft.
+ *
+ * This is the LAST reader of `draft_tree` / `published_tree`. Once it has run for every
+ * tenant, those columns, `emailTreeToSilica`, and the sparx email node schema go.
  */
-export function provisionDefaultEmails(ctx: ServiceContext): Promise<{ provisioned: number }> {
+async function repairLegacyRows(tx: Prisma.TransactionClient): Promise<number> {
+  const stale = await tx.builderEmail.findMany({
+    where: { silicaDraftDocument: { equals: Prisma.DbNull } },
+  });
+  for (const row of stale) {
+    await tx.builderEmail.update({
+      where: { id: row.id },
+      data: {
+        silicaDraftDocument: asDocJson(silicaDraft(row)),
+        // Only a row that was actually published gets a published document — converting
+        // an unpublished draft into one would silently publish it.
+        ...(row.publishedTree != null
+          ? { silicaPublishedDocument: asDocJson(silicaPublished(row)) }
+          : {}),
+      },
+    });
+  }
+  return stale.length;
+}
+
+/**
+ * Provision the tenant's default email templates (docs/91) — the keyed, tenant-wide
+ * (`property_id = null`) Builder emails that back the platform automations. Published
+ * immediately (draft == published) so they're send-ready. Idempotent: only the keys not
+ * already present are created (the `(tenant, key) WHERE property_id IS NULL` partial
+ * unique is the backstop), so a re-activation or duplicate `module.activated(email)`
+ * event is a safe no-op. Runs alongside the automation module's own seed of the
+ * automation rows — different tables, same event.
+ *
+ * It ALSO repairs (docs/120 slice 7): any row still holding only a sparx tree is
+ * converted to a silica document here. This is the reconcile that runs per tenant on
+ * activation and on the 6-hourly sweep, which makes it the natural — and only
+ * deployable — place to land the backfill. A one-off DB script would do the same thing
+ * off the normal path, and leave every future tenant unmigrated.
+ */
+export function provisionDefaultEmails(
+  ctx: ServiceContext
+): Promise<{ provisioned: number; repaired: number }> {
   return withTenant(ctx, async (tx) => {
+    const repaired = await repairLegacyRows(tx);
+
     const existing = await tx.builderEmail.findMany({
       where: { propertyId: null, key: { not: null } },
       select: { key: true },
     });
     const have = new Set(existing.map((e) => e.key));
     const missing = DEFAULT_EMAIL_TEMPLATES.filter((t) => !have.has(t.key));
-    if (missing.length === 0) return { provisioned: 0 };
+    if (missing.length === 0) return { provisioned: 0, repaired };
 
     const last = await tx.builderEmail.findFirst({
       orderBy: { position: 'desc' },
@@ -428,14 +500,12 @@ export function provisionDefaultEmails(ctx: ServiceContext): Promise<{ provision
           name: t.name,
           subject: t.subject,
           preheader: t.preheader,
+          // The silica document IS the email (docs/120 slice 7) — it's what every send
+          // renders. Published immediately: a default has to work the moment the module
+          // activates, with no visit to the editor. The sparx tree is still written
+          // because the column is NOT NULL until the drop migration; nothing reads it.
           draftTree: asJson(t.tree),
           publishedTree: asJson(t.tree),
-          // Provision BOTH engines (docs/120 parallel-run): the silica document is
-          // what every send now renders, and the legacy tree stays as the fallback
-          // that keeps already-provisioned tenants — whose rows have no silica
-          // document — sending unchanged. Published immediately, like the tree: a
-          // default has to work the moment the module activates, with no visit to
-          // the editor.
           silicaDraftDocument: asDocJson(t.doc),
           silicaPublishedDocument: asDocJson(t.doc),
           publishedAt: now,
@@ -451,9 +521,9 @@ export function provisionDefaultEmails(ctx: ServiceContext): Promise<{ provision
       action: 'builder.emails.provisioned',
       entityType: 'BuilderEmail',
       entityId: null,
-      diff: { after: { count: missing.length, keys: missing.map((m) => m.key) } },
+      diff: { after: { count: missing.length, keys: missing.map((m) => m.key), repaired } },
     });
-    return { provisioned: missing.length };
+    return { provisioned: missing.length, repaired };
   });
 }
 
@@ -540,7 +610,7 @@ export function customizeForSite(
 }
 
 /** The DRAFT read for the editor's true-HTML preview (docs/52 §9 Phase 2): the
- *  email's unsaved DRAFT tree by id, or null when it doesn't exist. Mirrors
+ *  email's unsaved DRAFT document by id, or null when it doesn't exist. Mirrors
  *  getPublishedById with no published gate. */
 export function getDraftById(ctx: ServiceContext, id: string): Promise<PublishedEmailDto | null> {
   return withTenant(ctx, async (tx) => {
@@ -550,9 +620,9 @@ export function getDraftById(ctx: ServiceContext, id: string): Promise<Published
       name: row.name,
       subject: row.subject,
       preheader: row.preheader,
-      tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
-      // Draft preview reads the DRAFT silica document (docs/120).
-      silicaDoc: (row.silicaDraftDocument as SilicaEmailDocument | null) ?? null,
+      // The DRAFT silica document — converted from the sparx tree for a row that
+      // predates the cutover, exactly as the published read does.
+      silicaDoc: silicaDraft(row),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });

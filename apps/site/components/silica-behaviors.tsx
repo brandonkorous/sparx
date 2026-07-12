@@ -19,6 +19,8 @@ import { hydrate, type ActionPayload } from '@wizeworks/silicaui-behaviors';
 
 import { useCart } from './cart-provider';
 import { subscribeEmail } from '@/lib/signup-client';
+import { submitContactForm } from '@/lib/contact-client';
+import { pageSlugFromPath } from '@/lib/page-slug';
 
 /** First value of a form field (a repeated name gathers to an array). */
 function firstValue(v: string | string[] | undefined): string | undefined {
@@ -49,6 +51,36 @@ export function SilicaBehaviors({
         if (ref === 'email-signup' || ref === 'newsletter' || ref === 'signup') {
           const email = firstValue(values.email);
           if (email) await subscribeEmail(tenantSlug, email, propertySlug);
+          return;
+        }
+
+        // Contact / lead forms (docs/115): silica's `contactSection` block lowers to a
+        // real <form> carrying the `form` behavior and this action ref. silicaui does
+        // the whole client half — validation, FormData, busy/success/error states — and
+        // deliberately stops at the host seam; THIS is the seam. Without it the block
+        // renders, validates, and silently posts nowhere.
+        //
+        // We must tell the server WHICH form submitted, because that is what it checks
+        // against the published tree (anti-forgery) and what keys the routing row. The
+        // <form> element carries the authored node's id as `data-sui-id` (emitted by
+        // SilicaChrome's metaProps), so we read it off the element the behavior handed
+        // us rather than trusting anything in the payload values.
+        if (ref === 'contact' && payload.kind === 'submit') {
+          const nodeId = payload.form.getAttribute('data-sui-id');
+          if (!nodeId) return;
+          const flat: Record<string, string> = {};
+          for (const [k, v] of Object.entries(values)) {
+            const one = firstValue(v);
+            if (one !== undefined) flat[k] = one;
+          }
+          // Throwing is the contract: the form behavior awaits this promise and settles
+          // the form's `data-sui-state` to success or error from it, so a failed submit
+          // shows the visitor an error instead of a false thank-you.
+          await submitContactForm(tenantSlug, propertySlug, pageSlugFromPath(pathname), {
+            nodeId,
+            values: flat,
+            ...(flat.honeypot !== undefined ? { honeypot: flat.honeypot } : {}),
+          });
           return;
         }
 

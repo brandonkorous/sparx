@@ -4,7 +4,6 @@
 import 'server-only';
 import { api } from '@/lib/api-rest-client';
 import type {
-  ArchetypeDto,
   BindingCatalog,
   BuilderEmailDto,
   BuilderLayoutDto,
@@ -94,21 +93,6 @@ export async function listComponentsFull(): Promise<ComponentDto[]> {
       '/v1/builder/components?include=tree'
     );
     return components;
-  } catch {
-    return [];
-  }
-}
-
-// The tenant's ENABLED brand-section archetypes WITH their trees — what the Add
-// palette stamps (docs/61 §6). The list endpoint seeds the platform defaults on
-// the tenant's first call. Defensive: a failed read yields [] so the palette still
-// runs with components + system blocks only.
-export async function listArchetypes(): Promise<ArchetypeDto[]> {
-  try {
-    const { archetypes } = await api.get<{ archetypes: ArchetypeDto[] }>(
-      '/v1/builder/archetypes?include=tree'
-    );
-    return archetypes;
   } catch {
     return [];
   }

@@ -17,20 +17,17 @@
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
-import { renderEmailTree } from '@sparx/email';
 import { renderSilicaEmail } from '@sparx/email/silica';
 import { emailService } from '@sparx/builder';
 import { brandService } from '@sparx/email-platform';
 import {
   interpolateEmailTokens,
   resolvePath,
-  type BuilderNode,
   type PublishedEmailDto,
 } from '@sparx/builder-schemas';
 
 import {
   applyEntitySnapshot,
-  resolveEmailData,
   resolveSilicaEmailData,
   type EmailRecipientRef,
 } from './email-data.js';
@@ -43,14 +40,6 @@ const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 export function buildFrom(fromName: string | null, fromAddress: string | null): string {
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
-}
-
-/** Does the tree contain a node of `type` (depth-first)? Detects the
- *  `unsubscribe_link` node that a marketing tree must carry (docs/91 §8). */
-export function treeHasNodeType(node: BuilderNode, type: string): boolean {
-  if (node.type === type) return true;
-  for (const child of node.children ?? []) if (treeHasNodeType(child, type)) return true;
-  return false;
 }
 
 /** A pre-rendered, branded email body the worker delivers as-is. */
@@ -69,7 +58,7 @@ export interface RenderBuilderEmailArgs {
   to: string;
   /** The site this send is on behalf of — drives per-site brand + analytics. */
   propertyId?: string | null;
-  /** Entity ids the tree resolves its bindings + `{{token}}`s against. */
+  /** Entity ids the document resolves its bindings + `{{token}}`s against. */
   ref: EmailRecipientRef;
   /** Whether this is a marketing send — supplies the one-click unsubscribe URL +
    *  List-Unsubscribe header (the caller decides; transactional sends pass false). */
@@ -99,27 +88,15 @@ export async function renderBuilderEmailDoc(
   // the trigger-time snapshot as a scalar fallback (no-op for direct sends). The
   // propertyId scopes `{{tenant.name}}` to the active site (docs/49 Phase 7) — the
   // SAME site whose brand this render uses below — so body copy and chrome agree.
-  //
-  // A silica-authored email (docs/120) collects its sources from the silica document
-  // (its `data` markers + `{{tokens}}`); an un-migrated one from the legacy tree.
-  // Both feed the same loader, so the resolved data is identical either way.
   const silicaDoc = args.doc.silicaDoc;
   const emailData = applyEntitySnapshot(
-    await (silicaDoc
-      ? resolveSilicaEmailData(
-          ctx,
-          silicaDoc,
-          args.ref,
-          [subject, preheader ?? ''],
-          args.propertyId
-        )
-      : resolveEmailData(
-          ctx,
-          args.doc.tree,
-          args.ref,
-          [subject, preheader ?? ''],
-          args.propertyId
-        )),
+    await resolveSilicaEmailData(
+      ctx,
+      silicaDoc,
+      args.ref,
+      [subject, preheader ?? ''],
+      args.propertyId
+    ),
     args.snapshot ?? null
   );
   const resolveToken = (path: string): unknown => resolvePath({ root: emailData }, path);
@@ -130,39 +107,23 @@ export async function renderBuilderEmailDoc(
   const unsubUrl = args.marketing ? unsubscribeUrl(ctx.tenantId, args.to) : undefined;
   const brand = (await brandService.resolveEmailBrand(ctx, args.propertyId ?? null)) ?? undefined;
 
-  // The parallel-run branch (docs/120). Both paths return the same SendableEmail
-  // shape, so everything below — the raw payload, the List-Unsubscribe headers — is
-  // identical regardless of which engine rendered the body.
-  const rendered = silicaDoc
-    ? renderSilicaEmail(
-        {
-          doc: silicaDoc,
-          subject: finalSubject,
-          preheader: finalPreheader ?? null,
-          to: args.to,
-          data: emailData,
-          marketing: args.marketing,
-          compliance: {
-            ...(args.physicalAddress ? { physicalAddress: args.physicalAddress } : {}),
-            ...(unsubUrl ? { unsubscribeUrl: unsubUrl } : {}),
-          },
-        },
-        { brand }
-      )
-    : await renderEmailTree(
-        {
-          tree: args.doc.tree,
-          subject: finalSubject,
-          preheader: finalPreheader,
-          to: args.to,
-          data: emailData,
-          compliance: {
-            physicalAddress: args.physicalAddress ?? undefined,
-            unsubscribeUrl: unsubUrl,
-          },
-        },
-        { brand }
-      );
+  // ONE engine (docs/120 slice 7): every email — including one authored on the retired
+  // sparx builder, which `emailService` converts on read — renders through silica.
+  const rendered = renderSilicaEmail(
+    {
+      doc: silicaDoc,
+      subject: finalSubject,
+      preheader: finalPreheader ?? null,
+      to: args.to,
+      data: emailData,
+      marketing: args.marketing,
+      compliance: {
+        ...(args.physicalAddress ? { physicalAddress: args.physicalAddress } : {}),
+        ...(unsubUrl ? { unsubscribeUrl: unsubUrl } : {}),
+      },
+    },
+    { brand }
+  );
 
   return {
     kind: 'raw',
@@ -227,17 +188,10 @@ export async function sendTenantEmailByKey(
 
   const emailType = args.emailType ?? 'transactional';
   const marketing = emailType === 'marketing';
-  // Compliance gate (docs/91 §8). A LEGACY tree must carry an `unsubscribe_link`
-  // node the author placed. A SILICA email (docs/120) can't miss it: the platform
-  // COMPOSES the legal footer (unsubscribe + physical address) into every marketing
-  // send, so the requirement is satisfied structurally rather than by inspection.
-  if (marketing && !doc.silicaDoc && !treeHasNodeType(doc.tree, 'unsubscribe_link')) {
-    logger.warn(
-      { tenantId, key: args.key },
-      'tenant-email: marketing email missing unsubscribe node — refused (compliance)'
-    );
-    return { sent: false, reason: 'compliance' };
-  }
+  // No unsubscribe-node gate any more (docs/120 slice 7). It existed because the
+  // sparx builder made the opt-out an OPTIONAL node an author had to place; silica
+  // COMPOSES the legal footer (unsubscribe + postal address) into every marketing
+  // send, so it is satisfied structurally and can't be authored away.
 
   const settings = await withTenant(ctx, (tx) =>
     tx.emailSettings.findUnique({ where: { tenantId } })

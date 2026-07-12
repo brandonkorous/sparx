@@ -325,6 +325,53 @@ undefined (reading 'className')`. **It failed at request time only** — `tsc` a
     `resolveBinding` nor `resolveCollection` — a host that supplies a differently-shaped
     resolver gets a silent no-op rather than an error.
 
+### Q26 — `<Builder>` owns its editor MODE in local state, so a host cannot deep-link into one — 🔴 **open (0.19.0)**
+
+- **Generic problem.** The `<Builder>` header offers four modes — **Theme · Layout · Page ·
+  Component** — and holds the choice in a private `React.useState('page')`. `BuilderProps`
+  exposes no `initialMode`, no controlled `mode`/`onModeChange`, and `changeMode` is not
+  reachable from `useEditor()`. So a host whose app is _bigger than the editor_ — any host
+  with its own navigation into the editor — can only ever land the author on **Page**.
+
+  Note what does NOT close this: `editor.setActiveTree('page' | 'frame')` _is_ public, and
+  the `Canvas`/`Navigator`/`Inspector` all read `useActiveTree()` — so calling it from a
+  `toolbarSlot` component genuinely retargets the whole editing spine at the frame. But the
+  header's ToggleGroup still reads the private `mode`, so it highlights **Page** while the
+  author edits the **Layout**. A working editor with a lying header is worse than no deep
+  link, so sparx ships neither. And **Theme mode has no engine-state equivalent at all** —
+  it swaps the center panel for the `ComponentBoard` purely off `mode` — so it is
+  unreachable from a host by any means.
+
+- **Motivating instance (sparx).** The Builder overview offers three entry cards (brand /
+  site shell / pages), the CMS entry editor links to the template that renders an entry, the
+  SEO surface links to a page, and a blueprint install lists "Site layout" and the theme it
+  created. The **page** deep links work — `editor.setActivePage(id)` is public engine state,
+  and sparx applies it from its `toolbarSlot` (`silica-toolbar.tsx`). The **theme** and
+  **layout** ones cannot, so sparx deleted the `?zone=theme` / `?zone=layout` query params
+  and its entry cards now open the editor on its default mode. That is a real regression
+  against the editor sparx replaced, which honored both.
+
+- **Candidate generic direction.** Either is sufficient and both are ~3 lines:
+
+  ```ts
+  // uncontrolled, minimal:
+  initialMode?: 'theme' | 'layout' | 'page' | 'component';
+  //   useState(initialMode ?? 'page')  +  run changeMode(initialMode) once on mount,
+  //   so the engine's activeTree agrees with the header from the first frame.
+
+  // or controlled, and strictly better for a host that owns a URL:
+  mode?: EditorMode;
+  onModeChange?: (mode: EditorMode) => void;
+  ```
+
+  The controlled pair also lets a host **reflect the mode back into its own URL**, so the
+  author's browser Back button and a copied link both behave — which is the real
+  requirement behind this, and one no host can implement on its own.
+
+- **Adjacent.** `onActivePageChange` already exists and is exactly the right shape for the
+  page axis (host-observable, host-restorable). Mode is the one axis of the editor's state
+  with no such seam.
+
 ---
 
 ## Part 10 — The email editor: the same dynamic-content gap, one level deeper (2026-07-11)

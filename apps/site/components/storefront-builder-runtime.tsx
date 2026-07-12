@@ -25,20 +25,13 @@ import { useCustomer } from './customer-provider';
 import type { Customer } from '@/lib/customer-client';
 import { subscribeEmail } from '@/lib/signup-client';
 import { submitContactForm } from '@/lib/contact-client';
+import { pageSlugFromPath } from '@/lib/page-slug';
 
 /** Display name for the account menu: full name, else the email, else null. */
 function accountName(c: Customer | null): string | null {
   if (!c) return null;
   const full = [c.firstName, c.lastName].filter(Boolean).join(' ').trim();
   return full !== '' ? full : (c.email ?? null);
-}
-
-/** The current storefront path → a Builder page slug (home = null). Singleton
- *  pages (contact, about) map directly; the server resolves a footer form off the
- *  active layout if the slug doesn't match. */
-function pageSlugFromPath(pathname: string | null): string | null {
-  const seg = (pathname ?? '/').replace(/^\/+|\/+$/g, '');
-  return seg === '' ? null : seg;
 }
 
 export function StorefrontBuilderRuntime({ children }: { children: React.ReactNode }) {

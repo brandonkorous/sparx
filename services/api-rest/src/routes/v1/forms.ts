@@ -17,7 +17,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { formService } from '@sparx/builder';
+import { formDefinitionService, formService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
@@ -48,7 +48,58 @@ function stripAttachmentKeys<T extends object>(row: T): T {
   return { ...row, attachments };
 }
 
+// A form's routing settings, addressed by its silica node id. This is the ONLY way
+// recipients are ever written, and it is authenticated + editor-role + module-gated.
+// The public submit endpoint READS this row and never writes it, so no address can
+// ever originate from a visitor.
+const FormNodeParam = z.object({ formNodeId: z.string().min(1).max(255) });
+const SaveFormBody = z.object({
+  pageSlug: z.string().max(255).nullish(),
+  // Parsed as real addresses here, at the trust boundary — the service stores what it
+  // is given, so this is where a malformed or injected recipient gets refused.
+  recipients: z.array(z.string().email().max(255)).max(20).default([]),
+  // Bounded, but PARTIAL: the service normalizes and fills every field, so a client
+  // that omits one (or predates it) still saves a complete config rather than 400ing.
+  config: z
+    .object({
+      name: z.string().max(120),
+      successMessage: z.string().max(1000),
+      notify: z.boolean(),
+      addToCrm: z.boolean(),
+      openDeal: z.boolean(),
+      autoresponder: z.boolean(),
+      autoresponderSubject: z.string().max(255),
+      autoresponderMessage: z.string().max(4000),
+    })
+    .partial()
+    .default({}),
+});
+
 const formsRoutes: FastifyPluginAsync = (app) => {
+  // ── A silica form's settings (docs/115) ────────────────────────────────────
+  app.get('/v1/forms/definitions/:formNodeId', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { formNodeId } = FormNodeParam.parse(request.params);
+    const ctx = await toBuilderContext(request);
+    return ok(await formDefinitionService.getSilicaForm(ctx, formNodeId));
+  });
+
+  app.put('/v1/forms/definitions/:formNodeId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { formNodeId } = FormNodeParam.parse(request.params);
+    const body = SaveFormBody.parse(request.body);
+    const ctx = await toBuilderContext(request);
+    return ok(
+      await formDefinitionService.saveSilicaForm(ctx, formNodeId, {
+        pageSlug: body.pageSlug ?? null,
+        recipients: body.recipients,
+        config: body.config,
+      })
+    );
+  });
+
   app.get('/v1/forms/submissions', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);

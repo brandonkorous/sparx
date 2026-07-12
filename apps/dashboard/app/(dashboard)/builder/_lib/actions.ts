@@ -72,21 +72,13 @@ export async function savePageTree(
 export async function syncBuilderSite(
   input: SiteSyncInput
 ): Promise<ActionResult<{ saved: boolean }>> {
-  return run(
-    () => api.put<{ saved: boolean }>('/v1/builder/site', input),
-    false,
-    '/builder/silica'
-  );
+  return run(() => api.put<{ saved: boolean }>('/v1/builder/site', input), false);
 }
 
 /** Publish the silica site — snapshot every draft tree → published. Revalidates
- *  the silica studio route so a fresh load reflects the published state. */
+ *  the studio route so a fresh load reflects the published state. */
 export async function publishBuilderSite(): Promise<ActionResult<{ published: boolean }>> {
-  return run(
-    () => api.post<{ published: boolean }>('/v1/builder/site/publish'),
-    true,
-    '/builder/silica'
-  );
+  return run(() => api.post<{ published: boolean }>('/v1/builder/site/publish'), true);
 }
 
 export async function renamePage(id: string, name: string): Promise<ActionResult<BuilderPageDto>> {

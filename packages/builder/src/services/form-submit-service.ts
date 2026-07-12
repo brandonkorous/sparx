@@ -1,66 +1,83 @@
-// formService — resolve a live ContactForm's routing config and store a
-// submission (docs/115). The read half of the public submit endpoint.
+// formService — resolve a live form's routing config and store a submission
+// (docs/115, on silica per docs/118). The read half of the public submit endpoint.
 //
-// SECURITY. `resolveContactForm` reads the form's config from the PUBLISHED tree
-// (the server-loaded snapshot) — never from the request — and returns null when
-// no such live ContactForm exists at the given address, so a visitor cannot spam
-// a tenant that has no form there. The recipient ADDRESSES come from the
-// server-only FormDefinition row, never the tree (they were stripped at publish).
+// SECURITY, and the shape of it changed with the silica cutover. There are two
+// questions at submit time, and they now have two different answers:
+//
+//   "Is this a real form?"  → the PUBLISHED SILICA TREE. A form must actually exist,
+//     at this id, on this page (or in the site frame — a footer form is legitimate).
+//     This is the anti-forgery check: without it the endpoint could be pointed at any
+//     tenant by a script. It reads the server-loaded published snapshot, never the
+//     request.
+//
+//   "Where does it go?"     → the FormDefinition ROW, and ONLY the row. Recipients and
+//     every routing toggle live server-side now. On the legacy engine the toggles lived
+//     in the tree and the recipients had to be stripped out of it at publish; on silica
+//     nothing sensitive is ever in the tree to begin with, so there is nothing to strip
+//     and nothing to leak. No recipient can ever come from the request body.
 
 import { withTenant } from '@sparx/db';
 import type { FormSubmission, Prisma } from '@sparx/db';
 import {
-  findNodeById,
-  readContactFormConfig,
-  CONTACT_FORM_TYPE,
-  type ContactFormConfig,
+  findSilicaFormNode,
+  readSilicaFormConfig,
   type FormAttachment,
+  type SilicaFormConfig,
+  type SilicaNode,
 } from '@sparx/builder-schemas';
 
 import type { PropertyContext, ServiceContext } from '../errors';
 import { BuilderNotFoundError } from '../errors';
-import * as pageService from './page-service';
-import * as layoutService from './layout-service';
+import * as siteService from './site-service';
 
 export interface ResolvedContactForm {
-  /** Non-sensitive toggles/copy read from the published tree. */
-  config: ContactFormConfig;
+  /** Routing config — read from the server-only row, never the tree. */
+  config: SilicaFormConfig;
   /** Server-only notify addresses (empty ⇒ caller falls back to the tenant email). */
   recipients: string[];
   /** Author label for the inbox, if any. */
   formName: string | null;
 }
 
-/** Resolve a live form node's config from the published page (by slug, or the home
- *  singleton) and — if not there — the active chrome layout. Returns null when no
- *  published ContactForm with that id exists. */
+/** Resolve a live form by id: prove it exists in the published silica page (by slug, or
+ *  the home singleton) or in the shared site frame, then read its routing from the
+ *  FormDefinition row. Returns null when no such live form is published — the caller
+ *  turns that into a 404, so a visitor cannot spam a tenant that has no form there. */
 export async function resolveContactForm(
   ctx: PropertyContext,
   args: { pageSlug: string | null; formNodeId: string }
 ): Promise<ResolvedContactForm | null> {
   const page = args.pageSlug
-    ? await pageService.getPublishedBySlug(ctx, args.pageSlug)
-    : await pageService.getPublishedHome(ctx);
-  let node = page ? findNodeById(page.tree, args.formNodeId) : null;
-  if (node?.type !== CONTACT_FORM_TYPE) {
-    const layout = await layoutService.getPublished(ctx);
-    node = layout ? findNodeById(layout.tree, args.formNodeId) : null;
+    ? await siteService.getPublishedPageBySlug(ctx, args.pageSlug)
+    : await siteService.getPublishedHome(ctx);
+
+  let node: SilicaNode | null = page ? findSilicaFormNode(page.root, args.formNodeId) : null;
+  if (!node) {
+    // Not on the page — try the shared frame. A form in the footer or a header
+    // newsletter block lives in the chrome, not in any one page body, and submits from
+    // every route; it would be wrong to refuse it just because the page didn't own it.
+    const { frame } = await siteService.getPublishedFrame(ctx);
+    node = frame ? findSilicaFormNode(frame.root, args.formNodeId) : null;
   }
-  if (node?.type !== CONTACT_FORM_TYPE) return null;
+  if (!node) return null;
 
   const def = await withTenant(ctx, (tx) =>
     tx.formDefinition.findUnique({
       where: {
         propertyId_formNodeId: { propertyId: ctx.propertyId, formNodeId: args.formNodeId },
       },
-      select: { recipients: true },
+      select: { recipients: true, config: true },
     })
   );
 
+  // A form the author never opened the settings panel on has no row yet. That is a
+  // real, working form — it just uses the defaults (notify the account email). It must
+  // NOT 404: the commonest possible flow is "drop the block, publish, done".
+  const config = readSilicaFormConfig(def?.config);
   return {
-    config: readContactFormConfig(node.props),
+    config,
     recipients: def?.recipients ?? [],
-    formName: typeof node.name === 'string' ? node.name : null,
+    formName: config.name || null,
   };
 }
 

@@ -47,6 +47,9 @@ export interface SilicaHostOptions {
   /** The media picker `<Builder>` invokes when an image/video field asks for a
    *  source. Omitted → the engine falls back to a raw URL input. */
   pickAsset?: BuilderHost['pickAsset'];
+  /** Host panels contributed to silica's Inspector — today the form-settings panel
+   *  (where a submission goes, docs/115), which silica has no opinion about by design. */
+  inspectorPanels?: BuilderHost['inspectorPanels'];
 }
 
 /** Assemble the sparx `BuilderHost`. The commerce catalog is structurally silica's
@@ -62,7 +65,6 @@ export function buildSilicaHost(opts: SilicaHostOptions): BuilderHost {
     catalog: () => ({ extend: COMMERCE_CATALOG as unknown as PaletteGroup[] }),
     ...(validateClass ? { validateClass } : {}),
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
-    // inspectorPanels — sparx's SEO / product-pin / per-module panels are additive
-    // and land next; the engine's built-in panels cover the base case until then.
+    ...(opts.inspectorPanels ? { inspectorPanels: opts.inspectorPanels } : {}),
   };
 }

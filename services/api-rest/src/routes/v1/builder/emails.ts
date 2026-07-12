@@ -32,7 +32,7 @@ import {
   toBuilderTenantContext,
 } from '../../../lib/builder-context.js';
 import { requireTenantProperty } from '../../../lib/property.js';
-import { emailDataResolver, silicaEmailDataResolver } from '../../../lib/email-data.js';
+import { silicaEmailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
@@ -160,15 +160,9 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const email = await emailService.get(ctx, id);
     const preview = await builderEmailService.renderPreview(
       ctx,
-      {
-        tree: email.tree,
-        subject: email.subject,
-        preheader: email.preheader,
-        silicaDoc: email.silicaDoc,
-      },
-      emailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId,
-      silicaEmailDataResolver(ctx, ctx.propertyId)
+      { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
+      silicaEmailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId
     );
     return ok(preview);
   });
@@ -187,16 +181,10 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const email = await emailService.get(ctx, id);
     const prepared = await builderEmailService.prepareTestSend(
       ctx,
-      {
-        tree: email.tree,
-        subject: email.subject,
-        preheader: email.preheader,
-        silicaDoc: email.silicaDoc,
-      },
+      { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
       request.body,
-      emailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId,
-      silicaEmailDataResolver(ctx, ctx.propertyId)
+      silicaEmailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId
     );
     await publish(request.log, 'email.send', ctx.tenantId, null, {
       kind: 'raw',

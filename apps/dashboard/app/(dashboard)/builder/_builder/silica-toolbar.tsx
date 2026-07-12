@@ -37,14 +37,31 @@ export interface SilicaToolbarProps {
   pages: BuilderPageDto[];
   /** The binding catalog's sources — the record types a template can render. */
   sources: DataSource[];
+  /** `?page=<id>` — the page to open on mount. Applied HERE rather than in the
+   *  studio because the active page is ENGINE state and `<Builder>` exposes no
+   *  initial-page prop; the toolbar is the one sparx component the engine renders
+   *  inside its provider, so `useEditor()` reaches it. Ignored when the id isn't a
+   *  page of this site (a stale bookmark, or a link into another site's template) —
+   *  the engine stays on its default page rather than dangling. */
+  initialPageId?: string;
 }
 
-export function SilicaToolbar({ saveState, pages, sources }: SilicaToolbarProps) {
+export function SilicaToolbar({ saveState, pages, sources, initialPageId }: SilicaToolbarProps) {
   const editor = useEditor();
   // Re-render on every committed edit so the active page + its name stay live
   // (page switches and renames both fire the engine's change event).
   const [, force] = useReducer((x: number) => x + 1, 0);
   useEffect(() => editor.subscribe(force), [editor]);
+
+  // Honor `?page=<id>` once, at mount. A page switch is a view concern in the
+  // engine (never on the undo stack), so this doesn't pollute history — and it
+  // must not re-fire when the author later switches page themselves, hence the
+  // mount-only dependency on the id the URL carried.
+  useEffect(() => {
+    if (!initialPageId) return;
+    if (!editor.pagesView.pages.some((p) => p.id === initialPageId)) return;
+    editor.setActivePage(initialPageId);
+  }, [editor, initialPageId]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
 

@@ -15,7 +15,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import { emailService } from '@sparx/builder';
 import type { EmailRecipientRef } from './email-data.js';
-import { buildFrom, renderBuilderEmailDoc, treeHasNodeType } from './tenant-email.js';
+import { buildFrom, renderBuilderEmailDoc } from './tenant-email.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
 const DEFAULT_INTERVAL_MS = 60_000;
@@ -172,34 +172,15 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             await markSendFailed(row.tenant_id, row.id, 'designed email not published');
             continue;
           }
-          // Compliance gate (docs/91 §8 / docs/90 §5): a send whose DECLARED intent
-          // is marketing must carry an unsubscribe node — refuse (recorded on the
-          // send) otherwise. CAN-SPAM/CASL: no marketing mail without a working
-          // opt-out. With no declared intent (the legacy broadcast id path)
-          // marketing-ness is inferred from the tree, so there is nothing to refuse.
-          //
-          // A SILICA email (docs/120) carries no `unsubscribe_link` node to sniff —
-          // the platform COMPOSES the legal footer into every marketing send — so it
-          // can never be "missing" the opt-out. Its intent is always DECLARED by the
-          // enqueuer (the broadcast path stamps `emailType: 'marketing'`), never
-          // inferred, which is why the legacy tree inference below is left untouched.
-          const treeHasUnsub = treeHasNodeType(doc.tree, 'unsubscribe_link');
-          const canOptOut = doc.silicaDoc != null || treeHasUnsub;
-          const marketing = payload.defer.emailType
-            ? payload.defer.emailType === 'marketing'
-            : treeHasUnsub;
-          if (marketing && !canOptOut) {
-            logger.warn(
-              { sendId: row.id, builderEmailKey: payload.defer.builderEmailKey },
-              'email-dispatch: marketing email missing unsubscribe node — refused (compliance)'
-            );
-            await markSendFailed(
-              row.tenant_id,
-              row.id,
-              'compliance: a marketing email must contain an unsubscribe link'
-            );
-            continue;
-          }
+          // Marketing-ness is DECLARED by the enqueuer, never sniffed from the body
+          // (docs/120 slice 7). It used to be inferred from an `unsubscribe_link` node
+          // the author had to remember to place — which meant an author could opt out
+          // of the opt-out. On silica the platform COMPOSES the legal footer
+          // (unsubscribe + postal address) into every marketing send, so the opt-out
+          // cannot be missing and there is nothing left to refuse here. The remaining
+          // compliance gate — a marketing send needs a postal address on file — lives
+          // where that address is read.
+          const marketing = payload.defer.emailType === 'marketing';
           const refs = (dispatch.entityRefs as Record<string, unknown> | null) ?? {};
           const ref: EmailRecipientRef = {
             email: to,

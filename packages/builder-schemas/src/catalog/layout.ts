@@ -179,7 +179,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   ['Documentation', '/docs'],
                   ['Help center', '/help'],
                   ['Status', '/status'],
-                  ['Privacy', '/privacy'],
+                  ['Privacy', '/privacy-policy'],
                 ]),
               ],
             }),
@@ -192,9 +192,9 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   el('p', '', { text: '© 2026 Your Company. All rights reserved.' }),
                   el('div', 'flex items-center gap-5', {
                     children: [
-                      footerLink('Terms', '/terms'),
-                      footerLink('Privacy', '/privacy'),
-                      footerLink('Cookies', '/cookies'),
+                      footerLink('Terms', '/terms-of-service'),
+                      footerLink('Privacy', '/privacy-policy'),
+                      footerLink('Cookies', '/cookie-policy'),
                     ],
                   }),
                 ],
@@ -229,8 +229,8 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                 attrs: { ariaLabel: 'Footer' },
                 children: [
                   footerLink('About', '/about'),
-                  footerLink('Privacy', '/privacy'),
-                  footerLink('Terms', '/terms'),
+                  footerLink('Privacy', '/privacy-policy'),
+                  footerLink('Terms', '/terms-of-service'),
                   footerLink('Contact', '/contact'),
                 ],
               }),

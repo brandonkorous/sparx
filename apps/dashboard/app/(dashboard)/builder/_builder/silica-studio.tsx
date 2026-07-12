@@ -1,16 +1,16 @@
 'use client';
 
-// The silica-engine studio mount (docs/118) — wraps the live `<Builder>` around the
+// The site studio mount (docs/118) — wraps the live silica `<Builder>` around the
 // sparx `BuilderHost`. The host carries FUNCTIONS (resolveBinding, validateClass,
 // pickAsset…), which can't cross the RSC boundary, so it's assembled HERE, client-
 // side, from the serializable inputs the server route passes (the pre-loaded data
 // root, the silica DataSource catalog, the tenant class allowlist, the page
-// metadata list). The starter document is plain serializable node data, built
-// server-side and handed in.
+// metadata list). The document is plain serializable node data, built server-side
+// and handed in.
 //
-// Additive: this is a NEW surface (/builder/silica) that leaves the existing
-// `SiteStudio` untouched — the engine editor is proven here before the main studio
-// route cuts over to it (and `onChange`/`onPublish` wire to the sparx store).
+// This IS the editor behind /builder/studio — the parallel-run proof route
+// (/builder/silica) and the hand-rolled `.bx-*` `SiteStudio` it was proven against
+// are both deleted.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder } from '@wizeworks/silicaui-builder/react';
@@ -25,6 +25,7 @@ import type {
 import { MediaPicker } from '../../cms/_components/media-picker';
 import { publishBuilderSite, syncBuilderSite } from '../_lib/actions';
 import { buildSilicaHost, defaultSilicaFormat } from './silica-host';
+import { makeFormPanels } from './form-settings-panel';
 import { SilicaToolbar, type SaveState } from './silica-toolbar';
 
 /** Project silica's extracted `Site` onto the sync wire shape — near-identity:
@@ -73,6 +74,10 @@ export interface SilicaStudioProps {
   /** The binding catalog's sources — the record types a template can render, listed
    *  in the page-settings "Page type" picker. */
   sources: DataSource[];
+  /** `?page=<id>` — open THIS page on mount instead of the site's first one. The
+   *  engine holds the active page, so the toolbar (which sits inside the engine's
+   *  provider) applies it; see `SilicaToolbar`. */
+  initialPageId?: string;
 }
 
 export function SilicaStudio({
@@ -82,6 +87,7 @@ export function SilicaStudio({
   tenantAllowlist,
   pages,
   sources,
+  initialPageId,
 }: SilicaStudioProps) {
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [picker, setPicker] = useState<PickerRequest | null>(null);
@@ -97,6 +103,21 @@ export function SilicaStudio({
     []
   );
 
+  // The slug of the page currently open. The engine owns which page is active, and it
+  // announces changes through `onActivePageChange`; we mirror it into a ref because the
+  // host is memoized once at mount and the form panel needs the CURRENT page at the
+  // moment the author saves, not the one that happened to be open on load.
+  const activeSlug = useRef<string | null>(null);
+  const onActivePageChange = useCallback((page: { slug: string }) => {
+    const slug = page.slug.replace(/^\/+|\/+$/g, '');
+    activeSlug.current = slug === '' ? null : slug;
+  }, []);
+
+  // sparx's contribution to silica's Inspector: where a form's submissions go
+  // (docs/115). silicaui ships the form and does the whole client half, then stops at
+  // this seam by design — it has no opinion about the submission target.
+  const inspectorPanels = useMemo(() => makeFormPanels(() => activeSlug.current), []);
+
   const host = useMemo(
     () =>
       buildSilicaHost({
@@ -105,8 +126,9 @@ export function SilicaStudio({
         tenantAllowlist,
         formatValue: defaultSilicaFormat,
         pickAsset,
+        inspectorPanels,
       }),
-    [root, dataSources, tenantAllowlist, pickAsset]
+    [root, dataSources, tenantAllowlist, pickAsset, inspectorPanels]
   );
 
   // Debounced whole-site autosave. The engine fires onChange per edit with the
@@ -180,8 +202,16 @@ export function SilicaStudio({
         // local IndexedDB crash-recovery layer duplicating it.
         persistKey={null}
         onChange={onChange}
+        onActivePageChange={onActivePageChange}
         onPublish={onPublish}
-        toolbarSlot={<SilicaToolbar saveState={saveState} pages={pages} sources={sources} />}
+        toolbarSlot={
+          <SilicaToolbar
+            saveState={saveState}
+            pages={pages}
+            sources={sources}
+            initialPageId={initialPageId}
+          />
+        }
       />
       <MediaPicker
         open={picker !== null}

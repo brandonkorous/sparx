@@ -18,10 +18,13 @@ import {
   collectNodesByType,
   formRoutingConfig,
   readContactFormConfig,
+  readSilicaFormConfig,
   CONTACT_FORM_TYPE,
   CONTACT_FORM_SECRET_PROPS,
   type BuilderNode,
+  type SilicaFormConfig,
 } from '@sparx/builder-schemas';
+import { withTenant } from '@sparx/db';
 import type { Prisma, TxClient } from '@sparx/db';
 
 import type { PropertyContext } from '../errors';
@@ -64,4 +67,70 @@ export async function syncFormDefinitions(
   // endpoint only reads a def a LIVE form node references, and node ids are never
   // reused. A periodic prune can reclaim them later.
   return sanitized;
+}
+
+// ── Silica forms: the row IS the config (docs/115 on silica) ─────────────────
+//
+// No publish-time extraction here, because there is nothing to extract. A silica
+// form's tree carries only the form; its routing lives ONLY in this row, written
+// directly by the author from the builder's form-settings panel. That removes the
+// whole class of bug the strip above exists to prevent — a recipient address cannot
+// leak into a published tree it was never in.
+
+export interface SilicaFormDefinition {
+  formNodeId: string;
+  /** The page the author configured this form on — for the inbox, not for auth. */
+  pageSlug: string | null;
+  recipients: string[];
+  config: SilicaFormConfig;
+}
+
+/** This form's saved settings, or the defaults when the author has never opened the
+ *  panel. Never null: an unconfigured form is a working form (notify the account
+ *  email), so the panel and the submit path agree on what "not set up yet" means. */
+export async function getSilicaForm(
+  ctx: PropertyContext,
+  formNodeId: string
+): Promise<SilicaFormDefinition> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.formDefinition.findUnique({
+      where: { propertyId_formNodeId: { propertyId: ctx.propertyId, formNodeId } },
+      select: { pageSlug: true, recipients: true, config: true },
+    })
+  );
+  return {
+    formNodeId,
+    pageSlug: row?.pageSlug ?? null,
+    recipients: row?.recipients ?? [],
+    config: readSilicaFormConfig(row?.config),
+  };
+}
+
+/** Save this form's routing. `recipients` is validated by the caller (the route parses
+ *  them as emails) — this never accepts an address from a public request, only from an
+ *  authenticated editor session. */
+export async function saveSilicaForm(
+  ctx: PropertyContext,
+  formNodeId: string,
+  // `config` is deliberately unnormalized: it is normalized on the way IN (below) and
+  // on the way OUT (`getSilicaForm`), so a partial blob from an older client, or one
+  // field the route didn't know about, still stores a complete, valid config.
+  input: { pageSlug: string | null; recipients: string[]; config: unknown }
+): Promise<SilicaFormDefinition> {
+  const config = readSilicaFormConfig(input.config) as unknown as Prisma.InputJsonValue;
+  await withTenant(ctx, (tx) =>
+    tx.formDefinition.upsert({
+      where: { propertyId_formNodeId: { propertyId: ctx.propertyId, formNodeId } },
+      create: {
+        tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
+        formNodeId,
+        pageSlug: input.pageSlug,
+        recipients: input.recipients,
+        config,
+      },
+      update: { pageSlug: input.pageSlug, recipients: input.recipients, config },
+    })
+  );
+  return getSilicaForm(ctx, formNodeId);
 }

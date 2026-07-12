@@ -1,18 +1,30 @@
-// resolveEmailData against the real DB (docs/91 §3). Proves the dispatch-time
-// resolver hydrates the nested DataSources the Builder email renderer reads —
-// entity-scoped sources keyed by the send's `entityRefs`, line-item collections,
-// and `*Url` tokens — for the real `invoicing-overdue` default template tree.
+// resolveSilicaEmailData against the real DB (docs/91 §3, docs/120). Proves the
+// dispatch-time resolver hydrates the nested DataSources the send reads — entity-scoped
+// sources keyed by the send's `entityRefs`, line-item collections, and `*Url` tokens —
+// for the real `invoicing-overdue` default template.
+//
+// The ad-hoc fixtures below are authored as legacy sparx trees and CONVERTED
+// (`emailTreeToSilica`), which is deliberate: it exercises the conversion against the
+// real database on the way in, so a converted email's bindings are proven to still
+// resolve — not just to have the right node shape.
 
 import crypto from 'node:crypto';
 
 import { prisma, withTenant } from '@sparx/db';
-import { getDefaultEmailTemplate } from '@sparx/builder-schemas';
+import {
+  emailTreeToSilica,
+  getDefaultEmailTemplate,
+  type BuilderNode,
+} from '@sparx/builder-schemas';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { resolveEmailData, applyEntitySnapshot } from '../../src/lib/email-data.js';
+import { resolveSilicaEmailData, applyEntitySnapshot } from '../../src/lib/email-data.js';
 import { createTestTenant, dropTestTenant, type TestTenant } from '../helpers.js';
 
-describe('resolveEmailData — invoice template', () => {
+/** A legacy tree fixture, as the send now sees it: converted to a silica document. */
+const asDoc = (tree: BuilderNode) => emailTreeToSilica(tree, '', null);
+
+describe('resolveSilicaEmailData — invoice template', () => {
   let fixture: TestTenant;
   let customerId: string;
   let billingDocumentId: string;
@@ -95,9 +107,9 @@ describe('resolveEmailData — invoice template', () => {
 
   it('hydrates the invoice (number, balance, computed overdue days, items, payUrl)', async () => {
     const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
-    const data = await resolveEmailData(
+    const data = await resolveSilicaEmailData(
       { tenantId: fixture.tenantId },
-      tpl.tree,
+      tpl.doc,
       { email: 'ar@buyer.test', customerId, billingDocumentId },
       [tpl.subject, tpl.preheader]
     );
@@ -132,7 +144,7 @@ describe('resolveEmailData — invoice template', () => {
         { id: 'p', type: 'Text', props: { text: 'Hi {{customer.firstName ?? "there"}}' } },
       ],
     };
-    const data = await resolveEmailData({ tenantId: fixture.tenantId }, tree, {
+    const data = await resolveSilicaEmailData({ tenantId: fixture.tenantId }, asDoc(tree), {
       email: 'ar@buyer.test',
       customerId,
     });
@@ -177,9 +189,9 @@ describe('resolveEmailData — invoice template', () => {
     // With the site's propertyId, the site's Property.name wins under BOTH the
     // canonical `site` root and the legacy `tenant` alias — body copy reads the site
     // name, matching the per-site wordmark/footer chrome (and the canvas/preview).
-    const scoped = await resolveEmailData(
+    const scoped = await resolveSilicaEmailData(
       { tenantId: fixture.tenantId },
-      tree,
+      asDoc(tree),
       { email: 'ar@buyer.test' },
       [],
       propertyId
@@ -191,15 +203,15 @@ describe('resolveEmailData — invoice template', () => {
     // returns no site name and falls through to the defensive org-name guard. In
     // PRODUCTION a primary property always exists (seeded at provisioning), so this
     // tail is unreachable there — it only guards a never-blank token.
-    const unscoped = await resolveEmailData({ tenantId: fixture.tenantId }, tree, {
+    const unscoped = await resolveSilicaEmailData({ tenantId: fixture.tenantId }, asDoc(tree), {
       email: 'ar@buyer.test',
     });
     expect(String((unscoped.tenant as Record<string, unknown>).name)).toContain('Test test-');
   });
 
-  it('only loads the sources the tree references (no order/cart for an invoice email)', async () => {
+  it('only loads the sources the email references (no order/cart for an invoice email)', async () => {
     const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
-    const data = await resolveEmailData({ tenantId: fixture.tenantId }, tpl.tree, {
+    const data = await resolveSilicaEmailData({ tenantId: fixture.tenantId }, tpl.doc, {
       email: 'ar@buyer.test',
       customerId,
       billingDocumentId,
