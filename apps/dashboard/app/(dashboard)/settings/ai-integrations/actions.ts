@@ -11,21 +11,27 @@ import 'server-only';
 import { revalidatePath } from 'next/cache';
 import {
   type IssuedKey,
+  type McpScopeMeta,
+  type StaffRole,
   issueApiKey as issueApiKeyService,
   listApiKeys as listApiKeysService,
   revokeApiKey as revokeApiKeyService,
   listMcpConnections as listMcpConnectionsService,
   revokeMcpConnection as revokeMcpConnectionService,
+  MCP_SCOPE_CATALOG,
+  grantableScopesForRole,
 } from '@sparx/auth';
 import { requireSession } from '@sparx/auth';
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: { message: string } };
 
-const VALID_SCOPES = ['read:crm', 'write:crm', 'write:crm_bulk'] as const;
-
-function badScopes(scopes: string[]): string | null {
+// Scopes an API key can be issued with are capped by the ISSUING staffer's
+// role, same rule the MCP OAuth consent page enforces (packages/auth's
+// grantableScopesForRole) — never a fixed CRM-only list.
+function badScopes(scopes: string[], role: StaffRole): string | null {
+  const grantable = new Set<string>(grantableScopesForRole(role));
   for (const s of scopes) {
-    if (!(VALID_SCOPES as readonly string[]).includes(s)) return s;
+    if (!grantable.has(s)) return s;
   }
   return null;
 }
@@ -47,7 +53,7 @@ export async function createApiKeyAction(input: CreateInput): Promise<ActionResu
   if (!Array.isArray(input.scopes) || input.scopes.length === 0) {
     return { ok: false, error: { message: 'At least one scope is required.' } };
   }
-  const bad = badScopes(input.scopes);
+  const bad = badScopes(input.scopes, session.user.role);
   if (bad) return { ok: false, error: { message: `Unsupported scope: ${bad}` } };
 
   try {
@@ -77,6 +83,15 @@ export async function revokeApiKeyAction(id: string): Promise<ActionResult<{ id:
   } catch (err) {
     return { ok: false, error: { message: err instanceof Error ? err.message : String(err) } };
   }
+}
+
+/** Scopes the current staffer's role may grant on a manually-issued API key —
+ *  same catalog + role cap the MCP OAuth consent page uses, so a key can be
+ *  scoped to any active module (Commerce, Inventory, Builder, ...), not just CRM. */
+export async function getIssuableScopeCatalogForCurrentTenant(): Promise<McpScopeMeta[]> {
+  const session = await requireSession();
+  const grantable = new Set<string>(grantableScopesForRole(session.user.role as StaffRole));
+  return MCP_SCOPE_CATALOG.filter((s) => grantable.has(s.scope));
 }
 
 export async function listApiKeysForCurrentTenant() {

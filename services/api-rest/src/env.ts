@@ -72,10 +72,6 @@ const EnvSchema = z
     // (dev / single-instance) → the default in-memory adapter, which is correct
     // for one process. Mirrors the GCP_PROJECT_ID Pub/Sub stub philosophy.
     REDIS_URL: z.string().optional(),
-    // Optional: when set, the Live Chat AI handler (docs/69 A-3) auto-responds
-    // to storefront messages via Claude Haiku. Unset → AI is disabled and every
-    // inbound customer message routes straight to a human (notification fires).
-    ANTHROPIC_API_KEY: z.string().optional(),
     // Google Search Console connector (docs/50 §7, docs/97 §4). Per-tenant OAuth:
     // each tenant authorizes THEIR Search Console; a nightly job ingests organic
     // metrics. The whole connector is INERT until these are set — the connect

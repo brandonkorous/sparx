@@ -9,6 +9,7 @@
 import * as React from 'react';
 import { Copy, Plus } from 'lucide-react';
 import {
+  Badge,
   Button,
   Checkbox,
   Dialog,
@@ -22,21 +23,35 @@ import {
   Label,
 } from '@wizeworks/silicaui-react';
 import { rule, useFieldValidation } from '@sparx/forms';
+import type { McpScopeMeta } from '@sparx/auth';
 
 import { createApiKeyAction } from '../actions';
 
-const SCOPE_OPTIONS = [
-  { value: 'read:crm', label: 'Read CRM (customers, deals, segments, reports)' },
-  { value: 'write:crm', label: 'Write CRM (notes, tasks, single-record updates)' },
-  { value: 'write:crm_bulk', label: 'Bulk write CRM (multi-record updates, mass assignments)' },
-] as const;
+export interface IssueKeyFormProps {
+  /** Scopes this staffer's role may grant — the full cross-module catalog
+   *  capped by grantableScopesForRole(), same as the MCP OAuth consent page. */
+  catalog: McpScopeMeta[];
+}
 
-export function IssueKeyForm() {
+// Group by module, preserving catalog order — mirrors oauth/consent's ConsentForm.
+function groupByModule(catalog: McpScopeMeta[]): { module: string; scopes: McpScopeMeta[] }[] {
+  const groups: { module: string; scopes: McpScopeMeta[] }[] = [];
+  for (const meta of catalog) {
+    const g = groups.find((x) => x.module === meta.module);
+    if (g) g.scopes.push(meta);
+    else groups.push({ module: meta.module, scopes: [meta] });
+  }
+  return groups;
+}
+
+export function IssueKeyForm({ catalog }: IssueKeyFormProps) {
   const [open, setOpen] = React.useState(false);
   const [pending, startTransition] = React.useTransition();
   const [name, setName] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [issued, setIssued] = React.useState<{ plaintext: string; prefix: string } | null>(null);
+  const [selected, setSelected] = React.useState<Set<string>>(() => new Set());
+  const groups = React.useMemo(() => groupByModule(catalog), [catalog]);
 
   const v = useFieldValidation({ name }, { name: rule.required('Give the key a label.') });
 
@@ -48,8 +63,17 @@ export function IssueKeyForm() {
       setIssued(null);
       setName('');
       setError(null);
+      setSelected(new Set());
     }
   }
+
+  const toggleScope = (scope: string, on: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (on) next.add(scope);
+      else next.delete(scope);
+      return next;
+    });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -142,20 +166,31 @@ export function IssueKeyForm() {
 
               <div className="flex flex-col gap-2">
                 <Label>Scopes</Label>
-                <div className="flex flex-col gap-2">
-                  {SCOPE_OPTIONS.map((s) => (
-                    <label key={s.value} className="flex items-start gap-2 text-sm">
-                      <Checkbox
-                        color="module"
-                        name="scopes"
-                        value={s.value}
-                        defaultChecked={s.value === 'read:crm'}
-                        className="mt-0.5"
-                      />
-                      <span>
-                        <code className="text-xs">{s.value}</code> — {s.label}
-                      </span>
-                    </label>
+                <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-auto pr-1">
+                  {groups.map((group) => (
+                    <div key={group.module} className="flex flex-col gap-2">
+                      <p className="text-base-content/70 text-xs font-medium">{group.module}</p>
+                      {group.scopes.map((s) => (
+                        <label key={s.scope} className="flex items-start gap-2 text-sm">
+                          <Checkbox
+                            color="module"
+                            name="scopes"
+                            value={s.scope}
+                            checked={selected.has(s.scope)}
+                            onChange={(e) => toggleScope(s.scope, e.target.checked)}
+                            className="mt-0.5"
+                          />
+                          <span>
+                            <code className="text-xs">{s.scope}</code> — {s.description}
+                            {s.sensitive && (
+                              <Badge color="danger" variant="soft" size="sm" className="ml-2">
+                                sensitive
+                              </Badge>
+                            )}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>

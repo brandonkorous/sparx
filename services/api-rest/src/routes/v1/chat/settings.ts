@@ -9,9 +9,16 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
+import { badRequest } from '@sparx/api-core/errors';
 
 import { requireChatModule } from '../../../lib/chat-context.js';
-import { getChatConfig, updateChatConfig, ChatConfigPatchSchema } from '../../../lib/chat/index.js';
+import {
+  getChatConfig,
+  updateChatConfig,
+  toPublicChatConfig,
+  ChatConfigPatchSchema,
+} from '../../../lib/chat/index.js';
+import { verifyAiProviderKey } from '../../../lib/ai/llm-router.js';
 
 const chatSettingsRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/chat/settings', async (request) => {
@@ -19,7 +26,7 @@ const chatSettingsRoutes: FastifyPluginAsync = (app) => {
     await requireChatModule(request);
     const auth = requireAuth(request);
     const config = await getChatConfig(auth.tenantId);
-    return ok(config);
+    return ok(toPublicChatConfig(config));
   });
 
   app.patch('/v1/chat/settings', async (request) => {
@@ -27,8 +34,21 @@ const chatSettingsRoutes: FastifyPluginAsync = (app) => {
     await requireChatModule(request);
     const auth = requireAuth(request);
     const patch = ChatConfigPatchSchema.parse(request.body);
+
+    // A newly-pasted key is verified with a real call BEFORE it's encrypted
+    // and stored — a bad key must never silently brick the AI first-responder.
+    if (patch.aiApiKey) {
+      const current = await getChatConfig(auth.tenantId);
+      const provider = patch.aiProvider ?? current.aiProvider;
+      if (!provider) {
+        throw badRequest('Choose an AI provider before adding a key.');
+      }
+      const result = await verifyAiProviderKey(provider, patch.aiApiKey);
+      if (!result.ok) throw badRequest(result.error);
+    }
+
     const config = await updateChatConfig(auth.tenantId, patch);
-    return ok(config);
+    return ok(toPublicChatConfig(config));
   });
 
   return Promise.resolve();

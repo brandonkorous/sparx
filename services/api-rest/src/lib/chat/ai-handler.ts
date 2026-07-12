@@ -1,31 +1,40 @@
 // Live Chat — AI first-responder (docs/56, docs/69 A-3).
 //
 // Invoked fire-and-forget after a customer message is persisted (public REST +
-// WebSocket paths). It answers product/policy questions with Claude Haiku and
-// escalates to a human when unsure, outside operating hours, or when AI is off.
+// WebSocket paths). It answers product/policy questions and escalates to a
+// human when unsure, outside operating hours, or when AI is off.
 // Escalation publishes `chat.message.received` so the notification fallbacks
 // (email-worker + web push, A-6) can alert staff.
+//
+// sparx never holds a platform-level AI credential — every call here runs
+// against the TENANT's own provider + key (Anthropic or OpenAI, brought in
+// Settings → Chat), decrypted just-in-time via llm-harness
+// (github.com/brandonkorous/llm-harness), which normalizes tool calling
+// across providers. No key configured → the bot stands down entirely and a
+// human handles it, same as AI being turned off.
 //
 // Grounding context comes from the tenant's own catalog + published pages via
 // RLS — not Typesense — because per-tenant Typesense reindex isn't live yet
 // (see memory project_typesense_build_progress). Swap in Typesense retrieval
 // here once it is, without touching callers.
 
-import Anthropic from '@anthropic-ai/sdk';
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant, prisma } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
+import { decryptProviderSecret } from '@sparx/integration-framework';
+import type { Message, ToolCall, ToolDefinition, ToolParameter } from 'llm-harness';
 import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@sparx/site-mcp';
 
 import { resolveActivePropertyName } from '../property.js';
 import { getActivePersona } from '../ai/prompt-templates.js';
+import { createTenantLlmRouter, DEFAULT_MODEL_BY_PROVIDER } from '../ai/llm-router.js';
 import { env } from '../../env.js';
 import { conversationService } from './index.js';
 import { getChatConfig, isWithinOperatingHours } from './config.js';
 import { getChatBroadcaster } from './broadcaster.js';
 import { escalateToHuman } from './notify.js';
+import type { AiProvider } from './types.js';
 
-const MODEL = 'claude-haiku-4-5-20251001';
 const CONFIDENCE_THRESHOLD = 0.8;
 const HANDOFF_MESSAGE =
   "Thanks! I've passed this along to our team — someone will follow up shortly.";
@@ -43,10 +52,10 @@ const MAX_TOOL_RESULT_CHARS = 6000;
 // concierge can look anything up but never acts on the customer's behalf.
 const CONCIERGE_TOOLS = SITE_TOOLS.filter((t) => t.kind === 'read');
 
-const RESPOND_TOOL: Anthropic.Tool = {
+const RESPOND_TOOL: ToolDefinition = {
   name: 'respond',
   description: 'Respond to the customer or escalate the conversation to a human agent.',
-  input_schema: {
+  parameters: {
     type: 'object',
     properties: {
       answer: {
@@ -63,18 +72,17 @@ const RESPOND_TOOL: Anthropic.Tool = {
       },
     },
     required: ['answer', 'confidence', 'escalate'],
-    additionalProperties: false,
   },
 };
 
-// respond + the read lookup tools. tool_choice is forced to `any` so every turn
-// is a tool call (never loose prose) — the model gathers via lookups, then
-// finalizes with `respond`.
-const TOOL_DEFS: Anthropic.Tool[] = [
+// respond + the read lookup tools. llm-harness has no cross-provider way to
+// FORCE a tool call, so the system prompt instructs the model to always
+// finish with `respond` — enforced by prompt, not the API (see buildSystemPrompt).
+const TOOL_DEFS: ToolDefinition[] = [
   ...toAnthropicTools(CONCIERGE_TOOLS).map((t) => ({
     name: t.name,
     description: t.description,
-    input_schema: t.input_schema as Anthropic.Tool.InputSchema,
+    parameters: t.input_schema as unknown as ToolParameter,
   })),
   RESPOND_TOOL,
 ];
@@ -104,8 +112,9 @@ export async function handleInboundForAI(
   try {
     const config = await getChatConfig(ctx.tenantId);
 
-    // AI disabled or no API key → a human must handle it.
-    if (!config.aiEnabled || !env.ANTHROPIC_API_KEY) {
+    // AI disabled, or the tenant hasn't connected their own provider + key
+    // yet → a human must handle it. sparx has no fallback credential.
+    if (!config.aiEnabled || !config.aiProvider || !config.aiApiKeyEncrypted) {
       await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');
       return;
     }
@@ -132,7 +141,14 @@ export async function handleInboundForAI(
       .find((m) => m.senderType === 'customer');
     if (!lastCustomer) return; // nothing to answer
 
-    const decision = await askClaude(ctx.tenantId, conversation.messages, config.greeting, logger);
+    const apiKey = decryptProviderSecret(config.aiApiKeyEncrypted);
+    const decision = await askAssistant(
+      ctx.tenantId,
+      config.aiProvider,
+      apiKey,
+      conversation.messages,
+      logger
+    );
     if (!decision) return; // API failed — staff still sees the inbound message
 
     if (decision.confidence >= CONFIDENCE_THRESHOLD && !decision.escalate) {
@@ -217,7 +233,8 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
   // assistant's voice + guardrails, with `{{business_name}}` resolved to the
   // customer-facing site name. Falls back to the platform default voice. Either way
   // the functional tool contract below is ALWAYS appended — the `respond` tool +
-  // confidence + escalation are wired to tool_choice and must not be overridable.
+  // confidence + escalation are wired to the caller's parsing and must not be
+  // overridable.
   const intro = persona
     ? persona.replace(/\{\{\s*business_name\s*\}\}/g, g.siteName)
     : [
@@ -226,7 +243,7 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
       ].join('\n\n');
   return [
     intro,
-    'You have lookup tools — use them to fetch real products, prices, availability, services, and store info before answering; never guess specifics. When you have what you need (or determine you cannot answer), call the `respond` tool. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded — be honest, low confidence beats a wrong answer. For order/account/refund specifics, or anything the tools cannot resolve, set escalate to true so a human takes over.',
+    'You have lookup tools — use them to fetch real products, prices, availability, services, and store info before answering; never guess specifics. When you have what you need (or determine you cannot answer), you MUST call the `respond` tool — never answer in plain text, even for a simple question. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded — be honest, low confidence beats a wrong answer. For order/account/refund specifics, or anything the tools cannot resolve, set escalate to true so a human takes over.',
     catalog,
     info,
   ]
@@ -234,10 +251,11 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
     .join('\n\n');
 }
 
-async function askClaude(
+async function askAssistant(
   tenantId: string,
+  provider: AiProvider,
+  apiKey: string,
   messages: { senderType: string; body: string }[],
-  _greeting: string,
   logger: FastifyBaseLogger
 ): Promise<AiDecision | null> {
   try {
@@ -248,53 +266,76 @@ async function askClaude(
     ]);
     if (!tenantSlug) return null; // can't scope tool calls without the tenant slug
 
-    const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    const router = createTenantLlmRouter(provider, apiKey);
     // The concierge calls the storefront's OWN public API — the same routes the
     // shopper MCP uses — over a loopback call. One execution path, real parity.
     const client = new SiteApiClient(`http://127.0.0.1:${env.PORT}`, { tenantSlug });
 
-    // Map the thread to Anthropic turns: customer → user, staff/ai → assistant.
-    // The thread always opens with the customer's first message, so it starts on
-    // a user turn; the tool loop appends assistant tool_use + user tool_result.
-    const convo: Anthropic.MessageParam[] = messages.map((m) => ({
+    // Map the thread to unified llm-harness turns: customer → user, staff/ai →
+    // assistant. The thread always opens with the customer's first message, so
+    // it starts on a user turn; the tool loop appends assistant tool_use +
+    // tool-role result messages.
+    const convo: Message[] = messages.map((m) => ({
       role: m.senderType === 'customer' ? ('user' as const) : ('assistant' as const),
       content: m.body,
     }));
 
-    const model = persona?.model ?? MODEL;
+    const model = DEFAULT_MODEL_BY_PROVIDER[provider];
     const system = buildSystemPrompt(grounding, persona?.body ?? null);
 
     for (let turn = 0; turn < MAX_TOOL_TURNS; turn++) {
-      const response = await anthropic.messages.create({
+      const response = await router.complete({
         model,
-        max_tokens: 1024,
+        maxTokens: 1024,
         system,
         messages: convo,
         tools: TOOL_DEFS,
-        tool_choice: { type: 'any' },
       });
 
-      const toolUses = response.content.filter(
-        (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use'
-      );
-      const respondUse = toolUses.find((b) => b.name === 'respond');
-      if (respondUse) return parseDecision(respondUse.input);
-      if (toolUses.length === 0) return null; // forced tool_choice:any should prevent this
+      const respondCall = response.toolCalls.find((c) => c.name === 'respond');
+      if (respondCall) return parseDecision(safeJsonParse(respondCall.arguments));
+
+      if (response.toolCalls.length === 0) {
+        // No forced tool_choice across providers (llm-harness has no unified
+        // equivalent) — the model answered in plain text instead of calling
+        // `respond`. Treat it as unvetted (no confidence/groundedness signal)
+        // so it always escalates rather than reaching the customer unchecked.
+        if (response.text.trim()) {
+          logger.warn({ tenantId, provider }, 'chat AI: model replied without calling respond');
+          return { answer: response.text.trim(), confidence: 0, escalate: true };
+        }
+        return null;
+      }
 
       // Execute the lookup tools this turn and feed results back for the next.
-      convo.push({ role: 'assistant', content: response.content });
-      const results: Anthropic.ToolResultBlockParam[] = [];
-      for (const use of toolUses) {
-        results.push(await runConciergeTool(client, tenantSlug, use, logger));
+      convo.push({
+        role: 'assistant',
+        content: response.toolCalls.map((c) => ({
+          type: 'tool_use' as const,
+          id: c.id,
+          name: c.name,
+          arguments: safeJsonParse(c.arguments),
+        })),
+      });
+      for (const call of response.toolCalls) {
+        convo.push(await runConciergeTool(client, tenantSlug, call, logger));
       }
-      convo.push({ role: 'user', content: results });
     }
 
-    logger.warn({ tenantId }, 'chat AI: tool loop hit the turn cap without responding');
+    logger.warn({ tenantId, provider }, 'chat AI: tool loop hit the turn cap without responding');
     return null;
   } catch (err) {
-    logger.error({ err }, 'chat AI: Anthropic call failed');
+    logger.error({ err, provider }, 'chat AI: provider call failed');
     return null;
+  }
+}
+
+function safeJsonParse(raw: string): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
   }
 }
 
@@ -308,24 +349,29 @@ function parseDecision(input: unknown): AiDecision | null {
   };
 }
 
-/** Run one concierge lookup tool and shape the Anthropic tool_result. A failed
- *  lookup becomes an is_error result the model can see and route around — it
- *  never throws out of the loop. */
+/** Run one concierge lookup tool and shape it as a `tool`-role result message.
+ *  A failed lookup becomes an error string the model can see and route around
+ *  — it never throws out of the loop. */
 async function runConciergeTool(
   client: SiteApiClient,
   tenantSlug: string,
-  use: Anthropic.ToolUseBlock,
+  call: ToolCall,
   logger: FastifyBaseLogger
-): Promise<Anthropic.ToolResultBlockParam> {
-  const base = { type: 'tool_result' as const, tool_use_id: use.id };
-  const tool = CONCIERGE_TOOLS.find((t) => t.name === use.name);
-  if (!tool) return { ...base, is_error: true, content: `unknown tool: ${use.name}` };
+): Promise<Message> {
+  const tool = CONCIERGE_TOOLS.find((t) => t.name === call.name);
+  if (!tool) {
+    return { role: 'tool', toolCallId: call.id, content: `Error: unknown tool ${call.name}` };
+  }
   try {
-    const parsed = tool.input.parse(use.input);
+    const parsed = tool.input.parse(safeJsonParse(call.arguments));
     const result = await tool.call(client, { tenantSlug }, parsed);
     const payload =
       result.meta !== undefined ? { data: result.data, meta: result.meta } : result.data;
-    return { ...base, content: JSON.stringify(payload).slice(0, MAX_TOOL_RESULT_CHARS) };
+    return {
+      role: 'tool',
+      toolCallId: call.id,
+      content: JSON.stringify(payload).slice(0, MAX_TOOL_RESULT_CHARS),
+    };
   } catch (err) {
     const message =
       err instanceof SiteApiError
@@ -333,7 +379,7 @@ async function runConciergeTool(
         : err instanceof Error
           ? err.message
           : String(err);
-    logger.debug({ tool: use.name, err }, 'chat AI: concierge tool failed');
-    return { ...base, is_error: true, content: message };
+    logger.debug({ tool: call.name, err }, 'chat AI: concierge tool failed');
+    return { role: 'tool', toolCallId: call.id, content: `Error: ${message}` };
   }
 }

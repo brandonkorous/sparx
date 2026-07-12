@@ -6,14 +6,28 @@
 // blob always resolves to DEFAULT_CHAT_CONFIG.
 
 import { prisma } from '@sparx/db';
+import { encryptProviderSecret } from '@sparx/integration-framework';
 
-import { DEFAULT_CHAT_CONFIG, type ChatConfig, type OperatingHours } from './types.js';
+import {
+  DEFAULT_CHAT_CONFIG,
+  AI_PROVIDERS,
+  type AiProvider,
+  type ChatConfig,
+  type ChatConfigPatch,
+  type OperatingHours,
+} from './types.js';
+
+function isAiProvider(v: unknown): v is AiProvider {
+  return typeof v === 'string' && (AI_PROVIDERS as readonly string[]).includes(v);
+}
 
 function coerceConfig(raw: unknown): ChatConfig {
   if (!raw || typeof raw !== 'object') return { ...DEFAULT_CHAT_CONFIG };
   const r = raw as Record<string, unknown>;
   return {
     aiEnabled: typeof r.aiEnabled === 'boolean' ? r.aiEnabled : DEFAULT_CHAT_CONFIG.aiEnabled,
+    aiProvider: isAiProvider(r.aiProvider) ? r.aiProvider : null,
+    aiApiKeyEncrypted: typeof r.aiApiKeyEncrypted === 'string' ? r.aiApiKeyEncrypted : null,
     collectEmail:
       typeof r.collectEmail === 'boolean' ? r.collectEmail : DEFAULT_CHAT_CONFIG.collectEmail,
     greeting: typeof r.greeting === 'string' ? r.greeting : DEFAULT_CHAT_CONFIG.greeting,
@@ -45,13 +59,20 @@ export async function getChatConfig(tenantId: string): Promise<ChatConfig> {
   return coerceConfig(settings.chat);
 }
 
-/** Shallow-merge a partial config patch onto the stored blob. */
+/** Shallow-merge a partial config patch onto the stored blob. `aiApiKey`
+ *  (plaintext) is encrypted here before it ever touches storage — omit it to
+ *  leave the stored key untouched, pass null to disconnect the tenant's AI
+ *  provider entirely. */
 export async function updateChatConfig(
   tenantId: string,
-  patch: Partial<ChatConfig>
+  patch: ChatConfigPatch
 ): Promise<ChatConfig> {
+  const { aiApiKey, ...configPatch } = patch;
   const current = await getChatConfig(tenantId);
-  const next: ChatConfig = { ...current, ...patch };
+  const next: ChatConfig = { ...current, ...configPatch };
+  if (aiApiKey !== undefined) {
+    next.aiApiKeyEncrypted = aiApiKey === null ? null : encryptProviderSecret(aiApiKey);
+  }
   // jsonb_set on the `chat` key only — never clobber sibling settings (modules,
   // primaryDomain, onboarding tracker, …). Uses a parameterized jsonb value.
   await prisma.$executeRaw`

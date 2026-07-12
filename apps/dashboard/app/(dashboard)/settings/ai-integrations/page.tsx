@@ -11,7 +11,11 @@ import { Badge, EmptyState } from '@wizeworks/silicaui-react';
 
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
-import { listApiKeysForCurrentTenant, listMcpConnectionsForCurrentTenant } from './actions';
+import {
+  listApiKeysForCurrentTenant,
+  listMcpConnectionsForCurrentTenant,
+  getIssuableScopeCatalogForCurrentTenant,
+} from './actions';
 import { IssueKeyForm } from './_components/issue-key-form';
 import { KeysList } from './_components/keys-list';
 import { ConnectionsList } from './_components/connections-list';
@@ -29,10 +33,11 @@ interface PageProps {
 
 export default async function AiIntegrationsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const [prefs, keys, connections] = await Promise.all([
+  const [prefs, keys, connections, issuableScopes] = await Promise.all([
     getUserPreferences(),
     listApiKeysForCurrentTenant(),
     listMcpConnectionsForCurrentTenant(),
+    getIssuableScopeCatalogForCurrentTenant(),
   ]);
 
   const view = (str(params.view) || prefs.defaultListView) === 'card' ? 'card' : 'table';
@@ -72,13 +77,17 @@ export default async function AiIntegrationsPage({ searchParams }: PageProps) {
 
         <div className="flex flex-col gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">API keys</h2>
-          <ListToolbar enableViewToggle searchable={false} primaryAction={<IssueKeyForm />} />
+          <ListToolbar
+            enableViewToggle
+            searchable={false}
+            primaryAction={<IssueKeyForm catalog={issuableScopes} />}
+          />
           {keys.length === 0 ? (
             <EmptyState
               icon={<KeyRound className="h-5 w-5" />}
               title="No API keys yet"
               description="Issue a scoped key to connect an assistant or integration that can’t use OAuth."
-              actions={<IssueKeyForm />}
+              actions={<IssueKeyForm catalog={issuableScopes} />}
             />
           ) : (
             <KeysList keys={sortedKeys} view={view} />

@@ -6,9 +6,9 @@ import { revalidatePath } from 'next/cache';
 
 import { api } from '@/lib/api-rest-client';
 
-import type { ChatConfig, QuickReplyDto } from './_lib/types';
+import type { ChatConfig, ChatConfigPatch, QuickReplyDto } from './_lib/types';
 
-export async function updateChatSettingsAction(patch: Partial<ChatConfig>): Promise<ChatConfig> {
+export async function updateChatSettingsAction(patch: ChatConfigPatch): Promise<ChatConfig> {
   const data = await api.patch<ChatConfig>('/v1/chat/settings', patch);
   revalidatePath('/settings/chat');
   return data;

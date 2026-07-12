@@ -10,6 +10,12 @@ export type ConversationStatus = 'open' | 'pending' | 'resolved' | 'spam';
 export type SenderType = 'customer' | 'staff' | 'ai';
 export type ChatSource = 'site' | 'sparx_market' | 'dashboard';
 
+/** LLM providers a tenant may bring their own key for (docs/07, chat AI
+ *  first-responder). sparx never holds a platform-level AI credential —
+ *  every AI call is made with the connecting TENANT's own key. */
+export type AiProvider = 'anthropic' | 'openai';
+export const AI_PROVIDERS: readonly AiProvider[] = ['anthropic', 'openai'];
+
 /** First value that is neither null/undefined nor an empty string, else null.
  *  Used for "name → company → email" display fallbacks where `??` is wrong
  *  (an empty trimmed name must fall through, not win). */
@@ -37,8 +43,15 @@ export interface OperatingHours {
 }
 
 export interface ChatConfig {
-  /** AI auto-responds to inbound storefront messages when true. */
+  /** AI auto-responds to inbound storefront messages when true — only takes
+   *  effect once the tenant has configured their own provider + key below. */
   aiEnabled: boolean;
+  /** The tenant's own AI provider — null until they connect one. */
+  aiProvider: AiProvider | null;
+  /** AES-256-GCM ciphertext (`@sparx/integration-framework`'s provider-secret
+   *  box), `enc:iv.tag.cipher`. SERVER-INTERNAL ONLY — never serialize this
+   *  field to a client; routes must go through `toPublicChatConfig`. */
+  aiApiKeyEncrypted: string | null;
   /** Show a name/email pre-chat form to anonymous visitors before the thread. */
   collectEmail: boolean;
   /** Auto-greeting inserted as the first AI/system message when a thread opens. */
@@ -59,7 +72,9 @@ export interface ChatConfig {
 }
 
 export const DEFAULT_CHAT_CONFIG: ChatConfig = {
-  aiEnabled: true,
+  aiEnabled: false,
+  aiProvider: null,
+  aiApiKeyEncrypted: null,
   collectEmail: true,
   greeting: 'Hi! 👋 How can we help?',
   awayMessage: "We're away right now, but leave a message and we'll get back to you.",
@@ -68,6 +83,18 @@ export const DEFAULT_CHAT_CONFIG: ChatConfig = {
   position: 'bottom-right',
   operatingHours: null,
 };
+
+/** Client-safe projection of {@link ChatConfig} — the encrypted key ciphertext
+ *  is replaced with a boolean. Every route that returns chat config to the
+ *  dashboard or widget MUST send this shape, never the raw `ChatConfig`. */
+export type ChatConfigPublic = Omit<ChatConfig, 'aiApiKeyEncrypted'> & {
+  aiKeyConfigured: boolean;
+};
+
+export function toPublicChatConfig(config: ChatConfig): ChatConfigPublic {
+  const { aiApiKeyEncrypted, ...rest } = config;
+  return { ...rest, aiKeyConfigured: aiApiKeyEncrypted !== null };
+}
 
 const TimeOfDay = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Expected HH:MM (24-hour)');
 
@@ -78,6 +105,7 @@ export const OperatingHoursSchema = z.object({
 
 export const ChatConfigSchema = z.object({
   aiEnabled: z.boolean(),
+  aiProvider: z.enum(AI_PROVIDERS).nullable(),
   collectEmail: z.boolean(),
   greeting: z.string().max(500),
   awayMessage: z.string().max(500),
@@ -93,7 +121,14 @@ export const ChatConfigSchema = z.object({
   operatingHours: OperatingHoursSchema.nullable(),
 });
 
-export const ChatConfigPatchSchema = ChatConfigSchema.partial();
+export const ChatConfigPatchSchema = ChatConfigSchema.partial().extend({
+  /** Plaintext AI provider key pasted by the tenant — encrypted server-side
+   *  before it ever reaches storage (never send/store ciphertext from here).
+   *  Omit to leave the stored key untouched; pass null to disconnect it. */
+  aiApiKey: z.string().min(1).max(500).nullable().optional(),
+});
+
+export type ChatConfigPatch = z.infer<typeof ChatConfigPatchSchema>;
 
 // ─── Conversation / message inputs ──────────────────────────────────────────
 

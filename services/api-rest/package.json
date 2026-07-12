@@ -20,6 +20,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
     "@fastify/cookie": "^11",
+    "llm-harness": "^0.3.1",
+    "openai": "^4.104.0",
     "@fastify/cors": "^11.0.1",
     "@fastify/jwt": "^9.0.4",
     "@fastify/rate-limit": "^10.3.0",
