@@ -1,4 +1,4 @@
-import { NavigationMenuLink } from '@sparx/ui';
+import { NavigationMenuLink, Text } from '@wizeworks/silicaui-react';
 import { getModuleColor, type MarketingModule } from './module-colors';
 
 // Source of truth for the Modules megamenu (desktop) and the mobile drawer
@@ -51,113 +51,36 @@ export const MODULE_GROUPS: { title: string; items: ModuleNavItem[] }[] = [
 // Flat list (drawer accordion + anywhere a single ordered list is handy).
 export const MODULE_NAV: ModuleNavItem[] = MODULE_GROUPS.flatMap((g) => g.items);
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
-
-// Small colored bullet for the megamenu swatches. Bespoke marketing chrome.
-function Dot({ color, size = 8 }: { color: string; size?: number }) {
-  return (
-    <span
-      aria-hidden
-      style={{
-        display: 'inline-block',
-        width: size,
-        height: size,
-        borderRadius: 9999,
-        backgroundColor: color,
-        flexShrink: 0,
-      }}
-    />
-  );
-}
-
 /**
- * The Modules megamenu panel — rendered inside a NavigationMenuContent. Owns its
- * own chrome (surface, border, shadow) in the marketing register; the @sparx/ui
- * NavigationMenu primitive supplies only the behavior.
- *
- * `linkBase` prefixes the marketing routes so the same panel works on the
- * marketing site (relative, '') and on the dashboard auth pages (absolute origin).
+ * The Modules megamenu panel — rendered inside a `NavigationMenuContent`,
+ * which already supplies the floating panel's surface/border/shadow, so this
+ * only lays out the grid of module links. `linkBase` prefixes the marketing
+ * routes so the same panel works on the marketing site (relative, '') and on
+ * the dashboard auth pages (absolute origin).
  */
 export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
   return (
-    <div
-      style={{
-        width: '680px',
-        maxWidth: 'calc(100vw - 48px)',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        boxShadow: '0 20px 50px rgba(15, 23, 42, 0.12)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '28px',
-          padding: '24px',
-        }}
-      >
+    <div className="w-[min(680px,calc(100vw-3rem))]">
+      <div className="grid grid-cols-3 gap-7 p-6">
         {MODULE_GROUPS.map((group) => (
-          <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                padding: '0 10px 6px',
-              }}
-            >
+          <div key={group.title} className="flex flex-col gap-1">
+            <Text className="text-base-content/50 px-2.5 pb-1.5 text-xs font-semibold">
               {group.title}
-            </span>
+            </Text>
             {group.items.map((m) => {
               const c = getModuleColor(m.module);
               return (
                 <NavigationMenuLink
                   key={m.module}
                   href={`${linkBase}${m.href}`}
-                  className="mkt-mm-item"
+                  className="rounded-field hover:bg-base-200 flex items-start gap-3 p-2.5"
                 >
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 26,
-                      height: 26,
-                      borderRadius: '7px',
-                      backgroundColor: c.tint,
-                      flexShrink: 0,
-                      marginTop: '1px',
-                    }}
-                  >
-                    <Dot color={c.color} size={8} />
+                  <span className="bg-base-200 mt-0.5 flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md">
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: c.color }} />
                   </span>
-                  <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span
-                      style={{
-                        fontFamily: SANS,
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        color: 'var(--color-base-content)',
-                      }}
-                    >
-                      {m.label}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: SANS,
-                        fontSize: '12.5px',
-                        lineHeight: '16px',
-                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      }}
-                    >
-                      {m.desc}
-                    </span>
+                  <span className="flex flex-col gap-0.5">
+                    <Text className="text-base-content text-sm font-medium">{m.label}</Text>
+                    <Text className="text-base-content/50 text-xs leading-snug">{m.desc}</Text>
                   </span>
                 </NavigationMenuLink>
               );
@@ -166,36 +89,13 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
         ))}
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          padding: '14px 24px',
-          borderTop: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
+      <div className="border-base-300 bg-base-200 flex items-center justify-between gap-4 border-t px-6 py-3.5">
+        <Text className="text-base-content/70 text-sm">
           One platform. Activate only what you need.
-        </span>
+        </Text>
         <NavigationMenuLink
           href={`${linkBase}/platform`}
-          style={{
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '13px',
-            color: 'var(--color-primary)',
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-          }}
+          className="text-primary text-sm font-medium whitespace-nowrap"
         >
           See the whole platform →
         </NavigationMenuLink>

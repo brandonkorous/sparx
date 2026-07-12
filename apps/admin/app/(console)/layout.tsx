@@ -1,4 +1,4 @@
-import { ConfirmProvider, ModuleProvider, Toaster } from '@sparx/ui';
+import { ConfirmProvider, ModuleProvider } from '@sparx/ui';
 import { requireOperator } from '@sparx/operator-auth/next';
 import { ConsoleShell } from './_components/console-shell';
 
@@ -23,7 +23,6 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
         <ConsoleShell email={operator.email} capabilities={operator.capabilities}>
           {children}
         </ConsoleShell>
-        <Toaster />
       </ConfirmProvider>
     </ModuleProvider>
   );

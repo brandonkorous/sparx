@@ -1,34 +1,59 @@
 'use client';
 
 import * as React from 'react';
-import { Toaster as SonnerToaster, toast as sonnerToast } from 'sonner';
+import { Toast } from '@base-ui-components/react/toast';
+import { ToastProvider } from '@wizeworks/silicaui-react';
 
-// Wraps sonner with sparx tokens. Apps mount <Toaster /> once at the root and
-// fire toasts via `toast.success(...)`, `toast.error(...)`, etc.
+// Wraps silicaui's Toast (Base UI underneath) with a sonner-shaped API so the
+// ~150 existing call sites (`toast.success(...)`, bare `toast(msg, opts)`)
+// don't change. `createToastManager()` is Base UI's event-bus escape hatch for
+// firing toasts from outside a React render — exactly the "call from
+// anywhere" ergonomics the old sonner singleton gave us. Apps mount
+// `<Toaster />` once (a leaf, like before — it doesn't need to wrap children)
+// and fire toasts via `toast.success(...)` etc. from anywhere, hook or not.
+const manager = Toast.createToastManager();
 
-export const Toaster = (
-  props: React.ComponentPropsWithoutRef<typeof SonnerToaster>
-): React.ReactElement => (
-  <SonnerToaster
-    position="bottom-right"
-    closeButton
-    toastOptions={{
-      classNames: {
-        toast: 'group rounded-md border border-base-300 bg-base-100 text-base-content shadow-md',
-        title: 'text-sm font-medium',
-        description: 'text-xs text-base-content/70',
-        actionButton:
-          'rounded-md bg-primary px-2 py-1 text-xs font-medium text-white hover:bg-primary',
-        cancelButton:
-          'rounded-md border border-base-300 bg-base-100 px-2 py-1 text-xs text-base-content/70 hover:bg-base-200',
-        success: 'border-[var(--color-success)] text-success bg-success bg-soft',
-        error: 'border-[var(--color-danger)] text-danger bg-danger bg-soft',
-        warning: 'border-[var(--color-warning)] text-warning bg-warning bg-soft',
-      },
-    }}
-    {...props}
-  />
-);
+interface ToastOptions {
+  description?: React.ReactNode;
+  /** Ms before auto-dismiss. `Infinity` means "never" (mapped to Base UI's `0` sentinel). */
+  duration?: number;
+  /** Dedupes/replaces an in-flight toast sharing this id. */
+  id?: string;
+  action?: { label: string; onClick: () => void };
+}
 
-// Re-export sonner's `toast` so consumers do `import { toast } from '@sparx/ui'`.
-export const toast = sonnerToast;
+type ToastType = 'success' | 'error' | 'warning' | 'info' | undefined;
+
+function toBaseUiTimeout(duration: number | undefined): number | undefined {
+  if (duration === undefined) return undefined;
+  return duration === Number.POSITIVE_INFINITY ? 0 : duration;
+}
+
+function add(type: ToastType, title: React.ReactNode, opts?: ToastOptions): string {
+  return manager.add({
+    id: opts?.id,
+    title,
+    description: opts?.description,
+    type,
+    timeout: toBaseUiTimeout(opts?.duration),
+    actionProps: opts?.action
+      ? { children: opts.action.label, onClick: opts.action.onClick }
+      : undefined,
+  });
+}
+
+function toastFn(title: React.ReactNode, opts?: ToastOptions): string {
+  return add(undefined, title, opts);
+}
+
+export const toast = Object.assign(toastFn, {
+  success: (title: React.ReactNode, opts?: ToastOptions) => add('success', title, opts),
+  error: (title: React.ReactNode, opts?: ToastOptions) => add('error', title, opts),
+  warning: (title: React.ReactNode, opts?: ToastOptions) => add('warning', title, opts),
+  info: (title: React.ReactNode, opts?: ToastOptions) => add('info', title, opts),
+  message: (title: React.ReactNode, opts?: ToastOptions) => add(undefined, title, opts),
+  promise: manager.promise,
+  close: (id: string) => manager.close(id),
+});
+
+export const Toaster = (): React.ReactElement => <ToastProvider toastManager={manager} />;

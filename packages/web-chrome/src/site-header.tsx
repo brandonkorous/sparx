@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Button,
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+  Navbar,
+  NavbarCenter,
+  NavbarEnd,
+  NavbarStart,
   NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
   NavigationMenuContent,
+  NavigationMenuItem,
   NavigationMenuLink,
-  Wordmark,
-} from '@sparx/ui';
+  NavigationMenuTrigger,
+} from '@wizeworks/silicaui-react';
+import { Wordmark } from '@sparx/ui';
 import { ModulesMegaContent, MODULE_NAV } from './modules-menu';
 
 export interface SiteHeaderProps {
@@ -37,223 +46,141 @@ const LINKS = [
   { label: 'Customers', href: '/customers' },
 ] as const;
 
-// The shared site header. Lives in @sparx/web-chrome so the marketing site and
-// the dashboard auth pages render one identical header. Marketing routes are
-// prefixed with `marketingOrigin`; the auth CTAs point wherever the consumer
-// says (relative on the dashboard, absolute on the marketing site).
+const NAV_LINK_CLASS = 'text-base-content/70 hover:text-base-content text-sm font-medium';
+const DRAWER_LINK_CLASS = 'border-base-300 text-base-content border-b py-3.5 text-lg font-medium';
+
+/**
+ * The shared site header — rebuilt solely on silicaui: `Navbar` for the bar
+ * shell, `NavigationMenu` for desktop links + the Modules megamenu, and
+ * `Drawer`/`Collapsible` for the mobile menu (replacing the old hand-rolled
+ * `mkt-mobile-drawer` + manual open-state booleans). Lives in @sparx/web-chrome
+ * so the marketing site and the dashboard auth pages render one identical
+ * header. Marketing routes are prefixed with `marketingOrigin`; the auth CTAs
+ * point wherever the consumer says (relative on the dashboard, absolute on
+ * the marketing site).
+ */
 export function SiteHeader({
   marketingOrigin = '',
   signInHref = '/sign-in',
   signUpHref = '/sign-up',
 }: SiteHeaderProps) {
-  const [open, setOpen] = useState(false);
-  const [modulesOpen, setModulesOpen] = useState(false);
   const link = (href: string) => `${marketingOrigin}${href}`;
+  const otherLinks = LINKS.filter((l) => l.label !== 'Platform');
 
   return (
-    <>
-      <nav
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingTop: '20px',
-          paddingBottom: '20px',
-          // Fall back to a sensible gutter when the marketing token isn't present
-          // (the dashboard doesn't define --gutter-page).
-          paddingLeft: 'var(--gutter-page, clamp(20px, 5vw, 64px))',
-          paddingRight: 'var(--gutter-page, clamp(20px, 5vw, 64px))',
-          borderBottom: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          backdropFilter: 'saturate(150%) blur(8px)',
-          gap: '16px',
-        }}
-      >
-        <a href={link('/')} aria-label="sparx home" style={{ display: 'inline-flex' }}>
-          <Wordmark />
+    <Navbar className="border-base-300 bg-base-100 sticky top-0 z-50 border-b px-6 sm:px-8">
+      <NavbarStart>
+        <a href={link('/')} aria-label="sparx home" className="inline-flex">
+          <Wordmark size={32} />
         </a>
+      </NavbarStart>
 
-        {/* Desktop: Radix NavigationMenu — Modules opens a megamenu panel. */}
-        <NavigationMenu viewport={false} className="mkt-hide-on-tablet" style={{ display: 'flex' }}>
-          <NavigationMenuList style={{ gap: '36px' }}>
-            <NavigationMenuItem>
-              <NavigationMenuLink href={link('/platform')} className="mkt-navlink">
-                Platform
+      {/* Centers the desktop nav between brand and CTAs — the daisyUI
+          `navbar-center` zone (verified against the real bug this session:
+          links were vanishing because Tailwind wasn't scanning this
+          package's source at all, not because of the zone's own CSS). */}
+      <NavbarCenter className="hidden lg:flex">
+        <NavigationMenu>
+          <NavigationMenuItem>
+            <NavigationMenuLink href={link('/platform')} className={NAV_LINK_CLASS}>
+              Platform
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuTrigger className={NAV_LINK_CLASS}>Modules</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ModulesMegaContent linkBase={marketingOrigin} />
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          {otherLinks.map((l) => (
+            <NavigationMenuItem key={l.label}>
+              <NavigationMenuLink href={link(l.href)} className={NAV_LINK_CLASS}>
+                {l.label}
               </NavigationMenuLink>
             </NavigationMenuItem>
-
-            <NavigationMenuItem style={{ position: 'relative' }}>
-              <NavigationMenuTrigger className="mkt-navlink-trigger">Modules</NavigationMenuTrigger>
-              <NavigationMenuContent
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 16px)',
-                  left: 0,
-                  width: 'max-content',
-                  zIndex: 60,
-                }}
-              >
-                <ModulesMegaContent linkBase={marketingOrigin} />
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-
-            {LINKS.filter((l) => l.label !== 'Platform').map((l) => (
-              <NavigationMenuItem key={l.label}>
-                <NavigationMenuLink href={link(l.href)} className="mkt-navlink">
-                  {l.label}
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span className="mkt-hide-on-mobile" style={{ display: 'inline-flex' }}>
-            <Button asChild variant="ghost" size="sm">
-              <a href={signInHref}>Sign in</a>
-            </Button>
-          </span>
-          <Button asChild variant="solid" size="sm" style={{ backgroundColor: '#0A0A0A' }}>
-            <a href={signUpHref}>Start free</a>
-          </Button>
-          <button
-            type="button"
-            className="mkt-tablet-down-only-flex"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            style={{
-              width: 36,
-              height: 36,
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-base-200)',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {open ? <CloseIcon /> : <MenuIcon />}
-          </button>
-        </div>
-      </nav>
-
-      {open ? (
-        <div className="mkt-mobile-drawer" style={{ display: 'flex' }}>
-          <a href={link('/platform')} onClick={() => setOpen(false)} style={drawerLinkStyle}>
-            Platform
-          </a>
-
-          {/* Modules: expandable section listing every module. */}
-          <button
-            type="button"
-            aria-expanded={modulesOpen}
-            onClick={() => setModulesOpen((v) => !v)}
-            style={{
-              ...drawerLinkStyle,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: '1px solid var(--color-base-300)',
-              width: '100%',
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-          >
-            Modules
-            <Caret open={modulesOpen} />
-          </button>
-          {modulesOpen ? (
-            <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: '6px' }}>
-              {MODULE_NAV.map((m) => (
-                <a
-                  key={m.module}
-                  href={link(m.href)}
-                  onClick={() => setOpen(false)}
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 400,
-                    fontSize: '15px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    textDecoration: 'none',
-                    padding: '10px 0 10px 16px',
-                  }}
-                >
-                  {m.label}
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '13px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      marginLeft: '8px',
-                    }}
-                  >
-                    {m.desc}
-                  </span>
-                </a>
-              ))}
-            </div>
-          ) : null}
-
-          {LINKS.filter((l) => l.label !== 'Platform').map((l) => (
-            <a
-              key={l.label}
-              href={link(l.href)}
-              onClick={() => setOpen(false)}
-              style={drawerLinkStyle}
-            >
-              {l.label}
-            </a>
           ))}
+        </NavigationMenu>
+      </NavbarCenter>
 
-          <a
-            href={signInHref}
-            onClick={() => setOpen(false)}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '18px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              textDecoration: 'none',
-              padding: '14px 0',
-            }}
-          >
+      <NavbarEnd className="gap-2">
+        {/* A responsive `hidden <bp>:<display>` toggle goes on a plain wrapper,
+            never directly on a component (Button, DrawerTrigger's child, …)
+            that already carries its own internal display/alignment classes —
+            the two compete and render inconsistently. Recurring gotcha in
+            this codebase; wrapping is the fix every time. */}
+        <span className="hidden lg:inline-flex">
+          <Button render={<a href={signInHref} aria-label="Sign in" />} variant="ghost" size="sm">
             Sign in
-          </a>
-        </div>
-      ) : null}
-    </>
-  );
-}
+          </Button>
+        </span>
+        <Button render={<a href={signUpHref} aria-label="Start free" />} color="neutral" size="sm">
+          Start free
+        </Button>
 
-const drawerLinkStyle = {
-  fontFamily: 'var(--font-sans)',
-  fontWeight: 500,
-  fontSize: '18px',
-  color: 'var(--color-base-content)',
-  textDecoration: 'none',
-  padding: '14px 0',
-  borderBottom: '1px solid var(--color-base-300)',
-} as const;
+        <Drawer>
+          <span className="lg:hidden">
+            <DrawerTrigger>
+              <Button variant="ghost" shape="square" size="sm" aria-label="Open menu">
+                <MenuIcon />
+              </Button>
+            </DrawerTrigger>
+          </span>
+          <DrawerContent side="right" className="flex w-full max-w-sm flex-col gap-1 p-6">
+            <div className="flex items-center justify-between pb-4">
+              <Wordmark size={32} />
+              <DrawerClose>
+                <Button variant="ghost" shape="circle" size="sm" aria-label="Close menu">
+                  <CloseIcon />
+                </Button>
+              </DrawerClose>
+            </div>
 
-function Caret({ open }: { open: boolean }) {
-  return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-      style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}
-    >
-      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" />
-    </svg>
+            <DrawerClose>
+              <a href={link('/platform')} className={DRAWER_LINK_CLASS}>
+                Platform
+              </a>
+            </DrawerClose>
+
+            <Collapsible className="border-base-300 border-b">
+              <CollapsibleTrigger className="py-3.5 text-lg font-medium">
+                Modules
+              </CollapsibleTrigger>
+              <CollapsiblePanel>
+                <div className="flex flex-col gap-0.5 pb-3">
+                  {MODULE_NAV.map((m) => (
+                    <DrawerClose key={m.module}>
+                      <a
+                        href={link(m.href)}
+                        className="rounded-field hover:bg-base-200 flex flex-col gap-0.5 px-3 py-2"
+                      >
+                        <span className="text-base-content text-sm font-medium">{m.label}</span>
+                        <span className="text-base-content/50 text-xs">{m.desc}</span>
+                      </a>
+                    </DrawerClose>
+                  ))}
+                </div>
+              </CollapsiblePanel>
+            </Collapsible>
+
+            {otherLinks.map((l) => (
+              <DrawerClose key={l.label}>
+                <a href={link(l.href)} className={DRAWER_LINK_CLASS}>
+                  {l.label}
+                </a>
+              </DrawerClose>
+            ))}
+
+            <DrawerClose>
+              <a href={signInHref} className="text-base-content/70 py-3.5 text-lg font-medium">
+                Sign in
+              </a>
+            </DrawerClose>
+          </DrawerContent>
+        </Drawer>
+      </NavbarEnd>
+    </Navbar>
   );
 }
 
