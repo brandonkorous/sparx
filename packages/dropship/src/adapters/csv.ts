@@ -2,10 +2,21 @@
 // Order submission and tracking are not supported; inventory can be synced
 // when the feed includes a quantity column.
 //
-// credentials shape (CsvCredentials):
-//   csvUrl     — URL the adapter fetches (must be publicly accessible)
-//   delimiter  — field separator, default ','
-//   mapping    — maps column names to normalized product fields
+// credentials shape (CsvCredentials) is a FLAT string bag — every value here
+// travels through the generic vendor `credentialFields` form + the
+// `credentials: Record<string, string>` API schema shared by every supplier
+// type (see packages/dropship/src/vendors.ts + services/api-rest's
+// SupplierBody), so the column-mapping inputs are just more text fields
+// (each one the CSV header name for that product attribute) rather than a
+// nested object the generic form/schema can't represent.
+//
+//   csvUrl              — URL the adapter fetches (must be publicly accessible)
+//   delimiter           — field separator, default ','
+//   mapProductIdColumn  — header that groups variant rows into one product
+//   mapTitleColumn      — header for the product/variant title
+//   mapSkuColumn        — header for the variant SKU
+//   mapCostColumn       — header for cost price, e.g. "15.99" → 1599 cents
+//   map*Column (rest)   — optional per-attribute header names
 
 import type {
   Credentials,
@@ -38,7 +49,41 @@ export interface CsvColumnMapping {
 export interface CsvCredentials {
   csvUrl: string;
   delimiter?: string;
-  mapping: CsvColumnMapping;
+  mapProductIdColumn: string;
+  mapTitleColumn: string;
+  mapSkuColumn: string;
+  mapCostColumn: string;
+  mapDescriptionColumn?: string;
+  mapCategoryColumn?: string;
+  mapTagsColumn?: string;
+  mapImagesColumn?: string;
+  mapMsrpColumn?: string;
+  mapInventoryColumn?: string;
+  mapWeightColumn?: string;
+  mapColorColumn?: string;
+  mapSizeColumn?: string;
+}
+
+// Build the nested CsvColumnMapping the row-parsing helpers use, from the flat
+// credential fields the connect form actually collects. Empty optional
+// strings become `undefined` so `mapping.foo &&` checks below skip them.
+function toColumnMapping(creds: CsvCredentials): CsvColumnMapping {
+  const opt = (v: string | undefined): string | undefined => (v?.trim() ? v.trim() : undefined);
+  return {
+    supplierProductId: creds.mapProductIdColumn?.trim() ?? '',
+    title: creds.mapTitleColumn?.trim() ?? '',
+    sku: creds.mapSkuColumn?.trim() ?? '',
+    costPrice: creds.mapCostColumn?.trim() ?? '',
+    description: opt(creds.mapDescriptionColumn),
+    category: opt(creds.mapCategoryColumn),
+    tags: opt(creds.mapTagsColumn),
+    imageUrls: opt(creds.mapImagesColumn),
+    msrp: opt(creds.mapMsrpColumn),
+    inventory: opt(creds.mapInventoryColumn),
+    weightGrams: opt(creds.mapWeightColumn),
+    variantColor: opt(creds.mapColorColumn),
+    variantSize: opt(creds.mapSizeColumn),
+  };
 }
 
 // ── RFC 4180 CSV parser ───────────────────────────────────────────────────────
@@ -183,6 +228,10 @@ export class CsvAdapter implements SupplierAdapter {
 
   async authenticate(_credentials: Credentials): Promise<boolean> {
     if (!this.creds.csvUrl) return false;
+    const mapping = toColumnMapping(this.creds);
+    if (!mapping.supplierProductId || !mapping.title || !mapping.sku || !mapping.costPrice) {
+      return false;
+    }
     try {
       const res = await fetch(this.creds.csvUrl, {
         method: 'HEAD',
@@ -195,7 +244,13 @@ export class CsvAdapter implements SupplierAdapter {
   }
 
   async *syncCatalog(_since?: Date): AsyncGenerator<NormalizedProduct> {
-    const { csvUrl, delimiter = ',', mapping } = this.creds;
+    const { csvUrl, delimiter = ',' } = this.creds;
+    const mapping = toColumnMapping(this.creds);
+    if (!mapping.supplierProductId || !mapping.title || !mapping.sku || !mapping.costPrice) {
+      throw new Error(
+        'CSV column mapping is incomplete — Product ID, Title, SKU, and Cost price columns are all required.'
+      );
+    }
     const res = await fetch(csvUrl, { signal: AbortSignal.timeout(60_000) });
     if (!res.ok) throw new Error(`CSV fetch failed: ${res.status} ${res.statusText}`);
     const text = await res.text();
@@ -219,8 +274,9 @@ export class CsvAdapter implements SupplierAdapter {
   }
 
   async checkInventory(skus: string[]): Promise<InventoryMap> {
-    const { csvUrl, delimiter = ',', mapping } = this.creds;
-    if (!mapping.inventory) return {};
+    const { csvUrl, delimiter = ',' } = this.creds;
+    const mapping = toColumnMapping(this.creds);
+    if (!mapping.sku || !mapping.inventory) return {};
     try {
       const res = await fetch(csvUrl, { signal: AbortSignal.timeout(60_000) });
       if (!res.ok) return {};

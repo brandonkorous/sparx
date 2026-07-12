@@ -65,6 +65,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
   const [region, setRegion] = React.useState(warehouse.region ?? '');
   const [postalCode, setPostalCode] = React.useState(warehouse.postalCode ?? '');
   const [country, setCountry] = React.useState(warehouse.country ?? '');
+  const [phone, setPhone] = React.useState(warehouse.phone ?? '');
   const [channels, setChannels] = React.useState<Record<string, boolean>>(() =>
     Object.fromEntries(CHANNELS.map((c) => [c, warehouse.defaultForChannel.includes(c)]))
   );
@@ -87,6 +88,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
     region.trim() !== (warehouse.region ?? '') ||
     postalCode.trim() !== (warehouse.postalCode ?? '') ||
     country.trim() !== (warehouse.country ?? '') ||
+    phone.trim() !== (warehouse.phone ?? '') ||
     CHANNELS.some((c) => !!channels[c] !== warehouse.defaultForChannel.includes(c)) ||
     isActive !== warehouse.isActive;
 
@@ -107,6 +109,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
         region: optional(region),
         postalCode: optional(postalCode),
         country: country.trim().toUpperCase(),
+        phone: optional(phone),
       },
       defaultForChannel: CHANNELS.filter((c) => channels[c]),
       isActive,
@@ -200,6 +203,14 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
                 />
               </Field>
             </div>
+            <Field>
+              <FieldLabel>Phone</FieldLabel>
+              <FieldControl name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <p className="text-base-content/70 text-xs">
+                Some carriers (e.g. USPS via Shippo) require a phone number on file for this address
+                before you can buy a real shipping label.
+              </p>
+            </Field>
             <div className="flex flex-col gap-2 pt-2">
               <p className="text-sm">Default for channel</p>
               <div className="flex flex-row flex-wrap gap-4">

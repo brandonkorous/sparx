@@ -70,8 +70,14 @@ export function createErrorsPlugin(options: ErrorsPluginOptions = {}): FastifyPl
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Request validation failed.',
+            // `field` is an alias of `path` — dashboard forms match a server
+            // validation error back to a specific field via `d.field in
+            // values` (19 call sites), but only `path` was ever emitted here,
+            // so every one of them silently fell through to the generic
+            // top-level message instead of an inline per-field error.
             details: err.issues.map((i) => ({
               path: i.path.join('.'),
+              field: i.path.join('.'),
               message: i.message,
               code: i.code,
             })),

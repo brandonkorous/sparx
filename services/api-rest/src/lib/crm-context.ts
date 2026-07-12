@@ -24,3 +24,16 @@ export async function requireCrmModule(request: FastifyRequest): Promise<void> {
   const enabled = await isModuleEnabled(auth.tenantId, 'crm');
   if (!enabled) throw moduleDisabled('crm');
 }
+
+/** Like requireCrmModule, but also passes for a commerce-only tenant (no
+ *  CRM). Orders live under /v1/crm/orders for historical reasons, but an
+ *  order is fundamentally a commerce record — a tenant with `commerce` (or
+ *  `b2b`, which requires it) must be able to view/act on their own orders
+ *  even without CRM active. Every other CRM route stays crm-exclusive via
+ *  requireCrmModule; only orders.ts uses this. */
+export async function requireCrmOrCommerceModule(request: FastifyRequest): Promise<void> {
+  const auth = requireAuth(request);
+  if (await isModuleEnabled(auth.tenantId, 'crm')) return;
+  if (await isModuleEnabled(auth.tenantId, 'commerce')) return;
+  throw moduleDisabled('crm');
+}

@@ -35,20 +35,23 @@ export async function resolveShipFromAddress(
       'No active warehouse is configured — add one under Inventory → Warehouses to enable live carrier rates.'
     );
   }
-  const warehouse = await withTenant(ctx, (tx) =>
-    tx.warehouse.findFirst({
-      where: { id: warehouseId },
-      select: {
-        name: true,
-        line1: true,
-        line2: true,
-        city: true,
-        region: true,
-        postalCode: true,
-        country: true,
-        phone: true,
-      },
-    })
+  const [warehouse, tenant] = await withTenant(ctx, (tx) =>
+    Promise.all([
+      tx.warehouse.findFirst({
+        where: { id: warehouseId },
+        select: {
+          name: true,
+          line1: true,
+          line2: true,
+          city: true,
+          region: true,
+          postalCode: true,
+          country: true,
+          phone: true,
+        },
+      }),
+      tx.tenant.findFirst({ where: { id: ctx.tenantId }, select: { email: true } }),
+    ])
   );
   if (!warehouse) {
     throw new CommerceValidationError('The configured default warehouse no longer exists.');
@@ -70,22 +73,29 @@ export async function resolveShipFromAddress(
     postalCode: warehouse.postalCode!,
     country: warehouse.country!,
     phone: warehouse.phone ?? undefined,
+    // The warehouse has no dedicated contact email (no column for it) — the
+    // tenant's account email is a reasonable stand-in; some carriers (USPS
+    // via Shippo) reject a real label purchase without a seller email+phone.
+    email: tenant?.email ?? undefined,
   };
 }
 
-/** A real address has a real postal code and street line — the
- *  placeholders checkout used to send (`line1: '—'`, no postalCode) fail
+/** A real address has a real street line, city, postal code, and country —
+ *  the placeholders checkout used to send (`line1: '—'`, `city: '—'`) fail
  *  this check, which is exactly how rateShipment() decides whether it's
- *  safe to call a live carrier or should stick to manual rates. */
-export function isAddressUsableForLiveRating(addr: AddressSnapshot): boolean {
-  return Boolean(
-    addr.line1 &&
-    addr.line1 !== '—' &&
-    addr.city &&
-    addr.city !== '—' &&
-    addr.postalCode &&
-    addr.country
-  );
+ *  safe to call a live carrier or should stick to manual rates. Verified
+ *  directly against Shippo: a placeholder destination address returns zero
+ *  usable rates (carriers geocode the full address to rate, not just the
+ *  ZIP), so `requireStreet` is NOT optional for a real quote — the caller
+ *  must supply the shopper's actual street/city, which the checkout form
+ *  already collects before "Get shipping rates" is even clickable. The
+ *  parameter exists only for a hypothetical future caller that has a
+ *  genuinely address-optional use case; every current caller wants the
+ *  default (`true`). */
+export function isAddressUsableForLiveRating(addr: AddressSnapshot, requireStreet = true): boolean {
+  if (!addr.postalCode || !addr.country) return false;
+  if (!requireStreet) return true;
+  return Boolean(addr.line1 && addr.line1 !== '—' && addr.city && addr.city !== '—');
 }
 
 export interface PackagingItem {

@@ -7,6 +7,7 @@ import { Badge, Card, CardBody, CardTitle, Table } from '@wizeworks/silicaui-rea
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
+import { CreateFulfillmentPanel } from './_components/create-fulfillment-panel';
 import { FulfillmentLabelPanel } from './_components/fulfillment-label-panel';
 import type { FulfillmentLabelDTO } from '../../order-label-actions';
 
@@ -90,6 +91,17 @@ export async function OrderDetailContent({ id }: Props) {
     api.get<CustomerSummary>(`/v1/crm/customers/${order.customerId}`).catch(() => null),
     api.get<{ slug: string }>('/v1/tenant'),
   ]);
+
+  const unfulfilledLines = order.items
+    .filter((i) => i.quantity > i.quantityFulfilled)
+    .map((i) => ({
+      orderItemId: i.id,
+      sku: i.sku,
+      name: i.name,
+      remaining: i.quantity - i.quantityFulfilled,
+    }));
+  const canFulfill =
+    unfulfilledLines.length > 0 && order.status !== 'cancelled' && order.status !== 'refunded';
 
   const fulfillmentLabels = await Promise.all(
     fulfillments.map((f) =>
@@ -280,11 +292,11 @@ export async function OrderDetailContent({ id }: Props) {
                 </Badge>
               </div>
             </CardTitle>
-            {fulfillments.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No fulfillments yet.</p>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {fulfillments.map((f, i) => (
+            <div className="flex flex-col gap-3">
+              {fulfillments.length === 0 ? (
+                <p className="text-base-content/70 text-sm">No fulfillments yet.</p>
+              ) : (
+                fulfillments.map((f, i) => (
                   <div key={f.id} className="flex flex-col gap-2">
                     <div className="flex flex-row justify-between">
                       <div className="flex flex-row items-center gap-2">
@@ -306,9 +318,10 @@ export async function OrderDetailContent({ id }: Props) {
                       initialLabels={fulfillmentLabels[i] ?? []}
                     />
                   </div>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+              {canFulfill && <CreateFulfillmentPanel orderId={order.id} lines={unfulfilledLines} />}
+            </div>
           </CardBody>
         </Card>
       </div>

@@ -101,6 +101,12 @@ export async function tryLiveRates(
   ctx: ServiceContext,
   request: ShipmentRequest
 ): Promise<RateOption[]> {
+  // Both ends need a full street-level address — verified directly against
+  // Shippo's API: a placeholder destination (`street1: '—'`) returns zero
+  // usable rates even though shipment creation itself "succeeds," because
+  // carriers rate off real geocoding, not just ZIP-to-ZIP. The caller is
+  // responsible for supplying the shopper's real address at quote time
+  // (see checkout.ts's shipping-quote route).
   if (
     !isAddressUsableForLiveRating(request.fromAddress) ||
     !isAddressUsableForLiveRating(request.toAddress)

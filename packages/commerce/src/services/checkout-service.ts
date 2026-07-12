@@ -376,14 +376,28 @@ export async function createPaymentIntent(
     providerSlug = SPARX_MARKET_GATEWAY_ID;
   } else {
     const gateway = await resolvePaymentGateway(ctx.tenantId);
-    intent = await paymentService.createPaymentIntent({
-      tenantId: ctx.tenantId,
-      amount: session.totalCents,
-      currency: session.currency.toLowerCase(),
-      metadata,
-      ...(input.returnUrl ? { returnUrl: input.returnUrl } : {}),
-      ...(input.cancelUrl ? { cancelUrl: input.cancelUrl } : {}),
-    });
+    // A gateway can resolve successfully (a stripeAccountId exists) while the
+    // underlying Connect account still isn't chargeable — e.g. mid-onboarding,
+    // captcha-interrupted, or since-restricted. Unlike its sibling methods
+    // (confirm/capture/cancel/refund), createPaymentIntent has no internal
+    // try/catch, so an account-not-ready Stripe error used to propagate raw
+    // to the shopper as a generic 500. Reuse the same clean message
+    // resolvePaymentGateway already gives a fully-unconfigured tenant — from
+    // the shopper's side both cases mean the same thing: they can't pay yet.
+    try {
+      intent = await paymentService.createPaymentIntent({
+        tenantId: ctx.tenantId,
+        amount: session.totalCents,
+        currency: session.currency.toLowerCase(),
+        metadata,
+        ...(input.returnUrl ? { returnUrl: input.returnUrl } : {}),
+        ...(input.cancelUrl ? { cancelUrl: input.cancelUrl } : {}),
+      });
+    } catch {
+      throw new CommerceValidationError(
+        'Online payments are not configured for this site. Set up a payment gateway in Settings → Payments.'
+      );
+    }
     providerSlug = gateway.id;
   }
 
@@ -578,48 +592,57 @@ export async function complete(
         });
     const surchargeDollars = surcharge.totalCents / 100;
 
-    const order = await orderService.create(ctx, {
-      customerId,
-      // Origin site (docs/58 D1) — inherit the cart's property so the order is
-      // tagged with the storefront it was placed on.
-      propertyId: cart.propertyId ?? undefined,
-      channel: isMarket
-        ? 'marketplace'
-        : session.channel === 'storefront' || session.channel === 'b2b_portal'
-          ? session.channel
-          : 'admin',
-      source: isMarket ? 'sparx_market' : 'commerce_checkout',
-      currency: session.currency,
-      shippingTotal: shippingDollars,
-      taxTotal: taxDollars,
-      discountTotal: discountDollars,
-      surchargeTotal: surchargeDollars,
-      appliedSurcharges: surcharge.applied,
-      shippingAddress: session.shippingAddress as Parameters<
-        typeof orderService.create
-      >[1] extends infer A
-        ? A
-        : never,
-      billingAddress: (session.billingAddress ?? session.shippingAddress) as Parameters<
-        typeof orderService.create
-      >[1] extends infer A
-        ? A
-        : never,
-      items,
-      metadata: {
-        commerceCheckoutSessionId: session.id,
-        commerceCartId: cart.id,
-        paymentProviderSlug: session.paymentProviderSlug,
-        paymentRef: session.paymentRef,
-        shippingProviderSlug: session.shippingProviderSlug,
-        shippingRateRef: session.shippingRateRef,
-        poNumber: session.poNumber,
-        paymentTermsRequested: session.paymentTermsRequested,
-        subtotalCents: session.subtotalCents,
-        giftCardAppliedCents: session.giftCardAppliedCents,
-        accountCreditAppliedCents: session.accountCreditAppliedCents,
-      },
-    });
+    // Compose into THIS transaction (tx injection) — orderService.create opens
+    // its own withTenant() when given a bare ctx, which would run in a separate,
+    // isolated transaction that can't see the customer row just created above
+    // (still uncommitted here). That caused a live "Customer not found" error on
+    // every checkout completion — see the tx-injection comment on the B2B AR call
+    // below for the established pattern this was missing.
+    const order = await orderService.create(
+      { ...ctx, tx },
+      {
+        customerId,
+        // Origin site (docs/58 D1) — inherit the cart's property so the order is
+        // tagged with the storefront it was placed on.
+        propertyId: cart.propertyId ?? undefined,
+        channel: isMarket
+          ? 'marketplace'
+          : session.channel === 'storefront' || session.channel === 'b2b_portal'
+            ? session.channel
+            : 'admin',
+        source: isMarket ? 'sparx_market' : 'commerce_checkout',
+        currency: session.currency,
+        shippingTotal: shippingDollars,
+        taxTotal: taxDollars,
+        discountTotal: discountDollars,
+        surchargeTotal: surchargeDollars,
+        appliedSurcharges: surcharge.applied,
+        shippingAddress: session.shippingAddress as Parameters<
+          typeof orderService.create
+        >[1] extends infer A
+          ? A
+          : never,
+        billingAddress: (session.billingAddress ?? session.shippingAddress) as Parameters<
+          typeof orderService.create
+        >[1] extends infer A
+          ? A
+          : never,
+        items,
+        metadata: {
+          commerceCheckoutSessionId: session.id,
+          commerceCartId: cart.id,
+          paymentProviderSlug: session.paymentProviderSlug,
+          paymentRef: session.paymentRef,
+          shippingProviderSlug: session.shippingProviderSlug,
+          shippingRateRef: session.shippingRateRef,
+          poNumber: session.poNumber,
+          paymentTermsRequested: session.paymentTermsRequested,
+          subtotalCents: session.subtotalCents,
+          giftCardAppliedCents: session.giftCardAppliedCents,
+          accountCreditAppliedCents: session.accountCreditAppliedCents,
+        },
+      }
+    );
 
     // Card payments: open a PENDING OrderPayment keyed to the gateway intent so the
     // payment webhook (payment.succeeded) can mark it captured + flip the order paid
@@ -722,20 +745,25 @@ export async function complete(
     // line commits its soft hold (or decrements directly when none exists),
     // writing a `sale` movement referencing the order, atomic with this
     // completion. Skipped when the order is held for B2B approval (placement —
-    // and the decrement — defers to the approval route) or when inventory is off
-    // (untracked = always available). Idempotency keys on the movements make a
-    // retried completion safe.
+    // and the decrement — defers to the approval route), when inventory is off
+    // (untracked = always available), or for a dropship-sourced line (the
+    // supplier holds the stock — see cart-service's addItem, which never
+    // reserves one of these in the first place). Idempotency keys on the
+    // movements make a retried completion safe.
     let committedSales: CommittedSale[] = [];
     if (inventoryActive && !pendingApproval) {
-      committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
-        orderId: order.id,
-        lines: cart.items.map((it) => ({
-          variantId: it.variantId,
-          quantity: it.quantity,
-          reservationId: it.inventoryReservationId,
-          lineKey: it.id,
-        })),
-      });
+      const trackedLines = cart.items.filter((it) => !it.variant.dropshipSourceId);
+      if (trackedLines.length > 0) {
+        committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
+          orderId: order.id,
+          lines: trackedLines.map((it) => ({
+            variantId: it.variantId,
+            quantity: it.quantity,
+            reservationId: it.inventoryReservationId,
+            lineKey: it.id,
+          })),
+        });
+      }
     }
 
     // Mark the session completed + record the resulting order so the
@@ -764,13 +792,18 @@ export async function complete(
     // Record discount usage rows so per-customer + total-usage limits
     // increment now that the cart has converted.
     for (const cd of cart.discounts) {
-      await discountService.recordDiscountUsage(ctx, {
-        discountId: cd.discountId,
-        customerId,
-        orderId: order.id,
-        cartId: cart.id,
-        appliedCents: cd.appliedCents,
-      });
+      // Same tx-composition requirement as orderService.create above — the
+      // order row this references only exists within this open transaction.
+      await discountService.recordDiscountUsage(
+        { ...ctx, tx },
+        {
+          discountId: cd.discountId,
+          customerId,
+          orderId: order.id,
+          cartId: cart.id,
+          appliedCents: cd.appliedCents,
+        }
+      );
     }
 
     await writeAuditLog({

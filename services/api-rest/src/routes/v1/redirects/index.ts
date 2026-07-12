@@ -18,9 +18,25 @@ import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
-import type { TxClient } from '@sparx/db';
+import type { Redirect, TxClient } from '@sparx/db';
 
 const PathSchema = z.string().min(1).max(2048).startsWith('/', 'Paths must begin with "/".');
+
+// The dashboard consumes snake_case fields (`redirects-list.tsx`), and
+// `hitCount` is a Prisma BigInt — passing a raw row straight to `ok`/`paged`
+// throws "Do not know how to serialize a BigInt" during response
+// serialization (no response schema is declared on these routes to coerce
+// it), so every row needs this explicit shape + Number() conversion.
+function toApiRedirect(row: Redirect) {
+  return {
+    id: row.id,
+    from_path: row.fromPath,
+    to_path: row.toPath,
+    status_code: row.statusCode,
+    hit_count: Number(row.hitCount),
+    created_at: row.createdAt.toISOString(),
+  };
+}
 
 const CreateBody = z.object({
   from_path: PathSchema,
@@ -71,7 +87,7 @@ const redirectRoutes: FastifyPluginAsync = (app) => {
         tx.redirect.count(),
       ])
     );
-    return paged(rows, { total, per_page: q.take ?? 50 });
+    return paged(rows.map(toApiRedirect), { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/redirects', async (request, reply) => {
@@ -108,7 +124,7 @@ const redirectRoutes: FastifyPluginAsync = (app) => {
     });
 
     reply.code(201);
-    return ok(created);
+    return ok(toApiRedirect(created));
   });
 
   app.post('/v1/redirects/bulk', async (request) => {

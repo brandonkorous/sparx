@@ -31,7 +31,7 @@ import {
 import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { requireCrmOrCommerceModule, toCrmContext } from '../../../lib/crm-context.js';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -70,7 +70,7 @@ const ListQuery = z.object({
 const orderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/orders', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await orderService.list(toCrmContext(request), {
       customerId: q.customer_id,
@@ -88,7 +88,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const order = await orderService.get(toCrmContext(request), id);
     return ok(order);
@@ -96,7 +96,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const order = await orderService.create(toCrmContext(request), request.body);
     reply.code(201);
     return ok(order);
@@ -104,7 +104,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.patch('/v1/crm/orders/:id', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const order = await orderService.update(toCrmContext(request), id, request.body);
     return ok(order);
@@ -112,7 +112,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/cancel', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     // The service takes a free-form input that already includes the orderId.
     // Pass it through, but make sure the URL param wins so callers can't pass
@@ -126,7 +126,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/payments', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const rows = await orderPaymentsService.listForOrder(toCrmContext(request), id);
     return ok(rows);
@@ -134,7 +134,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/payments', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
     const payment = await orderPaymentsService.recordPayment(toCrmContext(request), {
@@ -147,7 +147,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/payments/:paymentId/void', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id, paymentId } = PaymentPath.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
     const payment = await orderPaymentsService.voidPayment(toCrmContext(request), {
@@ -162,7 +162,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/fulfillments', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const rows = await orderFulfillmentsService.listForOrder(toCrmContext(request), id);
     return ok(rows);
@@ -170,7 +170,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/fulfillments', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
     const fulfillment = await orderFulfillmentsService.createFulfillment(toCrmContext(request), {
@@ -183,7 +183,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.patch('/v1/crm/orders/:id/fulfillments/:fulfillmentId', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id, fulfillmentId } = FulfillmentPath.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
     const fulfillment = await orderFulfillmentsService.updateFulfillment(toCrmContext(request), {
@@ -198,7 +198,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/rates', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const rates = await quoteOutboundRates(toCommerceContext(request), fulfillmentId);
@@ -207,7 +207,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/labels', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const labels = await listFulfillmentLabels(toCommerceContext(request), fulfillmentId);
@@ -216,7 +216,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/buy-label', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const { rateRef } = BuyLabelBody.parse(request.body);
@@ -230,7 +230,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/void-label', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const { labelRef } = VoidLabelBody.parse(request.body);
@@ -240,7 +240,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/track', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     await requireCommerceModule(request);
     const { trackingNumber, carrier } = TrackQuery.parse(request.query);
     const status = await shippingService.trackShipment(toCommerceContext(request), {
@@ -254,7 +254,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/orders/:id/refunds', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const rows = await orderRefundsService.listForOrder(toCrmContext(request), id);
     return ok(rows);
@@ -262,7 +262,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/v1/crm/orders/:id/refunds', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmModule(request);
+    await requireCrmOrCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
     const refund = await orderRefundsService.recordRefund(toCrmContext(request), {

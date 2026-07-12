@@ -101,11 +101,11 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
     },
     {
       title: 'Theme',
-      items: a.theme ? [{ label: a.theme.name, href: '/builder/studio?zone=theme' }] : [],
+      items: a.theme ? [{ label: a.theme.name, href: '/builder/studio' }] : [],
     },
     {
       title: 'Layout',
-      items: a.layoutId ? [{ label: 'Site layout', href: '/builder/studio?zone=layout' }] : [],
+      items: a.layoutId ? [{ label: 'Site layout', href: '/builder/studio' }] : [],
     },
   ].filter((g) => g.items.length > 0);
 

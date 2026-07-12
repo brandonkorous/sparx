@@ -55,6 +55,15 @@ const Address = z.object({
 });
 
 const ShippingQuoteBody = z.object({
+  // Full destination address, sent once the shopper's shipping form is
+  // filled in (the checkout form collects it before "Get shipping rates" is
+  // clickable). Live carrier rating needs the real street/city — a carrier
+  // geocodes the full address to rate, not just the ZIP — so without this,
+  // live rates are silently unreachable and every quote falls back to the
+  // manual/flat rate regardless of provider installed. `destinationCountry`/
+  // `destinationPostal` remain as a fallback for a caller that only has
+  // those (still enough for manual-zone matching, just not live rating).
+  destinationAddress: Address.optional(),
   destinationCountry: z.string().length(2).optional(),
   destinationPostal: z.string().max(20).optional(),
 });
@@ -65,6 +74,17 @@ const ShippingBody = z.object({
   shippingRateRef: z.string().min(1).max(255),
   shippingProviderSlug: z.string().min(1).max(63),
 });
+
+// The storefront's checkout form collects the recipient's name into this
+// route's own `Address.name`, but the canonical AddressSnapshot shape stored
+// on the order (packages/crm-schemas) keys it `recipientName`. Map at this
+// boundary — without it the name silently never lands on the order, and a
+// merchant can't buy a real carrier label later (Shippo requires a complete
+// recipient name to purchase, though it tolerates a missing one for a quote).
+function toAddressSnapshot(addr: z.infer<typeof Address>): Record<string, unknown> {
+  const { name, ...rest } = addr;
+  return { ...rest, recipientName: name };
+}
 
 const IntentBody = z.object({
   // The storefront's post-payment return URL for hosted-redirect gateways (docs/111 D4).
@@ -195,23 +215,26 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     );
     shipmentPackage.declaredValueCents = totalValue;
 
-    // Zone matching + live carrier rating only read toAddress.country/postal;
-    // the destination street/city aren't known until the shipping step, so
-    // this quote step sends placeholders for them — that's fine, it's the
-    // fromAddress (resolved below to the tenant's real warehouse) that live
-    // rating needs to be genuine. signatureRequired/saturdayDelivery default
-    // to false.
+    // Zone matching only reads toAddress.country, so that alone is enough for
+    // manual rates. Live carrier rating needs the full street+city too — a
+    // carrier geocodes the destination to rate, a placeholder always returns
+    // zero live rates even though shipment creation "succeeds" — so when the
+    // checkout form has already collected the shopper's full address (it has,
+    // by the time "Get shipping rates" is clickable), forward it as a real
+    // toAddress instead of the country/postal-only placeholder.
+    // signatureRequired/saturdayDelivery default to false.
     const fromAddress = await shippingService
       .resolveShipFromAddress(ctx)
       .catch(() => ({ line1: '—', city: '—', country: 'US' }));
+    const toAddress = body.destinationAddress ?? {
+      line1: '—',
+      city: '—',
+      country: body.destinationCountry ?? 'US',
+      ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
+    };
     const rates = await shippingService.rateShipment(ctx, {
       fromAddress,
-      toAddress: {
-        line1: '—',
-        city: '—',
-        country: body.destinationCountry ?? 'US',
-        ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
-      },
+      toAddress,
       currency: cart.currency,
       signatureRequired: false,
       saturdayDelivery: false,
@@ -238,8 +261,8 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     await assertSessionOwner(request, ctx, tenantId, sessionId);
     await checkoutService.submitShipping(ctx, {
       sessionId,
-      shippingAddress: body.shippingAddress,
-      ...(body.billingAddress ? { billingAddress: body.billingAddress } : {}),
+      shippingAddress: toAddressSnapshot(body.shippingAddress),
+      ...(body.billingAddress ? { billingAddress: toAddressSnapshot(body.billingAddress) } : {}),
       shippingRateRef: body.shippingRateRef,
       shippingProviderSlug: body.shippingProviderSlug,
     });

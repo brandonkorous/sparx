@@ -21,7 +21,7 @@ export const CreateTaxZoneInput = z.object({
     .string()
     .min(4)
     .max(6)
-    .regex(/^[A-Z]{2}-[A-Z0-9]{1,3}$/)
+    .regex(/^[A-Z]{2}-[A-Z0-9]{1,3}$/, 'Region must be a country-region code, e.g. "US-CA".')
     .optional(),
   nexusType: NexusType,
   registrationNumber: z.string().max(63).optional(), // sales-tax permit / VAT

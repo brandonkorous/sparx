@@ -1,8 +1,8 @@
 # sparx Platform — Dropship Integration PRD
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-14
+**Last Updated:** 2026-07-12
 
 ---
 
@@ -268,5 +268,3 @@ Do not block the deferred work: when POD authoring lands, it is additive.
   notifications.
 - **AutoDS by request.** If a tenant wants AutoDS, it needs a business deal + post-approval
   schemas; build the adapter then and add it to `VENDOR_CATALOG` (it would be a `manual`/gated card).
-- **CSV column mapping UI.** The CSV adapter needs a column-mapping config the current connect
-  form doesn't yet collect; a richer CSV mapping step is a follow-on.

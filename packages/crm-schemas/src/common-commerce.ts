@@ -28,6 +28,7 @@ export const AddressSnapshot = z.object({
     .length(2)
     .regex(/^[A-Z]{2}$/, 'Country must be ISO 3166-1 alpha-2 (e.g. "US")'),
   phone: z.string().max(50).optional(),
+  email: z.string().email().max(255).optional(),
 });
 export type AddressSnapshot = z.infer<typeof AddressSnapshot>;
 

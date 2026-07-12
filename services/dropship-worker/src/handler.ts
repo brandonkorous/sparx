@@ -35,7 +35,16 @@ export async function handle(event: SparxEvent<unknown>, log: Logger): Promise<v
       await handleSyncStarted(data as { supplierId: string; type: string }, tenantId, log);
       break;
 
+    // order.placed is the normal trigger (docs/14): an order carrying dropship
+    // line items gets routed to its suppliers as soon as it's placed — checkout
+    // has already collected payment synchronously by this point (Stripe Payment
+    // Element), so order.placed is the right signal, not order.paid (which only
+    // fires for async/offline payment paths like B2B net terms). dropship.order
+    // .route remains for manual/admin re-trigger. handleOrderRoute() is itself
+    // idempotent (skips a supplier that already has a dropshipOrder row for
+    // this order), so a redundant delivery of either event is harmless.
     case 'dropship.order.route':
+    case 'order.placed':
       await handleOrderRoute(data as { orderId: string }, tenantId, log);
       break;
 

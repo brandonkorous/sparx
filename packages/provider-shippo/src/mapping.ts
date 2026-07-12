@@ -26,6 +26,7 @@ export function toShippoAddress(addr: AddressSnapshot): components.AddressCreate
     zip: addr.postalCode,
     country: addr.country,
     phone: addr.phone,
+    email: addr.email,
   };
 }
 

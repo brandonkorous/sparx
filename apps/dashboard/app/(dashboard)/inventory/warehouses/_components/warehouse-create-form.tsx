@@ -78,6 +78,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
   const [region, setRegion] = React.useState('');
   const [postalCode, setPostalCode] = React.useState('');
   const [country, setCountry] = React.useState('');
+  const [phone, setPhone] = React.useState('');
   const [channels, setChannels] = React.useState<Record<string, boolean>>({});
   const [isActive, setIsActive] = React.useState(true);
 
@@ -102,6 +103,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
     region.trim() !== '' ||
     postalCode.trim() !== '' ||
     country.trim() !== '' ||
+    phone.trim() !== '' ||
     type !== 'owned' ||
     Object.values(channels).some(Boolean) ||
     !isActive;
@@ -162,6 +164,7 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
         region: optional(region),
         postalCode: optional(postalCode),
         country: trimmed(country).toUpperCase(),
+        phone: optional(phone),
       },
       defaultForChannel: CHANNELS.filter((c) => channels[c]),
       isActive,
@@ -325,6 +328,18 @@ export function WarehouseCreateForm({ surface }: WarehouseCreateFormProps) {
                       />
                     </Field>
                   </div>
+                  <Field>
+                    <FieldLabel>Phone</FieldLabel>
+                    <FieldControl
+                      name="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                    <FieldDescription>
+                      Some carriers (e.g. USPS via Shippo) require a phone number on file for this
+                      address before you can buy a real shipping label.
+                    </FieldDescription>
+                  </Field>
                 </div>
               </CardBody>
             </Card>

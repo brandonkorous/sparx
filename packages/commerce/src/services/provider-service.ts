@@ -347,6 +347,33 @@ export async function test(
   // The actual probe lives in the provider plugin; until those bridge
   // methods land we report a coarse "metadata present" signal so the
   // dashboard install dialog has something to render.
+  //
+  // A passing test is also what promotes the installation out of
+  // pending_verification — resolveActiveConfig() only ever resolves
+  // status='active' rows, so without this a "successful" test left the
+  // installation permanently invisible to checkout/order flows (rate
+  // quotes, label purchase, etc. would silently find nothing installed).
+  // Never demote an installation that's already active/disabled/errored;
+  // health monitoring (recordHealth) owns those transitions afterward.
+  if (installation.status === 'pending_verification' || installation.status === 'pending_oauth') {
+    await withTenant(ctx, async (tx) => {
+      await tx.providerInstallation.update({
+        where: { id: input.installationId },
+        data: { status: 'active' },
+      });
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        actorType: ctx.userId ? 'user' : 'system',
+        action: 'commerce.provider.activated',
+        entityType: 'ProviderInstallation',
+        entityId: input.installationId,
+        diff: { before: { status: installation.status }, after: { status: 'active' } },
+      });
+    });
+  }
+
   return {
     ok: true,
     details: `Provider metadata loaded (slug=${installation.providerSlug}, vendor=${bundle.metadata.vendor}).`,

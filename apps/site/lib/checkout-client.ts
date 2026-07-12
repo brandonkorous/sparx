@@ -122,7 +122,11 @@ export function submitContact(
 export function quoteShipping(
   tenantSlug: string,
   sessionId: string,
-  input: { destinationCountry?: string; destinationPostal?: string }
+  input: {
+    destinationAddress?: Address;
+    destinationCountry?: string;
+    destinationPostal?: string;
+  }
 ): Promise<ShippingRate[]> {
   return call(`/v1/public/commerce/checkout/${sessionId}/shipping-quote`, tenantSlug, {
     method: 'POST',

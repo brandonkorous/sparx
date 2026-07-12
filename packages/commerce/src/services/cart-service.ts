@@ -226,8 +226,17 @@ export async function addItem(
     // Soft-hold the stock against this line (docs/100 §2.4). Atomic with the
     // line write: a `deny`-policy shortfall throws InventoryOutOfStockError and
     // rolls the whole add back, so a customer can never add more than is
-    // available. No-op when inventory is off (untracked = always available).
-    if (inventoryActive) {
+    // available. No-op when inventory is off (untracked = always available) OR
+    // the variant is dropship-sourced — the supplier holds the stock, so
+    // reserving against a local warehouse would auto-vivify a phantom
+    // inventory_levels row for a product the warehouse never actually carries.
+    const isDropshipVariant = Boolean(
+      (await tx.productVariant.findFirst({
+        where: { id: variantId },
+        select: { dropshipSourceId: true },
+      }))?.dropshipSourceId
+    );
+    if (inventoryActive && !isDropshipVariant) {
       const hold = await inventoryService.reserveOnTx(tx, ctx, {
         variantId,
         quantity: input.quantity,
@@ -280,9 +289,11 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
         unitPriceCents: true,
         quantity: true,
         inventoryReservationId: true,
+        variant: { select: { dropshipSourceId: true } },
       },
     });
     if (!item) throw new CommerceNotFoundError('CartItem', input.cartItemId);
+    const isDropshipVariant = Boolean(item.variant.dropshipSourceId);
 
     if (input.quantity === 0) {
       // Remove — release the soft hold first, then drop the line.
@@ -293,9 +304,10 @@ export async function updateItem(ctx: ServiceContext, rawInput: unknown): Promis
     } else {
       // Re-hold on a quantity change: release the prior hold and reserve the new
       // quantity (a `deny` shortfall throws and rolls back the increase). When
-      // the quantity is unchanged the existing hold stands.
+      // the quantity is unchanged the existing hold stands. Skipped for
+      // dropship-sourced variants (see addItem) — never had a hold to begin with.
       let reservationId = item.inventoryReservationId;
-      if (inventoryActive && item.quantity !== input.quantity) {
+      if (inventoryActive && !isDropshipVariant && item.quantity !== input.quantity) {
         if (item.inventoryReservationId) {
           await inventoryService.releaseOnTx(tx, ctx, item.inventoryReservationId);
         }

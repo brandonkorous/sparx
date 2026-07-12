@@ -71,10 +71,12 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
     setError(null);
     try {
       // First submit: quote rates for the entered destination + require a pick.
+      // Send the full address (not just country/postal) so live carrier
+      // rating can actually geocode the destination — a placeholder
+      // street/city silently disables live rates entirely.
       if (rates.length === 0) {
         const quoted = await quoteShipping(tenantSlug, session.sessionId, {
-          destinationCountry: address.country,
-          destinationPostal: address.postalCode,
+          destinationAddress: address,
         });
         // Fall back to a single free standard option when the carrier engine
         // has no configured rates yet, so checkout still completes.

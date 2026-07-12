@@ -165,6 +165,8 @@ interface IngestLineRow {
   quantity: number;
   unitPrice: number;
   lineSubtotal: number;
+  /** Dropship-sourced variants are supplier-fulfilled — never decrement local stock. */
+  isDropshipVariant: boolean;
 }
 
 /** Resolve each aggregated SKU to a sparx variant (via the channel product mapping)
@@ -184,16 +186,18 @@ async function resolveLineRows(
       select: { productId: true, variantId: true },
     });
     let name = line.externalSku;
+    let isDropshipVariant = false;
     if (mapping) {
       const variant = await tx.productVariant.findUnique({
         where: { id: mapping.variantId },
-        select: { title: true, product: { select: { title: true } } },
+        select: { title: true, dropshipSourceId: true, product: { select: { title: true } } },
       });
       if (variant) {
         name =
           variant.title && variant.title !== variant.product.title
             ? `${variant.product.title} - ${variant.title}`
             : variant.product.title;
+        isDropshipVariant = variant.dropshipSourceId !== null;
       }
     } else {
       unmappedSkus.push(line.externalSku);
@@ -206,6 +210,7 @@ async function resolveLineRows(
       quantity: line.quantity,
       unitPrice: round2(line.unitPriceCents / 100),
       lineSubtotal: round2((line.unitPriceCents / 100) * line.quantity),
+      isDropshipVariant,
     });
   }
   return { rows, unmappedSkus };
@@ -326,12 +331,18 @@ export async function ingestChannelOrder(
       diff: { after: { orderNumber, source: input.channel, externalId: input.externalId } },
     });
 
-    // Decrement stock for every mapped line, atomic with the order write — the
-    // single sale authority (idempotency-keyed off the order + line).
+    // Decrement stock for every mapped, non-dropship line, atomic with the
+    // order write — the single sale authority (idempotency-keyed off the
+    // order + line). Dropship-sourced variants are supplier-fulfilled and
+    // never touch local warehouse stock (see cart-service's addItem for the
+    // same rule at the earlier reserve stage).
+    const dropshipVariantIds = new Set(
+      rows.filter((r) => r.isDropshipVariant && r.variantId).map((r) => r.variantId)
+    );
     const committedSales = await inventoryService.commitSaleOnTx(tx, ctx, {
       orderId: order.id,
       lines: order.items
-        .filter((i) => i.variantId)
+        .filter((i) => i.variantId && !dropshipVariantIds.has(i.variantId))
         .map((i) => ({
           variantId: i.variantId!,
           quantity: i.quantity,

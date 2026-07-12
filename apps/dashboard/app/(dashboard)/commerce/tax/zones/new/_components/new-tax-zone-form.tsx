@@ -122,8 +122,13 @@ export function NewTaxZoneForm({ surface }: NewTaxZoneFormProps) {
     setError(null);
     if (!v.validate()) return;
     const trimmedCountry = country.toUpperCase().trim();
-    const trimmedRegion = region.toUpperCase().trim();
     const trimmedReg = registrationNumber.trim();
+    // The wire format is a compound "US-CA" code, but Country and Region are
+    // separate fields — a merchant typing just "CA" into Region (the natural
+    // reading of two adjacent fields) shouldn't have to know to repeat the
+    // country prefix themselves.
+    const rawRegion = region.toUpperCase().trim();
+    const trimmedRegion = rawRegion && !rawRegion.includes('-') ? `${trimmedCountry}-${rawRegion}` : rawRegion;
 
     startTransition(async () => {
       const result = await createTaxZoneAction({
