@@ -6,7 +6,7 @@
 // schedule via the config blob; a richer scheduler UI is a future iteration).
 
 import { useState, useTransition } from 'react';
-import { useConfirm } from '@sparx/ui';
+import { cn, useConfirm } from '@sparx/ui';
 import {
   Button,
   Card,
@@ -17,6 +17,7 @@ import {
   FieldLabel,
   Switch,
   Textarea,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { Trash2 } from 'lucide-react';
 
@@ -25,14 +26,25 @@ import {
   deleteQuickReplyAction,
   updateChatSettingsAction,
 } from '../actions';
+import {
+  DEFAULT_ACCENT_SWATCHES,
+  readableContentOn,
+  type ThemeColorSwatch,
+} from '../_lib/theme-colors';
 import type { ChatConfig, QuickReplyDto } from '../_lib/types';
 
 export function ChatSettingsForm({
   initialConfig,
   initialQuickReplies,
+  themeColors,
 }: {
   initialConfig: ChatConfig;
   initialQuickReplies: QuickReplyDto[];
+  /** The tenant's brand + saved-theme identity colors (docs/33) — however many
+   *  the theme builder has produced, deduped by hex, each paired with its own
+   *  `-content` color. Powers the accent-color swatch picker so the widget can
+   *  match the site instead of a raw hex guess. */
+  themeColors: ThemeColorSwatch[];
 }): React.JSX.Element {
   const [config, setConfig] = useState<ChatConfig>(initialConfig);
   const [replies, setReplies] = useState<QuickReplyDto[]>(initialQuickReplies);
@@ -45,6 +57,19 @@ export function ChatSettingsForm({
 
   function patch<K extends keyof ChatConfig>(key: K, value: ChatConfig[K]): void {
     setConfig((c) => ({ ...c, [key]: value }));
+  }
+
+  // Picking a known theme swatch carries over the tenant's own -content
+  // (foreground) decision for that role, instead of a guessed black/white — so
+  // the widget text stays exactly as legible as it is on the tenant's own site.
+  function pickAccentColor(hex: string): void {
+    const known = themeColors.find((c) => c.hex.toUpperCase() === hex.toUpperCase());
+    const content = known?.content ?? readableContentOn(hex);
+    setConfig((c) => ({ ...c, primaryColor: hex, primaryColorContent: content }));
+  }
+
+  function resetAccentColor(): void {
+    setConfig((c) => ({ ...c, primaryColor: null, primaryColorContent: null }));
   }
 
   function saveConfig(): void {
@@ -129,16 +154,49 @@ export function ChatSettingsForm({
                 onChange={(e) => patch('awayMessage', e.target.value)}
               />
             </Field>
-            <div className="flex gap-4">
-              <Field>
-                <FieldLabel>Accent color</FieldLabel>
-                <FieldControl
-                  type="text"
-                  placeholder="#6366F1"
-                  value={config.primaryColor ?? ''}
-                  onChange={(e) => patch('primaryColor', e.target.value || null)}
-                />
-              </Field>
+            <div className="flex flex-wrap gap-4">
+              <div>
+                <span className="mb-1 block text-sm font-medium">Accent color</span>
+                <div
+                  className="flex flex-wrap items-center gap-2"
+                  role="group"
+                  aria-label="Accent color"
+                >
+                  {(themeColors.length > 0 ? themeColors : DEFAULT_ACCENT_SWATCHES).map(
+                    (swatch) => {
+                      const selected =
+                        config.primaryColor?.toUpperCase() === swatch.hex.toUpperCase();
+                      return (
+                        <Tooltip key={swatch.hex} content={swatch.label}>
+                          <button
+                            type="button"
+                            aria-label={swatch.label}
+                            aria-pressed={selected}
+                            onClick={() => pickAccentColor(swatch.hex)}
+                            className={cn(
+                              'h-8 w-8 rounded-full border transition-transform duration-100 hover:scale-110',
+                              selected
+                                ? 'border-module ring-module ring-offset-base-100 ring-2 ring-offset-2'
+                                : 'border-base-300'
+                            )}
+                            style={{ backgroundColor: swatch.hex }}
+                          />
+                        </Tooltip>
+                      );
+                    }
+                  )}
+                  {config.primaryColor ? (
+                    <Button type="button" variant="ghost" size="sm" onClick={resetAccentColor}>
+                      Reset
+                    </Button>
+                  ) : null}
+                </div>
+                {themeColors.length > 0 ? (
+                  <p className="text-base-content/70 mt-1 text-xs">
+                    Swatches match your site&rsquo;s brand and saved themes.
+                  </p>
+                ) : null}
+              </div>
               <div>
                 <span className="mb-1 block text-sm font-medium">Position</span>
                 <div className="flex gap-2">

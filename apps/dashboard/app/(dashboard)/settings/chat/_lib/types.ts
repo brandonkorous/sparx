@@ -6,6 +6,8 @@ export interface ChatConfig {
   greeting: string;
   awayMessage: string;
   primaryColor: string | null;
+  /** The legible "on primaryColor" color paired with it — see theme-colors.ts. */
+  primaryColorContent: string | null;
   position: 'bottom-right' | 'bottom-left';
   operatingHours: {
     timezone: string;

@@ -6,8 +6,10 @@ import { PageHeader } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { requireModuleOrUpsell } from '@/components/module-gate';
+import { getBrand, listSavedThemes } from '../../builder/_brand/lib/api';
 
 import { ChatSettingsForm } from './_components/chat-settings-form';
+import { themeColorSwatches } from './_lib/theme-colors';
 import type { ChatConfig, QuickReplyDto } from './_lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -16,10 +18,13 @@ export default async function ChatSettingsPage(): Promise<React.JSX.Element> {
   const upsell = await requireModuleOrUpsell('chat');
   if (upsell) return <>{upsell}</>;
 
-  const [config, quickReplies] = await Promise.all([
+  const [config, quickReplies, brand, savedThemes] = await Promise.all([
     api.get<ChatConfig>('/v1/chat/settings'),
     api.get<QuickReplyDto[]>('/v1/chat/quick-replies').catch(() => [] as QuickReplyDto[]),
+    getBrand().catch(() => null),
+    listSavedThemes(),
   ]);
+  const themeColors = themeColorSwatches(brand, savedThemes);
 
   return (
     <div className="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
@@ -29,7 +34,11 @@ export default async function ChatSettingsPage(): Promise<React.JSX.Element> {
           title="Live Chat"
           description="Configure the storefront chat widget, AI behavior, and your team's quick replies."
         />
-        <ChatSettingsForm initialConfig={config} initialQuickReplies={quickReplies} />
+        <ChatSettingsForm
+          initialConfig={config}
+          initialQuickReplies={quickReplies}
+          themeColors={themeColors}
+        />
       </div>
     </div>
   );

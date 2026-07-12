@@ -5,10 +5,19 @@
 // Renders the message thread for one conversation and keeps it live via the
 // shared chat socket. Sends + status/assignment changes go through server
 // actions (which broadcast); the socket echo dedupes the sender's own message.
-// "/" in the composer opens the quick-reply picker.
+// "/" in the composer opens the quick-reply picker — a hint below the
+// composer surfaces the shortcut (hidden when the tenant has none set up).
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Badge, Textarea } from '@wizeworks/silicaui-react';
+import {
+  Button,
+  Badge,
+  ChatComposer,
+  ChatLayoutMessages,
+  ChatMessage,
+  ChatTypingIndicator,
+  Timestamp,
+} from '@wizeworks/silicaui-react';
 import { Check, UserCheck } from 'lucide-react';
 
 import { useChatSocket } from './chat-socket-provider';
@@ -49,7 +58,6 @@ export function ThreadView({
   const [assignedToId, setAssignedToId] = useState<string | null>(conversation.assignedToId);
 
   const seen = useRef<Set<string>>(new Set(conversation.messages.map((m) => m.id)));
-  const endRef = useRef<HTMLDivElement | null>(null);
   const { socket, joinConversation, markRead } = useChatSocket();
 
   const id = conversation.id;
@@ -87,10 +95,6 @@ export function ThreadView({
     };
   }, [socket, id, markRead]);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, typing]);
-
   const quickMatches = useMemo(() => {
     if (!input.startsWith('/')) return [];
     const q = input.slice(1).toLowerCase();
@@ -98,11 +102,10 @@ export function ThreadView({
       .filter(
         (r) => (r.shortcut?.toLowerCase().includes(q) ?? false) || r.title.toLowerCase().includes(q)
       )
-      .slice(0, 5);
+      .slice(0, 8);
   }, [input, quickReplies]);
 
-  async function send(): Promise<void> {
-    const body = input.trim();
+  async function send(body: string): Promise<void> {
     if (!body || sending) return;
     setSending(true);
     try {
@@ -111,7 +114,11 @@ export function ThreadView({
         seen.current.add(message.id);
         setMessages((prev) => [...prev, message]);
       }
-      setInput('');
+    } catch (err) {
+      // ChatComposer clears its draft optimistically on submit — restore it so
+      // the reply isn't lost when the send actually fails.
+      setInput(body);
+      throw err;
     } finally {
       setSending(false);
     }
@@ -163,32 +170,20 @@ export function ThreadView({
         </div>
       </header>
 
-      <div className="bg-base-200 flex-1 space-y-2 overflow-y-auto p-5">
+      <ChatLayoutMessages className="bg-base-100 flex-1 space-y-1 p-5">
         {messages.map((m) => (
-          <div
+          <ChatMessage
             key={m.id}
-            className={`flex ${m.senderType === 'customer' ? 'justify-start' : 'justify-end'}`}
+            side={m.senderType === 'customer' ? 'start' : 'end'}
+            color={m.senderType === 'customer' ? undefined : 'module'}
+            name={m.senderType === 'ai' ? 'AI' : m.senderType === 'staff' ? 'You' : undefined}
+            time={<Timestamp value={m.createdAt} />}
           >
-            <div className="max-w-[72%]">
-              <div
-                className={`rounded-2xl px-3.5 py-2 text-sm ${
-                  m.senderType === 'customer'
-                    ? 'bg-base-100 text-base-content rounded-bl-sm'
-                    : 'bg-module rounded-br-sm text-white'
-                }`}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-              >
-                {m.body}
-              </div>
-              <div className="text-base-content/70 mt-0.5 px-1 text-[11px]">
-                {m.senderType === 'ai' ? 'AI' : m.senderType === 'staff' ? 'You' : ''}
-              </div>
-            </div>
-          </div>
+            {m.body}
+          </ChatMessage>
         ))}
-        {typing ? <div className="text-base-content/70 px-1 text-xs italic">typing…</div> : null}
-        <div ref={endRef} />
-      </div>
+        {typing ? <ChatTypingIndicator side="start" name="Customer is typing" /> : null}
+      </ChatLayoutMessages>
 
       <div className="border-base-300 relative border-t p-3">
         {quickMatches.length > 0 ? (
@@ -208,23 +203,18 @@ export function ThreadView({
             ))}
           </div>
         ) : null}
-        <div className="flex items-end gap-2">
-          <Textarea
-            rows={1}
-            value={input}
-            placeholder="Type a reply…  (/ for quick replies)"
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                void send();
-              }
-            }}
-          />
-          <Button color="module" disabled={sending || !input.trim()} onClick={() => void send()}>
-            Send
-          </Button>
-        </div>
+        <ChatComposer
+          value={input}
+          onValueChange={setInput}
+          onSend={(value) => void send(value)}
+          disabled={sending}
+          placeholder="Type a reply…  (/ for quick replies)"
+        />
+        {quickReplies.length > 0 ? (
+          <p className="text-base-content/70 mt-1.5 px-1 text-xs">
+            Type <span className="font-mono">/</span> in the box above to insert a quick reply.
+          </p>
+        ) : null}
       </div>
     </div>
   );

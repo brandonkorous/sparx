@@ -7,6 +7,7 @@ import type { OrgMembership } from '@sparx/auth';
 import type { Property } from '@/lib/sites';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import type { UserPreferences } from '../_shell/preferences-types';
+import { ChatNotifier } from '@/components/chat-notifier';
 import { BreadcrumbTrail } from './breadcrumb-trail';
 import { CommandPalette } from './command-palette';
 import { ContextualPanel, resolvePanelContext } from './contextual-panel';
@@ -167,6 +168,9 @@ export function DashboardShell({
           shortcut. Receives favorites + recents so they appear at the top
           of the search results without an extra fetch. */}
         <CommandPalette favorites={favorites} recents={recents} enabledModules={enabledModules} />
+        {/* Live-chat toast — mounted once here (not inside /chat/inbox) so a
+          staff member working another module still gets notified. */}
+        <ChatNotifier enabled={enabledModules.includes('chat')} />
       </FeedbackProvider>
     </PreferencesProvider>
   );

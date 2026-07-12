@@ -26,6 +26,10 @@ export interface PublicChatConfig {
   greeting: string;
   awayMessage: string;
   primaryColor: string | null;
+  /** The legible "on primaryColor" color paired with it (docs/69 A-5). null for
+   *  a config saved before this field existed — the widget then derives its own
+   *  black/white from primaryColor. */
+  primaryColorContent: string | null;
   position: 'bottom-right' | 'bottom-left';
 }
 

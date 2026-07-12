@@ -47,6 +47,12 @@ export interface ChatConfig {
   awayMessage: string;
   /** Overrides the storefront `--st-accent` for the bubble/panel. */
   primaryColor: string | null;
+  /** The legible "on primaryColor" text/icon color paired with it — carried over
+   *  from the matching brand/theme role when the dashboard picker's color came
+   *  from a theme swatch, else a computed black/white. null when primaryColor
+   *  is null, or for a config saved before this field existed (the widget then
+   *  derives its own black/white from primaryColor). */
+  primaryColorContent: string | null;
   position: 'bottom-right' | 'bottom-left';
   /** null = always available (no away state). */
   operatingHours: OperatingHours | null;
@@ -58,6 +64,7 @@ export const DEFAULT_CHAT_CONFIG: ChatConfig = {
   greeting: 'Hi! 👋 How can we help?',
   awayMessage: "We're away right now, but leave a message and we'll get back to you.",
   primaryColor: null,
+  primaryColorContent: null,
   position: 'bottom-right',
   operatingHours: null,
 };
@@ -75,6 +82,10 @@ export const ChatConfigSchema = z.object({
   greeting: z.string().max(500),
   awayMessage: z.string().max(500),
   primaryColor: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, 'Expected a #RRGGBB hex color')
+    .nullable(),
+  primaryColorContent: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, 'Expected a #RRGGBB hex color')
     .nullable(),

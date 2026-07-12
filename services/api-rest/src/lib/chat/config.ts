@@ -20,6 +20,7 @@ function coerceConfig(raw: unknown): ChatConfig {
     awayMessage:
       typeof r.awayMessage === 'string' ? r.awayMessage : DEFAULT_CHAT_CONFIG.awayMessage,
     primaryColor: typeof r.primaryColor === 'string' ? r.primaryColor : null,
+    primaryColorContent: typeof r.primaryColorContent === 'string' ? r.primaryColorContent : null,
     position: r.position === 'bottom-left' ? 'bottom-left' : 'bottom-right',
     operatingHours: isOperatingHours(r.operatingHours) ? r.operatingHours : null,
   };

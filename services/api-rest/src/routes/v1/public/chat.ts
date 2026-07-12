@@ -49,6 +49,7 @@ const publicChatRoutes: FastifyPluginAsync = (app) => {
       greeting: config.greeting,
       awayMessage: config.awayMessage,
       primaryColor: config.primaryColor,
+      primaryColorContent: config.primaryColorContent,
       position: config.position,
     });
   });

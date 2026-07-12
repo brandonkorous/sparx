@@ -16,27 +16,27 @@ import type { ConversationSummaryDto } from '../_lib/types';
 export const dynamic = 'force-dynamic';
 
 export default async function ChatInboxLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }): Promise<React.JSX.Element> {
-  const session = await requireSession();
-  let conversations: ConversationSummaryDto[] = [];
-  try {
-    const res = await api.getPaged<ConversationSummaryDto[]>('/v1/chat/conversations?take=50');
-    conversations = res.data;
-  } catch {
-    conversations = [];
-  }
+    const session = await requireSession();
+    let conversations: ConversationSummaryDto[] = [];
+    try {
+        const res = await api.getPaged<ConversationSummaryDto[]>('/v1/chat/conversations?take=50');
+        conversations = res.data;
+    } catch {
+        conversations = [];
+    }
 
-  return (
-    <ChatSocketProvider>
-      <div className="grid h-[calc(100dvh-4rem)] grid-cols-1 md:grid-cols-[320px_1fr]">
-        <aside className="border-base-300 overflow-hidden border-r">
-          <ConversationList initial={conversations} currentUserId={session.user.id} />
-        </aside>
-        <section className="min-w-0 overflow-hidden">{children}</section>
-      </div>
-    </ChatSocketProvider>
-  );
+    return (
+        <ChatSocketProvider>
+            <div className="grid h-[calc(100dvh-4rem)] grid-cols-1 md:grid-cols-[320px_1fr] bg-base-100">
+                <aside className="border-base-300 overflow-hidden border-r bg-base-200">
+                    <ConversationList initial={conversations} currentUserId={session.user.id} />
+                </aside>
+                <section className="min-w-0 overflow-hidden">{children}</section>
+            </div>
+        </ChatSocketProvider>
+    );
 }
