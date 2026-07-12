@@ -1,0 +1,13 @@
+# minAvailable: 1 with a single replica means zero voluntary disruption budget —
+# blocks Autopilot from evicting Redis for routine node consolidation/upgrades,
+# which otherwise stalls on RWO PVC reattach for several minutes.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: redis
+  namespace: sparx-prod
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: redis

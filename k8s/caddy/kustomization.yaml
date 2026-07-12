@@ -5,6 +5,7 @@ resources:
   - pvc.yaml
   - deployment.yaml
   - service.yaml
+  - pdb.yaml
 
 # Content-hashed Caddy config. The generator appends a hash suffix derived from
 # Caddyfile's contents (e.g. caddy-config-abc123) and rewrites the Deployment's

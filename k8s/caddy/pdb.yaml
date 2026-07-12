@@ -1,0 +1,16 @@
+# minAvailable: 1 with a single replica means zero voluntary disruption budget —
+# blocks Autopilot from evicting Caddy for routine node consolidation/upgrades.
+# It's the shared ingress for every *.sparx.works host, so an eviction means a
+# multi-minute outage (Recreate strategy + RWO PVC reattach) rather than a
+# same-node reschedule. Doesn't help against involuntary evictions (node
+# failure) — see the caddy-storage-redis migration for the real multi-replica fix.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: caddy
+  namespace: sparx-prod
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: caddy
