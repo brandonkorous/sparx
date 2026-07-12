@@ -50,6 +50,7 @@
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
 
+  --radius-box: 1.5rem; /* cards, alerts, larger surfaces (rounded-box) */
   --depth: 0;
 }
 

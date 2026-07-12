@@ -71,7 +71,7 @@ export function SiteHeader({
     <Navbar className="border-base-300 bg-base-100 sticky top-0 z-50 border-b px-6 sm:px-8">
       <NavbarStart>
         <a href={link('/')} aria-label="sparx home" className="inline-flex">
-          <Wordmark size={32} />
+          <Wordmark size={36} />
         </a>
       </NavbarStart>
 
@@ -129,7 +129,7 @@ export function SiteHeader({
           </span>
           <DrawerContent side="right" className="flex w-full max-w-sm flex-col gap-1 p-6">
             <div className="flex items-center justify-between pb-4">
-              <Wordmark size={32} />
+              <Wordmark size={36} />
               <DrawerClose>
                 <Button variant="ghost" shape="circle" size="sm" aria-label="Close menu">
                   <CloseIcon />
