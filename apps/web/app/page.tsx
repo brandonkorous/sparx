@@ -9,9 +9,9 @@ import { LandingV3Faq } from '@/components/marketing/landing-v3/faq';
 import { LandingV3FinalCta } from '@/components/marketing/landing-v3/final-cta';
 
 export const metadata = {
-    title: 'Sparx — Run the business, not the software',
-    description:
-        'A narrative walkthrough of sparx — the modular content and commerce OS that brings your site, customers, sales, email and AI into one connected system.',
+  title: 'Sparx — Run the business, not the software',
+  description:
+    'A narrative walkthrough of sparx — the modular content and commerce OS that brings your site, customers, sales, email and AI into one connected system.',
 };
 // v3 — rebuilding the homepage on pure silicaui (no primitives.tsx, no
 // mkt-* CSS classes, no inline style objects, no hardcoded colors), keeping
@@ -21,18 +21,17 @@ export const metadata = {
 // Hero, Whoever, Story, Switchboard, Timeline, Proof, DashboardSection, Faq,
 // FinalCta — every section from the live homepage now has a v3 build.
 export default function LandingV3Page() {
-    return (
-        <main>
-            <LandingV3Hero />
-            <LandingV3Whoever />
-            <LandingV3Story />
-            <LandingV3Switchboard />
-            <LandingV3Timeline />
-            <LandingV3Proof />
-            <LandingV3DashboardSection />
-            <LandingV3Faq />
-            <LandingV3FinalCta />
-        </main>
-    );
+  return (
+    <main>
+      <LandingV3Hero />
+      <LandingV3Whoever />
+      <LandingV3Story />
+      <LandingV3Switchboard />
+      <LandingV3Timeline />
+      <LandingV3Proof />
+      <LandingV3DashboardSection />
+      <LandingV3Faq />
+      <LandingV3FinalCta />
+    </main>
+  );
 }
-
