@@ -40,7 +40,7 @@ describe('Tabs', () => {
   it('pills variant: active trigger uses surface bg, no underline classes', () => {
     render(<Fixture variant="pills" />);
     const active = screen.getByRole('tab', { name: 'Overview' });
-    expect(active.className).toMatch(/data-\[state=active\]:bg-\[var\(--color-base-100\)\]/);
+    expect(active.className).toMatch(/data-\[state=active\]:bg-base-100/);
     expect(active.className).not.toMatch(/border-module/);
   });
 });
