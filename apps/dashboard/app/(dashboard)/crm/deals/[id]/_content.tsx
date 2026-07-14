@@ -5,7 +5,7 @@ import { FileText, Receipt, Calendar, User, Briefcase } from 'lucide-react';
 import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
-import { api, type ApiRestError, type PagedEnvelope } from '@/lib/api-rest-client';
+import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { stageColor } from '../../pipelines/[id]/_components/kanban-types';
 import { AttachOrderPopover, DetachOrderButton } from './_components/attach-order-popover';
@@ -115,7 +115,7 @@ export async function DealDetailContent({ id }: Props) {
     // same as the customer fetch above.
     api
       .getPaged<DocumentSummary[]>(`/v1/invoicing/documents?limit=100${documentCustomerFilter}`)
-      .catch(() => ({ data: [], meta: {}, etag: null }) as PagedEnvelope<DocumentSummary[]>),
+      .catch(() => ({ data: [], meta: {}, etag: null })),
   ]);
   const candidateOrders = candidateOrdersResp.data;
   const candidateDocuments = candidateDocumentsResp.data;
