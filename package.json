@@ -35,10 +35,10 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "prettier": "^3.4.0",
+    "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.3.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "^8.64.0"
   }
 }
