@@ -8,7 +8,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import * as accountApi from '@/lib/customer-client';
-import type { Customer } from '@/lib/customer-client';
+import type { CartHandoff, Customer } from '@/lib/customer-client';
 
 export type CustomerStatus = 'loading' | 'authenticated' | 'anonymous';
 
@@ -29,6 +29,13 @@ export interface CustomerContextValue {
   }) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Set right after a successful login/register when the server consolidated
+   *  the shopper's cart onto a new identity (e.g. merged their guest cart into
+   *  a pre-existing customer cart) — CartProvider (a descendant) picks this up
+   *  to adopt the new cart id/token instead of showing a stale, now-deleted
+   *  guest cart as empty. Null once consumed. */
+  cartHandoff: CartHandoff | null;
+  clearCartHandoff: () => void;
 }
 
 const CustomerContext = createContext<CustomerContextValue | null>(null);
@@ -56,6 +63,8 @@ export function CustomerProvider({
   // a fresh, separate membership because the email already had an account on
   // another of the tenant's sites. Drives the one-time notice below.
   const [recognized, setRecognized] = useState(false);
+  const [cartHandoff, setCartHandoff] = useState<CartHandoff | null>(null);
+  const clearCartHandoff = useCallback(() => setCartHandoff(null), []);
 
   const refresh = useCallback(async () => {
     try {
@@ -74,28 +83,30 @@ export function CustomerProvider({
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const { customer: me, recognized: r } = await accountApi.login(
-        tenantSlug,
-        { email, password },
-        propertySlug
-      );
+      const {
+        customer: me,
+        recognized: r,
+        cart,
+      } = await accountApi.login(tenantSlug, { email, password }, propertySlug);
       setCustomer(me);
       setStatus('authenticated');
       if (r) setRecognized(true);
+      if (cart) setCartHandoff(cart);
     },
     [tenantSlug, propertySlug]
   );
 
   const register = useCallback(
     async (input: { email: string; password: string; firstName?: string; lastName?: string }) => {
-      const { customer: me, recognized: r } = await accountApi.register(
-        tenantSlug,
-        input,
-        propertySlug
-      );
+      const {
+        customer: me,
+        recognized: r,
+        cart,
+      } = await accountApi.register(tenantSlug, input, propertySlug);
       setCustomer(me);
       setStatus('authenticated');
       if (r) setRecognized(true);
+      if (cart) setCartHandoff(cart);
     },
     [tenantSlug, propertySlug]
   );
@@ -108,8 +119,30 @@ export function CustomerProvider({
   }, [tenantSlug]);
 
   const value = useMemo<CustomerContextValue>(
-    () => ({ tenantSlug, propertySlug, customer, status, login, register, logout, refresh }),
-    [tenantSlug, propertySlug, customer, status, login, register, logout, refresh]
+    () => ({
+      tenantSlug,
+      propertySlug,
+      customer,
+      status,
+      login,
+      register,
+      logout,
+      refresh,
+      cartHandoff,
+      clearCartHandoff,
+    }),
+    [
+      tenantSlug,
+      propertySlug,
+      customer,
+      status,
+      login,
+      register,
+      logout,
+      refresh,
+      cartHandoff,
+      clearCartHandoff,
+    ]
   );
 
   return (

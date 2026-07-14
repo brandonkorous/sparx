@@ -306,7 +306,10 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
           } else {
             res = await finishOnboardingAction();
             if (res.ok) {
-              router.push('/builder/studio');
+              // Only a builder-enabled tenant has anywhere to land in the
+              // Studio — a Builder-less setup (e.g. a B2B/CRM-only backend)
+              // goes to the dashboard home instead.
+              router.push(modules.builder ? '/builder/studio' : '/');
               return;
             }
           }

@@ -181,7 +181,16 @@ function EditableLineRow({
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
 
-  const currentType = lineTypes.find((t) => t.id === line.lineTypeId);
+  // Switching an EXISTING line to a markup/pass_through type can't commit the
+  // type change alone — re-pricing needs a cost + markup directive the type
+  // change itself doesn't carry, so an immediate commit always 422s before
+  // the markup fields (which only render once markupMode is true) ever get a
+  // chance to appear. Stage the pick locally and fold it into the SAME
+  // request as "Apply markup" instead, mirroring how AddLineRow already
+  // bundles lineTypeKey + markup payload into one atomic add.
+  const [pendingTypeId, setPendingTypeId] = React.useState<string | null>(null);
+  const selectedTypeId = pendingTypeId ?? line.lineTypeId;
+  const currentType = lineTypes.find((t) => t.id === selectedTypeId);
   const pricingMode = currentType?.pricingMode ?? 'flat';
   const markupMode = isMarkupMode(pricingMode);
 
@@ -199,8 +208,19 @@ function EditableLineRow({
         setError(res.error.message);
         return;
       }
+      setPendingTypeId(null);
       router.refresh();
     });
+  }
+
+  function selectType(t: LineTypeOption) {
+    if (isMarkupMode(t.pricingMode)) {
+      setPendingTypeId(t.id);
+      setMarkupState(freshMarkupState(markupRules, t.pricingMode));
+      return;
+    }
+    setPendingTypeId(null);
+    commit({ lineTypeKey: t.key });
   }
 
   function applyMarkup() {
@@ -208,7 +228,10 @@ function EditableLineRow({
       setError(resolved.error);
       return;
     }
-    commit(resolved.payload);
+    commit({
+      ...resolved.payload,
+      ...(pendingTypeId ? { lineTypeKey: currentType?.key } : {}),
+    });
   }
 
   async function remove() {
@@ -253,11 +276,11 @@ function EditableLineRow({
           <select
             aria-label="Line type"
             className={SELECT_CLASS}
-            value={line.lineTypeId ?? ''}
+            value={selectedTypeId ?? ''}
             disabled={pending}
             onChange={(e) => {
               const t = lineTypes.find((x) => x.id === e.target.value);
-              if (t) commit({ lineTypeKey: t.key });
+              if (t) selectType(t);
             }}
           >
             {!currentType && <option value="">(none)</option>}
@@ -529,8 +552,12 @@ function AddLineRow({
 
   return (
     <div className="border-base-300 rounded-md border border-dashed px-2 py-3">
+      {/* items-end bottom-aligns the icon-only Add button (no label of its
+          own) against the input row; self-start on every Field cell keeps
+          each field's own label+input flush with its neighbors regardless of
+          whether a sibling is showing a taller inline validation error. */}
       <div className="grid grid-cols-12 items-end gap-2">
-        <Field className="col-span-12 md:col-span-2">
+        <Field className="col-span-12 self-start md:col-span-2">
           <FieldLabel className="text-xs">Type</FieldLabel>
           <select
             className={SELECT_CLASS}
@@ -545,7 +572,7 @@ function AddLineRow({
             ))}
           </select>
         </Field>
-        <Field {...v.field('description')} className="col-span-12 md:col-span-4">
+        <Field {...v.field('description')} className="col-span-12 self-start md:col-span-4">
           <FieldLabel className="text-xs" required>
             Description
           </FieldLabel>
@@ -558,7 +585,7 @@ function AddLineRow({
             {...v.control('description')}
           />
         </Field>
-        <Field {...v.field('quantity')} className="col-span-3 md:col-span-1">
+        <Field {...v.field('quantity')} className="col-span-3 self-start md:col-span-1">
           <FieldLabel className="text-xs" required>
             Qty
           </FieldLabel>
@@ -576,7 +603,7 @@ function AddLineRow({
         </Field>
 
         {markupMode ? (
-          <div className="col-span-9 md:col-span-4">
+          <div className="col-span-9 self-start md:col-span-4">
             <MarkupFields
               state={markupState}
               rules={markupRules}
@@ -589,7 +616,7 @@ function AddLineRow({
           </div>
         ) : (
           <>
-            <Field {...v.field('unitPrice')} className="col-span-4 md:col-span-2">
+            <Field {...v.field('unitPrice')} className="col-span-4 self-start md:col-span-2">
               <FieldLabel className="text-xs">Unit price</FieldLabel>
               <FieldControl
                 name="line-unit-price"
@@ -603,7 +630,7 @@ function AddLineRow({
                 {...v.control('unitPrice')}
               />
             </Field>
-            <Field {...v.field('cost')} className="col-span-3 md:col-span-2">
+            <Field {...v.field('cost')} className="col-span-3 self-start md:col-span-2">
               <FieldLabel className="text-xs">Cost (opt.)</FieldLabel>
               <FieldControl
                 name="line-cost"

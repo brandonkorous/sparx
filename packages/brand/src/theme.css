@@ -87,14 +87,6 @@
      `error`; kept as its own name so the platform's status vocabulary is exact. */
   --color-danger: #ef4444;
   --color-danger-content: #ffffff;
-
-  /* ── silicaui shape + type tokens ────────────────────────────────────────── */
-  --radius-box: 0.5rem; /* cards, alerts, larger surfaces (rounded-box) */
-  --radius-field: 6px; /* inputs, buttons (rounded-field) */
-  --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
-
-  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }
 
 /* Dark variant of the sparx brand — production-complete so a dark island (or a
@@ -135,13 +127,6 @@
 
   --color-danger: #f87171;
   --color-danger-content: #2a0a0a;
-
-  --radius-box: 0.5rem; /* cards, alerts, larger surfaces (rounded-box) */
-  --radius-field: 6px;
-  --radius-selector: 9999px;
-
-  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }
 
 /* ── Module identity palette ───────────────────────────────────────────────────
@@ -208,4 +193,13 @@
   --color-module-partner-content: #ffffff;
   --color-module-platform: #6366f1; /* indigo — the neutral platform surface */
   --color-module-platform-content: #ffffff;
+
+  /* ── silicaui shape + type tokens ────────────────────────────────────────── */
+  --radius-box: 0.5rem; /* cards, alerts, larger surfaces (rounded-box) */
+  --radius-field: 6px; /* inputs, buttons (rounded-field) */
+  --radius-selector: 9999px; /* pills, toggles, badges (rounded-selector) */
+
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-heading: 'europa', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
 }

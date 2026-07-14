@@ -43,7 +43,11 @@ export async function previewCount(
 
     let matches = 0;
     for (const c of sample) {
-      const projection = await buildSegmentRuleProjection(ctx, c.id).catch(() => null);
+      // Compose into the already-open transaction — a bare `ctx` here would
+      // make buildSegmentRuleProjection's own withTenant open a SECOND,
+      // nested $transaction (Prisma forbids nesting), which silently failed
+      // and made every preview report 0 matches regardless of the rule.
+      const projection = await buildSegmentRuleProjection({ ...ctx, tx }, c.id).catch(() => null);
       if (!projection) continue;
       if (evaluateSegmentRule(rule, projection)) matches += 1;
     }

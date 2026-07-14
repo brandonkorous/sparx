@@ -5,7 +5,7 @@ import { FileText, Receipt, Calendar, User, Briefcase } from 'lucide-react';
 import { Badge, Card, CardBody, CardTitle, EmptyState, Table } from '@wizeworks/silicaui-react';
 import { statusLabel, statusTone } from '@sparx/ui';
 
-import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { api, type ApiRestError, type PagedEnvelope } from '@/lib/api-rest-client';
 
 import { stageColor } from '../../pipelines/[id]/_components/kanban-types';
 import { AttachOrderPopover, DetachOrderButton } from './_components/attach-order-popover';
@@ -109,7 +109,13 @@ export async function DealDetailContent({ id }: Props) {
       ? api.get<CustomerSummary>(`/v1/crm/customers/${deal.customerId}`).catch(() => null)
       : Promise.resolve(null),
     api.getPaged<OrderSummary[]>(`/v1/crm/orders?take=100&sort_by=placedAt${customerFilter}`),
-    api.getPaged<DocumentSummary[]>(`/v1/invoicing/documents?limit=100${documentCustomerFilter}`),
+    // Invoicing is bundled-free with commerce/b2b, so a CRM-only tenant (e.g.
+    // salon-spa, consulting-group, bookkeeping-micro) has it off — degrade to
+    // an empty list instead of letting MODULE_DISABLED fail the whole page,
+    // same as the customer fetch above.
+    api
+      .getPaged<DocumentSummary[]>(`/v1/invoicing/documents?limit=100${documentCustomerFilter}`)
+      .catch(() => ({ data: [], meta: {}, etag: null }) as PagedEnvelope<DocumentSummary[]>),
   ]);
   const candidateOrders = candidateOrdersResp.data;
   const candidateDocuments = candidateDocumentsResp.data;

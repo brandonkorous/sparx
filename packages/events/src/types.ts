@@ -135,12 +135,6 @@ export type EventType =
   | 'b2b.order.pending_approval'
   | 'b2b.order.approved'
   | 'b2b.order.rejected'
-  // Service scheduling notifications (docs/64 B2B Ph7).
-  | 'b2b.appointment.requested'
-  | 'b2b.appointment.confirmed'
-  | 'b2b.appointment.cancelled'
-  | 'b2b.appointment.reminder'
-  | 'b2b.appointment.completed'
   // ─── Scheduling (docs/79) — the standalone booking module ──────────────
   // Booking lifecycle; the scheduling-worker consumes these to send
   // confirmations/reminders and the calendar-sync push.

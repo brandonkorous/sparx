@@ -14,7 +14,10 @@ import type { PipelineOption } from './customer-full-profile-wizard';
 interface RawStage {
   id: string;
   name: string;
-  probability: number;
+  // Prisma Decimal serializes to a JSON string over the wire; coerced to a
+  // real number below so the wizard can send it straight to CreateDealInput
+  // (which requires z.number()) without a separate cast at every call site.
+  probability: number | string;
 }
 
 interface RawPipeline {
@@ -31,7 +34,7 @@ export async function loadPipelineOptions(): Promise<PipelineOption[]> {
     return rows.map((p) => ({
       id: p.id,
       name: p.name,
-      stages: p.stages.map((s) => ({ id: s.id, name: s.name, probability: s.probability })),
+      stages: p.stages.map((s) => ({ id: s.id, name: s.name, probability: Number(s.probability) })),
     }));
   } catch {
     return [];

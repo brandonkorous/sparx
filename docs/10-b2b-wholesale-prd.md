@@ -1,8 +1,8 @@
 # WizeWorks Platform — B2B & Wholesale PRD
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-21
+**Last Updated:** 2026-07-14
 
 ---
 
@@ -293,5 +293,7 @@ For a parts-and-service business with both **B2B/Fleet** and **Scheduling** acti
 - Appointment confirmation and reminder emails are automated by the Scheduling module's
   builder-authored email templates.
 
-The legacy B2B fleet-scheduling tables remain in place until they are migrated onto the
-Scheduling engine; all new scheduling capability ships in the Scheduling module.
+The legacy B2B fleet-scheduling tables (`service_types`/`service_appointments`) were
+retired 2026-07-14 (docs/79 §15.7) — no tenant had production rows on them, so this was
+a clean drop, not a data migration. B2B fleet context now rides on the Scheduling
+module's own `Booking` model (`b2bAccountId`/`assetRef`/`partsLinked`/`workOrderId`).

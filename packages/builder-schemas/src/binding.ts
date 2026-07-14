@@ -498,28 +498,10 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
-    key: 'appointment',
-    label: 'Appointment',
-    module: 'crm',
-    cardinality: 'object',
-    recordType: 'appointment',
-    fields: [
-      text('service', 'Service'),
-      text('date', 'Date'),
-      text('time', 'Time'),
-      text('when', 'When'),
-      text('duration', 'Duration'),
-      text('status', 'Status'),
-      text('vehicle', 'Vehicle'),
-      text('cancellationReason', 'Cancellation reason'),
-      text('manageUrl', 'Manage link'),
-    ],
-  },
-  {
     // The Scheduling module's booking (docs/79) — the industry-agnostic
-    // appointment/class/reservation/rental record. Distinct from the legacy
-    // `appointment` source (B2B fleet `service_appointments`): no vehicle field,
-    // and it carries location/staff/party-size that span every booking type.
+    // appointment/class/reservation/rental record. B2B fleet appointments are
+    // Bookings too (Booking.b2bAccountId/assetRef) — the legacy B2B-only
+    // `appointment` source (service_appointments) was retired 2026-07-14.
     key: 'booking',
     label: 'Booking',
     module: 'scheduling',

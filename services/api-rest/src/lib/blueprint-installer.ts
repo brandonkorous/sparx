@@ -38,6 +38,7 @@ import { isAssetRef, type Blueprint } from '@sparx/blueprints';
 import type { BuilderNode } from '@sparx/builder-schemas';
 
 import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
+import { materializeSilicaSite } from './blueprint-silica-bridge.js';
 
 export interface InstallContext {
   tenantId: string;
@@ -1054,6 +1055,14 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
   for (const e of r.emails ?? []) {
     await emailService.publish(ctx, e.id).catch(() => undefined);
   }
+
+  // Silica bridge — mirror the legacy pages/layout just published above into the
+  // silica columns the storefront actually reads, so the tenant's own onboarded
+  // content replaces the generic starter fallback (apps/site/lib/silica.ts) from
+  // the moment they go live. Best-effort: never blocks go-live.
+  await materializeSilicaSite(ctxIn, r, logger).catch((err) =>
+    logger.warn({ err, installId }, 'silica bridge materialization failed')
+  );
 
   // Site theme — PUBLISH the draft into a SiteVersion. Install applied the shipped
   // theme to the DRAFT only (savedThemeService.apply → sitebuilder_configs draft);

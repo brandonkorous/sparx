@@ -212,6 +212,14 @@ export type ListBillingDocumentsInput = z.infer<typeof ListBillingDocumentsInput
 // modeling it here would cycle. The service validates `markup` against that
 // schema before pricing. Pass either `lineTypeId` or `lineTypeKey` to resolve
 // the line type (and its pricingMode + tax default).
+// `quantity`/`discountAmount` carry NO default here on purpose: this core is
+// shared by both Add (via `.extend()` below, which layers create-time
+// defaults on top) and Update (via `.partial()`), and Zod does not drop a
+// field's `.default()` when `.partial()` makes it optional — an update PATCH
+// that omits `quantity` would silently parse to `1` instead of `undefined`,
+// so `updateLine()`'s `input.quantity ?? existing.quantity` fallback would
+// never fire and every partial line edit would reset quantity to 1 (and
+// discount to 0). Defaults belong only on the create path.
 export const BillingLineWriteCore = z.object({
   lineTypeId: z.string().uuid().optional().nullable(),
   lineTypeKey: z
@@ -221,7 +229,7 @@ export const BillingLineWriteCore = z.object({
     .regex(/^[a-z][a-z0-9-]*$/, 'Slug must be lowercase kebab-case')
     .optional(),
   description: z.string().min(1).max(500),
-  quantity: z.number().positive().default(1),
+  quantity: z.number().positive(),
   variantId: z.string().uuid().optional().nullable(),
   productId: z.string().uuid().optional().nullable(),
   explicitCostCents: z.number().int().nonnegative().optional().nullable(),
@@ -229,13 +237,16 @@ export const BillingLineWriteCore = z.object({
   technicianUserId: z.string().uuid().optional().nullable(),
   // Defaults to the line type's `defaultTaxable` when omitted.
   taxable: z.boolean().optional(),
-  discountAmount: z.number().min(0).default(0),
+  discountAmount: z.number().min(0),
   sortOrder: z.number().int().min(0).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 export type BillingLineWriteCore = z.infer<typeof BillingLineWriteCore>;
 
-export const AddBillingLineInput = BillingLineWriteCore;
+export const AddBillingLineInput = BillingLineWriteCore.extend({
+  quantity: z.number().positive().default(1),
+  discountAmount: z.number().min(0).default(0),
+});
 export type AddBillingLineInput = z.infer<typeof AddBillingLineInput>;
 
 export const UpdateBillingLineInput = BillingLineWriteCore.partial();

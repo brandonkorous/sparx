@@ -44,8 +44,6 @@ export interface EmailRecipientRef {
   b2bAccountId?: string | null;
   /** The fulfillment a shipping-confirmation send is about (docs/93 §3). */
   fulfillmentId?: string | null;
-  /** The service appointment an appointment-* send is about (docs/93 §3). */
-  appointmentId?: string | null;
   /** The Scheduling-module booking a booking-* send is about (docs/79 §10). */
   bookingId?: string | null;
   /** The waitlist entry a waitlist-offer send is about (docs/79 §7). */
@@ -117,18 +115,6 @@ function dateLabel(d: Date | null | undefined): string {
 /** A clock time — `2:30 PM`. */
 function timeLabel(d: Date | null | undefined): string {
   return d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
-}
-
-/** A fleet-vehicle one-liner from an appointment's `vehicleRef` JSON snapshot
- *  (mirrors the scheduling route's `buildVehicleDescription`). */
-function vehicleDescription(ref: unknown): string {
-  if (!ref || typeof ref !== 'object') return '';
-  const v = ref as Record<string, unknown>;
-  const parts: string[] = [];
-  if (typeof v.year === 'number') parts.push(String(v.year));
-  if (typeof v.make === 'string') parts.push(v.make);
-  if (typeof v.model === 'string') parts.push(v.model);
-  return parts.join(' ');
 }
 
 /** A frozen order address snapshot (CustomerAddress shape) → a flat string map the
@@ -375,48 +361,6 @@ async function resolveShipping(
     // the CTA always resolves to something useful (docs/93 §3).
     trackingUrl: f.trackingUrl ?? siteLink(slug, '/account/orders'),
     shippedAt: dateLabel(f.shippedAt),
-  };
-}
-
-// ── appointment (B2B service scheduling) ─────────────────────────────────────
-
-async function resolveAppointment(
-  ctx: ServiceContext,
-  ref: EmailRecipientRef | undefined,
-  slug: string
-): Promise<Record<string, unknown>> {
-  if (!ref?.appointmentId) return {};
-  const appt = await withTenant(ctx, (tx) =>
-    tx.serviceAppointment.findUnique({
-      where: { id: ref.appointmentId! },
-      select: {
-        scheduledAt: true,
-        durationMinutes: true,
-        status: true,
-        vehicleRef: true,
-        cancellationReason: true,
-        b2bAccountId: true,
-        serviceType: { select: { name: true } },
-      },
-    })
-  );
-  if (!appt) return {};
-  const date = dateLabel(appt.scheduledAt);
-  const time = timeLabel(appt.scheduledAt);
-  return {
-    service: appt.serviceType?.name ?? '',
-    date,
-    time,
-    when: date && time ? `${date} at ${time}` : date || time,
-    duration: appt.durationMinutes ? `${appt.durationMinutes} min` : '',
-    status: appt.status,
-    vehicle: vehicleDescription(appt.vehicleRef),
-    cancellationReason: appt.cancellationReason ?? '',
-    // Where the customer manages/reschedules — their B2B portal appointments, else
-    // their account home.
-    manageUrl: appt.b2bAccountId
-      ? siteLink(slug, `/account/b2b/${appt.b2bAccountId}/appointments`)
-      : siteLink(slug, '/account'),
   };
 }
 
@@ -838,9 +782,6 @@ async function loadEmailSources(
   }
   if (keys.has('shipping')) {
     tasks.push(resolveShipping(ctx, ref, slug).then((v) => void (out.shipping = v)));
-  }
-  if (keys.has('appointment')) {
-    tasks.push(resolveAppointment(ctx, ref, slug).then((v) => void (out.appointment = v)));
   }
   if (keys.has('booking')) {
     tasks.push(resolveBooking(ctx, ref, slug).then((v) => void (out.booking = v)));

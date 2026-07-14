@@ -27,6 +27,7 @@ import {
   type PublishedSilicaPageDto,
   type SilicaFrame,
   type SilicaNode,
+  type SilicaPage,
   type SilicaSymbolDef,
   type SilicaTheme,
   type StoredSilicaSite,
@@ -35,9 +36,14 @@ import type { BuilderLayout, BuilderPage, BuilderSite } from '@sparx/db';
 // @sparx/db re-exports the Prisma namespace as a VALUE (its `DbNull` runtime
 // sentinel is needed to write SQL NULL into a nullable Json column).
 import { Prisma, withTenant, type TxClient } from '@sparx/db';
+// The authoring kit (docs/118 Stage N — the MCP single-item writers below). Only
+// the 3 primitives needed to turn a caller's section list into a stamped page
+// body; every other kit helper stays in @sparx/silica-catalog / the MCP tools.
+import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
+import { BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
@@ -292,7 +298,11 @@ export async function sync(ctx: PropertyContext, rawInput: unknown): Promise<voi
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const silicaRows = allPages.filter(isSilica);
     const inputIds = new Set(input.pages.map((p) => p.id));
-    const existingById = new Map(silicaRows.map((r) => [r.id, r] as const));
+    // Matched by id against EVERY page, not just already-silica ones: a page id
+    // can belong to a legacy-only row (the onboarding→silica bridge reuses the
+    // legacy page's id so both trees live on one row) — treating that as "new"
+    // would `create()` a second row with the same id and collide on the PK.
+    const existingById = new Map(allPages.map((r) => [r.id, r] as const));
 
     // Deletes first (a removed page frees its slug before any create reuses it).
     for (const r of silicaRows) {
@@ -303,9 +313,23 @@ export async function sync(ctx: PropertyContext, rawInput: unknown): Promise<voi
     for (let i = 0; i < input.pages.length; i += 1) {
       const p = input.pages[i]!;
       if (existingById.has(p.id)) {
+        const existing = existingById.get(p.id)!;
+        // Only stamp `slug` when it actually changed under normalization — a
+        // silica `Page.slug` is a non-nullable `string`, so a home page always
+        // arrives as `''`; unconditionally writing that would clobber a legacy
+        // row's `slug: null` (the LEGACY home-page sentinel `pageService`
+        // reads) even though both normalize to the same empty route. Leaving a
+        // semantically-unchanged slug alone keeps that legacy sentinel intact
+        // for a row a bridge (not the studio editor) materialized in place.
+        const slugChanged = normalizeSlug(existing.slug) !== normalizeSlug(p.slug);
         await tx.builderPage.update({
           where: { id: p.id },
-          data: { name: p.name, slug: p.slug, silicaDraftTree: asJson(p.root), position: i },
+          data: {
+            name: p.name,
+            ...(slugChanged ? { slug: p.slug } : {}),
+            silicaDraftTree: asJson(p.root),
+            position: i,
+          },
         });
       } else {
         await tx.builderPage.create({
@@ -493,5 +517,132 @@ export async function publish(ctx: PropertyContext): Promise<void> {
     tenantId: ctx.tenantId,
     topic: 'builder.page.published',
     payload: { pageId: ctx.propertyId, name: 'site' },
+  });
+}
+
+// ── Single-item safe writers (the Builder MCP silica tools) ───────────────────
+//
+// `sync()` is a WHOLE-SITE reconcile: any page missing from its payload gets
+// DELETED (docs/118 — the editor always hands back the complete `Site`, so a
+// missing page unambiguously means "the author removed it"). An MCP tool that
+// authors one page — or one theme edit — at a time must never build a
+// single-item payload and call `sync()` directly: that would delete every other
+// page on the site. These wrappers load the CURRENT site, splice in the one
+// change, and sync the whole result back, so a single-item write is safe by
+// construction. They reuse `load`/`sync` verbatim — no reconciliation logic is
+// duplicated here.
+
+/** The empty site a property with no silica pages yet starts from. */
+function emptySite(): StoredSilicaSite {
+  return { pages: [] };
+}
+
+/** A silica `Site` always needs at least one page (its own schema requires it —
+ *  `pages[0]` is the home/default page), so the FIRST write to a fresh or
+ *  freshly-reset property must be `upsertPage` — `setFrame`/`setTheme` need a
+ *  page to attach to and raise a clear error otherwise, rather than surfacing a
+ *  raw schema-validation failure from `sync`. */
+function requireAtLeastOnePage(current: StoredSilicaSite): void {
+  if (current.pages.length === 0) {
+    throw new BuilderValidationError(
+      'This site has no pages yet — call upsert_silica_page to create one (e.g. the home page) before setting the frame or theme.'
+    );
+  }
+}
+
+/** Create or replace ONE page's body, leaving every other page/the frame/theme/
+ *  symbols untouched. `sections` are the page's top-level children (siblings
+ *  under the page-body wrapper) — the caller supplies content nodes only; never
+ *  the outer wrapper or ids (`pageBody` + `stampTree` mint both). Omit `id` to
+ *  create a new page; a fresh id then becomes its row id. Returns the page's id
+ *  so a caller that omitted it learns what was minted. */
+export async function upsertPage(
+  ctx: PropertyContext,
+  input: { id?: string; name: string; slug: string; sections: SilicaNode[] }
+): Promise<{ id: string }> {
+  const current = (await load(ctx)) ?? emptySite();
+  const id = input.id ?? defaultMakeId();
+  const root = stampTree(pageBody(input.sections));
+  const nextPage: SilicaPage = { id, name: input.name, slug: input.slug, root };
+  const exists = current.pages.some((p) => p.id === id);
+  const pages = exists
+    ? current.pages.map((p) => (p.id === id ? nextPage : p))
+    : [...current.pages, nextPage];
+  await sync(ctx, { ...current, pages });
+  return { id };
+}
+
+/** Remove ONE page, leaving the rest of the site untouched. A silica `Site`
+ *  cannot have zero pages, so removing the last one is refused with a clear
+ *  message rather than left to fail inside `sync`'s schema validation. */
+export async function removePage(ctx: PropertyContext, pageId: string): Promise<void> {
+  const current = await load(ctx);
+  if (!current) return;
+  const pages = current.pages.filter((p) => p.id !== pageId);
+  if (pages.length === current.pages.length) return;
+  if (pages.length === 0) {
+    throw new BuilderValidationError(
+      `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
+    );
+  }
+  await sync(ctx, { ...current, pages });
+}
+
+/** Replace the site's FRAME (chrome) — the shared navbar/Outlet/footer every
+ *  page renders through — leaving pages/theme/symbols untouched. */
+export async function setFrame(ctx: PropertyContext, input: { root: SilicaNode }): Promise<void> {
+  const current = (await load(ctx)) ?? emptySite();
+  requireAtLeastOnePage(current);
+  await sync(ctx, { ...current, frame: { root: input.root } });
+}
+
+/** Replace the site's authored THEME (and optionally its saved-theme library),
+ *  leaving pages/frame/symbols untouched. Passing `savedThemes` REPLACES the
+ *  whole library (including `[]` to clear it); omitting it leaves the existing
+ *  library alone, mirroring `sync`'s own nullish-vs-absent contract. */
+export async function setTheme(
+  ctx: PropertyContext,
+  input: { theme: SilicaTheme; savedThemes?: SilicaTheme[] }
+): Promise<void> {
+  const current = (await load(ctx)) ?? emptySite();
+  requireAtLeastOnePage(current);
+  await sync(ctx, {
+    ...current,
+    theme: input.theme,
+    ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
+  });
+}
+
+/** The property's PUBLISHED site — pages + frame + theme + symbols, in one read
+ *  (the published-column mirror of `load()`'s draft shape). Used by
+ *  verification tooling (confirm what a publish actually made live) and by the
+ *  Phase 3 blueprint capture path (docs/118). Null when nothing is published. */
+export function getPublishedSite(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
+  return withTenant(ctx, async (tx) => {
+    const allPages = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    const pages = allPages.filter(isSilicaPublished);
+    if (pages.length === 0) return null;
+    const [layout, site] = await Promise.all([
+      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+    ]);
+    const symbols = publishedSymbols(site);
+    const theme = publishedTheme(site);
+    return {
+      ...(layout?.silicaPublishedTree != null
+        ? { frame: { root: layout.silicaPublishedTree as unknown as SilicaNode, editable: true } }
+        : {}),
+      pages: pages.map((r) => ({
+        id: r.id,
+        name: r.name,
+        slug: r.slug ?? '/',
+        root: r.silicaPublishedTree as unknown as SilicaNode,
+      })),
+      ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
+      ...(theme ? { theme } : {}),
+    };
   });
 }

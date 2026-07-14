@@ -61,7 +61,6 @@ export const SAVED_VIEW_PRESETS: Record<string, readonly SavedViewPreset[]> = {
     { target: '/b2b/quotes', name: 'Awaiting review', params: { stage: 'Under Review' } },
     { target: '/b2b/invoices', name: 'Overdue', params: { status: 'overdue' } },
     { target: '/b2b/invoices', name: 'Unpaid', params: { status: 'unpaid' } },
-    { target: '/b2b/appointments', name: 'Awaiting confirmation', params: { status: 'requested' } },
   ],
   invoicing: [
     { target: '/invoicing/documents', name: 'Overdue', params: { status: 'overdue' } },

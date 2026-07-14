@@ -42,6 +42,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  /* Europa's contextual alternates ('calt') — explicit so it's a deliberate
+     part of the heading style, not an accident of the browser default. */
+  font-variant-ligatures: contextual;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

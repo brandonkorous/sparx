@@ -125,6 +125,31 @@ export function createErrorsPlugin(options: ErrorsPluginOptions = {}): FastifyPl
         } satisfies ErrorEnvelope);
       }
 
+      // Fastify's own framework-level errors (malformed/empty JSON body,
+      // unsupported media type, payload too large, ...) carry a stable
+      // `FST_ERR_*` code and an accurate 4xx statusCode but no `.validation`
+      // array, so they fell through to the generic 500 branch below —
+      // turning a client bug (e.g. a `content-type: application/json` POST
+      // with no body) into a misleading "internal error" with no actionable
+      // cause. These messages are framework-authored and always safe to
+      // expose (never internal details), unlike an arbitrary thrown error.
+      if (
+        typeof err.code === 'string' &&
+        err.code.startsWith('FST_ERR_') &&
+        typeof err.statusCode === 'number' &&
+        err.statusCode >= 400 &&
+        err.statusCode < 500
+      ) {
+        return reply.code(err.statusCode).send({
+          success: false,
+          error: {
+            code: 'BAD_REQUEST',
+            message: err.message,
+            request_id: requestId,
+          },
+        } satisfies ErrorEnvelope);
+      }
+
       // Anything else is a bug. Log the full error server-side; return a
       // generic message client-side. The request_id lets us look it up.
       request.log.error({ err }, 'unhandled error');

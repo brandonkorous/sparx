@@ -63,7 +63,7 @@ export function MobileNav({
   canOperatePartner,
 }: MobileNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
-  const manifest = pathname ? getManifestForPath(pathname) : undefined;
+  const manifest = pathname ? getManifestForPath(pathname, enabledModules) : undefined;
   // A module with no sections (e.g. AI, overview-only for now) has nothing to
   // list beside "Overview" itself — mirrors the desktop contextual panel.
   const activeModule =
@@ -116,7 +116,9 @@ export function MobileNav({
           {visible.map((m) => {
             const Icon = m.icon;
             const active =
-              pathname === m.routePrefix || (pathname?.startsWith(`${m.routePrefix}/`) ?? false);
+              m.id === manifest?.id ||
+              pathname === m.routePrefix ||
+              (pathname?.startsWith(`${m.routePrefix}/`) ?? false);
             return (
               <ModuleProvider key={m.id} module={m.id}>
                 <SidebarItem moduleIcon asChild active={active} icon={<Icon className="h-4 w-4" />}>

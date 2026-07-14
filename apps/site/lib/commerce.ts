@@ -3,9 +3,29 @@
 // the rendering layer can treat both content + commerce reads the same
 // way.
 
+import { cookies } from 'next/headers';
+
 import { resolveActivePropertySlug } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+
+// Better Auth's customer-session cookie carries a `__Secure-` prefix in
+// production — matched by substring so both forms hit. Checked BEFORE the
+// no-op cache path so a signed-out visitor's product reads stay exactly as
+// cheap/cacheable as before this existed.
+const CUSTOMER_SESSION_COOKIE = 'sparx_customer_session';
+
+/** The raw Cookie header to forward to api-rest, only when a customer session
+ *  cookie is present — undefined (the common, fully-cached path) otherwise.
+ *  Reading it opts THIS request into dynamic rendering (Next.js's `cookies()`
+ *  contract), which is the real, accepted cost of viewer-driven pricing:
+ *  product reads for a signed-in shopper skip the shared 60s cache so one
+ *  customer's contract price can never leak into another's cached response. */
+async function forwardedSessionCookie(): Promise<string | undefined> {
+  const store = await cookies();
+  const hasSession = store.getAll().some((c) => c.name.includes(CUSTOMER_SESSION_COOKIE));
+  return hasSession ? store.toString() : undefined;
+}
 
 interface SuccessEnvelope<T> {
   success: true;
@@ -47,10 +67,13 @@ async function publicGet<T>(
   // single revalidateTag('commerce:<slug>') purge clears all of a tenant's
   // commerce reads (revalidateTag is exact-match, not prefix). See app/api/revalidate.
   const coarse = query.tenant ? [`commerce:${String(query.tenant)}`] : [];
+  const sessionCookie = previewToken ? undefined : await forwardedSessionCookie();
   const res = await fetch(`${BASE_URL}${path}?${params.toString()}`, {
     ...(previewToken
       ? { cache: 'no-store', headers: { Authorization: `Preview ${previewToken}` } }
-      : { next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] } }),
+      : sessionCookie
+        ? { cache: 'no-store', headers: { Cookie: sessionCookie } }
+        : { next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] } }),
   });
   const json = (await res.json()) as SuccessEnvelope<T> | ErrorEnvelope;
   if (!res.ok || 'error' in json) {
@@ -86,6 +109,10 @@ export interface PublicProductListItem {
   priceMinCents: number | null;
   priceMaxCents: number | null;
   compareAtCents: number | null;
+  /** The signed-in viewer's contract price on the default variant — present
+   *  only for an active B2B customer whose price differs from retail; null
+   *  for every anonymous/retail visitor (the common case). */
+  yourPriceCents: number | null;
   inStock: boolean;
   averageRating: number | null;
   reviewCount: number;
@@ -120,6 +147,10 @@ export interface PublicProductVariant {
   title: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
+  /** The signed-in viewer's price on THIS variant, resolved through the same
+   *  priority chain checkout uses (contract price → price list → bulk tier) —
+   *  present only when it differs from `priceCents`; null otherwise. */
+  yourPriceCents: number | null;
   isDefault: boolean;
   inventoryPolicy: string;
   optionValueIds: string[];

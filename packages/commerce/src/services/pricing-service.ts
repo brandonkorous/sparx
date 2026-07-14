@@ -2,6 +2,8 @@
 //
 // Resolution order is locked:
 //   1. Contract price (B2B) — highest priority
+//   1.5. B2B pricing tier (account overrides > tier overrides > tier
+//        discount > account flat discount, via resolve_b2b_price() SQL)
 //   2. Price list entry (channel + segment + B2B-targeted)
 //   3. Bulk price tier (quantity ramp)
 //   4. Variant base price (fallback)
@@ -157,6 +159,16 @@ export async function updatePriceList(
     const before = await tx.priceList.findFirst({ where: { id, deletedAt: null } });
     if (!before) throw new CommerceNotFoundError('PriceList', id);
 
+    const nextCustomerSegmentId =
+      input.customerSegmentId !== undefined ? input.customerSegmentId : before.customerSegmentId;
+    const nextB2bAccountId =
+      input.b2bAccountId !== undefined ? input.b2bAccountId : before.b2bAccountId;
+    if (nextCustomerSegmentId && nextB2bAccountId) {
+      throw new CommerceValidationError(
+        'Set at most one of customerSegmentId or b2bAccountId; not both'
+      );
+    }
+
     await tx.priceList.update({
       where: { id },
       data: {
@@ -165,9 +177,9 @@ export async function updatePriceList(
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
         ...(input.channel !== undefined ? { channel: input.channel } : {}),
         ...(input.customerSegmentId !== undefined
-          ? { customerSegmentId: input.customerSegmentId }
+          ? { customerSegmentId: nextCustomerSegmentId }
           : {}),
-        ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        ...(input.b2bAccountId !== undefined ? { b2bAccountId: nextB2bAccountId } : {}),
         ...(input.priority !== undefined ? { priority: input.priority } : {}),
         ...(input.validFrom !== undefined
           ? { validFrom: input.validFrom ? new Date(input.validFrom) : null }
@@ -548,6 +560,31 @@ export async function deleteContractPrice(ctx: ServiceContext, id: string): Prom
   });
 }
 
+// ─── B2B membership ──────────────────────────────────────────────────
+
+/**
+ * True B2B pricing/payment eligibility requires more than a customer's
+ * primary-account pointer (`Customer.b2bAccountId`) — it requires an ACTIVE
+ * `B2bAccountContact` row on record (packages/db/prisma/schema/62-b2b-contacts.
+ * prisma). Without this check, deactivating a contact (an employee who left,
+ * an account put on hold) would silently leave their wholesale pricing and
+ * net-terms eligibility intact forever, since nothing else re-validates the
+ * pointer. Callers (cart, checkout, the storefront PDP) should resolve
+ * through this rather than trusting `Customer.b2bAccountId` directly.
+ */
+export async function resolveActiveB2bAccountId(
+  tx: TxClient,
+  customerId: string | undefined,
+  primaryAccountId: string | null | undefined
+): Promise<string | undefined> {
+  if (!customerId || !primaryAccountId) return undefined;
+  const active = await tx.b2bAccountContact.findFirst({
+    where: { customerId, accountId: primaryAccountId, isActive: true },
+    select: { id: true },
+  });
+  return active ? primaryAccountId : undefined;
+}
+
 // ─── Price resolution ────────────────────────────────────────────────
 
 /**
@@ -603,6 +640,33 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
           note: 'B2B contract price',
         });
         return finishLine(input, unitPriceCents, trace);
+      }
+    }
+
+    // 1.5. B2B pricing tier — the account's assigned tier (+ its own
+    // account-level and tier-level product/collection overrides, and any
+    // flat account discount stacked on top). This is a parallel, older B2B
+    // pricing primitive from the account's `pricingTierId` (distinct from
+    // ContractPrice above) whose full waterfall already lives in the
+    // `resolve_b2b_price()` SQL function (docs/10, docs/64 Ph1) — it was
+    // never actually called from here, so a merchant could configure a
+    // tier discount, assign it to an account, and see it saved in the
+    // dashboard while every real storefront/checkout price stayed at list.
+    // Only applied when it beats the running price, same as bulk_tier below.
+    if (input.b2bAccountId) {
+      const [row] = await tx.$queryRaw<{ price: number | null }[]>`
+        SELECT resolve_b2b_price(${input.variantId}::uuid, ${input.b2bAccountId}::uuid) AS price
+      `;
+      if (row?.price != null && row.price < unitPriceCents) {
+        const delta = row.price - unitPriceCents;
+        unitPriceCents = row.price;
+        trace.push({
+          source: 'b2b_pricing_tier',
+          sourceId: input.b2bAccountId,
+          deltaCents: delta,
+          resultingUnitPriceCents: unitPriceCents,
+          note: 'B2B account pricing tier',
+        });
       }
     }
 

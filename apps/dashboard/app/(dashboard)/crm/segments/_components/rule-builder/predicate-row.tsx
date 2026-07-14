@@ -33,15 +33,16 @@ export function PredicateRow({ field, op, value, onChange, onRemove }: Props) {
 
   function changeField(nextField: SegmentField) {
     const nextOp = defaultOperatorFor(nextField);
+    const nextDef = FIELD_INDEX[nextField];
     onChange({
       field: nextField,
       op: nextOp,
-      value: defaultValueFor(FIELD_INDEX[nextField].kind, nextOp),
+      value: defaultValueFor(nextDef.kind, nextOp, nextDef.enumValues),
     });
   }
 
   function changeOp(nextOp: SegmentOperator) {
-    onChange({ field, op: nextOp, value: defaultValueFor(def.kind, nextOp) });
+    onChange({ field, op: nextOp, value: defaultValueFor(def.kind, nextOp, def.enumValues) });
   }
 
   return (
@@ -163,7 +164,11 @@ function ValueInput(props: {
   );
 }
 
-function defaultValueFor(kind: FieldKind, op: SegmentOperator): unknown {
+function defaultValueFor(
+  kind: FieldKind,
+  op: SegmentOperator,
+  enumValues?: readonly string[]
+): unknown {
   if (op === 'is_null' || op === 'is_not_null') return undefined;
   if (opTakesArray(op)) return [];
   switch (kind) {
@@ -173,6 +178,12 @@ function defaultValueFor(kind: FieldKind, op: SegmentOperator): unknown {
       return 0;
     case 'datetime':
       return new Date().toISOString();
+    case 'enum':
+      // The <select> below has no blank option, so the browser always shows
+      // the first <option> regardless of the controlled `value` — defaulting
+      // to '' here left that display out of sync with real state, silently
+      // saving an empty-string predicate no customer could ever match.
+      return enumValues?.[0] ?? '';
     default:
       return '';
   }

@@ -9,6 +9,8 @@ import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 
 import { PriceListStatusBar } from './_components/price-list-status-bar';
 import { PriceListEntriesEditor } from './_components/price-list-entries-editor';
+import { PriceListTargetingCard } from './_components/price-list-targeting-card';
+import { loadPriceListTargetingOptions } from '../_lib/targeting-options';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,9 +63,10 @@ export async function PriceListDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [entries, variantRows] = await Promise.all([
+  const [entries, variantRows, targetingOptions] = await Promise.all([
     api.get<EntryRow[]>(`/v1/commerce/price-lists/${id}/entries`),
     api.get<VariantListRow[]>('/v1/commerce/variants?take=500'),
+    loadPriceListTargetingOptions(),
   ]);
 
   const variantSummaries = variantRows.map((v) => ({
@@ -73,6 +76,12 @@ export async function PriceListDetailContent({ id }: Props) {
     basePriceCents: v.priceCents,
     productTitle: v.productTitle,
   }));
+
+  const targetLabel = priceList.b2bAccountId
+    ? targetingOptions.b2bAccounts.find((a) => a.id === priceList.b2bAccountId)?.label
+    : priceList.customerSegmentId
+      ? targetingOptions.segments.find((s) => s.id === priceList.customerSegmentId)?.label
+      : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,6 +108,11 @@ export async function PriceListDetailContent({ id }: Props) {
                 {statusLabel(priceList.channel)}
               </Badge>
             )}
+            {targetLabel && (
+              <Badge color="module" variant="soft" size="sm">
+                {targetLabel}
+              </Badge>
+            )}
           </div>
           <p className="text-base-content/70 text-sm">
             Priority {priceList.priority} · {entries.length} entries
@@ -113,6 +127,14 @@ export async function PriceListDetailContent({ id }: Props) {
           </CardBody>
         </Card>
       )}
+
+      <PriceListTargetingCard
+        priceListId={priceList.id}
+        b2bAccountId={priceList.b2bAccountId}
+        customerSegmentId={priceList.customerSegmentId}
+        b2bAccounts={targetingOptions.b2bAccounts}
+        segments={targetingOptions.segments}
+      />
 
       <Card>
         <CardBody>

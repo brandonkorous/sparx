@@ -398,14 +398,19 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
       const result = await createB2bAccountAction(input);
       if (!result.ok) {
         setError(result.error.message);
+        setSubmitting(false);
         return;
       }
 
+      // Deliberately leave `submitting` true on success rather than resetting
+      // it in a `finally` — the router.push navigation away is async, and
+      // resetting it immediately re-enabled "Create account" during that
+      // window, letting a second click (or an impatient double-click) submit
+      // the same form again and create a duplicate account.
       router.push(`/b2b/accounts/${result.data.id}`);
       router.refresh();
     } catch {
       setError('Unexpected error. Please try again.');
-    } finally {
       setSubmitting(false);
     }
   }

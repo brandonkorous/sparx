@@ -4,8 +4,8 @@
 //     → account health, open quotes, pending/overdue invoices, approval queue,
 //       credit extended — the founder-lens counts the B2B overview opens on
 //   GET /v1/b2b/reports/timeseries?from=&to=&grain=day|week|month
-//     → B2B order volume + revenue per bucket (orders placed through the
-//       b2b_portal channel)
+//     → B2B order volume + revenue per bucket (orders whose customer belongs
+//       to a B2B account)
 //
 // LIVE aggregates over the operational tables (no rollup): B2B order/quote/
 // invoice volumes are a subset of the storefront's and every query is bounded
@@ -92,9 +92,15 @@ interface RawDayRow {
   revenue: unknown;
 }
 
-// One GROUP-BY-day pass over b2b_portal orders in [from, toExclusive), bucketed
-// by placed_at's UTC date. Excludes cancelled + pending_approval (not yet real
+// One GROUP-BY-day pass over B2B orders in [from, toExclusive), bucketed by
+// placed_at's UTC date. Excludes cancelled + pending_approval (not yet real
 // revenue), matching the storefront revenue convention. RLS scopes to tenant.
+//
+// A B2B order is identified by its customer having a b2b_account_id, NOT by
+// channel — B2B orders place through the same storefront checkout everyone
+// uses (docs/10 §11) and always carry channel='storefront'; no code path ever
+// sets channel='b2b_portal', so the old `WHERE channel = 'b2b_portal'` filter
+// silently zeroed this report for every tenant.
 async function aggregateB2bOrdersByDay(
   tx: TxClient,
   from: Date,
@@ -102,14 +108,15 @@ async function aggregateB2bOrdersByDay(
 ): Promise<{ bucket: string; ordersCount: number; revenueCents: number }[]> {
   const rows = await tx.$queryRaw<RawDayRow[]>`
     SELECT
-      (placed_at AT TIME ZONE 'UTC')::date AS bucket,
-      COUNT(*)::int                        AS orders_count,
-      COALESCE(SUM(total), 0)              AS revenue
-    FROM orders
-    WHERE channel = 'b2b_portal'
-      AND status NOT IN ('cancelled', 'pending_approval')
-      AND placed_at >= ${from}
-      AND placed_at < ${toExclusive}
+      (o.placed_at AT TIME ZONE 'UTC')::date AS bucket,
+      COUNT(*)::int                          AS orders_count,
+      COALESCE(SUM(o.total), 0)              AS revenue
+    FROM orders o
+    JOIN customers c ON c.id = o.customer_id
+    WHERE c.b2b_account_id IS NOT NULL
+      AND o.status NOT IN ('cancelled', 'pending_approval')
+      AND o.placed_at >= ${from}
+      AND o.placed_at < ${toExclusive}
     GROUP BY 1
     ORDER BY 1
   `;

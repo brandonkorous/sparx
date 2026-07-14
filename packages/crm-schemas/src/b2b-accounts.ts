@@ -40,3 +40,22 @@ export type CreateB2BAccountInput = z.infer<typeof CreateB2BAccountInput>;
 
 export const UpdateB2BAccountInput = CreateB2BAccountInput.partial();
 export type UpdateB2BAccountInput = z.infer<typeof UpdateB2BAccountInput>;
+
+// B2B account contacts — links a Customer to a B2BAccount with a role
+// (packages/db/prisma/schema/62-b2b-contacts.prisma). This is the write path
+// for what pricing (contract price), checkout (net-terms eligibility), and
+// the storefront B2B portal (invoices/quotes/orders visibility) all key off.
+export const B2bAccountContactRole = z.enum(['primary_contact', 'buyer', 'approver', 'viewer']);
+export type B2bAccountContactRole = z.infer<typeof B2bAccountContactRole>;
+
+export const CreateB2bAccountContactInput = z.object({
+  customerId: Uuid,
+  role: B2bAccountContactRole.default('buyer'),
+});
+export type CreateB2bAccountContactInput = z.infer<typeof CreateB2bAccountContactInput>;
+
+export const UpdateB2bAccountContactInput = z.object({
+  role: B2bAccountContactRole.optional(),
+  isActive: z.boolean().optional(),
+});
+export type UpdateB2bAccountContactInput = z.infer<typeof UpdateB2bAccountContactInput>;

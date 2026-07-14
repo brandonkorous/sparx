@@ -21,14 +21,18 @@ import type { FastifyPluginAsync } from 'fastify';
 import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
+import type { FastifyRequest } from 'fastify';
+
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
+import { pricingService } from '@sparx/commerce';
 import { searchProducts } from '@sparx/search';
 import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
 import { tryVerifyProductPreview } from '../../../lib/preview.js';
+import { optionalCustomer } from '../../../lib/customer-session.js';
 
 // `property` (a stable site slug) scopes catalog reads to one web PROPERTY
 // (docs/49 Model B). The storefront passes it for non-primary sites; omitted →
@@ -141,6 +145,88 @@ async function resolveTenantBySlug(slug: string): Promise<string> {
   });
   if (!t) throw notFound('Tenant', slug);
   return t.id;
+}
+
+/**
+ * Product reads are otherwise fully anonymous/cacheable — but a signed-in
+ * B2B customer needs to see THEIR price on the same pages every shopper
+ * uses (no separate "B2B site"). Resolves the viewer's ACTIVE B2B
+ * membership when a customer session cookie is present, else null (the
+ * common, still-cacheable case — most visitors are anonymous or retail).
+ */
+async function resolveViewerB2bAccountId(
+  request: FastifyRequest,
+  tenantId: string
+): Promise<string | undefined> {
+  const resolved = await optionalCustomer(request, { tenantId });
+  if (!resolved) return undefined;
+  return withTenant({ tenantId }, async (tx) => {
+    const customer = await tx.customer.findFirst({
+      where: { id: resolved.customerId },
+      select: { b2bAccountId: true },
+    });
+    return pricingService.resolveActiveB2bAccountId(
+      tx,
+      resolved.customerId,
+      customer?.b2bAccountId
+    );
+  });
+}
+
+/**
+ * Card-list "your price" fast path: the DEFAULT variant's contract price
+ * only (not the full price-list/bulk-tier waterfall `resolve()` runs for the
+ * PDP/cart) — one batched query regardless of page size, so a 24-product grid
+ * costs the same as a single product. Anonymous/non-B2B viewers (the common
+ * case) skip this entirely and the response is unchanged from today.
+ */
+async function resolveDefaultVariantContractPrices(
+  tenantId: string,
+  b2bAccountId: string,
+  variantIds: string[]
+): Promise<Map<string, number>> {
+  if (variantIds.length === 0) return new Map();
+  const now = new Date();
+  const rows = await withTenant({ tenantId }, (tx) =>
+    tx.contractPrice.findMany({
+      where: {
+        b2bAccountId,
+        variantId: { in: variantIds },
+        validFrom: { lte: now },
+        OR: [{ validTo: null }, { validTo: { gte: now } }],
+      },
+      orderBy: { validFrom: 'desc' },
+      select: { variantId: true, priceCents: true },
+    })
+  );
+  const map = new Map<string, number>();
+  for (const r of rows) {
+    if (!map.has(r.variantId)) map.set(r.variantId, r.priceCents); // first hit = most recent
+  }
+  return map;
+}
+
+/** Attaches `yourPriceCents` to a page of `publicProduct()`-mapped cards for the
+ *  signed-in viewer — null for every card when there's no B2B viewer or no
+ *  matching contract price, which is the common case and costs one extra query. */
+async function withYourPrices(
+  tenantId: string,
+  products: ReturnType<typeof publicProduct>[],
+  viewerB2bAccountId: string | undefined
+): Promise<(ReturnType<typeof publicProduct> & { yourPriceCents: number | null })[]> {
+  if (!viewerB2bAccountId) {
+    return products.map((p) => ({ ...p, yourPriceCents: null }));
+  }
+  const variantIds = products.flatMap((p) => (p.defaultVariantId ? [p.defaultVariantId] : []));
+  const contractPrices = await resolveDefaultVariantContractPrices(
+    tenantId,
+    viewerB2bAccountId,
+    variantIds
+  );
+  return products.map((p) => ({
+    ...p,
+    yourPriceCents: p.defaultVariantId ? (contractPrices.get(p.defaultVariantId) ?? null) : null,
+  }));
 }
 
 function publicProduct(row: {
@@ -288,11 +374,15 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       return { rows, total };
     });
     if (!result) throw notFound('Collection', handle);
-    return paged(result.rows.map(publicProduct), {
-      page: q.page,
-      per_page: q.perPage,
-      total: result.total,
-    });
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return paged(
+      await withYourPrices(tenantId, result.rows.map(publicProduct), viewerB2bAccountId),
+      {
+        page: q.page,
+        per_page: q.perPage,
+        total: result.total,
+      }
+    );
   });
 
   // ─── Products ──────────────────────────────────────────────────────
@@ -355,11 +445,15 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ]);
       return { rows, total };
     });
-    return paged(result.rows.map(publicProduct), {
-      page: q.page,
-      per_page: q.perPage,
-      total: result.total,
-    });
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return paged(
+      await withYourPrices(tenantId, result.rows.map(publicProduct), viewerB2bAccountId),
+      {
+        page: q.page,
+        per_page: q.perPage,
+        total: result.total,
+      }
+    );
   });
 
   // ─── Search (Typesense) ────────────────────────────────────────────
@@ -427,7 +521,8 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       });
     }
 
-    return paged(ordered, {
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return paged(await withYourPrices(tenantId, ordered, viewerB2bAccountId), {
       page: result.page,
       per_page: result.perPage,
       total: result.found,
@@ -544,7 +639,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     // token is scoped to one product by `sub`, asserted against the match below
     // so it can't be replayed against a different product via the handle.
     const previewProductId = tryVerifyProductPreview(app, request, tenantId);
-    const [result, inventoryActive] = await Promise.all([
+    const [result, inventoryActive, viewerB2bAccountId] = await Promise.all([
       withTenant({ tenantId }, (tx) =>
         tx.product.findFirst({
           // Model B: a product not visible on the active site 404s by URL too.
@@ -559,11 +654,41 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
+      resolveViewerB2bAccountId(request, tenantId),
     ]);
     if (!result) throw notFound('Product', handle);
     // Token is bound to one product — reject a handle that resolves elsewhere.
     if (previewProductId && previewProductId !== result.id) throw notFound('Product', handle);
-    return ok(mapFullProduct(result, inventoryActive));
+
+    // "Your price" — resolved through the SAME priority chain (contract price →
+    // price list → bulk tier) the cart already uses, so the number shown here is
+    // exactly what checkout will charge, not a separate estimate. Anonymous and
+    // non-B2B viewers never hit this branch — they get the flat retail price
+    // exactly as before, so the response stays cacheable in that common case.
+    let yourPrices: Map<string, number> | undefined;
+    if (viewerB2bAccountId) {
+      const priced = await Promise.all(
+        result.variants.map((v) =>
+          pricingService.resolve(
+            { tenantId },
+            {
+              variantId: v.id,
+              quantity: 1,
+              channel: 'storefront',
+              currency: v.currency,
+              b2bAccountId: viewerB2bAccountId,
+              customerSegmentIds: [],
+            }
+          )
+        )
+      );
+      yourPrices = new Map(
+        result.variants
+          .map((v, i) => [v.id, priced[i]!.unitPriceCents] as const)
+          .filter(([, cents], i) => cents !== result.variants[i]!.priceCents)
+      );
+    }
+    return ok(mapFullProduct(result, inventoryActive, yourPrices));
   });
 
   // ─── Categories ────────────────────────────────────────────────────
@@ -681,11 +806,15 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       return { rows, total };
     });
     if (!result) throw notFound('Category', handle);
-    return paged(result.rows.map(publicProduct), {
-      page: q.page,
-      per_page: q.perPage,
-      total: result.total,
-    });
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return paged(
+      await withYourPrices(tenantId, result.rows.map(publicProduct), viewerB2bAccountId),
+      {
+        page: q.page,
+        per_page: q.perPage,
+        total: result.total,
+      }
+    );
   });
 
   // ─── Fitment ───────────────────────────────────────────────────────
@@ -855,6 +984,7 @@ const FULL_PRODUCT_SELECT = {
       title: true,
       priceCents: true,
       compareAtPriceCents: true,
+      currency: true,
       isDefault: true,
       inventoryPolicy: true,
       optionAssignments: { select: { optionValueId: true } },
@@ -888,7 +1018,11 @@ type FullProductRow = Prisma.ProductGetPayload<{ select: typeof FULL_PRODUCT_SEL
 /** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct).
  *  `inventoryActive` flows through to the availability rule: when the inventory
  *  module is off the variant degrades to untracked (always in stock) — docs/100 §2.4. */
-function mapFullProduct(result: FullProductRow, inventoryActive: boolean) {
+function mapFullProduct(
+  result: FullProductRow,
+  inventoryActive: boolean,
+  yourPrices?: Map<string, number>
+) {
   return {
     ...publicProduct(result),
     fulfillmentType: result.fulfillmentType,
@@ -911,6 +1045,10 @@ function mapFullProduct(result: FullProductRow, inventoryActive: boolean) {
         title: v.title,
         priceCents: v.priceCents,
         compareAtPriceCents: v.compareAtPriceCents,
+        // Present only for a signed-in customer whose active B2B membership
+        // resolves a different price than the flat retail one above — null for
+        // every anonymous/retail viewer (the storefront falls back to priceCents).
+        yourPriceCents: yourPrices?.get(v.id) ?? null,
         isDefault: v.isDefault,
         inventoryPolicy: v.inventoryPolicy,
         optionValueIds: v.optionAssignments.map((ov) => ov.optionValueId),

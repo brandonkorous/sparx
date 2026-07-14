@@ -38,12 +38,19 @@ import { mediaUrl } from './media';
  *  currency. */
 function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<string, unknown> {
   const url = mediaUrl(p.primaryImageId, tenantSlug);
+  // A signed-in B2B viewer's price wins over retail — reusing the existing
+  // compareAtPrice strikethrough mechanic (a sale-price pattern) to show it: `price`
+  // becomes their price, `compareAtPrice` becomes the retail price it replaces. An
+  // anonymous/retail viewer's `yourPriceCents` is always null, so this is a no-op for
+  // the common case.
+  const price = p.yourPriceCents ?? p.priceMinCents;
+  const compareAtPrice = p.yourPriceCents != null ? p.priceMinCents : p.compareAtCents;
   return {
     id: p.id,
     handle: p.handle,
     title: p.title,
-    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
-    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
+    price: price != null ? price / 100 : null,
+    compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
     description: p.description ?? '',
     image: url ? { url, alt: p.title } : null,
     // Bound by the buy box's hidden field, so its <form> submit carries a real
@@ -70,12 +77,19 @@ export function productToSilicaRecord(
   const primary = p.images[0];
   const url = primary ? mediaUrl(primary.mediaAssetId, tenantSlug) : null;
   const defaultVariant = p.variants.find((v) => v.isDefault) ?? p.variants[0];
+  // The default variant's viewer-resolved price wins over retail (same
+  // strikethrough reuse as toSilicaProduct above) — the buy box only ever shows
+  // the default variant's price, so it reads that variant's yourPriceCents rather
+  // than the list-level one (which is contract-price-only, for card fidelity).
+  const variantYourPrice = defaultVariant?.yourPriceCents ?? null;
+  const price = variantYourPrice ?? p.priceMinCents;
+  const compareAtPrice = variantYourPrice != null ? p.priceMinCents : p.compareAtCents;
   return {
     id: p.id,
     handle: p.handle,
     title: p.title,
-    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
-    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
+    price: price != null ? price / 100 : null,
+    compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
     description: p.description ?? '',
     image: url ? { url, alt: primary?.alt ?? p.title } : null,
     // The add-to-cart form's hidden field; empty string (not null) when the product

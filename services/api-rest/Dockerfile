@@ -60,6 +60,11 @@ COPY packages/surface-compile ./packages/surface-compile
 COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/sitebuilder ./packages/sitebuilder
 COPY packages/builder-schemas ./packages/builder-schemas
+# @sparx/builder's silica-native site-service (docs/118) imports @sparx/silica-catalog
+# at module load (the sparx commerce/content composite factories) — the /v1/builder/site
+# routes pull it in. Dependency-free beyond @wizeworks/silicaui-html. Omitting it
+# crashloops api-rest with ERR_MODULE_NOT_FOUND.
+COPY packages/silica-catalog ./packages/silica-catalog
 COPY packages/builder ./packages/builder
 COPY packages/blueprints ./packages/blueprints
 COPY packages/marketplace-schemas ./packages/marketplace-schemas

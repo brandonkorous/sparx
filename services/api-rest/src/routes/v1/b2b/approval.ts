@@ -210,10 +210,15 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const q = QueueQuery.parse(request.query);
 
+    // `status: 'pending_approval'` is set only by the checkout approval gate,
+    // which only ever fires for an active B2B account (checkout-service.ts) —
+    // no additional channel filter is needed. B2B orders place through the
+    // same storefront checkout everyone uses (docs/10 §11) and always carry
+    // channel='storefront', never 'b2b_portal' (no code path sets that value),
+    // so filtering on it here silently emptied the queue for every order.
     const where: Prisma.OrderWhereInput = {
       tenantId: ctx.tenantId,
       status: 'pending_approval',
-      channel: 'b2b_portal',
       ...(q.account_id
         ? {
             customer: { b2bAccountId: q.account_id },

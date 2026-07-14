@@ -50,8 +50,15 @@ export async function getSchedulingReport(
   return withTenant({ tenantId }, async (tx) => {
     const fromDate = new Date(query.from);
     const toDate = new Date(query.to);
+    const inRange = { gte: fromDate, lt: toDate };
     const rows = await tx.booking.findMany({
-      where: { deletedAt: null, startAt: { gte: fromDate, lt: toDate } },
+      where: {
+        deletedAt: null,
+        // A cancelled booking's startAt is often a future appointment slot that
+        // will now never happen — the event actually worth reporting is the
+        // cancellation itself, so that bucket keys off cancelledAt instead.
+        OR: [{ startAt: inRange }, { status: 'cancelled', cancelledAt: inRange }],
+      },
       select: {
         status: true,
         serviceId: true,

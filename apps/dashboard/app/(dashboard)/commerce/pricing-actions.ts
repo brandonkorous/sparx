@@ -78,20 +78,48 @@ export async function deleteBulkTierAction(tierId: string): Promise<ActionResult
 
 // ─── Contract prices ─────────────────────────────────────────────────
 
+export interface ContractPriceRow {
+  id: string;
+  b2bAccountId: string;
+  variantId: string;
+  variantSku: string;
+  productTitle: string;
+  priceCents: number;
+  validFrom: string;
+  validTo: string | null;
+  notes: string | null;
+}
+
+export async function listContractPricesAction(
+  b2bAccountId: string
+): Promise<ActionResult<ContractPriceRow[]>> {
+  return restAction(async () =>
+    api.get<ContractPriceRow[]>(
+      `/v1/commerce/contract-prices?b2b_account_id=${encodeURIComponent(b2bAccountId)}`
+    )
+  );
+}
+
 export async function createContractPriceAction(
-  input: unknown
+  input: unknown,
+  b2bAccountId: string
 ): Promise<ActionResult<{ id: string }>> {
   return restAction(async () => {
     const result = await api.post<{ id: string }>('/v1/commerce/contract-prices', input);
     revalidatePath('/commerce/pricing');
+    revalidatePath(`/crm/b2b/${b2bAccountId}`);
     return result;
   });
 }
 
-export async function deleteContractPriceAction(id: string): Promise<ActionResult<{ ok: true }>> {
+export async function deleteContractPriceAction(
+  id: string,
+  b2bAccountId?: string
+): Promise<ActionResult<{ ok: true }>> {
   return restAction(async () => {
     await api.delete<void>(`/v1/commerce/contract-prices/${id}`);
     revalidatePath('/commerce/pricing');
+    if (b2bAccountId) revalidatePath(`/crm/b2b/${b2bAccountId}`);
     return { ok: true as const };
   });
 }

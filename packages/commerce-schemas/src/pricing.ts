@@ -119,6 +119,7 @@ export const PriceTraceStep = z.object({
     'price_list',
     'bulk_tier',
     'contract_price',
+    'b2b_pricing_tier',
     'subscribe_and_save',
     'discount',
     'gift_card',

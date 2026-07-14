@@ -134,7 +134,6 @@ import tenantPartnerRoutes from './routes/v1/tenant-partner.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
 import publicEstimateRoutes from './routes/v1/public/estimates.js';
-import publicB2bSchedulingRoutes from './routes/v1/public/b2b-scheduling.js';
 import publicSchedulingRoutes from './routes/v1/public/scheduling.js';
 import schedulingAccountRoutes from './routes/v1/public/scheduling-account.js';
 import schedulingCalendarRoutes from './routes/v1/public/scheduling-calendar.js';
@@ -832,7 +831,6 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicAuthRoutes);
   await app.register(publicB2bPortalRoutes);
   await app.register(publicEstimateRoutes);
-  await app.register(publicB2bSchedulingRoutes);
   await app.register(publicSchedulingRoutes);
   await app.register(schedulingAccountRoutes);
   await app.register(schedulingCalendarRoutes);

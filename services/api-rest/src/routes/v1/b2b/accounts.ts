@@ -546,7 +546,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
         orderBy: { createdAt: 'asc' },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          collection: { select: { id: true, name: true } },
         },
       })
     );
@@ -579,7 +579,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
         },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          collection: { select: { id: true, name: true } },
         },
       })
     );
@@ -608,7 +608,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
         data: { ...body, updatedAt: new Date() },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          collection: { select: { id: true, name: true } },
         },
       })
     );

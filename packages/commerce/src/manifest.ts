@@ -62,6 +62,15 @@ export const commerceManifest: ModuleManifest = {
       icon: CreditCard,
       href: '/commerce/checkout-sessions',
     },
+    // Order management/fulfillment lives at /crm/orders (unified with the CRM
+    // customer/order data model, docs/11 §1) rather than under /commerce — but
+    // a commerce-only tenant with no CRM module must still be able to find and
+    // fulfill their own orders. Cross-listing the same route here (rather than
+    // moving it) keeps ONE Orders page instead of forking the UI; registry.ts's
+    // getManifestForPath() resolves this module as the nav "owner" of the page
+    // whenever CRM isn't enabled for the tenant, so the sidebar/breadcrumb stay
+    // coherent either way.
+    { id: 'orders', label: 'Orders', icon: Receipt, href: '/crm/orders' },
     {
       id: 'subscriptions',
       label: 'Subscriptions',

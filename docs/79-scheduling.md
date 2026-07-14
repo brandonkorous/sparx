@@ -1,8 +1,8 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-01
+**Last Updated:** 2026-07-14
 
 ---
 
@@ -1053,27 +1053,25 @@ in [89-feature-catalog.md](89-feature-catalog.md), the slug set in
 [73-pricing-model.md](73-pricing-model.md) table + toggle UI, and a pointer from
 [10-b2b-wholesale-prd.md](10-b2b-wholesale-prd.md) §10 to this module as the engine.
 
-### 15.7 Migrating the existing B2B scheduling tables
+### 15.7 Migrating the existing B2B scheduling tables — DONE (2026-07-14)
 
-`service_types` and `service_appointments`
-([64-b2b-scheduling.prisma](../packages/db/prisma/schema/64-b2b-scheduling.prisma)) are the
-narrow ancestor. Plan:
+`service_types` and `service_appointments` (formerly `64-b2b-scheduling.prisma`) were the
+narrow ancestor of this module's `SchedulingService`/`Booking` engine. No tenant had
+production rows on either table at cutover, so this was a clean drop, not a data
+migration — retired outright rather than copied:
 
-1. **Generalize, don't duplicate.** New `scheduling_services` / `bookings` supersede them.
-2. **Data migration:** copy `service_types` → `scheduling_services` (map `durationMinutes`,
-   `color`, `requiresVehicle` → `requiresAsset`); copy `service_appointments` → `bookings`
-   (map `scheduledAt`→`startAt`, derive `endAt` from duration, `vehicleRef`→`assetRef`,
-   `partsLinked`, `b2bAccountId`, `customerId`, status values), creating `booking_resources`
-   rows where a resource is implied.
-3. **Keep B2B semantics** as the fleet _context_: `bookings.b2bAccountId`, `assetRef`,
-   `partsLinked`, `workOrderId`. B2B's PRD §10 surface continues to work, now powered by the
-   general engine.
-4. **Retire** the old tables once cutover + verification complete (drop in a follow-up
-   migration; never both live at once).
+1. **Generalized, not duplicated.** `SchedulingService`/`Booking` supersede them entirely.
+2. **B2B semantics preserved** as the fleet _context_ on the general engine:
+   `Booking.b2bAccountId`, `assetRef`, `partsLinked`, `workOrderId` — B2B's PRD §10
+   surface (the B2B↔Scheduling bridge) is powered by this engine, never a parallel one.
+3. **Retired**: `packages/db/prisma/migrations/20261205000000_drop_b2b_legacy_scheduling`
+   dropped both tables; the Prisma models, both `b2b/scheduling.ts` route files, the
+   `/b2b/service-types`+`/b2b/appointments` dashboard pages, the read-only customer
+   portal appointments page, and the `b2b.appointment.*` event types were all removed
+   in the same pass.
 
-If those tables hold no production rows at cutover, this is a clean replace; if they do, the
-copy step preserves them. Either way, **one engine, never two** (the lesson from the
-automation-module unification).
+One engine, never two (the lesson from the automation-module unification) — see
+[[feedback_b2b_legacy_scheduling]] for the removal detail.
 
 ---
 

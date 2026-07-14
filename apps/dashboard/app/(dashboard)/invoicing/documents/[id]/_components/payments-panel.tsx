@@ -119,8 +119,12 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
           </div>
         </CardTitle>
         <div className="flex flex-col gap-4">
+          {/* items-end bottom-aligns the icon-only Record button against the
+              input row; self-start on every Field cell keeps each field's own
+              label+input flush with its neighbors regardless of whether the
+              Amount field is showing a taller inline validation error. */}
           <div className="grid grid-cols-12 items-end gap-2">
-            <Field className="col-span-6 md:col-span-3">
+            <Field className="col-span-6 self-start md:col-span-3">
               <FieldLabel className="text-xs">Type</FieldLabel>
               <select
                 className={SELECT_CLASS}
@@ -135,7 +139,7 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                 ))}
               </select>
             </Field>
-            <Field className="col-span-6 md:col-span-3">
+            <Field className="col-span-6 self-start md:col-span-3">
               <FieldLabel className="text-xs">Method</FieldLabel>
               <select
                 className={SELECT_CLASS}
@@ -150,7 +154,7 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                 ))}
               </select>
             </Field>
-            <Field {...v.field('amount')} className="col-span-5 md:col-span-2">
+            <Field {...v.field('amount')} className="col-span-5 self-start md:col-span-2">
               <FieldLabel className="text-xs" required>
                 Amount
               </FieldLabel>
@@ -166,7 +170,7 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                 {...v.control('amount')}
               />
             </Field>
-            <Field className="col-span-7 md:col-span-3">
+            <Field className="col-span-7 self-start md:col-span-3">
               <FieldLabel className="text-xs">Reference</FieldLabel>
               <FieldControl
                 name="reference"

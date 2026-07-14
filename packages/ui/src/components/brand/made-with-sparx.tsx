@@ -1,11 +1,16 @@
 import * as React from 'react';
 
-// "Made with sparx" — the platform attribution badge that floats in the bottom
-// corner of every tenant public site (apps/site mounts it as un-deletable shell
-// chrome, NOT a BuilderNode). A small, SELF-CONTAINED "glass" pill: it carries its
-// own dark surface, border, and shadow so it reads unmistakably as a discrete
-// badge on any tenant background — light, colored, or dark — and looks IDENTICAL
-// on every sparx site (a recognizable mark, not a theme-tinted link).
+// "Made with sparx" — the platform attribution badge that reads as a small tab
+// welded to the bottom edge of the viewport on every tenant public site (apps/site
+// mounts it as un-deletable shell chrome, NOT a BuilderNode). It sits flush with
+// `bottom: 0` (no gap beneath it), squares off its bottom corners, and drops its
+// border + shadow only on the bottom edge — so instead of a pill hovering above
+// the page, it looks like it's built into the bottom of the browser itself, the
+// way an old browser's link-preview status bar peeked up from the edge. It's a
+// SELF-CONTAINED "glass" tab: it carries its own dark surface, border, and shadow
+// so it reads unmistakably as a discrete badge on any tenant background — light,
+// colored, or dark — and looks IDENTICAL on every sparx site (a recognizable
+// mark, not a theme-tinted link).
 //
 // Two constraints that keep it safe to drop onto ANY tenant site:
 //
@@ -40,8 +45,7 @@ const STYLE = `
 }
 .sx-made-with-sparx:hover {
   background: rgba(24, 24, 28, 0.94) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.26) !important;
-  transform: translateY(-1px);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.28) !important;
 }
 .sx-made-with-sparx:focus-visible {
   outline: 2px solid ${SPARX_INDIGO};
@@ -56,13 +60,14 @@ const STYLE = `
   }
 }
 /* Mobile: shrink + tuck tighter into the corner so the badge stays out of the way
-   on small screens (and clears the corner if a site adds a sticky bottom bar). The
-   inline base styles win over stylesheets, so these overrides carry !important. */
+   on small screens (and clears the corner if a site adds a sticky bottom bar). Stays
+   flush with bottom: 0 so it still reads as welded to the viewport edge. The inline
+   base styles win over stylesheets, so these overrides carry !important. */
 @media (max-width: 640px) {
   .sx-made-with-sparx {
     font-size: 11px !important;
-    padding: 4px 8px !important;
-    bottom: 10px !important;
+    padding: 4px 8px 5px !important;
+    bottom: 0 !important;
   }
   .sx-made-with-sparx[data-placement='right'] {
     right: 10px !important;
@@ -103,23 +108,34 @@ export function MadeWithSparx({
         aria-label="Made with sparx"
         style={{
           position: 'fixed',
-          bottom: 14,
+          // Flush with the viewport edge (no gap beneath) so it reads as welded to
+          // the bottom of the browser rather than a pill floating above the page.
+          bottom: 0,
           ...(placement === 'left' ? { left: 16 } : { right: 16 }),
           zIndex: 40,
           display: 'inline-flex',
           alignItems: 'center',
           gap: Math.round(size * 0.34),
-          padding: `${Math.round(size * 0.5)}px ${Math.round(size * 0.83)}px`,
-          borderRadius: 999,
+          // Extra bottom padding vs. top: with no rounded bottom corners to give the
+          // text visual breathing room against the edge, the pad has to do that job.
+          padding: `${Math.round(size * 0.4)}px ${Math.round(size * 0.83)}px ${Math.round(size * 0.2)}px`,
+          // Top corners only — the bottom stays square and flush, like a tab welded
+          // to the browser edge instead of a pill hovering above it.
+          borderRadius: '10px 10px 0 0',
           // Self-contained dark "glass" surface — reads as a badge on any background.
           // Body is lifted slightly off pure-black (0.82α over #18181c) and the
-          // border is strong enough (0.22) to still define the pill on a near-black
+          // border is strong enough (0.22) to still define the tab on a near-black
           // tenant footer, where the fill alone would vanish into the background.
           background: 'rgba(24, 24, 28, 0.82)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
+          // No bottom border — it dissolves into the viewport edge instead of
+          // drawing a seam between the tab and the "browser" it's built into.
           border: '1px solid rgba(255, 255, 255, 0.22)',
-          boxShadow: '0 3px 14px rgba(0, 0, 0, 0.2)',
+          borderBottom: 'none',
+          // Shadow only casts upward/outward — there's nothing below the tab to
+          // cast a shadow onto, since it's flush with the true bottom edge.
+          boxShadow: '0 -3px 14px rgba(0, 0, 0, 0.2)',
           color: '#ffffff',
           fontSize: size,
           lineHeight: 1,

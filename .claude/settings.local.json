@@ -1,5 +1,12 @@
 {
   "description": "Impeccable design detector: runs after Edit/Write/MultiEdit on UI files and surfaces findings as system reminders.",
+  "enabledPlugins": {
+    "impeccable@impeccable": false,
+    "supabase@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": false,
+    "adobe-for-creativity@claude-plugins-official": false,
+    "sentry@claude-plugins-official": false
+  },
   "hooks": {
     "PostToolUse": [
       {

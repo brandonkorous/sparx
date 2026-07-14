@@ -110,6 +110,39 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<{ 
   return { cartId: result };
 }
 
+// A guest cart claimed by a customer who signs in mid-session (browsed
+// anonymously, then authenticated before adding more items). Idempotent and
+// one-way: never overwrites an already-linked cart, so it can't reassign one
+// customer's cart to another. Re-prices every existing line on the actual
+// link (not just items added afterward) — see repriceItems below.
+export async function claim(
+  ctx: ServiceContext,
+  input: { cartId: string; customerId: string }
+): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const cart = await tx.cart.findFirst({
+      where: { id: input.cartId },
+      select: { id: true, customerId: true, channel: true, currency: true },
+    });
+    if (!cart || cart.customerId) return;
+    await tx.cart.update({
+      where: { id: input.cartId },
+      data: { customerId: input.customerId },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.cart.claimed',
+      entityType: 'Cart',
+      entityId: input.cartId,
+      diff: { after: { customerId: input.customerId } },
+    });
+    await repriceItems(tx, ctx, { ...cart, customerId: input.customerId });
+  });
+}
+
 // ─── reads ───────────────────────────────────────────────────────────
 
 export async function get(ctx: ServiceContext, cartId: string): Promise<CartSnapshot | null> {
@@ -189,13 +222,18 @@ export async function addItem(
       };
     }
 
+    const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+      tx,
+      cart.customerId ?? undefined,
+      cart.customer?.b2bAccountId
+    );
     const priced = await pricingService.resolve(ctx, {
       variantId,
       quantity: input.quantity,
       channel: cart.channel as 'storefront' | 'b2b_portal' | 'admin' | 'subscription',
       currency: cart.currency,
       customerId: cart.customerId ?? undefined,
-      b2bAccountId: cart.customer?.b2bAccountId ?? undefined,
+      b2bAccountId,
       customerSegmentIds: [],
     });
 
@@ -498,7 +536,16 @@ export async function merge(
     await tx.cartDiscount.deleteMany({ where: { cartId: source.id } });
     await tx.cart.delete({ where: { id: source.id } });
 
-    await recomputeTotals(tx, ctx, target.id);
+    // Re-price every line (both retained and just-merged) against the
+    // target's current customer — a merge is typically the moment a guest
+    // cart's retail-priced lines should pick up the authenticated
+    // customer's B2B rate. Also recomputes totals, so no separate call.
+    await repriceItems(tx, ctx, {
+      id: target.id,
+      channel: target.channel,
+      currency: target.currency,
+      customerId: target.customerId,
+    });
 
     await writeAuditLog({
       tx,
@@ -526,6 +573,112 @@ export async function merge(
   });
 
   return { mergedCartId: input.targetCartId };
+}
+
+// ─── repricing ───────────────────────────────────────────────────────
+
+/** Force-reprice an existing cart's lines against its current customer —
+ *  for a cart whose B2B eligibility may have changed since it was last
+ *  touched (e.g. an account contact was activated/deactivated, or a new
+ *  contract price landed) without any claim/merge to trigger a reprice. */
+export async function repriceCart(ctx: ServiceContext, cartId: string): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const cart = await tx.cart.findFirst({
+      where: { id: cartId },
+      select: { id: true, channel: true, currency: true, customerId: true },
+    });
+    if (!cart) throw new CommerceNotFoundError('Cart', cartId);
+    await repriceItems(tx, ctx, cart);
+  });
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'cart.updated',
+    data: { cartId, reason: 'repriced' },
+  });
+}
+
+export interface CartHandoff {
+  cartId: string;
+  guestToken: string;
+}
+
+/**
+ * Called right after a customer authenticates (login/register) with a
+ * possible guest cart in hand (`x-cart-token`). Consolidates the guest cart
+ * into whichever cart the customer should now be using — merges into an
+ * existing customer cart if one already exists (claim/merge both reprice
+ * internally, see below), otherwise claims the guest cart outright. Falls
+ * back to a plain reprice of the customer's existing cart when there's no
+ * guest cart to reconcile, so a cart from an earlier session also picks up
+ * any B2B eligibility change since it was last priced. This is what fixes
+ * items added while anonymous — priced at retail — showing the customer's
+ * B2B rate once they sign in, not just on their next new add-to-cart.
+ *
+ * Returns the resulting cart's {cartId, guestToken} whenever the caller's
+ * cached cart identity might now be stale or missing — a merge deletes the
+ * guest cart the client had cached (its id+token 404 on the next request:
+ * cart ownership is token-only, see assertCartToken, with no fallback to
+ * "the signed-in customer owns this cart"), and a fresh browser/device may
+ * not have any cached cart at all even though one already exists server-side.
+ * Callers MUST relay this to the client so it can adopt the new identity —
+ * returns null only when the client's own cached identity is still valid
+ * (the claim case: same cart row, same guestToken) or there's truly nothing
+ * to hand off.
+ */
+export async function reconcileCartOnAuth(
+  ctx: ServiceContext,
+  input: {
+    guestToken?: string;
+    customerId: string;
+    channel: 'storefront' | 'b2b_portal' | 'admin' | 'subscription';
+  }
+): Promise<CartHandoff | null> {
+  const guestCart = input.guestToken
+    ? await withTenant(ctx, (tx) =>
+        tx.cart.findFirst({
+          where: {
+            guestToken: input.guestToken,
+            channel: input.channel,
+            abandonedAt: null,
+            customerId: null,
+          },
+          orderBy: { updatedAt: 'desc' },
+          select: { id: true },
+        })
+      )
+    : null;
+
+  const existingCart = await withTenant(ctx, (tx) =>
+    tx.cart.findFirst({
+      where: {
+        customerId: input.customerId,
+        channel: input.channel,
+        abandonedAt: null,
+        ...(guestCart ? { id: { not: guestCart.id } } : {}),
+      },
+      orderBy: { updatedAt: 'desc' },
+      select: { id: true, guestToken: true },
+    })
+  );
+
+  if (guestCart && existingCart) {
+    await merge(ctx, { sourceCartId: guestCart.id, targetCartId: existingCart.id });
+    return existingCart.guestToken
+      ? { cartId: existingCart.id, guestToken: existingCart.guestToken }
+      : null;
+  }
+  if (guestCart) {
+    await claim(ctx, { cartId: guestCart.id, customerId: input.customerId });
+    return null;
+  }
+  if (existingCart) {
+    await repriceCart(ctx, existingCart.id);
+    return existingCart.guestToken
+      ? { cartId: existingCart.id, guestToken: existingCart.guestToken }
+      : null;
+  }
+  return null;
 }
 
 // ─── abandonment lifecycle ───────────────────────────────────────────
@@ -629,6 +782,67 @@ async function loadCart(tx: TxClient, cartId: string): Promise<CartWithRelations
       customer: { select: CUSTOMER_NAME_SELECT },
     },
   });
+}
+
+/**
+ * Recompute every line's unitPriceCents/subtotalCents/unitPriceTrace against
+ * the cart's CURRENT customerId, then refresh cached totals. Called by
+ * claim()/merge()/repriceCart() whenever a cart's customer identity changes
+ * (or might have — repriceCart) so lines added while anonymous — priced at
+ * retail — pick up B2B contract/price-list rates immediately, not just on
+ * the next new item add (addItem already resolves per-item on its own).
+ */
+async function repriceItems(
+  tx: TxClient,
+  ctx: ServiceContext,
+  cart: { id: string; channel: string; currency: string; customerId: string | null }
+): Promise<void> {
+  const items = await tx.cartItem.findMany({
+    where: { cartId: cart.id },
+    select: { id: true, variantId: true, quantity: true, configurationPayload: true },
+  });
+  if (items.length === 0) return;
+
+  const customer = cart.customerId
+    ? await tx.customer.findFirst({
+        where: { id: cart.customerId },
+        select: { b2bAccountId: true },
+      })
+    : null;
+  const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+    tx,
+    cart.customerId ?? undefined,
+    customer?.b2bAccountId
+  );
+
+  for (const item of items) {
+    const priced = await pricingService.resolve(ctx, {
+      variantId: item.variantId,
+      quantity: item.quantity,
+      channel: cart.channel as 'storefront' | 'b2b_portal' | 'admin' | 'subscription',
+      currency: cart.currency,
+      customerId: cart.customerId ?? undefined,
+      b2bAccountId,
+      customerSegmentIds: [],
+    });
+    // Configurator lines layer a fixed add-on adjustment on top of the
+    // resolved base price (see addItem) — preserve it across a reprice.
+    const config =
+      item.configurationPayload && typeof item.configurationPayload === 'object'
+        ? (item.configurationPayload as { totalAdjustmentCents?: number })
+        : null;
+    const unitPriceCents = Math.max(0, priced.unitPriceCents + (config?.totalAdjustmentCents ?? 0));
+    await tx.cartItem.update({
+      where: { id: item.id },
+      data: {
+        unitPriceCents,
+        subtotalCents: unitPriceCents * item.quantity,
+        unitPriceTrace: priced.trace,
+      },
+    });
+  }
+
+  await recomputeTotals(tx, ctx, cart.id);
 }
 
 async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: string): Promise<void> {

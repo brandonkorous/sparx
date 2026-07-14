@@ -124,12 +124,24 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
 
   if (field.type === 'select') {
     const strVal = typeof value === 'string' ? value : '';
+    // Radix's SelectItem forbids an empty-string value (it's reserved to mean
+    // "cleared, show the placeholder"), but an "(unspecified)" option with
+    // value: '' is a normal thing for a caller's schema to want. Map it to an
+    // internal sentinel so the external contract (option value '' = unset)
+    // still works without crashing the whole form on mount.
+    const UNSET = '__sfr_unset__';
+    const toRadix = (v: string) => (v === '' ? UNSET : v);
+    const fromRadix = (v: string) => (v === UNSET ? '' : v);
     return (
       <Stack gap={1}>
         <Label htmlFor={id} required={field.required}>
           {field.label}
         </Label>
-        <Select value={strVal} onValueChange={(v) => onChange(v)} disabled={disabled}>
+        <Select
+          value={toRadix(strVal)}
+          onValueChange={(v) => onChange(fromRadix(v))}
+          disabled={disabled}
+        >
           <SelectTrigger id={id}>
             <SelectValue
               placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}…`}
@@ -137,7 +149,7 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
           </SelectTrigger>
           <SelectContent>
             {field.options?.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
+              <SelectItem key={opt.value} value={toRadix(opt.value)}>
                 {opt.label}
               </SelectItem>
             ))}

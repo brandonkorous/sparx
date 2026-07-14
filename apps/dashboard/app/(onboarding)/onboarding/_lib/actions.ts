@@ -106,9 +106,14 @@ export async function selectTemplateAction(
   }
 }
 
-// The "start from scratch" path: no blueprint. Turn the Builder on (so the
-// starter seeds and the tenant can design), clear any prior template selection,
-// and advance. The Launch step detects the absent install and routes into the
+// The "start from scratch" path: no blueprint. Clears any prior template
+// selection and advances — it does NOT touch the Builder module flag. It used
+// to force Builder on unconditionally, which silently overrode an explicit
+// "Builder off" choice from the Modules step (e.g. a B2B/CRM-only backend
+// tenant with no site presence) with no indication to the merchant, even
+// though the Modules step's own price summary never counted it. Whatever the
+// Modules step already saved is the source of truth here. The Launch step
+// detects the absent install and, when Builder IS enabled, routes into the
 // Builder instead of a publish-this-showcase preview.
 export async function startFromScratchAction(): Promise<WizardResult> {
   try {
@@ -118,7 +123,6 @@ export async function startFromScratchAction(): Promise<WizardResult> {
         .post(`/v1/blueprints/installs/${encodeURIComponent(state.installId)}/reset`)
         .catch(() => undefined);
     }
-    await api.patch('/v1/tenant/modules/builder', { enabled: true });
     await patchOnboarding({
       blueprintKey: null,
       installId: null,

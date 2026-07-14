@@ -48,6 +48,7 @@ import { isInventoryActive } from '../inventory-gate';
 
 import * as discountService from './discount-service';
 import * as marketService from './market';
+import * as pricingService from './pricing-service';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -105,6 +106,24 @@ export async function start(
     });
     if (existing) return existing.id;
 
+    // customerId/b2bAccountId are resolved server-side from the cart — never
+    // trusted from the client. A cart already carries the right customerId
+    // once the shopper is logged in (claimGuestCart() on login/signup), so
+    // this is the same signal cart-service's pricing resolution already
+    // uses; membership must additionally be ACTIVE (resolveActiveB2bAccountId)
+    // so a deactivated contact doesn't carry net-terms eligibility forward.
+    const customer = cart.customerId
+      ? await tx.customer.findFirst({
+          where: { id: cart.customerId },
+          select: { b2bAccountId: true },
+        })
+      : null;
+    const b2bAccountId = await pricingService.resolveActiveB2bAccountId(
+      tx,
+      cart.customerId ?? undefined,
+      customer?.b2bAccountId
+    );
+
     const expiresAt = new Date(Date.now() + DEFAULT_SESSION_TTL_MIN * 60_000);
     const session = await tx.checkoutSession.create({
       data: {
@@ -113,8 +132,8 @@ export async function start(
         step: 'cart_review',
         channel: input.channel,
         currency: input.currency,
-        customerId: input.customerId ?? null,
-        b2bAccountId: input.b2bAccountId ?? null,
+        customerId: cart.customerId ?? null,
+        b2bAccountId: b2bAccountId ?? null,
         customerEmail: input.customerEmail ?? null,
         subtotalCents: cart.subtotalCents,
         discountTotalCents: cart.discountTotalCents,
@@ -255,9 +274,20 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
     const session = await assertSessionWritable(tx, input.sessionId);
     assertCanAdvance(session.step, 'payment');
 
-    // B2B-only fields are accepted only on b2b_portal sessions.
-    if (input.poNumber && session.channel !== 'b2b_portal') {
-      throw new CommerceValidationError('PO numbers are only accepted on b2b_portal checkouts');
+    // PO numbers / net-terms are accepted whenever the checking-out customer
+    // is an active B2B contact — never gated on channel (a B2B customer
+    // orders on the same checkout everyone uses, per docs/10 §11). Exactly
+    // one of "bill to account" or "pay by card" must be present.
+    const billToAccount = Boolean(input.poNumber ?? input.paymentTermsRequested);
+    if (billToAccount && !session.b2bAccountId) {
+      throw new CommerceValidationError(
+        'PO numbers and net terms are only available to B2B accounts'
+      );
+    }
+    if (!billToAccount && !(input.paymentProviderSlug && input.paymentRef)) {
+      throw new CommerceValidationError(
+        'A payment provider is required unless billing to a B2B account'
+      );
     }
 
     await tx.checkoutSession.update({
@@ -500,16 +530,26 @@ export async function complete(
     if (!session.shippingAddress) {
       throw new CommerceValidationError('Cannot complete checkout without a shipping address');
     }
-    if (!session.paymentProviderSlug && session.channel !== 'b2b_portal') {
+    // Re-verify B2B membership is still ACTIVE right now — the session's
+    // b2bAccountId is a snapshot from start(); a long-lived session (or one
+    // whose contact was deactivated mid-checkout) must not slip through on
+    // a stale value for a money-committing step.
+    const activeB2bAccountId = await pricingService.resolveActiveB2bAccountId(
+      tx,
+      session.customerId ?? undefined,
+      session.b2bAccountId
+    );
+
+    if (!session.paymentProviderSlug && !activeB2bAccountId) {
       throw new CommerceValidationError(
         'Cannot complete a retail checkout without a payment provider'
       );
     }
 
     // B2B credit enforcement: net-terms checkouts require available credit.
-    if (session.channel === 'b2b_portal' && session.b2bAccountId && session.paymentTermsRequested) {
+    if (activeB2bAccountId && session.paymentTermsRequested) {
       const account = await tx.b2BAccount.findFirst({
-        where: { id: session.b2bAccountId, tenantId: ctx.tenantId },
+        where: { id: activeB2bAccountId, tenantId: ctx.tenantId },
         select: { status: true, creditLimit: true, creditUsed: true, paymentTerms: true },
       });
       if (!account) {
@@ -686,13 +726,13 @@ export async function complete(
     // order for staff review instead of immediately placing it. The pending status
     // blocks invoice creation and order.placed until approved (docs/64 B2B Ph6).
     let pendingApproval = false;
-    if (session.channel === 'b2b_portal' && session.b2bAccountId) {
+    if (activeB2bAccountId) {
       const rule = await (tx as AnyTx).purchaseApprovalRule.findFirst({
         where: {
           tenantId: ctx.tenantId,
           isActive: true,
           minAmountCents: { lte: session.totalCents },
-          OR: [{ accountId: session.b2bAccountId }, { accountId: null }],
+          OR: [{ accountId: activeB2bAccountId }, { accountId: null }],
         },
         select: { id: true },
       });
@@ -714,14 +754,9 @@ export async function complete(
     // composes into THIS checkout transaction (tx injection) and re-syncs the
     // account's credit_used via the billing money authority.
     let b2bInvoiceId: string | null = null;
-    if (
-      !pendingApproval &&
-      session.channel === 'b2b_portal' &&
-      session.b2bAccountId &&
-      session.paymentTermsRequested
-    ) {
+    if (!pendingApproval && activeB2bAccountId && session.paymentTermsRequested) {
       const account = await tx.b2BAccount.findFirst({
-        where: { id: session.b2bAccountId, tenantId: ctx.tenantId },
+        where: { id: activeB2bAccountId, tenantId: ctx.tenantId },
         select: { paymentTerms: true },
       });
       const dueDays = parseDueDays(account?.paymentTerms ?? session.paymentTermsRequested);
@@ -730,7 +765,7 @@ export async function complete(
       const arDoc = await b2bArService.createOrderArDocument(
         { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
         {
-          b2bAccountId: session.b2bAccountId,
+          b2bAccountId: activeB2bAccountId,
           orderId: order.id,
           amount: session.totalCents / 100,
           currency: session.currency,
@@ -1007,16 +1042,18 @@ function assertCanAdvance(from: string, to: string): void {
  * Shared by `get()` (pre-payment disclosure) and `complete()` (final charge) so
  * the disclosed fee and the charged fee always agree. A net-terms request →
  * 'account' (no card fee); a chosen card provider → 'card'. Before either is
- * known we default by channel: retail storefront pays by card, B2B on account.
+ * known we default by B2B membership (not channel — a B2B customer checks out
+ * on the same route as everyone else): eligible for net terms defaults to
+ * 'account', everyone else defaults to 'card'.
  */
 function surchargeMethodForSession(row: {
   paymentTermsRequested: string | null;
   paymentProviderSlug: string | null;
-  channel: string;
+  b2bAccountId: string | null;
 }): SurchargePaymentMethod {
   if (row.paymentTermsRequested) return 'account';
   if (row.paymentProviderSlug) return 'card';
-  return row.channel === 'b2b_portal' ? 'account' : 'card';
+  return row.b2bAccountId ? 'account' : 'card';
 }
 
 /** One human label for the disclosed surcharge: the single rule's label, or a

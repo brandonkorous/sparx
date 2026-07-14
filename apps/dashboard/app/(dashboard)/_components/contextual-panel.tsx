@@ -59,7 +59,7 @@ export function resolvePanelContext(
   pathname: string | null,
   enabledModules: readonly string[]
 ): PanelContext {
-  const manifest = pathname ? getManifestForPath(pathname) : undefined;
+  const manifest = pathname ? getManifestForPath(pathname, enabledModules) : undefined;
   // A module with no sections (e.g. AI, which is overview-only for now) has
   // nothing to list beside "Overview" itself — same as a platform surface
   // like Automations, the panel column drops out rather than echoing the rail.

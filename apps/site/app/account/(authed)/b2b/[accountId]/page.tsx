@@ -152,13 +152,6 @@ export default function B2bAccountPage() {
         >
           Quotes
         </Button>
-        <Button
-          render={<Link href={`/account/b2b/${accountId}/appointments`} />}
-          color="primary"
-          variant="outline"
-        >
-          Appointments
-        </Button>
       </div>
 
       {/* Recent orders */}

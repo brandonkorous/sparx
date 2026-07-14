@@ -20,6 +20,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { isModuleEnabled } from '@sparx/auth';
+import { cartService } from '@sparx/commerce';
 import { orderService, orderFulfillmentsService } from '@sparx/crm';
 import { withTenant } from '@sparx/db';
 import {
@@ -114,10 +115,19 @@ interface CustomerProfile {
   phone: string | null;
 }
 
-/** Resolve the tenant and assert the Builder module is active (404 otherwise). */
+/**
+ * Resolve the tenant and assert the Commerce module is active (404 otherwise).
+ * These routes live under `/v1/public/commerce/account/*` for a reason — a
+ * customer account is commerce/B2B infrastructure (cart claim, order history,
+ * wishlist, the wholesale portal login), not a Builder feature. This
+ * previously gated on `builder`, a leftover from when Builder was assumed
+ * always-on; it 404'd registration/login entirely for any commerce-only or
+ * B2B tenant that had deliberately left Builder off (b2b's own module
+ * dependency graph already requires commerce, so this covers both).
+ */
 async function accountContext(request: FastifyRequest): Promise<CustomerAuthContext> {
   const tenantId = await resolveTenantId(request);
-  if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
+  if (!(await isModuleEnabled(tenantId, 'commerce'))) throw moduleDisabled('commerce');
   return { tenantId };
 }
 
@@ -147,26 +157,32 @@ async function loadProfile(
 }
 
 /**
- * Claim the active guest cart for a freshly-authenticated customer: stamp the
- * customer id onto the cart that the guest token owns. Best-effort — never fail
- * auth over the cart.
+ * Reconcile the shopper's cart for a freshly-authenticated customer: merge
+ * or claim their guest cart (`x-cart-token`) and re-price every line against
+ * the now-known customer — so items added while anonymous pick up B2B
+ * contract/price-list rates immediately, not just on the next new add
+ * (cartService.reconcileCartOnAuth). Best-effort — never fail auth over the
+ * cart. Returns a {cartId, guestToken} handoff when the client's cached cart
+ * identity needs to change (a merge deletes the guest cart it had cached;
+ * cart ownership is token-only — see assertCartToken — with no fallback to
+ * "the signed-in customer owns this cart") — the caller MUST relay this to
+ * the client so it can adopt the new cart instead of appearing empty.
  */
 async function claimGuestCart(
   ctx: CustomerAuthContext,
   request: FastifyRequest,
   customerId: string
-): Promise<void> {
+): Promise<cartService.CartHandoff | null> {
   const token = request.headers['x-cart-token'];
-  if (!token || typeof token !== 'string') return;
   try {
-    await withTenant(ctx, (tx) =>
-      tx.cart.updateMany({
-        where: { guestToken: token, customerId: null },
-        data: { customerId },
-      })
-    );
+    return await cartService.reconcileCartOnAuth(ctx, {
+      customerId,
+      channel: 'storefront',
+      ...(token && typeof token === 'string' ? { guestToken: token } : {}),
+    });
   } catch {
     // Swallow — cart claiming is a convenience, not part of the auth contract.
+    return null;
   }
 }
 
@@ -196,10 +212,11 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       { firstName: body.firstName, lastName: body.lastName }
     );
     relaySetCookies(reply, outcome.setCookies);
-    await claimGuestCart(ctx, request, customerId);
+    const cart = await claimGuestCart(ctx, request, customerId);
     return ok({
       customer: await loadProfile(ctx, customerId),
       recognized: outcome.userPreexisted && created,
+      cart,
     });
   });
 
@@ -219,8 +236,8 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       {}
     );
     relaySetCookies(reply, outcome.setCookies);
-    await claimGuestCart(ctx, request, customerId);
-    return ok({ customer: await loadProfile(ctx, customerId), recognized: created });
+    const cart = await claimGuestCart(ctx, request, customerId);
+    return ok({ customer: await loadProfile(ctx, customerId), recognized: created, cart });
   });
 
   app.post('/v1/public/commerce/account/logout', async (request, reply) => {

@@ -111,8 +111,11 @@ export function StepLaunch({
   const monthlySavings = Math.max(0, monthlyElsewhere - monthlyTotal);
   const annualSavings = monthlySavings * 12;
 
-  // Scratch path — nothing to publish; the card's CTA opens the Builder.
+  // Scratch path — nothing to publish. When Builder is enabled the card's CTA
+  // opens it; a Builder-less setup (e.g. a B2B/CRM-only backend with no site
+  // presence) has no canvas to open, so the copy doesn't promise one.
   if (!installId) {
+    const builderEnabled = modules.some((m) => m.key === 'builder');
     return (
       <div className="mx-auto max-w-xl">
         <div className="flex flex-col items-center gap-5 text-center">
@@ -122,9 +125,19 @@ export function StepLaunch({
           <div className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-semibold tracking-tight">Your workspace is ready</h2>
             <p className="text-base-content/70">
-              You&apos;re starting from a blank canvas. Hit{' '}
-              <span className="text-base-content font-medium">Finish setup</span> to open the
-              Builder and design your site — publish whenever you&apos;re ready.
+              {builderEnabled ? (
+                <>
+                  You&apos;re starting from a blank canvas. Hit{' '}
+                  <span className="text-base-content font-medium">Finish setup</span> to open the
+                  Builder and design your site — publish whenever you&apos;re ready.
+                </>
+              ) : (
+                <>
+                  Your workspace is set up and ready to use. Hit{' '}
+                  <span className="text-base-content font-medium">Finish setup</span> to head to
+                  your dashboard.
+                </>
+              )}
             </p>
           </div>
         </div>

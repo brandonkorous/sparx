@@ -27,6 +27,7 @@ import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest } from '@sparx/api-core/errors';
 
+import { optionalCustomer } from '../../../lib/customer-session.js';
 import {
   assertCartToken,
   publicCommerceContext,
@@ -178,10 +179,17 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
       : null;
     const token = randomUUID();
     const currency = await defaultCurrency(tenantId, propertyId);
+    // A signed-in shopper's cart is linked to their customer record from the
+    // start — this is what lets addItem resolve their B2B pricing (contract
+    // price → price list → bulk tier) instead of always defaulting to retail.
+    // A guestToken still rides along regardless, since ownership (x-cart-token)
+    // is checked on every later call whether or not the cart is customer-linked.
+    const customer = await optionalCustomer(request, { tenantId });
     const { cartId } = await cartService.create(ctx, {
       channel: 'storefront',
       currency,
       guestToken: token,
+      ...(customer ? { customerId: customer.customerId } : {}),
       ...(propertyId ? { propertyId } : {}),
     });
     const cart = await serializePublicCart(ctx, tenantId, cartId);
@@ -201,6 +209,12 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
     const body = AddItemBody.parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertCartToken(request, tenantId, cartId);
+    // Claim an anonymous cart the shopper started browsing before signing in —
+    // a no-op once the cart is already linked (cartService.claim never
+    // reassigns an existing link) — so the item this call adds prices off
+    // their B2B membership rather than the stale anonymous default.
+    const customer = await optionalCustomer(request, { tenantId });
+    if (customer) await cartService.claim(ctx, { cartId, customerId: customer.customerId });
     await cartService.addItem(ctx, { cartId, variantId: body.variantId, quantity: body.quantity });
     return ok(await serializePublicCart(ctx, tenantId, cartId));
   });

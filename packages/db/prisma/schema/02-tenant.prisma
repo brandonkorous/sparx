@@ -391,10 +391,6 @@ model Tenant {
   b2bAccountContacts         B2bAccountContact[]
   purchaseApprovalRules      PurchaseApprovalRule[]
 
-  // B2B scheduling (docs/64 Ph7)
-  serviceTypes        ServiceType[]
-  serviceAppointments ServiceAppointment[]
-
   // Dropship (docs/14, docs/64 Ph1)
   dropshipSuppliers    DropshipSupplier[]
   dropshipProducts     DropshipProduct[]
@@ -434,8 +430,9 @@ model Tenant {
   rollupSiteDaily     RollupSiteDaily[]
 
   // Scheduling module (docs/79) — appointments / classes / reservations / rentals.
-  // The B2B fleet tables above (serviceTypes/serviceAppointments) are the narrow
-  // ancestor; Phase 9 migrates them onto this engine and retires them (§15.7).
+  // The legacy B2B fleet tables (service_types/service_appointments) were retired
+  // onto this engine 2026-07-14 (docs/79 §15.7); B2B fleet context now rides on
+  // Booking.b2bAccountId/assetRef/partsLinked/workOrderId.
   schedulingResources    SchedulingResource[]
   schedulingServices     SchedulingService[]
   bookings               Booking[]

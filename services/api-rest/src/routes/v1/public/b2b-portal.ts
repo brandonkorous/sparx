@@ -202,7 +202,11 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     const recentOrders = await withTenant(ctx, (tx) =>
       tx.order.findMany({
-        where: { customerId: { in: contactIds }, channel: 'b2b_portal' },
+        // No channel filter: B2B orders place through the same storefront
+        // checkout everyone uses and carry channel='storefront', never
+        // 'b2b_portal' (no code path sets that value) — contactIds already
+        // scopes this to the account's own orders.
+        where: { customerId: { in: contactIds } },
         select: {
           id: true,
           orderNumber: true,
@@ -339,9 +343,11 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
             .then((rows) => rows.map((r) => r.customerId))
     );
 
+    // No channel filter: B2B orders place through the same storefront checkout
+    // everyone uses and carry channel='storefront', never 'b2b_portal' (no code
+    // path sets that value) — accountCustomerIds already scopes this correctly.
     const orderWhere = {
       customerId: { in: accountCustomerIds },
-      channel: 'b2b_portal',
     };
 
     const { orderItems, orderTotal } = await withTenant(ctx, async (tx) => {
@@ -480,11 +486,19 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
       ...(body.customerNote !== undefined ? { customerNote: body.customerNote } : {}),
     });
 
+    // A requested line has no price yet — the merchant sets it while
+    // responding. `addLine`'s default `flat` pricing mode requires an
+    // explicit `unitPrice` and throws without one, so a product-linked line
+    // uses the `catalog` line type instead (auto-resolves to the variant's
+    // list price, a sensible reference the merchant can override) and a
+    // free-text line explicitly passes `unitPrice: 0` (nothing to reference).
     for (const line of body.lines) {
       doc = await billingLineService.addLine(ctx, doc.id, {
         description: line.description,
         quantity: line.quantity,
-        ...(line.variantId ? { variantId: line.variantId } : {}),
+        ...(line.variantId
+          ? { variantId: line.variantId, lineTypeKey: 'catalog' }
+          : { unitPrice: 0 }),
       });
     }
 

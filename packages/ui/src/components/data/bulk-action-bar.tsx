@@ -31,7 +31,12 @@ export interface BulkAction {
   icon?: React.ComponentType<{ className?: string }>;
   variant?: 'default' | 'destructive';
   requiresConfirm?: boolean;
-  /** Template string — use `{count}` as a placeholder for the selection count. */
+  /**
+   * Template string — use `{count}` as a placeholder for the selection count,
+   * and `{count === 1 ? "singular" : "plural"}` for simple pluralization
+   * (resolved by `resolveConfirmLabel` below; it is NOT a real JS template
+   * literal, just a matching plain-string convention).
+   */
   confirmLabel?: string;
   onAction: (ids: string[]) => Promise<void>;
 }
@@ -48,6 +53,21 @@ export interface BulkActionBarProps {
 // divider at the end regardless of the order the caller declared them in.
 // Each entry keeps its ORIGINAL array index for the click handler / loading
 // state, since `activatingIndex` is keyed against `actions`, not the group.
+// `confirmLabel` is authored as if it were a real template literal (several
+// call sites write `{count === 1 ? "" : "s"}` directly in the plain string),
+// but as a plain prop that syntax was never evaluated — it rendered to users
+// completely verbatim, unresolved braces and all. Resolve both the count
+// placeholder and that pluralization shape here, once, instead of at every
+// call site.
+function resolveConfirmLabel(template: string, count: number): string {
+  return template
+    .replace(
+      /\{count === 1 \? "([^"]*)" : "([^"]*)"\}/g,
+      (_match, singular: string, plural: string) => (count === 1 ? singular : plural)
+    )
+    .replace('{count}', String(count));
+}
+
 function orderedActions(actions: BulkAction[]): { action: BulkAction; index: number }[][] {
   const withIndex = actions.map((action, index) => ({ action, index }));
   const groups = [
@@ -89,7 +109,7 @@ export function BulkActionBar({ selected, onClear, actions, className }: BulkAct
   async function handleAction(action: BulkAction, index: number) {
     if (action.requiresConfirm) {
       const label = action.confirmLabel
-        ? action.confirmLabel.replace('{count}', String(count))
+        ? resolveConfirmLabel(action.confirmLabel, count)
         : `Apply to ${count} item${count === 1 ? '' : 's'}?`;
       const confirmed = await confirm({
         title: action.label,

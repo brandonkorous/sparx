@@ -7,6 +7,13 @@ import { Badge, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { CreditHoldToggle } from './_components/credit-hold-toggle';
+import {
+  B2bContactsCard,
+  type B2bContactRow,
+  type CustomerOption,
+} from './_components/b2b-contacts-card';
+import { B2bContractPricesCard, type VariantSummary } from './_components/b2b-contract-prices-card';
+import type { ContractPriceRow } from '../../../commerce/pricing-actions';
 
 interface B2bAccount {
   id: string;
@@ -45,6 +52,38 @@ export async function B2bAccountDetailContent({ id }: Props) {
   const remaining = Math.max(0, limit - used);
   const utilization = limit > 0 ? (used / limit) * 100 : 0;
   const profiles: unknown[] = Array.isArray(account.engineProfiles) ? account.engineProfiles : [];
+
+  interface CrmCustomerRow {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  }
+  interface VariantListRow {
+    id: string;
+    sku: string;
+    title: string | null;
+    priceCents: number;
+    productTitle: string;
+  }
+  const [contactsPaged, customersPaged, contractPrices, variantRows] = await Promise.all([
+    api.getPaged<B2bContactRow[]>(`/v1/crm/b2b-accounts/${id}/contacts`),
+    api.getPaged<CrmCustomerRow[]>('/v1/crm/customers?take=200'),
+    api.get<ContractPriceRow[]>(`/v1/commerce/contract-prices?b2b_account_id=${id}`),
+    api.get<VariantListRow[]>('/v1/commerce/variants?take=500'),
+  ]);
+  const contacts = contactsPaged.data;
+  const customers: CustomerOption[] = customersPaged.data.map((c) => {
+    const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
+    return { id: c.id, email: c.email, name: full || (c.email ?? '') || `${c.id.slice(0, 8)}…` };
+  });
+  const variants: VariantSummary[] = variantRows.map((r) => ({
+    id: r.id,
+    sku: r.sku,
+    title: r.title,
+    basePriceCents: r.priceCents,
+    productTitle: r.productTitle,
+  }));
 
   return (
     // @container so the body responds to its OWN width — full-page (wide) vs. the
@@ -127,6 +166,14 @@ export async function B2bAccountDetailContent({ id }: Props) {
           </div>
         </CardBody>
       </Card>
+
+      <B2bContactsCard accountId={account.id} contacts={contacts} customers={customers} />
+
+      <B2bContractPricesCard
+        accountId={account.id}
+        contractPrices={contractPrices}
+        variants={variants}
+      />
 
       {profiles.length > 0 && (
         <Card>

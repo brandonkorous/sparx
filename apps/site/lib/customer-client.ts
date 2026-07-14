@@ -56,12 +56,25 @@ async function parse<T>(res: Response): Promise<T> {
   return json.data as T;
 }
 
+/** A cart identity the client must adopt after login/register — returned
+ *  whenever the server merged the guest cart into a different, pre-existing
+ *  cart (deleting the one the client had cached) or found an existing cart
+ *  the client didn't know about (a fresh browser/device). Cart ownership is
+ *  token-only (no session fallback), so without this handoff the client's
+ *  stale cached cart id would 404 and the cart would appear empty. */
+export interface CartHandoff {
+  cartId: string;
+  guestToken: string;
+}
+
 /** Auth result: the profile plus `recognized` — true when the account already
  *  existed on a SISTER site and a separate membership was just created here
- *  (docs/58 D6), which the UI surfaces as a one-time notice. */
+ *  (docs/58 D6), which the UI surfaces as a one-time notice. `cart` is set
+ *  when the client needs to adopt a new cart identity post-login. */
 export interface AuthResult {
   customer: Customer;
   recognized: boolean;
+  cart: CartHandoff | null;
 }
 
 export async function register(
@@ -74,8 +87,10 @@ export async function register(
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  const data = await parse<{ customer: Customer; recognized?: boolean }>(res);
-  return { customer: data.customer, recognized: data.recognized ?? false };
+  const data = await parse<{ customer: Customer; recognized?: boolean; cart?: CartHandoff | null }>(
+    res
+  );
+  return { customer: data.customer, recognized: data.recognized ?? false, cart: data.cart ?? null };
 }
 
 export async function login(
@@ -88,8 +103,10 @@ export async function login(
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  const data = await parse<{ customer: Customer; recognized?: boolean }>(res);
-  return { customer: data.customer, recognized: data.recognized ?? false };
+  const data = await parse<{ customer: Customer; recognized?: boolean; cart?: CartHandoff | null }>(
+    res
+  );
+  return { customer: data.customer, recognized: data.recognized ?? false, cart: data.cart ?? null };
 }
 
 export async function logout(tenantSlug: string): Promise<void> {
@@ -402,6 +419,54 @@ export interface B2bQuoteLineInput {
   variantId?: string;
 }
 
+export interface QuoteProductResult {
+  productId: string;
+  variantId: string | null;
+  title: string;
+  priceCents: number | null;
+}
+
+/** Catalog search for the quote-request line picker — a thin client-side
+ *  wrapper over the same typo-tolerant search the shop/PLP uses, trimmed to
+ *  what a "which product is this?" typeahead needs. Degrades to an empty
+ *  list rather than throwing (a picker that briefly shows nothing is fine;
+ *  one that crashes the form is not). */
+export async function searchQuoteProducts(
+  tenantSlug: string,
+  query: string
+): Promise<QuoteProductResult[]> {
+  if (!query.trim()) return [];
+  const qs = new URLSearchParams({
+    tenant: tenantSlug,
+    q: query.trim(),
+    perPage: '8',
+  });
+  try {
+    const res = await fetch(`${API_BASE}/v1/public/commerce/search?${qs.toString()}`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return [];
+    const json = (await res.json().catch(() => null)) as {
+      success: boolean;
+      data?: {
+        id: string;
+        title: string;
+        defaultVariantId: string | null;
+        priceMinCents: number | null;
+      }[];
+    } | null;
+    if (!json || json.success === false) return [];
+    return (json.data ?? []).map((p) => ({
+      productId: p.id,
+      variantId: p.defaultVariantId,
+      title: p.title,
+      priceCents: p.priceMinCents,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 function b2bPortalUrl(path: string, tenantSlug: string): string {
   return `${API_BASE}/v1/public/b2b/portal${path}?tenant=${encodeURIComponent(tenantSlug)}`;
 }
@@ -507,7 +572,7 @@ export async function acceptB2bQuote(
       `/${encodeURIComponent(accountId)}/quotes/${encodeURIComponent(quoteId)}/accept`,
       tenantSlug
     ),
-    { method: 'POST', headers: { 'content-type': 'application/json' } }
+    { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }
   );
   await parse<{ id: string }>(res);
 }
@@ -586,7 +651,7 @@ export async function acceptEstimate(tenantSlug: string, estimateId: string): Pr
       `/v1/public/commerce/account/estimates/${encodeURIComponent(estimateId)}/accept`,
       tenantSlug
     ),
-    { method: 'POST', headers: { 'content-type': 'application/json' } }
+    { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }
   );
   await parse<{ id: string }>(res);
 }
@@ -608,63 +673,6 @@ export async function declineEstimate(
     }
   );
   await parse<{ id: string }>(res);
-}
-
-// ── B2B Appointments ─────────────────────────────────────────────────────────
-
-export interface B2bAppointmentEntry {
-  id: string;
-  serviceTypeId: string;
-  serviceTypeName: string | null;
-  scheduledAt: string;
-  durationMinutes: number;
-  status: string;
-  vehicleRef: Record<string, unknown> | null;
-  notes: string | null;
-  confirmedAt: string | null;
-  completedAt: string | null;
-  cancelledAt: string | null;
-  cancellationReason: string | null;
-  createdAt: string;
-  customerName: string | null;
-}
-
-export async function getB2bAppointments(
-  tenantSlug: string,
-  accountId: string,
-  skip = 0,
-  take = 20,
-  status?: string
-): Promise<{ items: B2bAppointmentEntry[]; total: number }> {
-  let url = `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/appointments`, tenantSlug)}&skip=${skip}&take=${take}`;
-  if (status) url += `&status=${encodeURIComponent(status)}`;
-  const res = await fetch(url, { cache: 'no-store' });
-  const json = (await res.json().catch(() => null)) as {
-    success: boolean;
-    data?: B2bAppointmentEntry[];
-    meta?: { total?: number };
-  } | null;
-  if (!res.ok || !json || json.success === false)
-    throw new AccountError('Could not load appointments.', res.status);
-  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
-}
-
-export async function cancelB2bAppointment(
-  tenantSlug: string,
-  accountId: string,
-  appointmentId: string,
-  reason?: string
-): Promise<void> {
-  const res = await fetch(
-    `${API_BASE}/v1/public/b2b/portal/${encodeURIComponent(accountId)}/appointments/${encodeURIComponent(appointmentId)}/cancel?tenant=${encodeURIComponent(tenantSlug)}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reason }),
-      cache: 'no-store',
-    }
-  );
-  if (!res.ok) throw new AccountError('Could not cancel appointment.', res.status);
 }
 
 // ── Bookings (Scheduling module portal, docs/79 §15 Phase 3c) ─────────────────

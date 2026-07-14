@@ -64,6 +64,7 @@ export function ProductCard({
           min={product.priceMinCents}
           max={product.priceMaxCents}
           compareAt={onSale ? product.compareAtCents : null}
+          yourPriceCents={product.yourPriceCents}
           currency={currency}
           locale={locale}
         />
@@ -76,15 +77,29 @@ function PriceLine({
   min,
   max,
   compareAt,
+  yourPriceCents,
   currency,
   locale,
 }: {
   min: number | null;
   max: number | null;
   compareAt: number | null;
+  yourPriceCents: number | null;
   currency: string;
   locale: string;
 }) {
+  // A signed-in B2B customer's contract price outranks the normal range/sale
+  // display — the retail price still shows, struck through, for reference.
+  if (yourPriceCents != null) {
+    return (
+      <span className="st-card__price">
+        Your price: {formatMoney(yourPriceCents, currency, locale)}
+        {min != null ? (
+          <span className="st-card__compare">{formatMoney(min, currency, locale)}</span>
+        ) : null}
+      </span>
+    );
+  }
   const range = formatPriceRange(min, max, currency, locale);
   if (!range) return null;
   return (

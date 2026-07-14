@@ -1,0 +1,5 @@
+product_id,title,description,category,tags,images,sku,cost,msrp,qty,weight,color,size
+DS-1001,Bluetooth Earbud Case,Protective silicone case for wireless earbuds,Accessories,"earbuds,case,silicone",https://picsum.photos/seed/ds1001/600,DS-1001-BLK,4.50,12.99,120,25,Black,
+DS-1001,Bluetooth Earbud Case,Protective silicone case for wireless earbuds,Accessories,"earbuds,case,silicone",https://picsum.photos/seed/ds1001b/600,DS-1001-BLU,4.50,12.99,80,25,Blue,
+DS-1002,USB-C Fast Charge Cable 6ft,Braided nylon USB-C to USB-C cable rated 100W,Cables,"usb-c,cable,charging",https://picsum.photos/seed/ds1002/600,DS-1002-6FT,2.10,9.99,300,90,,
+DS-1003,Portable Power Bank 10000mAh,Slim aluminum power bank with dual USB-A ports,Power,"power bank,battery,travel",https://picsum.photos/seed/ds1003/600,DS-1003-STD,7.80,24.99,60,220,,

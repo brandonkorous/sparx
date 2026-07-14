@@ -104,6 +104,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable} ${interWordmark.variable}`}
     >
+      <head>
+        {/* Adobe Fonts (Typekit) kit serving Europa, the platform's heading font
+            (--font-heading in @sparx/brand/theme.css). */}
+        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://use.typekit.net/rzb8qcq.css" />
+      </head>
       <body>
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy. */}
         <ChunkReloadGuard />

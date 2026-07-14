@@ -20,9 +20,11 @@ import {
   submitB2bQuote,
   type B2bQuoteEntry,
   type B2bQuoteLineInput,
+  type QuoteProductResult,
 } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
+import { QuoteProductPicker } from './product-picker';
 
 const PAGE_SIZE = 20;
 const WRITER_ROLES = new Set(['primary_contact', 'buyer']);
@@ -98,6 +100,23 @@ export default function B2bQuotesPage() {
 
   function removeLine(index: number) {
     setLines((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+  }
+
+  // A picked catalog result appends a new, product-linked line rather than
+  // filling the free-text field — the merchant sees the real SKU behind it
+  // (a product with no live variant falls back to a plain free-text line,
+  // same as typing the title in manually).
+  function addProductLine(product: QuoteProductResult) {
+    setLines((prev) => {
+      const draft = prev[0];
+      const startingBlank = prev.length === 1 && draft?.description === '';
+      const line: B2bQuoteLineInput = {
+        description: product.title,
+        quantity: 1,
+        ...(product.variantId ? { variantId: product.variantId } : {}),
+      };
+      return startingBlank ? [line] : [...prev, line];
+    });
   }
 
   async function handleSubmit() {
@@ -192,10 +211,26 @@ export default function B2bQuotesPage() {
             </Alert>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div>
+              <Label htmlFor="quote-product-search">Add a product from the catalog</Label>
+              <QuoteProductPicker onPick={addProductLine} />
+            </div>
             {lines.map((line, i) => (
               <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
-                  <Label htmlFor={`quote-line-desc-${i}`}>Item / description</Label>
+                  <Label htmlFor={`quote-line-desc-${i}`}>
+                    Item / description
+                    {line.variantId && (
+                      <Badge
+                        color="module"
+                        variant="soft"
+                        size="sm"
+                        style={{ marginLeft: '0.5rem' }}
+                      >
+                        Catalog item
+                      </Badge>
+                    )}
+                  </Label>
                   <Input
                     id={`quote-line-desc-${i}`}
                     value={line.description}

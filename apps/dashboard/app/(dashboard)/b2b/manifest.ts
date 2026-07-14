@@ -1,5 +1,5 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Building2, Calendar, CheckCircle, DollarSign, FileText, Receipt } from 'lucide-react';
+import { Building2, CheckCircle, DollarSign, FileText, Receipt } from 'lucide-react';
 
 export const b2bManifest: ModuleManifest = {
   id: 'b2b',
@@ -37,24 +37,11 @@ export const b2bManifest: ModuleManifest = {
       icon: CheckCircle,
       href: '/b2b/approval-queue',
     },
-    {
-      id: 'appointments',
-      label: 'Appointments',
-      icon: Calendar,
-      href: '/b2b/appointments',
-    },
-    {
-      id: 'service-types',
-      label: 'Service Types',
-      icon: Calendar,
-      href: '/b2b/service-types',
-    },
   ],
   actions: [],
   entityTypes: [
     { id: 'b2b-account', label: 'B2B Account', routePrefix: '/b2b/accounts' },
     // Create-only overlays (no detail view: the lists edit via a self-owned modal).
-    { id: 'b2b-service-type', label: 'Service type', routePrefix: '/b2b/service-types' },
     { id: 'b2b-pricing-tier', label: 'Pricing tier', routePrefix: '/b2b/pricing-tiers' },
   ],
 };

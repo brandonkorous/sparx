@@ -31,6 +31,7 @@ import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { CREATE_SENTINEL } from '../../../_shell/detail-registry';
 import { ViewSwitcher } from '../../../_components/detail-panel';
+import type { TargetOption } from '../_lib/targeting-options';
 
 // New-price-list form, on the standard create surface (docs/86 F layout). The
 // SAME component renders in both presentations, picked by the host:
@@ -52,8 +53,8 @@ import { ViewSwitcher } from '../../../_components/detail-panel';
 //
 // Price lists DO have a detail view, so create flows into it: on success the
 // overlay swaps its token to the new record's detail (preserving drawer vs
-// modal); the page navigates to the record. Targeting and per-variant entries
-// are managed from that detail page.
+// modal); the page navigates to the record. Targeting can be set here or
+// changed later; per-variant entries are only managed from the detail page.
 
 const CHANNELS = ['storefront', 'b2b_portal', 'admin', 'subscription'] as const;
 type ChannelValue = (typeof CHANNELS)[number];
@@ -67,13 +68,17 @@ const CHANNEL_LABELS: Record<ChannelValue, string> = {
   subscription: 'Subscription',
 };
 
+type TargetType = 'none' | 'b2b_account' | 'segment';
+
 interface PriceListCreateFormProps {
   surface: 'page' | 'overlay';
+  b2bAccounts: TargetOption[];
+  segments: TargetOption[];
 }
 
 const STEPS: SurfaceStepDef[] = [{ key: 'basics', label: 'Basics' }];
 
-export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
+export function PriceListCreateForm({ surface, b2bAccounts, segments }: PriceListCreateFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -90,12 +95,19 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
   const [currency, setCurrency] = React.useState('USD');
   const [channel, setChannel] = React.useState('');
   const [priority, setPriority] = React.useState('0');
+  const [targetType, setTargetType] = React.useState<TargetType>('none');
+  const [b2bAccountId, setB2bAccountId] = React.useState('');
+  const [customerSegmentId, setCustomerSegmentId] = React.useState('');
 
   // Field validation. `currency` carries no client rule but is validated-tracked
   // so a server-side currency error maps onto its field.
-  const values = { name, currency };
+  const values = { name, currency, b2bAccountId, customerSegmentId };
   const v = useFieldValidation(values, {
     name: rule.required('Name is required.'),
+    b2bAccountId: (val) =>
+      targetType === 'b2b_account' && String(val).trim() === '' ? 'Pick a B2B account.' : null,
+    customerSegmentId: (val) =>
+      targetType === 'segment' && String(val).trim() === '' ? 'Pick a customer segment.' : null,
   });
 
   // Unsaved-changes guard. A create form starts empty, so "dirty" is simply
@@ -106,7 +118,8 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
     description.trim() !== '' ||
     currency !== 'USD' ||
     channel !== '' ||
-    priority !== '0';
+    priority !== '0' ||
+    targetType !== 'none';
 
   const guardLeave = useUnsavedGuard(dirty, { kind: 'create', noun: 'price list' });
 
@@ -158,6 +171,8 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
       currency: (currency.trim() || 'USD').toUpperCase(),
       channel: channel === '' ? undefined : channel,
       priority: Number(priority.trim() || '0') || 0,
+      b2bAccountId: targetType === 'b2b_account' ? b2bAccountId : undefined,
+      customerSegmentId: targetType === 'segment' ? customerSegmentId : undefined,
     };
     startTransition(async () => {
       const result = await createPriceListAction(input);
@@ -196,6 +211,14 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
             channel={channel}
             currency={currency}
             priority={priority}
+            targetType={targetType}
+            targetLabel={
+              targetType === 'b2b_account'
+                ? (b2bAccounts.find((a) => a.id === b2bAccountId)?.label ?? null)
+                : targetType === 'segment'
+                  ? (segments.find((s) => s.id === customerSegmentId)?.label ?? null)
+                  : null
+            }
           />
         }
       >
@@ -274,6 +297,70 @@ export function PriceListCreateForm({ surface }: PriceListCreateFormProps) {
                     />
                   </Field>
                 </div>
+                <div className="flex flex-row flex-wrap gap-3">
+                  <Field className="min-w-[11rem] flex-1">
+                    <FieldLabel>Targeting</FieldLabel>
+                    <FieldControl
+                      name="targetType"
+                      value={targetType}
+                      onChange={(e) => {
+                        const next = e.target.value as TargetType;
+                        setTargetType(next);
+                        if (next !== 'b2b_account') setB2bAccountId('');
+                        if (next !== 'segment') setCustomerSegmentId('');
+                      }}
+                      render={
+                        <NativeSelect>
+                          <option value="none">All customers on this channel</option>
+                          <option value="b2b_account">One B2B account</option>
+                          <option value="segment">One customer segment</option>
+                        </NativeSelect>
+                      }
+                    />
+                  </Field>
+                  {targetType === 'b2b_account' && (
+                    <Field {...v.field('b2bAccountId')} className="min-w-[14rem] flex-1">
+                      <FieldLabel required>B2B account</FieldLabel>
+                      <FieldControl
+                        name="b2bAccountId"
+                        value={b2bAccountId}
+                        onChange={(e) => setB2bAccountId(e.target.value)}
+                        {...v.control('b2bAccountId')}
+                        render={
+                          <NativeSelect>
+                            <option value="">— pick —</option>
+                            {b2bAccounts.map((a) => (
+                              <option key={a.id} value={a.id}>
+                                {a.label}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                  )}
+                  {targetType === 'segment' && (
+                    <Field {...v.field('customerSegmentId')} className="min-w-[14rem] flex-1">
+                      <FieldLabel required>Customer segment</FieldLabel>
+                      <FieldControl
+                        name="customerSegmentId"
+                        value={customerSegmentId}
+                        onChange={(e) => setCustomerSegmentId(e.target.value)}
+                        {...v.control('customerSegmentId')}
+                        render={
+                          <NativeSelect>
+                            <option value="">— pick —</option>
+                            {segments.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                  )}
+                </div>
               </div>
             </CardBody>
           </Card>
@@ -303,11 +390,15 @@ function PriceListDraftSummary({
   channel,
   currency,
   priority,
+  targetType,
+  targetLabel,
 }: {
   name: string;
   channel: string;
   currency: string;
   priority: string;
+  targetType: TargetType;
+  targetLabel: string | null;
 }) {
   return (
     <SurfaceSummary
@@ -330,10 +421,17 @@ function PriceListDraftSummary({
       />
       <SurfaceSummaryRow label="Currency" value={(currency.trim() || 'USD').toUpperCase()} />
       <SurfaceSummaryRow label="Priority" value={priority.trim() || '0'} />
+      <SurfaceSummaryRow
+        label="Targeting"
+        value={
+          targetType === 'none'
+            ? 'Everyone'
+            : (targetLabel ?? (targetType === 'b2b_account' ? 'B2B account' : 'Segment'))
+        }
+      />
       <SurfaceSummaryDivider />
       <p className="text-base-content/70 text-sm">
-        Targeting — a customer segment or B2B account — is set on the detail page after the list
-        exists.
+        Per-variant prices are set on the detail page after the list exists.
       </p>
     </SurfaceSummary>
   );

@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { CreditCard, FileOutput, Trash2 } from 'lucide-react';
 
 import { useConfirm, toast } from '@sparx/ui';
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Tooltip } from '@wizeworks/silicaui-react';
 
 import {
   convertToOrderAction,
@@ -102,10 +102,41 @@ export function DocumentActionsBar({
 
   return (
     <div className="flex flex-row flex-wrap items-center gap-2">
+      {/* Destructive/demoted first — icon-only + tooltip, same treatment as
+          Archive on the product status bar, so it doesn't outweigh the real
+          forward actions rightmost in this cluster. */}
+      {canDelete && (
+        <Tooltip content="Delete draft">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            color="danger"
+            aria-label="Delete draft"
+            disabled={pending}
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+      )}
+      {balance > 0 && (
+        <Button
+          variant="outline"
+          size="sm"
+          color="module"
+          iconStart={<CreditCard className="h-4 w-4" />}
+          disabled={pending}
+          onClick={onPaymentLink}
+        >
+          Send payment link
+        </Button>
+      )}
       {convertedOrder ? (
         <Button
           variant="outline"
           size="sm"
+          color="module"
           iconStart={<FileOutput className="h-4 w-4" />}
           render={<Link href={`/crm/orders/${convertedOrder.id}`} />}
         >
@@ -123,29 +154,6 @@ export function DocumentActionsBar({
           Convert to order
         </Button>
       ) : null}
-      {balance > 0 && (
-        <Button
-          variant="outline"
-          size="sm"
-          iconStart={<CreditCard className="h-4 w-4" />}
-          disabled={pending}
-          onClick={onPaymentLink}
-        >
-          Send payment link
-        </Button>
-      )}
-      {canDelete && (
-        <Button
-          variant="ghost"
-          size="sm"
-          color="danger"
-          iconStart={<Trash2 className="h-4 w-4" />}
-          disabled={pending}
-          onClick={onDelete}
-        >
-          Delete
-        </Button>
-      )}
     </div>
   );
 }

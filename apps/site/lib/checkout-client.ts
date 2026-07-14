@@ -41,6 +41,9 @@ export interface CheckoutSession {
   step: string;
   currency: string;
   customerEmail?: string;
+  // Present only when the signed-in customer is an active B2B contact — the
+  // frontend's ONLY signal for showing the "bill to account" payment choice.
+  b2bAccountId?: string;
   // Customer-facing label for the surcharge line, when one applies.
   surchargeLabel?: string;
   totals: CheckoutTotals;
@@ -164,7 +167,9 @@ export function createPaymentIntent(
 export function submitPayment(
   tenantSlug: string,
   sessionId: string,
-  input: { paymentProviderSlug: string; paymentRef: string; poNumber?: string }
+  input:
+    | { paymentProviderSlug: string; paymentRef: string; poNumber?: string }
+    | { poNumber?: string; paymentTermsRequested: string }
 ): Promise<CheckoutSession> {
   return call(`/v1/public/commerce/checkout/${sessionId}/payment`, tenantSlug, {
     method: 'POST',

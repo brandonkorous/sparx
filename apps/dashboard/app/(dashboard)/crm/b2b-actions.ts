@@ -77,3 +77,41 @@ export async function setB2bAccountStatusAction(
     return { id: account.id, status: account.status };
   });
 }
+
+// Contacts — the write path that grants a customer B2B pricing + portal
+// access (packages/db/prisma/schema/62-b2b-contacts.prisma).
+
+interface B2bAccountContactResponse {
+  id: string;
+  role: string;
+  isActive: boolean;
+}
+
+export async function addB2bAccountContactAction(
+  accountId: string,
+  input: { customerId: string; role: string }
+): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const contact = await api.post<B2bAccountContactResponse>(
+      `/v1/crm/b2b-accounts/${accountId}/contacts`,
+      input
+    );
+    revalidatePath(`/crm/b2b/${accountId}`);
+    return { id: contact.id };
+  });
+}
+
+export async function updateB2bAccountContactAction(
+  accountId: string,
+  contactId: string,
+  input: { role?: string; isActive?: boolean }
+): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const contact = await api.patch<B2bAccountContactResponse>(
+      `/v1/crm/b2b-accounts/${accountId}/contacts/${contactId}`,
+      input
+    );
+    revalidatePath(`/crm/b2b/${accountId}`);
+    return { id: contact.id };
+  });
+}

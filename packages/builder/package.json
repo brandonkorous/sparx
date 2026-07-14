@@ -27,7 +27,9 @@
   "dependencies": {
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/silica-catalog": "workspace:*",
     "@sparx/surface-compile": "workspace:*",
+    "@wizeworks/silicaui-html": "catalog:",
     "zod": "^4.4.3"
   },
   "devDependencies": {

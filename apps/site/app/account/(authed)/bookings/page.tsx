@@ -5,6 +5,7 @@
 // customers see their own bookings and can cancel or reschedule the upcoming ones.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import { useCustomer } from '@/components/customer-provider';
 import { cancelMyBooking, getMyBookings, type CustomerBooking } from '@/lib/customer-client';
@@ -90,9 +91,22 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <h1 className="st-h2" style={{ marginBottom: '1rem' }}>
-        My bookings
-      </h1>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+          marginBottom: '1rem',
+        }}
+      >
+        <h1 className="st-h2">My bookings</h1>
+        <Button
+          type="button"
+          color="primary"
+          render={<Link href="/book">Book an appointment</Link>}
+        />
+      </div>
 
       <div role="tablist" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem' }}>
         {(['upcoming', 'past'] as const).map((s) => (

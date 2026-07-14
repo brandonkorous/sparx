@@ -9,6 +9,7 @@ import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { PricingLists } from './_components/pricing-lists';
+import { loadPriceListTargetingOptions } from './_lib/targeting-options';
 
 // Pricing — price lists, contract prices, bulk tiers.
 // Resolution order is locked: contract → price list → bulk tier → base
@@ -76,15 +77,20 @@ export default async function PricingPage({ searchParams }: PageProps) {
   if (status) query.set('status', status);
   if (channel) query.set('channel', channel);
 
-  const [prefs, priceListsPage, bulkTiers] = await Promise.all([
+  const [prefs, priceListsPage, bulkTiers, targetingOptions] = await Promise.all([
     getUserPreferences(),
     api.getPaged<PriceListRow[]>(`/v1/commerce/price-lists?${query.toString()}`),
     api.get<BulkPriceTierRow[]>('/v1/commerce/bulk-tiers'),
+    loadPriceListTargetingOptions(),
   ]);
 
   const priceLists = priceListsPage.data;
   const priceListTotal = (priceListsPage.meta?.total as number | undefined) ?? priceLists.length;
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
+  const b2bAccountLabels = Object.fromEntries(
+    targetingOptions.b2bAccounts.map((a) => [a.id, a.label])
+  );
+  const segmentLabels = Object.fromEntries(targetingOptions.segments.map((s) => [s.id, s.label]));
 
   return (
     <ListPageShell
@@ -124,6 +130,8 @@ export default async function PricingPage({ searchParams }: PageProps) {
         bulkTiers={bulkTiers}
         view={view}
         priceListTotal={priceListTotal}
+        b2bAccountLabels={b2bAccountLabels}
+        segmentLabels={segmentLabels}
       />
     </ListPageShell>
   );

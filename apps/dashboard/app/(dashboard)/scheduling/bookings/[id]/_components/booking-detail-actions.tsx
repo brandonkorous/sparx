@@ -83,7 +83,8 @@ export function BookingDetailActions({
   async function cancel() {
     const ok = await confirm({
       title: 'Cancel this booking?',
-      description: 'The slot is released immediately and becomes bookable again.',
+      description:
+        'The slot is released immediately and becomes bookable again. If this is within the cancellation window, a fee may apply per policy.',
       confirmLabel: 'Cancel booking',
       cancelLabel: 'Keep',
       tone: 'danger',

@@ -20,6 +20,7 @@ import {
   moduleManifests,
   findFavoritableById,
   findFavoritableByPath,
+  getManifestForPath,
   type FavoritableItem,
 } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
@@ -105,6 +106,7 @@ export function RailNav({
 }: RailNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const expanded = useRailExpanded();
+  const activeManifestId = pathname ? getManifestForPath(pathname, enabledModules)?.id : undefined;
 
   // Whether any billable module is inactive — drives the single "Add a module"
   // entry (Option A: one ambient upgrade pointer, not a locked tile per module).
@@ -188,7 +190,8 @@ export function RailNav({
       >
         {visible.map((manifest) => {
           const Icon = manifest.icon;
-          const active = isActivePath(pathname, manifest.routePrefix);
+          const active =
+            manifest.id === activeManifestId || isActivePath(pathname, manifest.routePrefix);
           return (
             <ModuleProvider key={manifest.id} module={manifest.id}>
               <Link

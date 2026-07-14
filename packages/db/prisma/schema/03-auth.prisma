@@ -60,7 +60,6 @@ model User {
   billingSnapshotsAuthored BillingDocumentSnapshot[] @relation("BillingSnapshotAuthor")
   billingPaymentsRecorded  BillingDocumentPayment[]  @relation("BillingPaymentRecordedBy")
   approvalRulesAsApprover  PurchaseApprovalRule[]    @relation("ApprovalRuleApprover")
-  confirmedAppointments    ServiceAppointment[]      @relation("AppointmentConfirmedBy")
 
   // Live Chat module — conversations this staff user is assigned to (docs/56)
   assignedChats ChatConversation[] @relation("ChatAssignedTo")

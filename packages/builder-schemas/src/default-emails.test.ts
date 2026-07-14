@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 24 documented templates with unique keys', () => {
+  it('ships exactly the 21 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(24);
-    expect(new Set(keys).size).toBe(24);
+    expect(keys).toHaveLength(21);
+    expect(new Set(keys).size).toBe(21);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -35,10 +35,8 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         // docs/93 — folded in from coded templates
         'order-confirmation',
         'shipping-confirmation',
-        'appointment-confirmation',
-        'appointment-reminder',
-        'appointment-cancelled',
-        // docs/79 — Scheduling module booking notifications
+        // docs/79 — Scheduling module booking notifications (the legacy B2B-fleet
+        // appointment-* templates were retired 2026-07-14, docs/79 §15.7)
         'booking-confirmation',
         'booking-reminder',
         'booking-rescheduled',

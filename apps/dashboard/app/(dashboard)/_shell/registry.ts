@@ -43,8 +43,8 @@ export function getManifestById(id: string): ModuleManifest | undefined {
 }
 
 // Returns the manifest that owns a given pathname, by matching the longest
-// prefix among the manifest's `routePrefix` and any of its section hrefs.
-export function getManifestForPath(pathname: string): ModuleManifest | undefined {
+// `routePrefix` among all manifests.
+function matchManifestByRoutePrefix(pathname: string): ModuleManifest | undefined {
   let best: { manifest: ModuleManifest; matchLength: number } | undefined;
   for (const manifest of moduleManifests) {
     if (pathname === manifest.routePrefix || pathname.startsWith(`${manifest.routePrefix}/`)) {
@@ -54,6 +54,38 @@ export function getManifestForPath(pathname: string): ModuleManifest | undefined
     }
   }
   return best?.manifest;
+}
+
+// Returns the manifest that "owns" a given pathname for nav purposes. Usually
+// that's just the routePrefix owner (Commerce owns everything under
+// /commerce). But a handful of pages are cross-listed in a SECOND module's
+// `sections` even though they live outside that module's own routePrefix —
+// e.g. Orders lives at /crm/orders (unified with the CRM customer/order data
+// model) but is also listed in Commerce's sections so a commerce-only tenant
+// without the CRM module can still find + fulfill their own orders. When the
+// routePrefix owner isn't enabled for this tenant, prefer whichever ENABLED
+// manifest cross-lists this path instead — that's what makes the sidebar,
+// breadcrumb, and mobile nav resolve to "Commerce" (not a blank/orphaned
+// "CRM") for such a tenant. Pass `enabledModules` wherever it's available;
+// omit it only for callers with no tenant-module context (falls back to the
+// plain routePrefix match).
+export function getManifestForPath(
+  pathname: string,
+  enabledModules?: readonly string[]
+): ModuleManifest | undefined {
+  const byPrefix = matchManifestByRoutePrefix(pathname);
+  if (!enabledModules || (byPrefix && enabledModules.includes(byPrefix.id))) {
+    return byPrefix;
+  }
+  for (const manifest of moduleManifests) {
+    if (!enabledModules.includes(manifest.id)) continue;
+    for (const section of manifest.sections) {
+      if (pathname === section.href || pathname.startsWith(`${section.href}/`)) {
+        return manifest;
+      }
+    }
+  }
+  return byPrefix;
 }
 
 // Find the action whose href matches the given pathname. Used by the header

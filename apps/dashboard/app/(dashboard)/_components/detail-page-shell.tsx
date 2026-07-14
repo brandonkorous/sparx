@@ -25,6 +25,7 @@ function DetailBackLink({ href, label }: { href: string; label: string }) {
   return (
     <Button
       variant="ghost"
+      color="module"
       size="sm"
       onClick={() => {
         void Promise.resolve(runGuard()).then((ok) => {
@@ -59,6 +60,7 @@ export function DetailPageShell({
   children,
   listHref: listHrefProp,
   listLabel: listLabelProp,
+  showViewSwitcher = true,
 }: {
   typeId: string;
   entityId: string;
@@ -68,6 +70,13 @@ export function DetailPageShell({
   // '/cms/content'). Defaults to the routePrefix-derived href + label.
   listHref?: string;
   listLabel?: string;
+  // Opt out for entity types with no drawer/modal detail rendering registered
+  // (e.g. billing-document — the document editor is deliberately full-page
+  // only, docs/87). ViewSwitcher can't tell reachability apart from the
+  // client-safe registry alone, so callers whose detail view was never wired
+  // into `detailComponents` must suppress it explicitly rather than offer a
+  // switch that opens an empty drawer/modal.
+  showViewSwitcher?: boolean;
 }) {
   const found = findEntityType(typeId);
   const moduleId = found?.manifest.id;
@@ -106,7 +115,7 @@ export function DetailPageShell({
             top-docked like every other toolbar on the platform, not floored at
             the page bottom. Zero-width until a form supplies one. */}
         <DetailFooterSlotTarget className="flex items-center gap-2" />
-        <ViewSwitcher typeId={typeId} entityId={entityId} current="page" />
+        {showViewSwitcher && <ViewSwitcher typeId={typeId} entityId={entityId} current="page" />}
       </div>
       {fullBleed ? (
         <div className="min-h-0 flex-1 overflow-hidden">{children}</div>

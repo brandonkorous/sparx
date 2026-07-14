@@ -24,6 +24,7 @@ import {
   shippingService,
   type ServiceContext,
 } from '@sparx/commerce';
+import { SubmitPaymentInput } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
@@ -90,12 +91,6 @@ const IntentBody = z.object({
   // The storefront's post-payment return URL for hosted-redirect gateways (docs/111 D4).
   returnUrl: z.string().url().max(2048).optional(),
   cancelUrl: z.string().url().max(2048).optional(),
-});
-
-const PaymentBody = z.object({
-  paymentProviderSlug: z.string().min(1).max(63),
-  paymentRef: z.string().min(1).max(255),
-  poNumber: z.string().max(63).optional(),
 });
 
 const CompleteBody = z.object({
@@ -297,15 +292,11 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
   // Record the confirmed payment ref on the session (advances to 'payment').
   app.post('/v1/public/commerce/checkout/:sessionId/payment', async (request) => {
     const { sessionId } = SessionParam.parse(request.params);
-    const body = PaymentBody.parse(request.body);
+    // sessionId rides in the path, not the body — the client never sends it.
+    const body = SubmitPaymentInput.omit({ sessionId: true }).parse(request.body);
     const { tenantId, ctx } = await publicCommerceContext(request);
     await assertSessionOwner(request, ctx, tenantId, sessionId);
-    await checkoutService.submitPayment(ctx, {
-      sessionId,
-      paymentProviderSlug: body.paymentProviderSlug,
-      paymentRef: body.paymentRef,
-      ...(body.poNumber ? { poNumber: body.poNumber } : {}),
-    });
+    await checkoutService.submitPayment(ctx, { sessionId, ...body });
     return ok(await checkoutService.get(ctx, sessionId));
   });
 

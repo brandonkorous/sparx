@@ -11,6 +11,7 @@
 import { useCallback, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -21,6 +22,7 @@ import {
   NativeSelect,
   Textarea,
 } from '@wizeworks/silicaui-react';
+import { TriangleAlert } from 'lucide-react';
 import { ModuleProvider, SurfaceFrame, SurfaceStep, toast, type SurfaceStepDef } from '@sparx/ui';
 import { rule, useFieldValidation } from '@sparx/forms';
 
@@ -97,6 +99,9 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
   const [policyText, setPolicyText] = useState(policy?.policyText ?? '');
 
   const showDepositAmount = depositType === 'deposit' || depositType === 'card_hold';
+  const feesWithoutDepositWarning =
+    depositType === 'none' &&
+    ((lateMode !== 'none' && lateValue > 0) || (noShowMode !== 'none' && noShowValue > 0));
 
   const v = useFieldValidation({ name }, { name: rule.required('Name is required.') });
 
@@ -282,6 +287,15 @@ export function PolicyForm({ presentation, policy, open, onOpenChange }: PolicyF
               onMode={setNoShowMode}
               onValue={setNoShowValue}
             />
+
+            {feesWithoutDepositWarning ? (
+              <Alert color="warning" variant="soft">
+                <TriangleAlert className="h-4 w-4" />
+                Fees can only be charged if you also collect a deposit or card hold above —
+                otherwise this fee is just informational and customers will never actually be
+                charged it.
+              </Alert>
+            ) : null}
 
             <Field>
               <FieldLabel>Reminder offsets (minutes before, comma-separated)</FieldLabel>

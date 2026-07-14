@@ -1,12 +1,14 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Printer, Receipt } from 'lucide-react';
 
 import { Stat } from '@sparx/ui';
-import { Badge, Button, Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, CardBody, CardTitle, Tooltip } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { AR_STATUS_VARIANT, formatMoney } from '../../_components/format';
+import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 import { StageBar } from './_components/stage-bar';
 import { LineGrid, type MarkupRuleSummary } from './_components/line-grid';
 import { PaymentsPanel } from './_components/payments-panel';
@@ -156,43 +158,48 @@ export async function DocumentEditorContent({ id }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-row flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-semibold">{doc.number ?? 'Draft'}</h1>
-            {currentStage && (
-              <Badge color="module" variant="soft">
-                {currentStage.customerLabel}
-              </Badge>
-            )}
-            <Badge color={AR_STATUS_VARIANT[doc.status] ?? 'neutral'}>{doc.status}</Badge>
-            {partyName && <p className="text-base-content/70 text-sm">{partyName}</p>}
-          </div>
-          <div className="flex flex-row flex-wrap items-center gap-2">
-            <DocumentActionsBar
-              documentId={doc.id}
-              canConvertToOrder={currentStage?.stageType === 'committed'}
-              convertedOrder={doc.convertedOrder}
-              canDelete={currentStage?.stageType === 'draft'}
-              balance={Number(doc.balance)}
-            />
+      {/* Lifecycle actions teleport into the shared detail-frame toolbar (docs/86)
+          instead of a bespoke in-body action row — the identity heading below
+          keeps the document number + status, since this is a read-only/transaction
+          detail (like an order), not an editable-name entity. */}
+      <DetailHeaderSlot>
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <Tooltip content="Print">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              color="module"
-              iconStart={<Printer className="h-4 w-4" />}
+              aria-label="Print"
               render={
-                <a
+                <Link
                   href={`/invoicing/documents/${doc.id}/print`}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label="Print"
                 />
               }
             >
-              Print
+              <Printer className="h-4 w-4" />
             </Button>
-          </div>
+          </Tooltip>
+          <DocumentActionsBar
+            documentId={doc.id}
+            canConvertToOrder={currentStage?.stageType === 'committed'}
+            convertedOrder={doc.convertedOrder}
+            canDelete={currentStage?.stageType === 'draft'}
+            balance={Number(doc.balance)}
+          />
+        </div>
+      </DetailHeaderSlot>
+
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold">{doc.number ?? 'Draft'}</h1>
+          {currentStage && (
+            <Badge color="module" variant="soft">
+              {currentStage.customerLabel}
+            </Badge>
+          )}
+          <Badge color={AR_STATUS_VARIANT[doc.status] ?? 'neutral'}>{doc.status}</Badge>
+          {partyName && <p className="text-base-content/70 text-sm">{partyName}</p>}
         </div>
       </div>
 
@@ -364,7 +371,7 @@ export async function DocumentEditorContent({ id }: Props) {
                     size="sm"
                     iconStart={<Printer className="h-3.5 w-3.5" />}
                     render={
-                      <a
+                      <Link
                         href={`/invoicing/documents/${doc.id}/print?snapshotId=${s.id}`}
                         target="_blank"
                         rel="noreferrer"

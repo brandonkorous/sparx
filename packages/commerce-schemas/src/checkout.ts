@@ -19,13 +19,15 @@ export const CheckoutStep = z.enum([
 ]);
 export type CheckoutStep = z.infer<typeof CheckoutStep>;
 
+// `customerId` / `b2bAccountId` are deliberately NOT accepted here — both are
+// resolved server-side from the cart's own `customerId` (never trusted from
+// the client, which would otherwise let any caller claim someone else's B2B
+// pricing). `channel` stays purely an analytics/origin tag.
 export const StartCheckoutInput = z.object({
   cartId: Uuid,
   channel: Channel,
   currency: Currency,
   customerEmail: z.string().email().optional(),
-  customerId: Uuid.optional(),
-  b2bAccountId: Uuid.optional(),
 });
 export type StartCheckoutInput = z.infer<typeof StartCheckoutInput>;
 
@@ -47,12 +49,18 @@ export const SubmitShippingInput = z.object({
 });
 export type SubmitShippingInput = z.infer<typeof SubmitShippingInput>;
 
+// paymentProviderSlug/paymentRef are required for a card payment, but a B2B
+// customer billing to their account skips the gateway entirely — the service
+// layer enforces that ONE of (a real provider) or (net terms + an active B2B
+// account) is present; a schema-level refine can't see the account, so this
+// stays a same-shape OR rather than a discriminated union.
 export const SubmitPaymentInput = z.object({
   sessionId: Uuid,
-  paymentProviderSlug: z.string().min(1).max(63),
+  paymentProviderSlug: z.string().min(1).max(63).optional(),
   // The provider's payment intent / setup intent reference.
-  paymentRef: z.string().min(1).max(255),
-  // B2B: PO number + requested net terms.
+  paymentRef: z.string().min(1).max(255).optional(),
+  // B2B: PO number + requested net terms — a "bill to account" submission
+  // requests one of these instead of a card.
   poNumber: z.string().max(63).optional(),
   paymentTermsRequested: z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']).optional(),
 });

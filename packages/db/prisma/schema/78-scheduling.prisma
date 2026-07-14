@@ -3,9 +3,9 @@
 // discriminator; availability is computed per resource, and a booking allocates
 // one or more resources for a time range (see BookingResource).
 //
-// Generalizes the narrow B2B fleet tables (service_types / service_appointments,
-// 64-b2b-scheduling.prisma). Those stay in place for now; Phase 9 migrates B2B
-// onto this engine and retires them (docs/79 §15.7). Until then this is additive.
+// Generalizes the narrow B2B fleet tables (service_types / service_appointments),
+// retired 2026-07-14 (docs/79 §15.7) — B2B fleet context now rides on Booking's
+// b2bAccountId/assetRef/partsLinked/workOrderId fields below.
 //
 // Cross-module references (customerId, b2bAccountId, userId, workOrderId,
 // paymentIntentId) are stored as plain indexed UUIDs WITHOUT a Prisma relation —

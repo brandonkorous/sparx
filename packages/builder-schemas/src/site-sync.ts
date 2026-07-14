@@ -52,8 +52,10 @@ export interface StoredSilicaSite {
 
 /** A silica node tree, validated structurally (a non-null object carrying a
  *  string `kind`) — silica owns the full shape and typed it, so `z.custom` keeps
- *  the real `SilicaNode` type while sparx stores the tree opaquely. */
-const SilicaTreeInput = z.custom<SilicaNode>(
+ *  the real `SilicaNode` type while sparx stores the tree opaquely. Exported so
+ *  other opaque-silica-shape validators (e.g. the MCP silica tools) reuse the
+ *  exact same check instead of redefining it. */
+export const SilicaTreeInput = z.custom<SilicaNode>(
   (v) => typeof v === 'object' && v !== null && typeof (v as { kind?: unknown }).kind === 'string',
   { message: 'Expected a silica-html Node (an object with a string `kind`)' }
 );
@@ -71,8 +73,9 @@ export type SiteSyncPageInput = z.infer<typeof SiteSyncPageInput>;
 
 /** A silica `Theme` — `{ name, tokens, dark?, mode? }`, where `tokens`/`dark` are
  *  the `--*` custom-property maps verbatim. Validated structurally (silica owns the
- *  shape); stored opaquely and projected straight to CSS. */
-const SilicaThemeInput = z.custom<SilicaTheme>(
+ *  shape); stored opaquely and projected straight to CSS. Exported for reuse (see
+ *  `SilicaTreeInput` above). */
+export const SilicaThemeInput = z.custom<SilicaTheme>(
   (v) =>
     typeof v === 'object' &&
     v !== null &&

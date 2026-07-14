@@ -17,6 +17,7 @@ import {
 } from 'react';
 
 import { mediaUrl } from '@/lib/media';
+import { useCustomer } from '@/components/customer-provider';
 
 // Same-origin proxy to api-rest (app/api/sparx/[...path]/route.ts) — keeps the
 // cart token + future customer cookie first-party and sidesteps CORS.
@@ -169,6 +170,19 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
       /* ignore */
     }
   }, [refresh]);
+
+  // A login/register may have consolidated this shopper's cart onto a new
+  // identity server-side (CustomerProvider's cartHandoff — see its docblock):
+  // adopt it so items priced retail while anonymous show correctly instead
+  // of the cart silently appearing empty (its old cached id/token 404s once
+  // the server has merged/deleted that cart — ownership is token-only).
+  const { cartHandoff, clearCartHandoff } = useCustomer();
+  useEffect(() => {
+    if (!cartHandoff) return;
+    persist(cartHandoff.cartId, cartHandoff.guestToken);
+    void refresh();
+    clearCartHandoff();
+  }, [cartHandoff, clearCartHandoff, persist, refresh]);
 
   // Create a cart on first write, capturing the issued ownership token.
   const ensureCart = useCallback(async (): Promise<string> => {

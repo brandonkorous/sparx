@@ -994,8 +994,13 @@ function LineComposer({
     <Card>
       <CardBody>
         <h3 className="text-xl font-semibold">Add a charge</h3>
+        {/* self-start on every labeled Field cell keeps each field's own
+            label+input flush with its neighbors regardless of whether a
+            sibling (e.g. Description) is showing a taller inline validation
+            error — items-end on the grid itself still bottom-aligns the
+            unlabeled taxable checkbox against the input row. */}
         <div className="grid grid-cols-12 items-end gap-2">
-          <Field className="col-span-12 md:col-span-3">
+          <Field className="col-span-12 self-start md:col-span-3">
             <FieldLabel className="text-xs">Type</FieldLabel>
             <select
               className={SELECT_CLASS}
@@ -1009,7 +1014,7 @@ function LineComposer({
               ))}
             </select>
           </Field>
-          <Field {...v.field('description')} className="col-span-12 md:col-span-5">
+          <Field {...v.field('description')} className="col-span-12 self-start md:col-span-5">
             <FieldLabel className="text-xs" required>
               Description
             </FieldLabel>
@@ -1021,7 +1026,7 @@ function LineComposer({
               {...v.control('description')}
             />
           </Field>
-          <Field {...v.field('quantity')} className="col-span-4 md:col-span-2">
+          <Field {...v.field('quantity')} className="col-span-4 self-start md:col-span-2">
             <FieldLabel className="text-xs" required>
               Qty
             </FieldLabel>

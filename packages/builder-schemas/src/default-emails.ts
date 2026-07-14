@@ -308,42 +308,11 @@ const shippingConfirmation = (): BuilderNode =>
     lineItems('order.items'),
   ]);
 
-const appointmentConfirmation = (): BuilderNode =>
-  body([
-    heading('Your appointment is confirmed'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} is booked for {{appointment.when}}.'
-    ),
-    conditional('appointment.vehicle', [para('Vehicle: {{appointment.vehicle}}')]),
-    button('Manage appointment', '{{appointment.manageUrl}}'),
-  ]);
-
-const appointmentReminder = (): BuilderNode =>
-  body([
-    heading('A reminder about your upcoming appointment'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — a reminder that your {{appointment.service}} is coming up on {{appointment.when}}.'
-    ),
-    conditional('appointment.vehicle', [para('Vehicle: {{appointment.vehicle}}')]),
-    button('Manage appointment', '{{appointment.manageUrl}}'),
-  ]);
-
-const appointmentCancelled = (): BuilderNode =>
-  body([
-    heading('Your appointment was cancelled'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} scheduled for {{appointment.when}} has been cancelled.'
-    ),
-    conditional('appointment.cancellationReason', [
-      para('Reason: {{appointment.cancellationReason}}'),
-    ]),
-    button('Book another time', '{{appointment.manageUrl}}'),
-  ]);
-
 // ── Scheduling-module booking trees (docs/79 §10) ────────────────────────────
-// The industry-agnostic counterpart to the legacy `appointment-*` trees above:
-// bound to the `booking` source (the Scheduling module's appointment | class |
-// reservation | rental record), never to the B2B-fleet `appointment` source.
+// The industry-agnostic booking record (appointment | class | reservation |
+// rental) — the legacy B2B-fleet `appointment` trees were retired 2026-07-14
+// (docs/79 §15.7) once service_appointments was dropped; B2B fleet bookings are
+// Bookings too (Booking.b2bAccountId/assetRef), so these cover them as well.
 // No vehicle copy — `location` / `staff` are the cross-type optionals instead.
 
 const bookingConfirmation = (): BuilderNode =>
@@ -618,39 +587,6 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     sources: ['customer', 'order', 'shipping', 'tenant'],
     refs: ['customerId', 'orderId', 'fulfillmentId'],
     tree: shippingConfirmation(),
-  },
-  {
-    key: 'appointment-confirmation',
-    name: 'Appointment confirmation',
-    type: 'transactional',
-    category: 'scheduling',
-    subject: 'Your appointment is confirmed',
-    preheader: '{{appointment.service}} on {{appointment.when}}.',
-    sources: ['customer', 'appointment', 'tenant'],
-    refs: ['customerId', 'appointmentId'],
-    tree: appointmentConfirmation(),
-  },
-  {
-    key: 'appointment-reminder',
-    name: 'Appointment reminder',
-    type: 'transactional',
-    category: 'scheduling',
-    subject: 'Reminder: your appointment on {{appointment.date}}',
-    preheader: '{{appointment.service}} on {{appointment.when}}.',
-    sources: ['customer', 'appointment', 'tenant'],
-    refs: ['customerId', 'appointmentId'],
-    tree: appointmentReminder(),
-  },
-  {
-    key: 'appointment-cancelled',
-    name: 'Appointment cancelled',
-    type: 'transactional',
-    category: 'scheduling',
-    subject: 'Your appointment was cancelled',
-    preheader: 'About your {{appointment.service}}.',
-    sources: ['customer', 'appointment', 'tenant'],
-    refs: ['customerId', 'appointmentId'],
-    tree: appointmentCancelled(),
   },
   {
     key: 'booking-confirmation',

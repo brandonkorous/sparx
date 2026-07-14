@@ -11,7 +11,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
 import {
@@ -20,6 +20,13 @@ import {
   type CheckoutSession,
   type PaymentIntentResult,
 } from '@/lib/checkout-client';
+
+const NET_TERMS_OPTIONS = [
+  { value: 'net15', label: 'Net 15' },
+  { value: 'net30', label: 'Net 30' },
+  { value: 'net60', label: 'Net 60' },
+  { value: 'net90', label: 'Net 90' },
+] as const;
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
 
@@ -38,13 +45,114 @@ export interface PaymentStepProps {
   onPaid: (orderNumber: string) => void;
 }
 
-export function PaymentStep({
-  tenantSlug,
-  session,
-  createIntent,
-  onBack,
-  onPaid,
-}: PaymentStepProps) {
+// Top-level payment step. A signed-in B2B customer (session.b2bAccountId
+// present — resolved server-side from their ACTIVE contact membership, never
+// client-supplied) gets a choice between paying now by card and billing to
+// their account on net terms; everyone else goes straight to card, unchanged
+// from before this existed.
+export function PaymentStep(props: PaymentStepProps) {
+  const { session } = props;
+  const [method, setMethod] = useState<'choose' | 'card' | 'account'>(
+    session.b2bAccountId ? 'choose' : 'card'
+  );
+
+  if (method === 'choose') {
+    return (
+      <div className="st-form">
+        <h2 className="st-h2">Payment</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <Button type="button" color="primary" size="lg" onClick={() => setMethod('card')}>
+            Pay by card
+          </Button>
+          <Button
+            type="button"
+            color="neutral"
+            variant="soft"
+            size="lg"
+            onClick={() => setMethod('account')}
+          >
+            Bill to my account (net terms)
+          </Button>
+        </div>
+        <Button type="button" color="neutral" variant="ghost" onClick={props.onBack}>
+          ← Back
+        </Button>
+      </div>
+    );
+  }
+
+  if (method === 'account') {
+    return <AccountPaymentStep {...props} onBack={() => setMethod('choose')} />;
+  }
+
+  return (
+    <CardPaymentStep
+      {...props}
+      onBack={session.b2bAccountId ? () => setMethod('choose') : props.onBack}
+    />
+  );
+}
+
+// A B2B customer requesting terms instead of a card — skips the payment
+// gateway entirely. Backed by the same submitPayment()/completeCheckout()
+// calls the card flow uses; the service layer enforces this is only reachable
+// for an active B2B account (checkout-service.ts submitPayment()).
+function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStepProps) {
+  const [poNumber, setPoNumber] = useState('');
+  const [terms, setTerms] = useState<string>('net30');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await submitPayment(tenantSlug, session.sessionId, {
+        paymentTermsRequested: terms,
+        ...(poNumber.trim() ? { poNumber: poNumber.trim() } : {}),
+      });
+      const result = await completeCheckout(tenantSlug, session.sessionId, crypto.randomUUID());
+      onPaid(result.orderNumber);
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="st-form">
+      <h2 className="st-h2">Bill to account</h2>
+      <label className="st-field">
+        <span>PO number (optional)</span>
+        <Input value={poNumber} onChange={(e) => setPoNumber(e.target.value)} />
+      </label>
+      <label className="st-field">
+        <span>Payment terms</span>
+        <NativeSelect value={terms} onChange={(e) => setTerms(e.target.value)}>
+          {NET_TERMS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </NativeSelect>
+      </label>
+      {error ? <Alert color="danger">{error}</Alert> : null}
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
+          ← Back
+        </Button>
+        <Button type="submit" color="primary" size="lg" style={{ flex: 1 }} disabled={busy}>
+          {busy
+            ? 'Placing order…'
+            : `Place order — ${formatMoney(session.totals.totalCents, session.currency)}`}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: PaymentStepProps) {
   const [intent, setIntent] = useState<PaymentIntentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 

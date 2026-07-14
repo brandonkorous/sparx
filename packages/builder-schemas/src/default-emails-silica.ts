@@ -231,40 +231,9 @@ const shippingConfirmation = (): SectionNode[] => [
   ...itemsTable('order.items'),
 ];
 
-// ── Scheduling: the legacy `appointment` source (B2B fleet) ──────────────────
-
-const appointmentBody = (title: string, lead: string, cta: string): SectionNode[] => [
-  copyBlock([heading(title), para(lead)]),
-  when('appointment.vehicle', [para('Vehicle: {{appointment.vehicle}}')]),
-  copyBlock([button(cta, '{{appointment.manageUrl}}')]),
-];
-
-const appointmentConfirmation = (): SectionNode[] =>
-  appointmentBody(
-    'Your appointment is confirmed',
-    'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} is booked for {{appointment.when}}.',
-    'Manage appointment'
-  );
-
-const appointmentReminder = (): SectionNode[] =>
-  appointmentBody(
-    'A reminder about your upcoming appointment',
-    'Hi {{customer.firstName ?? "there"}} — a reminder that your {{appointment.service}} is coming up on {{appointment.when}}.',
-    'Manage appointment'
-  );
-
-const appointmentCancelled = (): SectionNode[] => [
-  copyBlock([
-    heading('Your appointment was cancelled'),
-    para(
-      'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} scheduled for {{appointment.when}} has been cancelled.'
-    ),
-  ]),
-  when('appointment.cancellationReason', [para('Reason: {{appointment.cancellationReason}}')]),
-  copyBlock([button('Book another time', '{{appointment.manageUrl}}')]),
-];
-
 // ── Scheduling: the industry-agnostic `booking` source (docs/79 §10) ─────────
+// The legacy B2B-fleet `appointment` source (service_appointments) was retired
+// 2026-07-14 (docs/79 §15.7) — B2B fleet bookings are Bookings too.
 
 /** location / staff / add-to-calendar are the cross-type optionals every booking kind
  *  (appointment · class · reservation · rental) may or may not carry. */
@@ -340,9 +309,6 @@ const SILICA_EMAIL_BODIES: Record<string, SectionNode[]> = {
   'invoicing-receipt': invoicingReceipt(),
   'order-confirmation': orderConfirmation(),
   'shipping-confirmation': shippingConfirmation(),
-  'appointment-confirmation': appointmentConfirmation(),
-  'appointment-reminder': appointmentReminder(),
-  'appointment-cancelled': appointmentCancelled(),
   'booking-confirmation': bookingConfirmation(),
   'booking-reminder': bookingReminder(),
   'booking-rescheduled': bookingRescheduled(),

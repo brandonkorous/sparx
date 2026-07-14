@@ -295,9 +295,23 @@ function richness(bp: WizardBlueprint): number {
   return c.products + c.pages + c.content + c.emails + c.collections + c.categories;
 }
 
-/** Pick the starting-point blueprint for the story: the richest catalog blueprint
- *  whose required modules are ALL already enabled (so installing it never silently
- *  bills a module the owner didn't choose), preferring the industry's vertical.
+/** Pick the starting-point blueprint for the story: among the candidates whose
+ *  required modules are ALL already enabled (so installing one never silently
+ *  bills a module the owner didn't choose), prefer a vertical match over a
+ *  mismatch.
+ *
+ *  No marketplace blueprint declares anything finer than `vertical` — forge and
+ *  mosaic both just say `services`, with no industry/tag list that could tell a
+ *  salon from a consultancy from a creative agency (same for farm-fresh/tempo's
+ *  shared `retail`). So once vertical is tied there is no further signal to break
+ *  it on, and we deliberately do NOT invent one. In that case prefer the LEAST
+ *  content-rich candidate: a richer same-vertical blueprint just means more
+ *  placeholder copy that SOUNDS industry-specific (named "clients", case studies,
+ *  a portfolio) without actually being about the tenant's business — for a
+ *  non-technical owner who won't proofread every page before it publishes live,
+ *  obviously-generic beats detailed-and-wrong. A final tie is broken
+ *  alphabetically by key — deterministic, no randomness.
+ *
  *  Returns null when nothing is compatible → the commit starts from a blank Builder
  *  site instead. */
 export function pickBlueprint(
@@ -308,8 +322,15 @@ export function pickBlueprint(
   const wanted = industry?.vertical ?? (modules.commerce || modules.b2b ? 'retail' : 'content');
   const compatible = blueprints.filter((bp) => bp.requiresModules.every((m) => modules[m]));
   if (!compatible.length) return null;
-  const score = (bp: WizardBlueprint): number => (bp.vertical === wanted ? 1000 : 0) + richness(bp);
-  return [...compatible].sort((a, b) => score(b) - score(a))[0] ?? null;
+  return (
+    [...compatible].sort((a, b) => {
+      const aMatch = a.vertical === wanted ? 1 : 0;
+      const bMatch = b.vertical === wanted ? 1 : 0;
+      if (aMatch !== bMatch) return bMatch - aMatch; // vertical match beats mismatch
+      if (richness(a) !== richness(b)) return richness(a) - richness(b); // least-rich wins a tie
+      return a.key.localeCompare(b.key); // fully deterministic final tie-break
+    })[0] ?? null
+  );
 }
 
 /** Render the story as plain prose — the human-readable record we persist. */

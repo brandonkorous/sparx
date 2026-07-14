@@ -8,24 +8,7 @@ The repo is **substantially built out**. Alongside the design docs under [docs/]
 
 > **Start at the knowledge brain — [docs/brain/README.md](docs/brain/README.md).** It is the canonical, grounded, interlinked map of everything below (design, architecture, data, modules, infra, integrations, conventions…) with a task-router that tells you which nodes to read before a given kind of work. This file is the binding summary; the brain is the navigable detail, and its notes hard-link the real source-of-truth files.
 
-**Stack** (per [docs/02-architecture-overview.md](docs/02-architecture-overview.md), [docs/18-frontend-architecture.md](docs/18-frontend-architecture.md), [docs/23-frontend-component-architecture.md](docs/23-frontend-component-architecture.md)): Node.js 24, TypeScript 5.7 (strict), Fastify, Prisma, Next.js 16 (App Router), React 19, Tailwind CSS 4, Vitest, Playwright. Deployed to GKE.
-
-**Tooling decisions made:** pnpm workspaces + Turborepo, ESLint flat config + Prettier (with `prettier-plugin-tailwindcss`), TypeScript project references off [tsconfig.base.json](tsconfig.base.json). Node version pinned in [.nvmrc](.nvmrc).
-
-### Common commands
-
-| Command                            | Purpose                                            |
-| ---------------------------------- | -------------------------------------------------- |
-| `pnpm install`                     | Install all workspace dependencies                 |
-| `pnpm dev`                         | Run all `dev` tasks (Turborepo, persistent)        |
-| `pnpm build`                       | Build everything (`turbo run build`)               |
-| `pnpm lint`                        | Lint everything                                    |
-| `pnpm typecheck`                   | Type-check everything                              |
-| `pnpm test`                        | Run tests (Vitest in packages, Playwright in apps) |
-| `pnpm format`                      | Format with Prettier                               |
-| `pnpm --filter @sparx/ui <script>` | Run a script in a single workspace                 |
-
-Run `pnpm install` after cloning (it wires the git hooks via the root `prepare` script). Don't claim builds/tests pass without actually running them.
+Don't claim builds/tests pass without actually running them.
 
 ### Pre-push guard
 

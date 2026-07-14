@@ -60,6 +60,7 @@ export type {
   FormSubmission,
   FormDefinition,
   B2BAccount,
+  B2bAccountContact,
   Pipeline,
   PipelineStage,
   // Invoicing (docs/87)

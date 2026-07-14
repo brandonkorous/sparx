@@ -54,7 +54,7 @@ interface Override {
   discountPercentage: string | null;
   notes: string | null;
   variant?: { id: string; sku: string; title: string } | null;
-  collection?: { id: string; title: string } | null;
+  collection?: { id: string; name: string } | null;
 }
 
 interface PricingTierOption {

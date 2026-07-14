@@ -46,6 +46,11 @@ COPY packages/builder-schemas ./packages/builder-schemas
 # never loads surface-css-service, so the Tailwind compiler is installed but never
 # evaluated at runtime — surface-compile is here only so pnpm can resolve the dep.
 COPY packages/surface-compile ./packages/surface-compile
+# @sparx/builder's silica-native site-service (docs/118) imports @sparx/silica-catalog
+# (the sparx commerce/content composite factories) + @wizeworks/silicaui-html (the kit
+# helpers) at module load — the silica Builder MCP tools pull them in. Dependency-free
+# beyond silicaui-html. Omitting it crashloops api-mcp with ERR_MODULE_NOT_FOUND.
+COPY packages/silica-catalog ./packages/silica-catalog
 COPY packages/builder ./packages/builder
 COPY packages/email ./packages/email
 COPY packages/commerce-schemas ./packages/commerce-schemas

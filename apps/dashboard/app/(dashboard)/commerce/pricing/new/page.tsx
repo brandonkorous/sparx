@@ -1,4 +1,5 @@
 import { PriceListCreateForm } from '../_components/price-list-create-form';
+import { loadPriceListTargetingOptions } from '../_lib/targeting-options';
 
 // Full-page surface for creating a price list. The surface-aware
 // `PriceListCreateForm` (docs/86 F layout) renders the SAME SurfaceFrame here
@@ -11,6 +12,7 @@ import { PriceListCreateForm } from '../_components/price-list-create-form';
 
 export const dynamic = 'force-dynamic';
 
-export default function NewPriceListPage() {
-  return <PriceListCreateForm surface="page" />;
+export default async function NewPriceListPage() {
+  const { b2bAccounts, segments } = await loadPriceListTargetingOptions();
+  return <PriceListCreateForm surface="page" b2bAccounts={b2bAccounts} segments={segments} />;
 }

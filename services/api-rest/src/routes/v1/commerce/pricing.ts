@@ -27,6 +27,10 @@ const ListPriceListsQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+const ListContractPricesQuery = z.object({
+  b2b_account_id: z.string().uuid(),
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const pricingRoutes: FastifyPluginAsync = async (app) => {
   // Price lists
@@ -126,6 +130,18 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // Contract prices
+  app.get('/v1/commerce/contract-prices', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = ListContractPricesQuery.parse(request.query);
+    return ok(
+      await pricingService.listContractPricesForAccount(
+        toCommerceContext(request),
+        q.b2b_account_id
+      )
+    );
+  });
+
   app.post('/v1/commerce/contract-prices', async (request, reply) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);

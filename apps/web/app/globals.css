@@ -43,6 +43,7 @@
    non-color tokens Tailwind needs (font, radius). */
 @theme {
   --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
 
   --radius-sm: var(--radius-sm);
@@ -65,6 +66,18 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  /* Europa's contextual alternates ('calt') — explicit so it's a deliberate
+     part of the heading style, not an accident of the browser default. */
+  font-variant-ligatures: contextual;
 }
 
 @media (prefers-reduced-motion: reduce) {

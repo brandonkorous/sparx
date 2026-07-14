@@ -98,7 +98,7 @@ export function BreadcrumbTrail({
   activeOrgId = null,
 }: BreadcrumbTrailProps) {
   const pathname = usePathname() ?? '/';
-  const manifest = getManifestForPath(pathname);
+  const manifest = getManifestForPath(pathname, enabledModules);
   const section = findSectionByPath(pathname);
 
   // The Site segment is always present whenever the tenant has a site — a tenant

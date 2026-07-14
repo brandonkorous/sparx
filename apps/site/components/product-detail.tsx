@@ -134,6 +134,10 @@ export function ProductDetail({
   const priceCents = resolvedVariant?.priceCents ?? product.priceMinCents ?? 0;
   const compareAt = resolvedVariant?.compareAtPriceCents ?? null;
   const onSale = compareAt != null && compareAt > priceCents;
+  // A signed-in B2B customer's contract price for the resolved variant —
+  // resolved through the same priority chain checkout uses, so it's exactly
+  // what they'll be charged, not a separate estimate. Null for everyone else.
+  const yourPriceCents = resolvedVariant?.yourPriceCents ?? null;
 
   const inStock = resolvedVariant ? resolvedVariant.inStock : product.inStock;
   const available = resolvedVariant?.available ?? null;
@@ -217,14 +221,25 @@ export function ProductDetail({
         </h1>
 
         <div className="st-pdp__price">
-          {resolvedVariant
-            ? formatMoney(priceCents, currency, locale)
-            : formatPriceRange(product.priceMinCents, product.priceMaxCents, currency, locale)}
-          {onSale ? (
-            <span className="st-card__compare" style={{ fontSize: '1rem' }}>
-              {formatMoney(compareAt, currency, locale)}
-            </span>
-          ) : null}
+          {yourPriceCents != null ? (
+            <>
+              Your price: {formatMoney(yourPriceCents, currency, locale)}
+              <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+                {formatMoney(priceCents, currency, locale)}
+              </span>
+            </>
+          ) : (
+            <>
+              {resolvedVariant
+                ? formatMoney(priceCents, currency, locale)
+                : formatPriceRange(product.priceMinCents, product.priceMaxCents, currency, locale)}
+              {onSale ? (
+                <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+                  {formatMoney(compareAt, currency, locale)}
+                </span>
+              ) : null}
+            </>
+          )}
         </div>
 
         <StockLine inStock={inStock} lowStock={lowStock} available={available} />

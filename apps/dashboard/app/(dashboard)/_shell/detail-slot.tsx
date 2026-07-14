@@ -29,6 +29,7 @@ import { loadCategoryParents } from '../commerce/categories/_components/category
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
 import { WarehouseCreateForm } from '../inventory/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
+import { loadPriceListTargetingOptions } from '../commerce/pricing/_lib/targeting-options';
 import { SegmentCreateForm } from '../crm/segments/_components/segment-create-form';
 import { NewDealForm } from '../crm/deals/new/_components/new-deal-form';
 import { NewTaskForm } from '../crm/tasks/new/_components/new-task-form';
@@ -59,7 +60,6 @@ import { ResourceForm } from '../scheduling/resources/_components/resource-form'
 import { PolicyForm } from '../scheduling/policies/_components/policy-form';
 import { BookingForm } from '../scheduling/bookings/_components/booking-form';
 import type { SchedulingService } from '../scheduling/_lib/types';
-import { ServiceTypeForm } from '../b2b/service-types/_components/service-type-form';
 import { TierCreateForm } from '../b2b/pricing-tiers/_components/tier-create-form';
 import { SourceForm } from '../inventory/sources/_components/source-form';
 import {
@@ -505,6 +505,13 @@ async function CountCreateOverlay() {
   return <CountCreateForm surface="overlay" warehouses={warehouses} />;
 }
 
+// Price-list create overlay — needs the B2B account / segment targeting
+// options, so a thin server wrapper loads them (parity with CountCreateOverlay).
+async function PriceListCreateOverlay() {
+  const { b2bAccounts, segments } = await loadPriceListTargetingOptions();
+  return <PriceListCreateForm surface="overlay" b2bAccounts={b2bAccounts} segments={segments} />;
+}
+
 // New-site wizard as a create overlay — multi-step SurfaceFrame (full-bleed). It
 // needs the blueprint catalog + tenant zone suffix, so a thin server wrapper loads
 // them. Full page lives at /settings/sites/new; a created site returns to the list.
@@ -545,7 +552,7 @@ const createComponents: Record<string, React.ComponentType> = {
   // hands it the whole body. Full page stays at /commerce/products/new.
   product: () => <ProductWizard presentation="overlay" />,
   warehouse: () => <WarehouseCreateForm surface="overlay" />,
-  'price-list': () => <PriceListCreateForm surface="overlay" />,
+  'price-list': PriceListCreateOverlay,
   customer: CustomerCreateOverlay,
   'b2b-account': () => <B2bAccountWizard presentation="overlay" />,
   // Deal create is the single-step SurfaceFrame; a created deal opens into its detail.
@@ -586,7 +593,6 @@ const createComponents: Record<string, React.ComponentType> = {
   resource: () => <ResourceForm presentation="overlay" />,
   'booking-policy': () => <PolicyForm presentation="overlay" />,
   booking: BookingCreateOverlay,
-  'b2b-service-type': () => <ServiceTypeForm presentation="overlay" />,
   'b2b-pricing-tier': () => <TierCreateForm presentation="overlay" />,
   'inventory-source': () => <SourceForm presentation="overlay" />,
   'dropship-supplier': SupplierCreateOverlay,

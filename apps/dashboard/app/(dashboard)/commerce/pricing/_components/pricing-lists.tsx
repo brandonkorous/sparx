@@ -56,9 +56,23 @@ interface PricingListsProps {
   view: 'table' | 'card';
   /** Total price-list count (the only paged section); bulk tiers stay un-paged. */
   priceListTotal: number;
+  /** id → company name, for rendering a b2bAccountId target as a readable name. */
+  b2bAccountLabels: Record<string, string>;
+  /** id → segment name, for rendering a customerSegmentId target as a readable name. */
+  segmentLabels: Record<string, string>;
 }
 
-export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: PricingListsProps) {
+export function PricingLists({
+  priceLists,
+  bulkTiers,
+  view,
+  priceListTotal,
+  b2bAccountLabels,
+  segmentLabels,
+}: PricingListsProps) {
+  const priceListColumns = makePriceListColumns(b2bAccountLabels, segmentLabels);
+  const priceListCard = makePriceListCard(b2bAccountLabels, segmentLabels);
+
   return (
     <div className="flex flex-col gap-8">
       <PricingSection
@@ -182,34 +196,68 @@ const priceListStatus = (list: PriceListRow) => (
   </Badge>
 );
 
-const priceListColumns: SelectionColumn<PriceListRow>[] = [
-  { header: 'Name', cell: priceListName },
-  {
-    header: 'Currency',
-    cell: (list) => <span className="font-mono text-xs">{list.currency}</span>,
-  },
-  { header: 'Channel', cell: priceListChannel },
-  { header: 'Priority', cell: (list) => list.priority },
-  { header: 'Entries', cell: (list) => list.entryCount },
-  { header: 'Status', cell: priceListStatus },
-];
+// Target: the readable name of the b2bAccountId/customerSegmentId this list is
+// narrowed to, resolved from the bounded label maps the page fetched (no join
+// on the price-list row itself — see _lib/targeting-options.ts).
+function priceListTarget(
+  list: PriceListRow,
+  b2bAccountLabels: Record<string, string>,
+  segmentLabels: Record<string, string>
+) {
+  const label = list.b2bAccountId
+    ? (b2bAccountLabels[list.b2bAccountId] ?? 'B2B account')
+    : list.customerSegmentId
+      ? (segmentLabels[list.customerSegmentId] ?? 'Segment')
+      : null;
+  return label ? (
+    <Badge color="module" variant="soft" size="sm">
+      {label}
+    </Badge>
+  ) : (
+    <p className="text-base-content/70 text-xs">everyone</p>
+  );
+}
 
-const priceListCard: SelectionCard<PriceListRow> = {
-  title: priceListName,
-  badge: priceListStatus,
-  body: (list) => (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-center gap-2">
-        <span className="font-mono text-xs">{list.currency}</span>
-        {priceListChannel(list)}
+function makePriceListColumns(
+  b2bAccountLabels: Record<string, string>,
+  segmentLabels: Record<string, string>
+): SelectionColumn<PriceListRow>[] {
+  return [
+    { header: 'Name', cell: priceListName },
+    {
+      header: 'Currency',
+      cell: (list) => <span className="font-mono text-xs">{list.currency}</span>,
+    },
+    { header: 'Channel', cell: priceListChannel },
+    { header: 'Target', cell: (list) => priceListTarget(list, b2bAccountLabels, segmentLabels) },
+    { header: 'Priority', cell: (list) => list.priority },
+    { header: 'Entries', cell: (list) => list.entryCount },
+    { header: 'Status', cell: priceListStatus },
+  ];
+}
+
+function makePriceListCard(
+  b2bAccountLabels: Record<string, string>,
+  segmentLabels: Record<string, string>
+): SelectionCard<PriceListRow> {
+  return {
+    title: priceListName,
+    badge: priceListStatus,
+    body: (list) => (
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row flex-wrap items-center gap-2">
+          <span className="font-mono text-xs">{list.currency}</span>
+          {priceListChannel(list)}
+          {priceListTarget(list, b2bAccountLabels, segmentLabels)}
+        </div>
+        <div className="flex flex-row flex-wrap gap-4">
+          <p className="text-base-content/70 text-xs">Priority: {list.priority}</p>
+          <p className="text-base-content/70 text-xs">Entries: {list.entryCount}</p>
+        </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4">
-        <p className="text-base-content/70 text-xs">Priority: {list.priority}</p>
-        <p className="text-base-content/70 text-xs">Entries: {list.entryCount}</p>
-      </div>
-    </div>
-  ),
-};
+    ),
+  };
+}
 
 const bulkTierScope = (tier: BulkPriceTierRow) =>
   tier.variantId ? (

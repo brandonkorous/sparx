@@ -161,6 +161,47 @@ export const publishBuilderPage: McpToolDefinition = {
   },
 };
 
+export const setPageRecordType: McpToolDefinition = {
+  name: 'set_page_record_type',
+  description:
+    'Set a page’s recordType, turning it into a COLLECTION TEMPLATE that renders every record of that type (e.g. ' +
+    '"commerce.product", "cms.blog_post") — WITHOUT resending its content tree. Applies equally to a silica-' +
+    'materialized page (see describe_silica_authoring’s `metadata` section — a silica page id IS this row’s id). ' +
+    'Saves to DRAFT.',
+  scope: 'write:builder',
+  confirmation: false,
+  input: z.object({
+    pageId: z.string().uuid(),
+    recordType: z.string().min(1).max(63),
+    propertyId: propertyIdArg,
+  }),
+  run: async (ctx, input) => {
+    const { pageId, recordType, propertyId } = input as {
+      pageId: string;
+      recordType: string;
+      propertyId?: string;
+    };
+    const pctx = await toPropertyContext(ctx, propertyId);
+    return withSite(pctx, await pageService.update(pctx, pageId, { recordType }));
+  },
+};
+
+export const setPageDefault: McpToolDefinition = {
+  name: 'set_page_default',
+  description:
+    'Make a collection-template page the DEFAULT for its recordType — the template used when no per-record override ' +
+    'exists (e.g. the default product-detail layout). The page must already have a recordType set (via ' +
+    'set_page_record_type) and be a collection template. Saves to DRAFT.',
+  scope: 'write:builder',
+  confirmation: false,
+  input: z.object({ pageId: z.string().uuid(), propertyId: propertyIdArg }),
+  run: async (ctx, input) => {
+    const { pageId, propertyId } = input as { pageId: string; propertyId?: string };
+    const pctx = await toPropertyContext(ctx, propertyId);
+    return withSite(pctx, await pageService.setDefault(pctx, pageId));
+  },
+};
+
 export const deleteBuilderPage: McpToolDefinition = {
   name: 'delete_builder_page',
   description: 'Delete a Builder page permanently. Confirmation-gated.',
@@ -179,6 +220,8 @@ export const writeTools = [
   createBuilderPage,
   updateBuilderPage,
   setPageSeo,
+  setPageRecordType,
+  setPageDefault,
   publishBuilderPage,
   deleteBuilderPage,
 ];

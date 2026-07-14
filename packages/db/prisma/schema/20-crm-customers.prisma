@@ -89,9 +89,6 @@ model Customer {
   // B2B portal — contact role membership rows (docs/64 B2B Ph5)
   b2bContactRoles B2bAccountContact[]
 
-  // B2B scheduling — appointments booked by this customer (docs/64 Ph7)
-  serviceAppointments ServiceAppointment[]
-
   // Live Chat — conversations opened by this customer (docs/56)
   chatConversations ChatConversation[]
 
