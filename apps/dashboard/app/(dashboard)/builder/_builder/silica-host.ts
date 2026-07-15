@@ -17,6 +17,7 @@
 
 import type { BuilderHost, PaletteGroup } from '@wizeworks/silicaui-builder/react';
 import type { DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
+import { HOST_COMPONENTS } from '@sparx/silica-catalog';
 import {
   createSilicaClassValidator,
   createSilicaResolver,
@@ -50,6 +51,28 @@ export interface SilicaHostOptions {
   /** Host panels contributed to silica's Inspector — today the form-settings panel
    *  (where a submission goes, docs/115), which silica has no opinion about by design. */
   inspectorPanels?: BuilderHost['inspectorPanels'];
+  /** The live canvas preview for a pinned functional core (docs/122). Kept OUT of this
+   *  framework-free module — the client studio passes the React skeleton renderer in, so
+   *  this file never pulls a component bundle. Absent → the engine shows its own labeled
+   *  placeholder for a host node (still fine, just less branded). */
+  renderHostNode?: BuilderHost['renderHostNode'];
+}
+
+/** The pinned functional cores the Insert palette offers (docs/122) — `HOST_COMPONENTS`
+ *  (the React-free registry in @sparx/silica-catalog) mapped onto the builder's
+ *  `HostComponentDef`. Every core is `pinned: true`, so it inserts `locked: "host"`: the
+ *  engine refuses to remove/move it and the author UI offers no unlock. */
+function hostComponentDefs(): ReturnType<NonNullable<BuilderHost['hostComponents']>> {
+  return HOST_COMPONENTS.map((c) => ({
+    name: c.key,
+    label: c.label,
+    category: c.category,
+    icon: c.icon,
+    hint: c.hint,
+    pinned: true,
+    defaultClass: c.defaultClass,
+    ...(c.props ? { props: c.props } : {}),
+  }));
 }
 
 /** Assemble the sparx `BuilderHost`. The commerce catalog is structurally silica's
@@ -63,8 +86,10 @@ export function buildSilicaHost(opts: SilicaHostOptions): BuilderHost {
     resolveCollection: resolver.resolveCollection,
     dataSources: () => opts.dataSources,
     catalog: () => ({ extend: COMMERCE_CATALOG as unknown as PaletteGroup[] }),
+    hostComponents: hostComponentDefs,
     ...(validateClass ? { validateClass } : {}),
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
     ...(opts.inspectorPanels ? { inspectorPanels: opts.inspectorPanels } : {}),
+    ...(opts.renderHostNode ? { renderHostNode: opts.renderHostNode } : {}),
   };
 }

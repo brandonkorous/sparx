@@ -294,7 +294,11 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send(ok({ id: entry.id, status: entry.status }));
   });
 
-  // Class sessions a customer can join — open seats in a date range (docs/79 §7.2).
+  // Class sessions a customer can join, in a date range (docs/79 §7.2). NOT
+  // filtered to open seats — a full session still needs to be visible so a
+  // shopper can select it and land on the waitlist (bookClassSeat already
+  // handles overflow → waitlisted; filtering it out here just hid it with no
+  // way to ever reach that path from the storefront).
   app.get('/v1/public/scheduling/sessions', async (request) => {
     const tenantId = await requireScheduling(request);
     const q = SessionsQuery.parse(request.query);
@@ -302,7 +306,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     if (!service || !service.bookableOnline || !service.isActive) {
       throw notFound('Service', q.serviceId);
     }
-    const sessions = await listClassSessions(tenantId, { ...q, openOnly: true });
+    const sessions = await listClassSessions(tenantId, q);
     return ok(
       sessions.map((s) => ({
         bookingId: s.bookingId,

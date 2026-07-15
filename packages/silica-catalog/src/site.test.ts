@@ -52,10 +52,20 @@ const host: ResolveHost = {
 describe('starterSite — the silica-native seed', () => {
   const site = starterSite();
 
-  it('is a versioned Site with a frame and the four starter pages', () => {
+  it('is a versioned Site with a frame and the starter pages (incl. the editable cart)', () => {
     expect(site.version).toBe('1.0.0');
     expect(site.frame).toBeDefined();
-    expect(site.pages.map((p) => p.slug)).toEqual(['/', '/shop', '/about', '/contact']);
+    expect(site.pages.map((p) => p.slug)).toEqual([
+      '/',
+      '/shop',
+      '/cart',
+      '/search',
+      '/products',
+      '/collections',
+      '/category',
+      '/about',
+      '/contact',
+    ]);
   });
 
   it('gives the frame exactly one Outlet (the page-body slot)', () => {
@@ -69,6 +79,21 @@ describe('starterSite — the silica-native seed', () => {
       expect(page.id).toBeTruthy();
       expect(everyNodeHasId(page.root)).toBe(true);
     }
+  });
+
+  it('seeds an editable /book page only when the Scheduling module is active', () => {
+    // Default (no opts): scheduling is opt-in, so no Book page or nav link.
+    expect(starterPages().some((p) => p.slug === '/book')).toBe(false);
+    // Active: an editable shell page wrapping the pinned scheduling.services core.
+    const book = starterPages({ schedulingEnabled: true }).find((p) => p.slug === '/book');
+    expect(book).toBeDefined();
+    expect(everyNodeHasId(book!.root)).toBe(true);
+    // The seed carries the pinned booking-services core (lowered to its host mount).
+    let hasCore = false;
+    walk(book!.root, (n) => {
+      if (n.kind === 'host' && n.component === 'scheduling.services') hasCore = true;
+    });
+    expect(hasCore).toBe(true);
   });
 
   it('mints fresh ids per call — two seeds never share a node id', () => {
@@ -119,7 +144,17 @@ describe('renderSilicaPage — the storefront/publish render primitive', () => {
 describe('renderSilicaSite — the whole-site export', () => {
   it('renders every page, carrying identity + composed HTML', () => {
     const pages = renderSilicaSite(starterSite(), { host });
-    expect(pages.map((p) => p.slug)).toEqual(['/', '/shop', '/about', '/contact']);
+    expect(pages.map((p) => p.slug)).toEqual([
+      '/',
+      '/shop',
+      '/cart',
+      '/search',
+      '/products',
+      '/collections',
+      '/category',
+      '/about',
+      '/contact',
+    ]);
     for (const p of pages) {
       expect(p.html).toContain('min-h-screen'); // every page wears the frame
       expect(p.id).toBeTruthy();

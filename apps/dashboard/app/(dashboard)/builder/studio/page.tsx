@@ -3,6 +3,7 @@ import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
 import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/builder-schemas';
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
 import { starterSite } from '@sparx/silica-catalog';
+import { isModuleEnabled, requireSession } from '@sparx/auth';
 
 import { getActiveProperty } from '@/lib/sites';
 import { getBindingCatalog, getBuilderSite, listPages } from '../_lib/api';
@@ -78,7 +79,18 @@ interface BuilderStudioRouteProps {
 }
 
 export default async function BuilderStudioRoute({ searchParams }: BuilderStudioRouteProps) {
-  const [sp, catalog, baseBrand, config, activeProperty, storedSite, pages] = await Promise.all([
+  const session = await requireSession();
+  const [
+    sp,
+    catalog,
+    baseBrand,
+    config,
+    activeProperty,
+    storedSite,
+    pages,
+    commerceEnabled,
+    schedulingEnabled,
+  ] = await Promise.all([
     searchParams,
     getBindingCatalog().catch(() => ({ sources: [] })),
     getBrand().catch(() => FALLBACK_BRAND),
@@ -89,6 +101,12 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     // seed for the header page-settings drawer. Empty on failure (drawer still opens,
     // just without pre-filled values until the first save).
     listPages().catch(() => []),
+    // Only shapes the STARTER seed (below) for a tenant with no silica site yet —
+    // fails open to `true` (today's unconditional-Shop behavior) so a lookup
+    // failure never hides real Commerce chrome from a paying tenant.
+    isModuleEnabled(session.user.tenantId, 'commerce').catch(() => true),
+    // Same, for the Scheduling module's Book link/page — fails CLOSED (opt-in).
+    isModuleEnabled(session.user.tenantId, 'scheduling').catch(() => false),
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
@@ -118,7 +136,9 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
   // frame/Outlet chrome, symbols, and undo. A property with no silica site yet
   // opens on the starter seed, and the first autosave materializes it into the
   // store (siteService.sync).
-  const site: Site = storedSite ? { version: '1.0.0', ...storedSite, theme } : starterSite(theme);
+  const site: Site = storedSite
+    ? { version: '1.0.0', ...storedSite, theme }
+    : starterSite(theme, { commerceEnabled, schedulingEnabled });
 
   return (
     <SilicaStudio

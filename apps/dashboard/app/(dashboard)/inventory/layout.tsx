@@ -1,14 +1,15 @@
 import { ModuleProvider } from '@sparx/ui';
 
-// Inventory is gated at the API tier (requireInventoryModule) and renders
-// ungated on the dashboard side today, so this layout intentionally adds NO
-// ModuleGate — it only supplies the module's Amber color to every /inventory/*
-// route (the overview, sources, locations) via ModuleProvider, the same way the
-// other module layouts do.
+import { ModuleGate } from '../../../components/module-gate';
+
+// Inventory module gate lives here, not on each page.tsx, so every route under
+// /inventory/* gates from one place — mirrors invoicing/layout.tsx (the other
+// bundled-free-with-commerce/b2b module). A module flip via /settings/modules
+// calls revalidatePath('/inventory', 'layout') so the next request re-checks.
 export default function InventoryLayout({ children }: { children: React.ReactNode }) {
   return (
     <ModuleProvider module="inventory" className="flex h-full min-h-0 flex-col">
-      {children}
+      <ModuleGate module="inventory">{children}</ModuleGate>
     </ModuleProvider>
   );
 }

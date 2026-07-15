@@ -15,6 +15,8 @@ import {
   COMMERCE_SOURCES,
   CRM_SOURCES,
   EMAIL_SOURCES,
+  SCHEDULING_SOURCES,
+  commerceCategorySource,
   mapCmsContentType,
   type BindingCatalog,
   type CmsFieldLike,
@@ -52,11 +54,37 @@ async function loadCmsSources(tx: Prisma.TransactionClient): Promise<DataSource[
   });
 }
 
-/** The PAGE binding catalog — CMS content types + Commerce/CRM domain sources. */
+/** The tenant's product collections → parameterized `commerce.category.<handle>`
+ *  sources (docs/122), so the configurable Products block can bind a repeat to a
+ *  specific category from the studio picker. Same cross-module introspection pattern
+ *  as `loadCmsSources` — the builder reads what the tenant has to offer it as a
+ *  source. Soft-deleted collections are excluded; ordered by name for a stable picker. */
+async function loadCommerceCategorySources(tx: Prisma.TransactionClient): Promise<DataSource[]> {
+  const rows = await tx.productCollection.findMany({
+    where: { deletedAt: null },
+    orderBy: { name: 'asc' },
+    select: { handle: true, name: true },
+  });
+  return rows.map((r) => commerceCategorySource(r.handle, r.name));
+}
+
+/** The PAGE binding catalog — CMS content types + Commerce/CRM domain sources, plus
+ *  one `commerce.category.<handle>` source per tenant product collection. */
 export function getSchema(ctx: ServiceContext): Promise<BindingCatalog> {
   return withTenant(ctx, async (tx) => {
+    // Sequential (not Promise.all): both reads share one interactive tx, which
+    // serializes queries — concurrent use on the same client is unsupported.
     const cmsSources = await loadCmsSources(tx);
-    return { sources: [...cmsSources, ...COMMERCE_SOURCES, ...CRM_SOURCES] };
+    const categorySources = await loadCommerceCategorySources(tx);
+    return {
+      sources: [
+        ...cmsSources,
+        ...COMMERCE_SOURCES,
+        ...categorySources,
+        ...CRM_SOURCES,
+        ...SCHEDULING_SOURCES,
+      ],
+    };
   });
 }
 

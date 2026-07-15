@@ -31,6 +31,7 @@
 import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
+import { HOST_KEYS, functionalShell } from './host-nodes';
 
 // A neutral, self-contained placeholder tile (inline SVG data-URI) — the Image's
 // default `src` so the UNBOUND state (a card just inserted, not yet pinned to a
@@ -80,42 +81,83 @@ function productCardNode(extraClass = ''): Node {
 }
 
 /** A single product card — image, name, price. Bind it to one product (an entity
- *  pin) or let it inherit an ancestor product scope. */
+ *  pin) or let it inherit an ancestor product scope. This IS the reusable card the
+ *  Products block repeats; select it in the editor and "Save as component" to fork a
+ *  custom card, then swap it into the block. */
 export function productCard(): Node {
   return productCardNode();
 }
 
-/** A responsive grid that repeats over the tenant's product catalog. The grid
- *  container carries the `commerce.product` collection binding; each product scopes
- *  one card. */
-export function productGrid(): Node {
+/** Which product source a Products block binds. `commerce.product` is the whole
+ *  catalog (a shop-all grid); the rest are BOUNDED rails the storefront caps —
+ *  featured (merchant-tagged), new (newest), related (same collection as the viewed
+ *  product), or a specific category (`commerce.category.<collectionHandle>`). The
+ *  editor's data-source picker repoints this per instance (docs/122). */
+export type ProductsSource =
+  | 'commerce.product'
+  | 'commerce.featured'
+  | 'commerce.new'
+  | 'commerce.related'
+  | `commerce.category.${string}`;
+
+/** grid = a responsive multi-column grid (a shop/catalog page); rail = a horizontal
+ *  snap-scrolling strip (a featured/cross-sell rail). Switchable in the editor via the
+ *  normal layout controls too — the difference is only the repeat container's classes. */
+export type ProductsLayout = 'grid' | 'rail';
+
+export interface ProductsBlockOptions {
+  source?: ProductsSource;
+  layout?: ProductsLayout;
+  heading?: string;
+}
+
+// Literal container trees per layout — the authoring contract (§5) requires every
+// class to be a LITERAL string so the Tailwind `@source` harness safelists it; a
+// computed/concatenated class string would ship un-generated utilities. So each
+// layout is its own literal node rather than a templated class.
+function gridContainer() {
+  return el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
+    children: [productCardNode()],
+  });
+}
+function railContainer() {
+  return el('div', 'flex snap-x gap-6 overflow-x-auto pb-4', {
+    children: [productCardNode('w-64 shrink-0 snap-start')],
+  });
+}
+
+/** THE configurable product listing — one block, prop-driven. It repeats the reusable
+ *  product card over the chosen `source`, laid out as a `grid` or a `rail`. The editor
+ *  surfaces `source` through the data-source picker (every option is registered in
+ *  `COMMERCE_SOURCES`) and `layout` through the normal layout controls; `productGrid`
+ *  and `featuredProducts` below are just this block with preset literal options, kept
+ *  so existing pages and the starter/blueprints resolve unchanged. */
+export function productsBlock(opts: ProductsBlockOptions = {}): Node {
+  const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
   return el('section', 'bg-base-100 @container px-6 py-12', {
     children: [
-      el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: 'Shop our products' }),
-      repeat(
-        el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
-          children: [productCardNode()],
-        }),
-        'commerce.product'
-      ),
+      el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
+      repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
     ],
   });
 }
 
-/** A horizontal, snap-scrolling rail of products — the "featured" merchandising
- *  strip. Same product source, laid out as a scroll row instead of a grid. */
-export function featuredProducts(): Node {
-  return el('section', 'bg-base-200 @container px-6 py-12', {
-    children: [
-      el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: 'Featured' }),
-      repeat(
-        el('div', 'flex snap-x gap-6 overflow-x-auto pb-4', {
-          children: [productCardNode('w-64 shrink-0 snap-start')],
-        }),
-        'commerce.product'
-      ),
-    ],
+/** A responsive grid over the whole catalog — the shop-all page. A preset of
+ *  `productsBlock`. */
+export function productGrid(): Node {
+  return productsBlock({
+    source: 'commerce.product',
+    layout: 'grid',
+    heading: 'Shop our products',
   });
+}
+
+/** A horizontal, snap-scrolling rail of FEATURED products — a preset of
+ *  `productsBlock` bound to the BOUNDED `commerce.featured` source (merchant-tagged,
+ *  capped to a handful, newest-few fallback, current product excluded on a PDP). A
+ *  curated few, never the entire catalog. */
+export function featuredProducts(): Node {
+  return productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Featured' });
 }
 
 /** The Add-to-cart FORM — the buy box's interactive half.
@@ -259,6 +301,17 @@ export function collectionDetailPage(): Node {
     }),
     'collection'
   );
+}
+
+/** The full category-detail PAGE body (docs/122) — the `commerce.category` record
+ *  template's default: an editable shell wrapping the PINNED `commerce.category-detail`
+ *  core. Unlike `collectionDetailPage` (a bind-based flat grid), a category is a browse
+ *  TREE node whose header + subcategories + paginated product ROLLUP (self + descendants)
+ *  is server-computed, so the whole experience is one self-contained functional core the
+ *  tenant surrounds/restyles but can't delete. No shell heading — the core renders its own
+ *  header. The route mounts `<CategoryDetail>` at the host node with the category handle. */
+export function categoryDetailPage(): Node {
+  return functionalShell(HOST_KEYS.commerceCategoryDetail);
 }
 
 /** A centered header band for a collection / category landing page. Binds its

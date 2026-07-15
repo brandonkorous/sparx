@@ -103,10 +103,19 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium">Last dev send</p>
           <p className="text-base-content/70 text-xs">
-            <Code>{devLastSend.send.template ?? 'unknown'}</Code> → {devLastSend.send.to} ·{' '}
+            <Code>{devLastSend.send.templateId ?? 'unknown'}</Code> → {devLastSend.send.to} ·{' '}
             {new Date(devLastSend.send.acceptedAt).toLocaleString()}
           </p>
           <p className="text-base-content/70 text-xs">Subject: {devLastSend.send.subject}</p>
+          {devLastSend.send.text && (
+            <p className="text-base-content/70 text-xs">
+              Plain-text body:{' '}
+              <Code>
+                {devLastSend.send.text.slice(0, 120)}
+                {devLastSend.send.text.length > 120 ? '…' : ''}
+              </Code>
+            </p>
+          )}
         </div>
       )}
     </div>

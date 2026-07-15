@@ -1,17 +1,20 @@
-// Category index — the top level of the browse tree (root categories, featured
-// first). Each tile drills into /category/[handle], where its subcategories and
-// product rollup live. Hand-composed like the collections index; categories are
-// a structural tree, not a customizable layout target.
+// Category index — an EDITABLE shell around a PINNED `commerce.categories` core
+// (docs/122). The live card grid of root browse categories (each drilling into
+// /category/[handle]) lives in the host node the tenant can restyle and surround but not
+// delete; the route renders the stored shell (or the code fallback). Site-only, no URL
+// state. (The category DETAIL, /category/[handle], is a per-record template — it rides
+// the same pinned-core path once categories get a stored silica template, alongside the
+// PDP-as-functional work.)
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { EmptyState } from '@/components/empty-state';
-import { listCategories } from '@/lib/commerce';
-import { resolveSite } from '@/lib/site-context';
-
-import { CategoryCard } from './_lib/category-card';
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { getPublishedSilicaPage } from '@/lib/silica';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,40 +24,20 @@ export default async function CategoryIndexPage() {
   const site = await resolveSite();
   if (!site) notFound();
 
-  const all = await listCategories(site.slug);
-  const roots = all
-    .filter((c) => c.parentId === null)
-    .sort(
-      (a, b) =>
-        Number(b.featured) - Number(a.featured) ||
-        a.position - b.position ||
-        a.name.localeCompare(b.name)
-    );
+  const propertySlug = await resolveActivePropertySlug();
+  // The tenant's published categories shell, else the code shell wrapping the pinned
+  // core. No shell heading — the core renders its own header + subtitle.
+  const published = await getPublishedSilicaPage(site.slug, 'category');
+  const shell = published?.root ?? functionalShell(HOST_KEYS.commerceCategories);
+  const renderHost = storefrontHostRenderer({
+    site,
+    propertySlug: propertySlug ?? undefined,
+  });
 
   return (
     <div className="st-container">
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Categories' }]} />
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 className="st-h1">Categories</h1>
-        <p className="st-muted" style={{ marginTop: '0.5rem' }}>
-          Browse everything at {site.name}.
-        </p>
-      </header>
-
-      {roots.length === 0 ? (
-        <EmptyState
-          icon="▤"
-          title="No categories yet"
-          description="Check back soon, or browse the full catalog."
-          action={{ label: 'Shop all products', href: '/products' }}
-        />
-      ) : (
-        <div className="st-grid st-grid--auto">
-          {roots.map((c) => (
-            <CategoryCard key={c.id} category={c} tenantSlug={site.slug} />
-          ))}
-        </div>
-      )}
+      <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>
   );
 }

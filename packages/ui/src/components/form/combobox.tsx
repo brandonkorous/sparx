@@ -111,6 +111,7 @@ function CustomRow({
 interface ComboboxProps extends SharedProps {
   id?: string;
   value: string;
+  color?: string;
   onChange: (value: string) => void;
   /** Width / sizing of the trigger button (default `w-full`). */
   triggerClassName?: string;
@@ -126,6 +127,7 @@ export function Combobox({
   customHint = 'Use this exact value',
   allowCustom = true,
   mono = false,
+  color = '',
   disabled,
   triggerClassName,
   'aria-label': ariaLabel,
@@ -155,7 +157,7 @@ export function Combobox({
           id={id}
           type="button"
           variant="outline"
-          color="neutral"
+          color={color}
           role="combobox"
           aria-expanded={open}
           aria-controls={listboxId}

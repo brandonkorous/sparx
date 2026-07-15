@@ -293,7 +293,13 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
                 )
               ) : null}
 
-              {repeat ? null : (
+              {repeat ? (
+                <p className="text-base-content/70 text-sm">
+                  A recurring series creates the schedule only — it doesn&apos;t book anyone in.
+                  Customers reserve (or you book them into) each date individually once the series
+                  exists.
+                </p>
+              ) : (
                 <>
                   <Field>
                     <FieldLabel>Customer name</FieldLabel>

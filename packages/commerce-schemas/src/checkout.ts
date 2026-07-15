@@ -83,6 +83,10 @@ export const CheckoutSessionSnapshot = z.object({
   customerEmail: z.string().email().optional(),
   customerId: Uuid.optional(),
   b2bAccountId: Uuid.optional(),
+  // The linked B2B account's payment-terms designation (e.g. 'prepay',
+  // 'net30') — lets the storefront hide "bill to account" for a prepay
+  // account instead of offering net terms it isn't entitled to.
+  b2bAccountPaymentTerms: z.string().optional(),
   shippingAddress: AddressSnapshot.optional(),
   billingAddress: AddressSnapshot.optional(),
   shippingProviderSlug: z.string().optional(),

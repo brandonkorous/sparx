@@ -203,10 +203,65 @@ const COLLECTION_FIELDS: FieldSchema[] = [
   },
 ];
 
+// A browse-CATEGORY's own fields — the record a `commerce.category` detail template
+// binds its header to (docs/122). A category is a tree node, not a flat merchandising
+// surface: its product ROLLUP (self + descendants, paginated) is a functional core, not
+// a bindable list, so unlike COLLECTION_FIELDS there is no `products` list here — the
+// pinned `commerce.category-detail` core owns the rollup.
+const CATEGORY_FIELDS: FieldSchema[] = [
+  { key: 'id', label: 'Category ID', kind: 'text', cardinality: 'scalar' },
+  { key: 'handle', label: 'Handle (URL)', kind: 'text', cardinality: 'scalar' },
+  { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+  { key: 'description', label: 'Description', kind: 'richtext', cardinality: 'scalar' },
+  { key: 'image', label: 'Hero image', kind: 'image', cardinality: 'scalar' },
+  { key: 'url', label: 'Category URL', kind: 'text', cardinality: 'scalar' },
+];
+
+// A bookable SERVICE's own fields — the record a `scheduling.service` detail template
+// binds its header to (docs/122). The live time-picker (availability, slot selection) is
+// a functional core (`scheduling.service-detail`), so no availability data lives here.
+const SERVICE_FIELDS: FieldSchema[] = [
+  { key: 'id', label: 'Service ID', kind: 'text', cardinality: 'scalar' },
+  { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+  { key: 'description', label: 'Description', kind: 'richtext', cardinality: 'scalar' },
+  { key: 'duration', label: 'Duration (minutes)', kind: 'number', cardinality: 'scalar' },
+  { key: 'price', label: 'Price', kind: 'number', cardinality: 'scalar' },
+  { key: 'image', label: 'Image', kind: 'image', cardinality: 'scalar' },
+  { key: 'url', label: 'Booking URL', kind: 'text', cardinality: 'scalar' },
+];
+
 export const COMMERCE_SOURCES: DataSource[] = [
   {
     key: 'commerce.product',
-    label: 'Products',
+    label: 'All products',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'product',
+    fields: PRODUCT_FIELDS,
+  },
+  // The bounded rails the configurable Products block picks between (docs/118). Same
+  // product SHAPE as `commerce.product`; the storefront caps each to a handful and
+  // (on a PDP) excludes the product being viewed. `commerce.category.<handle>` is
+  // parameterized — the editor's Products inspector appends the chosen collection.
+  {
+    key: 'commerce.featured',
+    label: 'Featured products',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'product',
+    fields: PRODUCT_FIELDS,
+  },
+  {
+    key: 'commerce.new',
+    label: 'New arrivals',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'product',
+    fields: PRODUCT_FIELDS,
+  },
+  {
+    key: 'commerce.related',
+    label: 'Related products',
     module: 'commerce',
     cardinality: 'array',
     recordType: 'product',
@@ -236,7 +291,46 @@ export const COMMERCE_SOURCES: DataSource[] = [
     recordType: 'collection',
     fields: COLLECTION_FIELDS,
   },
+  // Browse categories — the ARRAY source makes `commerce.category` a template record
+  // type in the studio (a category-detail page); the OBJECT source (`category`) is the
+  // in-scope record a category-detail template binds its header to. Distinct from the
+  // parameterized `commerce.category.<handle>` product sources (a specific category's
+  // products for the Products block) — this is the category TYPE, not one category's items.
+  {
+    key: 'commerce.category',
+    label: 'Categories',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'category',
+    fields: CATEGORY_FIELDS,
+  },
+  {
+    key: 'category',
+    label: 'Category',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'category',
+    fields: CATEGORY_FIELDS,
+  },
 ];
+
+/** One tenant product collection → a parameterized `commerce.category.<handle>`
+ *  source for the configurable Products block (docs/122). `bindingService` enumerates
+ *  the tenant's real collections into the page catalog so each surfaces in the studio
+ *  binding picker as its own source ("Category: <name>"); picking one binds a Products
+ *  repeat to that collection. Same product SHAPE as `commerce.product` — the storefront
+ *  resolves the ref via `listCollectionProducts(handle)`. Handles are kebab-case (no
+ *  dots), so the dotted binding key stays a clean three-segment path. */
+export function commerceCategorySource(handle: string, name: string): DataSource {
+  return {
+    key: `commerce.category.${handle}`,
+    label: `Category: ${name}`,
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'product',
+    fields: PRODUCT_FIELDS,
+  };
+}
 
 export const CRM_SOURCES: DataSource[] = [
   {
@@ -249,6 +343,32 @@ export const CRM_SOURCES: DataSource[] = [
       { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
       { key: 'subscribers', label: 'Subscribers', kind: 'number', cardinality: 'scalar' },
     ],
+  },
+];
+
+// ── Scheduling sources ────────────────────────────────────────────────────────
+//
+// The ARRAY `scheduling.service` makes a bookable-service DETAIL a template record type
+// in the studio (docs/122); the OBJECT `service` is the in-scope record such a template
+// binds its header to. The live time-picker is a pinned `scheduling.service-detail`
+// functional core (availability isn't bindable data), so these fields are the service's
+// own descriptive attributes only.
+export const SCHEDULING_SOURCES: DataSource[] = [
+  {
+    key: 'scheduling.service',
+    label: 'Bookable services',
+    module: 'scheduling',
+    cardinality: 'array',
+    recordType: 'service',
+    fields: SERVICE_FIELDS,
+  },
+  {
+    key: 'service',
+    label: 'Service',
+    module: 'scheduling',
+    cardinality: 'object',
+    recordType: 'service',
+    fields: SERVICE_FIELDS,
   },
 ];
 

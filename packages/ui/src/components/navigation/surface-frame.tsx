@@ -552,12 +552,14 @@ function TopStepperFrame({
     <ActionSlotProvider>
       <div className={cn('bg-base-200 flex h-full flex-col overflow-hidden', className)}>
         <FrameToolbar title={title} footer={footer} />
-        <TopStepper
-          steps={steps}
-          current={current}
-          onStepSelect={onStepSelect}
-          canSelectStep={canSelectStep}
-        />
+        {steps.length > 1 && (
+          <TopStepper
+            steps={steps}
+            current={current}
+            onStepSelect={onStepSelect}
+            canSelectStep={canSelectStep}
+          />
+        )}
         {context && (
           <p className="text-base-content/60 border-base-300 bg-base-200 shrink-0 border-b px-6 py-2 text-center text-xs">
             {context}

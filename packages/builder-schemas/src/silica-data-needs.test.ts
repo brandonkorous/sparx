@@ -16,6 +16,15 @@ describe('collectSilicaSourceNeeds', () => {
     expect(needs.cmsTypes).toEqual([]);
   });
 
+  it('flags commerce for a commerce.featured rail (bounded, same fetch as the catalog)', () => {
+    const tree = repeat(
+      el('div', '', { children: [bind(el('h3'), 'title')] }),
+      'commerce.featured'
+    );
+    const needs = collectSilicaSourceNeeds(tree);
+    expect(needs.commerce).toBe(true);
+  });
+
   it('ignores scope-relative value refs (item.* / bare field keys)', () => {
     // A card's inner binds (`title`, `price`, `image`) name no source — only the
     // enclosing collection repeat does.
@@ -66,9 +75,34 @@ describe('collectSilicaSourceNeeds', () => {
     const tree = el('section', 'p-6', { children: [el('h1', '', { text: 'Hello' })] });
     expect(collectSilicaSourceNeeds(tree)).toEqual({
       commerce: false,
+      products: { catalog: false, featured: false, fresh: false, related: false, categories: [] },
       cmsTypes: [],
       productPins: [],
       cmsPins: [],
+    });
+  });
+
+  it('classifies each configurable product source (catalog/featured/new/related/category)', () => {
+    const rail = (ref: string) =>
+      repeat(el('div', '', { children: [bind(el('h3'), 'title')] }), ref);
+    const tree = el('div', '', {
+      children: [
+        rail('commerce.product'),
+        rail('commerce.featured'),
+        rail('commerce.new'),
+        rail('commerce.related'),
+        rail('commerce.category.studio-goods'),
+        rail('commerce.category.studio-goods'), // de-duped
+      ],
+    });
+    const needs = collectSilicaSourceNeeds(tree);
+    expect(needs.commerce).toBe(true);
+    expect(needs.products).toEqual({
+      catalog: true,
+      featured: true,
+      fresh: true,
+      related: true,
+      categories: ['studio-goods'],
     });
   });
 });

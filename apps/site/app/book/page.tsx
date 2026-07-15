@@ -1,51 +1,43 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+// Book — an EDITABLE shell around a PINNED `scheduling.services` core (docs/122). The
+// live list of bookable services (each drilling into /book/[serviceId]) lives in the host
+// node the tenant can restyle and surround but not delete; the route renders the stored
+// shell (or the code fallback). The route 404s when the Scheduling module is off (module
+// gating) — otherwise it always renders, and the core shows an empty state until a service
+// is bookable. (The service DETAIL, /book/[serviceId], is a per-record template — it rides
+// the same pinned-core path once services get a stored silica template.)
 
-import { listBookableServices } from '../../lib/scheduling';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
+
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Book an appointment' };
-
-function money(cents: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
-}
-
-function duration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
-}
+export const metadata: Metadata = { title: 'Book an appointment' };
 
 export default async function BookIndexPage() {
-  const services = await listBookableServices();
-  if (services.length === 0) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
+  // Module gating: a tenant without the Scheduling module has no booking surface.
+  if (!(await resolveSchedulingEnabled(site.slug))) notFound();
+
+  const propertySlug = await resolveActivePropertySlug();
+  // The tenant's published booking shell, else the code shell wrapping the pinned core.
+  // No shell heading — the services list core renders its own header + subtitle.
+  const published = await getPublishedSilicaPage(site.slug, 'book');
+  const shell = published?.root ?? functionalShell(HOST_KEYS.schedulingServices);
+  const renderHost = storefrontHostRenderer({
+    site,
+    propertySlug: propertySlug ?? undefined,
+  });
 
   return (
-    <section className="st-container st-section">
-      <header className="st-booking__header">
-        <h1 className="st-h1">Book with us</h1>
-        <p className="st-muted">Choose a service to see open times and reserve your spot.</p>
-      </header>
-
-      <ul className="st-booking__service-list">
-        {services.map((s) => (
-          <li key={s.id}>
-            <Link href={`/book/${s.id}`} className="st-card st-booking__service-card">
-              <span className="st-booking__service-name st-h3">{s.name}</span>
-              {s.description ? <span className="st-muted">{s.description}</span> : null}
-              <span className="st-booking__service-meta">
-                <span>{duration(s.durationMinutes)}</span>
-                {s.priceCents > 0 ? <span>{money(s.priceCents, s.currency)}</span> : null}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="st-container">
+      <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
+    </div>
   );
 }

@@ -63,7 +63,7 @@ export interface ConsoleSend {
   subject?: string;
   html?: string;
   text?: string;
-  template?: string;
+  templateId?: string;
   props?: Record<string, unknown>;
 }
 

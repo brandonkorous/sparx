@@ -52,8 +52,13 @@ export interface PaymentStepProps {
 // from before this existed.
 export function PaymentStep(props: PaymentStepProps) {
   const { session } = props;
+  // A prepay-designated account has no net-terms entitlement — go straight
+  // to card, same as a non-B2B shopper (server-side submitPayment() also
+  // rejects a net-terms request from a prepay account either way).
+  const netTermsEligible =
+    Boolean(session.b2bAccountId) && session.b2bAccountPaymentTerms !== 'prepay';
   const [method, setMethod] = useState<'choose' | 'card' | 'account'>(
-    session.b2bAccountId ? 'choose' : 'card'
+    netTermsEligible ? 'choose' : 'card'
   );
 
   if (method === 'choose') {
@@ -88,7 +93,7 @@ export function PaymentStep(props: PaymentStepProps) {
   return (
     <CardPaymentStep
       {...props}
-      onBack={session.b2bAccountId ? () => setMethod('choose') : props.onBack}
+      onBack={netTermsEligible ? () => setMethod('choose') : props.onBack}
     />
   );
 }

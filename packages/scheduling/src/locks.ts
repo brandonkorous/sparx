@@ -27,7 +27,11 @@ const LOCK_NS_POOLED_RESOURCE = 4802;
  *  within this transaction, so a concurrent join can't read a stale seat count and
  *  overbook. Keyed on the session booking id; released at transaction end. */
 export async function lockClassSession(tx: TxClient, bookingId: string): Promise<void> {
-  await tx.$queryRaw`SELECT pg_advisory_xact_lock(${LOCK_NS_CLASS_SEAT}::int4, hashtext(${bookingId})::int4)`;
+  // $executeRaw, not $queryRaw — the function returns `void`, a column type
+  // Prisma's query path can't deserialize ("Failed to deserialize column of
+  // type 'void'"). We never read a result, only wait for the lock, so the
+  // statement-execution path (no result-row deserialization) is correct here.
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(${LOCK_NS_CLASS_SEAT}::int4, hashtext(${bookingId})::int4)`;
 }
 
 /** Serialize concurrent bookings competing for the same non-exclusive (pooled)
@@ -39,6 +43,7 @@ export async function lockClassSession(tx: TxClient, bookingId: string): Promise
 export async function lockPooledResources(tx: TxClient, resourceIds: string[]): Promise<void> {
   const sorted = [...new Set(resourceIds)].sort();
   for (const id of sorted) {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${LOCK_NS_POOLED_RESOURCE}::int4, hashtext(${id})::int4)`;
+    // $executeRaw — see lockClassSession's comment; `void`-returning function.
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${LOCK_NS_POOLED_RESOURCE}::int4, hashtext(${id})::int4)`;
   }
 }

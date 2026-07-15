@@ -3,6 +3,7 @@
 // fresh-products rail. A brand-new store with no content still gets a polished
 // landing page rather than an empty shell.
 
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -19,6 +20,7 @@ import { buildSilicaHost } from '@/lib/silica-data';
 import { SilicaBody } from '@/components/silica-chrome';
 import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
+import { ogImageUrl } from '@/lib/og';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { ButtonLink } from '@/components/button-link';
@@ -27,6 +29,40 @@ export const dynamic = 'force-dynamic';
 
 interface RootPageProps {
   searchParams?: Promise<{ sparxPreview?: string; sparxSitePreview?: string }>;
+}
+
+// The silica engine's published HOME page owns `/` (docs/118 Stage 6) — title it
+// from its own SEO fields, mirroring the [...slug] route's silica branch. Every
+// other home path (legacy Builder, Site Builder, empty-store) keeps the generic
+// layout-level fallback, unchanged.
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await resolveSite();
+  if (!site) return {};
+  const silicaHome = await getPublishedSilicaHome(site.slug);
+  if (!silicaHome) return {};
+
+  const clean = (v: string | null): string | undefined => {
+    const t = v?.trim();
+    return t && t.length > 0 ? t : undefined;
+  };
+  const title = clean(silicaHome.seoTitle) ?? site.name;
+  const description = clean(silicaHome.seoDescription);
+  const canonical = clean(silicaHome.canonical);
+  const ogImage =
+    clean(silicaHome.ogImage) ??
+    ogImageUrl({
+      title: clean(silicaHome.seoTitle) ?? site.name,
+      eyebrow: 'Home',
+      brand: site.name,
+      accent: site.theme?.colorPrimary,
+    });
+  return {
+    title,
+    ...(description ? { description } : {}),
+    ...(canonical ? { alternates: { canonical } } : {}),
+    openGraph: { title, ...(description ? { description } : {}), images: [{ url: ogImage }] },
+    robots: silicaHome.noindex ? { index: false, follow: false } : { index: true, follow: true },
+  };
 }
 
 export default async function SiteRoot({ searchParams }: RootPageProps) {

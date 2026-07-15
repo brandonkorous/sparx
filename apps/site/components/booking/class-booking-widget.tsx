@@ -108,7 +108,9 @@ export function ClassBookingWidget({
               >
                 <span className="st-booking__session-when">{formatSession(s.startAt)}</span>
                 <span className="st-booking__session-seats st-muted">
-                  {s.remaining} {s.remaining === 1 ? 'seat' : 'seats'} left
+                  {s.remaining > 0
+                    ? `${s.remaining} ${s.remaining === 1 ? 'seat' : 'seats'} left`
+                    : 'Full — join the waitlist'}
                 </span>
               </button>
             ))}

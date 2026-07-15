@@ -28,13 +28,16 @@ import {
 } from '@wizeworks/silicaui-html';
 
 import { collectionHeader, featuredProducts, productGrid } from './commerce';
-import { siteFooter, siteNavbar } from './site-chrome';
+import { HOST_KEYS, functionalShell } from './host-nodes';
+import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 
 // ── Page content (sparx-authored, neutral copy) ──────────────────────────────
 
 /** A centered text hero — no image (so no broken-placeholder), neutral copy that
- *  fits a publisher, a shop, or both. The owner edits the words in place. */
-function hero(): Node {
+ *  fits a publisher, a shop, or both. The owner edits the words in place. A
+ *  Commerce-less tenant gets no "Browse the shop" CTA (there's no `/shop` page
+ *  to send visitors to — see `starterPages`). */
+function hero(commerceEnabled: boolean): Node {
   return el('section', 'bg-base-100 px-6 py-20 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col items-center gap-5', {
@@ -43,18 +46,28 @@ function hero(): Node {
             text: 'Your work, beautifully online.',
           }),
           el('p', 'text-lg text-base-content/70', {
-            text: 'Publish your pages, tell your story, and sell when you are ready — all from one place. This is your homepage; edit every word to make it yours.',
+            text: commerceEnabled
+              ? 'Publish your pages, tell your story, and sell when you are ready — all from one place. This is your homepage; edit every word to make it yours.'
+              : 'Publish your pages and tell your story — all from one place. This is your homepage; edit every word to make it yours.',
           }),
           el('div', 'mt-2 flex flex-wrap items-center justify-center gap-3', {
             children: [
-              el('a', 'btn btn-primary btn-lg', {
-                attrs: { href: '/shop' },
-                text: 'Browse the shop',
-              }),
-              el('a', 'btn btn-neutral btn-outline btn-lg', {
-                attrs: { href: '/about' },
-                text: 'Learn more',
-              }),
+              ...(commerceEnabled
+                ? [
+                    el('a', 'btn btn-primary btn-lg', {
+                      attrs: { href: '/shop' },
+                      text: 'Browse the shop',
+                    }),
+                  ]
+                : []),
+              el(
+                'a',
+                commerceEnabled ? 'btn btn-neutral btn-outline btn-lg' : 'btn btn-primary btn-lg',
+                {
+                  attrs: { href: '/about' },
+                  text: 'Learn more',
+                }
+              ),
             ],
           }),
         ],
@@ -172,33 +185,127 @@ function contactContent(): Node {
  *  (every page body drops in here), and the branded footer. The `min-h-screen
  *  flex-col` column pins the footer to the bottom on short pages. The main carries
  *  id="st-main" so the storefront skip-link targets it. Exactly one Outlet. */
-function frameRoot(): Node {
+function frameRoot(opts: SiteChromeOptions = {}): Node {
   return el('div', 'flex min-h-screen flex-col bg-base-100', {
     children: [
-      siteNavbar(),
+      siteNavbar(opts),
       el('main', 'flex-1', { attrs: { id: 'st-main', tabindex: -1 }, children: [outlet()] }),
-      siteFooter(),
+      siteFooter(opts),
     ],
   });
 }
 
 /** The starter frame — the shared branded header/footer chrome, fully stamped. */
-export function starterFrame(): Frame {
-  return { root: stampTree(frameRoot()), editable: true };
+export function starterFrame(opts: SiteChromeOptions = {}): Frame {
+  return { root: stampTree(frameRoot(opts)), editable: true };
 }
 
-/** The starter pages, fully stamped. Home merchandises (hero → product grid →
- *  featured rail → CTA); Shop is the catalog grid; About is editorial + a value
+/** The starter pages, fully stamped. With Commerce active: Home merchandises
+ *  (hero → product grid → featured rail → CTA), and Shop is the catalog grid.
+ *  Without it, Home drops the commerce sections (hero → CTA only) and Shop is
+ *  omitted entirely — a tenant with no Commerce module gets no page, nav link, or
+ *  CTA that points at a store that doesn't exist. About is editorial + a value
  *  row; Contact is a reach-out prompt. Each is a `pageBody` so the Navigator shows
  *  a real "Page" root that holds sections as siblings. */
-export function starterPages(): Page[] {
+export function starterPages(opts: SiteChromeOptions = {}): Page[] {
+  const { commerceEnabled = true, schedulingEnabled = false } = opts;
+  const homeSections = commerceEnabled
+    ? [hero(true), productGrid(), featuredProducts(), ctaBand()]
+    : [hero(false), ctaBand()];
   return [
-    makePage(
-      'Home',
-      '/',
-      stampTree(pageBody([hero(), productGrid(), featuredProducts(), ctaBand()]))
-    ),
-    makePage('Shop', '/shop', stampTree(pageBody([collectionHeader(), productGrid()]))),
+    makePage('Home', '/', stampTree(pageBody(homeSections))),
+    ...(commerceEnabled
+      ? [
+          makePage('Shop', '/shop', stampTree(pageBody([collectionHeader(), productGrid()]))),
+          // The cart is a FUNCTIONAL page (docs/122): an editable shell wrapping the
+          // pinned `commerce.cart` core. Seeded so a commerce tenant's studio lists a
+          // "Cart" page they can restyle/surround — the core stays put (locked: "host").
+          // Not linked in nav (the mini-cart reaches it); it's here to be editable.
+          makePage(
+            'Cart',
+            '/cart',
+            stampTree(pageBody([functionalShell(HOST_KEYS.commerceCart, { heading: 'Your cart' })]))
+          ),
+          // Search — an editable shell around the pinned `commerce.search` core. Seeded
+          // so the studio lists an editable "Search" page; not in nav (the header search
+          // field reaches it).
+          makePage(
+            'Search',
+            '/search',
+            stampTree(pageBody([functionalShell(HOST_KEYS.commerceSearch, { heading: 'Search' })]))
+          ),
+          // Products (PLP) — an editable shell around the pinned `commerce.plp` catalog
+          // core. No shell heading: the listing's heading is query-dependent, so the core
+          // renders it. This is the "Shop all" faceted catalog the nav points at.
+          makePage(
+            'Products',
+            '/products',
+            stampTree(pageBody([functionalShell(HOST_KEYS.commercePlp)]))
+          ),
+          // Collections index — an editable shell around the pinned `commerce.collections`
+          // grid core (the core renders its own header/subtitle).
+          makePage(
+            'Collections',
+            '/collections',
+            stampTree(pageBody([functionalShell(HOST_KEYS.commerceCollections)]))
+          ),
+          // Categories index — an editable shell around the pinned `commerce.categories`
+          // browse-tree grid core (the core renders its own header/subtitle).
+          makePage(
+            'Categories',
+            '/category',
+            stampTree(pageBody([functionalShell(HOST_KEYS.commerceCategories)]))
+          ),
+          // The public account AUTH pages (docs/122) — each an editable shell around the
+          // ONE pinned `commerce.auth` core, distinguished by the baked `mode` prop the
+          // route/composite sets (not author-tunable). Seeded so the studio lists a real
+          // "Login"/"Register"/… page a tenant can brand; the authed account cluster
+          // (orders/wishlist/…) is a separate surface. Commerce-gated (shopper accounts
+          // are a commerce concern, matching the footer's Account links).
+          makePage(
+            'Login',
+            '/account/login',
+            stampTree(
+              pageBody([functionalShell(HOST_KEYS.commerceAuth, { props: { mode: 'signin' } })])
+            )
+          ),
+          makePage(
+            'Register',
+            '/account/register',
+            stampTree(
+              pageBody([functionalShell(HOST_KEYS.commerceAuth, { props: { mode: 'register' } })])
+            )
+          ),
+          makePage(
+            'Forgot password',
+            '/account/forgot',
+            stampTree(
+              pageBody([functionalShell(HOST_KEYS.commerceAuth, { props: { mode: 'forgot' } })])
+            )
+          ),
+          makePage(
+            'Reset password',
+            '/account/reset',
+            stampTree(
+              pageBody([functionalShell(HOST_KEYS.commerceAuth, { props: { mode: 'reset' } })])
+            )
+          ),
+        ]
+      : []),
+    // Book — an editable shell around the pinned `scheduling.services` core (docs/122),
+    // seeded only for a tenant with the Scheduling module active. No shell heading: the
+    // services list core renders its own header + subtitle. The bookable-service DETAIL
+    // (/book/[serviceId], the live time-picker) is a per-record template on the same
+    // pinned-core path once services get a stored silica template.
+    ...(schedulingEnabled
+      ? [
+          makePage(
+            'Book',
+            '/book',
+            stampTree(pageBody([functionalShell(HOST_KEYS.schedulingServices)]))
+          ),
+        ]
+      : []),
     makePage('About', '/about', stampTree(pageBody([aboutContent(), featureTrio()]))),
     makePage('Contact', '/contact', stampTree(pageBody([contactContent()]))),
   ];
@@ -207,12 +314,14 @@ export function starterPages(): Page[] {
 /** The complete silica-native starter `Site` — shared branded frame + starter pages
  *  in the tenant's theme. Pass the tenant's compiled silica `Theme`
  *  (`compiledToSilicaTheme` of its brand) so the seed previews/renders in the real
- *  brand; falls back to a shipped preset when none is supplied. */
-export function starterSite(theme: Theme = THEME_PRESETS[0]!): Site {
+ *  brand; falls back to a shipped preset when none is supplied. `commerceEnabled`
+ *  (default `true`, so every existing caller/test is unaffected) strips every
+ *  Shop-flavored page/link/CTA for a tenant with no Commerce module active. */
+export function starterSite(theme: Theme = THEME_PRESETS[0]!, opts: SiteChromeOptions = {}): Site {
   return {
     version: '1.0.0',
     theme,
-    frame: starterFrame(),
-    pages: starterPages(),
+    frame: starterFrame(opts),
+    pages: starterPages(opts),
   };
 }

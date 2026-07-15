@@ -1,25 +1,20 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+// Bookable-service DETAIL — an EDITABLE shell around a PINNED `scheduling.service-detail`
+// core (docs/122). The live time-picker (availability, slot selection, booking) lives in
+// the host node the tenant can restyle and surround but not delete; the route renders the
+// tenant's published `scheduling.service` template (or the code fallback). This is a
+// per-record template: the record is the service, keyed by id. The route 404s for an
+// unknown service (which also covers the module being off — no service resolves then).
 
-import { activeTenantSlug, getBookableService } from '../../../lib/scheduling';
-import { BookingWidget } from '../../../components/booking/booking-widget';
-import { ClassBookingWidget } from '../../../components/booking/class-booking-widget';
+import { notFound } from 'next/navigation';
+import { getPublishedSilicaCollection } from '@/lib/silica';
+import { serviceDetailPage } from '@sparx/silica-catalog';
+
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { getBookableService } from '@/lib/scheduling';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
-
-function duration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h} hr` : `${h} hr ${m} min`;
-}
-
-function money(cents: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
-}
 
 interface Props {
   params: Promise<{ serviceId: string }>;
@@ -33,35 +28,26 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function BookServicePage({ params }: Props) {
   const { serviceId } = await params;
-  const [service, tenantSlug] = await Promise.all([
-    getBookableService(serviceId),
-    activeTenantSlug(),
-  ]);
-  if (!service || !tenantSlug) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
+  // Existence + module gate: an unknown/off-module service has no booking surface.
+  const service = await getBookableService(serviceId);
+  if (!service) notFound();
+
+  const propertySlug = await resolveActivePropertySlug();
+  // The tenant's published service template (per-record override → type default → code
+  // fallback). The core renders the service header + live widget from the id below.
+  const published = await getPublishedSilicaCollection(site.slug, 'scheduling.service', serviceId);
+  const shell = published?.root ?? serviceDetailPage();
+  const renderHost = storefrontHostRenderer({
+    site,
+    propertySlug: propertySlug ?? undefined,
+    recordId: serviceId,
+  });
 
   return (
-    <section className="st-container st-section">
-      <div className="st-booking__detail">
-        <Link href="/book" className="st-link st-booking__back">
-          ← All services
-        </Link>
-        <header className="st-booking__header">
-          <h1 className="st-h1">{service.name}</h1>
-          <p className="st-booking__service-meta st-muted">
-            <span>{duration(service.durationMinutes)}</span>
-            {service.priceCents > 0 ? (
-              <span>{money(service.priceCents, service.currency)}</span>
-            ) : null}
-          </p>
-          {service.description ? <p className="st-muted">{service.description}</p> : null}
-        </header>
-
-        {service.bookingType === 'class' ? (
-          <ClassBookingWidget tenantSlug={tenantSlug} service={service} />
-        ) : (
-          <BookingWidget tenantSlug={tenantSlug} service={service} />
-        )}
-      </div>
-    </section>
+    <div className="st-container">
+      <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
+    </div>
   );
 }

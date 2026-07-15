@@ -9,14 +9,17 @@
 // path wins where a silica page/frame is published, else the legacy path renders,
 // exactly the additive "builder owns it, else fall through" rule (docs/44 §2.5).
 
+import { cache } from 'react';
 import type {
   PublishedSilicaFrameDto,
   PublishedSilicaPageDto,
   SilicaNode,
 } from '@sparx/builder-schemas';
 import {
+  categoryDetailPage,
   collectionDetailPage,
   productDetailPage,
+  serviceDetailPage,
   starterFrame,
   starterPages,
 } from '@sparx/silica-catalog';
@@ -57,33 +60,44 @@ function starterPageDto(
   };
 }
 
-/** The starter home page (slug `/`) as a published DTO. */
-function starterHomeDto(): PublishedSilicaPageDto | null {
-  const home = starterPages().find((p) => STARTER_SLUG(p.slug) === '');
+/** The starter home page (slug `/`) as a published DTO. `commerceEnabled` decides
+ *  whether Home includes the product grid/featured rail — see `starterPages`. */
+function starterHomeDto(commerceEnabled: boolean): PublishedSilicaPageDto | null {
+  const home = starterPages({ commerceEnabled }).find((p) => STARTER_SLUG(p.slug) === '');
   return home ? starterPageDto(home.name, '', home.root) : null;
 }
 
-/** The starter page owning a slug (shop/about/contact), or null — so a non-starter
- *  slug (a CMS article) still falls through to the legacy content path. */
-function starterPageDtoForSlug(slug: string): PublishedSilicaPageDto | null {
+/** The starter page owning a slug (shop/book/about/contact), or null — so a non-starter
+ *  slug (a CMS article) still falls through to the legacy content path. There is no Shop
+ *  page when Commerce is off, nor a Book page when Scheduling is off (see `starterPages`). */
+function starterPageDtoForSlug(slug: string, flags: ModuleFlags): PublishedSilicaPageDto | null {
   const target = STARTER_SLUG(slug);
-  const page = starterPages().find((p) => STARTER_SLUG(p.slug) === target && target !== '');
+  const page = starterPages(flags).find((p) => STARTER_SLUG(p.slug) === target && target !== '');
   return page ? starterPageDto(page.name, STARTER_SLUG(page.slug), page.root) : null;
 }
 
 /** The starter frame DTO (brand-derived theme → null). Built lazily, only on the
- *  fallback path, so a published tenant never pays to stamp the starter tree. */
-function starterFrameDto(): PublishedSilicaFrameDto {
-  return { frame: starterFrame(), symbols: {}, theme: null };
+ *  fallback path, so a published tenant never pays to stamp the starter tree. Carries
+ *  the module flags so the fallback chrome + published-state signals match the tenant. */
+function starterFrameDto(flags: ModuleFlags): PublishedSilicaFrameDto {
+  return { frame: starterFrame(flags), symbols: {}, theme: null, ...flags };
 }
 
-/** The default per-record composite for a record type (PDP / collection), or null. */
+/** The default per-record composite for a record type (PDP / collection / category /
+ *  booking service), or null. Each is the code-authored template that renders a record of
+ *  that type out of the box until the tenant publishes their own template for it. */
 function starterCollectionDto(recordType: string): PublishedSilicaPageDto | null {
   if (recordType === 'commerce.product') {
     return starterPageDto('Product detail', '', productDetailPage(), recordType);
   }
   if (recordType === 'commerce.collection') {
     return starterPageDto('Collection', '', collectionDetailPage(), recordType);
+  }
+  if (recordType === 'commerce.category') {
+    return starterPageDto('Category detail', '', categoryDetailPage(), recordType);
+  }
+  if (recordType === 'scheduling.service') {
+    return starterPageDto('Service detail', '', serviceDetailPage(), recordType);
   }
   return null;
 }
@@ -110,6 +124,54 @@ interface ErrorEnvelope {
 // (the deferred Pub/Sub→revalidation-worker slice), matching lib/builder.ts.
 const NO_STORE: RequestInit = { cache: 'no-store' };
 
+/** The raw frame envelope fetch, `cache()`-memoized per request/tenantSlug so the
+ *  home/page fallbacks below (each needing `commerceEnabled`) never re-fetch it —
+ *  `getPublishedSilicaFrame` is guaranteed to hit the network at most once. */
+const fetchFrameEnvelope = cache(
+  async (tenantSlug: string): Promise<PublishedSilicaFrameDto | null> => {
+    try {
+      const res = await fetch(
+        `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
+        NO_STORE
+      );
+      const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
+      if (!res.ok || 'error' in json) return null;
+      return json.data;
+    } catch {
+      return null;
+    }
+  }
+);
+
+/** The module flags the code-authored starter fallback needs to match the tenant.
+ *  Commerce fails open to `true` (today's unconditional-Shop behavior) on any lookup
+ *  failure, never hiding real Commerce chrome over a transient error; Scheduling fails
+ *  closed to `false` (opt-in, no legacy behavior to preserve). */
+interface ModuleFlags {
+  commerceEnabled: boolean;
+  schedulingEnabled: boolean;
+}
+
+async function resolveModuleFlags(tenantSlug: string): Promise<ModuleFlags> {
+  const data = await fetchFrameEnvelope(tenantSlug);
+  return {
+    commerceEnabled: data?.commerceEnabled ?? true,
+    schedulingEnabled: data?.schedulingEnabled ?? false,
+  };
+}
+
+/** Whether the tenant's Commerce module is active — see `resolveModuleFlags`. */
+async function resolveCommerceEnabled(tenantSlug: string): Promise<boolean> {
+  return (await resolveModuleFlags(tenantSlug)).commerceEnabled;
+}
+
+/** Whether the tenant's Scheduling module is active — the /book route's module gate
+ *  (404s when off). Reads the same `cache()`-memoized frame envelope the layout already
+ *  fetched, so it's free on the request. */
+export async function resolveSchedulingEnabled(tenantSlug: string): Promise<boolean> {
+  return (await resolveModuleFlags(tenantSlug)).schedulingEnabled;
+}
+
 /** The published site FRAME + site-global symbols + authored theme — one read for
  *  everything the root layout needs. It renders the chrome once, wrapping every page
  *  at its Outlet. Falls back to the code starter frame when the tenant has published
@@ -118,17 +180,9 @@ const NO_STORE: RequestInit = { cache: 'no-store' };
 export async function getPublishedSilicaFrame(
   tenantSlug: string
 ): Promise<PublishedSilicaFrameDto> {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      NO_STORE
-    );
-    const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json || !json.data.frame) return starterFrameDto();
-    return json.data;
-  } catch {
-    return starterFrameDto();
-  }
+  const data = await fetchFrameEnvelope(tenantSlug);
+  if (!data?.frame) return starterFrameDto(await resolveModuleFlags(tenantSlug));
+  return data;
 }
 
 /** The property's PUBLISHED silica home body (the page whose slug is `/`). Falls back
@@ -143,10 +197,10 @@ export async function getPublishedSilicaHome(
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return starterHomeDto();
+    if (!res.ok || 'error' in json) return starterHomeDto(await resolveCommerceEnabled(tenantSlug));
     return json.data;
   } catch {
-    return starterHomeDto();
+    return starterHomeDto(await resolveCommerceEnabled(tenantSlug));
   }
 }
 
@@ -165,10 +219,12 @@ export async function getPublishedSilicaPage(
       NO_STORE
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return starterPageDtoForSlug(slug);
+    if (!res.ok || 'error' in json) {
+      return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug));
+    }
     return json.data;
   } catch {
-    return starterPageDtoForSlug(slug);
+    return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug));
   }
 }
 

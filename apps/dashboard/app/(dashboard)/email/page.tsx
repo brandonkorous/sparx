@@ -49,6 +49,8 @@ import {
   OverviewRow,
   fmtNumber,
 } from '../_components/overview-bits';
+import { readLastDevSend } from './actions';
+import { TestSendForm } from './test-send-form';
 import type { OverviewResult } from './_lib/types';
 
 // Email overview — the marketer's morning glance: subscriber pulse, the send
@@ -176,9 +178,10 @@ interface SubscriberGrowth {
 export default async function EmailPage() {
   await requireSession();
 
-  const [overview, subGrowth] = await Promise.all([
+  const [overview, subGrowth, devLastSend] = await Promise.all([
     api.get<OverviewResult>('/v1/email/analytics/overview?days=30').catch(() => null),
     api.get<SubscriberGrowth>('/v1/email/analytics/subscriber-growth?grain=day').catch(() => null),
+    readLastDevSend(),
   ]);
   const counts = overview?.counts ?? null;
 
@@ -625,6 +628,12 @@ export default async function EmailPage() {
             )}
           </OverviewCard>
         </div>
+
+        {/* Send a single test email — verifies the provider + template render
+            end-to-end without touching a real subscriber list. */}
+        <OverviewCard title="Send a test email" icon={<Send className="h-4 w-4" />} plain>
+          <TestSendForm devLastSend={devLastSend} />
+        </OverviewCard>
       </div>
     </div>
   );

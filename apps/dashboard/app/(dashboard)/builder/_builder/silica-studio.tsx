@@ -25,6 +25,7 @@ import type {
 import { MediaPicker } from '../../cms/_components/media-picker';
 import { publishBuilderSite, syncBuilderSite } from '../_lib/actions';
 import { buildSilicaHost, defaultSilicaFormat } from './silica-host';
+import { renderHostSkeleton } from './host-cores';
 import { makeFormPanels } from './form-settings-panel';
 import { SilicaToolbar, type SaveState } from './silica-toolbar';
 
@@ -127,6 +128,7 @@ export function SilicaStudio({
         formatValue: defaultSilicaFormat,
         pickAsset,
         inspectorPanels,
+        renderHostNode: renderHostSkeleton,
       }),
     [root, dataSources, tenantAllowlist, pickAsset, inspectorPanels]
   );

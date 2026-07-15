@@ -43,10 +43,24 @@ function footerColumn(title: string, links: [string, string][]): Node {
   });
 }
 
+export interface SiteChromeOptions {
+  /** Whether to show Shop/Cart/Orders links — omit for a tenant with no Commerce
+   *  module active, so the chrome never invites a visitor into a store that
+   *  doesn't exist (content and/or commerce — never assumed). Defaults to `true`
+   *  so existing callers (the MCP catalog block, tests) are unaffected. */
+  commerceEnabled?: boolean;
+  /** Whether to show the Book link + seed a `/book` page — on only for a tenant with
+   *  the Scheduling module active. Defaults to `false` (opt-in, unlike Commerce's
+   *  legacy unconditional Shop): a content/commerce tenant with no bookings never gets
+   *  a Book link or an orphan booking page. */
+  schedulingEnabled?: boolean;
+}
+
 /** The site navbar: the tenant wordmark (bound to `site.identity.name`) on the
  *  left, primary links centered-right, and a single call-to-action. A `<nav>` on
  *  core flex utilities so it needs no component class. */
-export function siteNavbar(): Node {
+export function siteNavbar(opts: SiteChromeOptions = {}): Node {
+  const { commerceEnabled = true, schedulingEnabled = false } = opts;
   return el(
     'nav',
     'flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4',
@@ -65,7 +79,8 @@ export function siteNavbar(): Node {
           children: [
             el('div', 'hidden items-center gap-6 sm:flex', {
               children: [
-                navLink('Shop', '/shop'),
+                ...(commerceEnabled ? [navLink('Shop', '/shop')] : []),
+                ...(schedulingEnabled ? [navLink('Book', '/book')] : []),
                 navLink('About', '/about'),
                 navLink('Contact', '/contact'),
               ],
@@ -80,39 +95,53 @@ export function siteNavbar(): Node {
 
 /** The site footer: a brand column (name bound) + link columns + a bound
  *  copyright line. Neutral, industry-agnostic labels. */
-export function siteFooter(): Node {
+export function siteFooter(opts: SiteChromeOptions = {}): Node {
+  const { commerceEnabled = true, schedulingEnabled = false } = opts;
   return el('footer', 'border-t border-base-300 bg-base-200 px-6 py-12', {
     children: [
-      el('div', 'mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4', {
-        children: [
-          el('div', 'flex flex-col gap-3', {
-            children: [
-              bind(
-                el('span', 'text-lg font-bold text-base-content', { text: 'Your site' }),
-                'site.identity.name'
-              ),
-              el('p', 'max-w-xs text-sm text-base-content/60', {
-                text: 'Everything you publish and sell, in one place.',
-              }),
-            ],
-          }),
-          footerColumn('Explore', [
-            ['Shop', '/shop'],
-            ['About', '/about'],
-            ['Contact', '/contact'],
-          ]),
-          footerColumn('Account', [
-            ['Sign in', '/account'],
-            ['Orders', '/account/orders'],
-            ['Cart', '/cart'],
-          ]),
-          footerColumn('More', [
-            ['Search', '/search'],
-            ['Privacy', '/privacy-policy'],
-            ['Terms', '/terms-of-service'],
-          ]),
-        ],
-      }),
+      el(
+        'div',
+        commerceEnabled
+          ? 'mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4'
+          : 'mx-auto grid max-w-6xl gap-10 sm:grid-cols-3',
+        {
+          children: [
+            el('div', 'flex flex-col gap-3', {
+              children: [
+                bind(
+                  el('span', 'text-lg font-bold text-base-content', { text: 'Your site' }),
+                  'site.identity.name'
+                ),
+                el('p', 'max-w-xs text-sm text-base-content/60', {
+                  text: commerceEnabled
+                    ? 'Everything you publish and sell, in one place.'
+                    : 'Everything you publish, in one place.',
+                }),
+              ],
+            }),
+            footerColumn('Explore', [
+              ...(commerceEnabled ? ([['Shop', '/shop']] as [string, string][]) : []),
+              ...(schedulingEnabled ? ([['Book', '/book']] as [string, string][]) : []),
+              ['About', '/about'],
+              ['Contact', '/contact'],
+            ]),
+            ...(commerceEnabled
+              ? [
+                  footerColumn('Account', [
+                    ['Sign in', '/account'],
+                    ['Orders', '/account/orders'],
+                    ['Cart', '/cart'],
+                  ]),
+                ]
+              : []),
+            footerColumn('More', [
+              ['Search', '/search'],
+              ['Privacy', '/privacy-policy'],
+              ['Terms', '/terms-of-service'],
+            ]),
+          ],
+        }
+      ),
       el('div', 'mx-auto mt-10 max-w-6xl border-t border-base-300 pt-6', {
         children: [
           bind(

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 
 import {
+  Combobox,
   Button,
   Card,
   CardBody,
@@ -17,7 +18,7 @@ import {
   NativeSelect,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import { AdaptiveLabel, Combobox, type ComboboxOption, MultiCombobox, toast } from '@sparx/ui';
+import { AdaptiveLabel, type ComboboxOption, MultiCombobox, toast } from '@sparx/ui';
 import { rule, useFieldValidation } from '@sparx/forms';
 
 import type { Property } from '@/lib/sites';
@@ -233,13 +234,10 @@ export function ProductEditForm({
                   <Label htmlFor="productType">Product type</Label>
                   <Combobox
                     id="productType"
+                    items={facets.productTypes}
                     value={form.productType}
-                    onChange={(val) => set('productType', val)}
-                    options={toOptions(facets.productTypes)}
+                    onValueChange={(val) => set('productType', val as string)}
                     placeholder="Choose or add a type"
-                    searchPlaceholder="Search or add a type…"
-                    customHint="Add this product type"
-                    aria-label="Product type"
                   />
                 </div>
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-2">
@@ -247,11 +245,9 @@ export function ProductEditForm({
                   <Combobox
                     id="vendor"
                     value={form.vendor}
-                    onChange={(val) => set('vendor', val)}
-                    options={toOptions(facets.vendors)}
+                    onValueChange={(val) => set('vendor', val as string)}
+                    items={facets.vendors}
                     placeholder="Choose or add a vendor"
-                    searchPlaceholder="Search or add a vendor…"
-                    customHint="Add this vendor"
                     aria-label="Vendor"
                   />
                 </div>
@@ -283,11 +279,9 @@ export function ProductEditForm({
                 <Combobox
                   id="taxClass"
                   value={form.taxClass}
-                  onChange={(val) => set('taxClass', val)}
-                  options={toOptions(facets.taxClasses)}
+                  onValueChange={(val) => set('taxClass', val as string)}
+                  items={facets.taxClasses}
                   placeholder="Standard (default)"
-                  searchPlaceholder="Search or add a tax class…"
-                  customHint="Add this tax class"
                   aria-label="Tax class"
                 />
                 <p className="text-base-content/70 text-xs">

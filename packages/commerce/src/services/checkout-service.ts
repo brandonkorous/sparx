@@ -197,11 +197,22 @@ export async function get(
     const surchargeTotalCents = terminal ? row.surchargeTotalCents : surcharge.totalCents;
     const totalCents = terminal ? row.totalCents : row.totalCents + surcharge.totalCents;
 
-    return serializeSession(row, {
-      surchargeTotalCents,
-      totalCents,
-      surchargeLabel: surchargeLabelFor(surcharge.applied),
-    });
+    const account = row.b2bAccountId
+      ? await tx.b2BAccount.findFirst({
+          where: { id: row.b2bAccountId },
+          select: { paymentTerms: true },
+        })
+      : null;
+
+    return serializeSession(
+      row,
+      {
+        surchargeTotalCents,
+        totalCents,
+        surchargeLabel: surchargeLabelFor(surcharge.applied),
+      },
+      account?.paymentTerms
+    );
   });
 }
 
@@ -283,6 +294,17 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
       throw new CommerceValidationError(
         'PO numbers and net terms are only available to B2B accounts'
       );
+    }
+    if (billToAccount && session.b2bAccountId) {
+      const account = await tx.b2BAccount.findFirst({
+        where: { id: session.b2bAccountId },
+        select: { paymentTerms: true },
+      });
+      if (account?.paymentTerms === 'prepay') {
+        throw new CommerceValidationError(
+          'This account is set up for prepayment — pay by card to complete your order.'
+        );
+      }
     }
     if (!billToAccount && !(input.paymentProviderSlug && input.paymentRef)) {
       throw new CommerceValidationError(
@@ -1066,7 +1088,8 @@ function surchargeLabelFor(applied: AppliedSurcharge[]): string | null {
 
 function serializeSession(
   row: CheckoutSession,
-  surcharge: { surchargeTotalCents: number; totalCents: number; surchargeLabel: string | null }
+  surcharge: { surchargeTotalCents: number; totalCents: number; surchargeLabel: string | null },
+  b2bAccountPaymentTerms?: string | null
 ): CheckoutSessionSnapshot {
   return {
     sessionId: row.id,
@@ -1077,6 +1100,7 @@ function serializeSession(
     customerEmail: row.customerEmail ?? undefined,
     customerId: row.customerId ?? undefined,
     b2bAccountId: row.b2bAccountId ?? undefined,
+    b2bAccountPaymentTerms: b2bAccountPaymentTerms ?? undefined,
     shippingAddress: (row.shippingAddress ??
       undefined) as CheckoutSessionSnapshot['shippingAddress'],
     billingAddress: (row.billingAddress ?? undefined) as CheckoutSessionSnapshot['billingAddress'],

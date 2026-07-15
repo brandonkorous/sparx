@@ -18,9 +18,25 @@
 import { decodeBindingRef } from './binding-ref';
 import type { SilicaNode } from './site-sync';
 
+/** Which PRODUCT sources a tree binds — the configurable Products block picks one
+ *  per instance, so a page can bind several at once (a "Featured" rail + a "New"
+ *  rail + a category grid). Each maps to a distinct storefront fetch; `catalog` is
+ *  the whole-catalog grid, `categories` holds the collection ids of every
+ *  `commerce.category.<id>` bound. */
+export interface SilicaProductSources {
+  catalog: boolean; // commerce.product — the whole catalog
+  featured: boolean; // commerce.featured — merchant-flagged, bounded
+  fresh: boolean; // commerce.new — newest first, bounded
+  related: boolean; // commerce.related — same collection as the in-scope product
+  categories: string[]; // ids from commerce.category.<id>
+}
+
 /** The platform sources a silica tree needs the storefront to fetch. */
 export interface SilicaSourceNeeds {
+  /** True when ANY product source is bound — the coarse "fetch commerce" gate kept
+   *  for back-compat; `products` says exactly which. */
   commerce: boolean;
+  products: SilicaProductSources;
   cmsTypes: string[];
   productPins: string[];
   cmsPins: string[];
@@ -65,8 +81,25 @@ function recordNeed(ref: string, needs: SilicaSourceNeeds): void {
   if (!path) return;
   if (path.startsWith('item') || path === 'index') return; // scope-relative — no source
   const root = path.split('[')[0] ?? path; // strip a trailing [n]
+  // The configurable Products block binds ONE of these product sources per instance
+  // (docs/118). Each is a distinct storefront fetch; `commerce` stays the coarse gate.
   if (root === 'commerce.product' || root.startsWith('commerce.product.')) {
     needs.commerce = true;
+    needs.products.catalog = true;
+  } else if (root === 'commerce.featured') {
+    needs.commerce = true;
+    needs.products.featured = true;
+  } else if (root === 'commerce.new') {
+    needs.commerce = true;
+    needs.products.fresh = true;
+  } else if (root === 'commerce.related') {
+    needs.commerce = true;
+    needs.products.related = true;
+  } else if (root === 'commerce.category' || root.startsWith('commerce.category.')) {
+    // `commerce.category.<collectionId>` — the id names WHICH collection's products.
+    needs.commerce = true;
+    const id = root.slice('commerce.category.'.length);
+    if (id) needs.products.categories.push(id);
   } else if (root.startsWith('cms.')) {
     const type = root.slice('cms.'.length).split('.')[0];
     if (type) needs.cmsTypes.push(type);
@@ -79,6 +112,7 @@ function recordNeed(ref: string, needs: SilicaSourceNeeds): void {
 export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
   const needs: SilicaSourceNeeds = {
     commerce: false,
+    products: { catalog: false, featured: false, fresh: false, related: false, categories: [] },
     cmsTypes: [],
     productPins: [],
     cmsPins: [],
@@ -102,5 +136,9 @@ export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
     (id) => !seenProductPins.has(id) && seenProductPins.add(id)
   );
   needs.cmsPins = needs.cmsPins.filter((id) => !seenCmsPins.has(id) && seenCmsPins.add(id));
+  const seenCat = new Set<string>();
+  needs.products.categories = needs.products.categories.filter(
+    (id) => !seenCat.has(id) && seenCat.add(id)
+  );
   return needs;
 }

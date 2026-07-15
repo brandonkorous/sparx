@@ -24,6 +24,7 @@ import {
 } from '@sparx/builder-schemas';
 
 import {
+  listCollectionProducts,
   listProducts,
   type PublicCollection,
   type PublicProduct,
@@ -31,6 +32,10 @@ import {
 } from './commerce';
 import { getEntryById, publicGet, type ApiEntry } from './content';
 import { mediaUrl } from './media';
+
+/** How many products the `commerce.featured` rail shows at most — a curated
+ *  handful, never the whole catalog (the whole-catalog grid binds `commerce.product`). */
+const FEATURED_LIMIT = 8;
 
 /** A product in the shape the silica commerce composites bind (scope-relative
  *  refs). `image` is a `{ url, alt }` object; the host `format` unwraps it to the
@@ -214,16 +219,41 @@ export async function buildSilicaHost(
   const root: DataSources = site ? siteRoot(site) : {};
   const tasks: Promise<void>[] = [];
 
-  if (needs.commerce || needs.productPins.length > 0) {
+  // The Products block binds ONE product source per instance; the collector reports
+  // which are on the page (docs/118). Each is its own fetch, run in parallel. The
+  // in-scope PDP product is excluded from every BOUNDED rail (they're cross-sell).
+  const p = needs.products;
+  const currentProductId =
+    record?.key === 'product' ? (record.value as { id?: string } | undefined)?.id : undefined;
+  const notCurrent = (i: PublicProductListItem) => i.id !== currentProductId;
+  /** Exclude the current product, cap to a handful, shape as cards — the bounded rail. */
+  const bounded = (items: PublicProductListItem[]) =>
+    items
+      .filter(notCurrent)
+      .slice(0, FEATURED_LIMIT)
+      .map((i) => toSilicaProduct(i, tenantSlug));
+
+  // Base catalog fetch (default sort) — the whole-catalog grid, the featured slice,
+  // and product pins all read from ONE list.
+  if (p.catalog || p.featured || needs.productPins.length > 0) {
     tasks.push(
       listProducts(tenantSlug, { perPage: 24 })
         .then(({ items }) => {
-          const products = items.map((p) => toSilicaProduct(p, tenantSlug));
-          if (needs.commerce) setAtPath(root, 'commerce.product', products);
-          // Product pins (docs/98 Pillar 7) → __pins['commerce:<id>'], indexed from
-          // the same list so a pinned card resolves without a second fetch.
+          const products = items.map((i) => toSilicaProduct(i, tenantSlug));
+          if (p.catalog) setAtPath(root, 'commerce.product', products);
+          if (p.featured) {
+            // "Featured" = products the merchant tagged `featured` (a no-schema curation
+            // signal on the existing `tags` field); newest-few fallback so the rail is
+            // never an empty heading when nothing is tagged yet.
+            const flagged = items.filter((i) =>
+              i.tags?.some((t) => t.toLowerCase() === 'featured')
+            );
+            setAtPath(root, 'commerce.featured', bounded(flagged.length > 0 ? flagged : items));
+          }
           if (needs.productPins.length > 0) {
-            const byId = new Map(products.map((p) => [p.id as string, p]));
+            // Product pins (docs/98 Pillar 7) → __pins['commerce:<id>'], indexed from
+            // the same list so a pinned card resolves without a second fetch.
+            const byId = new Map(products.map((c) => [c.id as string, c]));
             const pins = (root[PINS_ROOT] as Record<string, unknown> | undefined) ?? {};
             for (const id of needs.productPins) {
               const hit = byId.get(id);
@@ -232,7 +262,42 @@ export async function buildSilicaHost(
             root[PINS_ROOT] = pins;
           }
         })
-        .catch(() => setAtPath(root, 'commerce.product', []))
+        .catch(() => {
+          if (p.catalog) setAtPath(root, 'commerce.product', []);
+          if (p.featured) setAtPath(root, 'commerce.featured', []);
+        })
+    );
+  }
+
+  // Newest — the "New" rail. Also the fallback source for the "Related" rail until the
+  // public product API exposes a product's collection membership (see index-active-work).
+  if (p.fresh || p.related) {
+    tasks.push(
+      listProducts(tenantSlug, { sort: 'newest', perPage: FEATURED_LIMIT + 1 })
+        .then(({ items }) => {
+          if (p.fresh) setAtPath(root, 'commerce.new', bounded(items));
+          if (p.related) setAtPath(root, 'commerce.related', bounded(items));
+        })
+        .catch(() => {
+          if (p.fresh) setAtPath(root, 'commerce.new', []);
+          if (p.related) setAtPath(root, 'commerce.related', []);
+        })
+    );
+  }
+
+  // Category rails — one fetch per bound collection handle (`commerce.category.<handle>`).
+  // A category grid shows the collection's full page (not the rail cap), current excluded.
+  for (const handle of p.categories) {
+    tasks.push(
+      listCollectionProducts(tenantSlug, handle)
+        .then(({ items }) =>
+          setAtPath(
+            root,
+            `commerce.category.${handle}`,
+            items.filter(notCurrent).map((i) => toSilicaProduct(i, tenantSlug))
+          )
+        )
+        .catch(() => setAtPath(root, `commerce.category.${handle}`, []))
     );
   }
 

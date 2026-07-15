@@ -15,6 +15,7 @@ import {
   productCard,
   productDetailPage,
   productGrid,
+  productsBlock,
 } from './commerce';
 import { COMMERCE_CATALOG } from './catalog';
 import { renderSilicaBody } from './render';
@@ -48,6 +49,7 @@ const host: ResolveHost = {
   },
   resolveCollection(ref: string, scope: DataScope) {
     if (ref === 'commerce.product') return PRODUCTS;
+    if (ref === 'commerce.featured') return PRODUCTS; // bounded rail — host fills a slice
     if (ref === 'product') return [PRODUCT]; // object source → collection-of-one
     if (ref === 'collection') return [COLLECTION];
     // Scope-relative `products` — the collection's own list, off the in-scope item
@@ -120,11 +122,38 @@ describe('product_grid — data-bound product collection', () => {
 });
 
 describe('featured_products — horizontal rail', () => {
-  it('repeats the same product source in a scroll row', () => {
-    expect(collectionRef(featuredProducts())).toBe('commerce.product');
+  it('repeats the BOUNDED commerce.featured source (not the whole catalog) in a scroll row', () => {
+    expect(collectionRef(featuredProducts())).toBe('commerce.featured');
     const html = toHtml(resolveTree(featuredProducts(), host));
     expect(html).toContain('overflow-x-auto');
     expect((html.match(/Lamp|Chair/g) ?? []).length).toBe(2);
+  });
+});
+
+describe('products — the one configurable block', () => {
+  it('defaults to a grid over the whole catalog', () => {
+    const block = productsBlock();
+    expect(collectionRef(block)).toBe('commerce.product');
+    expect(toHtml(resolveTree(block, host))).toContain('grid-cols-2');
+  });
+
+  it('binds the chosen source and lays out as a rail', () => {
+    const block = productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Picks' });
+    expect(collectionRef(block)).toBe('commerce.featured');
+    const html = toHtml(resolveTree(block, host));
+    expect(html).toContain('overflow-x-auto');
+    expect(html).toContain('Picks');
+  });
+
+  it('accepts a parameterized category source', () => {
+    expect(collectionRef(productsBlock({ source: 'commerce.category.studio-goods' }))).toBe(
+      'commerce.category.studio-goods'
+    );
+  });
+
+  it('presets (productGrid / featuredProducts) are just this block', () => {
+    expect(collectionRef(productGrid())).toBe('commerce.product');
+    expect(collectionRef(featuredProducts())).toBe('commerce.featured');
   });
 });
 
@@ -233,8 +262,7 @@ describe('COMMERCE_CATALOG — the palette group', () => {
     const group = COMMERCE_CATALOG[0]!;
     expect(group.key).toBe('commerce');
     expect(group.items.map((i) => i.key)).toEqual([
-      'product_grid',
-      'featured_products',
+      'products',
       'product_card',
       'buy_box',
       'collection_header',

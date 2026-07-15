@@ -27,11 +27,17 @@ import {
   sanitizeElement,
   type ComponentNode,
   type DataScope,
+  type HostNode,
   type Node as SilicaNode,
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
 import { hoistAttrBindings, renderSilicaBody } from '@sparx/silica-catalog';
+
+/** Mounts the real interactive component for a pinned functional core (docs/122) —
+ *  keyed by the host node's `component`. The route supplies this (closing over its own
+ *  context: tenant slug, route params, fetched data), so the walk stays generic. */
+export type HostRenderer = (node: HostNode) => React.ReactNode;
 
 // ── SilicaBody: a published page body → one resolved HTML string ─────────────
 
@@ -50,6 +56,13 @@ export function SilicaBody({
     ...(symbols ? { symbols } : {}),
     ...(host ? { host } : {}),
     ...(scope ? { scope } : {}),
+    // `ids: true` mirrors the frame walker's own unconditional `data-sui-id`
+    // emission below (metaProps) — without it a page-body form/behavior node
+    // renders with no `data-sui-id`, so the client can wire the behavior
+    // (data-sui-behavior/data-sui-action are unconditional) but can never name
+    // WHICH node submitted. A contact form then "succeeds" client-side (no
+    // error thrown) while silently never reaching the server at all.
+    html: { ids: true },
   });
   return <div className="sx-silica-body" dangerouslySetInnerHTML={{ __html: html }} />;
 }
@@ -104,6 +117,16 @@ interface WalkNode {
   data?: DataMarker;
   behavior?: { type: string; params?: unknown };
   part?: string;
+  /** Host-node fields (`kind:"host"`) — the allowlist key + author-set config. */
+  component?: string;
+  props?: Record<string, unknown>;
+}
+
+/** What the walk drops at the special node kinds: the routed page at the frame's
+ *  single Outlet, and the real interactive component at each pinned host node. */
+interface WalkContext {
+  outlet?: React.ReactNode;
+  renderHost?: HostRenderer;
 }
 
 /** The `data-sui-*` markers a resolved node still carries — id + action + behavior +
@@ -141,14 +164,25 @@ function attrProps(
   return out;
 }
 
-/** Walk one resolved silica node to a React node. `outlet` is dropped where the
- *  (single) OutletNode sits. A ComponentNode expands to elements via silica's own
- *  `expandComponent` (the same expansion toHtml uses), so no drift. */
-function walk(node: WalkNode | string, key: React.Key, outlet: React.ReactNode): React.ReactNode {
+/** Walk one resolved silica node to a React node. The single OutletNode yields
+ *  `ctx.outlet` (the routed page); a host node yields its real mounted component
+ *  (`ctx.renderHost`) inside its authored wrapper (class + id preserved, so the
+ *  tenant's styling of the pinned region applies). A ComponentNode expands to
+ *  elements via silica's own `expandComponent` (the same expansion toHtml uses). */
+function walk(node: WalkNode | string, key: React.Key, ctx: WalkContext): React.ReactNode {
   if (typeof node === 'string') return node;
-  if (node.kind === 'outlet') return <React.Fragment key={key}>{outlet}</React.Fragment>;
+  if (node.kind === 'outlet') return <React.Fragment key={key}>{ctx.outlet}</React.Fragment>;
+  if (node.kind === 'host') {
+    // toHtml lowers a host node to `<div class data-sui-host>`; the React walk mounts
+    // the real component in that same wrapper. No renderer for the key → an empty
+    // wrapper (the storefront registry is the source of truth for what's live).
+    const mounted = ctx.renderHost?.(node as unknown as HostNode) ?? null;
+    const hostProps: Record<string, unknown> = { key, ...metaProps(node) };
+    if (node.class) hostProps.className = node.class;
+    return React.createElement('div', hostProps, mounted);
+  }
   if (node.kind === 'component') {
-    return walk(expandComponent(node as unknown as ComponentNode), key, outlet);
+    return walk(expandComponent(node as unknown as ComponentNode), key, ctx);
   }
   const tag = node.tag ?? 'div';
   const props: Record<string, unknown> = {
@@ -158,7 +192,7 @@ function walk(node: WalkNode | string, key: React.Key, outlet: React.ReactNode):
   };
   if (node.class) props.className = node.class;
   if (VOID_ELEMENTS.has(tag)) return React.createElement(tag, props);
-  const kids = (node.children ?? []).map((c, i) => walk(c, i, outlet));
+  const kids = (node.children ?? []).map((c, i) => walk(c, i, ctx));
   return React.createElement(tag, props, ...kids);
 }
 
@@ -178,5 +212,33 @@ export function SilicaChrome({
   // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
-  return walk(hoistAttrBindings(resolved), 'frame', children);
+  return walk(hoistAttrBindings(resolved), 'frame', { outlet: children });
+}
+
+// ── SilicaFunctionalBody: a page body with pinned cores → a React tree ───────
+//
+// A FUNCTIONAL page body (docs/122) carries one or more `kind:"host"` nodes — pinned
+// regions whose real interactive component (cart, checkout, search…) only exists in
+// React. The HTML-string `SilicaBody` would leave those as empty `<div data-sui-host>`
+// mount points, so a body that embeds a core renders through the SAME React walk the
+// frame uses, mounting each core at its node via the route-supplied `renderHost`. A
+// content page with no host nodes should keep using `SilicaBody` (the faster string
+// path); this is only for the functional shells.
+
+export function SilicaFunctionalBody({
+  root,
+  symbols,
+  host,
+  scope,
+  renderHost,
+}: {
+  root: SilicaNode;
+  symbols?: Record<string, SymbolDef>;
+  host?: ResolveHost;
+  scope?: DataScope;
+  renderHost: HostRenderer;
+}): React.ReactNode {
+  const flat = flattenSymbols(root, symbols ?? {});
+  const resolved = host ? resolveTree(flat, host, scope) : flat;
+  return walk(hoistAttrBindings(resolved), 'body', { renderHost });
 }

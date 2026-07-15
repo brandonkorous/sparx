@@ -106,14 +106,27 @@ export function readSilicaFormConfig(raw: unknown): SilicaFormConfig {
 
 /** Is this node a live, submittable form? Both markers must be present: silica's `form`
  *  behavior (the client-side machinery) AND our action ref (the host seam). A form the
- *  author stripped the action off is inert by construction, and must not resolve. */
+ *  author stripped the action off is inert by construction, and must not resolve.
+ *
+ *  This runs against the STORED (pre-expansion) tree, not the rendered/lowered one —
+ *  a `kind: 'component', component: 'Form'` node has no `.behavior` of its own; that
+ *  only materializes when `toHtml`'s renderer calls `expandComponent` on it (silicaui's
+ *  `Form` component always expands to `behavior: {type: 'form'}` unless the raw node
+ *  already sets one). Recognizing the pre-expansion `Form` component directly avoids
+ *  running the full render pipeline just to answer "does this form exist" — and
+ *  without it, EVERY silica contact-form submission 404s (the client correctly wires
+ *  and posts once the node carries `data-sui-id`, but the server can never find the
+ *  form it just verified exists in the browser's own rendered DOM). */
 export function isSilicaFormNode(node: SilicaNode): boolean {
   const n = node as {
+    kind?: string;
+    component?: string;
     behavior?: { type?: string };
     props?: Record<string, unknown>;
     data?: { kind?: string; ref?: string };
   };
-  const hasBehavior = n.behavior?.type === SILICA_FORM_BEHAVIOR;
+  const hasBehavior =
+    n.behavior?.type === SILICA_FORM_BEHAVIOR || (n.kind === 'component' && n.component === 'Form');
   // The ref reaches the DOM as `data-sui-action`, and it can arrive either as the
   // `Form` component's `action` prop (how the shipped block authors it) or as an
   // explicit action data-marker (how a hand-composed tree would).

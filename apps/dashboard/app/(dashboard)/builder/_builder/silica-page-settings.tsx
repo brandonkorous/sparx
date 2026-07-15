@@ -127,10 +127,10 @@ function SeoFields({
         />
       </Field>
       <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-col">
+        <Field className="flex flex-col">
           <FieldLabel>Hide from search engines</FieldLabel>
           <FieldDescription>Ask Google and others not to list this page.</FieldDescription>
-        </div>
+        </Field>
         <Switch
           checked={seo.noindex}
           disabled={disabled}
@@ -242,12 +242,12 @@ export function SilicaPageSettings({
 
           {isCollection && (
             <div className="flex items-center justify-between gap-4">
-              <div className="flex flex-col">
+              <Field className="flex flex-col">
                 <FieldLabel>Use as the default</FieldLabel>
                 <FieldDescription>
                   Show this template for every record of its type that doesn’t have its own.
                 </FieldDescription>
-              </div>
+              </Field>
               <Switch
                 checked={isDefault}
                 disabled={!materialized || busy || isDefault}

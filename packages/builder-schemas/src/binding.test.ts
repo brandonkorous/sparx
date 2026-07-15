@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { bindingRoot, bindingSourceKey, collectBindingPaths } from './runtime';
-import { EMAIL_PERSONALIZED_ROOTS, treeIsEmailPersonalized } from './binding';
+import {
+  EMAIL_PERSONALIZED_ROOTS,
+  commerceCategorySource,
+  treeIsEmailPersonalized,
+} from './binding';
 import type { BuilderNode } from './node';
 
 function node(type: string, over: Partial<BuilderNode> = {}): BuilderNode {
@@ -27,6 +31,29 @@ describe('bindingRoot / bindingSourceKey', () => {
     expect(bindingSourceKey('order.totalLabel')).toBe('order');
     expect(bindingSourceKey('item.title')).toBe('');
     expect(bindingSourceKey('index')).toBe('');
+  });
+});
+
+describe('commerceCategorySource', () => {
+  it('builds a parameterized commerce.category.<handle> array source with product fields', () => {
+    const src = commerceCategorySource('studio-goods', 'Studio Goods');
+    expect(src.key).toBe('commerce.category.studio-goods');
+    expect(src.label).toBe('Category: Studio Goods');
+    expect(src.module).toBe('commerce');
+    expect(src.cardinality).toBe('array');
+    expect(src.recordType).toBe('product');
+    // same shape as the whole-catalog product source — a card bound inside resolves
+    // item.title / item.price / item.image / item.url.
+    const keys = src.fields.map((f) => f.key);
+    expect(keys).toEqual(expect.arrayContaining(['title', 'price', 'image', 'url', 'handle']));
+  });
+
+  it('keeps the source key a clean three-segment dotted path (picker + resolver agree)', () => {
+    // handles are kebab-case (no dots) so `bindingSourceKey` reduces to `commerce.category`
+    // and the resolver walks commerce → category → <handle> off the root.
+    expect(commerceCategorySource('new-arrivals', 'New Arrivals').key).toBe(
+      'commerce.category.new-arrivals'
+    );
   });
 });
 

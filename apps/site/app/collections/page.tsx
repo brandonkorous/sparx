@@ -1,17 +1,17 @@
-// Collection index — every published collection for the tenant, featured
-// first. Both manual and rules-driven collections appear; the storefront only
-// sees the materialized membership so the distinction is invisible to shoppers.
+// Collection index — an EDITABLE shell around a PINNED `commerce.collections` core
+// (docs/122). The live card grid of every published collection (featured first) lives in
+// the host node the tenant can restyle and surround but not delete; the route renders the
+// stored shell (or the code fallback). Needs only the resolved site (no URL state).
 
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { EmptyState } from '@/components/empty-state';
-import { listCollections } from '@/lib/commerce';
-import { mediaUrl } from '@/lib/media';
-import { resolveSite } from '@/lib/site-context';
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { getPublishedSilicaPage } from '@/lib/silica';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,56 +21,20 @@ export default async function CollectionListingPage() {
   const site = await resolveSite();
   if (!site) notFound();
 
-  const collections = await listCollections(site.slug);
+  const propertySlug = await resolveActivePropertySlug();
+  // The tenant's published collections shell, else the code shell wrapping the pinned
+  // core. No heading in the shell — the core renders its own header + subtitle.
+  const published = await getPublishedSilicaPage(site.slug, 'collections');
+  const shell = published?.root ?? functionalShell(HOST_KEYS.commerceCollections);
+  const renderHost = storefrontHostRenderer({
+    site,
+    propertySlug: propertySlug ?? undefined,
+  });
 
   return (
     <div className="st-container">
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Collections' }]} />
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 className="st-h1">Collections</h1>
-        <p className="st-muted" style={{ marginTop: '0.5rem' }}>
-          Curated lineups from {site.name}.
-        </p>
-      </header>
-
-      {collections.length === 0 ? (
-        <EmptyState
-          icon="❖"
-          title="No collections yet"
-          description="Check back soon, or browse the full catalog."
-          action={{ label: 'Shop all products', href: '/products' }}
-        />
-      ) : (
-        <div className="st-grid st-grid--auto">
-          {collections.map((c) => {
-            const hero = mediaUrl(c.heroMediaId, site.slug);
-            return (
-              <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
-                <div className="st-card__media">
-                  {c.featured ? <span className="st-badge">Featured</span> : null}
-                  {hero ? (
-                    <Image
-                      src={hero}
-                      alt={c.name}
-                      fill
-                      sizes="(max-width: 860px) 50vw, 33vw"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div className="st-card__media st-card__media--empty" aria-hidden="true">
-                      <span style={{ fontSize: '2rem' }}>❖</span>
-                    </div>
-                  )}
-                </div>
-                <div className="st-card__body">
-                  <span className="st-card__title">{c.name}</span>
-                  {c.description ? <span className="st-muted">{c.description}</span> : null}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>
   );
 }

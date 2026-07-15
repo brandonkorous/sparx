@@ -122,9 +122,13 @@ export const SILICA_STYLE_GUIDE = {
       'dropdown',
     ],
     sparxComposites: [
-      'productGrid — a responsive grid of product cards, bound to commerce.product (or a collection-scoped source).',
-      'productCard — one product tile (image, title, price); usually used INSIDE productGrid, not standalone.',
-      'featuredProducts — a curated rail, e.g. for a homepage "Featured" section.',
+      'products — THE one configurable product listing. Repeats the product card over a chosen SOURCE, laid out as a ' +
+        "grid or a rail. Source options (change the repeat's ref): `commerce.product` (whole catalog / shop-all grid), " +
+        '`commerce.featured` (merchant-tagged, bounded), `commerce.new` (newest, bounded), `commerce.related` (same ' +
+        'collection as the viewed product, bounded), `commerce.category.<collectionHandle>` (one category). The bounded ' +
+        'sources are capped by the storefront and exclude the in-scope PDP product — NOT the whole catalog.',
+      'productCard — one product tile (image, title, price); the reusable card `products` repeats, also usable ' +
+        'standalone (pin it to one product). "Save as component" to fork a custom card.',
       'buyBox — the PDP add-to-cart form (variant picker + quantity + submit); pre-wired to the cart end to end.',
       "collectionHeader — a collection/category page's title + description band, bound to the in-scope record.",
       'siteNavbar / siteFooter — sparx-branded chrome (bound to site.identity/site.social); prefer these over the ' +
@@ -134,6 +138,61 @@ export const SILICA_STYLE_GUIDE = {
       "There is NO sparx-authored form composite — use silica's native `contactSection` block as-is for a contact " +
       'page. It is pre-wired end to end (the "contact" action ref is already handled by the storefront\'s behavior ' +
       'runtime + the CMS-backed form-submission pipeline); do not build a new form from raw elements.',
+  },
+
+  media: {
+    description:
+      'Images, video, audio, icons, and inline SVG all render (silica >= 0.21). The storefront projects a page body to ' +
+      "HTML through silica's `toHtml`, whose sanitizer allows a fixed set of media tags/components and coerces " +
+      'everything else to <div> (content lost). Author with the allowed tags/components below — do not reach for a ' +
+      'raw <iframe>/<embed>/<object> (those still floor to <div>).',
+    images:
+      'An image is a raw element: { kind:"element", tag:"img", class:"<layout>", attrs:{ src, alt, loading:"lazy" } }. ' +
+      'Allowed <img> attrs: src, alt, width, height, loading, decoding, srcset, sizes — plus `class` for sizing/fit ' +
+      '(e.g. "w-full h-full rounded-box object-cover"). Put the img inside a sized wrapper (e.g. a div with ' +
+      '`aspect-video overflow-hidden rounded-box`) so it crops cleanly.',
+    src:
+      'Two valid `src` forms: (1) an absolute https:// URL renders verbatim — an external/CDN/stock image (e.g. a ' +
+      'Pexels photo) is a first-class, portable choice and bakes no environment-specific host into the tree; (2) a ' +
+      'BOUND image — put a value ref on the <img> (bind(imgNode, "image")) and the host fills its `src` from live ' +
+      "data (a product/collection/blog record's own image, resolved through the platform media resolver). Prefer a " +
+      'binding for record imagery (product cards, PDP heroes) so it tracks the record; use a direct https URL for ' +
+      'decorative/marketing imagery (page hero, about-story photo, section art). Never hardcode a ' +
+      '`/v1/public/media/<id>` URL — that is env-specific; bind instead.',
+    video:
+      'Self-hosted / direct-URL video renders. Two forms: (1) the Video COMPONENT — ' +
+      '{ kind:"component", component:"Video", class, props:{ src|sources:[{src,type}], poster, controls, autoplay, muted, ' +
+      'loop, playsinline, preload, ratio } } — expands to a real <video> (multiple sources via `sources`, aspect via ' +
+      '`ratio` e.g. "16:9"); (2) a raw <video> element (allowed attrs: src, poster, controls, autoplay, loop, muted, ' +
+      'playsinline, preload, width, height, crossorigin) with <source> children (src/type/media/srcset/sizes). For a ' +
+      'muted looping hero-background video, seed controls:false, autoplay:true, muted:true, loop:true, playsinline:true ' +
+      'and ALWAYS set a `poster` still (first paint + no-autoplay fallback). <audio> renders the same way ' +
+      '(src/controls/autoplay/loop/muted/preload/crossorigin).',
+    embed:
+      'A third-party player/map (YouTube, Vimeo, Google Maps) uses the Embed COMPONENT — ' +
+      '{ kind:"component", component:"Embed", class, props:{ url, title, ratio } }. It is the ONLY sanctioned <iframe>: ' +
+      'silica normalizes `url` to the provider embed URL and emits a sandboxed, lazy iframe; an unrecognized host ' +
+      'falls back to a plain link (never a raw iframe). A hand-authored <iframe> element still floors to <div> — use ' +
+      'Embed instead.',
+    icons:
+      'The Icon COMPONENT — { kind:"component", component:"Icon", props:{ name:"<icon-name>" } } — resolves to an ' +
+      'inline SVG in `toHtml` (no client runtime needed; visible on the static storefront as of 0.21). CRITICAL: the ' +
+      "name must be one of silicaui's CURATED lucide set (~117 glyphs, NOT full lucide) — a name outside it renders " +
+      'as an EMPTY span (silently invisible, the same failure mode the whole feature just fixed). Verified-present ' +
+      'names include: sparkles, box, image, gallery, star, pencil, map-pin, calendar, clock, mail, phone, globe, ' +
+      'shield, zap, heart, check-circle, info, search, arrow-right, arrow-left, external-link, user, users, lock, ' +
+      'play, video, download, upload, send, settings, grid, list, plus. (palette/package/printer/pen-tool are NOT in ' +
+      'the set.) Size/color it with utility classes on the component `class` (e.g. "h-6 w-6 text-primary"); the SVG ' +
+      'inherits `currentColor`, so a `text-<token>` class tints it.',
+    allowedTags:
+      'Renderable media tags/components: img, picture, source, figure, figcaption, video, audio, a broad inline-svg ' +
+      'subset (svg/g/defs/symbol/use/path/circle/ellipse/rect/line/polygon/polyline/text/tspan/clipPath/mask/pattern/' +
+      'linearGradient/radialGradient/stop/image), and the Video/Embed/Icon/RichText components. Blocks with a media ' +
+      'slot (heroSplitCta, featureMedia) already emit a correct <img>.',
+    richText:
+      'Long-form CMS HTML (a blog body) renders through the RichText COMPONENT — { kind:"component", component:"RichText" } ' +
+      '— a `.prose` container for TRUSTED, pre-sanitized rich text bound from a content record. Use it for ' +
+      'record-driven article bodies rather than hand-splitting prose into paragraph nodes.',
   },
 
   binding: {

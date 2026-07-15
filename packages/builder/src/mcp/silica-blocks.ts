@@ -18,9 +18,8 @@ import type { Node } from '@wizeworks/silicaui-html';
 import {
   buyBox,
   collectionHeader,
-  featuredProducts,
   productCard,
-  productGrid,
+  productsBlock,
   siteFooter,
   siteNavbar,
 } from '@sparx/silica-catalog';
@@ -38,18 +37,16 @@ export interface SilicaCatalogEntry {
 
 const SPARX_ENTRIES: SilicaCatalogEntry[] = [
   {
-    key: 'sparx.product_grid',
-    label: 'Product grid',
+    // ONE configurable listing (docs/122). Defaults to a shop-all grid over
+    // `commerce.product`; change the repeat's ref to bind a bounded source instead —
+    // `commerce.featured`, `commerce.new`, `commerce.related`, or
+    // `commerce.category.<collectionHandle>` — and switch the container classes for a
+    // grid vs. a horizontal rail. Replaces the old separate grid + featured entries.
+    key: 'sparx.products',
+    label: 'Products',
     category: 'commerce',
-    hint: "A responsive grid of products from the tenant's catalog.",
-    make: productGrid,
-  },
-  {
-    key: 'sparx.featured_products',
-    label: 'Featured products',
-    category: 'commerce',
-    hint: 'A horizontal, scrolling rail of highlighted products.',
-    make: featuredProducts,
+    hint: 'A product listing — pick the source (all / featured / new / related / a category) and grid or rail.',
+    make: () => productsBlock(),
   },
   {
     key: 'sparx.product_card',

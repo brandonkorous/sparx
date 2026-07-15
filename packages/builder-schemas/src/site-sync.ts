@@ -51,14 +51,22 @@ export interface StoredSilicaSite {
 }
 
 /** A silica node tree, validated structurally (a non-null object carrying a
- *  string `kind`) — silica owns the full shape and typed it, so `z.custom` keeps
- *  the real `SilicaNode` type while sparx stores the tree opaquely. Exported so
- *  other opaque-silica-shape validators (e.g. the MCP silica tools) reuse the
- *  exact same check instead of redefining it. */
-export const SilicaTreeInput = z.custom<SilicaNode>(
-  (v) => typeof v === 'object' && v !== null && typeof (v as { kind?: unknown }).kind === 'string',
-  { message: 'Expected a silica-html Node (an object with a string `kind`)' }
-);
+ *  string `kind`) — silica owns the full shape and typed it, so this keeps the
+ *  real `SilicaNode` type (via the cast) while sparx stores the tree opaquely.
+ *  Exported so other opaque-silica-shape validators (e.g. the MCP silica tools)
+ *  reuse the exact same check instead of redefining it.
+ *
+ *  `z.looseObject`, not `z.custom` — a `z.custom` schema has no JSON Schema
+ *  representation (Zod v4 throws "Custom types cannot be represented in JSON
+ *  Schema" converting it), which broke the MCP server's `tools/list` for every
+ *  tool taking a silica tree (upsert_silica_page/set_silica_frame/…) — the
+ *  standard discovery call any real MCP client makes before ever calling a tool,
+ *  so no client could see ANY of the server's tools, not just these three. A
+ *  loose object requiring the same `kind: string` field is structurally
+ *  equivalent and Zod can represent it. */
+export const SilicaTreeInput = z.looseObject({
+  kind: z.string(),
+}) as unknown as z.ZodType<SilicaNode>;
 
 /** One page in a synced site: silica's `Page` (id + name + slug + body root). The
  *  `id` is the sparx `BuilderPage` row id (silica keeps it stable across edits);
@@ -74,15 +82,10 @@ export type SiteSyncPageInput = z.infer<typeof SiteSyncPageInput>;
 /** A silica `Theme` — `{ name, tokens, dark?, mode? }`, where `tokens`/`dark` are
  *  the `--*` custom-property maps verbatim. Validated structurally (silica owns the
  *  shape); stored opaquely and projected straight to CSS. Exported for reuse (see
- *  `SilicaTreeInput` above). */
-export const SilicaThemeInput = z.custom<SilicaTheme>(
-  (v) =>
-    typeof v === 'object' &&
-    v !== null &&
-    typeof (v as { tokens?: unknown }).tokens === 'object' &&
-    (v as { tokens?: unknown }).tokens !== null,
-  { message: 'Expected a silica Theme (an object with a `tokens` map)' }
-);
+ *  `SilicaTreeInput` above for why this is `z.looseObject`, not `z.custom`). */
+export const SilicaThemeInput = z.looseObject({
+  tokens: z.record(z.string(), z.unknown()),
+}) as unknown as z.ZodType<SilicaTheme>;
 
 /** The whole extracted site — the debounced `onChange` payload. `frame`/`symbols`/
  *  `theme` are optional (a site can have no chrome, no saved components, and an
@@ -111,11 +114,26 @@ export type SiteSyncInput = z.infer<typeof SiteSyncInput>;
  *
  *  `frame` is null when the property has published no silica layout (the storefront
  *  keeps its legacy chrome). `theme` is null when no author theme has been published
- *  — the storefront then renders the tenant's brand-derived theme instead. */
+ *  — the storefront then renders the tenant's brand-derived theme instead.
+ *  `commerceEnabled` is whether the tenant's Commerce module is active — the ONLY
+ *  module-state signal exposed publicly here, needed so the code-authored starter
+ *  fallback (frame + home/shop/about/contact) never shows Shop/Cart/Orders chrome
+ *  or a "Browse the shop" CTA to a tenant with no Commerce module (content and/or
+ *  commerce — never assumed, per the platform's core framing). Only the PUBLIC
+ *  storefront route computes it; other producers (the dashboard editor's own
+ *  preview, `form-submit-service`) leave it undefined — callers that care default
+ *  it to `true` (today's unconditional-Shop behavior), so it's opt-in, not a
+ *  breaking change to any other consumer.
+ *  `schedulingEnabled` is the same public module-state signal for the Scheduling
+ *  module, driving the starter fallback's Book link + `/book` page. Unlike Commerce
+ *  it defaults to `false` when undefined (scheduling is opt-in, no legacy behavior to
+ *  preserve). */
 export interface PublishedSilicaFrameDto {
   frame: SilicaFrame | null;
   symbols: Record<string, SilicaSymbolDef>;
   theme: SilicaTheme | null;
+  commerceEnabled?: boolean;
+  schedulingEnabled?: boolean;
 }
 
 /** A published silica PAGE body + the meta the storefront titles/routes it by.
