@@ -155,7 +155,16 @@ export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolve
         binding,
         scope.item !== undefined
       );
-      if (!found) return undefined;
+      if (!found) {
+        // `hideWhenEmpty` (the EMAIL conditional, docs/120) opts into "resolves to
+        // nothing ⇒ hide", and an ABSENT field resolves to nothing — that IS the
+        // condition. Reporting it as unknown instead would keep the authored block and
+        // render a dangling "Shipping to:" label with no address. The site builder wants
+        // the opposite (an unknown ref keeps its authored placeholder rather than
+        // vanishing), which is exactly why this hangs off the opt-in rather than being
+        // one global answer.
+        return hideWhenEmpty ? { value: undefined, visible: false } : undefined;
+      }
       const value = format ? format(raw, binding) : raw;
       const chip = label?.(binding);
       return {

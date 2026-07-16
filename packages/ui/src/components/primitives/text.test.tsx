@@ -19,8 +19,16 @@ describe('Text', () => {
     expect(label).toHaveAttribute('for', 'store-name');
   });
 
-  it('uses muted token for variant="muted"', () => {
-    render(<Text variant="muted">caption</Text>);
-    expect(screen.getByText('caption').className).toMatch(/text-base-content\/70/);
+  // `muted` / `subtle` are ALIASES for the real ink, not a fading scale: opacity is a
+  // filter, not a color, so `/70` composited against whatever sat behind it — the ink
+  // drifted per module on a tinted card and went near-invisible on the neutral inverse
+  // panel. Rank is carried by `size` and `weight`. The variant names survive only so
+  // ~570 call sites don't churn. These assert the ALIAS, and guard the fade from
+  // creeping back in.
+  it.each(['muted', 'subtle'] as const)('resolves variant="%s" to the real ink', (variant) => {
+    render(<Text variant={variant}>caption</Text>);
+    const className = screen.getByText('caption').className;
+    expect(className).toMatch(/\btext-base-content\b/);
+    expect(className).not.toMatch(/text-base-content\/\d+/);
   });
 });

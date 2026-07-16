@@ -91,4 +91,22 @@ describe('unknown vs empty refs (silica ResolveHost contract)', () => {
   it('returns undefined for an unknown COLLECTION ref (authored children stay)', () => {
     expect(resolver.resolveCollection('site.identity.nothing', {})).toBeUndefined();
   });
+
+  it('HIDES an unknown ref instead when hideWhenEmpty is on (the email conditional)', () => {
+    // docs/120: an email conditional is a bound wrapper that must VANISH when its data
+    // is absent — otherwise "Shipping to:" renders with no address. An absent field
+    // resolves to nothing, which is precisely the condition `hideWhenEmpty` opts into,
+    // so it must not be reported as an unknown ref (which would keep the block).
+    const email = createSilicaResolver({
+      root: { order: { total: 42 } },
+      hideWhenEmpty: true,
+    });
+    expect(email.resolveBinding('order.shippingAddress', {})).toEqual({
+      value: undefined,
+      visible: false,
+    });
+    // …while the SITE builder (hideWhenEmpty off) keeps the authored placeholder.
+    const site = createSilicaResolver({ root: { order: { total: 42 } } });
+    expect(site.resolveBinding('order.shippingAddress', {})).toBeUndefined();
+  });
 });
