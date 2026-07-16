@@ -18,6 +18,9 @@ export interface OnboardingState {
   // Routing hints carried on reads (the api-rest state has them); optional so a
   // partial PATCH need not supply them. `onboardingEntryHref` uses these to resume
   // the right onboarding front end (story flow vs classic wizard).
+  /** The onboarding front end the tenant explicitly chose (`story` | `classic`), set
+   *  when they use a switch link. Outranks every other hint here. */
+  flow?: string | null;
   /** Current classic-wizard step, when one is in progress. */
   currentStep?: string;
   /** The natural-language story narrative, when onboarding came through /story. */

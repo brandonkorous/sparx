@@ -285,11 +285,22 @@ const StoryNarrative = z
   .strict();
 type OnboardingStory = z.infer<typeof StoryNarrative>;
 
+// Which onboarding front end the tenant EXPLICITLY asked for, set only when they use
+// one of the two switch links (`story` ⇄ `classic`). Null means they never chose, and
+// the dashboard derives an entry from the rest of the state. This exists because the
+// derived rule alone is a one-way latch: composing a story saves a draft, and a saved
+// draft always routes back to /story — so without a recorded preference an owner who
+// touched the composer could never reach the wizard again.
+const ONBOARDING_FLOWS = ['story', 'classic'] as const;
+type OnboardingFlow = (typeof ONBOARDING_FLOWS)[number];
+
 const OnboardingPatch = z.object({
   dismissed: z.boolean().optional(),
   startedAt: z.string().datetime().nullable().optional(),
   finishedAt: z.string().datetime().nullable().optional(),
   currentStep: z.enum(ONBOARDING_STEPS).optional(),
+  // The tenant's explicit front-end choice; outranks every derived routing hint.
+  flow: z.enum(ONBOARDING_FLOWS).nullable().optional(),
   category: z.string().max(63).nullable().optional(),
   // The chosen blueprint + its install row, tracked so the Launch step can
   // publish (go-live) deterministically and the flow resumes mid-onboarding.
@@ -322,6 +333,7 @@ interface OnboardingState {
   startedAt: string | null;
   finishedAt: string | null;
   currentStep: OnboardingStep;
+  flow: OnboardingFlow | null;
   category: string | null;
   blueprintKey: string | null;
   installId: string | null;
@@ -342,6 +354,7 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   startedAt: null,
   finishedAt: null,
   currentStep: 'modules',
+  flow: null,
   category: null,
   blueprintKey: null,
   installId: null,
@@ -367,6 +380,9 @@ function readOnboarding(settings: unknown): OnboardingState {
     currentStep: ONBOARDING_STEPS.includes(rec.currentStep as OnboardingStep)
       ? (rec.currentStep as OnboardingStep)
       : 'modules',
+    flow: ONBOARDING_FLOWS.includes(rec.flow as OnboardingFlow)
+      ? (rec.flow as OnboardingFlow)
+      : null,
     category: typeof rec.category === 'string' ? rec.category : null,
     blueprintKey: typeof rec.blueprintKey === 'string' ? rec.blueprintKey : null,
     installId: typeof rec.installId === 'string' ? rec.installId : null,

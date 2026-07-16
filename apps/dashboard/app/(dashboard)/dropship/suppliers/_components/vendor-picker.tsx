@@ -39,9 +39,9 @@ export function VendorPicker({ vendors, onSelect }: Props) {
                 {v.connectionMethod === 'api' ? 'Automated' : 'Manual'}
               </Badge>
             </div>
-            <p className="text-base-content/70 text-sm">{v.tagline}</p>
+            <p className="text-base-content text-sm">{v.tagline}</p>
           </div>
-          <ChevronRight className="text-base-content/70 h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" />
+          <ChevronRight className="text-base-content h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5" />
         </button>
       ))}
     </div>

@@ -91,7 +91,7 @@ export function SuppressionsList({ rows, view }: SuppressionsListProps) {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           {reasonBadge(row)}
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {row.source ?? '—'} · {new Date(row.createdAt).toLocaleDateString()}
           </p>
         </div>

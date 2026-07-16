@@ -257,9 +257,7 @@ export function SegmentCreateForm({ surface }: SegmentCreateFormProps) {
                         <span className="font-medium tabular-nums">{preview.matches}</span> of{' '}
                         <span className="tabular-nums">{preview.sampled}</span> sampled match
                       </p>
-                      <p className="text-base-content/70 text-xs">
-                        ({preview.total} customers total)
-                      </p>
+                      <p className="text-base-content text-xs">({preview.total} customers total)</p>
                     </div>
                   )}
                 </div>

@@ -86,7 +86,7 @@ export function CrmUpsellBanner({ canActivate }: { canActivate: boolean }) {
             type="button"
             aria-label="Dismiss"
             onClick={dismiss}
-            className="text-base-content/50 hover:text-base-content absolute top-2 right-2 rounded-md p-1"
+            className="text-base-content hover:text-base-content absolute top-2 right-2 rounded-md p-1"
           >
             <X className="h-4 w-4" />
           </button>

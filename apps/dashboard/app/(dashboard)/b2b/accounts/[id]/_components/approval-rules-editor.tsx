@@ -107,9 +107,7 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
                 </td>
                 <td>
                   <p
-                    className={
-                      rule.requiredApproverName ? 'text-sm' : 'text-base-content/70 text-sm'
-                    }
+                    className={rule.requiredApproverName ? 'text-sm' : 'text-base-content text-sm'}
                   >
                     {rule.requiredApproverName ?? 'Any staff member'}
                   </p>
@@ -135,7 +133,7 @@ export function ApprovalRulesEditor({ accountId, rules }: Props) {
           </tbody>
         </Table>
       ) : (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No approval rules. Orders from this account are placed immediately.
         </p>
       )}

@@ -69,7 +69,7 @@ export function ProductPricingPanel({
       <Card>
         <CardBody>
           <h3 className="text-xl font-semibold">Pricing</h3>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             No variants yet. Add a variant on the Variants tab to set a price.
           </p>
         </CardBody>
@@ -95,7 +95,7 @@ export function ProductPricingPanel({
           <div className="flex flex-row flex-wrap items-center justify-between gap-3">
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold">Pricing</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Current retail price, cost, and margin for each variant. Edit individual prices on
                 the Variants tab.
               </p>
@@ -142,12 +142,12 @@ export function ProductPricingPanel({
                         </div>
                       </td>
                       <td className="text-right tabular-nums">{money(v.priceCents, v.currency)}</td>
-                      <td className="text-base-content/60 text-right tabular-nums">
+                      <td className="text-base-content text-right tabular-nums">
                         {v.compareAtPriceCents !== null
                           ? money(v.compareAtPriceCents, v.currency)
                           : '—'}
                       </td>
-                      <td className="text-base-content/60 text-right tabular-nums">
+                      <td className="text-base-content text-right tabular-nums">
                         {v.costCents !== null ? money(v.costCents, v.currency) : '—'}
                       </td>
                       <td className="text-right">
@@ -156,7 +156,7 @@ export function ProductPricingPanel({
                             {pct.toFixed(1)}%
                           </Badge>
                         ) : (
-                          <span className="text-base-content/70 text-sm">—</span>
+                          <span className="text-base-content text-sm">—</span>
                         )}
                       </td>
                       <td>
@@ -169,7 +169,7 @@ export function ProductPricingPanel({
                             {supplierName ?? 'Vendor'}
                           </Badge>
                         ) : (
-                          <span className="text-base-content/70 text-sm">Manual</span>
+                          <span className="text-base-content text-sm">Manual</span>
                         )}
                       </td>
                     </tr>
@@ -178,7 +178,7 @@ export function ProductPricingPanel({
               </tbody>
             </Table>
 
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Price lists and B2B contract pricing are coming in a later release.
             </p>
           </div>
@@ -189,7 +189,7 @@ export function ProductPricingPanel({
         <CardBody>
           <div className="flex flex-col gap-1">
             <h3 className="text-xl font-semibold">Bulk price tiers</h3>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Quantity ramps for this product&apos;s variants — e.g. 10+ at a lower unit price. A
               tier applies only when its price beats the otherwise-resolved price; variant tiers
               override price-list tiers.

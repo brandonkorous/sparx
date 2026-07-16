@@ -74,7 +74,7 @@ export default async function PartnerTierPage() {
                           </li>
                         ))}
                       </ul>
-                      <p className="text-base-content/70 text-xs">{meta.howToReach}</p>
+                      <p className="text-base-content text-xs">{meta.howToReach}</p>
                     </div>
                   </CardBody>
                 </Card>
@@ -90,11 +90,11 @@ export default async function PartnerTierPage() {
                 description={TIERS[upcoming].commission}
               >
                 <div className="flex flex-col gap-3">
-                  <p className="text-base-content/70 text-sm">{TIERS[upcoming].howToReach}</p>
+                  <p className="text-base-content text-sm">{TIERS[upcoming].howToReach}</p>
                   {canOperate ? (
                     <TierApply requestedTier={upcoming} />
                   ) : (
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Ask an owner or admin to apply for the next tier.
                     </p>
                   )}
@@ -107,7 +107,7 @@ export default async function PartnerTierPage() {
                     <h2 className="text-2xl font-semibold tracking-tight">
                       You’re at the top tier
                     </h2>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       You earn ongoing commission on managed accounts and can publish bootcamps
                       publicly. Keep growing — the directory rewards active certified partners.
                     </p>
@@ -121,7 +121,7 @@ export default async function PartnerTierPage() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <h2 className="text-2xl font-semibold tracking-tight">Not a partner yet?</h2>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Join the program to claim your referral link and start earning. You can apply
                       to move up a tier any time.
                     </p>

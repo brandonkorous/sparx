@@ -347,7 +347,7 @@ function PromptFormBody({ template, onClose, onSaved }: PromptFormBodyProps) {
                   />
                   <div className="flex flex-col gap-1">
                     <Label htmlFor="prompt-enabled">Enabled</Label>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {category === 'persona'
                         ? 'Only the active enabled persona grounds the chat assistant.'
                         : 'Disabled prompts stay in the library but won’t be offered to flows.'}

@@ -16,7 +16,7 @@ export function UnsuppliedPanel({ items }: { items: UnsuppliedSuggestion[] }) {
             <h3 className="text-xl font-semibold">Low — no supplier linked</h3>
             <Badge color="warning">{items.length}</Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             These items are low but have no purchasing supplier. Link one to a supplier&apos;s
             catalog and they&apos;ll become draftable reorder suggestions.
           </p>
@@ -30,11 +30,11 @@ export function UnsuppliedPanel({ items }: { items: UnsuppliedSuggestion[] }) {
                   <p className="text-sm font-medium">
                     {it.title ?? it.sku ?? it.variantId.slice(0, 8)}
                   </p>
-                  <p className="text-base-content/70 font-mono text-xs">
+                  <p className="text-base-content font-mono text-xs">
                     {it.sku ?? it.variantId} · {it.warehouseName ?? it.warehouseCode}
                   </p>
                 </div>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   {it.available} / {it.reorderPoint} reorder pt
                 </p>
                 <Button

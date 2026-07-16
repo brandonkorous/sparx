@@ -170,7 +170,7 @@ function FleetProfilesCard({
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-col gap-1">
             <h3 className="text-xl font-semibold">Fleet engine profiles</h3>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Optional — the engine variants this fleet runs, used by fitment-aware catalog
               filtering.
             </p>
@@ -187,7 +187,7 @@ function FleetProfilesCard({
           </Button>
         </div>
         {profiles.length === 0 ? (
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             No engine profiles. Click “Add engine” to record the make, model, and count for each
             engine variant the fleet runs.
           </p>
@@ -494,7 +494,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Company</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 The account’s company details. Only the company name is required to create the
                 account.
               </p>
@@ -512,7 +512,7 @@ function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps)
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Pricing &amp; credit</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Pricing tier, credit limit, and payment terms — all optional, and editable anytime.
               </p>
               <SchemaFieldRenderer

@@ -129,7 +129,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
                   onClick={() => toggle(node.id)}
                   aria-label={isOpen ? `Collapse ${node.name}` : `Expand ${node.name}`}
                   aria-expanded={isOpen}
-                  className="text-base-content/60 hover:text-base-content focus-visible:ring-primary shrink-0 rounded-sm transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none"
+                  className="text-base-content hover:text-base-content focus-visible:ring-primary shrink-0 rounded-sm transition-colors duration-150 focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {isOpen ? (
                     <ChevronDown className="h-4 w-4" />
@@ -152,7 +152,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
                 </EntityRowLink>
                 {node.featured && featuredBadge}
               </div>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 /{node.handle}
                 {filtering && parentName ? ` · under ${parentName}` : ''}
               </p>
@@ -174,9 +174,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
     {
       header: 'Updated',
       cell: ({ node }) => (
-        <p className="text-base-content/70 text-sm">
-          {new Date(node.updatedAt).toLocaleDateString()}
-        </p>
+        <p className="text-base-content text-sm">{new Date(node.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -193,7 +191,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
       </EntityRowLink>
     ),
     subtitle: ({ node, parentName }) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         /{node.handle}
         {parentName ? ` · under ${parentName}` : ' · top level'}
       </p>
@@ -201,7 +199,7 @@ export function CategoriesTable({ tree, view, q, featured }: CategoriesTableProp
     badge: ({ node }) => (node.featured ? featuredBadge : null),
     body: ({ node }) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-xs">priority {node.position}</p>
+        <p className="text-base-content text-xs">priority {node.position}</p>
         <p className="text-sm tabular-nums">
           {node.productCount} product{node.productCount === 1 ? '' : 's'}
         </p>

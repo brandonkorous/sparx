@@ -26,30 +26,50 @@ import type { DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
 
 import type { DataSource, FieldSchema } from './binding';
 
-/** A sparx `FieldSchema` → a silica nested `DataSource`. The field's own `key`
- *  is kept verbatim (scope-relative); `group`/`list` fields recurse so their
- *  inner fields become pickable once a repeat ancestor scopes them. */
-function fieldToSilica(field: FieldSchema): SilicaDataSource {
+/** A sparx `FieldSchema` → a silica nested `DataSource`. The field's own `key` is
+ *  kept verbatim (scope-relative); `group`/`list` fields recurse so their inner
+ *  fields become pickable once a repeat ancestor scopes them. `prefix` qualifies the
+ *  emitted keys for an AMBIENT source (see `sourceToSilica`), where there is no
+ *  ancestor scope to resolve a bare key against. */
+function fieldToSilica(field: FieldSchema, prefix = ''): SilicaDataSource {
+  const key = prefix ? `${prefix}.${field.key}` : field.key;
   const out: SilicaDataSource = {
-    key: field.key,
+    key,
     label: field.label,
     cardinality: field.cardinality,
   };
   if (field.fields && field.fields.length > 0) {
-    return { ...out, fields: field.fields.map(fieldToSilica) };
+    return { ...out, fields: field.fields.map((f) => fieldToSilica(f, key)) };
   }
   return out;
 }
 
 /** A sparx catalog `DataSource` → a silica top-level `DataSource`. The source's
- *  root `key` (e.g. `commerce.product`) is the ref a scope/collection node
- *  carries; its fields are scope-relative. */
+ *  root `key` (e.g. `commerce.product`) is the ref a scope/collection node carries; its
+ *  fields are emitted FULLY-QUALIFIED under it (`commerce.product.title`).
+ *
+ *  Qualification is not cosmetic — a bare field key is not a ref, it's a ref FRAGMENT,
+ *  and that breaks two ways:
+ *   1. AMBIGUOUS. The picker's option `value` IS the ref, and silica keys its options by
+ *      that value. Bare keys are unique only WITHIN a source, so the moment two sources
+ *      share a field shape — `commerce.product` / `commerce.featured` / `commerce.new` /
+ *      `commerce.related` / `product` all carry PRODUCT_FIELDS — the catalog emits
+ *      `title` five times: five colliding React keys, and five options that all mean the
+ *      same thing. (Real catalog before this: 88 options, 21 duplicate keys, 67 collisions.)
+ *   2. UNRESOLVABLE at the root. `logo` resolves against `root.logo` — nothing. That is
+ *      exactly how binding a tenant logo onto a wordmark silently blanked it (docs/122).
+ *
+ *  A qualified key is unique AND resolves at the root. Inside a repeat it is still correct:
+ *  `resolveBinding` tolerates the source prefix when a scope is active (see
+ *  `silica-resolve`), so `commerce.product.title` under a product repeat resolves against
+ *  `scope.item`. Bare refs (code-authored composites, trees authored before this) keep
+ *  working through the same path. */
 function sourceToSilica(source: DataSource): SilicaDataSource {
   return {
     key: source.key,
     label: source.label,
     cardinality: source.cardinality,
-    fields: source.fields.map(fieldToSilica),
+    fields: source.fields.map((f) => fieldToSilica(f, source.key)),
   };
 }
 

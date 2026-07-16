@@ -121,7 +121,7 @@ export function AllowlistCenter({
             <Stack gap={2}>
               {initial.base.map((rule) => (
                 <div key={rule.label} className="flex items-start gap-2.5">
-                  <Lock className="text-base-content/50 mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <Lock className="text-base-content mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
                   <Text size="sm">
                     <span className="font-mono">{rule.label}</span> — {rule.reason}
                   </Text>

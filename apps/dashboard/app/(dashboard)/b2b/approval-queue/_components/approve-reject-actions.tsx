@@ -95,7 +95,7 @@ export function ApproveRejectActions({ orderId, orderNumber }: Props) {
           </div>
 
           <div className="flex flex-col gap-4 px-6 py-2">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {action === 'approve'
                 ? 'The order will be placed and the buyer notified.'
                 : 'The order will be cancelled and the buyer notified.'}

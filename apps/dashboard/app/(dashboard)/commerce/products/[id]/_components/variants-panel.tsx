@@ -195,8 +195,8 @@ export function VariantsPanel({ productId, productTitle, options, variants, mark
           </div>
           {activeVariants.length === 0 && archivedVariants.length === 0 ? (
             <div className="border-base-300 flex flex-col items-center gap-2 border-t py-10 text-center">
-              <Boxes className="text-base-content/60 h-5 w-5" />
-              <p className="text-base-content/70 text-sm">
+              <Boxes className="text-base-content h-5 w-5" />
+              <p className="text-base-content text-sm">
                 No variants yet. Add at least one before publishing.
               </p>
             </div>
@@ -240,7 +240,7 @@ function OptionPreview({ option }: { option: OptionRow }) {
         <Badge color="neutral" variant="soft" size="sm">
           {statusLabel(option.displayType)}
         </Badge>
-        <span className="text-base-content/70 text-xs">
+        <span className="text-base-content text-xs">
           {option.values.length} value{option.values.length === 1 ? '' : 's'}
         </span>
       </div>
@@ -388,11 +388,11 @@ function VariantRowEditor({
               </Badge>
             )}
           </div>
-          {variant.title && <span className="text-base-content/70 text-xs">{variant.title}</span>}
+          {variant.title && <span className="text-base-content text-xs">{variant.title}</span>}
         </div>
       </td>
       <td>
-        <span className="text-base-content/70 text-sm">{optionsLabel || '—'}</span>
+        <span className="text-base-content text-sm">{optionsLabel || '—'}</span>
       </td>
       <td className="text-right tabular-nums">
         <div className="flex flex-col items-end gap-1">
@@ -443,7 +443,7 @@ function VariantRowEditor({
         </NativeSelect>
       </td>
       <td className="text-right tabular-nums">
-        <span className="text-base-content/70 text-sm">{variant.imageCount}</span>
+        <span className="text-base-content text-sm">{variant.imageCount}</span>
       </td>
       <td className="text-right">
         <div className="flex flex-row justify-end gap-1">

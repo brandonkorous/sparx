@@ -29,9 +29,7 @@ export function SalesByChannelCard({ channels }: { channels: ChannelRevenueRepor
               }))}
             />
           ) : (
-            <p className="text-base-content/70 py-2 text-sm">
-              No channel sales in this period yet.
-            </p>
+            <p className="text-base-content py-2 text-sm">No channel sales in this period yet.</p>
           )}
         </CardBody>
       </Card>
@@ -68,7 +66,7 @@ function RankedList<T>({
           >
             <div className="min-w-0">
               <div className="text-base-content truncate text-sm">{primary(r)}</div>
-              <div className="text-base-content/50 text-xs">{secondary(r)}</div>
+              <div className="text-base-content text-xs">{secondary(r)}</div>
             </div>
             <span className="text-base-content shrink-0 text-sm font-medium tabular-nums">
               {amount(r)}

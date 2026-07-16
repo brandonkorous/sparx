@@ -22,7 +22,7 @@ export function Stars({
   if (rating === null || reviewCount === 0) {
     if (compact) return null;
     return (
-      <span className="text-base-content/50 inline-flex items-center gap-1.5 text-sm">
+      <span className="text-base-content inline-flex items-center gap-1.5 text-sm">
         No reviews yet
       </span>
     );
@@ -34,7 +34,7 @@ export function Stars({
 
   return (
     <span
-      className="text-base-content/70 inline-flex items-center gap-1.5 text-sm"
+      className="text-base-content inline-flex items-center gap-1.5 text-sm"
       aria-label={`Rated ${rating.toFixed(1)} out of 5 from ${reviewCount} ${
         reviewCount === 1 ? 'review' : 'reviews'
       }`}
@@ -48,7 +48,7 @@ export function Stars({
         })}
       </span>
       {compact ? (
-        <span className="text-base-content/50">({reviewCount.toLocaleString()})</span>
+        <span className="text-base-content">({reviewCount.toLocaleString()})</span>
       ) : (
         <span>
           {rating.toFixed(1)} ({reviewCount.toLocaleString()})

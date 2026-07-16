@@ -28,12 +28,12 @@ export const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="border-base-300 flex items-center gap-2 border-b px-3">
-    <Search className="text-base-content/50 h-4 w-4 shrink-0" />
+    <Search className="text-base-content h-4 w-4 shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
         'flex h-10 w-full bg-transparent py-2 text-sm outline-none',
-        'placeholder:text-base-content/50',
+        'placeholder:text-base-content',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
@@ -61,7 +61,7 @@ export const CommandEmpty = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className={cn('text-base-content/70 py-6 text-center text-sm', className)}
+    className={cn('text-base-content py-6 text-center text-sm', className)}
     {...props}
   />
 ));
@@ -78,7 +78,7 @@ export const CommandGroup = React.forwardRef<
       '[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5',
       '[&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       '[&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:uppercase',
-      '[&_[cmdk-group-heading]]:text-base-content/50',
+      '[&_[cmdk-group-heading]]:text-base-content',
       className
     )}
     {...props}
@@ -118,10 +118,7 @@ export const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 export const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cn('text-base-content/50 ml-auto text-xs tracking-wide', className)}
-    {...props}
-  />
+  <span className={cn('text-base-content ml-auto text-xs tracking-wide', className)} {...props} />
 );
 CommandShortcut.displayName = 'CommandShortcut';
 

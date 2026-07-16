@@ -33,10 +33,10 @@ export function PricingV2Hero() {
             >
               Pay for what you use.
               <br />
-              <span className="text-base-content/55">Nothing else</span>
+              <span className="text-base-content">Nothing else</span>
               <span className="text-primary">.</span>
             </Heading>
-            <Text variant="lead" className="text-base-content/80 max-w-xl text-xl">
+            <Text variant="lead" className="text-base-content max-w-xl text-xl">
               Flat pricing, one module at a time. Switch on only the parts you need, get one
               invoice, and change your mind whenever the business does.
             </Text>
@@ -86,7 +86,7 @@ function StarterTag() {
       className="bg-base-100 text-base-content border-base-300 mx-auto w-full max-w-sm rounded-3xl border p-7 shadow-2xl"
       data-theme="light"
     >
-      <div className="text-base-content/45 font-mono text-xs tracking-[0.14em]">START HERE</div>
+      <div className="text-base-content font-mono text-xs tracking-[0.14em]">START HERE</div>
       <div className="mt-4 flex flex-col">
         {STARTER.map((row) => (
           <div
@@ -100,14 +100,14 @@ function StarterTag() {
               />
               {row.label}
             </span>
-            <span className="text-base-content/60 tabular-nums">{row.price}</span>
+            <span className="text-base-content tabular-nums">{row.price}</span>
           </div>
         ))}
       </div>
       <div className="border-base-content mt-4 flex items-baseline justify-between border-t-2 pt-4">
-        <span className="text-base-content/60 text-sm">Your monthly bill</span>
+        <span className="text-base-content text-sm">Your monthly bill</span>
         <span className="text-primary text-4xl font-semibold tracking-[-0.02em]">
-          $88<span className="text-base-content/45 text-xl font-normal">/mo</span>
+          $88<span className="text-base-content text-xl font-normal">/mo</span>
         </span>
       </div>
       <Text variant="caption" className="mt-3">

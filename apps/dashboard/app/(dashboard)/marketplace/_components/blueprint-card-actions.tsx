@@ -41,9 +41,7 @@ export function BlueprintCardActions({
 
   if (!canInstall) {
     return (
-      <p className="text-base-content/70 text-xs">
-        Only an owner or admin can install a blueprint.
-      </p>
+      <p className="text-base-content text-xs">Only an owner or admin can install a blueprint.</p>
     );
   }
 

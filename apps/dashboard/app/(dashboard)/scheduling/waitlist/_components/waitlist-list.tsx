@@ -90,7 +90,7 @@ function BookOfferModal({
           <DialogTitle>Book for {entry.customerName}</DialogTitle>
         </div>
         <div className="flex flex-col gap-3 px-1 py-2">
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {entry.serviceName} · requested {formatDate(entry.desiredFrom)} –{' '}
             {formatDate(entry.desiredTo)}
           </p>
@@ -111,12 +111,12 @@ function BookOfferModal({
             </Button>
           </div>
           {loading ? (
-            <div className="text-base-content/70 flex items-center gap-2 text-sm">
+            <div className="text-base-content flex items-center gap-2 text-sm">
               <Loading size="sm" /> Checking…
             </div>
           ) : slots ? (
             slots.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No open times that day.</p>
+              <p className="text-base-content text-sm">No open times that day.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {slots.map((s) => (
@@ -192,7 +192,7 @@ export function WaitlistList({ entries }: { entries: WaitlistEntry[] }) {
               <tr key={e.id}>
                 <td className="font-medium">{e.customerName}</td>
                 <td>{e.serviceName ?? 'Service'}</td>
-                <td className="text-base-content/70">
+                <td className="text-base-content">
                   {formatDate(e.desiredFrom)} – {formatDate(e.desiredTo)}
                 </td>
                 <td>

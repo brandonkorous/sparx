@@ -69,7 +69,7 @@ export function CaldavConnectForm({
     <div className="flex flex-col gap-2">
       <div>
         <p className="text-sm font-medium">Connect Apple iCloud (or another CalDAV account)</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Use an{' '}
           <a
             href="https://account.apple.com/account/manage"
@@ -123,7 +123,7 @@ export function CaldavConnectForm({
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
-          className="text-base-content/70 text-xs underline"
+          className="text-base-content text-xs underline"
           onClick={() => setUseCustomServer((v) => !v)}
         >
           {useCustomServer ? 'Use Apple iCloud instead' : 'Use a different CalDAV server'}

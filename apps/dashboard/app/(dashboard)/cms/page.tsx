@@ -381,7 +381,7 @@ export default async function CmsPage() {
                     ['Scheduled ahead', summary ? fmtNumber(summary.scheduledUpcoming) : '—'],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -407,9 +407,9 @@ export default async function CmsPage() {
                   ariaLabel="Entries by content type"
                 />
                 {topType ? (
-                  <div className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
+                  <div className="border-base-300 text-base-content mt-4 border-t pt-3 text-xs">
                     Most content ·{' '}
-                    <span className="text-base-content/70 font-medium">{topType.name}</span> —{' '}
+                    <span className="text-base-content font-medium">{topType.name}</span> —{' '}
                     {fmtNumber(topType.count)} entries
                   </div>
                 ) : null}
@@ -457,7 +457,7 @@ export default async function CmsPage() {
                           {c.typeName}
                         </Badge>
                       </td>
-                      <td className="text-base-content/70 text-right tabular-nums">
+                      <td className="text-base-content text-right tabular-nums">
                         {shortDate(c.publishedAt)}
                       </td>
                     </tr>
@@ -511,7 +511,7 @@ export default async function CmsPage() {
           description="Your most-viewed published content · last 30 days"
           right={
             contentViewsTotal != null ? (
-              <span className="text-base-content/50 text-xs">
+              <span className="text-base-content text-xs">
                 {fmtNumber(contentViewsTotal)} total views
               </span>
             ) : undefined
@@ -538,7 +538,7 @@ export default async function CmsPage() {
                       </Badge>
                     </td>
                     <td className="text-right tabular-nums">{c.views}</td>
-                    <td className="text-base-content/70 text-right tabular-nums">{c.visitors}</td>
+                    <td className="text-base-content text-right tabular-nums">{c.visitors}</td>
                   </tr>
                 ))}
               </tbody>
@@ -582,7 +582,7 @@ export default async function CmsPage() {
                   <TimelineItem key={a.id} showConnector={i < recent.activity.length - 1}>
                     <TimelineTitle>
                       <span className="font-medium">{a.author ?? 'Someone'}</span>{' '}
-                      <span className="text-base-content/70 font-normal">
+                      <span className="text-base-content font-normal">
                         {STATUS_VERB[a.status] ?? 'updated'}
                       </span>{' '}
                       <span className="font-medium">{a.title}</span>

@@ -50,14 +50,14 @@ export function WebVitalsCard({ vitals }: { vitals: SiteVitals | null }) {
                 key={r.label}
                 className="border-base-300 flex items-center justify-between gap-2 border-b py-3 last:border-b-0"
               >
-                <p className="text-base-content/70 text-sm">{r.label}</p>
+                <p className="text-base-content text-sm">{r.label}</p>
                 <Badge color={r.tone} variant="soft">
                   {r.value}
                 </Badge>
               </div>
             ))}
           </div>
-          <p className="text-base-content/70 mt-3 block text-xs">
+          <p className="text-base-content mt-3 block text-xs">
             Core Web Vitals{live ? ` · ${v.samples} samples` : ''}
           </p>
         </CardBody>

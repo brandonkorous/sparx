@@ -229,7 +229,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
               />
             </div>
             <div className="flex flex-row justify-between">
-              <p className="text-base-content/70 text-sm">{util.toFixed(1)}% used</p>
+              <p className="text-base-content text-sm">{util.toFixed(1)}% used</p>
               {util >= 75 && (
                 <div className="flex flex-row items-center gap-1">
                   <AlertTriangle className="text-warning h-3.5 w-3.5" />
@@ -298,7 +298,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
                   <tr key={idx}>
                     <td>
                       <p className="text-sm font-medium">{v.label ?? '—'}</p>
-                      {v.vin && <p className="text-base-content/70 text-sm">VIN {v.vin}</p>}
+                      {v.vin && <p className="text-base-content text-sm">VIN {v.vin}</p>}
                     </td>
                     <td>
                       <p className="text-sm">{fleetFitmentLabel(v)}</p>

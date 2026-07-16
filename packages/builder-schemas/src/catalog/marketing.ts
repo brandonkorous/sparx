@@ -13,7 +13,7 @@ import { el, atom, entry, type PlatformCatalogEntry } from './_kit';
 
 // A single feature row inside a pricing card — a check glyph + the line of copy.
 const featureLine = (text: string) =>
-  el('li', 'flex items-start gap-2 text-sm text-base-content/80', {
+  el('li', 'flex items-start gap-2 text-sm text-base-content', {
     children: [el('span', 'mt-0.5 shrink-0 text-success', { text: '✓' }), el('span', '', { text })],
   });
 
@@ -21,7 +21,7 @@ const featureLine = (text: string) =>
 const logoChip = (label: string) =>
   el(
     'div',
-    'flex h-10 w-28 items-center justify-center rounded-field bg-base-200 text-sm font-semibold tracking-tight text-base-content/40',
+    'flex h-10 w-28 items-center justify-center rounded-field bg-base-200 text-sm font-semibold tracking-tight text-base-content',
     { text: label }
   );
 
@@ -29,7 +29,7 @@ const logoChip = (label: string) =>
 const socialDot = (name: string, label: string) =>
   el(
     'a',
-    'flex h-8 w-8 items-center justify-center rounded-full text-base-content/50 transition-colors hover:bg-base-200 hover:text-primary',
+    'flex h-8 w-8 items-center justify-center rounded-full text-base-content transition-colors hover:bg-base-200 hover:text-primary',
     { attrs: { href: '#', ariaLabel: label }, children: [atom('Icon', 'h-4 w-4', { name })] }
   );
 
@@ -37,7 +37,7 @@ const socialDot = (name: string, label: string) =>
 // chrome (padding, row borders) comes from the st-table class on the <table>, so
 // these carry only alignment + the semantic color.
 const cellYes = () => el('td', 'text-center text-success', { text: '✓' });
-const cellNo = () => el('td', 'text-center text-base-content/30', { text: '—' });
+const cellNo = () => el('td', 'text-center text-base-content', { text: '—' });
 
 // A bento-mosaic cell — a padded tile; `span` widens it on a wide container, `tone`
 // sets its surface (a colored cell carries its own -content text for the children).
@@ -59,7 +59,7 @@ const stepItem = (n: string, title: string, body: string) =>
         { text: n }
       ),
       atom('Heading', 'text-lg font-semibold text-base-content', { level: 'h3', text: title }),
-      atom('Text', 'text-sm text-base-content/70', { variant: 'body', text: body }),
+      atom('Text', 'text-sm text-base-content', { variant: 'body', text: body }),
     ],
   });
 
@@ -130,7 +130,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Simple, transparent pricing',
             }),
-            el('p', 'text-lg text-base-content/60', {
+            el('p', 'text-lg text-base-content', {
               text: 'Pick a plan that fits today and upgrade the moment you outgrow it. Every tier includes a 14-day trial.',
             }),
           ],
@@ -146,7 +146,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex flex-col gap-1', {
                     children: [
                       el('h3', 'text-lg font-semibold text-base-content', { text: 'Starter' }),
-                      el('p', 'text-sm text-base-content/60', {
+                      el('p', 'text-sm text-base-content', {
                         text: 'For solo makers getting their first site live.',
                       }),
                     ],
@@ -156,7 +156,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       el('span', 'text-4xl font-bold tracking-tight text-base-content', {
                         text: '$0',
                       }),
-                      el('span', 'text-sm text-base-content/50', { text: '/month' }),
+                      el('span', 'text-sm text-base-content', { text: '/month' }),
                     ],
                   }),
                   el('ul', 'flex flex-col gap-3', {
@@ -187,7 +187,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex flex-col gap-1', {
                     children: [
                       el('h3', 'text-lg font-semibold text-base-content', { text: 'Pro' }),
-                      el('p', 'text-sm text-base-content/60', {
+                      el('p', 'text-sm text-base-content', {
                         text: 'For growing stores that need room to scale.',
                       }),
                     ],
@@ -197,7 +197,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       el('span', 'text-4xl font-bold tracking-tight text-base-content', {
                         text: '$29',
                       }),
-                      el('span', 'text-sm text-base-content/50', { text: '/month' }),
+                      el('span', 'text-sm text-base-content', { text: '/month' }),
                     ],
                   }),
                   el('ul', 'flex flex-col gap-3', {
@@ -224,7 +224,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex flex-col gap-1', {
                     children: [
                       el('h3', 'text-lg font-semibold text-base-content', { text: 'Enterprise' }),
-                      el('p', 'text-sm text-base-content/60', {
+                      el('p', 'text-sm text-base-content', {
                         text: 'For B2B teams with bespoke requirements.',
                       }),
                     ],
@@ -289,7 +289,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col text-left', {
                   children: [
                     el('span', 'font-semibold text-base-content', { text: 'Dana Whitfield' }),
-                    el('span', 'text-sm text-base-content/60', { text: 'Founder, Harbor & Pine' }),
+                    el('span', 'text-sm text-base-content', { text: 'Founder, Harbor & Pine' }),
                   ],
                 }),
               ],
@@ -319,7 +319,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Loved by thousands of merchants',
             }),
-            el('p', 'text-lg text-base-content/60', {
+            el('p', 'text-lg text-base-content', {
               text: 'From first-time sellers to established wholesalers, teams ship faster on sparx.',
             }),
           ],
@@ -332,7 +332,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               {
                 children: [
                   atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
-                  el('blockquote', 'text-base leading-relaxed text-base-content/80', {
+                  el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“Setup took an afternoon and the storefront looks like we hired an agency. The brand controls are unreal.”',
                   }),
                   el('figcaption', 'flex items-center gap-3', {
@@ -346,7 +346,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', 'text-sm font-semibold text-base-content', {
                             text: 'Marcus Lee',
                           }),
-                          el('span', 'text-xs text-base-content/60', {
+                          el('span', 'text-xs text-base-content', {
                             text: 'Owner, Northside Coffee',
                           }),
                         ],
@@ -362,7 +362,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               {
                 children: [
                   atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
-                  el('blockquote', 'text-base leading-relaxed text-base-content/80', {
+                  el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“We run wholesale and retail from one dashboard now. Net-terms invoicing alone paid for the year.”',
                   }),
                   el('figcaption', 'flex items-center gap-3', {
@@ -376,7 +376,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', 'text-sm font-semibold text-base-content', {
                             text: 'Priya Nair',
                           }),
-                          el('span', 'text-xs text-base-content/60', {
+                          el('span', 'text-xs text-base-content', {
                             text: 'Ops Lead, Field & Forge',
                           }),
                         ],
@@ -392,7 +392,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               {
                 children: [
                   atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
-                  el('blockquote', 'text-base leading-relaxed text-base-content/80', {
+                  el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“Support actually answers, the platform is fast, and our checkout conversion jumped after the move.”',
                   }),
                   el('figcaption', 'flex items-center gap-3', {
@@ -406,7 +406,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', 'text-sm font-semibold text-base-content', {
                             text: 'Sofia Alvarez',
                           }),
-                          el('span', 'text-xs text-base-content/60', {
+                          el('span', 'text-xs text-base-content', {
                             text: 'Founder, Lumen Skincare',
                           }),
                         ],
@@ -441,7 +441,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Everything you need to sell',
             }),
-            el('p', 'text-lg text-base-content/60', {
+            el('p', 'text-lg text-base-content', {
               text: 'One platform for your storefront, payments, customers, and marketing — no plugins to wrangle.',
             }),
           ],
@@ -458,7 +458,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   }
                 ),
                 el('h3', 'text-lg font-semibold text-base-content', { text: 'Live in minutes' }),
-                el('p', 'text-sm leading-relaxed text-base-content/70', {
+                el('p', 'text-sm leading-relaxed text-base-content', {
                   text: 'Start from a polished template and publish a branded store before your coffee gets cold.',
                 }),
               ],
@@ -473,7 +473,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   }
                 ),
                 el('h3', 'text-lg font-semibold text-base-content', { text: 'Payments built in' }),
-                el('p', 'text-sm leading-relaxed text-base-content/70', {
+                el('p', 'text-sm leading-relaxed text-base-content', {
                   text: 'Accept cards, wallets, and net terms out of the box, with payouts you can actually track.',
                 }),
               ],
@@ -490,7 +490,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('h3', 'text-lg font-semibold text-base-content', {
                   text: 'Know your customers',
                 }),
-                el('p', 'text-sm leading-relaxed text-base-content/70', {
+                el('p', 'text-sm leading-relaxed text-base-content', {
                   text: 'A built-in CRM ties every order, email, and conversation to the person behind it.',
                 }),
               ],
@@ -516,7 +516,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el('div', 'mx-auto flex max-w-4xl flex-col items-center gap-8', {
           children: [
-            el('p', 'text-sm font-medium text-base-content/50', {
+            el('p', 'text-sm font-medium text-base-content', {
               text: 'Trusted by fast-growing teams around the world',
             }),
             el('div', 'flex flex-wrap items-center justify-center gap-6', {
@@ -553,7 +553,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Get the weekly drop',
             }),
-            el('p', 'text-base text-base-content/60', {
+            el('p', 'text-base text-base-content', {
               text: 'New arrivals, restocks, and subscriber-only offers — straight to your inbox. No spam, unsubscribe anytime.',
             }),
             el('form', 'flex w-full flex-col gap-3 @sm:flex-row', {
@@ -612,7 +612,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', '', { text: 'Do I need a credit card to start?' }),
                           atom(
                             'Icon',
-                            'h-5 w-5 shrink-0 text-base-content/50 transition-transform group-open:rotate-180',
+                            'h-5 w-5 shrink-0 text-base-content transition-transform group-open:rotate-180',
                             {
                               name: 'chevron-down',
                             }
@@ -620,7 +620,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         ],
                       }
                     ),
-                    el('p', 'mt-3 text-sm leading-relaxed text-base-content/70', {
+                    el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
                       text: 'No. You can build and preview your entire site for free, and only add a card when you are ready to publish.',
                     }),
                   ],
@@ -635,7 +635,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', '', { text: 'Can I use my own domain?' }),
                           atom(
                             'Icon',
-                            'h-5 w-5 shrink-0 text-base-content/50 transition-transform group-open:rotate-180',
+                            'h-5 w-5 shrink-0 text-base-content transition-transform group-open:rotate-180',
                             {
                               name: 'chevron-down',
                             }
@@ -643,7 +643,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         ],
                       }
                     ),
-                    el('p', 'mt-3 text-sm leading-relaxed text-base-content/70', {
+                    el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
                       text: 'Yes. Connect a domain you already own or register a new one in a few clicks — SSL is provisioned automatically.',
                     }),
                   ],
@@ -658,7 +658,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', '', { text: 'What happens if I outgrow my plan?' }),
                           atom(
                             'Icon',
-                            'h-5 w-5 shrink-0 text-base-content/50 transition-transform group-open:rotate-180',
+                            'h-5 w-5 shrink-0 text-base-content transition-transform group-open:rotate-180',
                             {
                               name: 'chevron-down',
                             }
@@ -666,7 +666,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         ],
                       }
                     ),
-                    el('p', 'mt-3 text-sm leading-relaxed text-base-content/70', {
+                    el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
                       text: 'Upgrade any time and changes apply instantly. We prorate the difference, so you only pay for what you use.',
                     }),
                   ],
@@ -681,7 +681,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                           el('span', '', { text: 'Can I cancel whenever I want?' }),
                           atom(
                             'Icon',
-                            'h-5 w-5 shrink-0 text-base-content/50 transition-transform group-open:rotate-180',
+                            'h-5 w-5 shrink-0 text-base-content transition-transform group-open:rotate-180',
                             {
                               name: 'chevron-down',
                             }
@@ -689,7 +689,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         ],
                       }
                     ),
-                    el('p', 'mt-3 text-sm leading-relaxed text-base-content/70', {
+                    el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
                       text: 'Absolutely. There are no contracts or lock-in — cancel in one click and keep access through the end of the period.',
                     }),
                   ],
@@ -750,7 +750,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Meet the team',
             }),
-            el('p', 'text-lg text-base-content/60', {
+            el('p', 'text-lg text-base-content', {
               text: 'A small crew obsessed with making commerce simple for everyone who sells.',
             }),
           ],
@@ -766,7 +766,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col', {
                   children: [
                     el('h3', 'font-semibold text-base-content', { text: 'Avery Cole' }),
-                    el('p', 'text-sm text-base-content/60', { text: 'Co-founder & CEO' }),
+                    el('p', 'text-sm text-base-content', { text: 'Co-founder & CEO' }),
                   ],
                 }),
                 el('div', 'flex items-center gap-1', {
@@ -786,7 +786,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col', {
                   children: [
                     el('h3', 'font-semibold text-base-content', { text: 'Jordan Reyes' }),
-                    el('p', 'text-sm text-base-content/60', { text: 'Head of Product' }),
+                    el('p', 'text-sm text-base-content', { text: 'Head of Product' }),
                   ],
                 }),
                 el('div', 'flex items-center gap-1', {
@@ -806,7 +806,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col', {
                   children: [
                     el('h3', 'font-semibold text-base-content', { text: 'Mia Tanaka' }),
-                    el('p', 'text-sm text-base-content/60', { text: 'Lead Designer' }),
+                    el('p', 'text-sm text-base-content', { text: 'Lead Designer' }),
                   ],
                 }),
                 el('div', 'flex items-center gap-1', {
@@ -826,7 +826,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col', {
                   children: [
                     el('h3', 'font-semibold text-base-content', { text: 'Sam Okafor' }),
-                    el('p', 'text-sm text-base-content/60', { text: 'Head of Engineering' }),
+                    el('p', 'text-sm text-base-content', { text: 'Head of Engineering' }),
                   ],
                 }),
                 el('div', 'flex items-center gap-1', {
@@ -893,9 +893,9 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                         el('tr', '', {
                           children: [
                             el('td', 'font-medium text-base-content', { text: 'Published sites' }),
-                            el('td', 'text-center text-base-content/70', { text: '1' }),
-                            el('td', 'text-center text-base-content/70', { text: '5' }),
-                            el('td', 'text-center text-base-content/70', { text: 'Unlimited' }),
+                            el('td', 'text-center text-base-content', { text: '1' }),
+                            el('td', 'text-center text-base-content', { text: '5' }),
+                            el('td', 'text-center text-base-content', { text: 'Unlimited' }),
                           ],
                         }),
                         el('tr', '', {
@@ -1014,7 +1014,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                     text: 'Design your store, your way',
                   }
                 ),
-                el('p', 'text-lg leading-relaxed text-base-content/70', {
+                el('p', 'text-lg leading-relaxed text-base-content', {
                   text: 'Drag, drop, and theme every section with live brand controls. What you see in the editor is exactly what your customers get.',
                 }),
                 el('ul', 'flex flex-col gap-3', {
@@ -1110,7 +1110,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'See it in motion',
             }),
-            atom('Text', 'text-lg text-base-content/70', {
+            atom('Text', 'text-lg text-base-content', {
               variant: 'body',
               text: 'A two-minute look at how it all fits together — from a blank canvas to a published, polished site.',
             }),
@@ -1232,11 +1232,11 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   level: 'h2',
                   text: 'Get in touch',
                 }),
-                atom('Text', 'text-base text-base-content/70', {
+                atom('Text', 'text-base text-base-content', {
                   variant: 'body',
                   text: 'Questions, partnerships, or press — send a note and we will get back to you within a day.',
                 }),
-                el('div', 'mt-1 flex flex-col gap-1 text-sm text-base-content/80', {
+                el('div', 'mt-1 flex flex-col gap-1 text-sm text-base-content', {
                   children: [
                     el('p', '', {
                       children: [

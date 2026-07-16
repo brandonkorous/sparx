@@ -76,8 +76,8 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
           </div>
           {fitments.length === 0 ? (
             <div className="border-base-300 flex flex-col items-center gap-2 border-t py-10 text-center">
-              <Boxes className="text-base-content/60 h-5 w-5" />
-              <p className="text-base-content/70 text-sm">
+              <Boxes className="text-base-content h-5 w-5" />
+              <p className="text-base-content text-sm">
                 No fitment rules yet. Add one below so storefront filters can find this product.
               </p>
             </div>
@@ -118,7 +118,7 @@ export function FitmentPanel({ productId, productTitle, fitments, domains }: Pro
             stops at the make fits every model under it. Add a year/size window to narrow further.
           </p>
           {domains.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No fitment domains configured. Add one in <strong>Commerce → Fitment</strong> first.
             </p>
           ) : (
@@ -175,7 +175,7 @@ function FitmentRowDisplay({
           <div className="flex flex-row flex-wrap gap-1">
             {row.nodePath.map((name, i) => (
               <React.Fragment key={i}>
-                {i > 0 && <span className="text-base-content/70 text-xs">/</span>}
+                {i > 0 && <span className="text-base-content text-xs">/</span>}
                 <span className={i === row.nodePath.length - 1 ? 'text-sm font-medium' : 'text-sm'}>
                   {name}
                 </span>
@@ -198,11 +198,11 @@ function FitmentRowDisplay({
             ))}
           </div>
         ) : (
-          <span className="text-base-content/70 text-sm">—</span>
+          <span className="text-base-content text-sm">—</span>
         )}
       </td>
       <td>
-        <span className="text-base-content/70 text-xs">{row.notes ?? '—'}</span>
+        <span className="text-base-content text-xs">{row.notes ?? '—'}</span>
       </td>
       <td className="text-right">
         <Button
@@ -313,7 +313,7 @@ function NewFitmentForm({
   }
 
   if (!domain) {
-    return <p className="text-base-content/70 text-sm">Pick a domain to start.</p>;
+    return <p className="text-base-content text-sm">Pick a domain to start.</p>;
   }
 
   return (

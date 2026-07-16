@@ -57,9 +57,7 @@ export function KanbanCard({ deal, dragging }: KanbanCardProps) {
               {deal.title}
             </EntityRowLink>
           )}
-          <p className="text-base-content/70 text-xs tabular-nums">
-            ${deal.value.toLocaleString()}
-          </p>
+          <p className="text-base-content text-xs tabular-nums">${deal.value.toLocaleString()}</p>
         </div>
         <div className="flex flex-row flex-wrap gap-1">
           <Badge color="neutral" variant="soft" size="sm">

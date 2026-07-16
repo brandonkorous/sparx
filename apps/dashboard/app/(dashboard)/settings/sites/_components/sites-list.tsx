@@ -87,7 +87,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
       href={`https://${host}`}
       target="_blank"
       rel="noreferrer"
-      className={`inline-flex min-w-0 items-center gap-1 ${sizeClass} text-base-content/70 hover:text-module`}
+      className={`inline-flex min-w-0 items-center gap-1 ${sizeClass} text-base-content hover:text-module`}
       title={host}
     >
       <span className="truncate">{host}</span>
@@ -122,7 +122,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
           {primary ? (
             domainLink(primary.host, 'text-xs')
           ) : (
-            <p className="text-base-content/70 text-xs">No domain yet</p>
+            <p className="text-base-content text-xs">No domain yet</p>
           )}
         </div>
       </div>
@@ -135,7 +135,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
     {
       header: 'Domains',
       align: 'right',
-      cell: (p) => <p className="text-base-content/70 text-sm">{siteDomains(p).length}</p>,
+      cell: (p) => <p className="text-base-content text-sm">{siteDomains(p).length}</p>,
     },
     {
       header: '',
@@ -175,7 +175,7 @@ export function SitesList({ sites, domains, activePropertyId, view }: SitesListP
                 {primary ? (
                   domainLink(primary.host, 'text-sm')
                 ) : (
-                  <p className="text-base-content/70 text-sm">{siteDomains(p).length} domains</p>
+                  <p className="text-base-content text-sm">{siteDomains(p).length} domains</p>
                 )}
                 <Button
                   variant="ghost"

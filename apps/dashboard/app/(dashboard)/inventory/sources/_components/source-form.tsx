@@ -253,7 +253,7 @@ export function SourceForm({ presentation, source, open, onOpenChange }: SourceF
             {type === 'agent' && (
               <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border px-3 py-3">
                 <p className="text-sm font-medium">On-prem bridge agent</p>
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   For an ERP whose API only lives on your local network (e.g. Fishbowl). After
                   creating this source, open it and choose{' '}
                   <span className="font-medium">Pair agent</span> to mint a key, then install the

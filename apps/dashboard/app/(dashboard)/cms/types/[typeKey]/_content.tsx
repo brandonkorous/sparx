@@ -52,10 +52,10 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
           )}
         </div>
         <div className="flex flex-row flex-wrap items-center gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             <code>{type.key}</code>
           </p>
-          {type.description && <p className="text-base-content/70 text-sm">· {type.description}</p>}
+          {type.description && <p className="text-base-content text-sm">· {type.description}</p>}
         </div>
         <div className="flex flex-row flex-wrap items-center gap-2">
           <Button
@@ -85,7 +85,7 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
           <CardBody>
             <h3 className="text-xl font-semibold">Schema (read-only)</h3>
             <div className="flex flex-col gap-3">
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Built-in types are maintained in <code>packages/cms-schemas</code> and can&apos;t be
                 edited directly. Use <strong>Duplicate</strong> above to fork it into a custom type
                 you can tailor.

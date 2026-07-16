@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from 'reac
 import { SurfaceFrame, type SurfaceStepDef } from '@sparx/ui';
 import { SummaryCard } from '../../onboarding/_components/summary-card';
 import { RailFooter } from '../../onboarding/_components/rail-footer';
+import { FlowSwitchAlt } from '../../_components/flow-switch';
 import { industryOf } from '../_lib/clauses';
 import {
   EMPTY_STORY,
@@ -42,9 +43,13 @@ function cloneStory(s: StoryState): StoryState {
 
 // The orchestrator for the story onboarding's COMPOSE phase. The owner narrates their
 // business (or seeds from an example); on "Build" it commits through the reused
-// pipeline and hands off — IN PAGE — to <StoryTail> (payments + launch). It never
-// routes to the classic wizard. (Resuming mid-tail after the Stripe reload is the
-// page's job; it renders <StoryTail> directly from persisted state.)
+// pipeline and hands off — IN PAGE — to <StoryTail> (payments + launch), never bouncing
+// to the wizard to finish. (Resuming mid-tail after the Stripe reload is the page's
+// job; it renders <StoryTail> directly from persisted state.)
+//
+// The summary card does carry a switch to the classic wizard (`<FlowSwitchAlt>`) — the
+// two front ends are interchangeable. That's an owner-initiated move, not a hand-off,
+// and it's lossless: the draft keeps saving here, so switching back resumes this story.
 export function StoryComposer({
   blueprints,
   initialName,
@@ -244,6 +249,7 @@ export function StoryComposer({
             extras={
               display.industry ? <StoryExtras story={display} blueprints={blueprints} /> : undefined
             }
+            altAction={<FlowSwitchAlt to="classic" />}
           />
         </div>
       </div>

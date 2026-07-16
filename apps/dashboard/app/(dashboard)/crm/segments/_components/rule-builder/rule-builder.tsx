@@ -27,7 +27,7 @@ export function RuleBuilder({ value, onChange }: Props) {
     <div className="flex flex-col gap-3">
       <RuleNode rule={value} onChange={onChange} />
       <div className="flex flex-row items-center justify-between">
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Tip: groups nest. Use NOT to exclude a sub-tree.
         </p>
         <Button

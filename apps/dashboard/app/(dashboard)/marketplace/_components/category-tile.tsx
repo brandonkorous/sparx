@@ -45,7 +45,7 @@ export function CategoryTile({
           </div>
           <div>
             <p className="font-medium">{category.label}</p>
-            <p className="text-base-content/70 mt-1 text-sm">{category.tagline}</p>
+            <p className="text-base-content mt-1 text-sm">{category.tagline}</p>
           </div>
         </div>
       </CardBody>

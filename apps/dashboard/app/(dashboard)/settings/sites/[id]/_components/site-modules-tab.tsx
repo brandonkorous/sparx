@@ -65,7 +65,7 @@ export function SiteModulesTab({
                 <span aria-hidden className="bg-module size-2.5 shrink-0 rounded-full" />
                 <div className="flex min-w-0 flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{m.label}</p>
-                  <p className="text-base-content/70 text-xs">{m.description}</p>
+                  <p className="text-base-content text-xs">{m.description}</p>
                 </div>
                 <Switch
                   checked={enabled}

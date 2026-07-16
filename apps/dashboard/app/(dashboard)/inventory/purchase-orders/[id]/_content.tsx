@@ -56,7 +56,7 @@ export async function PurchaseOrderDetailContent({ id }: { id: string }) {
             <h1 className="text-3xl font-semibold">{po.number}</h1>
             <Badge color={status.color}>{status.label}</Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {po.supplierName ?? po.supplierCode ?? 'Supplier'} →{' '}
             {po.warehouseName ?? po.warehouseCode ?? 'Warehouse'}
             {po.reference ? ` · ref ${po.reference}` : ''}
@@ -103,7 +103,7 @@ function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
         <div className="flex flex-col gap-3 py-2">
           <h3 className="text-xl font-semibold">Receipts</h3>
           {receipts.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No goods received yet. Use <span className="font-medium">Receive</span> to book stock
               against this order.
             </p>
@@ -120,7 +120,7 @@ function ReceiptsPanel({ receipts }: { receipts: GoodsReceiptRow[] }) {
                   >
                     {r.number}
                   </Link>
-                  <p className="text-base-content/70 flex-1 text-sm">
+                  <p className="text-base-content flex-1 text-sm">
                     {formatDate(r.receivedAt)}
                     {r.reference ? ` · ${r.reference}` : ''}
                   </p>
@@ -163,7 +163,7 @@ function ReadOnlySummary({ po }: { po: PurchaseOrderDetail }) {
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-0">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="text-sm">{children}</p>
     </div>
   );
@@ -174,7 +174,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[9rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

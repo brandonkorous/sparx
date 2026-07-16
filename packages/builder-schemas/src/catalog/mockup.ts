@@ -143,7 +143,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
       el('div', 'flex flex-col gap-3 p-6', {
         children: [
           atom('Heading', 'text-base-content', { level: 'h3', text: 'Welcome back' }),
-          atom('Text', 'text-base-content/60', {
+          atom('Text', 'text-base-content', {
             variant: 'body',
             text: 'Replace this body with any layout — a chart, a form, or a screenshot.',
           }),

@@ -96,7 +96,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                       <Label htmlFor={`prop-mod-${g.module}`} className="cursor-pointer">
                         {g.label}
                       </Label>
-                      <p className="text-base-content/70 text-xs">{g.blurb}</p>
+                      <p className="text-base-content text-xs">{g.blurb}</p>
                     </div>
                   </div>
                 ))}
@@ -133,11 +133,11 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
         <CardBody>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1">
-              <p className="text-base-content/70 text-sm tracking-wider uppercase">Proposal</p>
+              <p className="text-base-content text-sm tracking-wider uppercase">Proposal</p>
               <h2 className="text-2xl font-semibold tracking-tight">
                 {client.trim() || 'Client name'}
               </h2>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Prepared by {preparedBy.trim() || 'Your practice'} · on Sparx
               </p>
             </div>
@@ -159,9 +159,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                   ))}
                 </ul>
               ) : (
-                <p className="text-base-content/70 text-sm">
-                  Select the modules you’ll set up above.
-                </p>
+                <p className="text-base-content text-sm">Select the modules you’ll set up above.</p>
               )}
             </div>
 
@@ -172,7 +170,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
                   ? `${monthlyLabel} per month on Sparx, for the modules above.`
                   : 'A monthly Sparx subscription for the modules above.'}
               </p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Starts with a 14-day free trial — build it and see it work before anything is
                 charged.
               </p>
@@ -187,7 +185,7 @@ export function ProposalBuilder({ defaultPreparedBy }: { defaultPreparedBy: stri
 
             <div className="flex flex-col gap-1">
               <p className="text-base font-medium">Next steps</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Approve this proposal and we’ll start the trial, build the site, and walk you
                 through it before you go live.
               </p>

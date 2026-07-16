@@ -73,7 +73,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
           <Badge color={statusTone(asset.status)} variant="soft" size="sm">
             {statusLabel(asset.status)}
           </Badge>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {asset.width && asset.height && `${asset.width}×${asset.height} · `}
             {asset.mime_type}
           </p>
@@ -112,7 +112,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
               AVIF first.
             </p>
             {asset.variants.length === 0 ? (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 No variants yet. {asset.status === 'uploading' && 'Transcode pending.'}
               </p>
             ) : (
@@ -126,7 +126,7 @@ export async function MediaAssetDetailContent({ id }: Props) {
                       {v.format.toUpperCase()}
                     </Badge>
                     <p className="text-sm">{v.width}px</p>
-                    <p className="text-base-content/70 ml-auto text-xs">
+                    <p className="text-base-content ml-auto text-xs">
                       {formatBytes(Number(v.byte_size))}
                     </p>
                   </div>

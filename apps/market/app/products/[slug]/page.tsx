@@ -124,7 +124,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <RecordView slug={product.slug} />
 
       {/* Breadcrumb trail */}
-      <nav className="text-base-content/70 mb-6 text-sm" aria-label="Breadcrumb">
+      <nav className="text-base-content mb-6 text-sm" aria-label="Breadcrumb">
         <Link href="/products" className="hover:underline">
           Products
         </Link>

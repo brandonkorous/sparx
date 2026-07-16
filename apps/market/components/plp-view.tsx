@@ -53,7 +53,7 @@ export async function PlpView({
 
       <div>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <span className="text-base-content/70 text-sm">
+          <span className="text-base-content text-sm">
             {result.total.toLocaleString()} {result.total === 1 ? 'product' : 'products'}
           </span>
           <PlpSort basePath={basePath} sort={sort} />

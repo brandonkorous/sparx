@@ -121,7 +121,7 @@ function FormSettings({ formNodeId, pageSlug }: FormSettingsProps) {
   }, [formNodeId, pageSlug, recipients, config]);
 
   if (loading) {
-    return <p className="text-base-content/60 p-3 text-sm">Loading this form’s settings…</p>;
+    return <p className="text-base-content p-3 text-sm">Loading this form’s settings…</p>;
   }
 
   return (

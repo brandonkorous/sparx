@@ -35,7 +35,7 @@ interface WorkflowsListProps {
 }
 
 function StageFunnel({ stages }: { stages: WorkflowStageRow[] }) {
-  if (stages.length === 0) return <p className="text-base-content/70 text-xs">No stages yet</p>;
+  if (stages.length === 0) return <p className="text-base-content text-xs">No stages yet</p>;
   return (
     <div className="flex flex-row flex-wrap items-center gap-2">
       {stages
@@ -46,7 +46,7 @@ function StageFunnel({ stages }: { stages: WorkflowStageRow[] }) {
             <Badge color="neutral" variant="soft" size="sm">
               {s.customerLabel}
             </Badge>
-            {i < arr.length - 1 && <span className="text-base-content/50">→</span>}
+            {i < arr.length - 1 && <span className="text-base-content">→</span>}
           </div>
         ))}
     </div>
@@ -89,7 +89,7 @@ export function WorkflowsList({ workflows, view }: WorkflowsListProps) {
       cell: (w) => (
         <div className="flex min-w-0 flex-col gap-1">
           {nameCell(w, 'text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             slug <code>{w.slug}</code>
           </p>
         </div>
@@ -107,7 +107,7 @@ export function WorkflowsList({ workflows, view }: WorkflowsListProps) {
           <div className="flex flex-row flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
               <CardTitle>{nameCell(w, 'hover:text-module hover:underline')}</CardTitle>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 slug <code>{w.slug}</code>
               </p>
             </div>

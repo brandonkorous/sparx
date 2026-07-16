@@ -93,7 +93,7 @@ export function BrandImageField({
               onError={() => setImgFailed(true)}
             />
           ) : (
-            <ImageIcon className="text-base-content/50 h-5 w-5" />
+            <ImageIcon className="text-base-content h-5 w-5" />
           )}
         </div>
         <div className="flex flex-col gap-1.5">
@@ -133,7 +133,7 @@ export function BrandImageField({
           {error ? (
             <span className="text-danger text-xs">{error}</span>
           ) : help ? (
-            <span className="text-base-content/60 text-xs">{help}</span>
+            <span className="text-base-content text-xs">{help}</span>
           ) : null}
         </div>
       </div>

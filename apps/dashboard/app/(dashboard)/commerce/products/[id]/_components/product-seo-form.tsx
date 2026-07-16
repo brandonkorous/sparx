@@ -94,7 +94,7 @@ export function ProductSeoForm({
             <div className="flex flex-col gap-4">
               <div className="border-base-300 bg-base-200 flex flex-col gap-1 rounded-md border p-3">
                 <p className="text-info text-sm">{previewTitle}</p>
-                <p className="text-base-content/70 text-xs">storefront.example/products/{handle}</p>
+                <p className="text-base-content text-xs">storefront.example/products/{handle}</p>
                 <p className="text-xs">{previewDescription || '(set a description to preview)'}</p>
               </div>
 

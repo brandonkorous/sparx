@@ -193,7 +193,7 @@ export function NewDomainDialog({ open, onOpenChange }: Props) {
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between">
                   <Label>Dimensions</Label>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     Levels nest top → bottom; ranges narrow a match
                   </p>
                 </div>

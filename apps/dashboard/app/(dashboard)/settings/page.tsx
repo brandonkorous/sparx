@@ -19,7 +19,7 @@ export default function SettingsPage() {
               <Card key={g.id}>
                 <CardBody>
                   <div className="flex flex-row items-center gap-2">
-                    <span aria-hidden className="text-base-content/70">
+                    <span aria-hidden className="text-base-content">
                       <Icon className="h-4 w-4" />
                     </span>
                     <CardTitle>{g.label}</CardTitle>

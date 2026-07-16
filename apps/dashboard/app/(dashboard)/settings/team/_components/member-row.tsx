@@ -64,9 +64,9 @@ export function MemberRow({
           <div className="flex min-w-0 flex-col gap-0">
             <p className="truncate font-medium">
               {displayName}
-              {isSelf ? <span className="text-base-content/70"> (you)</span> : null}
+              {isSelf ? <span className="text-base-content"> (you)</span> : null}
             </p>
-            <p className="text-base-content/70 truncate text-sm">{member.email}</p>
+            <p className="text-base-content truncate text-sm">{member.email}</p>
           </div>
         </div>
       </td>

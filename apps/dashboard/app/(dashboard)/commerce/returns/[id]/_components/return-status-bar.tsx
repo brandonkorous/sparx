@@ -99,7 +99,7 @@ export function ReturnStatusBar({ returnId, status }: { returnId: string; status
             <DialogTitle>Deny return?</DialogTitle>
           </div>
           <div className="flex flex-col gap-3 px-6 pb-2">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               The customer is notified the return was rejected. They may re-open if circumstances
               change.
             </p>

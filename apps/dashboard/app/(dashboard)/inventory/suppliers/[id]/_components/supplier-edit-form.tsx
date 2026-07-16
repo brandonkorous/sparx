@@ -323,7 +323,7 @@ export function SupplierEditForm({ supplier }: { supplier: SupplierDetail }) {
                 {error}
               </FieldStatus>
             )}
-            {savedAt && !error && <p className="text-base-content/70 text-xs">Saved {savedAt}</p>}
+            {savedAt && !error && <p className="text-base-content text-xs">Saved {savedAt}</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save'}
             </Button>

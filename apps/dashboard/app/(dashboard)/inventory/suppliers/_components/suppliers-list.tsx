@@ -55,15 +55,11 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
         {statusLabel(s.paymentTerms)}
       </Badge>
     ) : (
-      <p className="text-base-content/70 text-xs">—</p>
+      <p className="text-base-content text-xs">—</p>
     );
 
   const lead = (s: SupplierRow) =>
-    s.leadTimeDays !== null ? (
-      `${s.leadTimeDays}d`
-    ) : (
-      <p className="text-base-content/70 text-xs">—</p>
-    );
+    s.leadTimeDays !== null ? `${s.leadTimeDays}d` : <p className="text-base-content text-xs">—</p>;
 
   const statusBadge = (s: SupplierRow) =>
     s.isActive ? (
@@ -92,10 +88,10 @@ export function SuppliersList({ rows, view }: SuppliersListProps) {
     badge: statusBadge,
     body: (s) => (
       <div className="flex flex-col gap-2">
-        <p className="text-base-content/70 text-xs">{location(s)}</p>
+        <p className="text-base-content text-xs">{location(s)}</p>
         <div className="flex flex-row items-center gap-2">
           {terms(s)}
-          <p className="text-base-content/70 text-xs">{s.contactName ?? s.email ?? 'no contact'}</p>
+          <p className="text-base-content text-xs">{s.contactName ?? s.email ?? 'no contact'}</p>
         </div>
       </div>
     ),

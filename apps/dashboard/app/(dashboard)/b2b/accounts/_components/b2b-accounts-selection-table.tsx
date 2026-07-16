@@ -94,7 +94,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
         {a.pricingTierName}
       </Badge>
     ) : (
-      <p className="text-base-content/70 text-sm">—</p>
+      <p className="text-base-content text-sm">—</p>
     );
 
   const columns: SelectionColumn<B2bAccountRow>[] = [
@@ -133,14 +133,14 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     body: (a) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Credit limit</p>
+          <p className="text-base-content text-xs">Credit limit</p>
           <p className="text-sm tabular-nums">{formatDollars(a.creditLimitCents)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Remaining</p>
+          <p className="text-base-content text-xs">Remaining</p>
           <p className="text-sm tabular-nums">{formatDollars(a.creditRemainingCents)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Terms: {a.paymentTerms ?? '—'}
           {a.discountPercent > 0 ? ` · ${a.discountPercent}% discount` : ''}
         </p>

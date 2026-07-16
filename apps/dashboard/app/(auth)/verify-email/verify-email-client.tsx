@@ -41,7 +41,7 @@ export function VerifyEmailClient({ email }: { email: string | null }) {
         {status === 'checking' && (
           <div className="flex flex-row items-center gap-2">
             <Loading className="h-4 w-4" />
-            <p className="text-base-content/70">Confirming your email…</p>
+            <p className="text-base-content">Confirming your email…</p>
           </div>
         )}
 
@@ -49,7 +49,7 @@ export function VerifyEmailClient({ email }: { email: string | null }) {
           <div className="flex flex-col gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight">Email confirmed</h2>
-              <p className="text-base-content/70">
+              <p className="text-base-content">
                 Your email address is verified — you&apos;re all set.
               </p>
             </div>
@@ -61,7 +61,7 @@ export function VerifyEmailClient({ email }: { email: string | null }) {
           <div className="flex flex-col gap-4">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight">This link didn&apos;t work</h2>
-              <p className="text-base-content/70">
+              <p className="text-base-content">
                 The confirmation link is invalid or has expired. Request a fresh one below.
               </p>
             </div>

@@ -135,7 +135,7 @@ export function PromptLibrary({ prompts }: PromptLibraryProps) {
   return (
     <>
       <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {prompts.length} prompt{prompts.length === 1 ? '' : 's'} across {grouped.length} categor
           {grouped.length === 1 ? 'y' : 'ies'}.
         </p>
@@ -154,7 +154,7 @@ export function PromptLibrary({ prompts }: PromptLibraryProps) {
                   {items.length}
                 </Badge>
               </div>
-              <p className="text-base-content/70 text-xs">{categoryBlurb(category)}</p>
+              <p className="text-base-content text-xs">{categoryBlurb(category)}</p>
             </div>
             <div className="flex flex-col gap-3">
               {items.map((prompt) => (
@@ -212,10 +212,10 @@ function PromptRow({ prompt, deleting, onEdit, onDelete }: PromptRowProps) {
             </div>
 
             {prompt.description && (
-              <p className="text-base-content/70 text-sm">{prompt.description}</p>
+              <p className="text-base-content text-sm">{prompt.description}</p>
             )}
 
-            <p className="bg-base-200 text-base-content/70 line-clamp-2 rounded-md px-3 py-2 font-mono text-xs leading-relaxed">
+            <p className="bg-base-200 text-base-content line-clamp-2 rounded-md px-3 py-2 font-mono text-xs leading-relaxed">
               {prompt.body}
             </p>
 

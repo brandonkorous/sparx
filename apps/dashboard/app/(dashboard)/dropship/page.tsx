@@ -392,9 +392,9 @@ export default async function DropshipPage() {
                 <p className="text-[1.65rem] leading-none font-medium">
                   {fmtMoneyCents(profitCents)}
                 </p>
-                <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
+                <p className="text-base-content mt-1.5 mb-3 text-sm">
                   Net profit on dropship orders ·{' '}
-                  <span className="text-base-content/70">last 30 days</span>
+                  <span className="text-base-content">last 30 days</span>
                 </p>
                 <OverviewRow
                   icon={<DollarSign className="h-4 w-4" />}
@@ -452,7 +452,7 @@ export default async function DropshipPage() {
                 <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {volumeFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -628,7 +628,7 @@ export default async function DropshipPage() {
                   <TimelineItem key={a.key} showConnector={i < activityEntries.length - 1}>
                     <TimelineTitle>
                       <span className="font-medium">{a.what}</span>{' '}
-                      <span className="text-base-content/70 font-normal">{a.detail}</span>
+                      <span className="text-base-content font-normal">{a.detail}</span>
                     </TimelineTitle>
                     <TimelineTime>{a.when}</TimelineTime>
                   </TimelineItem>

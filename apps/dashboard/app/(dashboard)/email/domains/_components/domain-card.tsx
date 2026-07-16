@@ -54,7 +54,7 @@ export function DomainCard({ domain }: { domain: SendingDomainRow }) {
           <DomainActions domain={domain} />
         </div>
         <div className="flex flex-col gap-3">
-          <p className="text-base-content/70 text-sm">{STATE_HINT[domain.state]}</p>
+          <p className="text-base-content text-sm">{STATE_HINT[domain.state]}</p>
           <Button
             type="button"
             variant="ghost"

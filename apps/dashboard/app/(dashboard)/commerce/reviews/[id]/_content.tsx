@@ -87,7 +87,7 @@ export async function ReviewDetailContent({ id }: Props) {
                 Verified purchase
               </Badge>
             )}
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {review.displayName ?? (review.customerId ? 'Customer' : 'Anonymous')} ·{' '}
               {new Date(review.createdAt).toLocaleString()}
             </p>
@@ -120,14 +120,14 @@ export async function ReviewDetailContent({ id }: Props) {
               </div>
             )}
             <div className="flex flex-row gap-4">
-              <p className="text-base-content/70 text-xs">Helpful: {review.helpfulCount}</p>
-              <p className="text-base-content/70 text-xs">Unhelpful: {review.unhelpfulCount}</p>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">Helpful: {review.helpfulCount}</p>
+              <p className="text-base-content text-xs">Unhelpful: {review.unhelpfulCount}</p>
+              <p className="text-base-content text-xs">
                 Product:{' '}
                 {review.productTitle ? (
                   <Link
                     href={`/commerce/products/${review.productId}`}
-                    className="text-base-content/70 hover:text-module hover:underline"
+                    className="text-base-content hover:text-module hover:underline"
                   >
                     {review.productTitle}
                   </Link>
@@ -178,7 +178,7 @@ function Stars({ value }: { value: number }) {
           className={
             i <= value
               ? 'text-module h-4 w-4 fill-[var(--color-module)]'
-              : 'text-base-content/60 h-4 w-4'
+              : 'text-base-content h-4 w-4'
           }
         />
       ))}

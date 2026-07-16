@@ -78,7 +78,7 @@ const carouselArrow = (side: 'left' | 'right', glyph: string, label: string) =>
 const marqueeLogo = (label: string) =>
   el(
     'div',
-    'flex h-10 w-32 shrink-0 items-center justify-center rounded-field bg-base-200 text-sm font-semibold tracking-tight text-base-content/40',
+    'flex h-10 w-32 shrink-0 items-center justify-center rounded-field bg-base-200 text-sm font-semibold tracking-tight text-base-content',
     { text: label }
   );
 
@@ -102,7 +102,7 @@ const testimonialSlide = (quote: string, name: string, role: string) =>
               el('figcaption', 'flex flex-col gap-0.5', {
                 children: [
                   el('span', 'text-sm font-semibold text-base-content', { text: name }),
-                  el('span', 'text-sm text-base-content/60', { text: role }),
+                  el('span', 'text-sm text-base-content', { text: role }),
                 ],
               }),
             ],
@@ -118,7 +118,7 @@ const testimonialSlide = (quote: string, name: string, role: string) =>
 const spyLink = (label: string, href: string) =>
   el(
     'a',
-    'text-sm font-medium text-base-content/70 transition-colors hover:text-base-content data-[active=true]:font-semibold data-[active=true]:text-primary',
+    'text-sm font-medium text-base-content transition-colors hover:text-base-content data-[active=true]:font-semibold data-[active=true]:text-primary',
     { text: label, attrs: { href } }
   );
 
@@ -126,7 +126,7 @@ const spyLink = (label: string, href: string) =>
 const megaColumn = (title: string, links: [string, string][]) =>
   el('div', 'flex w-44 flex-col gap-2', {
     children: [
-      el('span', 'px-2 text-xs font-semibold tracking-wide text-base-content/50', { text: title }),
+      el('span', 'px-2 text-xs font-semibold tracking-wide text-base-content', { text: title }),
       el('ul', 'flex flex-col gap-0.5', {
         children: links.map(([label, href]) =>
           el('li', '', {
@@ -163,7 +163,7 @@ const faqItem = (question: string, answer: string) =>
                 el('span', '', { text: question }),
                 atom(
                   'Icon',
-                  'h-5 w-5 shrink-0 text-base-content/50 transition-transform duration-200 group-data-[open=true]:rotate-180',
+                  'h-5 w-5 shrink-0 text-base-content transition-transform duration-200 group-data-[open=true]:rotate-180',
                   { name: 'chevron-down' }
                 ),
               ],
@@ -172,7 +172,7 @@ const faqItem = (question: string, answer: string) =>
           'trigger'
         ),
         part(
-          el('div', 'px-5 pb-5 text-sm leading-relaxed text-base-content/70', {
+          el('div', 'px-5 pb-5 text-sm leading-relaxed text-base-content', {
             attrs: { hidden: true },
             children: [el('p', '', { text: answer })],
           }),
@@ -188,7 +188,7 @@ const tabButton = (label: string) =>
   part(
     el(
       'button',
-      '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content/60 transition-colors hover:text-base-content data-[active=true]:border-primary data-[active=true]:text-primary',
+      '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content transition-colors hover:text-base-content data-[active=true]:border-primary data-[active=true]:text-primary',
       { text: label, attrs: { type: 'button' } }
     ),
     'tab'
@@ -198,7 +198,7 @@ const tabButton = (label: string) =>
 // active panel paints before the behavior takes over.
 const tabPanel = (body: string, closed: boolean) =>
   part(
-    el('div', 'py-5 text-sm leading-relaxed text-base-content/70', {
+    el('div', 'py-5 text-sm leading-relaxed text-base-content', {
       attrs: closed ? { hidden: true } : {},
       children: [el('p', '', { text: body })],
     }),
@@ -211,7 +211,7 @@ const pricingTab = (label: string) =>
   part(
     el(
       'button',
-      'rounded-full px-5 py-2 text-sm font-medium text-base-content/70 transition-colors data-[active=true]:bg-base-100 data-[active=true]:text-base-content data-[active=true]:shadow-sm',
+      'rounded-full px-5 py-2 text-sm font-medium text-base-content transition-colors data-[active=true]:bg-base-100 data-[active=true]:text-base-content data-[active=true]:shadow-sm',
       { text: label, attrs: { type: 'button' } }
     ),
     'tab'
@@ -225,7 +225,7 @@ const priceTier = (name: string, price: string, cadence: string) =>
       el('div', 'flex items-baseline gap-1', {
         children: [
           el('span', 'text-4xl font-bold tracking-tight text-base-content', { text: price }),
-          el('span', 'text-sm text-base-content/60', { text: cadence }),
+          el('span', 'text-sm text-base-content', { text: cadence }),
         ],
       }),
       atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Choose plan' }),
@@ -256,7 +256,7 @@ const statCount = (value: string, label: string) =>
         el('div', 'text-4xl font-bold tracking-tight text-primary @2xl:text-5xl', { text: value }),
         'item'
       ),
-      el('div', 'text-sm text-base-content/70', { text: label }),
+      el('div', 'text-sm text-base-content', { text: label }),
     ],
   });
 
@@ -657,7 +657,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
                       }),
                       el(
                         'a',
-                        'text-lg leading-none text-base-content/40 transition-colors hover:text-base-content',
+                        'text-lg leading-none text-base-content transition-colors hover:text-base-content',
                         { text: '✕', attrs: { href: '#', ariaLabel: 'Close' } }
                       ),
                     ],
@@ -725,7 +725,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
                     level: 'h3',
                     text: 'Shipping estimate',
                   }),
-                  atom('Text', 'mt-1 text-sm text-base-content/70', {
+                  atom('Text', 'mt-1 text-sm text-base-content', {
                     variant: 'body',
                     text: 'Free 3–5 day shipping on orders over $75. Express options are offered at checkout.',
                   }),

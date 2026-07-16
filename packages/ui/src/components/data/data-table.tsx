@@ -82,7 +82,7 @@ export function DataTable<TData, TValue>({
                             'inline-flex items-center gap-1 text-xs font-medium tracking-wider uppercase',
                             'hover:text-base-content transition-colors duration-150',
                             'focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-                            sortDir ? 'text-base-content' : 'text-base-content/50'
+                            sortDir ? 'text-base-content' : 'text-base-content'
                           )}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -160,7 +160,7 @@ function DataTablePager({
   onNext: () => void;
 }) {
   return (
-    <div className="text-base-content/70 flex items-center justify-between px-1 text-xs">
+    <div className="text-base-content flex items-center justify-between px-1 text-xs">
       <span>
         {totalRows.toLocaleString()} {totalRows === 1 ? 'row' : 'rows'}
       </span>

@@ -99,7 +99,7 @@ export function QuickFilters({
           'rounded-full border px-3 py-1 text-sm font-medium transition-colors',
           mineActive
             ? 'border-module text-base-content'
-            : 'border-base-300 text-base-content/60 hover:text-base-content'
+            : 'border-base-300 text-base-content hover:text-base-content'
         )}
       >
         Assigned to me
@@ -167,7 +167,7 @@ function Chip({
         small ? 'text-xs' : 'text-sm',
         active
           ? 'border-module text-base-content'
-          : 'text-base-content/60 hover:text-base-content border-transparent'
+          : 'text-base-content hover:text-base-content border-transparent'
       )}
     >
       {label}

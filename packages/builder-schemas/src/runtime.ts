@@ -66,28 +66,64 @@ export interface NodeBinding {
  *   · action     → undefined (a trigger resolves no display value)
  *  Undefined when the record/array hasn't been loaded (the caller falls back). */
 export function resolveBinding(scope: Scope, binding: NodeBinding | undefined | null): unknown {
-  if (!binding) return undefined;
-  if (binding.action) return undefined;
+  return resolveBindingEx(scope, binding).value;
+}
+
+/** `resolveBinding` + the found/missing distinction (see `PathResolution`).
+ *
+ *  A pin/collection whose record has not been LOADED is reported as missing, not as
+ *  an empty value: the data simply isn't here, so the authored placeholder is the
+ *  honest thing to keep. An `action` binding resolves no display value at all and is
+ *  likewise "not a value ref". */
+export function resolveBindingEx(
+  scope: Scope,
+  binding: NodeBinding | undefined | null
+): PathResolution {
+  const miss: PathResolution = { found: false, value: undefined };
+  if (!binding) return miss;
+  if (binding.action) return miss;
   const root = scope.root as Record<string, unknown>;
   if (binding.source) {
     const sources = root[SOURCES_ROOT] as Record<string, unknown> | undefined;
-    return sources?.[collectionSourceKey(binding.source)];
+    const key = collectionSourceKey(binding.source);
+    if (!sources || !(key in sources)) return miss;
+    return { found: true, value: sources[key] };
   }
   if (binding.entity && binding.id) {
     const pins = root[PINS_ROOT] as Record<string, unknown> | undefined;
-    return pins?.[entityPinKey(binding.entity, binding.id)];
+    const key = entityPinKey(binding.entity, binding.id);
+    if (!pins || !(key in pins)) return miss;
+    return { found: true, value: pins[key] };
   }
-  if (binding.path) return resolvePath(scope, binding.path);
-  return undefined;
+  if (binding.path) return resolvePathEx(scope, binding.path);
+  return miss;
 }
 
-/** Resolve a dotted/bracketed path against a scope. Paths beginning with `item`
- *  resolve against the iteration item; `index` is the loop counter; everything
- *  else resolves against the module root. */
-export function resolvePath(scope: Scope, path: string): unknown {
+/** A resolution that distinguishes "this host has no such ref" from "the ref is
+ *  real and its value happens to be empty" — the distinction silica's `ResolveHost`
+ *  requires (`resolveBinding` returns `undefined` for the former, `{value}` for the
+ *  latter). Without it a renderer blanks the node either way, so a typo'd or stale
+ *  binding silently DELETES authored content instead of reporting itself. */
+export interface PathResolution {
+  /** Did every segment of the path actually exist in the data? */
+  found: boolean;
+  value: unknown;
+}
+
+/** Resolve a dotted/bracketed path, reporting whether the path EXISTS.
+ *
+ *  `found` is key-presence, not truthiness: `site.identity.logo === null` on a tenant
+ *  with no logo is FOUND (a real field, legitimately empty) and the node renders empty,
+ *  while `logo` at the root is NOT found (no such key) and the node keeps what the
+ *  author wrote. Presence is tested with `in`, so an explicit `undefined` still counts
+ *  as found. */
+export function resolvePathEx(scope: Scope, path: string): PathResolution {
+  const miss: PathResolution = { found: false, value: undefined };
   const trimmed = path.trim();
-  if (trimmed === '') return undefined;
-  if (trimmed === 'index') return scope.index;
+  if (trimmed === '') return miss;
+  if (trimmed === 'index') {
+    return scope.index === undefined ? miss : { found: true, value: scope.index };
+  }
 
   const segments = trimmed
     .replace(/\[(\d+)\]/g, '.$1')
@@ -96,17 +132,28 @@ export function resolvePath(scope: Scope, path: string): unknown {
 
   let cursor: unknown;
   if (segments[0] === 'item') {
+    if (scope.item === undefined) return miss;
     cursor = scope.item;
     segments.shift();
+    if (segments.length === 0) return { found: true, value: cursor };
   } else {
     cursor = scope.root;
   }
 
   for (const seg of segments) {
-    if (cursor == null) return undefined;
+    if (cursor == null || typeof cursor !== 'object') return miss;
+    if (!(seg in (cursor as Record<string, unknown>))) return miss;
     cursor = (cursor as Record<string, unknown>)[seg];
   }
-  return cursor;
+  return { found: true, value: cursor };
+}
+
+/** Resolve a dotted/bracketed path against a scope. Paths beginning with `item`
+ *  resolve against the iteration item; `index` is the loop counter; everything
+ *  else resolves against the module root. Value-only — use `resolvePathEx` when
+ *  "missing" and "empty" must be told apart. */
+export function resolvePath(scope: Scope, path: string): unknown {
+  return resolvePathEx(scope, path).value;
 }
 
 /** Classify a resolved value so a component (and the renderer) can decide

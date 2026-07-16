@@ -32,7 +32,7 @@ export function TransfersList({ rows, view }: TransfersListProps) {
   const route = (t: InventoryTransferRow) => (
     <div className="flex min-w-0 flex-row items-center gap-1">
       <p className="truncate text-sm">{warehouseLabel(t.fromWarehouseName, t.fromWarehouseCode)}</p>
-      <ArrowRight className="text-base-content/60 h-3.5 w-3.5 shrink-0" />
+      <ArrowRight className="text-base-content h-3.5 w-3.5 shrink-0" />
       <p className="truncate text-sm">{warehouseLabel(t.toWarehouseName, t.toWarehouseCode)}</p>
     </div>
   );
@@ -59,7 +59,7 @@ export function TransfersList({ rows, view }: TransfersListProps) {
     body: (t) => (
       <div className="flex flex-col gap-2">
         {units(t)}
-        <p className="text-base-content/70 text-xs">created {formatDate(t.createdAt)}</p>
+        <p className="text-base-content text-xs">created {formatDate(t.createdAt)}</p>
       </div>
     ),
   };

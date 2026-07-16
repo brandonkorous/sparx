@@ -192,16 +192,16 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
 
             <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
               {!domainsLoaded ? (
-                <div className="text-base-content/60 flex items-center gap-2 py-8">
+                <div className="text-base-content flex items-center gap-2 py-8">
                   <Loading className="h-4 w-4" /> Loading fitment…
                 </div>
               ) : domains.length === 0 ? (
-                <p className="text-base-content/70 py-4 text-center text-sm">
+                <p className="text-base-content py-4 text-center text-sm">
                   No fitment domains installed. Install one from the Fitment surface to build a
                   fleet.
                 </p>
               ) : vehicles.length === 0 ? (
-                <p className="text-base-content/70 py-4 text-center text-sm">
+                <p className="text-base-content py-4 text-center text-sm">
                   No vehicles in fleet yet.
                 </p>
               ) : (
@@ -217,7 +217,7 @@ export function FleetProfileEditor({ accountId, initialVehicles }: FleetProfileE
                           ×{v.count}
                         </Badge>
                       </div>
-                      <p className="text-base-content/70 truncate text-sm">
+                      <p className="text-base-content truncate text-sm">
                         {vehicleSummary(v, domainById.get(v.domainId))}
                       </p>
                     </div>

@@ -140,7 +140,7 @@ function ModeTab({ label, href, active }: { label: string; href: string; active:
         'border-b-2 pb-1 text-sm font-medium transition-colors',
         active
           ? 'border-module text-base-content'
-          : 'text-base-content/60 hover:text-base-content border-transparent'
+          : 'text-base-content hover:text-base-content border-transparent'
       )}
     >
       {label}

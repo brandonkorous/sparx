@@ -148,7 +148,7 @@ export default async function ReportsPage() {
                             {b.count}
                           </Badge>
                         </div>
-                        <p className="text-base-content/70 text-sm tabular-nums">
+                        <p className="text-base-content text-sm tabular-nums">
                           ${b.totalValue.toLocaleString()}
                         </p>
                       </div>
@@ -174,7 +174,7 @@ export default async function ReportsPage() {
               </div>
             </CardTitle>
             {winLoss.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No assigned-rep data yet.</p>
+              <p className="text-base-content text-sm">No assigned-rep data yet.</p>
             ) : (
               <Table>
                 <thead>
@@ -192,7 +192,7 @@ export default async function ReportsPage() {
                     <tr key={r.repId ?? `unassigned-${idx}`}>
                       <td>
                         {!r.repId ? (
-                          <p className="text-base-content/70 text-sm">Unassigned</p>
+                          <p className="text-base-content text-sm">Unassigned</p>
                         ) : repNameById.get(r.repId) ? (
                           <p className="text-sm">{repNameById.get(r.repId)}</p>
                         ) : (
@@ -249,7 +249,7 @@ export default async function ReportsPage() {
                   <p className="text-base font-medium">
                     {snapshot.overdueTasks} overdue tasks across the team
                   </p>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     <Link href="/crm/tasks?scope=all" className="hover:underline">
                       Review and reassign →
                     </Link>

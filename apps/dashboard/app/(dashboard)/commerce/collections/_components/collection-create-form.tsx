@@ -256,7 +256,7 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                       <RadioGroupItem color="module" value="manual" id="col-type-manual" />
                       <div className="flex flex-col gap-0">
                         <Label htmlFor="col-type-manual">Manual</Label>
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           Add products by hand on the detail page.
                         </p>
                       </div>
@@ -265,7 +265,7 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                       <RadioGroupItem color="module" value="rules" id="col-type-rules" />
                       <div className="flex flex-col gap-0">
                         <Label htmlFor="col-type-rules">Rules-driven</Label>
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           Membership re-projected on the next index flush.
                         </p>
                       </div>

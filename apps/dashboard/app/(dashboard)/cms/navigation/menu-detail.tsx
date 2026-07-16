@@ -88,7 +88,7 @@ export async function MenuDetailContent({ id: location }: Props) {
         <h1 className="text-3xl font-semibold">
           {menu ? 'Edit' : 'Create'} <code>/{location}</code> menu
         </h1>
-        <p className="text-base-content/70">
+        <p className="text-base-content">
           Each item must link to either a published entry or an external URL — not both. Use the
           move buttons to reorder.
         </p>

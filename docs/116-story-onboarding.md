@@ -1,8 +1,8 @@
 # sparx Platform — Story Onboarding (Narrative Flow)
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-06
+**Last Updated:** 2026-07-16
 
 ---
 
@@ -195,24 +195,55 @@ A single shared router,
 [apps/dashboard/lib/onboarding-entry.ts](../apps/dashboard/lib/onboarding-entry.ts)
 `onboardingEntryHref(state)`, decides where an unfinished tenant (re)enters. Precedence:
 
-1. A story narrative exists (committed **or** an in-progress draft) → **/story**
-2. The classic wizard was advanced (step moved off the first, or any step flagged
+1. The owner **explicitly chose** a front end (`settings.onboarding.flow`) → **that one**
+2. A story narrative exists (committed **or** an in-progress draft) → **/story**
+3. The classic wizard was advanced (step moved off the first, or any step flagged
    complete) **without** a story → **/onboarding**
-3. Otherwise — a fresh tenant → **/story** (the primary)
+4. Otherwise — a fresh tenant → **/story** (the primary)
 
-This never yanks a tenant out of the flow they actually started. It is wired into all
-three entry points:
+Rule 1 exists because rules 2–4 alone are a **one-way latch**. The composer
+debounce-saves a draft as the owner types, so `story` goes truthy within seconds of them
+touching it — and from then on rule 2 would route them back to `/story` forever, no
+matter how they tried to leave. An explicitly recorded choice is the only signal that can
+say _"I know there's a draft; I want the wizard."_ Below rule 1, nothing yanks a tenant
+out of the flow they actually started.
 
-- **Post-signup** — `/story`, except a `?blueprint=` arrival (the marketplace/template
-  funnel, docs/60 Ph5) still enters the classic wizard, whose template step honors the
-  pre-pick.
+Switching is **lossless in both directions**: the two front ends share one backend, and
+classic progress (`currentStep` / `completed`) and the story draft persist independently,
+so each flow resumes exactly where it was left.
+
+It is wired into all three entry points:
+
+- **Post-signup** — `signupEntryHref(blueprintKey)`, the same module: `/story`, except a
+  `?blueprint=` arrival (the marketplace/template funnel, docs/60 Ph5) enters the classic
+  wizard, whose template step honors the pre-pick.
 - **Dashboard guard** — the mandatory-onboarding redirect in the dashboard layout routes
   through the helper.
 - **Welcome banner** — the "Resume setup" CTA routes through the helper.
 
-The classic wizard stays linked both ways: the Story rail offers "Use the classic
-step-by-step setup," and the wizard's module step offers "Prefer to describe it in a
-sentence?"
+### 8.1 The switch
+
+Both front ends carry a switch (`_components/flow-switch.tsx` → `switchOnboardingFlowAction`,
+which records `flow` and then routes). They are alternatives, not a primary and a
+fallback, so the affordance reads the same either way:
+
+| Where                                  | Offers                                         |
+| -------------------------------------- | ---------------------------------------------- |
+| Wizard, Modules step (the loud pitch)  | "Prefer to tell your story?"                   |
+| Wizard, Blueprint / Workspace / Domain | Alt row → "Tell your story"                    |
+| Story, compose phase                   | Alt row → "Use the classic step-by-step setup" |
+| Either flow, Payments / Launch         | — (nothing)                                    |
+
+The alt row is a real **accent / soft** `<Button block>`, not a text link — the other flow
+is a genuine alternative an owner should be able to see, not a footnote. Accent (violet)
+rather than the rail's Builder-indigo `module` hue keeps it from reading as a second
+primary, and `soft` leaves the solid `module` CTA above it unambiguously first.
+
+Two deliberate gaps. The Modules step skips the card's alt row because it already makes
+the same offer louder, above the toggles. And **neither** flow offers the switch at
+Payments/Launch: the setup is committed by then (modules activated, blueprint installed),
+and the story flow's tail _is_ the wizard's last two steps — there is nothing on the other
+side to switch to.
 
 ---
 

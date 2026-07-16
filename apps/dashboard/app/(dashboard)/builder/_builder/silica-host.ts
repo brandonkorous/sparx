@@ -25,7 +25,7 @@ import {
   type DataSources,
   type NodeBinding,
 } from '@sparx/builder-schemas';
-import { COMMERCE_CATALOG } from '@sparx/silica-catalog';
+import { COMMERCE_CATALOG, SITE_CATALOG } from '@sparx/silica-catalog';
 
 // `defaultSilicaFormat` moved to @sparx/builder-schemas (silica-resolve) so the
 // storefront render host and this editor host format identically; re-export it
@@ -85,7 +85,9 @@ export function buildSilicaHost(opts: SilicaHostOptions): BuilderHost {
     resolveBinding: resolver.resolveBinding,
     resolveCollection: resolver.resolveCollection,
     dataSources: () => opts.dataSources,
-    catalog: () => ({ extend: COMMERCE_CATALOG as unknown as PaletteGroup[] }),
+    catalog: () => ({
+      extend: [...COMMERCE_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[],
+    }),
     hostComponents: hostComponentDefs,
     ...(validateClass ? { validateClass } : {}),
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),

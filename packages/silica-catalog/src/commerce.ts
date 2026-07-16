@@ -230,15 +230,12 @@ export function buyBox(): Node {
               children: [
                 bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
                 bind(
-                  el('span', 'text-lg text-base-content/50 line-through', { text: '' }),
+                  el('span', 'text-lg text-base-content line-through', { text: '' }),
                   'compareAtPrice'
                 ),
               ],
             }),
-            bind(
-              el('div', 'text-base-content/80', { text: 'Product description.' }),
-              'description'
-            ),
+            bind(el('div', 'text-base-content', { text: 'Product description.' }), 'description'),
             addToCartForm(),
           ],
         }),
@@ -280,7 +277,7 @@ export function collectionDetailPage(): Node {
           children: [
             bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'name'),
             bind(
-              el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content/70', {
+              el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content', {
                 text: 'Collection description.',
               }),
               'description'
@@ -322,7 +319,7 @@ export function collectionHeader(): Node {
     children: [
       bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'title'),
       bind(
-        el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content/70', {
+        el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content', {
           text: 'Collection description.',
         }),
         'description'

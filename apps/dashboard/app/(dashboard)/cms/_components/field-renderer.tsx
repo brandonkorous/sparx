@@ -89,7 +89,7 @@ function FieldLabel({ htmlFor, field }: { htmlFor: string; field: FieldDef }) {
         {field.label}
         {field.required ? <span className="text-danger ml-1">*</span> : null}
       </Label>
-      {field.helpText && <p className="text-base-content/70 text-xs">{field.helpText}</p>}
+      {field.helpText && <p className="text-base-content text-xs">{field.helpText}</p>}
       {isLucideIconField(field.helpText) && <LucideIconLink />}
     </div>
   );
@@ -282,7 +282,7 @@ function BooleanFieldR({
       />
       <div className="flex flex-col gap-0">
         <Label htmlFor={inputId}>{field.label}</Label>
-        {field.helpText && <p className="text-base-content/70 text-xs">{field.helpText}</p>}
+        {field.helpText && <p className="text-base-content text-xs">{field.helpText}</p>}
       </div>
     </div>
   );
@@ -443,7 +443,7 @@ function ReferenceFieldR({
                 onClick={() => removePick(id)}
                 aria-label={`Remove reference ${id}`}
                 disabled={disabled}
-                className="text-base-content/50 hover:text-danger disabled:opacity-50"
+                className="text-base-content hover:text-danger disabled:opacity-50"
               >
                 <Trash2 className="h-3 w-3" />
               </button>
@@ -547,7 +547,7 @@ function AssetFieldR({
             {r.src ? (
               <img src={r.src} alt={r.alt} className="h-full w-full object-cover" />
             ) : (
-              <div className="text-base-content/50 flex h-full w-full items-center justify-center text-xs">
+              <div className="text-base-content flex h-full w-full items-center justify-center text-xs">
                 {r.assetId.slice(0, 6)}
               </div>
             )}
@@ -662,14 +662,14 @@ function RepeaterFieldR({
     <div className="flex flex-col gap-2">
       <FieldLabel htmlFor={inputId} field={field} />
       <div className="flex flex-col gap-3">
-        {items.length === 0 && <p className="text-base-content/70 text-sm">No items yet.</p>}
+        {items.length === 0 && <p className="text-base-content text-sm">No items yet.</p>}
         {items.map((item, index) => (
           // variant="default": generic repeater renderer used across modules, not module-scoped
           <Card key={index} className="border-base-300">
             <CardBody>
               <div className="flex flex-col gap-3">
                 <div className="flex flex-row items-center justify-between gap-4">
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     {field.itemLabel ?? 'Item'} {index + 1}
                   </p>
                   <Button

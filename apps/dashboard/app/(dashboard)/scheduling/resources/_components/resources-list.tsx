@@ -90,7 +90,7 @@ export function ResourcesList({ resources, view }: ResourcesListProps) {
         <Tag key={t}>{t}</Tag>
       ))}
       {r.skillTags.length > 4 ? (
-        <span className="text-base-content/70 text-xs">+{r.skillTags.length - 4}</span>
+        <span className="text-base-content text-xs">+{r.skillTags.length - 4}</span>
       ) : null}
     </span>
   );
@@ -138,12 +138,12 @@ export function ResourcesList({ resources, view }: ResourcesListProps) {
 
   const card: SelectionCard<SchedulingResource> = {
     title: nameCell,
-    subtitle: (r) => <p className="text-base-content/70 text-xs">{RESOURCE_KIND_LABEL[r.kind]}</p>,
+    subtitle: (r) => <p className="text-base-content text-xs">{RESOURCE_KIND_LABEL[r.kind]}</p>,
     badge: statusBadge,
     body: (r) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Capacity {capacityLabel(r)}</p>
+          <p className="text-base-content text-sm">Capacity {capacityLabel(r)}</p>
           <Badge variant="soft" size="sm" color={r.exclusive ? 'neutral' : 'info'}>
             {r.exclusive ? 'Exclusive' : 'Pooled'}
           </Badge>

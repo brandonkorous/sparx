@@ -76,7 +76,7 @@ export function DiscountStatusToggle({
   void moveToDraft;
 
   if (status === 'archived') {
-    return <p className="text-base-content/70 text-xs">archived</p>;
+    return <p className="text-base-content text-xs">archived</p>;
   }
 
   return (

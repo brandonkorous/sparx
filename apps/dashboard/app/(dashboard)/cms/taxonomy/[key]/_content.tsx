@@ -56,9 +56,9 @@ export async function TaxonomyDetailContent({ id: key }: Props) {
           <Badge color="info" variant="soft" size="sm">
             {taxonomy.hierarchical ? 'hierarchical' : 'flat'}
           </Badge>
-          <code className="text-base-content/50 text-xs">{taxonomy.key}</code>
+          <code className="text-base-content text-xs">{taxonomy.key}</code>
         </div>
-        <p className="text-base-content/70 text-base">
+        <p className="text-base-content text-base">
           {terms.length} term{terms.length === 1 ? '' : 's'} in this taxonomy.
         </p>
       </div>

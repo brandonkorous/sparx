@@ -41,15 +41,13 @@ export function SerialsPanel({
       <CardBody>
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <h3 className="text-xl font-semibold">Serials</h3>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {serials.length} unit{serials.length === 1 ? '' : 's'}
           </p>
         </div>
         <div className="flex flex-col gap-2">
           {serials.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
-              No serials on this lot yet — add one below.
-            </p>
+            <p className="text-base-content text-sm">No serials on this lot yet — add one below.</p>
           ) : (
             serials.map((s) => <SerialRowItem key={s.id} lotId={lotId} serial={s} />)
           )}
@@ -80,7 +78,7 @@ function SerialRowItem({ lotId, serial: s }: { lotId: string; serial: SerialRow 
       <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
         <p className="font-mono text-sm font-medium">{s.serial}</p>
         {s.soldOnOrderItemId ? (
-          <p className="text-base-content/70 text-xs">sold on order item</p>
+          <p className="text-base-content text-xs">sold on order item</p>
         ) : null}
       </div>
       <Badge color={serialStatusColor(s.status)}>{serialStatusLabel(s.status)}</Badge>

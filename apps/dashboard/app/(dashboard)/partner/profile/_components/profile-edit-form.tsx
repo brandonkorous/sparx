@@ -279,7 +279,7 @@ export function PartnerProfileEditForm({ profile }: { profile: PartnerProfile })
 
                   <div className="flex flex-col gap-2">
                     <Label>Specialties</Label>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       The areas you focus on — these drive the directory’s specialty filter.
                     </p>
                     <div className="flex flex-row flex-wrap gap-2">
@@ -349,7 +349,7 @@ function Toggle({
     <div className="flex flex-row items-start justify-between gap-3">
       <div className="flex min-w-0 flex-col gap-1">
         <Label htmlFor={id}>{label}</Label>
-        <p className="text-base-content/70 text-xs">{hint}</p>
+        <p className="text-base-content text-xs">{hint}</p>
       </div>
       <Switch id={id} color="module" checked={checked} onCheckedChange={onCheckedChange} />
     </div>

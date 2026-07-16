@@ -75,7 +75,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           />
         ) : (
           <span
-            className="text-base-content/50 flex h-full w-full items-center justify-center"
+            className="text-base-content flex h-full w-full items-center justify-center"
             aria-hidden
           >
             <ImageOff size={28} />
@@ -99,7 +99,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         </Link>
         <Link
           href={`/merchants/${product.merchantSlug}`}
-          className="text-base-content/70 text-[0.8125rem] transition-colors hover:underline"
+          className="text-base-content text-[0.8125rem] transition-colors hover:underline"
         >
           {product.merchantName}
         </Link>

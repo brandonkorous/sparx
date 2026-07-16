@@ -128,7 +128,7 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
             )}
           </div>
           {initialRules.length === 0 ? (
-            <p className="text-base-content/70 py-6 text-center text-base">
+            <p className="text-base-content py-6 text-center text-base">
               No surcharges configured. Add one to pass a card fee or handling charge through to the
               order.
             </p>
@@ -155,13 +155,13 @@ export function SurchargesManager({ initialRules }: { initialRules: SurchargeRul
                         {summary(r)}
                       </Badge>
                       {r.capCents != null && (
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           cap {money.format(r.capCents / 100)}
                         </p>
                       )}
                     </td>
                     <td>
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         {r.paymentMethods.map((m) => METHOD_LABELS[m]).join(', ')}
                       </p>
                     </td>
@@ -361,7 +361,7 @@ function RuleForm({
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="text-base-content/70 text-xs font-medium">Apply to payment methods</p>
+              <p className="text-base-content text-xs font-medium">Apply to payment methods</p>
               <div className="flex flex-row flex-wrap gap-4">
                 {ALL_METHODS.map((m) => (
                   <label key={m} className="inline-flex items-center gap-2">
@@ -375,14 +375,14 @@ function RuleForm({
                   </label>
                 ))}
               </div>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Card = any card-processor checkout; Net terms = B2B account orders. A card fee
                 normally targets Card only.
               </p>
             </div>
 
             <div className="border-base-300 bg-base-200 flex flex-row items-center gap-3 rounded border p-3">
-              <p className="text-base-content/70 text-sm">On a $100 order →</p>
+              <p className="text-base-content text-sm">On a $100 order →</p>
               <p className="text-sm">
                 fee <strong>{money.format(Math.max(0, sample))}</strong>
               </p>

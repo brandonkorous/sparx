@@ -22,7 +22,7 @@ export function MakerStory() {
             <h2 className="text-[2rem] leading-[1.08] font-bold tracking-[-0.02em] md:text-[2.75rem]">
               Every order supports a real person.
             </h2>
-            <p className="text-base-content/70 mt-5 text-[1.0625rem] leading-relaxed">
+            <p className="text-base-content mt-5 text-[1.0625rem] leading-relaxed">
               Behind every listing on sparx.market is an independent maker — a potter, a baker, a
               designer — running their own shop. Buy here and you buy direct from them, with no
               faceless middleman in between.

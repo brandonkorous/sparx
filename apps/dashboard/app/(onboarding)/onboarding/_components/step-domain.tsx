@@ -94,7 +94,7 @@ export function StepDomain({
             <Globe className="text-module h-4 w-4 shrink-0" />
             <div className="min-w-0">
               <p className="truncate font-medium">{selectedHost}</p>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Added — you&apos;ll be charged when you publish.
               </p>
             </div>
@@ -112,7 +112,7 @@ export function StepDomain({
       )}
 
       <div className="relative">
-        <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+        <Search className="text-base-content pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -128,7 +128,7 @@ export function StepDomain({
       {searching && (
         <div className="mt-4 flex items-center gap-2">
           <Loading size="sm" />
-          <p className="text-base-content/70 text-xs">Searching…</p>
+          <p className="text-base-content text-xs">Searching…</p>
         </div>
       )}
 
@@ -172,7 +172,7 @@ export function StepDomain({
       )}
 
       {!searching && !error && query.trim() && suggestions.length === 0 && (
-        <p className="text-base-content/70 mt-4 block text-sm">
+        <p className="text-base-content mt-4 block text-sm">
           No domains found for &ldquo;{query}&rdquo;. Try a different name.
         </p>
       )}
@@ -180,7 +180,7 @@ export function StepDomain({
       {/* Paid-add-on disclosure — distinct copy for "checkout open" vs "soon". */}
       {purchaseEnabled ? (
         <div className="border-base-300 bg-base-100 mt-4 rounded-xl border px-4 py-3.5">
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             A custom domain is a paid registration — you&apos;ll be charged when you publish at the
             Launch step, not now. It&apos;s the one optional add-on with a cost; signing up and your
             free address are always free.
@@ -188,10 +188,10 @@ export function StepDomain({
         </div>
       ) : (
         <div className="border-base-300 bg-base-100 mt-4 flex items-start gap-2.5 rounded-xl border px-4 py-3.5">
-          <Clock className="text-base-content/50 mt-0.5 h-4 w-4 shrink-0" />
-          <p className="text-base-content/70 text-xs">
+          <Clock className="text-base-content mt-0.5 h-4 w-4 shrink-0" />
+          <p className="text-base-content text-xs">
             Custom domains are a paid registration and{' '}
-            <span className="text-base-content/70 font-medium">checkout opens soon</span>. For now,
+            <span className="text-base-content font-medium">checkout opens soon</span>. For now,
             launch on your free address — or connect a domain you already own from Settings.
             You&apos;re never charged to sign up.
           </p>
@@ -201,9 +201,9 @@ export function StepDomain({
       {/* Free-address note — "Continue" (in the setup card) keeps this address. */}
       <div className="border-base-content/30 bg-base-200 mt-3 rounded-xl border border-dashed px-4 py-3.5">
         <p className="text-sm font-medium">Happy on the free address?</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Your site is live at{' '}
-          <span className="text-base-content/70 font-medium">
+          <span className="text-base-content font-medium">
             {slug}.{SITE_ZONE}
           </span>{' '}
           — just hit Continue. You can add a domain anytime from Settings.
@@ -267,14 +267,14 @@ function DomainRow({
       {suggestion.available && (
         <div className="flex shrink-0 items-center gap-3">
           <div className="text-right">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               <span className="text-base-content font-medium">
                 ${(suggestion.displayPrice / 100).toFixed(2)}
               </span>
               /yr
             </p>
             {suggestion.renewalDisplayPrice > suggestion.displayPrice && (
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 then ${(suggestion.renewalDisplayPrice / 100).toFixed(2)}/yr
               </p>
             )}
@@ -307,7 +307,7 @@ function ExactTakenRow({ domain }: { domain: string }) {
     <div className="border-base-300 bg-base-200 flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5">
       <div className="min-w-0">
         <p className="truncate font-medium">{domain}</p>
-        <p className="text-base-content/70 mt-0.5 text-xs">
+        <p className="text-base-content mt-0.5 text-xs">
           Already registered — here are close ones you can grab.
         </p>
       </div>

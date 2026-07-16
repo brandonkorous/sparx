@@ -33,7 +33,7 @@ export interface PlpFacetState {
   inStock: boolean;
 }
 
-const LEGEND = 'text-xs font-semibold uppercase tracking-[0.04em] text-base-content/70';
+const LEGEND = 'text-xs font-semibold uppercase tracking-[0.04em] text-base-content';
 
 function FacetGroup({ legend, children }: { legend: string; children: ReactNode }) {
   return (
@@ -53,7 +53,7 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="text-base-content/70 hover:text-base-content -mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5 transition-colors"
+        className="text-base-content hover:text-base-content -mr-1 ml-0.5 inline-flex items-center rounded-full p-0.5 transition-colors"
       >
         <X size={12} aria-hidden />
       </button>
@@ -155,7 +155,7 @@ export function PlpFacets({
       '-mx-2 flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition-colors',
       active
         ? 'bg-primary/10 font-semibold text-primary'
-        : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'
+        : 'text-base-content hover:bg-base-200 hover:text-base-content'
     );
 
   return (
@@ -236,7 +236,7 @@ export function PlpFacets({
                 onClick={() => navigate({ category: undefined })}
               >
                 <span>All categories</span>
-                <span className="text-base-content/50">{allCount.toLocaleString()}</span>
+                <span className="text-base-content">{allCount.toLocaleString()}</span>
               </button>
               {visibleCategories.map((category) => {
                 const active = state.category === category.slug;
@@ -248,7 +248,7 @@ export function PlpFacets({
                     onClick={() => navigate({ category: category.slug })}
                   >
                     <span>{category.name}</span>
-                    <span className="text-base-content/50">
+                    <span className="text-base-content">
                       {(countBySlug.get(category.slug) ?? 0).toLocaleString()}
                     </span>
                   </button>
@@ -305,7 +305,7 @@ export function PlpFacets({
               />
               In stock only
             </span>
-            <span className="text-base-content/50">{counts.inStockCount.toLocaleString()}</span>
+            <span className="text-base-content">{counts.inStockCount.toLocaleString()}</span>
           </label>
         </FacetGroup>
 
@@ -347,7 +347,7 @@ export function PlpSort({ basePath, sort }: { basePath: string; sort: MarketSort
 
   return (
     <div className="hidden items-center gap-2 lg:flex">
-      <span className="text-base-content/70 text-sm">Sort</span>
+      <span className="text-base-content text-sm">Sort</span>
       <NativeSelect
         className="w-48"
         value={sort}

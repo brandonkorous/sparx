@@ -127,9 +127,7 @@ export function SearchConsoleControl({
   }
 
   if (!configured) {
-    return (
-      <span className="text-base-content/50 text-xs">Search Console connection coming soon</span>
-    );
+    return <span className="text-base-content text-xs">Search Console connection coming soon</span>;
   }
 
   if (status === 'connected') {
@@ -170,7 +168,7 @@ export function SearchConsoleControl({
             {pending === 'sites' ? 'Loading…' : 'Choose a site'}
           </Button>
         ) : sites.length === 0 ? (
-          <span className="text-base-content/50 text-xs">
+          <span className="text-base-content text-xs">
             No verified sites on this Google account.
           </span>
         ) : (

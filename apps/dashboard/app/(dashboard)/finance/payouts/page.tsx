@@ -71,7 +71,7 @@ export default async function PayoutsPage(): Promise<React.JSX.Element> {
             <Card>
               <CardBody>
                 <CardTitle>sparx.market earnings</CardTitle>
-                <p className="text-base-content/70 max-w-prose text-sm">
+                <p className="text-base-content max-w-prose text-sm">
                   Join sparx.market — the first-party marketplace — to earn an additional sales
                   channel. sparx handles checkout as merchant-of-record and pays you weekly, minus
                   commission. Your settlement history and payout bank account will appear here once

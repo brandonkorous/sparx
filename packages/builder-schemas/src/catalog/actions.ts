@@ -174,7 +174,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
         el('span', 'hidden h-6 w-px bg-base-300 @2xl:block', {}),
         el(
           'button',
-          'flex h-9 w-9 items-center justify-center rounded-field text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content',
+          'flex h-9 w-9 items-center justify-center rounded-field text-base-content transition-colors hover:bg-base-200 hover:text-base-content',
           {
             attrs: { type: 'button', ariaLabel: 'Share' },
             children: [atom('Icon', 'h-4 w-4', { name: 'share-2' })],
@@ -182,7 +182,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
         ),
         el(
           'button',
-          'flex h-9 w-9 items-center justify-center rounded-field text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content',
+          'flex h-9 w-9 items-center justify-center rounded-field text-base-content transition-colors hover:bg-base-200 hover:text-base-content',
           {
             attrs: { type: 'button', ariaLabel: 'More options' },
             children: [atom('Icon', 'h-4 w-4', { name: 'ellipsis-vertical' })],
@@ -207,7 +207,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el(
           'button',
-          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content/70 transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
+          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
           {
             attrs: { type: 'button', ariaLabel: 'Like' },
             children: [atom('Icon', 'h-4 w-4', { name: 'heart' })],
@@ -215,7 +215,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
         ),
         el(
           'button',
-          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content/70 transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
+          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
           {
             attrs: { type: 'button', ariaLabel: 'Comment' },
             children: [atom('Icon', 'h-4 w-4', { name: 'message-circle' })],
@@ -223,7 +223,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
         ),
         el(
           'button',
-          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content/70 transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
+          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
           {
             attrs: { type: 'button', ariaLabel: 'Share' },
             children: [atom('Icon', 'h-4 w-4', { name: 'share-2' })],
@@ -231,7 +231,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
         ),
         el(
           'button',
-          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content/70 transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
+          'flex h-10 w-10 items-center justify-center rounded-full border border-base-200 text-base-content transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary',
           {
             attrs: { type: 'button', ariaLabel: 'Bookmark' },
             children: [atom('Icon', 'h-4 w-4', { name: 'bookmark' })],

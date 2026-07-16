@@ -196,7 +196,7 @@ function ModuleRow({
               ? 'text-success font-medium'
               : on
                 ? 'text-base-content font-medium'
-                : 'text-base-content/50'
+                : 'text-base-content'
           )}
         >
           {priceLabel}

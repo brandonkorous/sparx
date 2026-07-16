@@ -418,11 +418,11 @@ export default async function SeoPage() {
               >
                 <p className="text-[2.1rem] leading-none font-medium">
                   {avg}
-                  <span className="text-base-content/50 text-base font-normal"> / 100</span>
+                  <span className="text-base-content text-base font-normal"> / 100</span>
                 </p>
-                <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
-                  Average score across{' '}
-                  <span className="text-base-content/70">{fmtNumber(count)}</span> scored page
+                <p className="text-base-content mt-1.5 mb-3 text-sm">
+                  Average score across <span className="text-base-content">{fmtNumber(count)}</span>{' '}
+                  scored page
                   {count === 1 ? '' : 's'}
                 </p>
                 {checklistRows.length ? (
@@ -489,7 +489,7 @@ export default async function SeoPage() {
                         ['Avg. position', organicKpis.position],
                       ].map(([label, value]) => (
                         <div key={label}>
-                          <div className="text-base-content/50 text-xs">{label}</div>
+                          <div className="text-base-content text-xs">{label}</div>
                           <div className="font-medium">{value}</div>
                         </div>
                       ))}
@@ -536,13 +536,13 @@ export default async function SeoPage() {
                               <div className="text-module font-mono text-xs">{r.path}</div>
                             )}
                           </td>
-                          <td className="text-base-content/50">{ENTITY_LABEL[r.entityType]}</td>
+                          <td className="text-base-content">{ENTITY_LABEL[r.entityType]}</td>
                           <td className="text-right">
                             <Badge color={rb.color} variant="soft">
                               {r.score}
                             </Badge>
                           </td>
-                          <td className="text-base-content/70">{r.fixFirst ?? '—'}</td>
+                          <td className="text-base-content">{r.fixFirst ?? '—'}</td>
                         </tr>
                       );
                     })}

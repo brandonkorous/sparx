@@ -96,7 +96,7 @@ export default async function ListingDetailPage({
             ) : (
               <div className="border-base-300 aspect-[16/10] w-full rounded-lg border" />
             )}
-            <p className="text-base-content/70 mt-4">{item.description ?? item.tagline ?? ''}</p>
+            <p className="text-base-content mt-4">{item.description ?? item.tagline ?? ''}</p>
           </div>
 
           <Card className="bg-module bg-soft">
@@ -114,7 +114,7 @@ export default async function ListingDetailPage({
                     <p className="mb-2 text-sm font-medium">What&apos;s included</p>
                     <div className="flex flex-col gap-1">
                       {included.map((line) => (
-                        <p key={line} className="text-base-content/70 text-sm">
+                        <p key={line} className="text-base-content text-sm">
                           {line}
                         </p>
                       ))}
@@ -133,7 +133,7 @@ export default async function ListingDetailPage({
                     </div>
                   </div>
                 ) : null}
-                <p className="text-base-content/70 text-xs">Version {item.version}</p>
+                <p className="text-base-content text-xs">Version {item.version}</p>
               </div>
             </CardBody>
           </Card>

@@ -91,7 +91,7 @@ export function StackSummaryCard({
               </Text>
               <span className="text-4xl font-semibold tracking-[-0.02em]">
                 ${total}
-                <span className="text-base-content/50 text-base font-normal">/mo</span>
+                <span className="text-base-content text-base font-normal">/mo</span>
               </span>
             </div>
 
@@ -100,7 +100,7 @@ export function StackSummaryCard({
                 <Text as="span" className="text-sm">
                   Same stack, stitched together
                 </Text>
-                <Text as="span" className="text-base-content/50 text-base line-through">
+                <Text as="span" className="text-base-content text-base line-through">
                   ${elsewhereTotal}/mo
                 </Text>
               </div>

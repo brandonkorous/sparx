@@ -67,7 +67,7 @@ function AssetThumb({ src, alt }: { src: string | null; alt: string }) {
   if (!src || failed) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <ImageIcon className="text-base-content/50 h-6 w-6" />
+        <ImageIcon className="text-base-content h-6 w-6" />
       </div>
     );
   }
@@ -144,7 +144,7 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
         <div className="px-6 py-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-row items-center gap-2">
-              <Search className="text-base-content/50 h-4 w-4" />
+              <Search className="text-base-content h-4 w-4" />
               <Input
                 placeholder="Filter by filename or alt text"
                 value={q}
@@ -152,10 +152,10 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                 aria-label="Filter assets"
               />
             </div>
-            {loading && <p className="text-base-content/70 text-base">Loading assets…</p>}
+            {loading && <p className="text-base-content text-base">Loading assets…</p>}
             {error && <p className="text-danger text-base">{error}</p>}
             {!loading && !error && filtered.length === 0 && (
-              <p className="text-base-content/70 text-base">No assets matched.</p>
+              <p className="text-base-content text-base">No assets matched.</p>
             )}
             <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
               {filtered.map((a) => {

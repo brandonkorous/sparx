@@ -91,7 +91,7 @@ export default async function SeoAuditsPage({ searchParams }: PageProps) {
         </Card>
       ) : (
         <>
-          <p className="text-base-content/70 mb-6 text-sm">
+          <p className="text-base-content mb-6 text-sm">
             {count} page{count === 1 ? '' : 's'} scored
             {avg != null ? ` · average ${avg}/100` : ''}
           </p>

@@ -98,14 +98,14 @@ export function ServicesList({ services, view }: ServicesListProps) {
   const card: SelectionCard<SchedulingService> = {
     title: (svc) => <p className="font-medium">{svc.name}</p>,
     subtitle: (svc) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {BOOKING_TYPE_LABEL[svc.bookingType]} · {duration(svc.durationMinutes)}
       </p>
     ),
     badge: statusBadge,
     body: (svc) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {priceLabel(svc)} · capacity {svc.capacity}
         </p>
         {actionsMenu(svc)}

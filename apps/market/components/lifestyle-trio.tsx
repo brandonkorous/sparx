@@ -37,7 +37,7 @@ function LifestyleTile({ edit, priority }: { edit: LifestyleEdit; priority: bool
             className="text-primary shrink-0 transition-transform group-hover:translate-x-0.5"
           />
         </div>
-        <span className="text-base-content/70 mt-0.5 block text-sm">{edit.sub}</span>
+        <span className="text-base-content mt-0.5 block text-sm">{edit.sub}</span>
       </div>
     </Link>
   );

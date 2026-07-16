@@ -293,7 +293,7 @@ function OrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Customer</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 An order is placed for a single customer, through a channel.
               </p>
               <div className="flex flex-col gap-4">
@@ -341,7 +341,7 @@ function OrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Line items</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 SKU, name, quantity, unit price, and any per-line tax or discount.
               </p>
               <LineItemsEditor onChange={setItems} initialItems={items} />
@@ -352,7 +352,7 @@ function OrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Details</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 A source reference and header shipping — all optional.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">

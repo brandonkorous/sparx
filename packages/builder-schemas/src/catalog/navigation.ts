@@ -21,7 +21,7 @@ import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
 
 // A primary-nav link — individually editable (not a NavMenu black box).
 const navLink = (label: string, href: string) =>
-  el('a', 'text-sm font-medium text-base-content/80 transition-colors hover:text-primary', {
+  el('a', 'text-sm font-medium text-base-content transition-colors hover:text-primary', {
     text: label,
     attrs: { href },
   });
@@ -39,7 +39,7 @@ const sheetLink = (label: string, href: string) =>
 const megaCol = (title: string, links: [string, string][]) =>
   el('div', 'flex flex-col gap-1', {
     children: [
-      el('p', 'mb-1 text-xs font-semibold uppercase tracking-wide text-base-content/50', {
+      el('p', 'mb-1 text-xs font-semibold uppercase tracking-wide text-base-content', {
         text: title,
       }),
       ...links.map(([label, href]) => atom('NavItem', '', { label, href })),
@@ -290,12 +290,12 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
         ),
         el(
           'button',
-          '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content/60 transition-colors hover:text-base-content',
+          '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content transition-colors hover:text-base-content',
           { text: 'Details', attrs: { type: 'button' } }
         ),
         el(
           'button',
-          '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content/60 transition-colors hover:text-base-content',
+          '-mb-px border-b-2 border-transparent px-4 py-2 text-sm font-medium text-base-content transition-colors hover:text-base-content',
           { text: 'Reviews', attrs: { type: 'button' } }
         ),
       ],

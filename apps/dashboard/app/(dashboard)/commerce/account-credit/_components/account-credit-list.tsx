@@ -42,7 +42,7 @@ export function AccountCreditList({ balances, view }: AccountCreditListProps) {
   const customerCell = (b: AccountCreditRow) => (
     <div className="flex flex-col gap-0">
       <p className="text-sm">{customerName(b.customer) ?? '—'}</p>
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {b.customer?.email ?? b.customerId.slice(0, 8) + '…'}
       </p>
     </div>
@@ -58,7 +58,7 @@ export function AccountCreditList({ balances, view }: AccountCreditListProps) {
     {
       header: 'Updated',
       cell: (b) => (
-        <p className="text-base-content/70 text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -66,7 +66,7 @@ export function AccountCreditList({ balances, view }: AccountCreditListProps) {
   const card: SelectionCard<AccountCreditRow> = {
     title: (b) => <p className="text-sm">{customerName(b.customer) ?? '—'}</p>,
     subtitle: (b) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {b.customer?.email ?? b.customerId.slice(0, 8) + '…'}
       </p>
     ),
@@ -74,7 +74,7 @@ export function AccountCreditList({ balances, view }: AccountCreditListProps) {
     body: (b) => (
       <div className="flex flex-row items-center justify-between gap-2">
         <p className="text-sm tabular-nums">{moneyFmt.format(b.balanceCents / 100)}</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           updated {new Date(b.updatedAt).toLocaleDateString()}
         </p>
       </div>

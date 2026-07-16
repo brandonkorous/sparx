@@ -59,7 +59,7 @@ export function VariantPicker({ variant, onResolve, onClear, defaultSku }: Varia
       <div className="flex flex-row flex-wrap items-center gap-2">
         <div className="flex min-w-0 flex-col gap-0">
           <p className="text-sm font-medium">{variant.title ?? variant.sku}</p>
-          <p className="text-base-content/70 font-mono text-xs">{variant.sku}</p>
+          <p className="text-base-content font-mono text-xs">{variant.sku}</p>
         </div>
         <Button variant="ghost" size="sm" type="button" onClick={onClear}>
           Change

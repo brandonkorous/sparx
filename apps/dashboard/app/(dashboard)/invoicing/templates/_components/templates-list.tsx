@@ -49,7 +49,7 @@ export function TemplatesList({ rows, view }: TemplatesListProps) {
     );
 
   const updated = (t: TemplateRow) => (
-    <p className="text-base-content/70 text-sm">{new Date(t.updatedAt).toLocaleDateString()}</p>
+    <p className="text-base-content text-sm">{new Date(t.updatedAt).toLocaleDateString()}</p>
   );
 
   const actions = (t: TemplateRow) => (
@@ -68,7 +68,7 @@ export function TemplatesList({ rows, view }: TemplatesListProps) {
     badge: statusBadge,
     body: (t) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Updated {new Date(t.updatedAt).toLocaleDateString()}
         </p>
         {actions(t)}

@@ -136,7 +136,7 @@ export function ConversationList({
       </div>
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="text-base-content/70 p-6 text-sm">No conversations.</p>
+          <p className="text-base-content p-6 text-sm">No conversations.</p>
         ) : (
           filtered.map((c) => (
             <Link
@@ -150,12 +150,12 @@ export function ConversationList({
                 <span className="text-base-content truncate text-sm font-medium">
                   {c.customerName ?? c.customerEmail ?? 'Anonymous visitor'}
                 </span>
-                <span className="text-base-content/70 shrink-0 text-xs">
+                <span className="text-base-content shrink-0 text-xs">
                   {timeAgo(c.lastMessageAt)}
                 </span>
               </div>
               <div className="mt-1 flex items-center justify-between gap-2">
-                <span className="text-base-content/70 truncate text-xs">
+                <span className="text-base-content truncate text-xs">
                   {c.lastMessageSnippet ?? 'No messages yet'}
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5">

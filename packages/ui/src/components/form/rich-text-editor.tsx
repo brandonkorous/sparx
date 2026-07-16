@@ -60,7 +60,7 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
         'disabled:pointer-events-none disabled:opacity-40',
         active
           ? 'bg-module bg-soft text-module'
-          : 'text-base-content/70 hover:text-base-content hover:bg-base-200'
+          : 'text-base-content hover:text-base-content hover:bg-base-200'
       )}
     >
       {children}
@@ -111,7 +111,7 @@ export function RichTextEditor({
           '[&_h2]:mt-4 [&_h3]:mt-3 [&_p]:my-2',
           '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
           '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
-          '[&_blockquote]:text-base-content/70 [&_blockquote]:border-base-300 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:pl-3',
+          '[&_blockquote]:text-base-content [&_blockquote]:border-base-300 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:pl-3',
           '[&_code]:bg-base-200 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
           '[&_pre]:bg-base-200 [&_pre]:my-2 [&_pre]:rounded-md [&_pre]:p-3 [&_pre]:text-xs'
         ),

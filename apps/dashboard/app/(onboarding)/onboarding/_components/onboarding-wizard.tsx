@@ -40,6 +40,7 @@ import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
 import { SummaryCard, type SummaryEntry } from './summary-card';
 import { RailFooter } from './rail-footer';
+import { FlowSwitchAlt } from '../../_components/flow-switch';
 
 // The orchestrator for the modules-first guided setup (docs/15 v2). It is the
 // BRAIN: it owns every step's state, computes the next/back math, and renders the
@@ -144,6 +145,13 @@ const FULL_ORDER: OnboardingStepKey[] = [
   'payments',
   'launch',
 ];
+
+// Where the summary card offers the story flow. NOT `modules` — that step makes the
+// same offer louder, above the toggles, and two links to one place on one screen is
+// noise. NOT `payments`/`launch` either: by then the setup is committed (modules
+// activated, blueprint installed) and the story flow's own tail IS these same two
+// steps, so switching would only ask the owner to re-narrate finished work.
+const ALT_SWITCH_STEPS: OnboardingStepKey[] = ['template', 'workspace', 'domain'];
 
 /** A blueprint key, the literal `'scratch'` sentinel (blank-canvas path), or
  *  null when nothing is chosen yet. */
@@ -483,7 +491,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
             {head && (
               <div className="flex flex-col gap-2">
                 <h2 className="text-2xl font-semibold tracking-tight">{head.title}</h2>
-                <p className="text-base-content/70 max-w-[58ch]">{head.supporting}</p>
+                <p className="text-base-content max-w-[58ch]">{head.supporting}</p>
               </div>
             )}
             <div
@@ -502,6 +510,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
             onBack={idx > 0 ? () => goPersist(prevKey) : undefined}
             error={error}
             collapsibleModules={idx > 0}
+            altAction={ALT_SWITCH_STEPS.includes(step) ? <FlowSwitchAlt to="story" /> : undefined}
           />
         </div>
       </div>

@@ -82,7 +82,7 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
                 {overdueCount} overdue — {formatCents(totalOwed)} outstanding
               </Badge>
             ) : (
-              <p className="text-base-content/70 text-sm">{formatCents(totalOwed)} outstanding</p>
+              <p className="text-base-content text-sm">{formatCents(totalOwed)} outstanding</p>
             )
           }
           className="mb-0"

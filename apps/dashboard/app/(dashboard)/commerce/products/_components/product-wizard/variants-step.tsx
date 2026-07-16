@@ -207,7 +207,7 @@ export function VariantsStep({
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="text-base-content/60 flex items-center gap-2 py-8">
+            <div className="text-base-content flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading options & variants…
             </div>
           ) : (
@@ -244,7 +244,7 @@ export function VariantsStep({
                     />
                   </div>
                 ) : options.length === 0 ? (
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     No options — this product is a single SKU (the one you priced). Add an option
                     like Size or Color to sell variations, or continue.
                   </p>
@@ -295,7 +295,7 @@ export function VariantsStep({
                   ) : (
                     <div className="border-base-300 overflow-hidden rounded-xl border">
                       {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
-                      <div className="border-base-300 bg-base-200 text-base-content/60 grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b px-3 py-2 text-xs font-medium">
+                      <div className="border-base-300 bg-base-200 text-base-content grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b px-3 py-2 text-xs font-medium">
                         <span>Combination</span>
                         <span>SKU</span>
                         <span>Price (USD)</span>

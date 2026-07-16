@@ -57,7 +57,7 @@ export function CommissionsList({
       <p className="text-sm font-medium tabular-nums">{fmtMoneyCents(c.amountCents, c.currency)}</p>
     ),
     subtitle: (c) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {c.kind === 'ongoing' ? 'Ongoing' : 'First payment'}
         {c.period ? ` · ${c.period}` : ''} · {fmtDate(c.createdAt) ?? '—'}
       </p>

@@ -89,7 +89,7 @@ export default async function InventoryMovementsPage({ searchParams }: PageProps
 
           {f.variantId ? (
             <div className="flex flex-row flex-wrap items-center gap-2">
-              <p className="text-base-content/70 text-sm">Filtered to item:</p>
+              <p className="text-base-content text-sm">Filtered to item:</p>
               <Badge color="module" variant="soft">
                 {f.sku || f.variantId.slice(0, 8)}
               </Badge>

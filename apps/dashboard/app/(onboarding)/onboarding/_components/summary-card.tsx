@@ -53,6 +53,10 @@ export interface SummaryCardProps {
    *  story flow populates these (starting point, web address, fulfillment, etc.);
    *  the step-by-step wizard leaves it empty and uses `entries` instead. */
   extras?: React.ReactNode;
+  /** An alternative path OUT of this flow, pinned below the CTA — in practice the
+   *  other onboarding front end's switch (`<FlowSwitchAlt>`). Deliberately last and
+   *  quiet: it must be findable from any step without ever competing with the CTA. */
+  altAction?: React.ReactNode;
 }
 
 export function SummaryCard({
@@ -63,6 +67,7 @@ export function SummaryCard({
   error,
   collapsibleModules = false,
   extras,
+  altAction,
 }: SummaryCardProps) {
   const savings = Math.max(0, plan.elsewhere - plan.total);
   const [expanded, setExpanded] = React.useState(false);
@@ -76,7 +81,10 @@ export function SummaryCard({
       <div className="flex flex-col gap-2 px-6 pt-6 pb-4">
         <div className="flex items-center justify-between">
           <p className="font-medium">Your setup</p>
-          <Badge color="module" variant="soft" size="sm">
+          {/* A COUNT of modules is not a module — `neutral`, not `module`. Wearing one
+              module's hue to tally all of them contradicted the per-module dots forty
+              lines below, which get this right. */}
+          <Badge color="neutral" variant="soft" size="sm">
             {plan.items.length} {plan.items.length === 1 ? 'module' : 'modules'}
           </Badge>
         </div>
@@ -84,9 +92,9 @@ export function SummaryCard({
           <span className="text-base-content text-[3.25rem] leading-[1] font-medium tracking-[-0.04em]">
             ${plan.total}
           </span>
-          <span className="text-base-content/50 text-lg">/mo</span>
+          <span className="text-base-content text-lg">/mo</span>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           After your 14-day trial · one invoice for everything
         </p>
       </div>
@@ -100,19 +108,19 @@ export function SummaryCard({
             aria-expanded={expanded}
             className="flex items-center justify-between"
           >
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {expanded ? 'Hide modules' : `${plan.items.length} modules`}
             </p>
             <ChevronDown
               className={cn(
-                'text-base-content/50 h-4 w-4 transition-transform duration-200',
+                'text-base-content h-4 w-4 transition-transform duration-200',
                 expanded && 'rotate-180'
               )}
             />
           </button>
         )}
         {plan.items.length === 0 ? (
-          <p className="text-base-content/70 text-sm">Flip on a module to start.</p>
+          <p className="text-base-content text-sm">Flip on a module to start.</p>
         ) : (
           showList &&
           plan.items.map((m) => (
@@ -123,9 +131,9 @@ export function SummaryCard({
                   style={{ background: m.colorVar }}
                 />
                 <span className="min-w-0">
-                  <p className="text-base-content/70 text-sm">{m.name}</p>
+                  <p className="text-base-content text-sm">{m.name}</p>
                   {m.caption && (
-                    <p className="text-base-content/70 block text-xs opacity-80">{m.caption}</p>
+                    <p className="text-base-content block text-xs opacity-80">{m.caption}</p>
                   )}
                 </span>
               </span>
@@ -141,8 +149,8 @@ export function SummaryCard({
       {plan.items.length > 0 && (
         <div className="border-base-300 flex flex-col gap-2.5 border-t px-6 py-4">
           <div className="flex items-center justify-between">
-            <p className="text-base-content/70 text-xs">Same stack, stitched together</p>
-            <span className="text-base-content/50 text-sm line-through">${plan.elsewhere}/mo</span>
+            <p className="text-base-content text-xs">Same stack, stitched together</p>
+            <span className="text-base-content text-sm line-through">${plan.elsewhere}/mo</span>
           </div>
           {savings > 0 && (
             <div className="bg-success bg-soft flex items-center gap-2.5 rounded-lg px-3.5 py-3">
@@ -175,8 +183,11 @@ export function SummaryCard({
                 aria-hidden
                 className={cn(
                   'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full',
+                  // Status is its own color axis: a finished step is a SUCCESS, not an
+                  // identity, so it goes green. `active` keeps the module hue — the
+                  // current step IS the chrome — and `pending` stays neutral ink.
                   e.status === 'done'
-                    ? 'bg-module text-white'
+                    ? 'bg-success text-white'
                     : e.status === 'active'
                       ? 'border-module border-2'
                       : 'border-base-content/30 border-2'
@@ -185,13 +196,11 @@ export function SummaryCard({
                 {e.status === 'done' && <Check className="h-2.5 w-2.5" />}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-base-content/70 text-xs">{e.label}</p>
+                <p className="text-base-content text-xs">{e.label}</p>
                 <div
                   className={cn(
                     'truncate text-sm',
-                    e.status === 'pending'
-                      ? 'text-base-content/50'
-                      : 'text-base-content font-medium'
+                    e.status === 'pending' ? 'text-base-content' : 'text-base-content font-medium'
                   )}
                 >
                   {e.value}
@@ -218,20 +227,27 @@ export function SummaryCard({
         >
           {cta.label}
         </Button>
-        <p className="text-base-content/70 text-center text-xs">
+        {/* Back sits WITH the CTA, above the fine print — both are actions, and the
+            trial microcopy is a footnote to the pair, not a divider between them. */}
+        {onBack && (
+          <Button
+            color="danger"
+            variant="soft"
+            size="sm"
+            block
+            onClick={onBack}
+            iconStart={<ArrowLeft className="h-3.5 w-3.5" />}
+          >
+            Back
+          </Button>
+        )}
+        <p className="text-base-content text-center text-xs">
           Free for 14 days · no card today · cancel anytime
         </p>
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            className="text-base-content/50 hover:text-base-content mt-1 flex items-center justify-center gap-1 text-xs transition-colors"
-          >
-            <ArrowLeft className="h-3 w-3" />
-            Back
-          </button>
-        )}
       </div>
+
+      {/* ── The other front end (switch flows without losing your place) ──── */}
+      {altAction}
     </aside>
   );
 }

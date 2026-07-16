@@ -378,7 +378,7 @@ export default async function EmailPage() {
             }
             plain
           >
-            <p className="text-base-content/50 mb-3 text-sm">
+            <p className="text-base-content mb-3 text-sm">
               Authentication &amp; deliverability · sending via{' '}
               <span className="text-module">sparx.email</span>
             </p>
@@ -468,7 +468,7 @@ export default async function EmailPage() {
                 {broadcastRows.map((b, i) => (
                   <tr key={`${b.subject}-${i}`}>
                     <td className="font-medium">{b.subject}</td>
-                    <td className="text-base-content/50 text-right tabular-nums">{b.sentLabel}</td>
+                    <td className="text-base-content text-right tabular-nums">{b.sentLabel}</td>
                     <td className="text-right tabular-nums">{b.recipients}</td>
                     <td className="text-right tabular-nums">{b.openRate}</td>
                     <td className="text-right tabular-nums">{b.clickRate}</td>
@@ -546,7 +546,7 @@ export default async function EmailPage() {
                   />
                 </div>
                 <div className="border-base-300 flex items-baseline justify-between border-t pt-3 text-sm">
-                  <span className="text-base-content/50">Current list size</span>
+                  <span className="text-base-content">Current list size</span>
                   <span className="font-medium">{fmtNumber(subGrowth.currentSubscribers)}</span>
                 </div>
               </>

@@ -78,7 +78,7 @@ export function ConfiguratorPanel({
             >
               <div className="flex min-w-0 flex-col gap-0">
                 <p className="group-hover:text-module truncate font-medium">{t.name}</p>
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   {t.optionCount} option{t.optionCount === 1 ? '' : 's'} · {t.ruleCount} rule
                   {t.ruleCount === 1 ? '' : 's'} · {t.addOnCount} add-on
                   {t.addOnCount === 1 ? '' : 's'}
@@ -88,7 +88,7 @@ export function ConfiguratorPanel({
                 <Badge color={statusTone(t.status)} variant="soft">
                   {statusLabel(t.status)}
                 </Badge>
-                <ChevronRight className="text-base-content/60 h-4 w-4" aria-hidden />
+                <ChevronRight className="text-base-content h-4 w-4" aria-hidden />
               </div>
             </Link>
           ))}

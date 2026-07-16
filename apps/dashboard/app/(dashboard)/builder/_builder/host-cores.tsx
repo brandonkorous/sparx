@@ -28,7 +28,7 @@ function Bar({ w = 'w-full' }: { w?: string }) {
 function CoreFrame({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
-      <div className="text-base-content/50 mb-4 flex items-center gap-2 text-xs font-medium">
+      <div className="text-base-content mb-4 flex items-center gap-2 text-xs font-medium">
         <span className="bg-primary inline-block h-2 w-2 rounded-full" />
         {label} · live region
       </div>
@@ -158,6 +158,24 @@ function BookingWidgetSkeleton() {
   );
 }
 
+/** An auth-form skeleton — a centered card with a title, a couple of labelled fields, and a
+ *  submit button: the sign-in / create-account footprint an author styles around. */
+function AuthFormSkeleton() {
+  return (
+    <div className="border-base-content/15 mx-auto max-w-md space-y-5 rounded-lg border p-6">
+      <Bar w="w-1/3" />
+      {[0, 1].map((i) => (
+        <div key={i} className="space-y-2">
+          <Bar w="w-1/4" />
+          <div className="bg-base-200 h-10 rounded" />
+        </div>
+      ))}
+      <div className="bg-primary/70 h-10 rounded" />
+      <Bar w="w-1/2" />
+    </div>
+  );
+}
+
 /** A card-grid skeleton — the collection index footprint (image tiles + labels). */
 function CardGridSkeleton() {
   return (
@@ -215,6 +233,12 @@ export const renderHostSkeleton: RenderHostNode = (node, _ctx) => {
       return (
         <CoreFrame label={label}>
           <BookingWidgetSkeleton />
+        </CoreFrame>
+      );
+    case HOST_KEYS.commerceAuth:
+      return (
+        <CoreFrame label={label}>
+          <AuthFormSkeleton />
         </CoreFrame>
       );
     default:

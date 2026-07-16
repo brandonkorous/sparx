@@ -100,7 +100,7 @@ export function SupplierVariantsPanel({
         </div>
         <div className="flex flex-col gap-4">
           {links.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No variants linked yet. Add one below by its SKU.
             </p>
           ) : (
@@ -117,7 +117,7 @@ export function SupplierVariantsPanel({
                       </p>
                       {l.isPreferred && <Badge color="module">preferred</Badge>}
                     </div>
-                    <p className="text-base-content/70 font-mono text-xs">
+                    <p className="text-base-content font-mono text-xs">
                       {l.variantSku ?? l.variantId}
                       {l.supplierSku ? ` · their #${l.supplierSku}` : ''}
                     </p>
@@ -169,7 +169,7 @@ export function SupplierVariantsPanel({
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex w-[5rem] flex-col gap-0">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="text-sm">{value}</p>
     </div>
   );

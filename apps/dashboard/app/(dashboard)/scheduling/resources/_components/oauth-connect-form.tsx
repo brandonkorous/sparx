@@ -74,7 +74,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
 
   if (providers && !providers.cryptoConfigured) {
     return (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Real-time calendar sync isn&rsquo;t enabled on this deployment yet. You can still import a
         read-only calendar link below.
       </p>
@@ -85,7 +85,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
     <div className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-medium">Connect a calendar for real-time sync</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           One click. Outside events block this resource&rsquo;s sparx availability the moment they
           change, and confirmed bookings appear on the connected calendar.
         </p>
@@ -111,7 +111,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
         })}
       </div>
       {providers && (!providers.google || !providers.microsoft) ? (
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {!providers.google && !providers.microsoft
             ? 'The one-click apps aren’t configured here — use your own credentials below.'
             : `${!providers.google ? 'Google' : 'Microsoft'} one-click isn’t configured here — use your own credentials below.`}
@@ -121,7 +121,7 @@ export function OAuthConnectForm({ resourceId }: { resourceId: string }) {
       <div>
         <button
           type="button"
-          className="text-base-content/70 text-xs underline"
+          className="text-base-content text-xs underline"
           onClick={() => setByoOpen((v) => !v)}
         >
           {byoOpen

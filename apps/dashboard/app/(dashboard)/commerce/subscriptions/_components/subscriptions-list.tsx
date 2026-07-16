@@ -75,7 +75,7 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
         s.customerName ? (
           <p className="text-sm">{s.customerName}</p>
         ) : (
-          <p className="text-base-content/70 font-mono text-xs">{s.customerId.slice(0, 8)}</p>
+          <p className="text-base-content font-mono text-xs">{s.customerId.slice(0, 8)}</p>
         ),
     },
     { header: 'Items', cell: (s) => s.itemCount },
@@ -91,7 +91,7 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
   const card: SelectionCard<SubscriptionSummary> = {
     title: (s) => idLink(s, 'truncate font-mono text-sm hover:text-module'),
     subtitle: (s) => (
-      <p className={`text-xs text-base-content/70${s.customerName ? '' : 'font-mono'}`}>
+      <p className={`text-xs text-base-content${s.customerName ? '' : 'font-mono'}`}>
         {s.customerName ?? s.customerId.slice(0, 8)}
       </p>
     ),
@@ -99,12 +99,12 @@ export function SubscriptionsList({ items, view }: SubscriptionsListProps) {
     body: (s) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {s.itemCount} item{s.itemCount === 1 ? '' : 's'}
           </p>
           <p className="text-sm tabular-nums">{mrr(s)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Next charge {nextCharge(s)} · {s.providerSlug}
         </p>
       </>

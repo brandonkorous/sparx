@@ -124,7 +124,7 @@ export function StepLaunch({
           </span>
           <div className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-semibold tracking-tight">Your workspace is ready</h2>
-            <p className="text-base-content/70">
+            <p className="text-base-content">
               {builderEnabled ? (
                 <>
                   You&apos;re starting from a blank canvas. Hit{' '}
@@ -171,7 +171,7 @@ export function StepLaunch({
         </span>
         <div className="flex flex-col items-center gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">Your site is ready</h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             {blueprint ? (
               <>
                 The <span className="text-base-content font-medium">{blueprint.name}</span>{' '}
@@ -232,7 +232,7 @@ export function StepLaunch({
 
       {/* ── Already in your site (blueprint content) ──────────────────────── */}
       {facts.length > 0 && (
-        <p className="text-base-content/70 mt-4 block text-center text-sm">
+        <p className="text-base-content mt-4 block text-center text-sm">
           {facts.join(' · ')} — installed and ready to edit.
         </p>
       )}
@@ -297,12 +297,12 @@ function DomainChargeCard({ domain }: { domain: PendingDomain }) {
       </div>
       <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="text-lg font-medium">{domain.domain}</p>
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           <span className="text-base-content font-medium">{first}</span> charged when you publish
           {renews ? ` · then ${renews}/yr` : ''}
         </p>
       </div>
-      <p className="text-base-content/70 mt-2 block text-xs">
+      <p className="text-base-content mt-2 block text-xs">
         We register it and point it at your site automatically — no DNS to set up. Not ready? Go
         back a step and switch to your free address; you won&apos;t be charged.
       </p>
@@ -318,7 +318,7 @@ function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: strin
       </span>
       <div>
         <p className="text-sm font-medium">{title}</p>
-        <p className="text-base-content/70 text-sm">{body}</p>
+        <p className="text-base-content text-sm">{body}</p>
       </div>
     </div>
   );
@@ -347,7 +347,7 @@ function SavingsBanner({
         </span>
         <span className="text-success/70 text-lg">/mo</span>
       </div>
-      <p className="text-base-content/70 mx-auto mt-2 block max-w-[42ch] text-sm">
+      <p className="text-base-content mx-auto mt-2 block max-w-[42ch] text-sm">
         That&apos;s <span className="text-base-content font-medium">${usd(annualSavings)}</span> a
         year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login, one
         invoice — for ${usd(monthlyTotal)}/mo after your free trial.
@@ -374,7 +374,7 @@ function LaunchSuccess({
             <PartyPopper className="text-module h-7 w-7" />
           </span>
           <h2 className="text-2xl font-semibold tracking-tight">You&apos;re live</h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             Your site is published and ready for the world. Here&apos;s where to go next.
           </p>
           <Button
@@ -432,9 +432,9 @@ function NextCard({
           <div className="flex flex-row items-center justify-between gap-3">
             <div className="flex flex-col gap-1">
               <p className="font-medium">{title}</p>
-              <p className="text-base-content/70 text-sm">{description}</p>
+              <p className="text-base-content text-sm">{description}</p>
             </div>
-            <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
+            <ArrowRight className="text-base-content h-4 w-4 shrink-0" />
           </div>
         </CardBody>
       </Card>

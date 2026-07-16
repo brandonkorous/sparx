@@ -44,7 +44,7 @@ export function ModuleUpsell({
                 Not in your plan
               </Badge>
             </div>
-            <p className="text-base-content/70">{tagline}</p>
+            <p className="text-base-content">{tagline}</p>
           </div>
 
           <EmptyState
@@ -57,7 +57,7 @@ export function ModuleUpsell({
                   Activate {title}
                 </Button>
               ) : (
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Ask a workspace owner or admin to activate {title}.
                 </p>
               )
@@ -71,7 +71,7 @@ export function ModuleUpsell({
                 <Card key={f.title} className="bg-module bg-soft">
                   <CardBody>
                     <CardTitle>{f.title}</CardTitle>
-                    <p className="text-base-content/70 text-sm">{f.description}</p>
+                    <p className="text-base-content text-sm">{f.description}</p>
                   </CardBody>
                 </Card>
               ))}

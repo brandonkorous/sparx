@@ -39,7 +39,7 @@ function JsonBlock({ value }: { value: unknown }) {
 function GateLog({ entries }: { entries: GateLogEntry[] }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <p className="text-base-content/70 text-sm">Gate decisions</p>
+      <p className="text-base-content text-sm">Gate decisions</p>
       <ul className="flex flex-col gap-1">
         {entries.map((g, i) => (
           <li key={i} className="flex flex-wrap items-center gap-2 text-sm">
@@ -47,7 +47,7 @@ function GateLog({ entries }: { entries: GateLogEntry[] }) {
               {g.decision}
             </Badge>
             <code className="font-mono text-xs">{g.gate}</code>
-            {g.reason && <span className="text-base-content/70 text-sm">— {g.reason}</span>}
+            {g.reason && <span className="text-base-content text-sm">— {g.reason}</span>}
           </li>
         ))}
       </ul>
@@ -96,7 +96,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
               </div>
               {run.errorMessage && <p className="text-danger text-sm">{run.errorMessage}</p>}
               <details>
-                <summary className="text-base-content/70 cursor-pointer text-sm">
+                <summary className="text-base-content cursor-pointer text-sm">
                   Trigger event
                 </summary>
                 <div className="mt-2">
@@ -109,22 +109,20 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
 
         <div className="flex flex-col gap-3">
           {run.steps.length === 0 ? (
-            <p className="text-base-content/70 text-sm">No steps recorded for this run.</p>
+            <p className="text-base-content text-sm">No steps recorded for this run.</p>
           ) : (
             run.steps.map((step) => (
               <Card key={step.id}>
                 <CardBody>
                   <CardTitle>
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-base-content/50 text-sm">
-                        Step {step.actionIndex + 1}
-                      </span>
+                      <span className="text-base-content text-sm">Step {step.actionIndex + 1}</span>
                       <code className="font-mono text-sm">{step.actionType}</code>
                       <StepStatusBadge status={step.status} />
                     </span>
                   </CardTitle>
                   <div className="flex flex-col gap-3">
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       {formatTimestamp(step.startedAt)}
                       {step.completedAt ? ` → ${formatTimestamp(step.completedAt)}` : ''}
                     </p>
@@ -132,7 +130,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                     {step.gateLog && step.gateLog.length > 0 && <GateLog entries={step.gateLog} />}
                     {step.input !== null && step.input !== undefined && (
                       <details>
-                        <summary className="text-base-content/70 cursor-pointer text-sm">
+                        <summary className="text-base-content cursor-pointer text-sm">
                           Input
                         </summary>
                         <div className="mt-2">
@@ -142,7 +140,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
                     )}
                     {step.output !== null && step.output !== undefined && (
                       <details>
-                        <summary className="text-base-content/70 cursor-pointer text-sm">
+                        <summary className="text-base-content cursor-pointer text-sm">
                           Output
                         </summary>
                         <div className="mt-2">
@@ -164,7 +162,7 @@ export default async function AutomationRunDetailPage({ params }: PageProps) {
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-base-content/70 text-xs">{label}</span>
+      <span className="text-base-content text-xs">{label}</span>
       <span className="text-sm">{value}</span>
     </div>
   );

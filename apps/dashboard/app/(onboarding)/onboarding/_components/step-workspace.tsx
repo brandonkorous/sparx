@@ -92,12 +92,12 @@ export function StepWorkspace({
               autoComplete="off"
               spellCheck={false}
             />
-            <p className="text-base-content/70 whitespace-nowrap">.{SITE_ZONE}</p>
+            <p className="text-base-content whitespace-nowrap">.{SITE_ZONE}</p>
           </div>
           {check.status === 'checking' && (
             <div className="flex items-center gap-2">
               <Loading size="sm" />
-              <p className="text-base-content/70 text-xs">Checking availability…</p>
+              <p className="text-base-content text-xs">Checking availability…</p>
             </div>
           )}
           {result?.available && (
@@ -112,7 +112,7 @@ export function StepWorkspace({
               </FieldStatus>
               {result.suggestions.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-base-content/70 text-xs">Try:</p>
+                  <p className="text-base-content text-xs">Try:</p>
                   {result.suggestions.map((s) => (
                     <Button
                       key={s}

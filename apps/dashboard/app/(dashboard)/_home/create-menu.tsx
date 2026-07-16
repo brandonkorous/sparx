@@ -113,7 +113,7 @@ export function CreateMenu({ modules }: { modules: ReadonlySet<string> }) {
               </span>
               <span className="flex flex-col">
                 <span className="text-sm font-medium">{a.label}</span>
-                <span className="text-base-content/50 text-xs">{a.hint}</span>
+                <span className="text-base-content text-xs">{a.hint}</span>
               </span>
             </Link>
           </DropdownMenuItem>

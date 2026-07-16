@@ -166,9 +166,9 @@ function Field({
 }) {
   return (
     <div className="flex flex-row items-start gap-3">
-      <span className="text-base-content/50 mt-0.5">{icon}</span>
+      <span className="text-base-content mt-0.5">{icon}</span>
       <div className="flex min-w-0 flex-col gap-1">
-        <p className="text-base-content/70 text-xs">{label}</p>
+        <p className="text-base-content text-xs">{label}</p>
         <div className="text-sm">{children}</div>
       </div>
     </div>
@@ -232,7 +232,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
             </Link>
           )}
         </div>
-        <p className="text-base-content/70 text-base">
+        <p className="text-base-content text-base">
           {formatDate(booking.startAt, tz)} · {formatTime(booking.startAt, tz)} –{' '}
           {formatTime(booking.endAt, tz)}
         </p>
@@ -286,7 +286,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                       {customerName}
                     </Link>
                   ) : (
-                    (customerName ?? <span className="text-base-content/50">—</span>)
+                    (customerName ?? <span className="text-base-content">—</span>)
                   )}
                 </Field>
                 {custStats && custStats.total > 0 ? (
@@ -308,7 +308,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                   {staffNames.length ? (
                     staffNames.join(', ')
                   ) : (
-                    <span className="text-base-content/50">Unassigned</span>
+                    <span className="text-base-content">Unassigned</span>
                   )}
                 </Field>
                 {booking.partySize ? (
@@ -356,7 +356,7 @@ export async function BookingDetailContent({ id }: { id: string }) {
                 <TimelineItem key={e.key} showConnector={i < events.length - 1}>
                   <TimelineTitle>{e.title}</TimelineTitle>
                   <TimelineTime>{e.when}</TimelineTime>
-                  {e.detail && <p className="text-base-content/70 text-xs">{e.detail}</p>}
+                  {e.detail && <p className="text-base-content text-xs">{e.detail}</p>}
                 </TimelineItem>
               ))}
             </Timeline>

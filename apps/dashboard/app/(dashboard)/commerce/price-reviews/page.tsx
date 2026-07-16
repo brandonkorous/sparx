@@ -30,7 +30,7 @@ export default async function PriceReviewsPage() {
           }
           description="Cost-driven price changes a markup rule recomputed but didn't apply on its own — because the rule is set to always review, or the new price moved beyond its auto-apply tolerance. Approve to update the price, or reject to keep the current one."
         />
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           A rule set to “Auto-apply within tolerance” reprices small cost moves automatically; only
           changes beyond the band land here. Adjust a rule’s recompute behaviour on its editor.
         </p>

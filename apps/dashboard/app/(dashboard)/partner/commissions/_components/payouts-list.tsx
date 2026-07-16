@@ -47,7 +47,7 @@ export function PayoutsList({ rows, view }: { rows: PartnerPayoutRun[]; view: 't
       <p className="text-sm font-medium tabular-nums">{fmtMoneyCents(p.amountCents, p.currency)}</p>
     ),
     subtitle: (p) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {fmtDateRange(p.periodStart, p.periodEnd)} · {p.commissionCount} commission
         {p.commissionCount === 1 ? '' : 's'}
       </p>

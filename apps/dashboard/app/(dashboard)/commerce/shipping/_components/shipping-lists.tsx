@@ -215,7 +215,7 @@ const zoneCountries = (z: ShippingZoneRow) =>
       )}
     </div>
   ) : (
-    <p className="text-base-content/70 text-xs">any</p>
+    <p className="text-base-content text-xs">any</p>
   );
 
 const zoneColumns: SelectionColumn<ShippingZoneRow>[] = [
@@ -231,8 +231,8 @@ const zoneCard: SelectionCard<ShippingZoneRow> = {
     <div className="flex flex-col gap-2">
       {zoneCountries(z)}
       <div className="flex flex-row flex-wrap gap-4">
-        <p className="text-base-content/70 text-xs">Priority: {z.priority}</p>
-        <p className="text-base-content/70 text-xs">Rates: {z.rateCount}</p>
+        <p className="text-base-content text-xs">Priority: {z.priority}</p>
+        <p className="text-base-content text-xs">Rates: {z.rateCount}</p>
       </div>
     </div>
   ),
@@ -291,12 +291,12 @@ const profileCard: SelectionCard<ShippingProfileRow> = {
     <div className="flex flex-col gap-2">
       {p.hazmatClassesAllowed.length > 0 ? profileHazmat(p) : null}
       <div className="flex flex-row flex-wrap items-center gap-2">
-        <p className="text-base-content/70 text-xs">Freight:</p>
+        <p className="text-base-content text-xs">Freight:</p>
         {profileFreight(p)}
-        <p className="text-base-content/70 text-xs">Signature:</p>
+        <p className="text-base-content text-xs">Signature:</p>
         {profileSignature(p)}
       </div>
-      <p className="text-base-content/70 text-xs">Products: {p.productCount}</p>
+      <p className="text-base-content text-xs">Products: {p.productCount}</p>
     </div>
   ),
 };

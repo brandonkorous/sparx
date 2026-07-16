@@ -190,7 +190,7 @@ export function SchemaEditor({
                       checked={isSingleton}
                       onChange={(e) => setIsSingleton(e.target.checked)}
                     />
-                    <p className="text-base-content/70 text-xs">Only one entry can exist.</p>
+                    <p className="text-base-content text-xs">Only one entry can exist.</p>
                   </div>
                 </div>
               </div>

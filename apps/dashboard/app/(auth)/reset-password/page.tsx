@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
       <div className="flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Set a new password</h2>
-          <p className="text-base-content/70">Enter a new password for your account.</p>
+          <p className="text-base-content">Enter a new password for your account.</p>
         </div>
 
         {done ? (

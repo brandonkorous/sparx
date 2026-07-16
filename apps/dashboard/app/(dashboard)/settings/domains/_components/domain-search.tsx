@@ -36,9 +36,7 @@ function SearchResults({
   onSelect: (s: DomainSuggestion) => void;
 }) {
   if (suggestions.length === 0) {
-    return (
-      <p className="text-base-content/70 py-2 text-sm">No suggestions found for that query.</p>
-    );
+    return <p className="text-base-content py-2 text-sm">No suggestions found for that query.</p>;
   }
   return (
     <div className="grid gap-2 sm:grid-cols-2">
@@ -49,7 +47,7 @@ function SearchResults({
         >
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">{s.domain}</p>
-            <p className="text-base-content/70 text-sm">{formatPrice(s.displayPrice)}/yr</p>
+            <p className="text-base-content text-sm">{formatPrice(s.displayPrice)}/yr</p>
           </div>
           {!s.available ? (
             <Badge color="neutral" variant="soft">
@@ -125,8 +123,8 @@ export function DomainSearch({
         <div className="flex flex-col gap-4">
           {!purchaseEnabled && (
             <div className="border-base-300 bg-base-200 flex items-start gap-2.5 rounded-lg border px-4 py-3">
-              <Clock className="text-base-content/70 mt-0.5 size-4 shrink-0" />
-              <p className="text-base-content/70 text-sm">
+              <Clock className="text-base-content mt-0.5 size-4 shrink-0" />
+              <p className="text-base-content text-sm">
                 <strong className="text-base-content font-medium">Checkout opens soon.</strong>{' '}
                 Search and pricing are live, but buying a new domain isn&apos;t open yet. In the
                 meantime, connect a domain you already own from{' '}
@@ -140,7 +138,7 @@ export function DomainSearch({
 
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="text-base-content/70 absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+              <Search className="text-base-content absolute top-1/2 left-3 size-4 -translate-y-1/2" />
               <Input
                 placeholder="Search for a domain (e.g. yourbrand.com)"
                 value={query}
@@ -170,7 +168,7 @@ export function DomainSearch({
           )}
 
           {!query && (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Already have a domain? Connect it from{' '}
               <Link href="/settings/sites" className="underline">
                 Settings → Sites

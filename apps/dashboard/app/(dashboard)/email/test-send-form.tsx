@@ -86,7 +86,7 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
               <Code>{result.send.templateId}</Code> → {result.send.to}
             </p>
           </div>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             id <Code>{result.send.id}</Code> · via <Code>{result.send.provider}</Code> ·{' '}
             {new Date(result.send.acceptedAt).toLocaleString()}
           </p>
@@ -102,13 +102,13 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
       {devLastSend.enabled && devLastSend.send && (
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium">Last dev send</p>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             <Code>{devLastSend.send.templateId ?? 'unknown'}</Code> → {devLastSend.send.to} ·{' '}
             {new Date(devLastSend.send.acceptedAt).toLocaleString()}
           </p>
-          <p className="text-base-content/70 text-xs">Subject: {devLastSend.send.subject}</p>
+          <p className="text-base-content text-xs">Subject: {devLastSend.send.subject}</p>
           {devLastSend.send.text && (
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Plain-text body:{' '}
               <Code>
                 {devLastSend.send.text.slice(0, 120)}

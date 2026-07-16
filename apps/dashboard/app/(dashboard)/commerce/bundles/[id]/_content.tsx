@@ -106,7 +106,7 @@ export async function BundleDetailContent({ id }: Props) {
               {statusLabel(bundle.inventoryMode)}
             </Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {bundle.componentCount} component{bundle.componentCount === 1 ? '' : 's'} · updated{' '}
             {new Date(bundle.updatedAt).toLocaleDateString()}
           </p>

@@ -16,14 +16,16 @@
 //     (entity pin / object) becomes a **collection-of-one** so a detail page
 //     (buy-box, CMS entry) scopes its descendants to `item.*` with no repeat.
 //
-// SCOPE-RELATIVE refs (silica's binding model — data-sources.ts / the Inspector's
-// `scopeAt` + `flattenSources`): inside a scope the built-in picker writes a
-// field's OWN key (`title`, `items`), NOT a root path, and the engine passes
-// `scope.item`. So when `scope.item` is present a bare-path ref is item-relative
-// — we prefix `item.` before handing it to sparx's `resolvePath`. Entity-pin /
-// collection-source / action refs (the JSON-encoded Layer-B binds) stay ABSOLUTE
-// (they resolve from `__pins` / `__sources`, independent of the enclosing item),
-// as do refs already written relative (`item.*` / `index`).
+// REF SHAPES (see `resolveScoped`). A value ref is a path from the data ROOT
+// (`commerce.product.title`, `site.identity.logo`) — sparx qualifies every field the
+// picker offers under its source (`toSilicaDataSources`), because a bare field key is a
+// ref FRAGMENT: it collides across the sources that share a field shape (silica keys
+// picker options by their value) and resolves against nothing at the root. Inside a
+// repeat the value lives on `scope.item`, so the source prefix is peeled off; a BARE
+// ref (code-authored composites, older trees) is already item-relative and still works.
+// Entity-pin / collection-source / action refs (the JSON-encoded Layer-B binds) stay
+// ABSOLUTE — they resolve from `__pins` / `__sources`, independent of the enclosing
+// item — as do refs already written relative (`item.*` / `index`).
 //
 // React-free by design (types only from silicaui-html) — the full `BuilderHost`
 // (catalog / inspectorPanels / pickAsset / validateClass) is assembled in the
@@ -33,9 +35,11 @@ import type { DataScope, Resolved, ResolveHost } from '@wizeworks/silicaui-html'
 
 import { decodeBindingRef } from './binding-ref';
 import {
-  resolveBinding as resolveSparxBinding,
+  resolveBindingEx as resolveSparxBindingEx,
+  resolvePathEx,
   type DataSources,
   type NodeBinding,
+  type PathResolution,
   type Scope,
 } from './runtime';
 
@@ -77,19 +81,39 @@ function isEmptyValue(value: unknown): boolean {
  *  or hand to `resolveTree(tree, resolver)` directly. */
 export type SilicaResolver = Required<Pick<ResolveHost, 'resolveBinding' | 'resolveCollection'>>;
 
-/** Re-root a bare-path binding to the enclosing `item` when a scope is active.
- *  silica's picker writes scope-relative field keys (`title`, `items`) inside a
- *  repeat; sparx's `resolvePath` reads `item.*` off `scope.item`, so we prefix.
- *  Absolute binds (entity pin / collection source / action) and refs already
- *  written relative (`item.*` / `index`) pass through untouched. */
-function scopeRelative(binding: NodeBinding, hasItem: boolean): NodeBinding {
-  if (!hasItem) return binding;
+/** Resolve a binding against the enclosing `item` when a scope is active.
+ *
+ *  Refs come from two authors and are shaped differently, and BOTH must work:
+ *   · the picker writes a SOURCE-QUALIFIED path (`commerce.product.title`) — qualified
+ *     so option values stay unique and resolve at the root (see `toSilicaDataSources`);
+ *   · code-authored composites (and trees authored before that) write the BARE field
+ *     key (`title`), which is already item-relative.
+ *
+ *  Inside a repeat the value lives on `scope.item`, so the source prefix — however many
+ *  segments it is (`commerce.product.`, `commerce.collection.products.`) — must come off.
+ *  Rather than carry a registry of source keys into every host (the storefront resolver
+ *  has the data root, not the catalog), we peel leading segments and take the first that
+ *  actually RESOLVES. The full path is tried first, so a genuine `item.foo.bar` nested
+ *  read still wins over a coincidental shorter match.
+ *
+ *  Not found after peeling ⇒ `{found:false}` ⇒ an UNKNOWN ref: the node keeps its authored
+ *  content and the engine reports a diagnostic, rather than silently blanking. */
+function resolveScoped(scope: Scope, binding: NodeBinding, hasItem: boolean): PathResolution {
   const path = binding.path;
-  if (!path || binding.entity || binding.source || binding.action) return binding;
-  if (path === 'index' || path === 'item' || path.startsWith('item.') || path.startsWith('item[')) {
-    return binding;
+  // Absolute binds (entity pin / collection source / action) and non-path binds are
+  // scope-independent; `item.*` / `index` are already written relative.
+  if (!hasItem || !path || binding.entity || binding.source || binding.action) {
+    return resolveSparxBindingEx(scope, binding);
   }
-  return { ...binding, path: `item.${path}` };
+  if (path === 'index' || path === 'item' || path.startsWith('item.') || path.startsWith('item[')) {
+    return resolveSparxBindingEx(scope, binding);
+  }
+  const segments = path.split('.');
+  for (let i = 0; i < segments.length; i += 1) {
+    const candidate = resolvePathEx(scope, `item.${segments.slice(i).join('.')}`);
+    if (candidate.found) return candidate;
+  }
+  return { found: false, value: undefined };
 }
 
 /** The default host value formatter, covering the two shape gaps between sparx's
@@ -117,13 +141,21 @@ export function defaultSilicaFormat(value: unknown, binding: NodeBinding): unkno
 export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolver {
   const { root, format, label, hideWhenEmpty } = opts;
   const scopeOf = (s: DataScope): Scope => ({ root, item: s.item, index: s.index });
-  const bindingOf = (ref: string, scope: DataScope): NodeBinding =>
-    scopeRelative(decodeBindingRef(ref), scope.item !== undefined);
 
   return {
-    resolveBinding(ref: string, scope: DataScope): Resolved {
-      const binding = bindingOf(ref, scope);
-      const raw = resolveSparxBinding(scopeOf(scope), binding);
+    // `undefined` (not `{ value: undefined }`) when the ref is UNKNOWN — silica's
+    // ResolveHost contract. The engine then keeps the node's AUTHORED content and
+    // fires a diagnostic, instead of blanking it. That distinction is the difference
+    // between a stale binding announcing itself and a stale binding silently eating
+    // a tenant's wordmark (docs/122).
+    resolveBinding(ref: string, scope: DataScope): Resolved | undefined {
+      const binding = decodeBindingRef(ref);
+      const { found, value: raw } = resolveScoped(
+        scopeOf(scope),
+        binding,
+        scope.item !== undefined
+      );
+      if (!found) return undefined;
       const value = format ? format(raw, binding) : raw;
       const chip = label?.(binding);
       return {
@@ -133,10 +165,19 @@ export function createSilicaResolver(opts: SilicaResolverOptions): SilicaResolve
       };
     },
 
-    resolveCollection(ref: string, scope: DataScope): readonly unknown[] {
-      const binding = bindingOf(ref, scope);
-      const raw = resolveSparxBinding(scopeOf(scope), binding);
-      if (Array.isArray(raw)) return raw;
+    resolveCollection(ref: string, scope: DataScope): readonly unknown[] | undefined {
+      const binding = decodeBindingRef(ref);
+      const { found, value: raw } = resolveScoped(
+        scopeOf(scope),
+        binding,
+        scope.item !== undefined
+      );
+      // Unknown ref → authored children stay + diagnostic. A KNOWN but empty
+      // collection is `[]`, which legitimately renders the empty/placeholder state.
+      if (!found) return undefined;
+      // `Array.isArray` narrows `unknown` to `any[]`; re-assert the element type so
+      // nothing `any`-typed escapes into the engine.
+      if (Array.isArray(raw)) return raw as readonly unknown[];
       if (raw == null) return [];
       // Entity pin / single object → collection-of-one (docs/118 §4): repeats
       // once, scoping descendants to `item.*`.

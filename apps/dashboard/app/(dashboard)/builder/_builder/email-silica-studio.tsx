@@ -277,7 +277,7 @@ export function EmailSilicaStudio({
     return (
       <ModuleProvider module="builder">
         <div className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center gap-3">
-          <p className="text-base-content/60">No emails yet.</p>
+          <p className="text-base-content">No emails yet.</p>
           <Button
             size="sm"
             variant="solid"

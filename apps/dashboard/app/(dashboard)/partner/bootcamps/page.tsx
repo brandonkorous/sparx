@@ -84,7 +84,7 @@ export default async function PartnerBootcampsPage({ searchParams }: PageProps) 
                     <p className="text-sm font-medium">
                       Hosting unlocks when your partner account is active
                     </p>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Your application is in review. Once you’re an active partner you’ll be able to
                       create and run bootcamps here.
                     </p>

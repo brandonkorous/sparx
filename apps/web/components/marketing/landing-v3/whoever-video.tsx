@@ -94,7 +94,7 @@ export function WhoeverVideo() {
           {CLIPS.map((c, i) => (
             <span
               key={c.label}
-              className={`transition-colors duration-300 ${i === current ? 'text-base-content' : 'text-base-content/40'}`}
+              className={`transition-colors duration-300 ${i === current ? 'text-base-content' : 'text-base-content'}`}
             >
               {c.label}
             </span>

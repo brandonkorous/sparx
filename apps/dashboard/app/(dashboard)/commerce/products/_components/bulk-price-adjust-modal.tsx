@@ -187,7 +187,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
             <Field {...v.field('amount')} className="gap-2">
               <FieldLabel htmlFor="bulk-price-amount">{amountLabel}</FieldLabel>
               <div className="flex flex-row items-center gap-2">
-                {unit === '$' ? <span className="text-base-content/70 text-sm">$</span> : null}
+                {unit === '$' ? <span className="text-base-content text-sm">$</span> : null}
                 <FieldControl
                   id="bulk-price-amount"
                   type="number"
@@ -199,7 +199,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
                   className="max-w-40"
                   {...v.control('amount')}
                 />
-                {unit === '%' ? <span className="text-base-content/70 text-sm">%</span> : null}
+                {unit === '%' ? <span className="text-base-content text-sm">%</span> : null}
               </div>
             </Field>
           </div>
@@ -256,7 +256,7 @@ export function BulkPriceAdjustModal({ open, onOpenChange, productIds, onApplied
 function PreviewStep({ preview }: { preview: BulkPricePreview }) {
   return (
     <div className="flex flex-col gap-3 py-2">
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         <span className="text-base-content font-medium">{preview.label}.</span>{' '}
         {preview.changedVariantCount} of {preview.variantCount} variant
         {preview.variantCount === 1 ? '' : 's'} across {preview.productCount} product
@@ -279,19 +279,19 @@ function PreviewStep({ preview }: { preview: BulkPricePreview }) {
                 <tr key={p.productId}>
                   <td>
                     <p className="text-sm font-medium">{p.title}</p>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {p.variantCount} variant{p.variantCount === 1 ? '' : 's'}
                     </p>
                   </td>
                   <td className="text-right tabular-nums">
-                    <span className="text-base-content/70 text-sm">
+                    <span className="text-base-content text-sm">
                       {priceRange(p.currentMinCents, p.currentMaxCents)}
                     </span>
                   </td>
                   <td className="text-right tabular-nums">
                     <span
                       className={
-                        changed ? 'text-module text-sm font-medium' : 'text-base-content/70 text-sm'
+                        changed ? 'text-module text-sm font-medium' : 'text-base-content text-sm'
                       }
                     >
                       {priceRange(p.newMinCents, p.newMaxCents)}

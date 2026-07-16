@@ -106,7 +106,7 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     { header: 'Status', cell: statusBadge },
     {
       header: 'Pricing tier',
-      cell: (a) => <p className="text-base-content/70 text-sm">{a.pricingTier ?? '—'}</p>,
+      cell: (a) => <p className="text-base-content text-sm">{a.pricingTier ?? '—'}</p>,
     },
     {
       header: 'Credit limit',
@@ -116,25 +116,25 @@ export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelecti
     { header: 'Used', align: 'right', cell: usedCell },
     {
       header: 'Fleet',
-      cell: (a) => <p className="text-base-content/70 text-sm">{a.fleetSize ?? '—'}</p>,
+      cell: (a) => <p className="text-base-content text-sm">{a.fleetSize ?? '—'}</p>,
     },
   ];
 
   const card: SelectionCard<B2bAccountRow> = {
     title: (a) => companyLink(a, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (a) => (
-      <p className="text-base-content/70 text-xs">{a.pricingTier ?? 'No pricing tier'}</p>
+      <p className="text-base-content text-xs">{a.pricingTier ?? 'No pricing tier'}</p>
     ),
     badge: statusBadge,
     body: (a) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Limit ${Number(a.creditLimit).toLocaleString()}
           </p>
           {usedCell(a)}
         </div>
-        <p className="text-base-content/70 text-xs">Fleet: {a.fleetSize ?? '—'}</p>
+        <p className="text-base-content text-xs">Fleet: {a.fleetSize ?? '—'}</p>
       </>
     ),
   };

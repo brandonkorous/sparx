@@ -179,13 +179,13 @@ export function LineItemsEditor({ onChange, initialItems }: LineItemsEditorProps
           Add line item
         </Button>
         <div className="flex flex-row gap-4">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Subtotal: <span className="tabular-nums">${subtotal.toFixed(2)}</span>
           </p>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Tax: <span className="tabular-nums">${taxSum.toFixed(2)}</span>
           </p>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Discount: <span className="tabular-nums">${discountSum.toFixed(2)}</span>
           </p>
         </div>

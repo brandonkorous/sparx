@@ -228,7 +228,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="text-base-content/60 flex items-center gap-2 py-8">
+            <div className="text-base-content flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading photos…
             </div>
           ) : (
@@ -249,7 +249,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">
-                            <ImageIcon className="text-base-content/50 h-6 w-6" />
+                            <ImageIcon className="text-base-content h-6 w-6" />
                           </div>
                         )}
                         {img.isPrimary && (
@@ -316,7 +316,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
                   type="button"
                   onClick={() => setPickerOpen(true)}
                   disabled={busy}
-                  className="border-base-300 text-base-content/60 hover:border-module hover:text-module flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed transition-colors disabled:opacity-40"
+                  className="border-base-300 text-base-content hover:border-module hover:text-module flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed transition-colors disabled:opacity-40"
                 >
                   <Plus className="h-5 w-5" />
                   <span className="text-sm">Add image</span>
@@ -324,7 +324,7 @@ export function MediaStep({ productId, onBack, onComplete }: MediaStepProps) {
               </div>
 
               {images.length === 0 && (
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   No photos yet. Add at least one so the product looks its best — or continue and
                   add them later.
                 </p>

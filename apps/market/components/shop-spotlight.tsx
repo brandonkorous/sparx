@@ -39,7 +39,7 @@ export function ShopSpotlight({
           {merchant.logoUrl ? (
             <Image src={merchant.logoUrl} alt={merchant.name} fill sizes="64px" />
           ) : (
-            <Store size={26} aria-hidden className="text-base-content/70" />
+            <Store size={26} aria-hidden className="text-base-content" />
           )}
         </span>
         <div className="min-w-0 flex-1 pb-1">
@@ -49,7 +49,7 @@ export function ShopSpotlight({
           >
             {merchant.name}
           </Link>
-          <div className="text-base-content/70 mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem]">
+          <div className="text-base-content mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8125rem]">
             {merchant.rating != null && merchant.ratingCount > 0 ? (
               <Stars
                 rating={merchant.rating}
@@ -84,7 +84,7 @@ export function ShopSpotlight({
 
       {/* Headline / bio */}
       {merchant.headline || merchant.bio ? (
-        <p className="text-base-content/70 mt-4 max-w-3xl px-5 text-[0.9375rem] leading-relaxed md:px-6">
+        <p className="text-base-content mt-4 max-w-3xl px-5 text-[0.9375rem] leading-relaxed md:px-6">
           {merchant.headline ?? merchant.bio}
         </p>
       ) : null}

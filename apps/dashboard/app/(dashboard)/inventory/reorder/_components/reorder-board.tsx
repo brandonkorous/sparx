@@ -113,7 +113,7 @@ export function ReorderBoard({ groups }: { groups: ReorderGroup[] }) {
 
       {groups.length > 1 ? (
         <div className="flex flex-row flex-wrap items-center gap-3">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {groups.length} suppliers · draft a separate purchase order for each.
           </p>
           <Button
@@ -172,13 +172,13 @@ function GroupCard({
             <Package className="h-5 w-5" />
             <div className="flex flex-col gap-0">
               <h3 className="text-xl font-semibold">{g.supplierName}</h3>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 {g.warehouseName} · {g.lines.length} item{g.lines.length === 1 ? '' : 's'}
                 {g.expectedArrivalAt ? ` · ETA ${formatDate(g.expectedArrivalAt)}` : ''}
               </p>
             </div>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {selectedTotal > 0 ? formatMoney(selectedTotal, g.currency) : '—'} selected
           </p>
         </div>
@@ -246,7 +246,7 @@ function LineRow({
       </td>
       <td>
         <p className="text-sm font-medium">{l.title ?? l.sku ?? l.variantId.slice(0, 8)}</p>
-        <p className="text-base-content/70 font-mono text-xs">
+        <p className="text-base-content font-mono text-xs">
           {l.sku ?? l.variantId} · {l.available}/{l.reorderPoint} reorder pt
         </p>
       </td>
@@ -266,7 +266,7 @@ function LineRow({
         />
       </td>
       <td className="text-right">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {l.unitCostCents !== null ? formatMoney(l.unitCostCents, currency) : '—'}
         </p>
       </td>

@@ -161,7 +161,7 @@ function MatrixBandsEditor({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-base-content/70 text-xs font-medium">Cost bands</p>
+      <p className="text-base-content text-xs font-medium">Cost bands</p>
       <div className="flex flex-col gap-2">
         {rows.map((r, i) => (
           <div key={i} className="flex flex-row flex-wrap items-end gap-2">
@@ -238,7 +238,7 @@ function MatrixBandsEditor({
           Add band
         </Button>
       </div>
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Bands are matched low → high by cost. Leave the top band’s upper bound blank for open-ended.
         A cost outside every band clamps to the nearest.
       </p>
@@ -398,7 +398,7 @@ export function MarkupRulesManager({
             )}
           </div>
           {initialRules.length === 0 ? (
-            <p className="text-base-content/70 py-6 text-center text-base">
+            <p className="text-base-content py-6 text-center text-base">
               No markup rules yet. Create one to price products from their cost.
             </p>
           ) : (
@@ -421,7 +421,7 @@ export function MarkupRulesManager({
                       <div className="flex flex-col gap-1">
                         <p className="text-base font-medium">{r.name}</p>
                         {r.appliesTo !== 'document' && r.recomputeMode !== 'auto' && (
-                          <p className="text-base-content/70 text-xs">
+                          <p className="text-base-content text-xs">
                             {r.recomputeMode === 'off'
                               ? 'Cost changes ignored'
                               : 'Cost changes queued for review'}
@@ -435,12 +435,12 @@ export function MarkupRulesManager({
                       </Badge>
                     </td>
                     <td>
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         {r.costBasis === 'supplier_cost' ? 'Supplier cost' : 'Variant cost'}
                       </p>
                     </td>
                     <td>
-                      <p className="text-base-content/70 text-sm">{scopeSummary(r.scope)}</p>
+                      <p className="text-base-content text-sm">{scopeSummary(r.scope)}</p>
                     </td>
                     <td className="text-right">{r.boundVariantCount}</td>
                     <td>
@@ -771,7 +771,7 @@ function RuleForm({
             {
               <div className="border-base-300 bg-base-200 flex flex-row flex-wrap items-center gap-3 rounded border p-3">
                 <div className="flex flex-row items-center gap-2">
-                  <p className="text-base-content/70 text-sm">If cost is</p>
+                  <p className="text-base-content text-sm">If cost is</p>
                   <Input
                     type="number"
                     inputMode="decimal"
@@ -788,9 +788,7 @@ function RuleForm({
                     · margin {preview.marginPct}% · profit {fmt(preview.profitCents)}
                   </p>
                 ) : (
-                  <p className="text-base-content/70 text-sm">
-                    Enter a value to preview the price.
-                  </p>
+                  <p className="text-base-content text-sm">Enter a value to preview the price.</p>
                 )}
               </div>
             }
@@ -915,7 +913,7 @@ function RuleForm({
             {/* Cost-driven recompute (docs/48 §8) — only meaningful for catalog rules. */}
             {appliesTo !== 'document' && (
               <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border p-3">
-                <p className="text-base-content/70 text-xs font-medium">
+                <p className="text-base-content text-xs font-medium">
                   When a bound variant’s cost changes
                 </p>
                 <div className="flex flex-row flex-wrap items-end gap-3">
@@ -947,7 +945,7 @@ function RuleForm({
                     </Field>
                   )}
                 </div>
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   {recomputeMode === 'off'
                     ? 'Prices stay frozen when costs move — re-apply the rule manually to refresh.'
                     : recomputeMode === 'review'
@@ -997,7 +995,7 @@ function RuleForm({
               />
             )}
 
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Need to target a one-off set of SKUs? Use the{' '}
               <a className="underline" href="/commerce/products/pricing">
                 bulk pricing tool
@@ -1037,7 +1035,7 @@ function CollectionPicker({
 }) {
   if (collections.length === 0) {
     return (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         No collections yet — create one under Collections first, or scope by product type / vendor.
       </p>
     );

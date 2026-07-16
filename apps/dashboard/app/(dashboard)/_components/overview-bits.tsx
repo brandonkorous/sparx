@@ -111,7 +111,7 @@ export function MetricTile({ value, label, tone = 'default', className }: Metric
   return (
     <div className={cn('border-base-300 rounded-md border p-3', className)}>
       <div className={cn('text-xl leading-none font-medium', TONE_CLASS[tone])}>{value}</div>
-      <div className="text-base-content/50 mt-1.5 text-xs">{label}</div>
+      <div className="text-base-content mt-1.5 text-xs">{label}</div>
     </div>
   );
 }
@@ -166,7 +166,7 @@ export function OverviewCard({
             )}
             {title}
           </h3>
-          {description && <p className="text-base-content/70 mt-1 text-sm">{description}</p>}
+          {description && <p className="text-base-content mt-1 text-sm">{description}</p>}
         </div>
         {right && <div className="shrink-0">{right}</div>}
       </div>
@@ -219,7 +219,7 @@ export function OverviewRow({
       )}
       <div className="min-w-0 flex-1">
         <div className="text-base-content truncate text-sm font-medium">{title}</div>
-        {hint && <div className="text-base-content/50 mt-0.5 text-xs">{hint}</div>}
+        {hint && <div className="text-base-content mt-0.5 text-xs">{hint}</div>}
       </div>
       {right != null && (
         <div className="text-base-content shrink-0 text-right text-sm font-medium tabular-nums">

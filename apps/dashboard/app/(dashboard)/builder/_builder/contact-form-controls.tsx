@@ -54,7 +54,7 @@ export function RecipientsEditor({
               <button
                 type="button"
                 aria-label={`Remove ${email}`}
-                className="text-base-content/50 hover:text-base-content rounded-full p-0.5"
+                className="text-base-content hover:text-base-content rounded-full p-0.5"
                 onClick={() => onChange(recipients.filter((r) => r !== email))}
               >
                 <X className="h-3 w-3" />

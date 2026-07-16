@@ -58,7 +58,7 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
 
           {partner.status !== 'active' && (
             <OverviewCard title="Application in review" icon={<Award className="h-4 w-4" />}>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {partner.status === 'pending'
                   ? 'Your partner profile is live and you can start referring right away. We’re reviewing your application for the higher tier — you’ll earn at the informal rate until it’s approved.'
                   : 'This partner account is suspended. Reach out to the Sparx team to reinstate it.'}
@@ -82,7 +82,7 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
                   {tier.commission}
                 </Badge>
               </div>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {upcoming
                   ? `Next up: ${TIERS[upcoming].label} — ${TIERS[upcoming].commission}. ${TIERS[upcoming].howToReach}`
                   : 'You’re at the top tier. You earn ongoing commission and can publish bootcamps publicly.'}
@@ -106,7 +106,7 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
                   hint={`${fmtNumber(overview.activeReferrals)} active`}
                   right={fmtNumber(overview.referralCount)}
                 />
-                <p className="text-base-content/70 pt-3 text-sm">
+                <p className="text-base-content pt-3 text-sm">
                   Share your link — code <span className="font-mono">{partner.referralCode}</span>.
                 </p>
               </OverviewCard>
@@ -137,7 +137,7 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
                 right={<CardLink href="/partner/bootcamps">Open</CardLink>}
                 plain
               >
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Host training cohorts on Sparx. Every on-platform RSVP becomes a lead in your CRM.
                   {partner.tier === 'certified'
                     ? ' As a Certified partner you can publish them publicly.'
@@ -158,7 +158,7 @@ export function PartnerOverviewDashboard({ overview }: { overview: PartnerOvervi
                   >
                     {partner.directoryVisible ? 'Listed' : 'Hidden'}
                   </Badge>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     {partner.directoryVisible
                       ? 'Visible in the public partner directory.'
                       : 'Not shown in the public directory.'}

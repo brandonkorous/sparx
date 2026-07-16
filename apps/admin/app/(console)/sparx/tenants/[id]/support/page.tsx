@@ -61,7 +61,7 @@ export default async function TenantSupportPage({
   }
 
   const backLink = (
-    <Link href={`/sparx/tenants/${id}`} className="text-base-content/60 text-sm hover:underline">
+    <Link href={`/sparx/tenants/${id}`} className="text-base-content text-sm hover:underline">
       ← Back to tenant
     </Link>
   );

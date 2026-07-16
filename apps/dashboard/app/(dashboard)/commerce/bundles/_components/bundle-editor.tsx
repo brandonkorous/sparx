@@ -289,7 +289,7 @@ export function BundleEditor({
       <div className="flex flex-row flex-wrap items-center justify-between gap-2">
         <div className="flex flex-col gap-0">
           <Heading3>Components</Heading3>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Sum of components: {moneyFmt.format(sumOfComponentsCents / 100)}
           </p>
         </div>
@@ -330,7 +330,7 @@ export function BundleEditor({
       </div>
 
       {components.length === 0 ? (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No components yet — pick a variant above to add one.
         </p>
       ) : (
@@ -352,7 +352,7 @@ export function BundleEditor({
                   <td>
                     <div className="flex flex-col gap-0">
                       <p className="text-sm">{v?.productTitle ?? '—'}</p>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         {v?.sku ?? c.variantId.slice(0, 8) + '…'}
                       </p>
                     </div>

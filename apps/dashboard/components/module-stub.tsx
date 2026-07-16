@@ -24,7 +24,7 @@ export function ModuleStub({ icon, title, tagline, description, features }: Modu
             <h1 className="text-3xl font-semibold">{title}</h1>
             <Badge color="module">Module preview</Badge>
           </div>
-          <p className="text-base-content/70">{tagline}</p>
+          <p className="text-base-content">{tagline}</p>
         </div>
 
         <EmptyState
@@ -41,7 +41,7 @@ export function ModuleStub({ icon, title, tagline, description, features }: Modu
                 <CardBody>
                   <p className="opacity-70">Planned</p>
                   <CardTitle>{f.title}</CardTitle>
-                  <p className="text-base-content/70 text-sm">{f.description}</p>
+                  <p className="text-base-content text-sm">{f.description}</p>
                 </CardBody>
               </Card>
             ))}

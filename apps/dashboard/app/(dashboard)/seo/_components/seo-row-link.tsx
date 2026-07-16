@@ -88,7 +88,7 @@ export function SeoRowLink({
         className="block text-left hover:underline focus-visible:underline focus-visible:outline-none"
       >
         <div className="font-medium">{title}</div>
-        <div className="text-base-content/50 text-xs">{subtitle}</div>
+        <div className="text-base-content text-xs">{subtitle}</div>
       </Link>
 
       {overlay === 'drawer' ? (

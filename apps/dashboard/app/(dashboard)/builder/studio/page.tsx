@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
 import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/builder-schemas';
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
-import { starterSite } from '@sparx/silica-catalog';
+import { ensureUniqueIds, starterSite } from '@sparx/silica-catalog';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
 
 import { getActiveProperty } from '@/lib/sites';
 import { getBindingCatalog, getBuilderSite, listPages } from '../_lib/api';
-import { getBrand, getConfig } from '../_brand/lib/api';
+import { getBrand, getConfig, getSitePreviewData } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
 
@@ -96,7 +96,10 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     getBrand().catch(() => FALLBACK_BRAND),
     getConfig().catch(() => FALLBACK_CONFIG),
     getActiveProperty().catch(() => null),
-    getBuilderSite().catch(() => null),
+    // NOT `.catch(() => null)` — see getBuilderSite. `null` means "no site yet, seed the
+    // starter", so swallowing a read failure here seeds a starter OVER the tenant's real
+    // site and the first autosave persists it. Let it throw to the error boundary instead.
+    getBuilderSite(),
     // The page catalog with domain metadata (recordType / isDefault / SEO) — the
     // seed for the header page-settings drawer. Empty on failure (drawer still opens,
     // just without pre-filled values until the first save).
@@ -111,12 +114,28 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
 
-  // The tenant's real binding catalog drives the picker + the resolver root; fall
-  // back to the code-defined commerce + site sources when the fetch fails so the
-  // editor always opens with a working binding picker.
-  const sources = catalog.sources.length ? catalog.sources : [...COMMERCE_SOURCES, ...SITE_SOURCES];
-  const root = buildPreviewData(sources, null);
-  const dataSources = toSilicaDataSources(sources);
+  // The tenant's REAL chrome data (site name + public logo URL + socials), scoped to the
+  // active property so a per-site brand override previews correctly. Sequenced after the
+  // batch above because it needs the resolved property slug. Overlays the synthetic
+  // preview data below so a bound Wordmark/Logo on the FRAME renders the actual brand on
+  // the canvas — passing `null` here left `site.identity.*` unresolved, so a bound
+  // wordmark silently fell back to its literal placeholder text and an author editing the
+  // layout could never see their own name or logo (docs/122). Self-defends: a failed read
+  // degrades to a bare "Brand" rather than throwing.
+  const sitePreview = await getSitePreviewData(activeProperty?.slug);
+
+  // Page bindings + the page-TYPE picker (record types) come from the tenant catalog
+  // (CMS/commerce/CRM/scheduling); fall back to the code commerce sources when the fetch
+  // fails so the editor always opens with a working picker.
+  const pageSources = catalog.sources.length ? catalog.sources : [...COMMERCE_SOURCES];
+  const root = buildPreviewData(pageSources, sitePreview);
+  // The BINDING picker additionally offers the site/chrome sources (site.identity.logo /
+  // name, social) so an author editing the FRAME can bind the tenant logo/name onto any
+  // node — the "assign the logo to the wordmark" path (docs/122). Scoped to the picker:
+  // kept OUT of `pageSources` so the page-TYPE picker never lists `site.social` as a bogus
+  // template record type. The canvas still RESOLVES these paths — `sitePreview` above
+  // supplies their real values — so binding the logo previews the actual asset.
+  const dataSources = toSilicaDataSources([...pageSources, ...SITE_SOURCES]);
 
   // Preview in this site's brand: the tenant base for the primary site, else the
   // base with this site's override applied (docs/49), so a non-primary site's
@@ -137,7 +156,20 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
   // opens on the starter seed, and the first autosave materializes it into the
   // store (siteService.sync).
   const site: Site = storedSite
-    ? { version: '1.0.0', ...storedSite, theme }
+    ? {
+        version: '1.0.0',
+        ...storedSite,
+        theme,
+        // Heal legacy stored trees that predate id-stamping (or carry a duplicate id) before
+        // the engine edits them: without ids, silica's Navigator keys layer rows by TAG, so
+        // several id-less <a> links collide on key "a" ("two children with the same key").
+        // Idempotent for already-stamped trees; the healed ids persist on the next autosave,
+        // so the stored data self-corrects after one edit.
+        pages: storedSite.pages.map((p) => ({ ...p, root: ensureUniqueIds(p.root) })),
+        ...(storedSite.frame
+          ? { frame: { ...storedSite.frame, root: ensureUniqueIds(storedSite.frame.root) } }
+          : {}),
+      }
     : starterSite(theme, { commerceEnabled, schedulingEnabled });
 
   return (
@@ -151,7 +183,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
       root={root}
       dataSources={dataSources}
       pages={pages}
-      sources={sources}
+      sources={pageSources}
       initialPageId={initialPageId}
     />
   );

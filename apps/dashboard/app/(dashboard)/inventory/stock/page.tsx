@@ -241,7 +241,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
                 {gridRows.length} variants
               </Badge>
             </h3>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Each row shows the latest counts; the inline editor records every change as an audited
               adjustment (sale, recount, manual…).
             </p>

@@ -254,12 +254,12 @@ export function MarkupFields({
           <Badge color="module" variant="soft">
             {formatMoney(resolved.preview.priceCents / 100, currency)} / unit
           </Badge>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {resolved.preview.marginPct}% margin · {resolved.preview.markupPct}% markup
           </p>
         </div>
       ) : (
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {resolved.error ?? 'Enter a cost to preview the price.'}
         </p>
       )}

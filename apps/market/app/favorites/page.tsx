@@ -37,13 +37,13 @@ export default function FavoritesPage() {
         <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Your favorites
         </h1>
-        <p className="text-base-content/70 mt-2 max-w-2xl text-base">
+        <p className="text-base-content mt-2 max-w-2xl text-base">
           Products you’ve saved from across the marketplace. Saved on this device.
         </p>
       </header>
 
       {items === null ? (
-        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
+        <div className="text-base-content flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your favorites…
         </div>

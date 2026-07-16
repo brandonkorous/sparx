@@ -19,7 +19,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <Card>
       <CardBody className="p-5">
-        <p className="text-base-content/60 mb-1 text-xs font-medium">{label}</p>
+        <p className="text-base-content mb-1 text-xs font-medium">{label}</p>
         <p className="text-2xl font-semibold tracking-tight">{value}</p>
       </CardBody>
     </Card>
@@ -73,7 +73,7 @@ export function ChannelRevenuePanel({
                 </td>
                 <td className="text-right">{row.orders.toLocaleString()}</td>
                 <td className="text-right">{fmtCents(row.grossRevenueCents, currency)}</td>
-                <td className="text-base-content/60 text-right">
+                <td className="text-base-content text-right">
                   {row.channelFeeCents > 0 ? fmtCents(row.channelFeeCents, currency) : '—'}
                 </td>
                 <td className="text-right">{fmtCents(row.netAfterFeesCents, currency)}</td>
@@ -106,7 +106,7 @@ export function ChannelTopProductsPanel({
         </Badge>
       </div>
       {products.length === 0 ? (
-        <p className="text-base-content/70 text-sm">No sales on {label} in the last 30 days yet.</p>
+        <p className="text-base-content text-sm">No sales on {label} in the last 30 days yet.</p>
       ) : (
         <Table>
           <thead>

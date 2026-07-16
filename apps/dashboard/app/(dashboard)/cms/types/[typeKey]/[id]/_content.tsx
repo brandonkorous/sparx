@@ -177,7 +177,7 @@ export async function ContentEntryDetailContent({
           <Badge color="module">{lowerType}</Badge>
         </div>
         {entry.slug && (
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             <code>/{entry.slug}</code>
           </p>
         )}

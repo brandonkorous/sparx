@@ -18,9 +18,9 @@ import {
 function Tile({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-4 py-3">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="text-lg">{value}</p>
-      {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
+      {hint ? <p className="text-base-content text-xs">{hint}</p> : null}
     </div>
   );
 }
@@ -87,7 +87,7 @@ export function AgingPanel({ report }: { report: AgingReport }) {
             ))}
           </div>
           {report.deadStock.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No dead stock — every item with stock has sold within {report.deadStockDays} days.
             </p>
           ) : (
@@ -111,9 +111,7 @@ export function AgingPanel({ report }: { report: AgingReport }) {
                       >
                         {d.title ?? d.sku ?? d.variantId.slice(0, 8)}
                       </Link>
-                      <p className="text-base-content/70 font-mono text-xs">
-                        {d.sku ?? d.variantId}
-                      </p>
+                      <p className="text-base-content font-mono text-xs">{d.sku ?? d.variantId}</p>
                     </td>
                     <td>{d.warehouseCode}</td>
                     <td className="text-right">{d.onHand}</td>
@@ -153,7 +151,7 @@ export function ReorderAnalysisPanel({ report }: { report: ReorderAnalysisReport
           <ExportCsvButton kind="reorder-analysis" />
         </div>
         {report.rows.length === 0 ? (
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Nothing below its reorder point. Set reorder points on the stock grid to surface items
             here.
           </p>
@@ -175,7 +173,7 @@ export function ReorderAnalysisPanel({ report }: { report: ReorderAnalysisReport
                 <tr key={`${r.variantId}-${r.warehouseId}`}>
                   <td>
                     {r.title ?? r.sku ?? r.variantId.slice(0, 8)}
-                    <p className="text-base-content/70 font-mono text-xs">{r.sku ?? r.variantId}</p>
+                    <p className="text-base-content font-mono text-xs">{r.sku ?? r.variantId}</p>
                   </td>
                   <td>{r.warehouseCode}</td>
                   <td className="text-right">

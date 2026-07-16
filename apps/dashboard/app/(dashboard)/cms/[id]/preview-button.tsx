@@ -107,7 +107,7 @@ export function PreviewButton({
     <div className="flex flex-col gap-1">
       {button}
       {manualCopyUrl && (
-        <p className="text-base-content/70 text-xs" aria-live="polite">
+        <p className="text-base-content text-xs" aria-live="polite">
           <code className="break-all">{manualCopyUrl}</code>
         </p>
       )}

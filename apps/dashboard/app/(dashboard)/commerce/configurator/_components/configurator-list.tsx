@@ -72,10 +72,10 @@ export function ConfiguratorList({ templates, view }: ConfiguratorListProps) {
 
   const card: SelectionCard<ConfigurationTemplateRow> = {
     title: (t) => templateLink(t, 'truncate hover:text-module'),
-    subtitle: (t) => <span className="text-base-content/70 text-xs">{productLink(t)}</span>,
+    subtitle: (t) => <span className="text-base-content text-xs">{productLink(t)}</span>,
     badge: statusBadge,
     body: (t) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {t.optionCount} option{t.optionCount === 1 ? '' : 's'} · {t.ruleCount} rule
         {t.ruleCount === 1 ? '' : 's'} · {t.addOnCount} add-on{t.addOnCount === 1 ? '' : 's'}
       </p>

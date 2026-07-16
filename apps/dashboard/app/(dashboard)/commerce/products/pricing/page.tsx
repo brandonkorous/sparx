@@ -42,7 +42,7 @@ export default async function BulkPricingPage() {
           }
           description="Apply a markup rule across a scope you choose — preview every before/after price, then commit. Variants without a cost are skipped."
         />
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Applying binds each priced variant to the rule and stamps a snapshot, so a later cost
           change can re-derive the price. Bind individual variants on a product’s Variants tab;
           author the rules themselves under{' '}

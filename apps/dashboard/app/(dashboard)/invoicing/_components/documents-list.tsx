@@ -56,7 +56,7 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
     },
     {
       header: 'Kind',
-      cell: (d) => <p className="text-base-content/70 text-sm">{stageLabels[d.stageId] ?? '—'}</p>,
+      cell: (d) => <p className="text-base-content text-sm">{stageLabels[d.stageId] ?? '—'}</p>,
     },
     { header: 'Status', cell: statusBadge },
     {
@@ -72,28 +72,26 @@ export function DocumentsList({ items, view, stageLabels }: DocumentsListProps) 
     {
       header: 'Updated',
       cell: (d) => (
-        <p className="text-base-content/70 text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
 
   const card: SelectionCard<DocumentRow> = {
     title: (d) => numberLink(d, 'truncate text-sm font-medium hover:text-module hover:underline'),
-    subtitle: (d) => (
-      <p className="text-base-content/70 text-xs">{stageLabels[d.stageId] ?? '—'}</p>
-    ),
+    subtitle: (d) => <p className="text-base-content text-xs">{stageLabels[d.stageId] ?? '—'}</p>,
     badge: statusBadge,
     body: (d) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Total</p>
+          <p className="text-base-content text-sm">Total</p>
           <p className="text-sm tabular-nums">{formatMoney(d.total, d.currency)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Balance</p>
+          <p className="text-base-content text-sm">Balance</p>
           <p className="text-sm tabular-nums">{formatMoney(d.balance, d.currency)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Updated {new Date(d.updatedAt).toLocaleDateString()}
         </p>
       </>

@@ -38,7 +38,7 @@ export function RequirementEditor({ value, onChange }: Props) {
     <div className="flex flex-col gap-3">
       <Label>Resource requirements</Label>
       {value.length === 0 ? (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No explicit roles — a single staff member is assigned automatically.
         </p>
       ) : (

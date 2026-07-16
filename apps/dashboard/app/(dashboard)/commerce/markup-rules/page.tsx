@@ -38,7 +38,7 @@ export default async function MarkupRulesPage() {
           }
           description="Derive a product's price from its cost — cost + 40%, keystone (×2), a target margin, or a flat markup. Bind a rule to variants on the product's Variants tab, or apply one across a scope here."
         />
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Markup is a cost → list-price step. B2B tiers and discounts apply on top of the list price
           it produces, so margin reporting stays honest.
         </p>

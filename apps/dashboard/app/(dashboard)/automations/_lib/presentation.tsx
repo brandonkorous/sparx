@@ -242,9 +242,9 @@ export function ConditionGroupView({
 }) {
   if (group.conditions.length === 0) {
     return nested ? (
-      <span className="text-base-content/50 text-sm">(empty group)</span>
+      <span className="text-base-content text-sm">(empty group)</span>
     ) : (
-      <p className="text-base-content/50 text-sm">No conditions — runs on every trigger.</p>
+      <p className="text-base-content text-sm">No conditions — runs on every trigger.</p>
     );
   }
   const joiner = group.logic;
@@ -257,7 +257,7 @@ export function ConditionGroupView({
       {group.conditions.map((node, i) => (
         <li key={i} className="flex items-start gap-2 text-sm">
           {i > 0 && (
-            <span className="text-base-content/50 mt-0.5 text-xs font-medium tracking-wide uppercase">
+            <span className="text-base-content mt-0.5 text-xs font-medium tracking-wide uppercase">
               {joiner}
             </span>
           )}
@@ -299,7 +299,7 @@ export function actionSummaryText(action: Action): string {
 
 export function ActionListView({ actions }: { actions: readonly Action[] }) {
   if (actions.length === 0) {
-    return <p className="text-base-content/50 text-sm">No actions.</p>;
+    return <p className="text-base-content text-sm">No actions.</p>;
   }
   return (
     <ol className="flex flex-col gap-2">
@@ -310,7 +310,7 @@ export function ActionListView({ actions }: { actions: readonly Action[] }) {
           </span>
           <div className="flex flex-col gap-0.5">
             <span className="font-medium">{actionSummaryText(a)}</span>
-            <span className="text-base-content/50 font-mono text-xs">{a.type}</span>
+            <span className="text-base-content font-mono text-xs">{a.type}</span>
           </div>
         </li>
       ))}

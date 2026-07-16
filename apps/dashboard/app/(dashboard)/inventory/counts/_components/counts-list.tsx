@@ -44,7 +44,7 @@ export function CountsList({ rows, view }: CountsListProps) {
   };
 
   const progress = (c: InventoryCountRow) => (
-    <p className="text-base-content/70 text-xs">
+    <p className="text-base-content text-xs">
       {c.countedLineCount}/{c.lineCount} counted
     </p>
   );
@@ -76,7 +76,7 @@ export function CountsList({ rows, view }: CountsListProps) {
           {progress(c)}
           <p className="text-sm font-medium">{variance(c)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">started {formatDate(c.startedAt)}</p>
+        <p className="text-base-content text-xs">started {formatDate(c.startedAt)}</p>
       </div>
     ),
   };

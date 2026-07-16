@@ -137,7 +137,7 @@ function UnmappedRow({
           <p className="font-mono text-sm font-medium">
             {externalRef(row.externalSku, row.externalLocation)}
           </p>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             qty {row.lastQuantity} · seen {row.seenCount}× · last {formatDateTime(row.lastSeenAt)}
           </p>
         </div>

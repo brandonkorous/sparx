@@ -36,16 +36,20 @@ export async function getActiveLayout(): Promise<BuilderLayoutDto | null> {
 }
 
 // The property's stored silica-native site (docs/118): page bodies + frame +
-// symbols, theme-less. Null when no silica site is materialized yet — the
-// engine-adoption studio then opens on the in-memory starter seed and the first
-// autosave materializes it. Defensive: a failed read yields null (open on starter).
+// symbols, theme-less. `null` means NO silica site is materialized yet — the studio
+// then opens on the in-memory starter seed and the first autosave materializes it.
+//
+// THROWS on a failed read, deliberately — do NOT "defensively" catch this to null.
+// `null` is a load-bearing signal that means "this property is empty, seed the
+// starter", so degrading an ERROR into `null` tells the studio to seed a starter
+// over a site that already exists — and the first autosave then persists that
+// starter, destroying the tenant's real frame + pages. (That is not theoretical: a
+// transient read failure during a package rebuild wiped a real draft frame this way.)
+// A thrown error surfaces the route's error boundary — "couldn't load, retry" — which
+// is always recoverable, whereas a silent overwrite is not.
 export async function getBuilderSite(): Promise<StoredSilicaSite | null> {
-  try {
-    const { site } = await api.get<{ site: StoredSilicaSite | null }>('/v1/builder/site');
-    return site;
-  } catch {
-    return null;
-  }
+  const { site } = await api.get<{ site: StoredSilicaSite | null }>('/v1/builder/site');
+  return site;
 }
 
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS

@@ -844,7 +844,7 @@ export function ThemeCenter({
         <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
           <DropdownMenuLabel>My themes</DropdownMenuLabel>
           {savedThemes.length === 0 ? (
-            <p className="text-base-content/60 px-2 py-1.5 text-xs">No saved themes yet</p>
+            <p className="text-base-content px-2 py-1.5 text-xs">No saved themes yet</p>
           ) : (
             savedThemes.map((t) => (
               <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>

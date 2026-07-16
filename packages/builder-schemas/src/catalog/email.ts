@@ -25,7 +25,7 @@ const promoCard = (name: string, price: string) =>
   atom('Stack', 'flex flex-col gap-2', {}, [
     atom('ImageDisplay', 'rounded-lg', { ratio: 'square', alt: name }),
     atom('Text', 'text-base font-semibold text-base-content', { variant: 'body', text: name }),
-    atom('Text', 'text-sm text-base-content/70', { variant: 'body', text: price }),
+    atom('Text', 'text-sm text-base-content', { variant: 'body', text: price }),
     atom('Button', 'bg-base-100 text-primary', { label: 'Shop', href: '#' }),
   ]);
 
@@ -46,7 +46,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
         level: 'h1',
         text: 'Big news for you',
       }),
-      atom('Text', 'text-base text-base-content/70', {
+      atom('Text', 'text-base text-base-content', {
         variant: 'body',
         text: 'A short, friendly line that sets up the offer and gives them a reason to read on.',
       }),
@@ -74,7 +74,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
         variant: 'body',
         text: 'Open with the one thing you want them to know. Keep it to a sentence or two so the message stays scannable in the inbox.',
       }),
-      atom('Text', 'text-base text-base-content/80', {
+      atom('Text', 'text-base text-base-content', {
         variant: 'body',
         text: 'Add any supporting detail here, then point them at a single, obvious next step.',
       }),

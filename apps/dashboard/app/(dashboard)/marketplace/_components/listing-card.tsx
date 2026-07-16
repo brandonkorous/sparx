@@ -75,7 +75,7 @@ export function ListingCard({
           {tag ? <Badge variant="soft">{tag}</Badge> : null}
         </div>
         <div className="flex flex-1 flex-col gap-3">
-          <p className="text-base-content/70 line-clamp-2 text-sm">
+          <p className="text-base-content line-clamp-2 text-sm">
             {item.tagline ?? item.description ?? ''}
           </p>
           {badges.length > 0 ? (

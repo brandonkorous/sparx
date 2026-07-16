@@ -35,9 +35,9 @@ export function KanbanColumn({ stage, deals }: KanbanColumnProps) {
               {deals.length}
             </Badge>
           </div>
-          <p className="text-base-content/70 text-xs">{stage.probability}%</p>
+          <p className="text-base-content text-xs">{stage.probability}%</p>
         </div>
-        <p className="text-base-content/70 text-xs">${stageValue.toLocaleString()}</p>
+        <p className="text-base-content text-xs">${stageValue.toLocaleString()}</p>
         <div className="flex min-h-[120px] flex-col gap-2">
           {deals.map((deal) => (
             <KanbanCard key={deal.id} deal={deal} />

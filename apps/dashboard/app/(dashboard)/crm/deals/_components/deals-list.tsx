@@ -64,7 +64,7 @@ export function DealsList({ deals, view }: DealsListProps) {
         {d.stage.name}
       </Badge>
     ) : (
-      <p className="text-base-content/70 text-sm">—</p>
+      <p className="text-base-content text-sm">—</p>
     );
 
   const valueText = (d: DealRow) => `${d.currency} ${Number(d.value).toLocaleString()}`;
@@ -78,31 +78,31 @@ export function DealsList({ deals, view }: DealsListProps) {
     },
     {
       header: 'Pipeline',
-      cell: (d) => <p className="text-base-content/70 text-sm">{d.pipelineName}</p>,
+      cell: (d) => <p className="text-base-content text-sm">{d.pipelineName}</p>,
     },
     { header: 'Stage', cell: stageBadge },
     { header: 'Value', align: 'right', cell: valueText },
     { header: 'Probability', align: 'right', cell: (d) => `${Number(d.probability)}%` },
     {
       header: 'Expected close',
-      cell: (d) => <p className="text-base-content/70 text-sm">{closeText(d)}</p>,
+      cell: (d) => <p className="text-base-content text-sm">{closeText(d)}</p>,
     },
     {
       header: 'Updated',
       cell: (d) => (
-        <p className="text-base-content/70 text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(d.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
 
   const card: SelectionCard<DealRow> = {
     title: (d) => dealLink(d, 'truncate text-sm font-medium hover:text-module hover:underline'),
-    subtitle: (d) => <p className="text-base-content/70 text-xs">{d.pipelineName}</p>,
+    subtitle: (d) => <p className="text-base-content text-xs">{d.pipelineName}</p>,
     badge: stageBadge,
     body: (d) => (
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {Number(d.probability)}% · close {closeText(d)}
           </p>
           <p className="text-sm tabular-nums">{valueText(d)}</p>

@@ -41,7 +41,7 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <Label>Variables</Label>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Declare each <code>{'{{placeholder}}'}</code> your body uses. The consuming flow fills
           these in; the keys you list here surface as hint chips on the prompt.
         </p>
@@ -54,7 +54,7 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
               <CardBody className="p-3">
                 <div className="flex flex-row flex-wrap items-start gap-2">
                   <Field className="min-w-[8rem] flex-1">
-                    <FieldLabel className="text-base-content/50">Key</FieldLabel>
+                    <FieldLabel className="text-base-content">Key</FieldLabel>
                     <FieldControl
                       id={`var-key-${index}`}
                       value={variable.key}
@@ -63,7 +63,7 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                     />
                   </Field>
                   <Field className="min-w-[8rem] flex-1">
-                    <FieldLabel className="text-base-content/50">Label</FieldLabel>
+                    <FieldLabel className="text-base-content">Label</FieldLabel>
                     <FieldControl
                       id={`var-label-${index}`}
                       value={variable.label}
@@ -72,7 +72,7 @@ export function VariableRepeater({ variables, onChange }: VariableRepeaterProps)
                     />
                   </Field>
                   <Field className="min-w-[8rem] flex-1">
-                    <FieldLabel className="text-base-content/50">Example (optional)</FieldLabel>
+                    <FieldLabel className="text-base-content">Example (optional)</FieldLabel>
                     <FieldControl
                       id={`var-example-${index}`}
                       value={variable.example ?? ''}

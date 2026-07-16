@@ -56,7 +56,7 @@ export function StoreControls({
           <Search
             size={16}
             aria-hidden
-            className="text-base-content/50 pointer-events-none absolute left-3 z-10"
+            className="text-base-content pointer-events-none absolute left-3 z-10"
           />
           <Input
             type="search"
@@ -97,7 +97,7 @@ export function StoreControls({
       </form>
 
       <div className="flex items-center gap-2">
-        <span className="text-base-content/70 text-sm">Sort</span>
+        <span className="text-base-content text-sm">Sort</span>
         <NativeSelect
           className="w-44"
           value={sort}

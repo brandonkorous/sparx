@@ -62,9 +62,7 @@ export function BulkPriceRevertBanner({ op }: { op: ReversibleOp }) {
               <span className="font-medium">{op.label}</span> — {op.productCount} product
               {op.productCount === 1 ? '' : 's'}, {op.variantCount} variant
               {op.variantCount === 1 ? '' : 's'}.{' '}
-              <span className="text-base-content/70 tabular-nums">
-                Undo available for {countdown}
-              </span>
+              <span className="text-base-content tabular-nums">Undo available for {countdown}</span>
               {error ? <span className="text-danger"> · {error}</span> : null}
             </p>
           </div>

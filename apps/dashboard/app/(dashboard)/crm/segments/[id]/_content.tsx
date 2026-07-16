@@ -79,10 +79,10 @@ export async function SegmentDetailContent({ id }: Props) {
               <Archive className="h-3 w-3" /> Archived
             </Badge>
           )}
-          <code className="text-base-content/50 text-xs">{segment.slug}</code>
+          <code className="text-base-content text-xs">{segment.slug}</code>
         </div>
         {segment.description && (
-          <p className="text-base-content/70 text-base">{segment.description}</p>
+          <p className="text-base-content text-base">{segment.description}</p>
         )}
       </div>
 
@@ -114,7 +114,7 @@ export async function SegmentDetailContent({ id }: Props) {
           <pre className="bg-base-200 overflow-x-auto rounded-md p-3 text-xs">
             {JSON.stringify(segment.rules, null, 2)}
           </pre>
-          <p className="text-base-content/70 mt-2 text-xs">
+          <p className="text-base-content mt-2 text-xs">
             {segment.isBuiltIn
               ? 'Built-in segments are read-only — clone to customize. (Visual rule editor lands in the next dashboard iteration.)'
               : 'Visual rule editor lands in the next dashboard iteration; until then the JSON above is the source of truth and can be edited via the API.'}
@@ -171,7 +171,7 @@ export async function SegmentDetailContent({ id }: Props) {
                       ${Number(m.customer.totalSpent).toLocaleString()}
                     </td>
                     <td>
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         {new Date(m.enteredAt).toLocaleDateString()}
                       </p>
                     </td>

@@ -39,9 +39,9 @@ function CollectLink({
       </span>
       <div className="flex flex-1 flex-col">
         <p className="font-medium">{label}</p>
-        <p className="text-base-content/70 text-xs">{description}</p>
+        <p className="text-base-content text-xs">{description}</p>
       </div>
-      <ArrowRight className="text-base-content/50 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      <ArrowRight className="text-base-content h-4 w-4 transition-transform group-hover:translate-x-0.5" />
     </Link>
   );
 }
@@ -76,7 +76,7 @@ export default async function ReceivablesPage(): Promise<React.JSX.Element> {
                     All current
                   </Badge>
                 </div>
-                <p className="text-base-content/70 max-w-prose text-sm">
+                <p className="text-base-content max-w-prose text-sm">
                   Nothing outstanding — every invoice is paid. New unpaid invoices and their aging
                   will appear here as you bill customers and accounts.
                 </p>

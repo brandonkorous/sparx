@@ -37,7 +37,7 @@ function ReviewCard({ review }: { review: ProductReview }) {
           <span className="text-base-content font-semibold">{review.title}</span>
         ) : null}
       </div>
-      <div className="text-base-content/70 mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem]">
+      <div className="text-base-content mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem]">
         <span>{review.author ?? 'Verified buyer'}</span>
         {review.verifiedPurchase ? (
           <span className="text-success inline-flex items-center gap-1">
@@ -54,11 +54,11 @@ function ReviewCard({ review }: { review: ProductReview }) {
       {review.response ? (
         <div className="bg-base-200 mt-3 rounded-lg p-3 text-sm">
           <p className="text-base-content font-semibold">Seller response</p>
-          <p className="text-base-content/70 mt-1 whitespace-pre-line">{review.response}</p>
+          <p className="text-base-content mt-1 whitespace-pre-line">{review.response}</p>
         </div>
       ) : null}
       {review.helpfulCount > 0 ? (
-        <p className="text-base-content/50 mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]">
+        <p className="text-base-content mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]">
           <ThumbsUp size={13} aria-hidden />
           {review.helpfulCount.toLocaleString()} found this helpful
         </p>
@@ -199,7 +199,7 @@ export function ProductReviews({
               <Stars rating={summary.averageRating} reviewCount={summary.total} />
             </div>
           ) : (
-            <p className="text-base-content/70 mt-1 text-sm">
+            <p className="text-base-content mt-1 text-sm">
               No reviews yet — be the first to share your experience.
             </p>
           )}
@@ -240,7 +240,7 @@ export function ProductReviews({
             <ReviewCard key={review.id} review={review} />
           ))}
           {summary.total > reviews.length ? (
-            <p className="text-base-content/70 mt-4 text-sm">
+            <p className="text-base-content mt-4 text-sm">
               Showing {reviews.length} of {summary.total.toLocaleString()} reviews.
             </p>
           ) : null}

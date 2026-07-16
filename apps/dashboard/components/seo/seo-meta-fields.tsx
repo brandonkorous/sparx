@@ -114,7 +114,7 @@ export function SeoMetaFields({
           onChange={(e) => onSeoTitleChange(e.target.value)}
         />
         {seoTitle.trim().length === 0 && nameFill.length > 0 && (
-          <p className="text-base-content/70 text-xs">Blank uses the name — “{nameFill}”.</p>
+          <p className="text-base-content text-xs">Blank uses the name — “{nameFill}”.</p>
         )}
       </div>
 
@@ -142,7 +142,7 @@ export function SeoMetaFields({
           onChange={(e) => onSeoDescriptionChange(e.target.value)}
         />
         {seoDescription.trim().length === 0 && descFill.length > 0 && (
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Blank uses the description (trimmed to {DESC_FILL_MAX} characters).
           </p>
         )}

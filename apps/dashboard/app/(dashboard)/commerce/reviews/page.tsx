@@ -97,7 +97,7 @@ export default async function ReviewsPage({
         </Card>
       ) : (
         <>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {labelFor(filter)} — click a review to read the full body + media, respond as the
             merchant, or moderate.
           </p>

@@ -163,7 +163,7 @@ export function WeekCalendar({
           const isToday = ymd(d) === todayYmd;
           return (
             <div key={ymd(d)} className="border-base-300 border-l px-2 py-2 text-center">
-              <div className="text-base-content/70 text-xs">{DOW[d.getDay()]}</div>
+              <div className="text-base-content text-xs">{DOW[d.getDay()]}</div>
               <div
                 className={`text-sm font-semibold ${isToday ? 'text-[var(--color-module-scheduling)]' : ''}`}
               >
@@ -182,7 +182,7 @@ export function WeekCalendar({
             {hours.map((h, i) => (
               <div
                 key={h}
-                className="text-base-content/70 absolute right-2 -translate-y-1/2 text-[11px] whitespace-nowrap tabular-nums"
+                className="text-base-content absolute right-2 -translate-y-1/2 text-[11px] whitespace-nowrap tabular-nums"
                 style={{ top: `${(i / hours.length) * 100}%` }}
               >
                 {i === 0 ? '' : minuteOfDay(h * 60)}
@@ -247,7 +247,7 @@ function EventBlock({ p, top, bottom }: { p: Positioned; top: number; bottom: nu
       >
         {p.ev.serviceName}
       </div>
-      <div className="text-base-content/70 truncate text-[10px] leading-tight">
+      <div className="text-base-content truncate text-[10px] leading-tight">
         {minuteOfDay(p.startMin)}
         {p.ev.resourceNames.length ? ` · ${p.ev.resourceNames[0]}` : ''}
       </div>

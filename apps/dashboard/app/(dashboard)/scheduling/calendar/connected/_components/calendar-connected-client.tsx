@@ -61,7 +61,7 @@ export function CalendarConnectedClient({
             <Loader2 className="h-8 w-8 animate-spin text-[var(--color-module-scheduling)]" />
             <div>
               <p className="text-base font-semibold">Finishing the connection…</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Exchanging tokens and importing your calendar.
               </p>
             </div>
@@ -71,7 +71,7 @@ export function CalendarConnectedClient({
             <CalendarCheck2 className="text-success h-8 w-8" />
             <div>
               <p className="text-base font-semibold">Calendar connected</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Your {phase.provider === 'google' ? 'Google' : 'Microsoft'} calendar is syncing.
                 Outside events now block this resource&rsquo;s availability.
               </p>
@@ -87,7 +87,7 @@ export function CalendarConnectedClient({
               <p className="text-base font-semibold">
                 {phase.kind === 'declined' ? 'Connection cancelled' : 'Could not connect'}
               </p>
-              <p className="text-base-content/70 text-sm">{phase.reason}</p>
+              <p className="text-base-content text-sm">{phase.reason}</p>
             </div>
             <Link href="/scheduling/resources">
               <Button variant="outline">Back to scheduling</Button>

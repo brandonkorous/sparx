@@ -143,7 +143,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           type="button"
           {...attributes}
           {...listeners}
-          className="text-base-content/50 hover:text-module cursor-grab"
+          className="text-base-content hover:text-module cursor-grab"
           aria-label="Drag to reorder"
         >
           <GripVertical className="h-4 w-4" />
@@ -197,7 +197,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
       </div>
 
       <div className="mt-3 flex flex-row flex-wrap items-center gap-4 px-1">
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={numberOnEnter}
@@ -218,7 +218,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
             />
           </div>
         )}
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
@@ -226,7 +226,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           />
           Freeze a snapshot
         </label>
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={locksEditing}
@@ -234,7 +234,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
           />
           Lock editing
         </label>
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={color !== null}
@@ -264,7 +264,7 @@ export function SortableStageRow({ stage, workflowId }: { stage: StageRow; workf
       </div>
 
       {numberOnEnter && !numberPrefix.trim() && (
-        <p className="text-base-content/70 mt-1 px-1 text-xs">
+        <p className="text-base-content mt-1 px-1 text-xs">
           Without a prefix, numbers mint as plain sequence (e.g. 000123). Add one like INV- or EST-.
         </p>
       )}

@@ -207,7 +207,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     }
 
     if (items.length === 0) {
-      return <p className="text-base-content/70 text-sm">—</p>;
+      return <p className="text-base-content text-sm">—</p>;
     }
     return (
       <DropdownMenu>
@@ -223,7 +223,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
 
   const hostCell = (d: Domain) => (
     <div className="flex min-w-0 flex-row items-center gap-2">
-      <Globe className="text-base-content/70 h-4 w-4 shrink-0" />
+      <Globe className="text-base-content h-4 w-4 shrink-0" />
       <div className="flex min-w-0 flex-col gap-1">
         <div className="flex flex-row flex-wrap items-center gap-2">
           <p className="truncate text-sm font-medium">{d.host}</p>
@@ -233,7 +233,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
             </Badge>
           )}
         </div>
-        <p className="text-base-content/70 text-xs">{typeLabel(d)}</p>
+        <p className="text-base-content text-xs">{typeLabel(d)}</p>
       </div>
     </div>
   );
@@ -251,15 +251,13 @@ export function DomainsInventory({ domains, properties, view }: Props) {
     { header: 'Domain', cell: hostCell },
     {
       header: 'Site',
-      cell: (d) => (
-        <p className="text-base-content/70 text-sm">{propertyName(d.propertyId) ?? '—'}</p>
-      ),
+      cell: (d) => <p className="text-base-content text-sm">{propertyName(d.propertyId) ?? '—'}</p>,
     },
     { header: 'Status', cell: statusCell },
     {
       header: 'Expiry',
       cell: (d) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {d.type === 'purchased' && d.expiresAt ? formatDate(d.expiresAt) : '—'}
         </p>
       ),
@@ -283,7 +281,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
                 </Badge>
               </div>
               <div className="flex flex-row items-center justify-between gap-2">
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   {site ?? '—'}
                   {d.type === 'purchased' && d.expiresAt
                     ? ` · expires ${formatDate(d.expiresAt)}`
@@ -305,7 +303,7 @@ export function DomainsInventory({ domains, properties, view }: Props) {
           <AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" />
           <div className="flex flex-col gap-1">
             <p className="font-medium">Transfer auth code for {transferResult.host}</p>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Copy this code and use it at your new registrar. It expires in 24 hours.
             </p>
             <Code>{transferResult.authCode}</Code>
@@ -395,7 +393,7 @@ function RenewDialog({
                 onChange={(e) => setYears(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
               />
             </Field>
-            {total && <p className="text-base-content/70 text-sm">Total: {total}</p>}
+            {total && <p className="text-base-content text-sm">Total: {total}</p>}
           </div>
         </div>
         <div className="mt-4 flex justify-end gap-2 px-6 pb-2">
@@ -437,18 +435,18 @@ function DnsDialog({
         </div>
         <div className="px-6 pb-2">
           <div className="flex flex-col gap-3">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Add these records at your registrar, then verify:
             </p>
             {inst && (
               <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                <span className="text-base-content/70">CNAME</span>
+                <span className="text-base-content">CNAME</span>
                 <Code>
                   {inst.cname.name} → {inst.cname.value}
                 </Code>
                 {inst.txt && (
                   <>
-                    <span className="text-base-content/70">TXT</span>
+                    <span className="text-base-content">TXT</span>
                     <Code>
                       {inst.txt.name} = {inst.txt.value}
                     </Code>

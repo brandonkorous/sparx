@@ -186,7 +186,7 @@ export function PurchaseOrderEditForm({
                 {error}
               </FieldStatus>
             )}
-            {saved && !error && <p className="text-base-content/70 text-sm">Saved.</p>}
+            {saved && !error && <p className="text-base-content text-sm">Saved.</p>}
             <Button color="module" type="submit" disabled={pending} className="ml-auto">
               {pending ? 'Saving…' : 'Save changes'}
             </Button>

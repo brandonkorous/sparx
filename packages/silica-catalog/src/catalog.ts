@@ -5,6 +5,7 @@
 
 import type { CatalogGroup } from './types';
 import { buyBox, collectionHeader, productCard, productsBlock } from './commerce';
+import { brandWordmark } from './site-chrome';
 
 /** sparx's `host.catalog().extend` — the commerce composites silica doesn't ship.
  *  Icons are silica `IconName`s (the dashboard adapter narrows the `string` type). */
@@ -44,6 +45,26 @@ export const COMMERCE_CATALOG: CatalogGroup[] = [
         icon: 'layout',
         hint: 'A titled header band for a collection or category page.',
         make: collectionHeader,
+      },
+    ],
+  },
+];
+
+/** Site/brand chrome composites — the pieces a tenant drops into the shared frame
+ *  (navbar/footer). `brand_wordmark` is the logo-capable wordmark: pre-bound to the
+ *  tenant's `site.identity.logo` + name, so dropping it into the navbar gives a real
+ *  header logo with no binding work (docs/122 — the wordmark-logo gap). */
+export const SITE_CATALOG: CatalogGroup[] = [
+  {
+    key: 'brand',
+    label: 'Brand',
+    items: [
+      {
+        key: 'brand_wordmark',
+        label: 'Brand (logo + name)',
+        icon: 'image',
+        hint: 'Your logo beside your site name, both pre-filled from your brand. Drop it in the header; delete either part for logo-only or text-only.',
+        make: brandWordmark,
       },
     ],
   },

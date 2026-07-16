@@ -81,7 +81,7 @@ export async function PipelineForecast({ pipelineId }: PipelineForecastProps) {
                   />
                 </div>
                 {b.closedWonValue > 0 && (
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     Closed-won: ${b.closedWonValue.toLocaleString()}
                   </p>
                 )}

@@ -48,7 +48,7 @@ function Movement({ from, to }: { from: number; to: number }) {
   const up = to > from;
   return (
     <div className="flex flex-row flex-wrap items-center gap-1">
-      <p className="text-base-content/70 text-sm tabular-nums line-through">{fmt(from)}</p>
+      <p className="text-base-content text-sm tabular-nums line-through">{fmt(from)}</p>
       <ArrowRight className="h-3 w-3 text-[var(--color-fg-muted)]" />
       <p className="text-sm font-medium tabular-nums">{fmt(to)}</p>
       <Badge color={up ? 'success' : 'danger'} variant="soft">
@@ -157,7 +157,7 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
     return (
       <Card>
         <CardBody>
-          <p className="text-base-content/70 py-10 text-center text-base">
+          <p className="text-base-content py-10 text-center text-base">
             No price changes waiting for review. Cost-driven changes within a rule’s tolerance apply
             automatically; anything beyond it shows up here.
           </p>
@@ -240,7 +240,7 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
                     </div>
                   </td>
                   <td>
-                    <p className="text-base-content/70 text-sm">{r.ruleName ?? '—'}</p>
+                    <p className="text-base-content text-sm">{r.ruleName ?? '—'}</p>
                   </td>
                   <td>
                     <Movement from={r.oldCostCents ?? r.newCostCents} to={r.newCostCents} />

@@ -252,7 +252,7 @@ export function SiteSettings({
               onChange={(e) => setSiteName(e.target.value)}
               placeholder="Acme Co."
             />
-            <p className="text-base-content/60 text-xs">
+            <p className="text-base-content text-xs">
               The name customers see on this site — its title, header, and emails. Your
               business&apos;s legal or billing name lives in Settings → General.
             </p>
@@ -265,7 +265,7 @@ export function SiteSettings({
               onChange={(e) => setTagline(e.target.value)}
               placeholder="A short line that sums up what you do"
             />
-            <p className="text-base-content/60 text-xs">
+            <p className="text-base-content text-xs">
               An optional short phrase shown beside your name in some layouts.
             </p>
           </div>
@@ -347,7 +347,7 @@ function AppearancePicker({
           );
         })}
       </div>
-      {active ? <p className="text-base-content/60 text-xs">{active.help}</p> : null}
+      {active ? <p className="text-base-content text-xs">{active.help}</p> : null}
     </div>
   );
 }
@@ -367,7 +367,7 @@ function Card({
     <section className="border-base-300 bg-base-100 flex flex-col gap-4 rounded-[var(--radius-lg)] border p-5">
       <div className="flex flex-col gap-0.5">
         <h2 className="text-base-content text-sm font-semibold">{title}</h2>
-        {hint ? <p className="text-base-content/60 text-xs">{hint}</p> : null}
+        {hint ? <p className="text-base-content text-xs">{hint}</p> : null}
       </div>
       {children}
     </section>

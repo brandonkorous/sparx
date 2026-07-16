@@ -59,7 +59,7 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
     return (
       <Card>
         <CardBody>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             This install is already on the latest version — nothing to update.
           </p>
         </CardBody>
@@ -121,7 +121,7 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
       {nothing ? (
         <Card>
           <CardBody>
-            <p className="text-base-content/70">
+            <p className="text-base-content">
               The new version makes no changes to anything on your site.
             </p>
           </CardBody>
@@ -164,7 +164,7 @@ export function UpdateReview({ installId, blueprintName, plan, canManage }: Prop
           />
         </div>
       ) : (
-        <p className="text-base-content/70 text-sm">Only an owner or admin can apply an update.</p>
+        <p className="text-base-content text-sm">Only an owner or admin can apply an update.</p>
       )}
     </div>
   );
@@ -212,7 +212,7 @@ function ArtifactCard({
             />
           ))}
           {autos.length > 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {autos.length} other change{autos.length === 1 ? '' : 's'} the blueprint made
               {conflicts.length > 0 ? ' also' : ''} appl{autos.length === 1 ? 'ies' : 'y'}{' '}
               automatically.
@@ -239,10 +239,10 @@ function ConflictRow({
     <div className="border-base-300 flex flex-col gap-2 rounded-md border p-3">
       <p className="text-sm">{change.path}</p>
       <div className="flex flex-col gap-1">
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Yours: <span className="text-base-content">{fmt(change.mine)}</span>
         </p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Blueprint v{toVersion}: <span className="text-base-content">{fmt(change.theirs)}</span>
         </p>
       </div>
@@ -279,7 +279,7 @@ function InfoCard({ title, items, note }: { title: string; items: string[]; note
               {it}
             </p>
           ))}
-          <p className="text-base-content/70 pt-1 text-xs">{note}</p>
+          <p className="text-base-content pt-1 text-xs">{note}</p>
         </div>
       </CardBody>
     </Card>

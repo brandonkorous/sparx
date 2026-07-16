@@ -22,14 +22,14 @@ export function EnterprisePlanCard({
       <CardBody>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Building2 className="text-base-content/60 h-5 w-5" />
+            <Building2 className="text-base-content h-5 w-5" />
             <CardTitle>Enterprise plan</CardTitle>
           </div>
           <Badge color="module" variant="soft">
             Managed
           </Badge>
         </div>
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Your workspace is on a custom Enterprise agreement — bespoke pricing, managed hosting, and
           a dedicated account team. Plan changes go through your account team rather than the
           self-serve flow.

@@ -184,18 +184,18 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       cell: (p) => (
         <div className="flex flex-col gap-1">
           {titleLink(p, 'text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 text-xs">/{p.handle}</p>
+          <p className="text-base-content text-xs">/{p.handle}</p>
         </div>
       ),
     },
     { header: 'Status', cell: statusBadge },
     {
       header: 'Vendor',
-      cell: (p) => <p className="text-base-content/70 text-sm">{p.vendor ?? '—'}</p>,
+      cell: (p) => <p className="text-base-content text-sm">{p.vendor ?? '—'}</p>,
     },
     {
       header: 'Type',
-      cell: (p) => <p className="text-base-content/70 text-sm">{p.productType ?? '—'}</p>,
+      cell: (p) => <p className="text-base-content text-sm">{p.productType ?? '—'}</p>,
     },
     {
       header: 'Variants',
@@ -206,7 +206,7 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       header: 'Price',
       align: 'right',
       cell: (p) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
         </p>
       ),
@@ -214,24 +214,24 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
     {
       header: 'Updated',
       cell: (p) => (
-        <p className="text-base-content/70 text-sm">{new Date(p.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(p.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
 
   const card: SelectionCard<ProductListItem> = {
     title: (p) => titleLink(p, 'truncate text-sm font-medium hover:text-module hover:underline'),
-    subtitle: (p) => <p className="text-base-content/70 text-xs">/{p.handle}</p>,
+    subtitle: (p) => <p className="text-base-content text-xs">/{p.handle}</p>,
     badge: statusBadge,
     body: (p) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">{p.vendor ?? '—'}</p>
+          <p className="text-base-content text-sm">{p.vendor ?? '—'}</p>
           <p className="text-sm tabular-nums">
             {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
           </p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {variantsLabel(p.variantCount)} · updated {new Date(p.updatedAt).toLocaleDateString()}
         </p>
       </>

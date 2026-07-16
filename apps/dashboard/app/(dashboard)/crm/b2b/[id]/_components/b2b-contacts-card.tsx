@@ -101,7 +101,7 @@ export function B2bContactsCard({
     <Card>
       <CardBody>
         <CardTitle>Contacts</CardTitle>
-        <p className="text-base-content/70 -mt-2 text-sm">
+        <p className="text-base-content -mt-2 text-sm">
           Who can sign in as this company — sets their pricing, net-terms eligibility, and portal
           access.
         </p>
@@ -121,7 +121,7 @@ export function B2bContactsCard({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{name}</p>
                     {c.customer.email && (
-                      <p className="text-base-content/70 truncate text-xs">{c.customer.email}</p>
+                      <p className="text-base-content truncate text-xs">{c.customer.email}</p>
                     )}
                   </div>
                   <Badge color={c.isActive ? 'module' : 'neutral'} variant="soft" size="sm">
@@ -159,7 +159,7 @@ export function B2bContactsCard({
           className="border-base-300 flex flex-row flex-wrap items-end gap-3 rounded-lg border border-dashed p-3"
         >
           <div className="flex min-w-[14rem] flex-1 flex-col gap-1">
-            <label className="text-base-content/70 text-xs" htmlFor="b2b-contact-customer">
+            <label className="text-base-content text-xs" htmlFor="b2b-contact-customer">
               Customer
             </label>
             <NativeSelect
@@ -177,7 +177,7 @@ export function B2bContactsCard({
             </NativeSelect>
           </div>
           <div className="flex w-40 flex-col gap-1">
-            <label className="text-base-content/70 text-xs" htmlFor="b2b-contact-role">
+            <label className="text-base-content text-xs" htmlFor="b2b-contact-role">
               Role
             </label>
             <NativeSelect

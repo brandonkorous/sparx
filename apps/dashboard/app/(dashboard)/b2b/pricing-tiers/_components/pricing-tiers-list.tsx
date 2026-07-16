@@ -48,7 +48,7 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
       cell: (t) => (
         <div className="flex flex-col gap-1">
           <p className="text-sm font-medium">{t.name}</p>
-          {t.description ? <p className="text-base-content/70 text-xs">{t.description}</p> : null}
+          {t.description ? <p className="text-base-content text-xs">{t.description}</p> : null}
         </div>
       ),
     },
@@ -62,13 +62,13 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     },
     {
       header: 'Scope',
-      cell: (t) => <p className="text-base-content/70 text-sm">{scopeLabel(t.productScope)}</p>,
+      cell: (t) => <p className="text-base-content text-sm">{scopeLabel(t.productScope)}</p>,
     },
     {
       header: 'Minimum order',
       align: 'right',
       cell: (t) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {t.minOrderCents > 0 ? minOrderLabel(t.minOrderCents) : '—'}
         </p>
       ),
@@ -76,7 +76,7 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
     {
       header: 'Accounts',
       align: 'right',
-      cell: (t) => <p className="text-base-content/70 text-sm">{t.accountCount ?? '—'}</p>,
+      cell: (t) => <p className="text-base-content text-sm">{t.accountCount ?? '—'}</p>,
     },
   ];
 
@@ -94,18 +94,18 @@ export function PricingTiersList({ rows, view }: PricingTiersListProps) {
           {tier.description && <p className="opacity-70">{tier.description}</p>}
           <div className="flex flex-col gap-2">
             <div className="flex flex-row justify-between">
-              <p className="text-base-content/70 text-sm">Scope</p>
+              <p className="text-base-content text-sm">Scope</p>
               <p className="text-sm">{scopeLabel(tier.productScope)}</p>
             </div>
             {tier.minOrderCents > 0 && (
               <div className="flex flex-row justify-between">
-                <p className="text-base-content/70 text-sm">Minimum order</p>
+                <p className="text-base-content text-sm">Minimum order</p>
                 <p className="text-sm">{minOrderLabel(tier.minOrderCents)}</p>
               </div>
             )}
             {tier.accountCount !== undefined && (
               <div className="flex flex-row justify-between">
-                <p className="text-base-content/70 text-sm">Accounts</p>
+                <p className="text-base-content text-sm">Accounts</p>
                 <p className="text-sm">{tier.accountCount}</p>
               </div>
             )}

@@ -35,7 +35,7 @@ function DomainCell({ domain }: { domain: SendingDomainRow }) {
         <Code>{domain.domain}</Code>
         {domain.isDefault ? <Badge color="module">Default</Badge> : null}
       </div>
-      <p className="text-base-content/70 text-xs">{STATE_HINT[domain.state]}</p>
+      <p className="text-base-content text-xs">{STATE_HINT[domain.state]}</p>
       <Button
         type="button"
         variant="ghost"

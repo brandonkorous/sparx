@@ -141,7 +141,7 @@ export function ExceptionsPanel({
           </Field>
 
           {exceptions.length === 0 ? (
-            <p className="text-base-content/70 flex items-center gap-2 text-sm">
+            <p className="text-base-content flex items-center gap-2 text-sm">
               <CalendarOff className="h-4 w-4" />
               No exceptions — this resource follows its weekly hours.
             </p>
@@ -161,7 +161,7 @@ export function ExceptionsPanel({
                       {formatDateTime(ex.startAt)} → {formatDateTime(ex.endAt)}
                     </span>
                     {ex.reason ? (
-                      <span className="text-base-content/70 text-sm">{ex.reason}</span>
+                      <span className="text-base-content text-sm">{ex.reason}</span>
                     ) : null}
                   </div>
                   <Button

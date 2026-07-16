@@ -68,7 +68,7 @@ export function B2bAccountsTable({ accounts }: Props) {
                     {a.pricingTierName}
                   </Badge>
                 ) : (
-                  <p className="text-base-content/70 text-sm">—</p>
+                  <p className="text-base-content text-sm">—</p>
                 )}
               </td>
               <td>

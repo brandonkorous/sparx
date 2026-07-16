@@ -76,7 +76,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
         <>
           <Link
             href="/dropship/suppliers"
-            className="text-base-content/70 hover:text-base-content flex w-fit items-center gap-1 text-sm"
+            className="text-base-content hover:text-base-content flex w-fit items-center gap-1 text-sm"
           >
             <ChevronLeft className="h-4 w-4" /> Suppliers
           </Link>
@@ -102,7 +102,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
       pager={
         total > take ? (
           <div className="flex flex-row items-center justify-end gap-2">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {skip + 1}–{Math.min(skip + take, total)} of {total}
             </p>
             {skip > 0 && (
@@ -140,7 +140,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
         <div className="border-base-300 overflow-x-auto rounded-lg border">
           <table className="w-full text-sm">
             {/* eslint-disable-next-line no-restricted-syntax -- table header with muted bg, not a reimplemented control */}
-            <thead className="bg-base-200 text-base-content/70">
+            <thead className="bg-base-200 text-base-content">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Product</th>
                 <th className="px-4 py-3 text-left font-medium">Supplier ID</th>
@@ -168,14 +168,14 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                       <p className="line-clamp-1 text-base font-medium">{p.title}</p>
                     </div>
                   </td>
-                  <td className="text-base-content/70 px-4 py-3 font-mono text-xs">
+                  <td className="text-base-content px-4 py-3 font-mono text-xs">
                     {p.supplierProductId}
                   </td>
-                  <td className="text-base-content/70 px-4 py-3">{p.variants.length}</td>
+                  <td className="text-base-content px-4 py-3">{p.variants.length}</td>
                   <td className="px-4 py-3">
                     {p.costPriceCents > 0 ? formatCents(p.costPriceCents) : '—'}
                   </td>
-                  <td className="text-base-content/70 px-4 py-3">
+                  <td className="text-base-content px-4 py-3">
                     {p.msrpCents ? formatCents(p.msrpCents) : '—'}
                   </td>
                   <td className="px-4 py-3">

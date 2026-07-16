@@ -51,7 +51,7 @@ export async function SupplierDetailContent({ id }: { id: string }) {
               </Badge>
             )}
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {[supplier.contactName, supplier.email, supplier.phone].filter(Boolean).join(' · ') ||
               'No contact on file'}
           </p>
@@ -73,7 +73,7 @@ export async function SupplierDetailContent({ id }: { id: string }) {
 
       <SupplierVariantsPanel supplierId={supplier.id} links={variants} />
 
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Purchase orders for this supplier land in{' '}
         <Link href="/inventory/suppliers" className="hover:text-module underline">
           a later step
@@ -89,7 +89,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[9rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

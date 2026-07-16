@@ -17,7 +17,7 @@ export const BreadcrumbList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ol
     ref={ref}
-    className={cn('text-base-content/70 flex flex-wrap items-center gap-1.5', className)}
+    className={cn('text-base-content flex flex-wrap items-center gap-1.5', className)}
     {...props}
   />
 ));
@@ -68,7 +68,7 @@ export const BreadcrumbSeparator = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'li'>) => (
-  <li role="presentation" aria-hidden className={cn('text-base-content/50', className)} {...props}>
+  <li role="presentation" aria-hidden className={cn('text-base-content', className)} {...props}>
     {children ?? <ChevronRight className="h-3.5 w-3.5" />}
   </li>
 );
@@ -81,7 +81,7 @@ export const BreadcrumbEllipsis = ({
   <span
     role="presentation"
     aria-hidden
-    className={cn('text-base-content/50 flex h-5 w-5 items-center justify-center', className)}
+    className={cn('text-base-content flex h-5 w-5 items-center justify-center', className)}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />

@@ -317,7 +317,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                     builder, bound by id — so a reslug breaks nothing live; just note
                     the change. */}
                   {handleChanged && (
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       Changing the handle reslugs this category from <code>{category.handle}</code>{' '}
                       to <code>{handle.trim()}</code>. Categories don’t have a standalone storefront
                       page yet, so this won’t break any links today.
@@ -367,7 +367,7 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                       />
                       <Label htmlFor="cat-featured">Featured</Label>
                     </div>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       Highlights this category in storefront navigation and featured collections.
                     </p>
                   </div>
@@ -434,7 +434,7 @@ function CategorySummary({
       {siblings.length > 0 && (
         <>
           <SurfaceSummaryDivider />
-          <p className="text-base-content/70 mb-1 text-sm">Siblings by priority</p>
+          <p className="text-base-content mb-1 text-sm">Siblings by priority</p>
           {siblings
             .slice()
             .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity))

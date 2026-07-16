@@ -99,7 +99,7 @@ export default async function SettingsPartnerPage() {
 
             <div className="flex flex-col gap-3">
               <p className="font-medium">Who can manage this workspace</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 External partners get access as consultants on your team. Revoke a seat any time —
                 your data always stays yours.
               </p>
@@ -130,7 +130,7 @@ function ReferredByCard({ partner }: { partner: ReferredByPartner }) {
                     {tierLabel(partner.tier)}
                   </Badge>
                   {referred ? (
-                    <p className="text-base-content/70 text-xs">Referred you {referred}</p>
+                    <p className="text-base-content text-xs">Referred you {referred}</p>
                   ) : null}
                 </div>
               </div>

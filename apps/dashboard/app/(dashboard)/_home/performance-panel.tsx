@@ -17,7 +17,7 @@ import type { PerfPanel } from './types';
 const DELTA_CLASS: Record<string, string> = {
   up: 'text-success',
   down: 'text-danger',
-  neutral: 'text-base-content/50',
+  neutral: 'text-base-content',
 };
 
 export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeLabel: string }) {
@@ -68,7 +68,7 @@ export function PerformancePanel({ perf, rangeLabel }: { perf: PerfPanel; rangeL
                   </span>
                 )}
               </div>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {metric.caption} · {rangeLabel}
               </p>
             </div>

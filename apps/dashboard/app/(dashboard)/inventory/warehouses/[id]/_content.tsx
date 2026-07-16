@@ -103,7 +103,7 @@ export async function WarehouseDetailContent({ id }: Props) {
               </Badge>
             )}
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {[warehouse.city, warehouse.region, warehouse.country].filter(Boolean).join(', ')}
           </p>
         </div>
@@ -161,7 +161,7 @@ function Stat({
     <Card className="min-w-[10rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className={`text-lg${tone === 'warn' ? 'text-warning' : ''}`}>{value}</p>
         </div>
       </CardBody>

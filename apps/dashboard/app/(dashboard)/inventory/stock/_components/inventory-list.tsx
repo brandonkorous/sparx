@@ -29,7 +29,7 @@ function productCell(r: InventoryRow) {
       <Link href={`/commerce/products/${r.productId}`} className="hover:text-module text-sm">
         {r.productTitle}
       </Link>
-      {r.variantTitle && <p className="text-base-content/70 text-xs">{r.variantTitle}</p>}
+      {r.variantTitle && <p className="text-base-content text-xs">{r.variantTitle}</p>}
     </div>
   );
 }
@@ -40,7 +40,7 @@ function reorderBadge(r: InventoryRow) {
       ≤ {r.reorderPoint}
     </Badge>
   ) : (
-    <p className="text-base-content/70 text-xs">none</p>
+    <p className="text-base-content text-xs">none</p>
   );
 }
 
@@ -73,15 +73,15 @@ export function InventoryList({ rows, warehouseId, view }: InventoryListProps) {
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-4">
           <div className="flex flex-col gap-0">
-            <p className="text-base-content/70 text-xs">On hand</p>
+            <p className="text-base-content text-xs">On hand</p>
             <p className="text-base tabular-nums">{r.onHand}</p>
           </div>
           <div className="flex flex-col gap-0">
-            <p className="text-base-content/70 text-xs">Allocated</p>
+            <p className="text-base-content text-xs">Allocated</p>
             <p className="text-base tabular-nums">{r.allocated}</p>
           </div>
           <div className="flex flex-col gap-0">
-            <p className="text-base-content/70 text-xs">Available</p>
+            <p className="text-base-content text-xs">Available</p>
             {availableCell(r)}
           </div>
         </div>

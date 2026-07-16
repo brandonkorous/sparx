@@ -55,7 +55,7 @@ export function MappingsPanel({ sourceId, links, warehouses }: MappingsPanelProp
           <AddMappingForm sourceId={sourceId} warehouses={warehouses} />
 
           {links.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No mappings yet. Add one above, or map an unmapped SKU from the queue.
             </p>
           ) : (
@@ -97,12 +97,12 @@ function MappingRow({ sourceId, link }: { sourceId: string; link: SourceLinkRow 
             stale
           </Badge>
         ) : null}
-        <p className="text-base-content/70 text-xs">→</p>
+        <p className="text-base-content text-xs">→</p>
         <div className="flex min-w-0 flex-col gap-0">
           <p className="text-sm font-medium">
             {link.variant?.title ?? link.variant?.sku ?? 'Unknown item'}
           </p>
-          <p className="text-base-content/70 font-mono text-xs">
+          <p className="text-base-content font-mono text-xs">
             {link.variant?.sku ?? '—'} · {link.warehouse?.name ?? link.warehouse?.code ?? '—'}
           </p>
         </div>

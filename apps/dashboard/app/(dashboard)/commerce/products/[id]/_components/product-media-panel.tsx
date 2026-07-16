@@ -157,7 +157,7 @@ export function ProductMediaPanel({
         <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex flex-col gap-1">
             <h3 className="text-xl font-semibold">Photos</h3>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Images shown on the product across every variant. Star one as the main image used in
               lists, search, and social shares.
             </p>
@@ -169,7 +169,7 @@ export function ProductMediaPanel({
           )}
         </div>
         {loading ? (
-          <div className="text-base-content/60 flex flex-row items-center gap-2 py-8">
+          <div className="text-base-content flex flex-row items-center gap-2 py-8">
             <Loading className="h-4 w-4" /> Loading photos…
           </div>
         ) : (
@@ -225,7 +225,7 @@ export function ProductMediaPanel({
                 type="button"
                 onClick={() => setPickerOpen(true)}
                 disabled={busy}
-                className="border-base-300 text-base-content/60 hover:border-module hover:text-module flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed transition-colors disabled:opacity-40"
+                className="border-base-300 text-base-content hover:border-module hover:text-module flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed transition-colors disabled:opacity-40"
               >
                 <Plus className="h-5 w-5" />
                 <span className="text-sm">Add image</span>
@@ -233,9 +233,9 @@ export function ProductMediaPanel({
             </div>
 
             {images.length === 0 && (
-              <div className="text-base-content/60 flex flex-row items-center gap-2">
+              <div className="text-base-content flex flex-row items-center gap-2">
                 <ImageIcon className="h-4 w-4" />
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   No photos yet. Add at least one so the product looks its best.
                 </p>
               </div>

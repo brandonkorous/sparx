@@ -446,9 +446,9 @@ export default async function CrmOverviewPage() {
           icon={<Filter className="h-4 w-4" />}
           right={
             snapshot ? (
-              <span className="text-base-content/50 text-xs">
+              <span className="text-base-content text-xs">
                 Open value{' '}
-                <span className="text-base-content/70 font-medium">
+                <span className="text-base-content font-medium">
                   {fmtMoney(snapshot.pipelineValue)}
                 </span>
               </span>
@@ -521,8 +521,8 @@ export default async function CrmOverviewPage() {
                   ['Done · 30d', fmtNumber(taskStats.completedLast30d)],
                 ].map(([label, value]) => (
                   <div key={label}>
-                    <div className="text-base-content/50">{label}</div>
-                    <div className="text-base-content/70 font-medium">{value}</div>
+                    <div className="text-base-content">{label}</div>
+                    <div className="text-base-content font-medium">{value}</div>
                   </div>
                 ))}
               </div>
@@ -571,7 +571,7 @@ export default async function CrmOverviewPage() {
                       </td>
                       <td className="text-right tabular-nums">{fmtNumber(c.orders)}</td>
                       <td className="text-right tabular-nums">{c.ltv}</td>
-                      <td className="text-base-content/50 text-right tabular-nums">{c.last}</td>
+                      <td className="text-base-content text-right tabular-nums">{c.last}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -667,9 +667,9 @@ export default async function CrmOverviewPage() {
               <>
                 <BarList items={openDealsRows} />
                 {snapshot && (
-                  <div className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
+                  <div className="border-base-300 text-base-content mt-4 border-t pt-3 text-xs">
                     Open pipeline ·{' '}
-                    <span className="text-base-content/70 font-medium">
+                    <span className="text-base-content font-medium">
                       {fmtMoney(snapshot.pipelineValue)}
                     </span>{' '}
                     across {fmtNumber(snapshot.openDeals)} deals

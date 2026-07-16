@@ -17,7 +17,7 @@ const selectTriggerVariants = cva(
   [
     'bg-base-100 flex w-full items-center justify-between rounded-md border',
     'text-base-content text-sm',
-    'placeholder:text-base-content/50',
+    'placeholder:text-base-content',
     'transition-colors duration-150',
     'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-50',
@@ -132,7 +132,7 @@ export const SelectLabel = React.forwardRef<
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      'text-base-content/50 px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
+      'text-base-content px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
       className
     )}
     {...props}

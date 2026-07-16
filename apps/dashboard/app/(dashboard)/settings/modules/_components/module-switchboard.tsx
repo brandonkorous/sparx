@@ -125,7 +125,7 @@ export function ModuleSwitchboard({
           <React.Fragment key={m.key}>
             {firstAddon && (
               <div className="px-1 pt-4 pb-1.5">
-                <p className="text-base-content/70 text-xs font-medium">Add-ons</p>
+                <p className="text-base-content text-xs font-medium">Add-ons</p>
               </div>
             )}
             <ModuleRow
@@ -185,12 +185,12 @@ function ModuleRow({
               <p className="font-medium">{m.name}</p>
               <ChevronDown
                 className={cn(
-                  'text-base-content/50 h-4 w-4 transition-transform duration-200',
+                  'text-base-content h-4 w-4 transition-transform duration-200',
                   open && 'rotate-180'
                 )}
               />
             </span>
-            <p className="text-base-content/70 text-xs">{m.desc}</p>
+            <p className="text-base-content text-xs">{m.desc}</p>
           </button>
           {caption && (
             <Badge
@@ -210,7 +210,7 @@ function ModuleRow({
               ? 'text-success font-medium'
               : on
                 ? 'text-base-content font-medium'
-                : 'text-base-content/50'
+                : 'text-base-content'
           )}
         >
           {lock === 'included' ? 'Included' : `+ $${m.price}`}
@@ -232,7 +232,7 @@ function ModuleRow({
 
       {open && (
         <div className="flex flex-col gap-3.5 pt-0.5 pr-1 pb-5 pl-[26px]">
-          <p className="text-base-content/70 max-w-[560px] text-sm">{m.long}</p>
+          <p className="text-base-content max-w-[560px] text-sm">{m.long}</p>
           <ul className="flex flex-wrap gap-x-7 gap-y-2.5">
             {m.feats.map((f) => (
               <li key={f} className="flex w-[248px] max-w-full items-center gap-2.5">
@@ -240,13 +240,13 @@ function ModuleRow({
                   className="h-[5px] w-[5px] shrink-0 rounded-full"
                   style={{ background: m.colorVar }}
                 />
-                <p className="text-base-content/70 text-sm">{f}</p>
+                <p className="text-base-content text-sm">{f}</p>
               </li>
             ))}
           </ul>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Replaces {m.replaces} — about{' '}
-            <span className="text-base-content/70 font-medium">${m.elsewhere}/mo</span> bought
+            <span className="text-base-content font-medium">${m.elsewhere}/mo</span> bought
             separately.
           </p>
         </div>

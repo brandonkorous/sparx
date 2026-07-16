@@ -64,7 +64,7 @@ export function BootcampsList({ rows, view }: { rows: Bootcamp[]; view: 'table' 
   const card: SelectionCard<Bootcamp> = {
     title: titleLink,
     subtitle: (b) => (
-      <p className="text-base-content/70 text-xs">{fmtDateRange(b.startsAt, b.endsAt)}</p>
+      <p className="text-base-content text-xs">{fmtDateRange(b.startsAt, b.endsAt)}</p>
     ),
     badge: statusBadge,
     body: (b) => (
@@ -72,7 +72,7 @@ export function BootcampsList({ rows, view }: { rows: Bootcamp[]; view: 'table' 
         <Badge color="info" variant="soft" size="sm">
           {FORMAT_LABELS[b.format]}
         </Badge>
-        <p className="text-base-content/70 text-xs">{seatsLabel(b)} seats</p>
+        <p className="text-base-content text-xs">{seatsLabel(b)} seats</p>
       </div>
     ),
   };

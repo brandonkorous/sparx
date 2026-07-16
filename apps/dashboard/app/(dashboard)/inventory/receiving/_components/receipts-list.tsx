@@ -30,7 +30,7 @@ export function ReceiptsList({ receipts, view }: ReceiptsListProps) {
       cell: (r) => (
         <div className="flex flex-col gap-1">
           {numberLink(r, 'font-mono text-sm hover:text-module hover:underline')}
-          <p className="text-base-content/70 text-xs">{r.purchaseOrderNumber ?? '—'}</p>
+          <p className="text-base-content text-xs">{r.purchaseOrderNumber ?? '—'}</p>
         </div>
       ),
     },
@@ -40,7 +40,7 @@ export function ReceiptsList({ receipts, view }: ReceiptsListProps) {
     },
     {
       header: 'Received',
-      cell: (r) => <p className="text-base-content/70 text-sm">{formatDate(r.receivedAt)}</p>,
+      cell: (r) => <p className="text-base-content text-sm">{formatDate(r.receivedAt)}</p>,
     },
     {
       header: 'Quantity',
@@ -52,12 +52,12 @@ export function ReceiptsList({ receipts, view }: ReceiptsListProps) {
   const card: SelectionCard<GoodsReceiptRow> = {
     title: (r) => numberLink(r, 'font-mono text-sm hover:text-module hover:underline'),
     subtitle: (r) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {r.purchaseOrderNumber ?? '—'} · {formatDate(r.receivedAt)}
       </p>
     ),
     body: (r) => (
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         {quantityLine(r)}
         {r.reference ? ` · ${r.reference}` : ''}
       </p>

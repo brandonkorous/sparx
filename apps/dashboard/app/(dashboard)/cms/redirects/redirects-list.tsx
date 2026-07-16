@@ -97,7 +97,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
       header: 'To',
       cell: (r) => (
         <div className="flex min-w-0 flex-row items-center gap-2">
-          <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
+          <ArrowRight className="text-base-content h-4 w-4 shrink-0" />
           <p className="truncate font-mono text-sm">{r.to_path}</p>
         </div>
       ),
@@ -105,7 +105,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
     {
       header: 'Hits',
       align: 'right',
-      cell: (r) => <p className="text-base-content/70 text-sm">{r.hit_count}</p>,
+      cell: (r) => <p className="text-base-content text-sm">{r.hit_count}</p>,
     },
     {
       header: '',
@@ -127,11 +127,11 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
     body: (r) => (
       <div className="flex flex-col gap-2">
         <div className="flex min-w-0 flex-row items-center gap-2">
-          <ArrowRight className="text-base-content/50 h-4 w-4 shrink-0" />
+          <ArrowRight className="text-base-content h-4 w-4 shrink-0" />
           <p className="truncate font-mono text-sm">{r.to_path}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">{r.hit_count} hits</p>
+          <p className="text-base-content text-xs">{r.hit_count} hits</p>
           {removeButton(r)}
         </div>
       </div>
@@ -146,7 +146,7 @@ export function RedirectsList({ rows, view }: RedirectsListProps) {
         </p>
       )}
 
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         {rows.length} redirect{rows.length === 1 ? '' : 's'} active.
       </p>
 

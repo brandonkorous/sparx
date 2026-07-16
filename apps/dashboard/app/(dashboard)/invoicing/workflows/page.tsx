@@ -121,7 +121,7 @@ export default async function InvoicingWorkflowsPage({ searchParams }: PageProps
         <WorkflowsList workflows={workflows} view={view} />
       )}
 
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Stages key off a semantic <strong>type</strong> (draft, open, committed, final, paid, void)
         that drives behavior — the label stays yours, so the same engine serves estimates, work
         orders, invoices and tickets.

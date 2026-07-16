@@ -42,7 +42,7 @@ export function StoryComposeStage({
       <div className="min-w-0">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">Make it yours</h2>
-          <p className="text-base-content/70 max-w-[58ch]">
+          <p className="text-base-content max-w-[58ch]">
             Tap any phrase to change it. Add as much as you want; there’s always room for more.
           </p>
         </div>
@@ -62,7 +62,7 @@ export function StoryComposeStage({
     <div className="min-w-0">
       <div className="flex flex-col gap-2.5">
         <h2 className="text-2xl font-semibold tracking-tight">What are you building?</h2>
-        <p className="text-base-content/70 max-w-[58ch]">
+        <p className="text-base-content max-w-[58ch]">
           Say it the way you’d tell a friend — what you make, who it’s for, how they buy. Start from
           one of these and tap any phrase to make it your own, or write your own from scratch.
         </p>

@@ -25,7 +25,7 @@ export function MarketplaceSearch() {
 
   return (
     <form onSubmit={onSubmit} className="relative max-w-xl">
-      <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+      <Search className="text-base-content pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}

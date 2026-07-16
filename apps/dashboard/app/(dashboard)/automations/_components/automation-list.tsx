@@ -81,7 +81,7 @@ export function AutomationList({
 
   const runStats = (a: AutomationDto) => (
     <div className="flex flex-col gap-0">
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {a.runCount} run{a.runCount === 1 ? '' : 's'} ·{' '}
         {a.lastRunAt ? formatTimestamp(a.lastRunAt) : 'never run'}
       </p>
@@ -102,7 +102,7 @@ export function AutomationList({
             {nameLink(a, 'text-sm font-medium hover:text-module hover:underline')}
             <OriginBadge origin={a.origin} locked={a.locked} />
           </div>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {summarizeTrigger(a.triggerType, a.triggerConfig)}
           </p>
         </div>
@@ -122,7 +122,7 @@ export function AutomationList({
     {
       header: 'Enabled',
       align: 'right',
-      cell: (a) => statusToggle(a) ?? <span className="text-base-content/50">—</span>,
+      cell: (a) => statusToggle(a) ?? <span className="text-base-content">—</span>,
     },
   ];
 
@@ -139,7 +139,7 @@ export function AutomationList({
                 {nameLink(a, 'text-base font-medium hover:text-module hover:underline')}
                 <OriginBadge origin={a.origin} locked={a.locked} />
               </div>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {summarizeTrigger(a.triggerType, a.triggerConfig)}
               </p>
               <ModuleTags
@@ -184,7 +184,7 @@ export function AutomationList({
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No {emailOnly ? 'email ' : ''}automations match these filters.
         </p>
       ) : (

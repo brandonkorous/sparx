@@ -181,7 +181,7 @@ export function CollectionMetaForm(props: Props) {
                 />
                 <Label htmlFor="featured">Featured</Label>
               </div>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Featured collections surface in curated storefront slots (hero rails, nav promos).
               </p>
             </div>

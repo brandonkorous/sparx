@@ -73,7 +73,7 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
         <div className="px-6 py-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-row items-center gap-2">
-              <Search className="text-base-content/50 h-4 w-4" />
+              <Search className="text-base-content h-4 w-4" />
               <Input
                 placeholder={
                   typeKey ? `Search ${typeKey.replace(/_/g, ' ')} entries…` : 'Search any entry…'
@@ -83,10 +83,10 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
                 aria-label="Search entries"
               />
             </div>
-            {loading && <p className="text-base-content/70 text-base">Searching…</p>}
+            {loading && <p className="text-base-content text-base">Searching…</p>}
             {error && <p className="text-danger text-base">{error}</p>}
             {!loading && !error && results.length === 0 && (
-              <p className="text-base-content/70 text-base">No entries match yet.</p>
+              <p className="text-base-content text-base">No entries match yet.</p>
             )}
             <div className="flex max-h-[50vh] flex-col gap-1 overflow-y-auto">
               {results.map((r) => (
@@ -108,7 +108,7 @@ export function ReferencePicker({ open, onOpenChange, onPick, typeKey }: Referen
                   <div className="flex flex-col gap-0">
                     {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */}
                     <p className="text-sm">{r.title || r.slug || r.id}</p>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {r.typeKey}
                       {r.slug ? ` · /${r.slug}` : ''} · {r.status}
                     </p>

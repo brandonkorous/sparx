@@ -81,9 +81,7 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
               {installation.enabled ? 'enabled' : 'disabled'}
             </Badge>
           </div>
-          {installation.label && (
-            <p className="text-base-content/70 text-sm">{installation.label}</p>
-          )}
+          {installation.label && <p className="text-base-content text-sm">{installation.label}</p>}
         </div>
       </div>
 
@@ -139,7 +137,7 @@ export async function ProviderInstallationDetailContent({ id }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-row gap-4">
-      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-base-content w-40 text-sm">{label}</p>
       <p className="text-sm">{value}</p>
     </div>
   );

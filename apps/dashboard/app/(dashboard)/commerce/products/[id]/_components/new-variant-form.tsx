@@ -115,7 +115,7 @@ export function NewVariantForm({ productId, options, onCreated, onCancel }: Prop
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h4 className="text-lg font-semibold">New variant</h4>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {options.length === 0
               ? 'This product has no options — fill the SKU + price to add the default purchasable row.'
               : 'Pick one value per option, then set SKU + price.'}

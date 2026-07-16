@@ -116,7 +116,7 @@ export default async function CommerceChannelsPage({
           )}
 
           {hasRevenue && (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               See the full revenue breakdown — gross, fees, net, and top products by channel — in{' '}
               <Link href="/finance/channels" className="text-module font-medium hover:underline">
                 Finance → Channels
@@ -129,9 +129,7 @@ export default async function CommerceChannelsPage({
             <CardBody>
               <CardTitle>Available channels</CardTitle>
               {available.length === 0 ? (
-                <p className="text-base-content/70 text-sm">
-                  Every available channel is connected.
-                </p>
+                <p className="text-base-content text-sm">Every available channel is connected.</p>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {available.map((c) => (

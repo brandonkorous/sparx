@@ -123,7 +123,7 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
             options={eventSuggestions.map((e) => ({ value: e.eventType, label: e.label }))}
             onChange={(eventType) => onChange({ kind: 'event', eventType })}
           />
-          <p className="text-base-content/50 text-xs">
+          <p className="text-base-content text-xs">
             The bus event that fires this automation. Pick a suggestion or type any event type.
           </p>
         </div>

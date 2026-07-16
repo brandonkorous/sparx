@@ -33,7 +33,7 @@ export function SectionHeading({
         <h2 className="text-base-content text-2xl font-semibold tracking-[-0.01em] md:text-[1.75rem]">
           {title}
         </h2>
-        {sub ? <p className="text-base-content/70 mt-1.5 text-[0.9375rem]">{sub}</p> : null}
+        {sub ? <p className="text-base-content mt-1.5 text-[0.9375rem]">{sub}</p> : null}
       </div>
       {href ? (
         <Link
@@ -101,14 +101,14 @@ export function CategoryTiles({ categories }: { categories: CategoryTileData[] }
               <span className="text-base-content block truncate text-base font-semibold">
                 {category.name}
               </span>
-              <span className="text-base-content/70 block text-[0.8125rem]">
+              <span className="text-base-content block text-[0.8125rem]">
                 {categoryCountLabel(category.count)}
               </span>
             </div>
             <ArrowRight
               size={16}
               aria-hidden
-              className="text-base-content/50 group-hover:text-primary shrink-0 transition-all group-hover:translate-x-0.5"
+              className="text-base-content group-hover:text-primary shrink-0 transition-all group-hover:translate-x-0.5"
             />
           </div>
         </LinkCard>
@@ -190,9 +190,7 @@ export function TrustStrip() {
             </span>
             <div>
               <p className="text-base-content text-[0.9375rem] font-semibold">{item.title}</p>
-              <p className="text-base-content/70 mt-0.5 text-[0.8125rem] leading-snug">
-                {item.text}
-              </p>
+              <p className="text-base-content mt-0.5 text-[0.8125rem] leading-snug">{item.text}</p>
             </div>
           </Card>
         );

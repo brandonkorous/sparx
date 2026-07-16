@@ -44,7 +44,7 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   'transition-colors duration-150',
                   status === 'complete' && 'border-module bg-module text-white',
                   status === 'current' && 'border-module bg-module bg-soft text-module',
-                  status === 'upcoming' && 'text-base-content/50 border-base-300'
+                  status === 'upcoming' && 'text-base-content border-base-300'
                 )}
               >
                 {status === 'complete' ? <Check className="h-3.5 w-3.5" /> : idx + 1}
@@ -60,13 +60,13 @@ export const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
               <p
                 className={cn(
                   'text-xs leading-tight font-medium',
-                  status === 'current' ? 'text-base-content' : 'text-base-content/70'
+                  status === 'current' ? 'text-base-content' : 'text-base-content'
                 )}
               >
                 {step.label}
               </p>
               {step.description && (
-                <p className="text-base-content/50 mt-0.5 text-xs">{step.description}</p>
+                <p className="text-base-content mt-0.5 text-xs">{step.description}</p>
               )}
             </div>
           </li>

@@ -16,7 +16,7 @@ export default function PartnerPitchPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-base-content/70 hover:text-base-content text-sm"
+            className="text-base-content hover:text-base-content text-sm"
           >
             ← Resources
           </Link>
@@ -39,7 +39,7 @@ export default function PartnerPitchPage() {
                           aria-hidden
                           className="bg-module mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
                         />
-                        <p className="text-base-content/70 text-sm">{p}</p>
+                        <p className="text-base-content text-sm">{p}</p>
                       </li>
                     ))}
                   </ul>

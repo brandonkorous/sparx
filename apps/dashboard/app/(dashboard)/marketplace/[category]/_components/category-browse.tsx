@@ -151,7 +151,7 @@ export function CategoryBrowse({
 
       <div className="min-w-0">
         <div className="mb-4 flex flex-row flex-wrap items-center gap-3">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {total.toLocaleString()} {total === 1 ? singular : `${singular}s`}
           </p>
           <div className="ml-auto flex items-center gap-2">
@@ -206,7 +206,7 @@ export function CategoryBrowse({
 
         {items.length === 0 ? (
           <div className="border-base-300 flex flex-col items-center gap-3 rounded-lg border p-10 text-center">
-            <p className="text-base-content/70">No {singular}s match these filters.</p>
+            <p className="text-base-content">No {singular}s match these filters.</p>
             <Button variant="outline" size="sm" onClick={() => router.push(pathname)}>
               Clear filters
             </Button>
@@ -228,7 +228,7 @@ export function CategoryBrowse({
                 <Button variant="outline" onClick={loadMore} loading={loading} disabled={loading}>
                   Load more
                 </Button>
-                <p className="text-base-content/70 mt-2 text-sm">
+                <p className="text-base-content mt-2 text-sm">
                   Showing {items.length} of {total.toLocaleString()}
                 </p>
               </div>
@@ -266,9 +266,7 @@ function sortedEntries(counts: Record<string, number>): [string, number][] {
 function FacetBlock({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-base-content/70 mb-2 text-xs font-medium tracking-wide uppercase">
-        {title}
-      </p>
+      <p className="text-base-content mb-2 text-xs font-medium tracking-wide uppercase">{title}</p>
       <div>{children}</div>
     </div>
   );
@@ -288,8 +286,8 @@ function FacetRow({
   return (
     <label className="flex cursor-pointer items-center gap-2 py-1 text-sm">
       <Checkbox checked={checked} onChange={() => onToggle()} />
-      <span className="text-base-content/70">{label}</span>
-      <span className="text-base-content/50 ml-auto text-xs">{count.toLocaleString()}</span>
+      <span className="text-base-content">{label}</span>
+      <span className="text-base-content ml-auto text-xs">{count.toLocaleString()}</span>
     </label>
   );
 }

@@ -199,7 +199,7 @@ export async function DocumentEditorContent({ id }: Props) {
             </Badge>
           )}
           <Badge color={AR_STATUS_VARIANT[doc.status] ?? 'neutral'}>{doc.status}</Badge>
-          {partyName && <p className="text-base-content/70 text-sm">{partyName}</p>}
+          {partyName && <p className="text-base-content text-sm">{partyName}</p>}
         </div>
       </div>
 
@@ -362,7 +362,7 @@ export async function DocumentEditorContent({ id }: Props) {
                     <Badge color="neutral" variant="soft" size="sm">
                       {s.customerLabel}
                     </Badge>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {new Date(s.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -403,7 +403,7 @@ export async function DocumentEditorContent({ id }: Props) {
 function TotalRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex flex-row items-center justify-between">
-      <p className={`text-sm ${strong ? 'font-semibold' : 'text-base-content/70'}`}>{label}</p>
+      <p className={`text-sm ${strong ? 'font-semibold' : 'text-base-content'}`}>{label}</p>
       <p className={`text-sm tabular-nums ${strong ? 'font-semibold' : ''}`}>{value}</p>
     </div>
   );

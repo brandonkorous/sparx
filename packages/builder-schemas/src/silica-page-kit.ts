@@ -62,15 +62,12 @@ export function legacyBuyBoxToSilica(): Node {
               children: [
                 bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
                 bind(
-                  el('span', 'text-lg text-base-content/50 line-through', { text: '' }),
+                  el('span', 'text-lg text-base-content line-through', { text: '' }),
                   'compareAtPrice'
                 ),
               ],
             }),
-            bind(
-              el('div', 'text-base-content/80', { text: 'Product description.' }),
-              'description'
-            ),
+            bind(el('div', 'text-base-content', { text: 'Product description.' }), 'description'),
             addToCartForm(),
           ],
         }),

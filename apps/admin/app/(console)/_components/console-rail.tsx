@@ -20,7 +20,7 @@ import {
 
 const TILE_BASE =
   'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none';
-const TILE_INACTIVE = 'text-base-content/70 hover:bg-base-200 hover:text-base-content';
+const TILE_INACTIVE = 'text-base-content hover:bg-base-200 hover:text-base-content';
 const TILE_ACTIVE = 'bg-module bg-soft text-module';
 
 function tileClass(active: boolean, expanded: boolean): string {
@@ -31,7 +31,7 @@ function tileClass(active: boolean, expanded: boolean): string {
 function tileIconClass(active: boolean): string {
   return cn(
     'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-    active ? 'text-module' : 'text-base-content/50 group-hover:text-base-content/70'
+    active ? 'text-module' : 'text-base-content group-hover:text-base-content'
   );
 }
 
@@ -100,7 +100,7 @@ export function ConsoleRail({
             >
               {group.label ? (
                 expanded ? (
-                  <div className="text-base-content/50 px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider uppercase">
+                  <div className="text-base-content px-2 pt-3 pb-0.5 text-xs font-medium tracking-wider uppercase">
                     {group.label}
                   </div>
                 ) : (

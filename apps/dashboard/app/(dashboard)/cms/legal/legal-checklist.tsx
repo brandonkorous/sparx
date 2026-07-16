@@ -151,7 +151,7 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
             ) : null}
             {unreviewedBadge(item)}
           </div>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             /{slugFor(item)}
             {item.state === 'stale' && item.entry
               ? ` · template v${item.entry.templateVersion ?? '—'} → v${item.entry.currentVersion} available`
@@ -166,7 +166,7 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
 
   const card: SelectionCard<ChecklistItem> = {
     title: (item) => <p className="truncate font-medium">{item.title}</p>,
-    subtitle: (item) => <p className="text-base-content/70 text-xs">/{slugFor(item)}</p>,
+    subtitle: (item) => <p className="text-base-content text-xs">/{slugFor(item)}</p>,
     badge: (item) => (
       <div className="flex flex-col items-end gap-1">
         {item.required ? (

@@ -73,7 +73,7 @@ function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
     return cn(
       'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
       SIZE_PILLS[size],
-      'text-base-content/70 hover:text-base-content',
+      'text-base-content hover:text-base-content',
       'transition-colors duration-150',
       'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
       'disabled:pointer-events-none disabled:opacity-40',
@@ -86,7 +86,7 @@ function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
   return cn(
     'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
     SIZE_DEFAULT[size],
-    'text-base-content/70 hover:text-base-content',
+    'text-base-content hover:text-base-content',
     'border-b-2 border-transparent transition-colors duration-150',
     'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
     'disabled:pointer-events-none disabled:opacity-40',

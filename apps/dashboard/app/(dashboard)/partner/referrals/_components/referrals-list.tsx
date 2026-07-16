@@ -53,7 +53,7 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
         r.firstPaymentAt ? (
           fmtDate(r.firstPaymentAt)
         ) : (
-          <p className="text-base-content/70 text-sm">Not yet</p>
+          <p className="text-base-content text-sm">Not yet</p>
         ),
     },
     { header: 'Rate', cell: rate, align: 'right' },
@@ -63,12 +63,12 @@ export function ReferralsList({ rows, view }: { rows: PartnerReferral[]; view: '
   const card: SelectionCard<PartnerReferral> = {
     title: (r) => <p className="text-sm font-medium">{accountLabel(r)}</p>,
     subtitle: (r) => (
-      <p className="text-base-content/70 text-xs">Signed up {fmtDate(r.signupAt) ?? '—'}</p>
+      <p className="text-base-content text-xs">Signed up {fmtDate(r.signupAt) ?? '—'}</p>
     ),
     badge: statusBadge,
     body: (r) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {r.firstPaymentAt
             ? `First payment ${fmtDate(r.firstPaymentAt)}`
             : 'Awaiting first payment'}

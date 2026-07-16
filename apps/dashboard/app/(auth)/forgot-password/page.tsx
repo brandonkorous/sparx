@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
       <div className="flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Reset your password</h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             Enter the email tied to your account and we&apos;ll send you a reset link.
           </p>
         </div>

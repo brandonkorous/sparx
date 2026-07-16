@@ -380,7 +380,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
   return (
     <div className="border-base-300 bg-base-100 shrink-0 border-b px-6 py-4">
       {/* Narrow viewports collapse to a single line (top-2 rule). */}
-      <p className="text-base-content/70 hidden text-center text-xs font-medium max-[680px]:block">
+      <p className="text-base-content hidden text-center text-xs font-medium max-[680px]:block">
         Step {current + 1} of {steps.length}
         {steps[current]?.label ? ` · ${steps[current]?.label}` : ''}
       </p>
@@ -417,7 +417,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                   className={cn(
                     'flex h-7 w-7 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors duration-200',
                     status === 'upcoming' &&
-                      'text-base-content/60 bg-base-100 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
+                      'text-base-content bg-base-100 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
                     status === 'done' &&
                       'bg-module border-transparent text-[var(--color-module-content)]',
                     status === 'current' &&
@@ -429,7 +429,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                 <span
                   className={cn(
                     'max-w-[14ch] text-center text-[11px] leading-tight font-medium transition-colors duration-200',
-                    status === 'upcoming' ? 'text-base-content/60' : 'text-base-content'
+                    status === 'upcoming' ? 'text-base-content' : 'text-base-content'
                   )}
                 >
                   {step.label}
@@ -512,7 +512,7 @@ function FrameToolbar({
       ) : (
         <div className="flex-1" />
       )}
-      {footer && <div className="text-base-content/60 shrink-0 text-[0.8rem]">{footer}</div>}
+      {footer && <div className="text-base-content shrink-0 text-[0.8rem]">{footer}</div>}
       {/* Zone order: Form actions (Cancel/Continue) before Presentation
           (headerActions — the drawer/modal switch) before Window — the
           rightmost, strongest control is always the one that moves forward,
@@ -561,7 +561,7 @@ function TopStepperFrame({
           />
         )}
         {context && (
-          <p className="text-base-content/60 border-base-300 bg-base-200 shrink-0 border-b px-6 py-2 text-center text-xs">
+          <p className="text-base-content border-base-300 bg-base-200 shrink-0 border-b px-6 py-2 text-center text-xs">
             {context}
           </p>
         )}
@@ -590,7 +590,7 @@ function MiniProgress({
   className?: string;
 }) {
   return (
-    <div className={cn('text-base-content/60 flex items-center gap-1.5 text-xs', className)}>
+    <div className={cn('text-base-content flex items-center gap-1.5 text-xs', className)}>
       <span className="flex items-center gap-1" aria-hidden>
         {steps.map((step, idx) => (
           <span
@@ -652,7 +652,7 @@ export function SurfaceSummaryRow({
     <div className="flex items-baseline justify-between gap-3 py-2">
       <span
         className={cn(
-          'text-base-content/60 text-sm',
+          'text-base-content text-sm',
           strong && 'text-base-content text-[0.9375rem] font-semibold'
         )}
       >

@@ -83,7 +83,7 @@ function SignInForm() {
       <div className="flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Sign in</h2>
-          <p className="text-base-content/70">Sign in to your sparx workspace.</p>
+          <p className="text-base-content">Sign in to your sparx workspace.</p>
         </div>
 
         <SocialAuthSection />
@@ -104,7 +104,7 @@ function SignInForm() {
             <Field {...v.field('password')}>
               <div className="flex flex-row items-center justify-between gap-4">
                 <FieldLabel required>Password</FieldLabel>
-                <Link href="/forgot-password" className="text-base-content/70 text-xs">
+                <Link href="/forgot-password" className="text-base-content text-xs">
                   Forgot password?
                 </Link>
               </div>
@@ -131,7 +131,7 @@ function SignInForm() {
         </form>
 
         <div className="flex flex-row items-center gap-1">
-          <p className="text-base-content/70 text-sm">New here?</p>
+          <p className="text-base-content text-sm">New here?</p>
           <Button color="primary" variant="link" size="sm" render={<Link href="/sign-up" />}>
             Create an account
           </Button>

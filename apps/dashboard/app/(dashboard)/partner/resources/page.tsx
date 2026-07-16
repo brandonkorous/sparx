@@ -100,7 +100,7 @@ export default function PartnerResourcesPage() {
                     </span>
                     <div className="flex min-w-0 flex-col gap-1">
                       <p className="text-base font-medium">Onboarding guides</p>
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         Step-by-step playbooks to get each module live —{' '}
                         {MODULE_GUIDES.map((g) => g.label).join(', ')}.
                       </p>
@@ -154,7 +154,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
           </span>
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">{resource.title}</p>
-            <p className="text-base-content/70 text-sm">{resource.description}</p>
+            <p className="text-base-content text-sm">{resource.description}</p>
           </div>
           <Button
             render={<Link href={resource.href} />}

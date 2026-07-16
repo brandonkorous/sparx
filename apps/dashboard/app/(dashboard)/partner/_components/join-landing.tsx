@@ -66,7 +66,7 @@ export function PartnerJoinLanding({ canApply }: { canApply: boolean }) {
             ) : (
               <Card>
                 <CardBody>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     Applying to the Partner Program is an owner or admin action. Ask an owner or
                     admin of this workspace to apply — every application is reviewed before
                     approval.
@@ -92,7 +92,7 @@ function Hero() {
             {HERO_STATS.map((s) => (
               <div key={s.label} className="flex flex-col gap-1">
                 <span className="text-module text-[2rem] leading-none font-medium">{s.value}</span>
-                <p className="text-base-content/70 text-sm">{s.label}</p>
+                <p className="text-base-content text-sm">{s.label}</p>
               </div>
             ))}
           </div>
@@ -113,7 +113,7 @@ function HowItWorks() {
               <div className="flex flex-col gap-2">
                 <span className="text-module font-mono text-sm">{s.n}</span>
                 <p className="text-base font-medium">{s.t}</p>
-                <p className="text-base-content/70 text-sm">{s.d}</p>
+                <p className="text-base-content text-sm">{s.d}</p>
               </div>
             </CardBody>
           </Card>
@@ -137,7 +137,7 @@ function TierLadder() {
                   <div className="flex flex-col gap-1">
                     <p className="text-lg font-medium">{meta.label}</p>
                     <p className="text-module text-sm">{meta.commission}</p>
-                    <p className="text-base-content/70 text-sm">{meta.tagline}</p>
+                    <p className="text-base-content text-sm">{meta.tagline}</p>
                   </div>
                   <ul className="flex flex-col gap-2">
                     {meta.unlocks.map((u) => (

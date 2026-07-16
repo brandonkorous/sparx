@@ -155,14 +155,14 @@ export async function DealDetailContent({ id }: Props) {
         </div>
         <div className="flex flex-row flex-wrap gap-4">
           <div className="flex flex-row items-center gap-1">
-            <Briefcase className="text-base-content/50 h-3.5 w-3.5" />
-            <p className="text-base-content/70 text-sm">
+            <Briefcase className="text-base-content h-3.5 w-3.5" />
+            <p className="text-base-content text-sm">
               {deal.currency} {Number(deal.value).toLocaleString()}
             </p>
           </div>
           <div className="flex flex-row items-center gap-1">
-            <Calendar className="text-base-content/50 h-3.5 w-3.5" />
-            <p className="text-base-content/70 text-sm">
+            <Calendar className="text-base-content h-3.5 w-3.5" />
+            <p className="text-base-content text-sm">
               {deal.expectedCloseDate
                 ? `Expected ${new Date(deal.expectedCloseDate).toLocaleDateString()}`
                 : 'No expected close'}
@@ -170,7 +170,7 @@ export async function DealDetailContent({ id }: Props) {
           </div>
           {customer && (
             <div className="flex flex-row items-center gap-1">
-              <User className="text-base-content/50 h-3.5 w-3.5" />
+              <User className="text-base-content h-3.5 w-3.5" />
               <Link
                 href={`/crm/customers/${customer.id}`}
                 className="hover:text-module text-sm hover:underline"
@@ -244,7 +244,7 @@ export async function DealDetailContent({ id }: Props) {
                           {o.currency} {Number(o.total).toLocaleString()}
                         </td>
                         <td>
-                          <p className="text-base-content/70 text-sm">
+                          <p className="text-base-content text-sm">
                             {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
                           </p>
                         </td>
@@ -318,7 +318,7 @@ export async function DealDetailContent({ id }: Props) {
                           {d.currency} {Number(d.total).toLocaleString()}
                         </td>
                         <td>
-                          <p className="text-base-content/70 text-sm">
+                          <p className="text-base-content text-sm">
                             {d.validUntil ? new Date(d.validUntil).toLocaleDateString() : '—'}
                           </p>
                         </td>
@@ -338,7 +338,7 @@ export async function DealDetailContent({ id }: Props) {
           <CardBody>
             <CardTitle>Activity</CardTitle>
             {activities.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No activity yet on this deal.</p>
+              <p className="text-base-content text-sm">No activity yet on this deal.</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {activities.map((a) => (
@@ -347,7 +347,7 @@ export async function DealDetailContent({ id }: Props) {
                       <Badge color="neutral" variant="soft" size="sm">
                         {statusLabel(a.type)}
                       </Badge>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         {new Date(a.occurredAt).toLocaleDateString()}
                       </p>
                     </div>

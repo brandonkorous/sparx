@@ -102,7 +102,7 @@ export default async function PartnersPage({
                         'border-b-2 pb-1 text-sm font-medium transition-colors',
                         status === t.value
                           ? 'border-module text-base-content'
-                          : 'text-base-content/60 hover:text-base-content border-transparent'
+                          : 'text-base-content hover:text-base-content border-transparent'
                       )}
                     >
                       {t.label}

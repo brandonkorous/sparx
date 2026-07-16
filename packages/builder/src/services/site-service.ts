@@ -43,7 +43,7 @@ import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
-import { BuilderValidationError } from '../errors';
+import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
@@ -292,12 +292,75 @@ async function activeLayoutTx(tx: TxClient, ctx: PropertyContext): Promise<Build
  *  per page (by id — silica keeps ids stable), creates a row for a page silica
  *  just added, deletes a silica row absent from the payload (an explicit page
  *  removal), and writes the frame + symbols onto the active layout. */
-export async function sync(ctx: PropertyContext, rawInput: unknown): Promise<void> {
+/** Would this sync payload CLOBBER the stored site — i.e. delete every page it has?
+ *
+ *  True when a non-empty stored site shares NO page id with the incoming pages. See
+ *  the guard in `sync` for the full rationale; extracted here so the decision is pure
+ *  and directly testable (`sync` itself needs a database).
+ *
+ *  · stored empty        → false (a fresh property seeding its starter — the legit path)
+ *  · any id in common    → false (a normal edit, however many pages were removed)
+ *  · no id in common     → TRUE  (the caller holds a different site than the store) */
+export function wouldClobberSite(
+  storedPageIds: readonly string[],
+  incomingPageIds: readonly string[]
+): boolean {
+  if (storedPageIds.length === 0) return false;
+  const incoming = new Set(incomingPageIds);
+  return !storedPageIds.some((id) => incoming.has(id));
+}
+
+export interface SyncOptions {
+  /** Permit a WHOLESALE REPLACEMENT — a sync whose pages share no id with the stored
+   *  site, which otherwise trips the clobber guard below. Only for callers that mean
+   *  to swap the whole site (a blueprint install, a reset→reseed). NEVER set this on
+   *  the editor autosave path. */
+  allowReplace?: boolean;
+}
+
+export async function sync(
+  ctx: PropertyContext,
+  rawInput: unknown,
+  opts: SyncOptions = {}
+): Promise<void> {
   const input = SiteSyncInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const silicaRows = allPages.filter(isSilica);
     const inputIds = new Set(input.pages.map((p) => p.id));
+
+    // ── Clobber guard ────────────────────────────────────────────────────────
+    // This reconcile DELETES every stored page missing from the payload, published
+    // trees and all — so a payload that is not actually "this site, edited" destroys
+    // the tenant's live content irrecoverably.
+    //
+    // A real edit always keeps most page ids: silica hands back the same `Site` it
+    // was given, mutated. ZERO id overlap against a NON-EMPTY site therefore never
+    // means "the author deleted every page and made new ones" — the editor cannot
+    // even express that in one step. It means the caller is holding a DIFFERENT site
+    // than the one on disk, and the only outcomes are (a) destroy everything, or
+    // (b) refuse. Refuse.
+    //
+    // This is not hypothetical: a transient read failure made the studio seed a
+    // pristine STARTER (fresh ids) over a real tenant, and the first autosave deleted
+    // every page. The route no longer swallows that error, but the guard lives HERE
+    // so the store is safe from ANY caller — a future route, an MCP tool, a bug.
+    // Seeding a brand-new property is unaffected (no stored rows ⇒ nothing to clobber).
+    if (
+      !opts.allowReplace &&
+      wouldClobberSite(
+        silicaRows.map((r) => r.id),
+        input.pages.map((p) => p.id)
+      )
+    ) {
+      throw new BuilderConflictError(
+        `Refusing to sync: none of the ${input.pages.length} incoming page(s) match any of ` +
+          `the ${silicaRows.length} stored page(s) for this site, so this write would delete ` +
+          `every existing page. This usually means the editor loaded a starter or a different ` +
+          `site instead of yours. Reload the editor; if you meant to replace the whole site, ` +
+          `use the explicit replace path.`
+      );
+    }
     // Matched by id against EVERY page, not just already-silica ones: a page id
     // can belong to a legacy-only row (the onboarding→silica bridge reuses the
     // legacy page's id so both trees live on one row) — treating that as "new"

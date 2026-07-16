@@ -95,7 +95,7 @@ export function PaletteSection() {
         <SectionHeader
           accent="var(--color-success)"
           headline="Semantic & neutral palette"
-          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Supporting and hint text aren’t separate colors; they’re that same ink dialed back to 70% and 50% (text-base-content/70 and /50)."
+          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Supporting and hint text aren’t separate colors; they’re that same ink dialed back to 70% and 50% (text-base-content and /50)."
         />
 
         <Group title="Semantic — reserved, never decorative">

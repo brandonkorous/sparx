@@ -82,7 +82,7 @@ function ConsultantCard({
             <Avatar alt={displayName} size="md" />
             <div className="flex min-w-0 flex-col gap-0">
               <p className="truncate font-medium">{displayName}</p>
-              <p className="text-base-content/70 truncate text-sm">{consultant.email}</p>
+              <p className="text-base-content truncate text-sm">{consultant.email}</p>
             </div>
           </div>
           <div className="flex flex-row items-center gap-3">

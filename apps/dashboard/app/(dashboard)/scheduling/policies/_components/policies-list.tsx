@@ -79,7 +79,7 @@ export function PoliciesList({ policies, view }: PoliciesListProps) {
 
   const depositBadge = (p: BookingPolicy) =>
     p.depositType === 'none' ? (
-      <span className="text-base-content/70">—</span>
+      <span className="text-base-content">—</span>
     ) : (
       <Badge color="module" variant="soft" size="sm">
         {depositSummary(p)}
@@ -122,12 +122,12 @@ export function PoliciesList({ policies, view }: PoliciesListProps) {
   const card: SelectionCard<BookingPolicy> = {
     title: (p) => <p className="font-medium">{p.name}</p>,
     subtitle: (p) => (
-      <p className="text-base-content/70 text-xs">{p.cancellationWindowHours}h notice</p>
+      <p className="text-base-content text-xs">{p.cancellationWindowHours}h notice</p>
     ),
     badge: depositBadge,
     body: (p) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Late {feeSummary(p.lateCancelFeeType, p.lateCancelFeeValue)} · No-show{' '}
           {feeSummary(p.noShowFeeType, p.noShowFeeValue)}
         </p>

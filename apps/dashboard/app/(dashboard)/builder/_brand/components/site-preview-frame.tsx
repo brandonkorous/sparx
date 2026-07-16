@@ -124,7 +124,7 @@ export function SitePreviewFrame({
       <div className="border-base-300 relative overflow-hidden rounded-[var(--radius-lg)] border shadow-sm">
         {status === 'loading' ? (
           <div className="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
-            <span className="text-base-content/60 text-sm">Loading your site…</span>
+            <span className="text-base-content text-sm">Loading your site…</span>
           </div>
         ) : null}
         {src ? (
@@ -141,7 +141,7 @@ export function SitePreviewFrame({
         ) : null}
       </div>
 
-      <p className="text-base-content/60 text-xs">
+      <p className="text-base-content text-xs">
         Your live site, re-themed as you edit. Content reflects your latest saved draft —{' '}
         <strong>Publish</strong> to make it public.
       </p>

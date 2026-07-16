@@ -216,7 +216,7 @@ export default async function ReportsPage({
               <p className="opacity-70">By revenue in the selected range.</p>
             </div>
             {topProducts.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No orders in this range.</p>
+              <p className="text-base-content text-sm">No orders in this range.</p>
             ) : (
               <Table>
                 <thead>
@@ -247,7 +247,7 @@ export default async function ReportsPage({
               <p className="opacity-70">By spend in the selected range.</p>
             </div>
             {topCustomers.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No orders in this range.</p>
+              <p className="text-base-content text-sm">No orders in this range.</p>
             ) : (
               <Table>
                 <thead>
@@ -315,7 +315,7 @@ function Kpi({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[10rem] flex-1">
       <CardBody className="py-4">
         <div className="flex flex-col gap-1">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-2xl font-semibold">{value}</p>
         </div>
       </CardBody>
@@ -326,7 +326,7 @@ function Kpi({ label, value }: { label: string; value: string }) {
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
     <div className="flex flex-row justify-between gap-4">
-      <p className="text-base-content/70 text-sm">{label}</p>
+      <p className="text-base-content text-sm">{label}</p>
       <p className={`text-sm ${bold ? 'font-semibold' : ''}`}>{value}</p>
     </div>
   );

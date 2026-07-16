@@ -183,7 +183,7 @@ export function ConditionEditor({
             items={{ AND: 'All of', OR: 'Any of' }}
             className="w-28"
           />
-          <span className="text-base-content/70 text-sm">the following {label}</span>
+          <span className="text-base-content text-sm">the following {label}</span>
         </div>
         {onRemove && (
           <Button
@@ -200,7 +200,7 @@ export function ConditionEditor({
       </div>
 
       {value.conditions.length === 0 ? (
-        <p className="text-base-content/50 text-sm">
+        <p className="text-base-content text-sm">
           {isRoot
             ? 'No conditions — the automation runs on every trigger.'
             : 'Empty group — add a condition.'}

@@ -266,7 +266,7 @@ export default async function SchedulingOverviewPage() {
                 <div className="flex flex-col gap-4">
                   {[...groups.entries()].map(([key, dayEvents]) => (
                     <div key={key}>
-                      <p className="text-base-content/50 mb-1 text-xs font-medium">
+                      <p className="text-base-content mb-1 text-xs font-medium">
                         {dayHeading(dayEvents[0]!.startAt)}
                       </p>
                       {dayEvents.map((e) => (
@@ -277,14 +277,14 @@ export default async function SchedulingOverviewPage() {
                           entityId={e.id}
                           className="border-base-300 hover:bg-base-200 -mx-2 flex items-center gap-3 rounded-md border-b px-2 py-2.5 transition-colors last:border-b-0"
                         >
-                          <span className="text-base-content/70 w-16 shrink-0 text-sm font-medium tabular-nums">
+                          <span className="text-base-content w-16 shrink-0 text-sm font-medium tabular-nums">
                             {formatTime(e.startAt)}
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="text-base-content block truncate text-sm font-medium">
                               {e.serviceName}
                             </span>
-                            <span className="text-base-content/50 block truncate text-xs">
+                            <span className="text-base-content block truncate text-xs">
                               {eventMeta(e)}
                             </span>
                           </span>

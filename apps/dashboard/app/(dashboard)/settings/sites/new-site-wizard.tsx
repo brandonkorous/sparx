@@ -226,7 +226,7 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
           )}
         >
           <span className="flex items-center gap-2">
-            <PencilRuler className="text-base-content/50 h-4 w-4" />
+            <PencilRuler className="text-base-content h-4 w-4" />
             <p className="font-medium">Blank site</p>
             {choice === BLANK && (
               <Badge color="module" variant="solid" size="sm">
@@ -234,7 +234,7 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
               </Badge>
             )}
           </span>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             An empty site with default chrome. Build it yourself in the Builder, or run it headless.
           </p>
         </button>
@@ -276,8 +276,8 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
               </div>
               <div className="flex flex-1 flex-col gap-1.5 p-4">
                 <p className="font-medium">{bp.name}</p>
-                <p className="text-base-content/70 line-clamp-2 text-sm">{bp.summary}</p>
-                <p className="text-base-content/70 mt-1 text-xs">{contentsLine(bp.contents)}</p>
+                <p className="text-base-content line-clamp-2 text-sm">{bp.summary}</p>
+                <p className="text-base-content mt-1 text-xs">{contentsLine(bp.contents)}</p>
               </div>
             </button>
           );
@@ -319,7 +319,7 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
             }}
             placeholder="wholesale"
           />
-          <div className="text-base-content/60 mt-2 flex items-center gap-2 text-sm">
+          <div className="text-base-content mt-2 flex items-center gap-2 text-sm">
             <Globe className="h-4 w-4 shrink-0" />
             <span>
               Live instantly at{' '}
@@ -345,18 +345,18 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
     >
       <div className="flex flex-col gap-4">
         <dl className="grid grid-cols-[7rem_1fr] gap-x-4 gap-y-2.5 text-sm">
-          <dt className="text-base-content/60">Name</dt>
+          <dt className="text-base-content">Name</dt>
           <dd className="font-medium">{name.trim() || '—'}</dd>
-          <dt className="text-base-content/60">Address</dt>
+          <dt className="text-base-content">Address</dt>
           <dd className="font-medium">{predictedHost}</dd>
-          <dt className="text-base-content/60">Starting point</dt>
+          <dt className="text-base-content">Starting point</dt>
           <dd className="font-medium">
             {selectedBlueprint ? selectedBlueprint.name : 'Blank site'}
           </dd>
           {selectedBlueprint && (
             <>
-              <dt className="text-base-content/60">Includes</dt>
-              <dd className="text-base-content/60">{contentsLine(selectedBlueprint.contents)}</dd>
+              <dt className="text-base-content">Includes</dt>
+              <dd className="text-base-content">{contentsLine(selectedBlueprint.contents)}</dd>
             </>
           )}
         </dl>
@@ -365,7 +365,7 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
           <div className="border-base-300 flex items-start justify-between gap-4 rounded-xl border p-4">
             <span className="flex flex-col gap-0.5">
               <p className="text-sm font-medium">Publish immediately</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Your new site goes live at its address right away. Turn this off to install
                 everything as drafts and review before going live.
               </p>
@@ -426,7 +426,7 @@ function NewSiteWizardInner({ presentation = 'page', blueprints, zoneSuffix }: N
       <div className="flex flex-col gap-5">
         {result.host && (
           <div className="border-base-300 flex items-center gap-2 rounded-xl border p-3 text-sm">
-            <Globe className="text-base-content/50 h-4 w-4 shrink-0" />
+            <Globe className="text-base-content h-4 w-4 shrink-0" />
             <a
               href={`https://${result.host}`}
               target="_blank"

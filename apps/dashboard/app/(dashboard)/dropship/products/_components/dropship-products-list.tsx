@@ -79,7 +79,7 @@ function productCell(p: DropshipProduct) {
         {p.links[0] && (
           <Link
             href={`/commerce/products/${p.links[0].productId}`}
-            className="text-base-content/70 text-xs hover:underline"
+            className="text-base-content text-xs hover:underline"
           >
             View in catalog →
           </Link>
@@ -90,7 +90,7 @@ function productCell(p: DropshipProduct) {
 }
 
 function supplierIdCell(p: DropshipProduct) {
-  return <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>;
+  return <span className="text-base-content font-mono text-xs">{p.supplierProductId}</span>;
 }
 
 function costCell(p: DropshipProduct) {
@@ -98,15 +98,13 @@ function costCell(p: DropshipProduct) {
 }
 
 function msrpCell(p: DropshipProduct) {
-  return (
-    <span className="text-base-content/70">{p.msrpCents ? formatCents(p.msrpCents) : '—'}</span>
-  );
+  return <span className="text-base-content">{p.msrpCents ? formatCents(p.msrpCents) : '—'}</span>;
 }
 
 function marginCell(p: DropshipProduct) {
   const margin = calcMarginPct(p.costPriceCents, p.msrpCents);
   if (margin === null) {
-    return <p className="text-base-content/70 text-sm">—</p>;
+    return <p className="text-base-content text-sm">—</p>;
   }
   return (
     <Badge
@@ -196,25 +194,25 @@ function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
       p.links[0] ? (
         <Link
           href={`/commerce/products/${p.links[0].productId}`}
-          className="text-base-content/70 text-xs hover:underline"
+          className="text-base-content text-xs hover:underline"
         >
           View in catalog →
         </Link>
       ) : (
-        <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>
+        <span className="text-base-content font-mono text-xs">{p.supplierProductId}</span>
       ),
     badge: statusCell,
     body: (p) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">{costCell(p)} cost</p>
+          <p className="text-base-content text-sm">{costCell(p)} cost</p>
           {marginCell(p)}
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             MSRP {p.msrpCents ? formatCents(p.msrpCents) : '—'}
           </p>
-          <span className="text-base-content/70 font-mono text-xs">{p.supplierProductId}</span>
+          <span className="text-base-content font-mono text-xs">{p.supplierProductId}</span>
         </div>
         <div className="flex flex-row justify-end">
           <ResyncButton supplierId={supplierId} productId={p.id} />
@@ -236,7 +234,7 @@ export function DropshipProductsList({ groups, view }: DropshipProductsListProps
             </Badge>
             <Link
               href={`/dropship/suppliers/${supplier.id}/catalog`}
-              className="text-base-content/70 hover:text-base-content ml-auto flex items-center gap-1 text-xs"
+              className="text-base-content hover:text-base-content ml-auto flex items-center gap-1 text-xs"
             >
               Browse catalog <ExternalLink className="h-3 w-3" />
             </Link>

@@ -108,7 +108,7 @@ function ShipmentLine({ fulfillment }: { fulfillment: OrderFulfillmentView }): R
     .join(' · ');
   return (
     <div className="mt-1.5 text-sm">
-      <span className="text-base-content/60">{label}</span>
+      <span className="text-base-content">{label}</span>
       {fulfillment.trackingNumber ? (
         fulfillment.trackingUrl ? (
           <a
@@ -121,7 +121,7 @@ function ShipmentLine({ fulfillment }: { fulfillment: OrderFulfillmentView }): R
             <ExternalLink size={13} aria-hidden />
           </a>
         ) : (
-          <span className="text-base-content/60 ml-2">Tracking {fulfillment.trackingNumber}</span>
+          <span className="text-base-content ml-2">Tracking {fulfillment.trackingNumber}</span>
         )
       ) : null}
     </div>
@@ -261,24 +261,24 @@ export function OrderTimeline({ order }: { order: OrderDetail }) {
         return (
           <TimelineItem key={step.key}>
             {i > 0 ? <hr className={before ? rail : 'bg-base-300'} /> : null}
-            <TimelineMiddle className={reached ? mark : 'text-base-content/30'}>
+            <TimelineMiddle className={reached ? mark : 'text-base-content'}>
               {step.icon}
             </TimelineMiddle>
             <TimelineEnd className="pb-6">
               <span
                 className={cn(
                   'block text-base font-semibold',
-                  reached ? 'text-base-content' : 'text-base-content/50'
+                  reached ? 'text-base-content' : 'text-base-content'
                 )}
               >
                 {step.label}
               </span>
               {step.at ? (
-                <span className="text-base-content/60 mt-0.5 block text-sm">
+                <span className="text-base-content mt-0.5 block text-sm">
                   {formatStamp(step.at)}
                 </span>
               ) : states[i] === 'active' && !step.terminal ? (
-                <span className="text-base-content/60 mt-0.5 block text-sm">In progress</span>
+                <span className="text-base-content mt-0.5 block text-sm">In progress</span>
               ) : null}
               {step.detail}
             </TimelineEnd>

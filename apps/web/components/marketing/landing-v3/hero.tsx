@@ -23,7 +23,7 @@ export function LandingV3Hero() {
               <br />
               <span className="text-primary">Not the software.</span>
             </Heading>
-            <Text variant="lead" className="text-base-content/80 max-w-xl text-xl">
+            <Text variant="lead" className="text-base-content max-w-xl text-xl">
               You started a business to make, sell, serve, teach, or finally work for yourself.
               Sparx brings your website, customers, sales, email and AI into one place that grows
               with you.

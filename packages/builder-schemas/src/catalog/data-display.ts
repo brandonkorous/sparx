@@ -60,7 +60,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
                 'product.title'
               ),
               bound(
-                atom('Text', 'text-sm text-base-content/70', {
+                atom('Text', 'text-sm text-base-content', {
                   variant: 'body',
                   text: 'Everything you need for the long haul — sealed bearings, a reinforced frame, and a five-year warranty.',
                 }),
@@ -73,7 +73,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
                   }),
                   el(
                     'a',
-                    'text-sm font-medium text-base-content/60 transition-colors hover:text-primary',
+                    'text-sm font-medium text-base-content transition-colors hover:text-primary',
                     {
                       text: 'Compare',
                       attrs: { href: '#' },
@@ -114,7 +114,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
                 level: 'h3',
                 text: 'Fleet maintenance plan',
               }),
-              atom('Text', 'text-sm text-base-content/70', {
+              atom('Text', 'text-sm text-base-content', {
                 variant: 'body',
                 text: 'Scheduled service across every vehicle, billed monthly with priority bay access and loaner coverage.',
               }),
@@ -209,7 +209,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
             ),
           ],
         }),
-        el('span', 'text-sm text-base-content/70', { text: '9 people on this account' }),
+        el('span', 'text-sm text-base-content', { text: '9 people on this account' }),
       ],
     }),
   }),
@@ -265,7 +265,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el('table', 'w-full border-collapse text-left text-sm', {
           children: [
-            el('thead', 'bg-base-200 text-xs font-semibold text-base-content/70', {
+            el('thead', 'bg-base-200 text-xs font-semibold text-base-content', {
               children: [
                 el('tr', '', {
                   children: [
@@ -356,7 +356,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex items-center gap-2', {
                   children: [
                     el('span', 'text-sm font-medium text-base-content', { text: 'Sasha Rivera' }),
-                    el('span', 'text-xs text-base-content/50', { text: '9:41 AM' }),
+                    el('span', 'text-xs text-base-content', { text: '9:41 AM' }),
                   ],
                 }),
                 el(
@@ -378,7 +378,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
               children: [
                 el('div', 'flex items-center gap-2', {
                   children: [
-                    el('span', 'text-xs text-base-content/50', { text: '9:43 AM' }),
+                    el('span', 'text-xs text-base-content', { text: '9:43 AM' }),
                     el('span', 'text-sm font-medium text-base-content', { text: 'You' }),
                   ],
                 }),
@@ -408,11 +408,11 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
       'Inline keycaps describing a shortcut, with a label and a join glyph between keys.',
     surfaces: ['page', 'site'],
     tags: ['kbd', 'shortcut', 'keys', 'hotkey', 'keyboard', 'data-display'],
-    tree: el('div', 'flex w-full flex-wrap items-center gap-2 text-sm text-base-content/70', {
+    tree: el('div', 'flex w-full flex-wrap items-center gap-2 text-sm text-base-content', {
       children: [
         el('span', '', { text: 'Open the command palette' }),
         el('span', 'inline-flex items-center gap-1', {
-          children: [keycap('⌘'), el('span', 'text-base-content/40', { text: '+' }), keycap('K')],
+          children: [keycap('⌘'), el('span', 'text-base-content', { text: '+' }), keycap('K')],
         }),
       ],
     }),
@@ -434,7 +434,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
       children: [
         atom('Rating', 'st-c-warning', { value: '4', count: '5' }),
         el('span', 'text-sm font-medium text-base-content', { text: '4.0' }),
-        el('span', 'text-sm text-base-content/50', { text: '(218 reviews)' }),
+        el('span', 'text-sm text-base-content', { text: '(218 reviews)' }),
       ],
     }),
   }),
@@ -480,13 +480,13 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
           {
             children: [
               el('span', '', { text: 'Shipping & returns' }),
-              el('span', 'text-base-content/50 transition-transform group-open:rotate-180', {
+              el('span', 'text-base-content transition-transform group-open:rotate-180', {
                 text: '⌄',
               }),
             ],
           }
         ),
-        atom('Text', 'mt-3 text-sm text-base-content/70', {
+        atom('Text', 'mt-3 text-sm text-base-content', {
           variant: 'body',
           text: 'Orders ship within one business day. Returns are accepted within 30 days in original condition — we cover return shipping on defects.',
         }),
@@ -554,13 +554,13 @@ function accordionItem(question: string, answer: string, open: boolean): Builder
         {
           children: [
             el('span', '', { text: question }),
-            el('span', 'shrink-0 text-base-content/50 transition-transform group-open:rotate-180', {
+            el('span', 'shrink-0 text-base-content transition-transform group-open:rotate-180', {
               text: '⌄',
             }),
           ],
         }
       ),
-      el('div', 'px-5 pb-4 text-sm text-base-content/70', { text: answer }),
+      el('div', 'px-5 pb-4 text-sm text-base-content', { text: answer }),
     ],
   });
 }
@@ -605,13 +605,13 @@ function timelineEntry(
           el('div', 'flex flex-wrap items-baseline gap-2', {
             children: [
               el('p', 'text-sm font-semibold text-base-content', { text: title }),
-              el('time', 'text-xs text-base-content/50', {
+              el('time', 'text-xs text-base-content', {
                 text: date,
                 attrs: { datetime: '2026-06' },
               }),
             ],
           }),
-          el('p', 'mt-1 text-sm text-base-content/70', { text: body }),
+          el('p', 'mt-1 text-sm text-base-content', { text: body }),
         ],
       }),
     ],
@@ -629,7 +629,7 @@ function carouselCard(title: string, body: string): BuilderNode {
         el('div', 'flex flex-col gap-1 p-4', {
           children: [
             el('p', 'text-base font-semibold text-base-content', { text: title }),
-            el('p', 'text-sm text-base-content/70', { text: body }),
+            el('p', 'text-sm text-base-content', { text: body }),
           ],
         }),
       ],
@@ -641,7 +641,7 @@ function carouselCard(title: string, body: string): BuilderNode {
 function descRow(term: string, detail: string): BuilderNode {
   return el('div', 'flex items-baseline justify-between gap-4 px-5 py-3', {
     children: [
-      el('dt', 'text-sm text-base-content/60', { text: term }),
+      el('dt', 'text-sm text-base-content', { text: term }),
       el('dd', 'text-sm font-medium text-base-content', { text: detail }),
     ],
   });

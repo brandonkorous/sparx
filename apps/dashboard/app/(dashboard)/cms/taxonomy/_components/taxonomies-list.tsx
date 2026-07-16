@@ -64,7 +64,7 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
       cell: (t) => (
         <div className="flex min-w-0 flex-col gap-1">
           {nameLink(t, 'truncate text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 truncate text-xs">
+          <p className="text-base-content truncate text-xs">
             <code>{t.key}</code>
           </p>
         </div>
@@ -87,14 +87,14 @@ export function TaxonomiesList({ rows, view }: TaxonomiesListProps) {
   const card: SelectionCard<TaxonomyListItem> = {
     title: (t) => nameLink(t, 'truncate text-sm font-medium hover:text-module hover:underline'),
     subtitle: (t) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         <code>{t.key}</code>
       </p>
     ),
     badge: kindBadge,
     body: (t) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {t.term_count} term{t.term_count === 1 ? '' : 's'}
         </p>
         {manageButton(t)}

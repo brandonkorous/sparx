@@ -130,7 +130,7 @@ export function InventoryPanel({ variantsWithLevels, warehouses }: InventoryPane
                         <div className="flex flex-row flex-wrap items-center gap-2">
                           <span className="font-mono text-sm font-medium">{v.sku}</span>
                           {v.variantTitle && (
-                            <span className="text-base-content/70 text-sm">{v.variantTitle}</span>
+                            <span className="text-base-content text-sm">{v.variantTitle}</span>
                           )}
                         </div>
                       </td>
@@ -269,7 +269,7 @@ function VariantInventoryRow({
         <td>
           <div className="flex flex-col gap-0">
             <span className="font-mono text-sm font-medium">{warehouse.code}</span>
-            <span className="text-base-content/70 text-xs">{warehouse.name}</span>
+            <span className="text-base-content text-xs">{warehouse.name}</span>
           </div>
         </td>
         <td className="text-right tabular-nums">{onHand}</td>
@@ -279,13 +279,13 @@ function VariantInventoryRow({
         </td>
         <td>
           {reorderPoint === null ? (
-            <span className="text-base-content/70 text-xs">none</span>
+            <span className="text-base-content text-xs">none</span>
           ) : belowReorder ? (
             <Badge color="warning" variant="soft" size="sm">
               ≤ {reorderPoint}
             </Badge>
           ) : (
-            <span className="text-base-content/70 text-sm tabular-nums">≤ {reorderPoint}</span>
+            <span className="text-base-content text-sm tabular-nums">≤ {reorderPoint}</span>
           )}
         </td>
         <td className="text-right">

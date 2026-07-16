@@ -46,7 +46,7 @@ export default async function MerchantsPage({
         <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Independent sellers
         </h1>
-        <p className="text-base-content/70 mt-2 max-w-2xl text-base">
+        <p className="text-base-content mt-2 max-w-2xl text-base">
           {q
             ? `Sellers matching “${q}”.`
             : 'Real shops and makers selling direct on sparx.market — shipped from across the network.'}

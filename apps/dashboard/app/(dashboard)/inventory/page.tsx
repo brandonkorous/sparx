@@ -363,7 +363,7 @@ export default async function InventoryPage() {
                     ],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -434,7 +434,7 @@ export default async function InventoryPage() {
                 {summary.lowOrOut.map((r) => (
                   <tr key={`${r.variantId}-${r.location}`}>
                     <td className="font-medium">{r.title}</td>
-                    <td className="text-base-content/50">{r.location}</td>
+                    <td className="text-base-content">{r.location}</td>
                     <td className="text-right tabular-nums">{fmtNumber(r.onHand)}</td>
                     <td className="text-right tabular-nums">{fmtNumber(r.available)}</td>
                     <td>
@@ -478,9 +478,9 @@ export default async function InventoryPage() {
                   color="module"
                   valueFormat="number"
                 />
-                <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
+                <p className="border-base-300 text-base-content mt-4 border-t pt-3 text-xs">
                   Total on hand ·{' '}
-                  <span className="text-base-content/70 font-medium">
+                  <span className="text-base-content font-medium">
                     {summary ? fmtNumber(summary.valuation.totalUnits) : '—'} units
                   </span>{' '}
                   across {fmtNumber(locationCount)} locations
@@ -502,7 +502,7 @@ export default async function InventoryPage() {
                   <TimelineItem key={a.id} showConnector={i < activity.length - 1}>
                     <TimelineTitle>
                       {a.title} —{' '}
-                      <span className="text-base-content/70 font-normal">
+                      <span className="text-base-content font-normal">
                         {signed(a.delta)} · {REASON_LABELS[a.reason] ?? a.reason} at {a.location}
                       </span>
                     </TimelineTitle>

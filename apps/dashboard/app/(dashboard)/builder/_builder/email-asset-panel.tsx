@@ -101,7 +101,7 @@ function MediaField({
           className="border-base-300 h-24 w-full rounded border object-cover"
         />
       ) : (
-        <p className="text-base-content/60">No picture chosen yet.</p>
+        <p className="text-base-content">No picture chosen yet.</p>
       )}
       <div className="flex items-center gap-2">
         <Button

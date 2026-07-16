@@ -98,11 +98,19 @@ function serializeAsset(row: AssetRow, variants: VariantRow[] = []) {
     usage_count: row.usageCount,
     // Originals are private — the dashboard fetches them via a separate
     // signed-GET flow once we add it (Phase 3.7). Variants are public.
-    // A hot-linked external asset (blueprint installs) stores an absolute URL
-    // as its key — surface it verbatim so the dashboard can preview it. In
-    // local mode the original bytes are served by api-rest; in GCS mode the
-    // private original has no public URL (null).
-    original_url: /^https?:\/\//i.test(row.key)
+    //
+    // A key that IS ALREADY A URL is surfaced verbatim; only a real STORAGE key gets
+    // resolved through `storage.publicUrl`. Two kinds qualify: an absolute http(s)
+    // ref (a hot-linked blueprint asset) and an inline `data:` URI (an SVG brand mark
+    // — stored inline, no transcoded variants since the worker skips SVG). Matching
+    // http(s) alone sent `data:` down the storage branch, which CONCATENATED the
+    // public base onto the URI ("…/v1/public/media/file/data:image/svg+xml,…") and
+    // yielded a 404. The dashboard trusts original_url over the raw key, so a set
+    // logo previewed as an empty tile (docs/122).
+    //
+    // In local mode the original bytes are served by api-rest; in GCS mode the private
+    // original has no public URL (null) — there the dashboard falls back to the key.
+    original_url: /^(?:https?:|data:)/i.test(row.key)
       ? row.key
       : storage.mode === 'local'
         ? storage.publicUrl(row.key)

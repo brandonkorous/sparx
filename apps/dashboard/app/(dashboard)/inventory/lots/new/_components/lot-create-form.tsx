@@ -362,7 +362,7 @@ function SkuResolver({
       <div className="border-base-300 flex flex-row flex-wrap items-center gap-3 rounded border px-3 py-2">
         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
           <p className="text-sm font-medium">{variant.title ?? variant.sku}</p>
-          <p className="text-base-content/70 font-mono text-xs">{variant.sku}</p>
+          <p className="text-base-content font-mono text-xs">{variant.sku}</p>
         </div>
         <Button variant="ghost" size="sm" type="button" onClick={onClear}>
           Change item

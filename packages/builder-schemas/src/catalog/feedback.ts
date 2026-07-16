@@ -120,12 +120,12 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex flex-1 flex-col gap-0.5', {
                     children: [
                       el('p', 'text-sm font-medium text-base-content', { text: 'Saved to drafts' }),
-                      el('p', 'text-xs text-base-content/60', {
+                      el('p', 'text-xs text-base-content', {
                         text: 'You can publish whenever you’re ready.',
                       }),
                     ],
                   }),
-                  el('span', 'cursor-pointer text-base-content/40 hover:text-base-content', {
+                  el('span', 'cursor-pointer text-base-content hover:text-base-content', {
                     text: '✕',
                   }),
                 ],
@@ -142,12 +142,12 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex flex-1 flex-col gap-0.5', {
                     children: [
                       el('p', 'text-sm font-medium text-base-content', { text: 'New comment' }),
-                      el('p', 'text-xs text-base-content/60', {
+                      el('p', 'text-xs text-base-content', {
                         text: 'Riley left a note on your homepage.',
                       }),
                     ],
                   }),
-                  el('span', 'cursor-pointer text-base-content/40 hover:text-base-content', {
+                  el('span', 'cursor-pointer text-base-content hover:text-base-content', {
                     text: '✕',
                   }),
                 ],
@@ -174,7 +174,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
         el('div', 'flex items-center justify-between text-sm', {
           children: [
             el('span', 'font-medium text-base-content', { text: 'Uploading assets' }),
-            el('span', 'text-base-content/60', { text: '65%' }),
+            el('span', 'text-base-content', { text: '65%' }),
           ],
         }),
         // The real Progress atom (st-progress) — value/max drive the fill, st-c-*
@@ -315,7 +315,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       {
         children: [
           el('div', 'flex h-14 w-14 items-center justify-center rounded-full bg-base-200', {
-            children: [atom('Icon', 'h-7 w-7 text-base-content/50', { name: 'inbox' })],
+            children: [atom('Icon', 'h-7 w-7 text-base-content', { name: 'inbox' })],
           }),
           el('div', 'flex flex-col gap-1', {
             children: [
@@ -323,7 +323,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
                 level: 'h3',
                 text: 'No results yet',
               }),
-              el('p', 'mx-auto max-w-sm text-sm text-base-content/60', {
+              el('p', 'mx-auto max-w-sm text-sm text-base-content', {
                 text: 'Nothing matches your filters right now. Try broadening your search or add your first item to get started.',
               }),
             ],
@@ -403,7 +403,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
               'mx-auto flex max-w-5xl flex-col items-center gap-4 @2xl:flex-row @2xl:justify-between',
               {
                 children: [
-                  atom('Text', 'text-sm text-base-content/80', {
+                  atom('Text', 'text-sm text-base-content', {
                     variant: 'body',
                     text: 'We use cookies to keep the site running smoothly and to understand how it is used. Accept all, or keep only what is essential.',
                   }),

@@ -23,6 +23,7 @@ import { CategoryIndex } from '@/components/category/category-index';
 import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
+import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import type { ResolvedSite } from '@/lib/site-context';
 
 /** Route-supplied context a core may need beyond its author-set `node.props` — the
@@ -77,6 +78,10 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
       case HOST_KEYS.schedulingServiceDetail:
         // Per-record: the route passes the service id.
         return <BookingServiceDetail serviceId={ctx.recordId ?? ''} />;
+      case HOST_KEYS.commerceAuth:
+        // Mode-parameterized: the composite/route bakes `mode` into the node's props
+        // (signin | register | forgot | reset); the form reads its own URL params.
+        return <AccountAuth mode={toAuthMode(node.props?.mode)} />;
       default:
         return null;
     }

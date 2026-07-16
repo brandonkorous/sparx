@@ -197,7 +197,7 @@ export function ThreadView({
               >
                 <span className="font-medium">{r.title}</span>
                 {r.shortcut ? (
-                  <span className="text-base-content/70 ml-2 text-xs">/{r.shortcut}</span>
+                  <span className="text-base-content ml-2 text-xs">/{r.shortcut}</span>
                 ) : null}
               </button>
             ))}
@@ -211,7 +211,7 @@ export function ThreadView({
           placeholder="Type a reply…  (/ for quick replies)"
         />
         {quickReplies.length > 0 ? (
-          <p className="text-base-content/70 mt-1.5 px-1 text-xs">
+          <p className="text-base-content mt-1.5 px-1 text-xs">
             Type <span className="font-mono">/</span> in the box above to insert a quick reply.
           </p>
         ) : null}

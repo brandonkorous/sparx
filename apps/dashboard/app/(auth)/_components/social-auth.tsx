@@ -62,7 +62,7 @@ export function SocialAuthSection() {
         </span>
       </Button>
 
-      <p className="text-base-content/70 text-center text-xs">
+      <p className="text-base-content text-center text-xs">
         By continuing with Google, you agree to our{' '}
         <a
           href={`${LEGAL_BASE}/terms`}
@@ -95,7 +95,7 @@ export function SocialAuthSection() {
 
       <div className="flex items-center gap-3 py-1" aria-hidden>
         <span className="bg-base-300 h-px flex-1" />
-        <span className="text-base-content/50 text-xs">or</span>
+        <span className="text-base-content text-xs">or</span>
         <span className="bg-base-300 h-px flex-1" />
       </div>
     </div>

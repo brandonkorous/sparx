@@ -32,7 +32,7 @@ function capabilityScopes(c: Connection): string[] {
 
 function scopeBadges(scopes: string[]) {
   if (scopes.length === 0) {
-    return <p className="text-base-content/70 text-xs">No capability scopes</p>;
+    return <p className="text-base-content text-xs">No capability scopes</p>;
   }
   return (
     <div className="flex flex-row flex-wrap gap-1">
@@ -74,7 +74,7 @@ export function ConnectionsList({ connections }: { connections: Connection[] }) 
     {
       header: 'Connected',
       cell: (c) => (
-        <p className="text-base-content/70 text-sm">{c.firstAuthorizedAt.toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{c.firstAuthorizedAt.toLocaleDateString()}</p>
       ),
     },
     { header: '', id: 'actions', align: 'right', cell: revokeButton },
@@ -96,7 +96,7 @@ export function ConnectionsList({ connections }: { connections: Connection[] }) 
               {revokeButton(c)}
             </div>
             {scopeBadges(capabilityScopes(c))}
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Connected {c.firstAuthorizedAt.toLocaleDateString()} · last authorized{' '}
               {c.lastAuthorizedAt.toLocaleString()}
             </p>

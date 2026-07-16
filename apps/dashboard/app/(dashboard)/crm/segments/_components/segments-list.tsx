@@ -68,7 +68,7 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
             {nameLink(s, 'text-sm font-medium hover:text-module hover:underline')}
             {badges(s)}
           </div>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             slug <code>{s.slug}</code>
           </p>
         </div>
@@ -78,9 +78,9 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
       header: 'Description',
       cell: (s) =>
         s.description ? (
-          <p className="text-base-content/70 line-clamp-2 text-sm">{s.description}</p>
+          <p className="text-base-content line-clamp-2 text-sm">{s.description}</p>
         ) : (
-          <p className="text-base-content/70 text-sm">—</p>
+          <p className="text-base-content text-sm">—</p>
         ),
     },
     {
@@ -112,15 +112,15 @@ export function SegmentsList({ segments, view }: SegmentsListProps) {
                 {badges(s)}
               </div>
               {s.description && (
-                <p className="text-base-content/70 truncate text-sm">{s.description}</p>
+                <p className="text-base-content truncate text-sm">{s.description}</p>
               )}
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 slug <code>{s.slug}</code>
               </p>
             </div>
             <div className="flex flex-row items-center gap-3">
               <div className="flex flex-col gap-0">
-                <p className="text-base-content/70 text-xs">Members</p>
+                <p className="text-base-content text-xs">Members</p>
                 <p className="text-lg font-medium tabular-nums">{s.memberCount.toLocaleString()}</p>
               </div>
               <Button render={<Link href={`/crm/segments/${s.id}`} />} variant="ghost" size="sm">

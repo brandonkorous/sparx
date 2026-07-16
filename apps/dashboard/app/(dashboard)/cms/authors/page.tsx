@@ -100,7 +100,7 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
         </Card>
       ) : (
         <>
-          <p className="text-base-content/70 mb-6 text-sm">
+          <p className="text-base-content mb-6 text-sm">
             Click an author to edit name, slug, and bio.
           </p>
           <AuthorsList rows={authors} view={view} />

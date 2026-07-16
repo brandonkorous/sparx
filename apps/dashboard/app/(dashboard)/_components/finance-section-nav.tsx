@@ -32,7 +32,7 @@ function FlowDivider({ label, collapsed }: { label: string; collapsed: boolean }
   }
   return (
     <div className="border-base-300 mt-3 mb-1 border-t px-2 pt-2">
-      <span className="text-base-content/50 text-xs font-medium">{label}</span>
+      <span className="text-base-content text-xs font-medium">{label}</span>
     </div>
   );
 }

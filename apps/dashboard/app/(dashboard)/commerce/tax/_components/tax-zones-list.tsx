@@ -56,7 +56,7 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
     { header: 'Country', cell: (z) => countryLink(z) },
     {
       header: 'Region',
-      cell: (z) => z.region ?? <p className="text-base-content/70 text-xs">—</p>,
+      cell: (z) => z.region ?? <p className="text-base-content text-xs">—</p>,
     },
     {
       header: 'Nexus',
@@ -76,14 +76,14 @@ export function TaxZonesList({ zones, view }: TaxZonesListProps) {
 
   const card: SelectionCard<TaxZoneRow> = {
     title: (z) => countryLink(z, 'truncate font-medium hover:text-module'),
-    subtitle: (z) => (z.region ? <p className="text-base-content/70 text-xs">{z.region}</p> : null),
+    subtitle: (z) => (z.region ? <p className="text-base-content text-xs">{z.region}</p> : null),
     badge: statusBadge,
     body: (z) => (
       <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge color="neutral" variant="soft" size="sm">
           {statusLabel(z.nexusType)}
         </Badge>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {z.rateCount} rate{z.rateCount === 1 ? '' : 's'}
           {z.registrationNumber ? ` · reg ${z.registrationNumber}` : ''}
         </p>

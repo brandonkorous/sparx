@@ -88,7 +88,7 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
     { header: 'Supplier', cell: (s) => nameLink(s, 'text-sm font-medium hover:underline') },
     {
       header: 'Type',
-      cell: (s) => <p className="text-base-content/70 text-sm">{vendorLabel(s.type)}</p>,
+      cell: (s) => <p className="text-base-content text-sm">{vendorLabel(s.type)}</p>,
     },
     { header: 'Status', cell: statusBadge },
     ...(showSites
@@ -97,21 +97,19 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
             header: 'Sites',
             id: 'sites',
             cell: (s: Supplier) => (
-              <p className="text-base-content/70 text-sm">{formatSiteScope(s.siteScope)}</p>
+              <p className="text-base-content text-sm">{formatSiteScope(s.siteScope)}</p>
             ),
           } satisfies SelectionColumn<Supplier>,
         ]
       : []),
     {
       header: 'Pricing rule',
-      cell: (s) => (
-        <p className="text-base-content/70 text-sm">{formatPricingRule(s.pricingRule)}</p>
-      ),
+      cell: (s) => <p className="text-base-content text-sm">{formatPricingRule(s.pricingRule)}</p>,
     },
     {
       header: 'Last synced',
       cell: (s) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
         </p>
       ),
@@ -121,19 +119,19 @@ export function SuppliersList({ suppliers, view, sites, vendors, showSites }: Su
 
   const card: SelectionCard<Supplier> = {
     title: (s) => nameLink(s, 'truncate text-sm font-medium hover:underline'),
-    subtitle: (s) => <p className="text-base-content/70 text-xs">{vendorLabel(s.type)}</p>,
+    subtitle: (s) => <p className="text-base-content text-xs">{vendorLabel(s.type)}</p>,
     badge: statusBadge,
     body: (s) => (
       <>
         {showSites ? (
           <div className="flex flex-row items-center justify-between gap-2">
-            <p className="text-base-content/70 text-sm">Sites</p>
-            <p className="text-base-content/70 text-sm">{formatSiteScope(s.siteScope)}</p>
+            <p className="text-base-content text-sm">Sites</p>
+            <p className="text-base-content text-sm">{formatSiteScope(s.siteScope)}</p>
           </div>
         ) : null}
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">{formatPricingRule(s.pricingRule)}</p>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-sm">{formatPricingRule(s.pricingRule)}</p>
+          <p className="text-base-content text-xs">
             {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
           </p>
         </div>

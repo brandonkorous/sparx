@@ -148,10 +148,10 @@ export async function CustomerDetailContent({ id }: Props) {
         </div>
         {customer.company && (
           <div className="flex flex-row items-center gap-2">
-            <Building2 className="text-base-content/50 h-4 w-4" />
-            <p className="text-base-content/70">{customer.company}</p>
+            <Building2 className="text-base-content h-4 w-4" />
+            <p className="text-base-content">{customer.company}</p>
             {customer.jobTitle && (
-              <p className="text-base-content/70 text-sm">· {customer.jobTitle}</p>
+              <p className="text-base-content text-sm">· {customer.jobTitle}</p>
             )}
           </div>
         )}
@@ -210,7 +210,7 @@ export async function CustomerDetailContent({ id }: Props) {
                 <CardBody>
                   <CardTitle>Activity</CardTitle>
                   {activities.length === 0 ? (
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       No activity recorded yet. Orders, emails, and notes will appear here as they
                       happen.
                     </p>
@@ -236,7 +236,7 @@ export async function CustomerDetailContent({ id }: Props) {
                     </Button>
                   </div>
                   {openTasks.length === 0 ? (
-                    <p className="text-base-content/70 text-sm">No open tasks for this customer.</p>
+                    <p className="text-base-content text-sm">No open tasks for this customer.</p>
                   ) : (
                     <div className="flex flex-col gap-3">
                       {openTasks.map((task) => (
@@ -246,14 +246,14 @@ export async function CustomerDetailContent({ id }: Props) {
                         >
                           <div className="flex flex-col gap-1">
                             <div className="flex flex-row items-center gap-2">
-                              <CheckSquare className="text-base-content/50 h-3.5 w-3.5" />
+                              <CheckSquare className="text-base-content h-3.5 w-3.5" />
                               <p className="text-sm">{task.title}</p>
                               <Badge color={taskPriorityVariant(task.priority)}>
                                 {task.priority}
                               </Badge>
                             </div>
                             {task.dueAt && (
-                              <p className="text-base-content/70 text-xs">
+                              <p className="text-base-content text-xs">
                                 Due {new Date(task.dueAt).toLocaleDateString()}
                               </p>
                             )}
@@ -269,7 +269,7 @@ export async function CustomerDetailContent({ id }: Props) {
             <TabsPanel value="deals">
               <Card>
                 <CardBody>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     Deal list lands in Phase 3 (sales pipeline). Until then, deals attached to this
                     customer can be opened from the Pipeline view.
                   </p>
@@ -281,7 +281,7 @@ export async function CustomerDetailContent({ id }: Props) {
               <Card>
                 <CardBody>
                   <div className="flex flex-col gap-4">
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Notes are recorded as activities of type{' '}
                       <Badge color="neutral" variant="soft" size="sm">
                         note
@@ -303,20 +303,20 @@ export async function CustomerDetailContent({ id }: Props) {
               <div className="flex flex-col gap-3">
                 {customer.email ? (
                   <div className="flex flex-row items-center gap-2">
-                    <Mail className="text-base-content/50 h-4 w-4" />
+                    <Mail className="text-base-content h-4 w-4" />
                     <p className="text-sm">{customer.email}</p>
                   </div>
                 ) : (
-                  <p className="text-base-content/70 text-sm">No email on file.</p>
+                  <p className="text-base-content text-sm">No email on file.</p>
                 )}
                 {customer.phone && (
                   <div className="flex flex-row items-center gap-2">
-                    <Phone className="text-base-content/50 h-4 w-4" />
+                    <Phone className="text-base-content h-4 w-4" />
                     <p className="text-sm">{customer.phone}</p>
                   </div>
                 )}
                 {customer.preferredContactMethod && (
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     Preferred: {customer.preferredContactMethod}
                   </p>
                 )}
@@ -373,7 +373,7 @@ export async function CustomerDetailContent({ id }: Props) {
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <h3 className="text-xl font-semibold">{value}</h3>
     </div>
   );
@@ -453,7 +453,7 @@ function B2BAccountCard({
           {limit > 0 && (
             <div className="flex flex-col gap-1">
               <div className="flex flex-row justify-between gap-4">
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   <CreditCard className="mr-1 inline h-3 w-3" />
                   Credit
                 </p>
@@ -467,7 +467,7 @@ function B2BAccountCard({
             </div>
           )}
           {account.paymentTerms && (
-            <p className="text-base-content/70 text-xs">Terms: {account.paymentTerms}</p>
+            <p className="text-base-content text-xs">Terms: {account.paymentTerms}</p>
           )}
           <Button
             size="sm"

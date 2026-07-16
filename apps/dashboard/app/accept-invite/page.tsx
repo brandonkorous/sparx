@@ -71,7 +71,7 @@ export default async function AcceptInvitePage({
           >
             Create an account
           </Button>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Use {invite.email} so the invitation matches your account.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default async function AcceptInvitePage({
     return (
       <InviteFrame invite={invite}>
         <div className="flex flex-col gap-3">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             You&apos;re signed in as <strong>{session.user.email}</strong>, but this invitation was
             sent to <strong>{invite.email}</strong>. Sign in with that address to accept it.
           </p>
@@ -100,7 +100,7 @@ export default async function AcceptInvitePage({
     return (
       <InviteFrame invite={invite}>
         <div className="flex flex-col gap-3">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Verify your email address ({invite.email}) before accepting. Check your inbox for the
             verification link, then come back to this page.
           </p>
@@ -137,12 +137,12 @@ function InviteFrame({
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">You&apos;re invited</h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             {invite.inviterName} invited you to join <strong>{invite.orgName}</strong>.
           </p>
         </div>
         <div className="flex flex-row items-center gap-2">
-          <p className="text-base-content/70 text-sm">Role</p>
+          <p className="text-base-content text-sm">Role</p>
           <Badge color="neutral" variant="soft" size="sm">
             {roleLabel(invite.role)}
           </Badge>
@@ -168,7 +168,7 @@ function InviteMessage({
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-          <p className="text-base-content/70">{body}</p>
+          <p className="text-base-content">{body}</p>
         </div>
         {footer ?? (
           <Button variant="outline" render={<Link href="/sign-in" />}>

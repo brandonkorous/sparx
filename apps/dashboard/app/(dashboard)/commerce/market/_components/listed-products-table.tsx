@@ -75,7 +75,7 @@ function ProductRow({ product }: { product: MarketListedProduct }) {
           >
             {product.title}
           </Link>
-          <p className="text-base-content/70 text-xs">/{product.handle}</p>
+          <p className="text-base-content text-xs">/{product.handle}</p>
         </div>
       </td>
       <td>
@@ -105,7 +105,7 @@ function ProductRow({ product }: { product: MarketListedProduct }) {
         </div>
       </td>
       <td className="text-right whitespace-nowrap">
-        <p className="text-base-content/70 text-sm">{priceLabel(product.priceMinCents)}</p>
+        <p className="text-base-content text-sm">{priceLabel(product.priceMinCents)}</p>
       </td>
       <td className="text-right">
         <Button
@@ -147,7 +147,7 @@ export function ListedProductsTable({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-row flex-wrap items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {total.toLocaleString()} product{total === 1 ? '' : 's'} listed
           {total > products.length ? ` · showing ${products.length}` : ''}
         </p>

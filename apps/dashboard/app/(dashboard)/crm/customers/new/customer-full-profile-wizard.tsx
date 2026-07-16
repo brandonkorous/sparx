@@ -559,7 +559,7 @@ function CustomerWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Contact details</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Only an email is required — fill in the rest now or after the contact exists.
               </p>
               <SchemaFieldRenderer
@@ -576,7 +576,7 @@ function CustomerWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Classification</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Type, contact preferences, and tags — they drive segments and campaigns.
               </p>
               <SchemaFieldRenderer
@@ -595,13 +595,13 @@ function CustomerWizardInner({
                 <div className="flex flex-row items-center justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     <h3 className="text-xl font-semibold">Primary address</h3>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Add a primary address now, or skip and add one later from the profile.
                     </p>
                   </div>
                   <button
                     type="button"
-                    className="text-base-content/60 shrink-0 text-xs underline-offset-4 hover:underline"
+                    className="text-base-content shrink-0 text-xs underline-offset-4 hover:underline"
                     onClick={() => {
                       setSkipAddress(true);
                       setAddressErrors({});
@@ -623,8 +623,8 @@ function CustomerWizardInner({
             <Card className="bg-base-200">
               <CardBody className="p-3">
                 <div className="flex flex-row items-center gap-3">
-                  <UserPlus className="text-base-content/60 h-4 w-4 shrink-0" />
-                  <p className="text-base-content/70 text-sm">
+                  <UserPlus className="text-base-content h-4 w-4 shrink-0" />
+                  <p className="text-base-content text-sm">
                     No address will be added. You can add one from the customer’s profile.
                   </p>
                   <button
@@ -642,7 +642,7 @@ function CustomerWizardInner({
           {/* Optional "fill to create" zone */}
           <div className="pt-1">
             <h3 className="text-xl font-semibold">Get a head start</h3>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               All optional — capture a first interaction, set a follow-up, or open a deal and draft
               quote now. Fill a section to create it; leave it blank to skip.
             </p>
@@ -724,12 +724,12 @@ function CustomerWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Start a deal</h3>
               {pipelines.length === 0 ? (
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   No pipelines yet. Create one in CRM → Pipelines to open deals from here.
                 </p>
               ) : (
                 <div className="flex flex-col gap-3">
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     Name the opportunity to open it on a pipeline. Leave the name blank to skip.
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -792,12 +792,12 @@ function CustomerWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Start a draft quote</h3>
               {!quoteWorkflowId ? (
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Turn on Invoicing to open draft quotes from here.
                 </p>
               ) : (
                 <div className="flex flex-col gap-3">
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     Add a first line item to open a draft quote. You can add more lines and send it
                     from the quote later. Leave the item blank to skip.
                   </p>

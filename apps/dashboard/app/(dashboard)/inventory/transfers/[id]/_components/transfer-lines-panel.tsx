@@ -72,7 +72,7 @@ function DraftLines({ id, lines }: { id: string; lines: InventoryTransferLineRow
         <h3 className="text-xl font-semibold">Lines</h3>
         <div className="flex flex-col gap-2">
           {lines.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No lines on this transfer yet — add a SKU below.
             </p>
           ) : (
@@ -187,7 +187,7 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
       <CardBody>
         <div className="flex flex-col gap-1">
           <h3 className="text-xl font-semibold">Receive</h3>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Confirm what arrived at the destination. A quantity short of what shipped is written off
             in transit.
           </p>
@@ -222,7 +222,7 @@ function ReceiveLines({ id, lines }: { id: string; lines: InventoryTransferLineR
             {error ? (
               <p className="text-danger text-sm">{error}</p>
             ) : short ? (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Some lines are short — the difference is written off in transit.
               </p>
             ) : (
@@ -284,7 +284,7 @@ function LineIdentity({ line: l }: { line: InventoryTransferLineRow }) {
       <p className="text-sm font-medium">
         {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
       </p>
-      <p className="text-base-content/70 font-mono text-xs">{l.variantSku ?? l.variantId}</p>
+      <p className="text-base-content font-mono text-xs">{l.variantSku ?? l.variantId}</p>
     </div>
   );
 }
@@ -292,7 +292,7 @@ function LineIdentity({ line: l }: { line: InventoryTransferLineRow }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex w-[5rem] flex-col gap-0 text-right">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="text-sm font-medium">{value}</p>
     </div>
   );

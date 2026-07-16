@@ -3,9 +3,23 @@
 // + facet rail. Adding a category (Apps, Workflows, …) is one entry here plus a
 // data adapter — no page-component rewrite (docs/60 M3).
 //
-// `accent` is the category's stripe/icon color — catalog data (like a blueprint's
-// vertical), not a control re-skin, so it's applied as an inline style on the
-// home tile, not a token-backed component variant.
+// `accent` is the category's stripe/icon color, applied as an inline style on the
+// home tile (it's catalog data, not a control re-skin — so it isn't a component
+// variant).
+//
+// It draws from the PRODUCT palette (primary / secondary / accent / neutral), never
+// from a module hue. /marketplace is module-LESS: module color exists to say "this
+// belongs to CMS," and a marketplace category says nothing of the kind — Themes is
+// not the Chat module, Integrations is not Commerce. These were previously the raw
+// hexes #6366f1 / #8b5cf6 / #f97316 / #14b8a6 — verbatim `--color-module-builder`,
+// `-chat`, `-commerce` and `-cms` — which both spent module identity on taxonomy and,
+// being literal hexes, couldn't adapt to dark mode. Distinguishing four categories is
+// a job for the product's own design language; that's what these three brand colors
+// are for.
+//
+// The ONE place a module hue belongs in this directory is the blueprints `modules`
+// facet below ("Requires module") — a blueprint that requires Commerce genuinely is
+// about Commerce, so that badge earns orange.
 
 import { Boxes, Component, Palette, Plug, type LucideIcon } from 'lucide-react';
 
@@ -30,6 +44,8 @@ export interface MarketplaceCategory {
   /** Singular noun for prose ("install a blueprint", "1 blueprint"). */
   singular: string;
   icon: LucideIcon;
+  /** A product-palette token reference, e.g. `var(--color-primary)`. Never a module
+   *  hue and never a literal hex — see the file header. */
   accent: string;
   tagline: string;
   status: CategoryStatus;
@@ -44,7 +60,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     label: 'Blueprints',
     singular: 'blueprint',
     icon: Boxes,
-    accent: '#6366f1',
+    accent: 'var(--color-primary)',
     tagline: 'Whole themed sites — pages, products, content, and emails.',
     status: 'live',
     facets: [
@@ -63,7 +79,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     label: 'Themes',
     singular: 'theme',
     icon: Palette,
-    accent: '#8b5cf6',
+    accent: 'var(--color-secondary)',
     tagline: 'Brand looks — color, type, and shape — applied site-wide.',
     status: 'live',
     facets: [
@@ -82,7 +98,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     label: 'Integrations',
     singular: 'integration',
     icon: Plug,
-    accent: '#f97316',
+    accent: 'var(--color-accent)',
     tagline: 'Payments, shipping, tax, and the rest of your stack.',
     status: 'live',
     facets: [{ key: 'kind', label: 'Type', type: 'multi' }],
@@ -97,7 +113,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     label: 'Components',
     singular: 'component',
     icon: Component,
-    accent: '#14b8a6',
+    accent: 'var(--color-neutral)',
     tagline: 'Reusable building blocks for the Builder canvas.',
     status: 'live',
     facets: [

@@ -92,7 +92,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
             <Badge color="neutral" variant="soft" size="sm">
               priority {zone.priority}
             </Badge>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {zone.targeting.countries.length === 0
                 ? 'any country'
                 : `${zone.targeting.countries.length} countries`}
@@ -120,7 +120,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-base-content/70 text-sm">any</p>
+                <p className="text-base-content text-sm">any</p>
               )}
             </Field>
             <Field label="Regions">
@@ -133,7 +133,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-base-content/70 text-sm">none</p>
+                <p className="text-base-content text-sm">none</p>
               )}
             </Field>
           </div>
@@ -153,7 +153,7 @@ export async function ShippingZoneDetailContent({ id }: Props) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       {children}
     </div>
   );
@@ -207,7 +207,7 @@ function ManualRatesCard({
                   <tr key={r.id}>
                     <td>{r.name}</td>
                     <td>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         {profileById.get(r.profileId)?.name ?? r.profileId.slice(0, 8)}
                       </p>
                     </td>

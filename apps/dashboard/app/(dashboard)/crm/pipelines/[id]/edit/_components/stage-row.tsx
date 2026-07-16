@@ -62,7 +62,7 @@ export function SortableStageRow({ stage, pipelineId }: { stage: StageRow; pipel
         type="button"
         {...attributes}
         {...listeners}
-        className="text-base-content/50 hover:text-module cursor-grab"
+        className="text-base-content hover:text-module cursor-grab"
         aria-label="Drag to reorder"
       >
         <GripVertical className="h-4 w-4" />

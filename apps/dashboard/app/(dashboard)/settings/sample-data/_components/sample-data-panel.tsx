@@ -121,7 +121,7 @@ export function SampleDataPanel({ status, canEdit }: Props) {
       <Card variant="subtle" padding="md">
         <div className="flex flex-col gap-2">
           <p className="font-medium">No sample dataset yet</p>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {status.industry
               ? `There's no sample dataset for "${status.industry}" yet, or none of its modules are enabled.`
               : 'Pick your industry first and we can load a matching dataset for it.'}
@@ -157,12 +157,12 @@ export function SampleDataPanel({ status, canEdit }: Props) {
               </Badge>
             )}
           </div>
-          <p className="text-base-content/70 text-sm">{status.packSummary}</p>
+          <p className="text-base-content text-sm">{status.packSummary}</p>
         </div>
 
         {hasPack && (
           <div className="flex flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Spans these enabled modules:</p>
+            <p className="text-base-content text-xs">Spans these enabled modules:</p>
             <div className="flex flex-row flex-wrap gap-1">
               {status.modules.map((m) => (
                 <ModuleProvider key={m} module={m as SparxModuleName} className="inline-flex">
@@ -177,7 +177,7 @@ export function SampleDataPanel({ status, canEdit }: Props) {
 
         {status.loaded && loadedSummary.length > 0 && (
           <div className="flex flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Currently loaded:</p>
+            <p className="text-base-content text-xs">Currently loaded:</p>
             <p className="text-sm">{loadedSummary.join(' · ')}</p>
           </div>
         )}

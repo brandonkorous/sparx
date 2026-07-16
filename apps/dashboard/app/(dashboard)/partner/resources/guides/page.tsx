@@ -17,7 +17,7 @@ export default function PartnerGuidesPage() {
         <div className="flex flex-col gap-8 py-10">
           <Link
             href="/partner/resources"
-            className="text-base-content/70 hover:text-base-content text-sm"
+            className="text-base-content hover:text-base-content text-sm"
           >
             ← Resources
           </Link>
@@ -35,7 +35,7 @@ export default function PartnerGuidesPage() {
                     <div className="flex flex-col gap-3">
                       <div className="flex flex-col gap-1">
                         <p className="text-module text-base font-medium">{guide.label}</p>
-                        <p className="text-base-content/70 text-sm">{guide.blurb}</p>
+                        <p className="text-base-content text-sm">{guide.blurb}</p>
                       </div>
                       <ol className="flex flex-col gap-2">
                         {guide.steps.map((step, i) => (

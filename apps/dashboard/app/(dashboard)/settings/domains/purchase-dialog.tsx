@@ -221,7 +221,7 @@ export function PurchaseDialog({
               <CheckCircle2 className="text-success size-12" />
               <div>
                 <p className="text-lg font-medium">{result.domain.host}</p>
-                <p className="text-base-content/70 mt-1 text-sm">
+                <p className="text-base-content mt-1 text-sm">
                   Registered through{' '}
                   {new Date(result.expiresAt).toLocaleDateString(undefined, {
                     year: 'numeric',
@@ -257,7 +257,7 @@ export function PurchaseDialog({
                       className={[
                         'text-sm',
                         current ? 'font-medium' : '',
-                        done ? 'text-base-content/70' : '',
+                        done ? 'text-base-content' : '',
                       ]
                         .filter(Boolean)
                         .join(' ')}
@@ -281,7 +281,7 @@ export function PurchaseDialog({
                 <div className="border-base-300 bg-base-200 flex items-center justify-between rounded-lg border px-4 py-3">
                   <div className="flex flex-col gap-1">
                     <p className="font-medium">{suggestion.domain}</p>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       {suggestion.available ? 'Available' : 'Taken'}
                     </p>
                   </div>
@@ -339,7 +339,7 @@ export function PurchaseDialog({
                     <Label htmlFor="pd-privacy" className="flex items-center gap-1.5">
                       <Lock className="size-3.5" /> WHOIS privacy protection
                     </Label>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Hides your personal details from the public WHOIS database.
                     </p>
                   </div>
@@ -348,7 +348,7 @@ export function PurchaseDialog({
                 {/* Registrant contact */}
                 <div>
                   <p className="mb-3 font-medium">Registrant contact</p>
-                  <p className="text-base-content/70 mb-4 text-sm">
+                  <p className="text-base-content mb-4 text-sm">
                     Required by ICANN for domain registration. This information may appear in the
                     public WHOIS record if privacy protection is disabled.
                   </p>
@@ -468,7 +468,7 @@ export function PurchaseDialog({
                 {/* Payment notice — mode-aware. Select mode (onboarding) charges
                     at Launch, not now; purchase mode (Settings) charges on submit. */}
                 <div className="border-base-300 bg-base-200 rounded-lg border px-4 py-3">
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     <strong className="text-base-content font-medium">Billing:</strong>{' '}
                     {mode === 'select' ? (
                       <>

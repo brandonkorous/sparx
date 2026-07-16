@@ -60,10 +60,10 @@ export function PricingV2Features() {
                         <Badge color="primary" variant="soft">
                           {m.price}
                         </Badge>
-                        <span className="text-base-content/55 hidden flex-1 text-sm lg:block">
+                        <span className="text-base-content hidden flex-1 text-sm lg:block">
                           {m.repl}
                         </span>
-                        <span className="text-base-content/55 hidden text-sm sm:block">
+                        <span className="text-base-content hidden text-sm sm:block">
                           {m.feats.length} features
                         </span>
                       </span>
@@ -73,7 +73,7 @@ export function PricingV2Features() {
                         {m.feats.map((f) => (
                           <span
                             key={f}
-                            className="text-base-content/75 flex items-center gap-2.5 text-base"
+                            className="text-base-content flex items-center gap-2.5 text-base"
                           >
                             <span
                               className="h-1.5 w-1.5 shrink-0 rounded-full"

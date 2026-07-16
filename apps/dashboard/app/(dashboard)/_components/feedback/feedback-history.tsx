@@ -34,7 +34,7 @@ export function FeedbackHistory({
 
   if (isLoading) {
     return (
-      <div className="text-base-content/50 flex items-center justify-center py-12">
+      <div className="text-base-content flex items-center justify-center py-12">
         <Loader2 className="h-5 w-5 animate-spin" />
       </div>
     );
@@ -42,7 +42,7 @@ export function FeedbackHistory({
 
   if (isError) {
     return (
-      <p className="text-base-content/50 py-10 text-center text-sm">Couldn’t load your feedback.</p>
+      <p className="text-base-content py-10 text-center text-sm">Couldn’t load your feedback.</p>
     );
   }
 
@@ -51,8 +51,8 @@ export function FeedbackHistory({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
-        <MessageSquarePlus className="text-base-content/50 h-8 w-8" />
-        <p className="text-base-content/70 text-sm">You haven’t sent any feedback yet.</p>
+        <MessageSquarePlus className="text-base-content h-8 w-8" />
+        <p className="text-base-content text-sm">You haven’t sent any feedback yet.</p>
         <Button color="primary" variant="soft" size="sm" onClick={onCompose}>
           Send your first feedback
         </Button>
@@ -78,7 +78,7 @@ function FeedbackRow({ item, onOpen }: { item: FeedbackSubmission; onOpen: () =>
         onClick={onOpen}
         className="border-base-300 bg-base-100 hover:bg-base-200 focus-visible:ring-primary flex w-full items-center gap-3 rounded-md border px-3 py-2.5 text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
       >
-        <Icon className="text-base-content/50 h-4 w-4 shrink-0" />
+        <Icon className="text-base-content h-4 w-4 shrink-0" />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex items-center gap-2">
             <span className="text-base-content truncate text-sm font-medium">
@@ -88,7 +88,7 @@ function FeedbackRow({ item, onOpen }: { item: FeedbackSubmission; onOpen: () =>
               <span className="bg-primary h-2 w-2 shrink-0 rounded-full" aria-label="New reply" />
             )}
           </span>
-          <span className="text-base-content/50 text-xs">
+          <span className="text-base-content text-xs">
             {timeAgo(item.createdAt)}
             {item.messageCount
               ? ` · ${item.messageCount} repl${item.messageCount === 1 ? 'y' : 'ies'}`

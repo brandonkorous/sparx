@@ -8,7 +8,7 @@ const inputVariants = cva(
   [
     'bg-base-100 flex w-full rounded-md border',
     'text-base-content text-sm',
-    'placeholder:text-base-content/50',
+    'placeholder:text-base-content',
     'transition-colors duration-150',
     'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
     'disabled:cursor-not-allowed disabled:opacity-50',

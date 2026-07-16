@@ -366,7 +366,7 @@ export default async function CommercePage() {
                 <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {revenueFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -435,13 +435,13 @@ export default async function CommercePage() {
                     />
                     <div className="min-w-0">
                       <div className="truncate text-sm font-medium">{p.name}</div>
-                      {p.meta && <div className="text-base-content/50 text-xs">{p.meta}</div>}
+                      {p.meta && <div className="text-base-content text-xs">{p.meta}</div>}
                     </div>
                     <div className="ml-auto text-right">
                       <div className="text-sm font-medium tabular-nums">
                         {fmtMoneyCents(p.revenueCents, currency)}
                       </div>
-                      <div className="text-base-content/50 text-xs">
+                      <div className="text-base-content text-xs">
                         {fmtNumber(p.units)} {p.unitsSuffix}
                       </div>
                     </div>

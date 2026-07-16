@@ -185,7 +185,7 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
           <Card>
             <CardBody className="py-6">
               <div className="flex flex-col gap-4">
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   The handle is the category&apos;s URL-safe slug — unique across your catalog and
                   auto-derived from the name if you leave it blank. You can change it later.
                 </p>

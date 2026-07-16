@@ -73,18 +73,18 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
         <Card>
           <CardBody>
             <div className="flex flex-col gap-4">
-              <p className="text-base-content/70 text-sm font-semibold tracking-wide uppercase">
+              <p className="text-base-content text-sm font-semibold tracking-wide uppercase">
                 Invoice details
               </p>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <div>
-                  <p className="text-base-content/70 text-xs">Amount</p>
+                  <p className="text-base-content text-xs">Amount</p>
                   <p className="text-lg font-semibold tabular-nums">
                     {formatCents(invoice.amountCents)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-base-content/70 text-xs">Due date</p>
+                  <p className="text-base-content text-xs">Due date</p>
                   <p
                     className={`text-sm ${
                       invoice.status === 'overdue' ? 'text-danger font-medium' : ''
@@ -96,13 +96,13 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
                 </div>
                 {invoice.account?.paymentTerms && (
                   <div>
-                    <p className="text-base-content/70 text-xs">Payment terms</p>
+                    <p className="text-base-content text-xs">Payment terms</p>
                     <p className="text-sm">{invoice.account.paymentTerms.toUpperCase()}</p>
                   </div>
                 )}
                 {invoice.orderId && (
                   <div>
-                    <p className="text-base-content/70 text-xs">Order</p>
+                    <p className="text-base-content text-xs">Order</p>
                     <Link
                       href={`/crm/orders/${invoice.orderId}`}
                       className="hover:text-module text-sm hover:underline"
@@ -114,31 +114,31 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
                 {invoice.paidAt && (
                   <>
                     <div>
-                      <p className="text-base-content/70 text-xs">Paid on</p>
+                      <p className="text-base-content text-xs">Paid on</p>
                       <p className="text-sm">{new Date(invoice.paidAt).toLocaleDateString()}</p>
                     </div>
                     <div>
-                      <p className="text-base-content/70 text-xs">Payment method</p>
+                      <p className="text-base-content text-xs">Payment method</p>
                       <p className="text-sm">{invoice.paidMethod ?? '—'}</p>
                     </div>
                     {invoice.paidBy && (
                       <div>
-                        <p className="text-base-content/70 text-xs">Recorded by</p>
+                        <p className="text-base-content text-xs">Recorded by</p>
                         <p className="text-sm">{invoice.paidBy.name ?? invoice.paidBy.email}</p>
                       </div>
                     )}
                   </>
                 )}
                 <div>
-                  <p className="text-base-content/70 text-xs">Created</p>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-xs">Created</p>
+                  <p className="text-base-content text-sm">
                     {new Date(invoice.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
               {invoice.notes && (
                 <div>
-                  <p className="text-base-content/70 text-xs">Notes</p>
+                  <p className="text-base-content text-xs">Notes</p>
                   <p className="text-sm">{invoice.notes}</p>
                 </div>
               )}

@@ -60,7 +60,7 @@ export default async function FeedbackDetailPage({
   }
 
   const backLink = (
-    <Link href="/sparx/feedback" className="text-base-content/60 text-sm hover:underline">
+    <Link href="/sparx/feedback" className="text-base-content text-sm hover:underline">
       ← All feedback
     </Link>
   );
@@ -83,7 +83,7 @@ export default async function FeedbackDetailPage({
       <Stack gap={2}>
         {backLink}
         <Stack direction="row" align="center" gap={3} className="flex-wrap">
-          <CategoryIcon category={feedback.category} className="text-base-content/60 h-5 w-5" />
+          <CategoryIcon category={feedback.category} className="text-base-content h-5 w-5" />
           <Heading level={1}>{titleOf(feedback)}</Heading>
           <Badge color={feedbackStatusTone(feedback.status)} variant="soft">
             {feedbackStatusLabel(feedback.status)}

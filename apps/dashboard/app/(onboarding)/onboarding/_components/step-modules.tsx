@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { Badge } from '@wizeworks/silicaui-react';
 import { Switch, cn } from '@sparx/ui';
 import { ChevronDown, Sparkles } from 'lucide-react';
+import { FlowSwitchButton } from '../../_components/flow-switch';
 import {
   ONBOARDING_MODULES,
   effectiveModuleOn,
@@ -40,21 +40,23 @@ export function StepModules({
 
   return (
     <div className="max-w-[620px]">
-      <Link
-        href="/story"
-        className="border-base-300 text-base-content/60 hover:text-base-content mb-4 flex items-center gap-2.5 rounded-xl border border-dashed px-4 py-3 text-sm transition-colors hover:border-[var(--color-module-builder)]"
+      {/* The loud pitch for the story flow, at the one step where nothing is committed
+          yet. Routes through FlowSwitchButton (not a bare Link) so the move is RECORDED
+          — otherwise an owner who'd already flagged a step complete would be bounced
+          straight back here by the entry rule. */}
+      <FlowSwitchButton
+        to="story"
+        className="border-base-300 text-base-content hover:text-base-content mb-4 flex w-full items-center gap-2.5 rounded-xl border border-dashed px-4 py-3 text-left text-sm transition-colors hover:border-[var(--color-module-builder)] disabled:opacity-60"
       >
         <Sparkles size={16} className="shrink-0 text-[var(--color-module-builder)]" />
         <span>
-          <span className="text-base-content font-medium">
-            Prefer to describe it in a sentence?
-          </span>{' '}
-          Tell your story and we’ll switch these on for you.
+          <span className="text-base-content font-medium">Prefer to tell your story?</span> Describe
+          your business and we’ll switch these on for you.
         </span>
         <span className="ml-auto shrink-0" aria-hidden>
           →
         </span>
-      </Link>
+      </FlowSwitchButton>
       {ONBOARDING_MODULES.map((m, i) => {
         const firstAddon = m.addon && (i === 0 || !ONBOARDING_MODULES[i - 1]?.addon);
         const lock = moduleLock(value, m.key);
@@ -62,7 +64,7 @@ export function StepModules({
           <React.Fragment key={m.key}>
             {firstAddon && (
               <div className="px-1 pt-4 pb-1.5">
-                <p className="text-base-content/70 text-xs font-medium">Add-ons</p>
+                <p className="text-base-content text-xs font-medium">Add-ons</p>
               </div>
             )}
             <ModuleRow
@@ -116,12 +118,12 @@ function ModuleRow({
               <p className="font-medium">{m.name}</p>
               <ChevronDown
                 className={cn(
-                  'text-base-content/50 h-4 w-4 transition-transform duration-200',
+                  'text-base-content h-4 w-4 transition-transform duration-200',
                   open && 'rotate-180'
                 )}
               />
             </span>
-            <p className="text-base-content/70 text-xs">{m.desc}</p>
+            <p className="text-base-content text-xs">{m.desc}</p>
           </button>
           {caption && (
             <Badge
@@ -141,7 +143,7 @@ function ModuleRow({
               ? 'text-success font-medium'
               : on
                 ? 'text-base-content font-medium'
-                : 'text-base-content/50'
+                : 'text-base-content'
           )}
         >
           {lock === 'included' ? 'Included' : `+ $${m.price}`}
@@ -163,7 +165,7 @@ function ModuleRow({
 
       {open && (
         <div className="flex flex-col gap-3.5 pt-0.5 pr-1 pb-5 pl-[26px]">
-          <p className="text-base-content/70 max-w-[560px] text-sm">{m.long}</p>
+          <p className="text-base-content max-w-[560px] text-sm">{m.long}</p>
           <ul className="flex flex-wrap gap-x-7 gap-y-2.5">
             {m.feats.map((f) => (
               <li key={f} className="flex w-[248px] max-w-full items-center gap-2.5">
@@ -171,13 +173,13 @@ function ModuleRow({
                   className="h-[5px] w-[5px] shrink-0 rounded-full"
                   style={{ background: m.colorVar }}
                 />
-                <p className="text-base-content/70 text-sm">{f}</p>
+                <p className="text-base-content text-sm">{f}</p>
               </li>
             ))}
           </ul>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Replaces {m.replaces} — about{' '}
-            <span className="text-base-content/70 font-medium">${m.elsewhere}/mo</span> bought
+            <span className="text-base-content font-medium">${m.elsewhere}/mo</span> bought
             separately.
           </p>
         </div>

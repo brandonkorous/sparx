@@ -100,14 +100,14 @@ export async function PipelineList({ pipelineId }: PipelineListProps) {
                   </td>
                   <td className="text-right tabular-nums">{Number(d.probability)}%</td>
                   <td>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       {d.expectedCloseDate
                         ? new Date(d.expectedCloseDate).toLocaleDateString()
                         : '—'}
                     </p>
                   </td>
                   <td>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       {new Date(d.updatedAt).toLocaleDateString()}
                     </p>
                   </td>

@@ -58,7 +58,7 @@ export function EarningsCalculator() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-semibold tracking-tight">Estimate your earnings</h2>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               A rough projection — adjust the numbers to match the clients you have in mind.
             </p>
           </div>
@@ -143,19 +143,19 @@ function Figure({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-sm">{label}</p>
+      <p className="text-base-content text-sm">{label}</p>
       <span
         className={
           emphasis
             ? 'text-module text-[2rem] leading-none font-medium'
             : muted
-              ? 'text-base-content/50 text-[1.65rem] leading-none font-medium'
+              ? 'text-base-content text-[1.65rem] leading-none font-medium'
               : 'text-base-content text-[1.65rem] leading-none font-medium'
         }
       >
         {value}
       </span>
-      {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
+      {hint ? <p className="text-base-content text-xs">{hint}</p> : null}
     </div>
   );
 }

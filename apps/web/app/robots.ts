@@ -21,11 +21,21 @@ const AI_CRAWLERS = [
   'Meta-ExternalAgent',
 ];
 
+// Faceted browse is a filter UI for humans, not a set of pages. Every facet
+// combination is a distinct URL, so a crawler that follows them explores an
+// exponential space of near-identical results — which is exactly how api-rest was
+// flooded into a heap-death crashloop on 2026-07-16. The catalog's real content is
+// fully reachable without filters: the category pages and every listing detail are
+// in the sitemap. So crawl `/market/…`, but never its query strings. The facet
+// links carry rel="nofollow" and filtered views send `noindex` too — this is the
+// outermost of those three fences.
+const FACETED_BROWSE = '/market/*?*';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/' },
-      { userAgent: AI_CRAWLERS, allow: '/' },
+      { userAgent: '*', allow: '/', disallow: FACETED_BROWSE },
+      { userAgent: AI_CRAWLERS, allow: '/', disallow: FACETED_BROWSE },
     ],
     sitemap: 'https://sparx.works/sitemap.xml',
     host: 'https://sparx.works',

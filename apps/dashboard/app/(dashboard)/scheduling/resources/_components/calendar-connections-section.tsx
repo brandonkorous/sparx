@@ -112,7 +112,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
 
       <div>
         <p className="text-sm font-medium">Block times from a calendar link</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Paste a read-only iCal/ICS link (Google/Outlook/Apple &ldquo;secret address&rdquo;).
           Events there will block this resource&rsquo;s sparx availability. Imports refresh
           periodically and can lag a few hours.
@@ -144,9 +144,9 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
       <CaldavConnectForm resourceId={resourceId} onConnected={refresh} />
 
       {connections === null ? (
-        <p className="text-base-content/70 text-xs">Loading…</p>
+        <p className="text-base-content text-xs">Loading…</p>
       ) : connections.length === 0 ? (
-        <p className="text-base-content/70 text-xs">No calendars connected yet.</p>
+        <p className="text-base-content text-xs">No calendars connected yet.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {connections.map((c) => (
@@ -170,7 +170,7 @@ export function CalendarConnectionsSection({ resourceId }: { resourceId: string 
                     {c.status}
                   </Badge>
                 </div>
-                <div className="text-base-content/70 text-xs">
+                <div className="text-base-content text-xs">
                   Synced {relTime(c.lastSyncedAt)}
                   {c.lastError ? ` · ${c.lastError}` : ''}
                 </div>

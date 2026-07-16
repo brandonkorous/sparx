@@ -171,7 +171,7 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
 
       {/* Holds list */}
       {holds.length === 0 ? (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No fleet holds yet. Check a SKU above to reserve stock for a work order.
         </p>
       ) : (
@@ -190,7 +190,7 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
               <tr key={h.id}>
                 <td>
                   {h.title ?? h.sku ?? '—'}
-                  <p className="text-base-content/70 font-mono text-xs">
+                  <p className="text-base-content font-mono text-xs">
                     {h.sku} · {h.warehouseCode}
                   </p>
                 </td>
@@ -223,7 +223,7 @@ export function FleetHoldsPanel({ accountId, holds }: { accountId: string; holds
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-base-content/70 text-xs">—</p>
+                    <p className="text-base-content text-xs">—</p>
                   )}
                 </td>
               </tr>

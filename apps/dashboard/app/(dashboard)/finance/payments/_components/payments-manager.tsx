@@ -109,7 +109,7 @@ export function PaymentsManager({
             <Badge color="success" variant="soft" size="sm">
               Live
             </Badge>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Accepting payments via <span className="text-base-content">{liveName}</span>.
             </p>
           </>
@@ -118,7 +118,7 @@ export function PaymentsManager({
             <Badge color="warning" variant="soft" size="sm">
               Not collecting
             </Badge>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No online payment method is live yet — set one up below.
             </p>
           </>
@@ -135,7 +135,7 @@ export function PaymentsManager({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <p className="font-medium">Bring your own processor</p>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Already have a merchant account? Connect it — no sparx fee, you keep your rates.
           </p>
         </div>

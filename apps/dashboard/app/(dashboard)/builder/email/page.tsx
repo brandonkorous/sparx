@@ -100,7 +100,7 @@ export default async function BuilderEmailRoute() {
   if (emails.length === 0) {
     return (
       <div className="px-6 py-8 lg:px-10">
-        <div className="border-base-300 text-base-content/60 rounded-xl border border-dashed p-12 text-center">
+        <div className="border-base-300 text-base-content rounded-xl border border-dashed p-12 text-center">
           Couldn’t load your emails. Check that the Builder module is enabled, then reload.
         </div>
       </div>

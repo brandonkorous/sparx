@@ -371,7 +371,7 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
                 {typing ? <ChatTypingIndicator side="start" name="Agent is typing" /> : null}
               </ChatLayoutMessages>
               {!config.online ? (
-                <p className="text-base-content/70 border-base-300 border-t px-4 py-2.5 text-xs">
+                <p className="text-base-content border-base-300 border-t px-4 py-2.5 text-xs">
                   {config.awayMessage}
                 </p>
               ) : null}

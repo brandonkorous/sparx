@@ -65,7 +65,7 @@ export function FinanceUpsellCard({
               Available
             </Badge>
           </div>
-          <p className="text-base-content/70 flex-1 text-sm">{pitch}</p>
+          <p className="text-base-content flex-1 text-sm">{pitch}</p>
           <CardActions className="justify-start">
             {canActivate ? (
               <Button
@@ -78,7 +78,7 @@ export function FinanceUpsellCard({
                 Turn on {title}
               </Button>
             ) : (
-              <p className="text-base-content/70 text-sm">Ask an owner to turn on {title}.</p>
+              <p className="text-base-content text-sm">Ask an owner to turn on {title}.</p>
             )}
           </CardActions>
         </CardBody>

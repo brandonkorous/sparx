@@ -150,7 +150,7 @@ export function ProfileForm({ profile }: { profile: MarketProfile }) {
         <div className="bg-base-200 flex flex-row flex-wrap items-center justify-between gap-3 rounded-md px-4 py-3">
           <div className="flex flex-col gap-1">
             <p className="text-sm font-medium">Commission rate</p>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Deducted from each sale at settlement.
               {profile.hasCommissionOverride ? ' Custom rate negotiated for your store.' : ''}
             </p>

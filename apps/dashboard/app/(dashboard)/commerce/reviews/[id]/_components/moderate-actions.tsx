@@ -161,7 +161,7 @@ export function ModerateActions({ reviewId, status }: { reviewId: string; status
             <DialogTitle>Reject review?</DialogTitle>
           </div>
           <div className="flex flex-col gap-3 px-6 pb-2">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Rejected reviews are hidden from the storefront and the customer.
             </p>
             <div className="flex flex-col gap-1">

@@ -217,7 +217,7 @@ function PaletteMapper({
           const chosen = sources.find((s) => s.id === sel) ?? null;
           return (
             <div key={role.key} className="flex items-center gap-2">
-              <span className="text-base-content/70 w-20 shrink-0 text-xs">{role.label}</span>
+              <span className="text-base-content w-20 shrink-0 text-xs">{role.label}</span>
               <NativeSelect
                 aria-label={`${role.label} source color`}
                 value={sel}

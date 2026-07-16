@@ -56,7 +56,7 @@ export function RespondForm({
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-col gap-0">
           {respondedAt && (
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Last response: {new Date(respondedAt).toLocaleString()}
             </p>
           )}

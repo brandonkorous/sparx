@@ -39,7 +39,7 @@ export function GatewayDrawer({
             <GatewayStatusBadge status={status} />
           </div>
           <div className="mt-5 flex flex-col gap-5">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {gateway.feeNote}
               {gateway.checkout === 'redirect'
                 ? ' Shoppers pay on the gateway’s hosted page, so card data never touches sparx.'

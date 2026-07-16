@@ -99,7 +99,7 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
         </Card>
       ) : (
         <>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Higher-priority discounts evaluate first when multiple are eligible. Per-customer limits
             and total caps are enforced at redemption time.
           </p>

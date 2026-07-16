@@ -75,7 +75,7 @@ export function AttachOrderPopover({ dealId, candidates, attachedIds }: AttachOr
           />
           <div className="max-h-72 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="text-base-content/70 py-4 text-center text-sm">No matching orders.</p>
+              <p className="text-base-content py-4 text-center text-sm">No matching orders.</p>
             ) : (
               <div className="flex flex-col gap-1">
                 {filtered.map((o) => (
@@ -87,13 +87,13 @@ export function AttachOrderPopover({ dealId, candidates, attachedIds }: AttachOr
                     className="hover:bg-module/10 flex items-center justify-between rounded-md p-2 text-left disabled:opacity-50"
                   >
                     <div className="flex flex-row items-center gap-2">
-                      <Link2 className="text-base-content/50 h-3.5 w-3.5" />
+                      <Link2 className="text-base-content h-3.5 w-3.5" />
                       <p className="text-sm font-medium">{o.orderNumber}</p>
                       <Badge color={statusTone(o.status)} variant="soft" size="sm">
                         {statusLabel(o.status)}
                       </Badge>
                     </div>
-                    <p className="text-base-content/70 text-xs tabular-nums">
+                    <p className="text-base-content text-xs tabular-nums">
                       {o.currency} {Number(o.total).toLocaleString()}
                     </p>
                   </button>

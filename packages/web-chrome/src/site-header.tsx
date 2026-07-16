@@ -46,7 +46,7 @@ const LINKS = [
   { label: 'Customers', href: '/customers' },
 ] as const;
 
-const NAV_LINK_CLASS = 'text-base-content/70 hover:text-base-content text-sm font-medium';
+const NAV_LINK_CLASS = 'text-base-content hover:text-base-content text-sm font-medium';
 const DRAWER_LINK_CLASS = 'border-base-300 text-base-content border-b py-3.5 text-lg font-medium';
 
 /**
@@ -156,7 +156,7 @@ export function SiteHeader({
                         className="rounded-field hover:bg-base-200 flex flex-col gap-0.5 px-3 py-2"
                       >
                         <span className="text-base-content text-sm font-medium">{m.label}</span>
-                        <span className="text-base-content/50 text-xs">{m.desc}</span>
+                        <span className="text-base-content text-xs">{m.desc}</span>
                       </a>
                     </DrawerClose>
                   ))}
@@ -173,7 +173,7 @@ export function SiteHeader({
             ))}
 
             <DrawerClose>
-              <a href={signInHref} className="text-base-content/70 py-3.5 text-lg font-medium">
+              <a href={signInHref} className="text-base-content py-3.5 text-lg font-medium">
                 Sign in
               </a>
             </DrawerClose>

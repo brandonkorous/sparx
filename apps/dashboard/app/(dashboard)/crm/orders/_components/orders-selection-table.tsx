@@ -89,7 +89,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
   const channelBadge = (o: OrderRow) => {
     const label = channelLabel(o);
     if (!label) {
-      return <p className="text-base-content/70 text-sm">—</p>;
+      return <p className="text-base-content text-sm">—</p>;
     }
     return (
       <Badge color={o.channel === 'marketplace' ? 'info' : 'neutral'} variant="soft" size="sm">
@@ -116,7 +116,7 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     {
       header: 'Placed',
       cell: (o) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
         </p>
       ),
@@ -134,13 +134,13 @@ export function OrdersSelectionTable({ orders, view }: OrdersSelectionTableProps
     body: (o) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
           </p>
           <p className="text-sm tabular-nums">{totalText(o)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Paid {paidText(o)}</p>
+          <p className="text-base-content text-xs">Paid {paidText(o)}</p>
           {channelLabel(o) ? channelBadge(o) : null}
         </div>
       </>

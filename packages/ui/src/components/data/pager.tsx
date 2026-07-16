@@ -59,7 +59,7 @@ export function Pager({
   return (
     <div
       className={cn(
-        'text-base-content/70 flex flex-wrap items-center justify-between gap-3 px-1 text-xs',
+        'text-base-content flex flex-wrap items-center justify-between gap-3 px-1 text-xs',
         className
       )}
     >

@@ -116,7 +116,7 @@ export function AgentPanel({ sourceId, health }: { sourceId: string; health: Syn
                   Unpair
                 </Button>
               </div>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Rotating issues a new key and revokes the old one — update the bridge config with
                 the new key to keep it connected.
               </p>
@@ -151,7 +151,7 @@ function Tile({
 }) {
   return (
     <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-3 py-2">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className={`text-sm ${mono ? 'font-mono' : ''} ${emphasis ? 'text-warning' : ''}`.trim()}>
         {value}
       </p>
@@ -185,7 +185,7 @@ function KeyModal({
         </div>
         <div className="flex flex-col gap-3">
           <CodeBlock text={snippet} />
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Set <span className="font-mono">SPARX_BASE_URL</span> to your sparx API URL. See the
             bridge README for install + the local-export setup.
           </p>

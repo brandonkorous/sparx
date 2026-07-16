@@ -328,7 +328,7 @@ export function DiscountCreateForm({ surface }: { surface: 'page' | 'overlay' })
             <Card>
               <CardBody className="py-6">
                 <div className="flex flex-col gap-4">
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     Per-customer limit defaults to 1 — set higher to allow repeat redemptions per
                     shopper. Total cap limits redemptions across all customers.
                   </p>

@@ -24,7 +24,7 @@ export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
   ({ className, label, value, delta, icon, hint, chart, ...props }, ref) => (
     <div ref={ref} className={cn('bg-base-200 rounded-lg p-4', className)} {...props}>
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-base-content/50 text-xs font-medium tracking-wider uppercase">{label}</p>
+        <p className="text-base-content text-xs font-medium tracking-wider uppercase">{label}</p>
         {icon && <div className="bg-module bg-soft text-module rounded-md p-1.5">{icon}</div>}
       </div>
       <p className="text-base-content text-2xl font-medium">{value}</p>
@@ -36,13 +36,13 @@ export const Stat = React.forwardRef<HTMLDivElement, StatProps>(
                 'text-xs font-medium',
                 delta.trend === 'up' && 'text-success',
                 delta.trend === 'down' && 'text-danger',
-                delta.trend === 'neutral' && 'text-base-content/50'
+                delta.trend === 'neutral' && 'text-base-content'
               )}
             >
               {delta.value}
             </p>
           )}
-          {hint && !delta && <p className="text-base-content/50 text-xs">{hint}</p>}
+          {hint && !delta && <p className="text-base-content text-xs">{hint}</p>}
         </div>
         {chart && <div className="h-8 w-24 shrink-0">{chart}</div>}
       </div>

@@ -114,7 +114,7 @@ export async function PriceListDetailContent({ id }: Props) {
               </Badge>
             )}
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Priority {priceList.priority} · {entries.length} entries
           </p>
         </div>

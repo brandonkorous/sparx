@@ -57,7 +57,7 @@ export function AwaitingReceiptList({ purchaseOrders, view }: AwaitingReceiptLis
       cell: (po) => (
         <div className="flex flex-col gap-1">
           {numberLink(po, 'font-mono text-sm hover:text-module hover:underline')}
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {po.supplierName ?? po.supplierCode ?? 'Supplier'}
           </p>
         </div>
@@ -70,9 +70,7 @@ export function AwaitingReceiptList({ purchaseOrders, view }: AwaitingReceiptLis
     },
     {
       header: 'Expected',
-      cell: (po) => (
-        <p className="text-base-content/70 text-sm">{formatDate(po.expectedArrivalAt)}</p>
-      ),
+      cell: (po) => <p className="text-base-content text-sm">{formatDate(po.expectedArrivalAt)}</p>,
     },
     {
       header: 'Outstanding',
@@ -85,7 +83,7 @@ export function AwaitingReceiptList({ purchaseOrders, view }: AwaitingReceiptLis
   const card: SelectionCard<PurchaseOrderRow> = {
     title: (po) => numberLink(po, 'font-mono text-sm hover:text-module hover:underline'),
     subtitle: (po) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {po.supplierName ?? po.supplierCode ?? 'Supplier'}
       </p>
     ),
@@ -93,13 +91,11 @@ export function AwaitingReceiptList({ purchaseOrders, view }: AwaitingReceiptLis
     body: (po) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
-            {po.warehouseName ?? po.warehouseCode ?? '—'}
-          </p>
+          <p className="text-base-content text-sm">{po.warehouseName ?? po.warehouseCode ?? '—'}</p>
           <p className="text-sm">{outstanding(po)} outstanding</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">exp {formatDate(po.expectedArrivalAt)}</p>
+          <p className="text-base-content text-xs">exp {formatDate(po.expectedArrivalAt)}</p>
           {receiveButton(po)}
         </div>
       </>

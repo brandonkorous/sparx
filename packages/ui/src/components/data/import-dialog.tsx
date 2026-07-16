@@ -313,7 +313,7 @@ export function ImportDialog({
               }}
               aria-label={`Upload ${onParseXlsx ? 'CSV or Excel' : 'CSV'} file`}
             >
-              <Upload className="text-base-content/60 h-8 w-8" />
+              <Upload className="text-base-content h-8 w-8" />
               <Stack gap={1} className="text-center">
                 <Text size="sm" className="font-medium">
                   Drop a {onParseXlsx ? 'CSV or Excel' : 'CSV'} file here, or click to browse
@@ -337,7 +337,7 @@ export function ImportDialog({
 
             {fileName && (
               <Stack direction="row" align="center" gap={2}>
-                <FileText className="text-base-content/60 h-4 w-4 shrink-0" />
+                <FileText className="text-base-content h-4 w-4 shrink-0" />
                 <Text size="sm" className="truncate font-medium">
                   {fileName}
                 </Text>
@@ -426,14 +426,14 @@ export function ImportDialog({
               <table className="w-full text-xs">
                 <thead className="bg-base-200">
                   <tr>
-                    <th className="text-base-content/60 px-3 py-2 text-left font-medium">#</th>
+                    <th className="text-base-content px-3 py-2 text-left font-medium">#</th>
                     {previewHeaders.map((h) => (
-                      <th key={h} className="text-base-content/60 px-3 py-2 text-left font-medium">
+                      <th key={h} className="text-base-content px-3 py-2 text-left font-medium">
                         {h}
                       </th>
                     ))}
                     {headers.length > 8 && (
-                      <th className="text-base-content/60 px-3 py-2 text-left font-medium">
+                      <th className="text-base-content px-3 py-2 text-left font-medium">
                         +{headers.length - 8} more
                       </th>
                     )}
@@ -442,10 +442,10 @@ export function ImportDialog({
                 <tbody>
                   {previewRows.map((row, i) => (
                     <tr key={i} className="border-base-300 border-t">
-                      <td className="text-base-content/60 px-3 py-1.5">{i + 1}</td>
+                      <td className="text-base-content px-3 py-1.5">{i + 1}</td>
                       {previewHeaders.map((h) => (
                         <td key={h} className="max-w-[120px] truncate px-3 py-1.5" title={row[h]}>
-                          {row[h] ?? <span className="text-base-content/60">—</span>}
+                          {row[h] ?? <span className="text-base-content">—</span>}
                         </td>
                       ))}
                       {headers.length > 8 && <td />}
@@ -546,15 +546,9 @@ export function ImportDialog({
                   <table className="w-full text-xs">
                     <thead className="bg-base-200">
                       <tr>
-                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
-                          Row
-                        </th>
-                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
-                          Key
-                        </th>
-                        <th className="text-base-content/60 px-3 py-2 text-left font-medium">
-                          Error
-                        </th>
+                        <th className="text-base-content px-3 py-2 text-left font-medium">Row</th>
+                        <th className="text-base-content px-3 py-2 text-left font-medium">Key</th>
+                        <th className="text-base-content px-3 py-2 text-left font-medium">Error</th>
                       </tr>
                     </thead>
                     <tbody>

@@ -76,7 +76,7 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
               <SelectItem key={t.id} value={t.id}>
                 <span className="flex flex-row items-center gap-2">
                   <span>{t.name}</span>
-                  <span className="text-base-content/70 text-xs">
+                  <span className="text-base-content text-xs">
                     {t.discountType === 'percentage'
                       ? `${t.discountValue}% off`
                       : `$${(t.discountValue / 100).toFixed(2)} off`}

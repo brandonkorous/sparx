@@ -182,7 +182,7 @@ export function WorkflowEditor({ workflow }: WorkflowEditorProps) {
             </div>
           </CardTitle>
           {stages.length === 0 ? (
-            <p className="text-base-content/70 pb-4 text-sm">
+            <p className="text-base-content pb-4 text-sm">
               No stages yet. Add the first stage below — a one-stage “Invoice” workflow is perfectly
               valid.
             </p>

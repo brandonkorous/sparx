@@ -118,7 +118,7 @@ export function LineGrid({
           </div>
         </CardTitle>
         <div className="flex flex-col gap-3">
-          <div className="text-base-content/60 hidden grid-cols-12 gap-2 px-1 text-xs font-medium tracking-wide uppercase md:grid">
+          <div className="text-base-content hidden grid-cols-12 gap-2 px-1 text-xs font-medium tracking-wide uppercase md:grid">
             <div className="col-span-2">Type</div>
             <div className="col-span-4">Description</div>
             <div className="col-span-1 text-right">Qty</div>
@@ -128,7 +128,7 @@ export function LineGrid({
           </div>
 
           {lines.length === 0 && (
-            <p className="text-base-content/70 px-1 py-2 text-sm">
+            <p className="text-base-content px-1 py-2 text-sm">
               No line items yet. Add the first charge below.
             </p>
           )}
@@ -256,7 +256,7 @@ function EditableLineRow({
   if (locked) {
     return (
       <div className="border-base-300 grid grid-cols-12 items-center gap-2 rounded-md border px-2 py-2">
-        <div className="text-base-content/60 col-span-2 text-sm">{currentType?.label ?? '—'}</div>
+        <div className="text-base-content col-span-2 text-sm">{currentType?.label ?? '—'}</div>
         <div className="col-span-4 text-sm">{line.description}</div>
         <div className="col-span-1 text-right text-sm tabular-nums">{line.quantity}</div>
         <div className="col-span-2 text-right text-sm tabular-nums">
@@ -320,7 +320,7 @@ function EditableLineRow({
         {markupMode ? (
           <div className="col-span-8 text-right text-sm tabular-nums md:col-span-2">
             {formatMoney(line.unitPrice, currency)}
-            <span className="text-base-content/60 ml-1 text-xs">/ unit</span>
+            <span className="text-base-content ml-1 text-xs">/ unit</span>
           </div>
         ) : (
           <div className="col-span-4 md:col-span-2">
@@ -382,7 +382,7 @@ function EditableLineRow({
       )}
 
       <div className="mt-2 flex flex-row flex-wrap items-center gap-3 px-1">
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             defaultChecked={line.taxable}

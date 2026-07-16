@@ -40,16 +40,14 @@ export async function InventoryTransferDetailContent({ id }: { id: string }) {
             <Badge color={status.color}>{status.label}</Badge>
           </div>
           <div className="flex flex-row flex-wrap items-center gap-2">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {warehouseLabel(transfer.fromWarehouseName, transfer.fromWarehouseCode)}
             </p>
-            <ArrowRight className="text-base-content/60 h-3.5 w-3.5" />
-            <p className="text-base-content/70 text-sm">
+            <ArrowRight className="text-base-content h-3.5 w-3.5" />
+            <p className="text-base-content text-sm">
               {warehouseLabel(transfer.toWarehouseName, transfer.toWarehouseCode)}
             </p>
-            {transfer.note ? (
-              <p className="text-base-content/70 text-sm">· {transfer.note}</p>
-            ) : null}
+            {transfer.note ? <p className="text-base-content text-sm">· {transfer.note}</p> : null}
           </div>
         </div>
         <TransferActionsBar id={transfer.id} status={transfer.status} />
@@ -77,7 +75,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[9rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

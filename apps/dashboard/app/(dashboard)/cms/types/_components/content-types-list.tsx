@@ -38,9 +38,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
       >
         {t.plural_name}
       </Link>
-      {t.description && (
-        <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
-      )}
+      {t.description && <p className="text-base-content line-clamp-1 text-xs">{t.description}</p>}
     </div>
   );
 
@@ -59,9 +57,9 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
 
   const urlCell = (t: ContentType) =>
     t.url_pattern ? (
-      <p className="text-base-content/70 font-mono text-xs">{t.url_pattern}</p>
+      <p className="text-base-content font-mono text-xs">{t.url_pattern}</p>
     ) : (
-      <p className="text-base-content/70 text-xs">—</p>
+      <p className="text-base-content text-xs">—</p>
     );
 
   const itemsLink = (t: ContentType) => (
@@ -75,7 +73,7 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
       href={`/cms/types/${t.key}`}
       entityType="content-type"
       entityId={t.key}
-      className="text-base-content/70 hover:text-module text-xs hover:underline"
+      className="text-base-content hover:text-module text-xs hover:underline"
     >
       {t.is_built_in ? 'View' : 'Edit'}
     </EntityRowLink>
@@ -105,17 +103,17 @@ export function ContentTypesList({ types, counts, view }: ContentTypesListProps)
     ),
     subtitle: (t) =>
       t.description ? (
-        <p className="text-base-content/70 line-clamp-1 text-xs">{t.description}</p>
+        <p className="text-base-content line-clamp-1 text-xs">{t.description}</p>
       ) : null,
     badge: kindCell,
     body: (t) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">URL pattern</p>
+          <p className="text-base-content text-sm">URL pattern</p>
           {urlCell(t)}
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Items</p>
+          <p className="text-base-content text-sm">Items</p>
           <span className="text-sm tabular-nums">{itemsLink(t)}</span>
         </div>
         <div className="flex flex-row items-center justify-end gap-2">{schemaLink(t)}</div>

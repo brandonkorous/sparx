@@ -185,7 +185,7 @@ export function FitmentStep({ productId, onBack, onComplete }: FitmentStepProps)
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="text-base-content/60 flex items-center gap-2 py-8">
+            <div className="text-base-content flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading fitment…
             </div>
           ) : (

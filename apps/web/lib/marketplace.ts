@@ -13,6 +13,8 @@
 // Server-only by construction: it reads `process.env` and is imported only by
 // server components + the load-more server action — never shipped to the client.
 
+import { canonicalQueryString } from './browse-params';
+
 // In-cluster api-rest URL (k8s/apps/site.yaml injects SPARX_API_REST_URL); the
 // public routes need no auth. Falls back to the local api-rest port for dev.
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -137,13 +139,19 @@ async function getPublic<T>(path: string): Promise<T | null> {
 }
 
 /** A category's faceted, paged catalog page. `query` carries `q`, `sort`,
- *  `cursor`, `limit`, and any facet keys (comma-separated values), passed through
- *  verbatim to the public endpoint. Degrades to an empty page on error. */
+ *  `cursor`, `limit`, and any facet keys (comma-separated values). Degrades to an
+ *  empty page on error.
+ *
+ *  The query is CANONICALIZED before it becomes a URL, because that URL is the
+ *  fetch cache's key: without it, the same logical query spelled two ways is two
+ *  cold entries and two real api-rest reads. Canonicalizing here (not only at the
+ *  call sites) means every caller — page, `generateMetadata`, the load-more action
+ *  — shares one cache entry. See lib/browse-params. */
 export async function fetchCategory(
   category: string,
   query: Record<string, string> = {}
 ): Promise<MarketplaceListResponse> {
-  const qs = new URLSearchParams(query).toString();
+  const qs = canonicalQueryString(category, query);
   const data = await getPublic<MarketplaceListResponse>(
     `/v1/public/marketplace/${encodeURIComponent(category)}${qs ? `?${qs}` : ''}`
   );

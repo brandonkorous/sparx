@@ -92,12 +92,12 @@ function BigNumerals() {
           <span className="text-primary text-6xl leading-[0.85] font-medium tracking-[-0.04em] lg:text-7xl">
             {s.value}
             {s.suffix ? (
-              <span className="text-base-content/40 text-3xl font-normal tracking-tight">
+              <span className="text-base-content text-3xl font-normal tracking-tight">
                 {s.suffix}
               </span>
             ) : null}
           </span>
-          <Text className="text-base-content/70 max-w-[30ch] text-sm">{s.label}</Text>
+          <Text className="text-base-content max-w-[30ch] text-sm">{s.label}</Text>
         </div>
       ))}
     </div>
@@ -117,7 +117,7 @@ function OldWayReceipt() {
         style={{ clipPath: RECEIPT_TORN_EDGE }}
       >
         <div className="px-6 pt-6 pb-10">
-          <div className="text-base-content/50 border-base-300 border-b border-dashed pb-3 text-center text-[11px] tracking-[0.2em]">
+          <div className="text-base-content border-base-300 border-b border-dashed pb-3 text-center text-[11px] tracking-[0.2em]">
             ★ YOUR STACK, STITCHED TOGETHER ★
           </div>
           {LEDGER.map((r) => (
@@ -125,12 +125,12 @@ function OldWayReceipt() {
               key={r.key}
               className="border-base-300 flex items-baseline justify-between gap-3 border-b border-dashed py-2"
             >
-              <span className="text-base-content/70 min-w-0">{r.alt}</span>
+              <span className="text-base-content min-w-0">{r.alt}</span>
               <span className="tabular-nums">{r.amt}</span>
             </div>
           ))}
           <div className="flex items-baseline justify-between gap-3 pt-4">
-            <span className="text-base-content/60 text-sm">TOTAL / MONTH</span>
+            <span className="text-base-content text-sm">TOTAL / MONTH</span>
             <span className="text-error text-2xl font-bold tabular-nums line-through decoration-2">
               {fmtUsd(RECEIPT_TOTAL)}
             </span>
@@ -141,7 +141,7 @@ function OldWayReceipt() {
                 <span key={i} className="bg-base-content h-full" style={{ width: `${w}px` }} />
               ))}
             </div>
-            <div className="text-base-content/40 mt-2 text-center text-[10px] tracking-[0.2em]">
+            <div className="text-base-content mt-2 text-center text-[10px] tracking-[0.2em]">
               before sparx
             </div>
           </div>

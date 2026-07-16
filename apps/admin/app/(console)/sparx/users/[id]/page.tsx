@@ -17,7 +17,7 @@ import { MembershipControls } from './_components/membership-controls';
 import { PasswordResetButton } from './_components/password-reset-button';
 
 const backLink = (
-  <Link href="/sparx/users" className="text-base-content/60 text-sm hover:underline">
+  <Link href="/sparx/users" className="text-base-content text-sm hover:underline">
     ← All users
   </Link>
 );

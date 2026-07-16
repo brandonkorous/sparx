@@ -83,7 +83,7 @@ export const SILICA_STYLE_GUIDE = {
                 {
                   kind: 'element',
                   tag: 'p',
-                  class: 'text-lg text-base-content/80',
+                  class: 'text-lg text-base-content',
                   children: ['A few sentences on who we are and why we make things by hand.'],
                 },
               ],

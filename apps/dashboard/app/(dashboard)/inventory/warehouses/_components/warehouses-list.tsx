@@ -61,7 +61,7 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
         ))}
       </div>
     ) : (
-      <p className="text-base-content/70 text-xs">none</p>
+      <p className="text-base-content text-xs">none</p>
     );
 
   const statusBadge = (w: WarehouseRow) =>
@@ -101,7 +101,7 @@ export function WarehousesList({ rows, view }: WarehousesListProps) {
           <Badge color="info" variant="soft" size="sm">
             {statusLabel(w.type)}
           </Badge>
-          <p className="text-base-content/70 text-xs">{location(w)}</p>
+          <p className="text-base-content text-xs">{location(w)}</p>
         </div>
         {channels(w)}
       </div>

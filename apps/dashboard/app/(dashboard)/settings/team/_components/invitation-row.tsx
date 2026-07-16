@@ -46,7 +46,7 @@ export function InvitationRow({
         </Badge>
       </td>
       <td>
-        <p className="text-base-content/70 text-sm">{invitation.inviterName}</p>
+        <p className="text-base-content text-sm">{invitation.inviterName}</p>
       </td>
       <td>
         <Badge color={statusTone('pending')} variant="soft" size="sm">

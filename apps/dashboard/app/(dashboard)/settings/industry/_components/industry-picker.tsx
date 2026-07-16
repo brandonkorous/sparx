@@ -98,7 +98,7 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
           >
             <div className="flex h-full flex-col gap-2">
               <div className="flex flex-row items-center gap-2">
-                <Icon className="text-base-content/60 h-4 w-4" />
+                <Icon className="text-base-content h-4 w-4" />
                 <p className="flex-1 font-medium">{starter.name}</p>
                 {isActive && (
                   <Badge color="success" variant="soft" size="sm">
@@ -107,7 +107,7 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
                 )}
               </div>
 
-              <p className="text-base-content/70 flex-1 text-xs">{starter.description}</p>
+              <p className="text-base-content flex-1 text-xs">{starter.description}</p>
 
               <div className="flex flex-row flex-wrap gap-1">
                 {starter.modules.map((m) =>
@@ -125,7 +125,7 @@ export function IndustryPicker({ starters, activeSlug, canEdit }: Props) {
                 )}
               </div>
 
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 {starter.applicablePresetCount} of {starter.totalPresetCount} packs apply to your
                 enabled modules.
               </p>

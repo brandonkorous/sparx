@@ -178,7 +178,7 @@ export function ChatSettingsForm({
             <label htmlFor="chat-collect-email" className="flex items-center justify-between gap-4">
               <span>
                 <span className="block text-sm font-medium">Pre-chat form</span>
-                <span className="text-base-content/70 block text-xs">
+                <span className="text-base-content block text-xs">
                   Ask anonymous visitors for a name and email before chatting.
                 </span>
               </span>
@@ -241,7 +241,7 @@ export function ChatSettingsForm({
                   ) : null}
                 </div>
                 {themeColors.length > 0 ? (
-                  <p className="text-base-content/70 mt-1 text-xs">
+                  <p className="text-base-content mt-1 text-xs">
                     Swatches match your site&rsquo;s brand and saved themes.
                   </p>
                 ) : null}
@@ -268,9 +268,7 @@ export function ChatSettingsForm({
               <Button color="module" onClick={saveConfig} disabled={saving}>
                 {saving ? 'Saving…' : 'Save settings'}
               </Button>
-              {savedAt ? (
-                <span className="text-base-content/70 text-xs">Saved {savedAt}</span>
-              ) : null}
+              {savedAt ? <span className="text-base-content text-xs">Saved {savedAt}</span> : null}
             </div>
           </div>
         </CardBody>
@@ -286,7 +284,7 @@ export function ChatSettingsForm({
               </Badge>
             ) : null}
           </div>
-          <p className="text-base-content/70 mb-4 text-sm">
+          <p className="text-base-content mb-4 text-sm">
             Bring your own AI to answer common questions in chat and escalate to your team when
             it&rsquo;s unsure. sparx never runs its own AI or sees your key beyond sending it
             straight to your chosen provider — you can disconnect anytime.
@@ -301,7 +299,7 @@ export function ChatSettingsForm({
             >
               <span>
                 <span className="block text-sm font-medium">Let AI answer for you</span>
-                <span className="text-base-content/70 block text-xs">
+                <span className="text-base-content block text-xs">
                   Answers common questions automatically and hands off to your team when unsure.
                 </span>
               </span>
@@ -379,7 +377,7 @@ export function ChatSettingsForm({
                 </Button>
               ) : null}
               {aiSavedAt ? (
-                <span className="text-base-content/70 text-xs">Saved {aiSavedAt}</span>
+                <span className="text-base-content text-xs">Saved {aiSavedAt}</span>
               ) : null}
             </div>
           </div>
@@ -391,7 +389,7 @@ export function ChatSettingsForm({
           <CardTitle>Quick replies</CardTitle>
           <div className="flex flex-col gap-4">
             {replies.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No quick replies yet.</p>
+              <p className="text-base-content text-sm">No quick replies yet.</p>
             ) : (
               <ul className="divide-base-300 divide-y">
                 {replies.map((r) => (
@@ -400,10 +398,10 @@ export function ChatSettingsForm({
                       <div className="text-sm font-medium">
                         {r.title}
                         {r.shortcut ? (
-                          <span className="text-base-content/70 ml-2 text-xs">/{r.shortcut}</span>
+                          <span className="text-base-content ml-2 text-xs">/{r.shortcut}</span>
                         ) : null}
                       </div>
-                      <div className="text-base-content/70 truncate text-xs">{r.body}</div>
+                      <div className="text-base-content truncate text-xs">{r.body}</div>
                     </div>
                     <Button
                       type="button"

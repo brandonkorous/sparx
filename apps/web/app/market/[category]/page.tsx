@@ -5,13 +5,14 @@
 // sorting are URL-driven navigations; only "Load more" is a client island.
 
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Button, Input } from '@wizeworks/silicaui-react';
 import { Section, SectionHeader, Display, Spark } from '@/components/marketing/primitives';
 import { fetchCategory, signUpHref } from '@/lib/marketplace';
 import { getCategory, type MarketplaceCategory } from '@/lib/marketplace-registry';
+import { canonicalQueryString, type BrowseParams } from '@/lib/browse-params';
 import { ListingCard } from '../_components/listing-card';
-import { FacetBar, type BrowseParams } from '../_components/facet-bar';
+import { FacetBar } from '../_components/facet-bar';
 import { LoadMore } from './load-more';
 
 export const revalidate = 300;
@@ -22,16 +23,25 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ category: string }>;
+  searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
   const { category } = await params;
   const cat = getCategory(category);
   if (!cat) return { title: 'Marketplace — sparx' };
+
+  // A filtered view is a slice of the same catalog, not its own page: it points
+  // its canonical at the unfiltered category and asks not to be indexed. Only the
+  // bare category page competes in search, which is also what keeps the facet
+  // combination space out of the index entirely.
+  const filtered = Object.keys(normalize(await searchParams)).length > 0;
   return {
     title: `${cat.label} — sparx Marketplace`,
     description: cat.tagline,
     alternates: { canonical: `/market/${cat.id}` },
+    ...(filtered ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -44,6 +54,7 @@ function normalize(sp: SearchParams): BrowseParams {
     if (val) out[k] = val;
   }
   if (out.sort && !SORT_KEYS.has(out.sort)) delete out.sort;
+  if (out.sort === 'popular') delete out.sort; // the default — never spell it out
   delete out.cursor;
   delete out.limit;
   return out;
@@ -53,7 +64,7 @@ function normalize(sp: SearchParams): BrowseParams {
 function sortHref(cat: MarketplaceCategory, current: BrowseParams, sort: string): string {
   const next: BrowseParams = { ...current, sort };
   if (sort === 'popular') delete next.sort; // popular is the default — keep URLs clean
-  const qs = new URLSearchParams(next).toString();
+  const qs = canonicalQueryString(cat.id, next);
   return `/market/${cat.id}${qs ? `?${qs}` : ''}`;
 }
 
@@ -69,6 +80,16 @@ export default async function CategoryBrowsePage({
   if (!cat) notFound();
 
   const current = normalize(await searchParams);
+
+  // One logical query, one URL. Any other spelling of the same selection (facet
+  // values in click order, keys in arrival order) redirects here rather than
+  // rendering — otherwise each spelling is its own page-cache entry AND its own
+  // catalog fetch, and the space grows factorially. Safe from loops because
+  // canonicalization is idempotent: the target always re-canonicalizes to itself.
+  const canonical = canonicalQueryString(cat.id, current);
+  if (canonical !== new URLSearchParams(current).toString()) {
+    permanentRedirect(`/market/${cat.id}${canonical ? `?${canonical}` : ''}`);
+  }
 
   if (cat.status !== 'live') {
     return <ComingSoonCategory cat={cat} />;

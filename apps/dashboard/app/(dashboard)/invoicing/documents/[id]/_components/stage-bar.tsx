@@ -74,7 +74,7 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
             return (
               <React.Fragment key={stage.id}>
                 {idx > 0 && (
-                  <span aria-hidden className="text-base-content/60">
+                  <span aria-hidden className="text-base-content">
                     ›
                   </span>
                 )}
@@ -87,7 +87,7 @@ export function StageBar({ documentId, stages, currentStageId }: StageBarProps) 
                     type="button"
                     disabled={pending}
                     onClick={() => void advance(stage)}
-                    className="border-base-300 text-base-content/70 hover:border-module hover:text-module inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-50"
+                    className="border-base-300 text-base-content hover:border-module hover:text-module inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-50"
                   >
                     {isPast && <Check className="h-3.5 w-3.5" />}
                     {stage.customerLabel}

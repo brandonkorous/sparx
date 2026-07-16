@@ -29,7 +29,7 @@ export function Calendar({
         button_previous: cn(
           'inline-flex h-7 w-7 items-center justify-center rounded-md',
           'border-base-300 bg-base-100 border',
-          'text-base-content/70 hover:text-base-content hover:bg-base-200',
+          'text-base-content hover:text-base-content hover:bg-base-200',
           'transition-colors duration-150',
           'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
           'disabled:pointer-events-none disabled:opacity-40'
@@ -37,7 +37,7 @@ export function Calendar({
         button_next: cn(
           'inline-flex h-7 w-7 items-center justify-center rounded-md',
           'border-base-300 bg-base-100 border',
-          'text-base-content/70 hover:text-base-content hover:bg-base-200',
+          'text-base-content hover:text-base-content hover:bg-base-200',
           'transition-colors duration-150',
           'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
           'disabled:pointer-events-none disabled:opacity-40'
@@ -45,7 +45,7 @@ export function Calendar({
         month_grid: 'w-full border-collapse',
         weekdays: 'flex',
         weekday:
-          'flex-1 text-center text-xs font-medium uppercase tracking-wider text-base-content/50 pb-2',
+          'flex-1 text-center text-xs font-medium uppercase tracking-wider text-base-content pb-2',
         week: 'flex w-full mt-1',
         day: cn(
           'relative flex flex-1 items-center justify-center p-0 text-sm',
@@ -60,7 +60,7 @@ export function Calendar({
         ),
         selected: '[&_button]:bg-module [&_button]:text-white [&_button]:hover:bg-module',
         today: '[&_button]:bg-base-200 [&_button]:font-medium [&_button]:text-base-content',
-        outside: '[&_button]:text-base-content/50 [&_button]:opacity-50',
+        outside: '[&_button]:text-base-content [&_button]:opacity-50',
         disabled: '[&_button]:pointer-events-none [&_button]:opacity-40',
         range_middle: '[&_button]:bg-module/10 [&_button]:text-module',
         hidden: 'invisible',

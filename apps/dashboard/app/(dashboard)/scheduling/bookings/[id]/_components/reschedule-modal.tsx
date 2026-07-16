@@ -101,13 +101,11 @@ export function RescheduleModal({
           {loading ? (
             <div className="flex flex-row items-center gap-2">
               <Loading size="sm" />
-              <p className="text-base-content/70 text-sm">Checking availability…</p>
+              <p className="text-base-content text-sm">Checking availability…</p>
             </div>
           ) : slots ? (
             slots.length === 0 ? (
-              <p className="text-base-content/70 text-sm">
-                No open times that day. Try another date.
-              </p>
+              <p className="text-base-content text-sm">No open times that day. Try another date.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {slots.map((slot) => (
@@ -125,7 +123,7 @@ export function RescheduleModal({
               </div>
             )
           ) : (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Pick a date and find open times — only slots that respect availability and buffers are
               offered.
             </p>

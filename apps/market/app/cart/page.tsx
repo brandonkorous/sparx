@@ -105,7 +105,7 @@ export default function CartPage() {
   if (status === 'loading') {
     return (
       <Container className="py-8 md:py-12">
-        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
+        <div className="text-base-content flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your cart…
         </div>
@@ -139,7 +139,7 @@ export default function CartPage() {
         <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
           Your cart
         </h1>
-        <p className="text-base-content/70 mt-2 text-base">
+        <p className="text-base-content mt-2 text-base">
           Items from{' '}
           <Link
             href={`/merchants/${cart.merchantSlug}`}
@@ -175,7 +175,7 @@ export default function CartPage() {
                     />
                   ) : (
                     <span
-                      className="text-base-content/50 flex h-full items-center justify-center"
+                      className="text-base-content flex h-full items-center justify-center"
                       aria-hidden
                     >
                       <ImageOff size={20} />
@@ -195,11 +195,9 @@ export default function CartPage() {
                     <span className="text-base-content text-sm font-semibold">{line.title}</span>
                   )}
                   {line.variantTitle ? (
-                    <span className="text-base-content/70 text-[0.8125rem]">
-                      {line.variantTitle}
-                    </span>
+                    <span className="text-base-content text-[0.8125rem]">{line.variantTitle}</span>
                   ) : null}
-                  <span className="text-base-content/70 text-[0.8125rem]">
+                  <span className="text-base-content text-[0.8125rem]">
                     {formatCents(line.unitPriceCents, cart.currency)} each
                   </span>
 
@@ -269,7 +267,7 @@ export default function CartPage() {
                 <Tag
                   size={15}
                   aria-hidden
-                  className="text-base-content/50 pointer-events-none absolute left-3 z-10"
+                  className="text-base-content pointer-events-none absolute left-3 z-10"
                 />
                 <Input
                   value={code}
@@ -311,7 +309,7 @@ export default function CartPage() {
           </form>
 
           <div className="flex flex-col gap-2 text-sm">
-            <div className="text-base-content/70 flex items-center justify-between">
+            <div className="text-base-content flex items-center justify-between">
               <span>Subtotal</span>
               <span className="tabular-nums">
                 {formatCents(cart.totals.subtotalCents, cart.currency)}
@@ -325,7 +323,7 @@ export default function CartPage() {
                 </span>
               </div>
             ) : null}
-            <div className="text-base-content/70 flex items-center justify-between">
+            <div className="text-base-content flex items-center justify-between">
               <span>Shipping</span>
               <span>Calculated at checkout</span>
             </div>
@@ -356,7 +354,7 @@ export default function CartPage() {
             Continue shopping
           </Button>
 
-          <p className="text-base-content/50 mt-4 flex items-center justify-center gap-1.5 text-[0.8125rem]">
+          <p className="text-base-content mt-4 flex items-center justify-center gap-1.5 text-[0.8125rem]">
             <Lock size={13} aria-hidden />
             Secure checkout — sparx is the merchant of record.
           </p>

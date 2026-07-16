@@ -30,9 +30,7 @@ export function LotsList({ rows, view }: LotsListProps) {
       <p className="truncate text-sm font-medium">
         {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
       </p>
-      {l.variantSku ? (
-        <p className="text-base-content/70 font-mono text-xs">{l.variantSku}</p>
-      ) : null}
+      {l.variantSku ? <p className="text-base-content font-mono text-xs">{l.variantSku}</p> : null}
     </div>
   );
 
@@ -42,7 +40,7 @@ export function LotsList({ rows, view }: LotsListProps) {
       <div className="flex flex-col gap-0">
         <p className="text-sm">{formatDate(l.expiresAt)}</p>
         {days !== null ? (
-          <p className={`text-xs ${days < 0 ? 'text-danger' : 'text-base-content/60'}`}>
+          <p className={`text-xs ${days < 0 ? 'text-danger' : 'text-base-content'}`}>
             {days < 0 ? `expired ${-days}d ago` : `${days}d left`}
           </p>
         ) : null}
@@ -52,7 +50,7 @@ export function LotsList({ rows, view }: LotsListProps) {
 
   const hazmat = (l: LotRow) =>
     l.hazmatClass === 'none' ? (
-      <p className="text-base-content/70 text-xs">none</p>
+      <p className="text-base-content text-xs">none</p>
     ) : (
       <Badge color="warning" variant="soft">
         {hazmatLabel(l.hazmatClass)}
@@ -64,7 +62,7 @@ export function LotsList({ rows, view }: LotsListProps) {
     return b ? (
       <Badge color={b.color}>{b.label}</Badge>
     ) : (
-      <p className="text-base-content/70 text-xs">—</p>
+      <p className="text-base-content text-xs">—</p>
     );
   };
 
@@ -89,9 +87,7 @@ export function LotsList({ rows, view }: LotsListProps) {
     body: (l) => (
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
-            {l.warehouseName ?? l.warehouseCode ?? '—'}
-          </p>
+          <p className="text-base-content text-sm">{l.warehouseName ?? l.warehouseCode ?? '—'}</p>
           <p className="text-sm">
             {l.quantity} qty · {l.serialCount} serial{l.serialCount === 1 ? '' : 's'}
           </p>

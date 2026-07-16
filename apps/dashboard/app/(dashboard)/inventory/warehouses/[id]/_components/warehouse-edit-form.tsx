@@ -206,7 +206,7 @@ export function WarehouseEditForm({ warehouse }: { warehouse: WarehouseRow }) {
             <Field>
               <FieldLabel>Phone</FieldLabel>
               <FieldControl name="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Some carriers (e.g. USPS via Shippo) require a phone number on file for this address
                 before you can buy a real shipping label.
               </p>

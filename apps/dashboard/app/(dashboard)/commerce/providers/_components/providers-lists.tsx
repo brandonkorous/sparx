@@ -167,7 +167,7 @@ function ProviderCard({ provider, kind }: { provider: ProviderMetadata; kind: Pr
             </Badge>
           )}
         </div>
-        <p className="text-base-content/70 text-sm">{provider.description}</p>
+        <p className="text-base-content text-sm">{provider.description}</p>
         <div className="flex flex-row flex-wrap gap-1 pt-1">
           {provider.supportedCountries.slice(0, 8).map((c) => (
             <Badge key={c} color="neutral" variant="soft" size="sm">
@@ -227,7 +227,7 @@ const installedProvider = (inst: InstallationRow) => (
 );
 
 const installedLabel = (inst: InstallationRow) =>
-  inst.label ?? <p className="text-base-content/70 text-xs">—</p>;
+  inst.label ?? <p className="text-base-content text-xs">—</p>;
 
 const installedEnvironment = (inst: InstallationRow) => (
   <Badge color={inst.environment === 'production' ? 'success' : 'warning'}>
@@ -261,9 +261,9 @@ const installedCard: SelectionCard<InstallationRow> = {
     <div className="flex flex-col gap-2">
       <div className="flex flex-row flex-wrap items-center gap-2">
         {installedEnvironment(inst)}
-        {inst.label ? <p className="text-base-content/70 text-xs">{inst.label}</p> : null}
+        {inst.label ? <p className="text-base-content text-xs">{inst.label}</p> : null}
       </div>
-      <div className="text-base-content/70 flex flex-row flex-wrap items-center gap-1 text-xs">
+      <div className="text-base-content flex flex-row flex-wrap items-center gap-1 text-xs">
         <span>Health:</span>
         {installedHealth(inst)}
       </div>

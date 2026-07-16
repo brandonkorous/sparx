@@ -11,6 +11,7 @@ export * from './attr-binding';
 export * from './commerce';
 export * from './scheduling';
 export * from './host-nodes';
+export * from './ensure-ids';
 export * from './catalog';
 export * from './site-chrome';
 export * from './site';

@@ -112,7 +112,7 @@ export function ContentSelectionTable({
       >
         {entryTitle(e)}
       </EntityRowLink>
-      {e.slug && <p className="text-base-content/70 text-xs">/{e.slug}</p>}
+      {e.slug && <p className="text-base-content text-xs">/{e.slug}</p>}
     </div>
   );
 
@@ -126,9 +126,7 @@ export function ContentSelectionTable({
     {
       header: 'Updated',
       cell: (e) => (
-        <p className="text-base-content/70 text-sm">
-          {new Date(e.updated_at).toLocaleDateString()}
-        </p>
+        <p className="text-base-content text-sm">{new Date(e.updated_at).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -139,7 +137,7 @@ export function ContentSelectionTable({
     body: (e) => (
       <div className="flex flex-row items-center justify-between gap-2">
         {showType ? typeBadge(e) : <span />}
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {e.status === 'published' && e.published_at
             ? `Published ${new Date(e.published_at).toLocaleDateString()}`
             : `Updated ${new Date(e.updated_at).toLocaleDateString()}`}

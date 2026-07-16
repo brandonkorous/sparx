@@ -33,9 +33,7 @@ export function MovementsList({ rows, view }: MovementsListProps) {
       >
         {m.productTitle ?? m.variantSku ?? m.variantId.slice(0, 8)}
       </Link>
-      {m.variantSku ? (
-        <p className="text-base-content/70 font-mono text-xs">{m.variantSku}</p>
-      ) : null}
+      {m.variantSku ? <p className="text-base-content font-mono text-xs">{m.variantSku}</p> : null}
     </div>
   );
 
@@ -60,15 +58,15 @@ export function MovementsList({ rows, view }: MovementsListProps) {
   const actor = (m: MovementRow) => (
     <div className="flex min-w-0 flex-col gap-0">
       <p className="text-sm">{actorLabel(m.actorType)}</p>
-      {m.source ? <p className="text-base-content/70 truncate text-xs">{m.source}</p> : null}
+      {m.source ? <p className="text-base-content truncate text-xs">{m.source}</p> : null}
     </div>
   );
 
   const reference = (m: MovementRow) =>
     m.referenceType ? (
-      <p className="text-base-content/70 text-xs">{m.referenceType}</p>
+      <p className="text-base-content text-xs">{m.referenceType}</p>
     ) : (
-      <p className="text-base-content/70 text-xs">—</p>
+      <p className="text-base-content text-xs">—</p>
     );
 
   const columns: SelectionColumn<MovementRow>[] = [
@@ -85,19 +83,17 @@ export function MovementsList({ rows, view }: MovementsListProps) {
   const card: SelectionCard<MovementRow> = {
     title: item,
     badge: reason,
-    subtitle: (m) => <p className="text-base-content/70 text-xs">{formatDateTime(m.createdAt)}</p>,
+    subtitle: (m) => <p className="text-base-content text-xs">{formatDateTime(m.createdAt)}</p>,
     body: (m) => (
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
-            {m.warehouseName ?? m.warehouseCode ?? '—'}
-          </p>
+          <p className="text-base-content text-sm">{m.warehouseName ?? m.warehouseCode ?? '—'}</p>
           <div className="flex flex-row items-center gap-2">
             {change(m)}
-            <p className="text-base-content/70 text-xs">bal {m.balanceAfter ?? '—'}</p>
+            <p className="text-base-content text-xs">bal {m.balanceAfter ?? '—'}</p>
           </div>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {actorLabel(m.actorType)}
           {m.referenceType ? ` · ${m.referenceType}` : ''}
         </p>

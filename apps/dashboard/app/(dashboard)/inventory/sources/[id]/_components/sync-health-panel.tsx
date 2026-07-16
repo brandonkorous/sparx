@@ -49,7 +49,7 @@ export function SyncHealthPanel({ health }: { health: SyncHealth }) {
               <RecentRunsTable runs={health.recentRuns} />
             </div>
           ) : (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No syncs have run yet. Trigger one with “Sync now”, or push stock to this source via
               the API.
             </p>
@@ -71,7 +71,7 @@ function Tile({
 }) {
   return (
     <div className="border-base-300 flex min-w-[10rem] flex-1 flex-col gap-1 rounded border px-3 py-2">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className={emphasis ? 'text-warning text-lg' : 'text-lg'}>{value}</p>
     </div>
   );
@@ -82,7 +82,7 @@ function LatestRun({ run }: { run: SyncRunRow }) {
     <div className="border-base-300 bg-base-200 flex flex-col gap-2 rounded border px-3 py-3">
       <div className="flex flex-row flex-wrap items-center gap-2">
         <Badge color={runStatusColor(run.status)}>{run.status}</Badge>
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {triggerLabel(run.trigger)} · {formatDateTime(run.finishedAt ?? run.startedAt)}
         </p>
       </div>
@@ -103,7 +103,7 @@ function Metric({ label, value, warn = false }: { label: string; value: number; 
   return (
     <div className="flex flex-col gap-0">
       <p className={warn && value > 0 ? 'text-warning text-lg' : 'text-lg'}>{value}</p>
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
     </div>
   );
 }

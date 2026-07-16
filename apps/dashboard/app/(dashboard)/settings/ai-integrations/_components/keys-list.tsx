@@ -64,7 +64,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
       cell: (k) => (
         <div className="flex min-w-0 flex-col gap-1">
           <p className="truncate text-sm font-medium">{k.name}</p>
-          <code className="text-base-content/60 text-xs">{k.keyPrefix}…</code>
+          <code className="text-base-content text-xs">{k.keyPrefix}…</code>
         </div>
       ),
     },
@@ -72,7 +72,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
     {
       header: 'Last used',
       cell: (k) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {k.lastUsedAt ? k.lastUsedAt.toLocaleDateString() : 'Never'}
         </p>
       ),
@@ -102,7 +102,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
               <div className="flex flex-row items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="truncate font-medium">{k.name}</p>
-                  <code className="text-base-content/60 text-xs">{k.keyPrefix}…</code>
+                  <code className="text-base-content text-xs">{k.keyPrefix}…</code>
                 </div>
                 <Badge color={s.color} variant="soft">
                   {s.label}
@@ -110,7 +110,7 @@ export function KeysList({ keys, view }: { keys: ApiKey[]; view: 'table' | 'card
               </div>
               {scopeBadges(k.scopes)}
               <div className="flex flex-row items-center justify-between gap-2">
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   {k.lastUsedAt ? `Last used ${k.lastUsedAt.toLocaleDateString()}` : 'Never used'}
                 </p>
                 {revokeButton(k)}

@@ -21,7 +21,7 @@ export function PricingV2FinalCta() {
             Light the spark
             <span className="text-primary">.</span>
           </Heading>
-          <Text variant="lead" className="text-base-content/70 max-w-xl">
+          <Text variant="lead" className="text-base-content max-w-xl">
             Sign up free. Switch on the modules you need. One invoice, no card, cancel any time.
             Keep the site, the data, and the control for years.
           </Text>

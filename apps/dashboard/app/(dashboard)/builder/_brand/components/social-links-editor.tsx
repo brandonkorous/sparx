@@ -61,7 +61,7 @@ export function SocialLinksEditor({
   return (
     <div className="flex flex-col gap-2.5">
       {socials.length === 0 ? (
-        <p className="text-base-content/60 text-xs">No links yet.</p>
+        <p className="text-base-content text-xs">No links yet.</p>
       ) : (
         socials.map((row, index) => {
           const known = KNOWN_KEYS.has(row.platform);

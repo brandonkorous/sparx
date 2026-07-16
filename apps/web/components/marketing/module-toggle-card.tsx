@@ -48,7 +48,7 @@ export function ModuleToggleCard({
           <CardTitle className="text-base">{label}</CardTitle>
           <Text variant="caption">{title}</Text>
           {reason ? (
-            <Text variant="caption" className="text-base-content/50">
+            <Text variant="caption" className="text-base-content">
               {reason}
             </Text>
           ) : null}

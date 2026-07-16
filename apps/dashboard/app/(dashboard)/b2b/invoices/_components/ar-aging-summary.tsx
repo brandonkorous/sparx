@@ -35,7 +35,7 @@ export function ArAgingSummary({ aging }: { aging: AgingReport }) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <p className="font-medium">AR aging</p>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               {money(aging.totalOutstanding)} outstanding · {aging.totalCount} open
             </p>
           </div>
@@ -47,7 +47,7 @@ export function ArAgingSummary({ aging }: { aging: AgingReport }) {
                   key={b.key}
                   className="border-base-300 flex flex-col gap-0.5 rounded-lg border p-3"
                 >
-                  <p className="text-base-content/70 text-xs">{b.label}</p>
+                  <p className="text-base-content text-xs">{b.label}</p>
                   <p
                     className={
                       pastDue
@@ -57,7 +57,7 @@ export function ArAgingSummary({ aging }: { aging: AgingReport }) {
                   >
                     {money(b.balance)}
                   </p>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     {b.count} invoice{b.count === 1 ? '' : 's'}
                   </p>
                 </div>

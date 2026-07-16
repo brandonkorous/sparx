@@ -50,7 +50,7 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
   if (overrides.length === 0) {
     return (
       <div className="flex flex-col gap-3 p-6 text-center">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           No product overrides. Overrides let you set a specific price or additional discount for
           this account on individual variants or collections.
         </p>
@@ -106,13 +106,11 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
                     {Number(o.discountPercentage)}% off
                   </Badge>
                 ) : (
-                  <p className="text-base-content/70 text-sm">—</p>
+                  <p className="text-base-content text-sm">—</p>
                 )}
               </td>
               <td>
-                <p className="text-base-content/70 max-w-[200px] truncate text-sm">
-                  {o.notes ?? '—'}
-                </p>
+                <p className="text-base-content max-w-[200px] truncate text-sm">{o.notes ?? '—'}</p>
               </td>
               <td>
                 <div className="flex flex-col items-end gap-1">

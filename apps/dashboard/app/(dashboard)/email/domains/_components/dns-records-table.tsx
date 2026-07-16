@@ -32,7 +32,7 @@ function validBadge(valid: string) {
 export function DnsRecordsTable({ records }: { records: DnsRecord[] }) {
   if (records.length === 0) {
     return (
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         No DNS records yet — they appear once the domain is provisioned.
       </p>
     );

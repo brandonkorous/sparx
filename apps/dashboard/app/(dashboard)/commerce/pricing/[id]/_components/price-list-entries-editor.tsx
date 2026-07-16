@@ -157,7 +157,7 @@ export function PriceListEntriesEditor({
             />
           </Field>
           <div className="flex flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Mode</p>
+            <p className="text-base-content text-xs">Mode</p>
             <RadioGroup
               value={mode}
               onValueChange={(val) => setMode(val as 'fixed' | 'percent')}

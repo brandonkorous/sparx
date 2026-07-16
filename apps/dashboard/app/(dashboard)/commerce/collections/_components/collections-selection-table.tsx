@@ -78,7 +78,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
             </EntityRowLink>
             {c.featured && featuredBadge}
           </div>
-          <p className="text-base-content/70 text-xs">/{c.handle}</p>
+          <p className="text-base-content text-xs">/{c.handle}</p>
         </div>
       ),
     },
@@ -91,7 +91,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
     {
       header: 'Updated',
       cell: (c) => (
-        <p className="text-base-content/70 text-sm">{new Date(c.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(c.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -107,7 +107,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
         {c.name}
       </EntityRowLink>
     ),
-    subtitle: (c) => <p className="text-base-content/70 text-xs">/{c.handle}</p>,
+    subtitle: (c) => <p className="text-base-content text-xs">/{c.handle}</p>,
     badge: typeBadge,
     body: (c) => (
       <>
@@ -117,7 +117,7 @@ export function CollectionsSelectionTable({ collections, view }: CollectionsSele
             {c.productCount} product{c.productCount === 1 ? '' : 's'}
           </p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           updated {new Date(c.updatedAt).toLocaleDateString()}
         </p>
       </>

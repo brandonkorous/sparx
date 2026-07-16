@@ -112,7 +112,7 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
             isDragging
               ? 'border-module bg-module bg-soft text-module'
-              : 'text-base-content/70 border-base-300 bg-base-200 hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
+              : 'text-base-content border-base-300 bg-base-200 hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
             disabled && 'pointer-events-none opacity-50'
           )}
         >
@@ -121,7 +121,7 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             <span className="text-base-content font-medium">Click to upload</span>
             {' or drag and drop'}
           </p>
-          {accept && <p className="text-base-content/50 text-xs">{accept}</p>}
+          {accept && <p className="text-base-content text-xs">{accept}</p>}
         </div>
 
         <input
@@ -144,11 +144,9 @@ export const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
                 key={`${file.name}-${idx}`}
                 className="border-base-300 bg-base-100 flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm"
               >
-                <FileIcon className="text-base-content/50 h-4 w-4 shrink-0" />
+                <FileIcon className="text-base-content h-4 w-4 shrink-0" />
                 <span className="text-base-content flex-1 truncate">{file.name}</span>
-                <span className="text-base-content/50 shrink-0 text-xs">
-                  {formatSize(file.size)}
-                </span>
+                <span className="text-base-content shrink-0 text-xs">{formatSize(file.size)}</span>
                 <Button
                   type="button"
                   variant="ghost"

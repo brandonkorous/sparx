@@ -85,7 +85,7 @@ function Segmented<T extends string>({
             'inline-flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-3 text-[13px] font-medium transition-colors',
             value === o.value
               ? 'bg-base-100 text-base-content shadow-sm'
-              : 'text-base-content/70 hover:text-base-content'
+              : 'text-base-content hover:text-base-content'
           )}
         >
           {o.icon}

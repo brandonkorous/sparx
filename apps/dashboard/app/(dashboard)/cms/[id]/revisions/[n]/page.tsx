@@ -129,7 +129,7 @@ export default async function RevisionDiffPage({ params }: PageParams) {
               )}
             </div>
             {revHtml === curHtml ? (
-              <p className="text-base-content/70 text-base">
+              <p className="text-base-content text-base">
                 The body is identical between this revision and the current entry.
               </p>
             ) : (
@@ -172,11 +172,11 @@ function FieldDiff({
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Revision</p>
+            <p className="text-base-content text-xs">Revision</p>
             <p className="text-sm">{revision || <em>empty</em>}</p>
           </div>
           <div className="flex flex-col gap-1">
-            <p className="text-base-content/70 text-xs">Current</p>
+            <p className="text-base-content text-xs">Current</p>
             <p className="text-sm">{current || <em>empty</em>}</p>
           </div>
         </div>
@@ -224,7 +224,7 @@ function SeoDiff({
           ))}
           {unchangedRows.length > 0 && (
             <details>
-              <summary className="text-base-content/60 cursor-pointer text-sm">
+              <summary className="text-base-content cursor-pointer text-sm">
                 Show {unchangedRows.length} unchanged{' '}
                 {unchangedRows.length === 1 ? 'field' : 'fields'}
               </summary>
@@ -254,7 +254,7 @@ function SeoDiffRow({ fieldKey, rev, cur }: { fieldKey: string; rev: string; cur
 function BodyPanel({ title, html }: { title: string; html: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-base-content/70 text-xs">{title}</p>
+      <p className="text-base-content text-xs">{title}</p>
       <div
         className="sparx-content border-base-300 bg-base-100 max-h-[600px] min-h-[200px] overflow-auto rounded-lg border p-4"
         dangerouslySetInnerHTML={{ __html: html }}

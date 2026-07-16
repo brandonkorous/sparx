@@ -104,7 +104,7 @@ export function ImageFramingModal({
                 style={{ left: `${focal.x}%`, top: `${focal.y}%` }}
               />
             </div>
-            <p className="text-base-content/60 text-xs">
+            <p className="text-base-content text-xs">
               Click or drag on the image to set the focal point — the part kept in view when it’s
               cropped.
             </p>
@@ -135,9 +135,7 @@ export function ImageFramingModal({
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-base-content text-sm font-medium">Zoom</span>
-                  <span className="text-base-content/60 text-xs tabular-nums">
-                    {zoom.toFixed(1)}×
-                  </span>
+                  <span className="text-base-content text-xs tabular-nums">{zoom.toFixed(1)}×</span>
                 </div>
                 <Slider
                   value={[zoom]}
@@ -166,7 +164,7 @@ export function ImageFramingModal({
             </div>
           </div>
         ) : (
-          <p className="text-base-content/60 text-sm">
+          <p className="text-base-content text-sm">
             Choose an image first, then you can frame it here.
           </p>
         )}

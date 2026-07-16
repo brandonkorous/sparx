@@ -76,7 +76,7 @@ export async function SubscriptionDetailContent({ id }: Props) {
               {statusLabel(sub.status)}
             </Badge>
           </div>
-          <p className="text-base-content/70 text-base">
+          <p className="text-base-content text-base">
             {sub.customerName ?? `Customer ${sub.customerId.slice(0, 8)}`} · Every{' '}
             {sub.intervalCount} {sub.intervalUnit}
             {sub.intervalCount > 1 ? 's' : ''} · {sub.deliveriesPerCycle} per cycle
@@ -120,7 +120,7 @@ export async function SubscriptionDetailContent({ id }: Props) {
                     <div className="flex flex-col gap-0">
                       <p className="text-sm">{it.productTitle ?? it.variantId.slice(0, 8)}</p>
                       {it.variantSku && (
-                        <p className="text-base-content/70 font-mono text-xs">{it.variantSku}</p>
+                        <p className="text-base-content font-mono text-xs">{it.variantSku}</p>
                       )}
                     </div>
                   </td>
@@ -184,7 +184,7 @@ export async function SubscriptionDetailContent({ id }: Props) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-base-300 flex flex-col gap-1 rounded border p-3">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="text-base font-medium">{value}</p>
     </div>
   );
@@ -193,7 +193,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-row gap-4">
-      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-base-content w-40 text-sm">{label}</p>
       <p className="text-sm">{value}</p>
     </div>
   );

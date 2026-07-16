@@ -63,6 +63,10 @@ describe('starterSite — the silica-native seed', () => {
       '/products',
       '/collections',
       '/category',
+      '/account/login',
+      '/account/register',
+      '/account/forgot',
+      '/account/reset',
       '/about',
       '/contact',
     ]);
@@ -152,6 +156,10 @@ describe('renderSilicaSite — the whole-site export', () => {
       '/products',
       '/collections',
       '/category',
+      '/account/login',
+      '/account/register',
+      '/account/forgot',
+      '/account/reset',
       '/about',
       '/contact',
     ]);

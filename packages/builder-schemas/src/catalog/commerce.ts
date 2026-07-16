@@ -38,7 +38,7 @@ function shoppableCard(): PlatformCatalogEntry['tree'] {
               'item.title'
             ),
             bound(
-              atom('Text', 'text-sm text-base-content/70', {
+              atom('Text', 'text-sm text-base-content', {
                 variant: 'body',
                 text: 'Hand-glazed and microwave-safe — built for a slow morning.',
               }),
@@ -73,7 +73,7 @@ function cartLine(name: string, qty: string, price: string): PlatformCatalogEntr
       el('div', 'flex flex-1 flex-col', {
         children: [
           el('span', 'text-sm font-medium text-base-content', { text: name }),
-          el('span', 'text-xs text-base-content/60', { text: `Qty ${qty}` }),
+          el('span', 'text-xs text-base-content', { text: `Qty ${qty}` }),
         ],
       }),
       el('span', 'text-sm font-semibold text-base-content', { text: price }),
@@ -177,7 +177,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
                   'item.title'
                 ),
                 bound(
-                  atom('Text', 'text-base leading-relaxed text-base-content/70', {
+                  atom('Text', 'text-base leading-relaxed text-base-content', {
                     variant: 'body',
                     text: 'Full-grain leather that softens with use, a laptop sleeve inside, and a footprint sized for the daily carry. Made to be the only bag you reach for.',
                   }),
@@ -257,7 +257,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
           }),
           el('div', 'flex items-center justify-between border-t border-base-200 pt-4', {
             children: [
-              el('span', 'text-sm text-base-content/70', { text: 'Subtotal' }),
+              el('span', 'text-sm text-base-content', { text: 'Subtotal' }),
               el('span', 'text-lg font-semibold text-base-content', { text: '$138.00' }),
             ],
           }),

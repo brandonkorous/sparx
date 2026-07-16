@@ -87,7 +87,7 @@ export const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-base-content/70 text-sm', className)} {...props} />
+  <p ref={ref} className={cn('text-base-content text-sm', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 

@@ -495,7 +495,7 @@ function InvoiceWizardInner({
                     Document created — but {partialFailures.length} item
                     {partialFailures.length === 1 ? '' : 's'} couldn’t be added automatically:
                   </p>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     {partialFailures.join(', ')}. Open the document to add{' '}
                     {partialFailures.length === 1 ? 'it' : 'them'} by hand.
                   </p>
@@ -509,7 +509,7 @@ function InvoiceWizardInner({
             <Card>
               <CardBody>
                 <h3 className="text-xl font-semibold">Document</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   The workflow sets the stages and the customer-facing label. Bill a retail customer
                   or a B2B account — at least one is required.
                 </p>
@@ -517,7 +517,7 @@ function InvoiceWizardInner({
                   <Field>
                     <FieldLabel>Workflow</FieldLabel>
                     {workflows.length === 0 ? (
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         No document workflows exist yet. Create one in Invoicing → Workflows first.
                       </p>
                     ) : (
@@ -605,13 +605,13 @@ function InvoiceWizardInner({
                     {lines.length}
                   </Badge>
                 </div>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Manual lines take a unit price; marked-up parts and pass-through price live from a
                   cost basis. Lines are optional here — you can also add them on the document.
                 </p>
                 <div className="flex flex-col gap-2">
                   {lines.length === 0 ? (
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       No lines yet. Add the first charge below — or continue and add them on the
                       document.
                     </p>
@@ -626,12 +626,10 @@ function InvoiceWizardInner({
                             {l.typeLabel}
                           </Badge>
                           <p className="truncate text-sm">{l.description}</p>
-                          {!l.taxable && (
-                            <p className="text-base-content/70 text-xs">(non-taxable)</p>
-                          )}
+                          {!l.taxable && <p className="text-base-content text-xs">(non-taxable)</p>}
                         </div>
                         <div className="flex flex-row items-center gap-3">
-                          <p className="text-base-content/70 text-xs tabular-nums">
+                          <p className="text-base-content text-xs tabular-nums">
                             {l.quantity} × {formatMoney(l.unitPrice, currency)}
                           </p>
                           <p className="text-sm tabular-nums">
@@ -656,7 +654,7 @@ function InvoiceWizardInner({
             </Card>
 
             {lineTypes.length === 0 ? (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 No line types are configured. They seed automatically when Invoicing is activated.
               </p>
             ) : (
@@ -672,7 +670,7 @@ function InvoiceWizardInner({
             <Card>
               <CardBody>
                 <h3 className="text-xl font-semibold">Tax, shipping &amp; surcharge</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Document-level charges. Tax applies to the lines you mark taxable. All optional.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-3">
@@ -723,7 +721,7 @@ function InvoiceWizardInner({
             <Card>
               <CardBody>
                 <h3 className="text-xl font-semibold">Terms</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Due date, validity, and notes — all optional.
                 </p>
                 <div className="flex flex-col gap-3">
@@ -764,7 +762,7 @@ function InvoiceWizardInner({
             <Card>
               <CardBody>
                 <h3 className="text-xl font-semibold">Deposit / payment</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Record an upfront deposit or payment now — optional; leave the amount blank to
                   skip.
                 </p>
@@ -818,7 +816,7 @@ function InvoiceWizardInner({
                   </Field>
                 </div>
                 {depositNum > 0 && (
-                  <p className="text-base-content/70 mt-3 text-xs">
+                  <p className="text-base-content mt-3 text-xs">
                     {formatMoney(depositNum, currency)} {depositKind} will be recorded on create —
                     balance after: {formatMoney(balance, currency)}.
                   </p>
@@ -831,7 +829,7 @@ function InvoiceWizardInner({
               <Card>
                 <CardBody>
                   <h3 className="text-xl font-semibold">Start at stage</h3>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     The document is created at the first stage; pick a later stage to advance it
                     straight away (e.g. issue the invoice now).
                   </p>
@@ -1042,7 +1040,7 @@ function LineComposer({
             />
           </Field>
           <div className="col-span-8 flex items-center gap-2 md:col-span-2 md:justify-end md:pb-2">
-            <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+            <label className="text-base-content flex items-center gap-1.5 text-xs">
               <Checkbox
                 color="module"
                 checked={taxable}

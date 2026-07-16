@@ -296,7 +296,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             onChange={(e) => setSiteName(e.target.value)}
             placeholder="Acme Co."
           />
-          <p className="text-base-content/60 text-xs">
+          <p className="text-base-content text-xs">
             The name customers see on this site — its title, header, and emails. Your tenant&apos;s
             legal/billing name lives in Settings → General.
           </p>
@@ -548,7 +548,7 @@ function Section({
     <section className="flex flex-col gap-3">
       <div className="flex flex-col gap-0.5">
         <h2 className="text-base-content text-sm font-semibold">{title}</h2>
-        {hint ? <p className="text-base-content/60 text-xs">{hint}</p> : null}
+        {hint ? <p className="text-base-content text-xs">{hint}</p> : null}
       </div>
       {children}
     </section>
@@ -604,7 +604,7 @@ function ColorSwatch({
           </button>
         ) : null}
       </div>
-      <span className="text-base-content/70 text-center text-[11px] leading-tight">{label}</span>
+      <span className="text-base-content text-center text-[11px] leading-tight">{label}</span>
     </div>
   );
 }
@@ -708,7 +708,7 @@ function Segmented({
           );
         })}
       </div>
-      {help ? <p className="text-base-content/60 text-xs">{help}</p> : null}
+      {help ? <p className="text-base-content text-xs">{help}</p> : null}
     </div>
   );
 }

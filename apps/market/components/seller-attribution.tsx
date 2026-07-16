@@ -37,7 +37,7 @@ export function SellerAttribution({
               className="object-cover"
             />
           ) : (
-            <Store size={20} aria-hidden className="text-base-content/70" />
+            <Store size={20} aria-hidden className="text-base-content" />
           )}
         </Link>
 
@@ -48,7 +48,7 @@ export function SellerAttribution({
           >
             {merchantName}
           </Link>
-          <p className="text-base-content/70 inline-flex items-center gap-1 text-[0.8125rem]">
+          <p className="text-base-content inline-flex items-center gap-1 text-[0.8125rem]">
             <ShieldCheck size={13} aria-hidden className="text-success" />
             Independent seller on sparx.market
           </p>

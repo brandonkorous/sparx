@@ -47,7 +47,7 @@ export default async function FinanceChannelsPage({
                 <CardBody>
                   <div className="flex items-center justify-between gap-2">
                     <CardTitle>Revenue by channel</CardTitle>
-                    <p className="text-base-content/70 text-xs">{revenue.rangeLabel}</p>
+                    <p className="text-base-content text-xs">{revenue.rangeLabel}</p>
                   </div>
                   <ChannelRevenuePanel report={revenue} selectedChannel={selectedChannel} />
                 </CardBody>
@@ -68,7 +68,7 @@ export default async function FinanceChannelsPage({
           ) : (
             <Card className="bg-module bg-soft">
               <CardBody>
-                <p className="text-base-content/70 max-w-prose text-sm">
+                <p className="text-base-content max-w-prose text-sm">
                   No channel sales in the last 30 days yet. Once orders come in — through your own
                   storefront or a connected marketplace — your revenue, fees, and net break down by
                   channel here.
@@ -82,7 +82,7 @@ export default async function FinanceChannelsPage({
             </Card>
           )}
 
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Connect, disconnect, or sync channels in{' '}
             <Link href="/commerce/channels" className="text-module font-medium hover:underline">
               Commerce → Sales channels

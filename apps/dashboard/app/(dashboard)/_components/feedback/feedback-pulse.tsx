@@ -156,7 +156,7 @@ function PulseAsk({
       <button
         type="button"
         onClick={onDismiss}
-        className="text-base-content/50 mt-2 text-xs underline-offset-2 hover:underline"
+        className="text-base-content mt-2 text-xs underline-offset-2 hover:underline"
       >
         Not now
       </button>
@@ -168,7 +168,7 @@ function PulseThanks({ onShareMore }: { onShareMore: () => void }) {
   return (
     <>
       <p className="text-base-content pr-5 text-sm font-medium">Thanks! 🙏</p>
-      <p className="text-base-content/70 mt-1 text-xs">Anything you’d like to add?</p>
+      <p className="text-base-content mt-1 text-xs">Anything you’d like to add?</p>
       <Button color="primary" variant="soft" size="sm" className="mt-3" onClick={onShareMore}>
         Share more
       </Button>

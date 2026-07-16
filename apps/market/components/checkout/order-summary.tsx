@@ -38,7 +38,7 @@ export function OrderSummary({
                 />
               ) : (
                 <span
-                  className="text-base-content/50 flex h-full items-center justify-center"
+                  className="text-base-content flex h-full items-center justify-center"
                   aria-hidden
                 >
                   <ImageOff size={18} />
@@ -48,9 +48,9 @@ export function OrderSummary({
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="text-base-content text-sm font-semibold">{line.title}</span>
               {line.variantTitle ? (
-                <span className="text-base-content/70 text-[0.8125rem]">{line.variantTitle}</span>
+                <span className="text-base-content text-[0.8125rem]">{line.variantTitle}</span>
               ) : null}
-              <span className="text-base-content/70 text-[0.8125rem]">Qty {line.quantity}</span>
+              <span className="text-base-content text-[0.8125rem]">Qty {line.quantity}</span>
             </div>
             <span className="text-base-content text-sm font-semibold tabular-nums">
               {formatCents(line.lineTotalCents, currency)}

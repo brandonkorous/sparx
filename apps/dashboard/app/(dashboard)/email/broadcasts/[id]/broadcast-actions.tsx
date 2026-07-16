@@ -116,7 +116,7 @@ export function BroadcastActions({ broadcast }: { broadcast: BroadcastRow }) {
   if (broadcast.status === 'scheduled') {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Scheduled for{' '}
           {broadcast.scheduledAt ? new Date(broadcast.scheduledAt).toLocaleString() : ''}
         </p>

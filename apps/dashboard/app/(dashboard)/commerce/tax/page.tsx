@@ -65,7 +65,7 @@ export default async function TaxPage({ searchParams }: PageProps) {
               <Globe2 className="h-4 w-4" />
               <h3 className="text-xl font-semibold">Nexus zones</h3>
             </div>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Country-wide or region-narrowed (US-CA, US-OR…). Click a zone to add rates.
             </p>
           </div>
@@ -123,7 +123,7 @@ export default async function TaxPage({ searchParams }: PageProps) {
               page; the checkout pipeline reads them automatically.
             </p>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Open a customer (CRM → Customers) or a B2B account (CRM → B2B accounts) and use the Tax
             exemptions panel to upload certificates.
           </p>

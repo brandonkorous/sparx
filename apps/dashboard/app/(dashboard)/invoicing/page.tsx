@@ -396,22 +396,22 @@ export default async function InvoicingPage() {
             <p className="text-[1.65rem] leading-none font-medium">
               {fmtMoney(outstanding, currency)}
             </p>
-            <p className="text-base-content/50 mt-1.5 mb-4 text-sm">
+            <p className="text-base-content mt-1.5 mb-4 text-sm">
               Outstanding across{' '}
-              <span className="text-base-content/70">
+              <span className="text-base-content">
                 {aging ? `${fmtNumber(aging.totalCount)} open documents` : 'your open documents'}
               </span>
             </p>
             {agingItems.length > 0 ? (
               <BarList items={agingItems} />
             ) : (
-              <p className="text-base-content/50 py-6 text-center text-sm">
+              <p className="text-base-content py-6 text-center text-sm">
                 Nothing outstanding — every document is paid or has no balance.
               </p>
             )}
             <div className="border-base-300 mt-4 flex items-center gap-2 border-t pt-3">
               <AlertTriangle aria-hidden className="text-danger h-4 w-4" />
-              <span className="text-base-content/50 text-xs">
+              <span className="text-base-content text-xs">
                 <span className="text-danger font-medium">
                   {fmtMoney(overdue, currency)} past due
                 </span>{' '}
@@ -447,7 +447,7 @@ export default async function InvoicingPage() {
                 <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {collectedFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -504,7 +504,7 @@ export default async function InvoicingPage() {
                           {d.status}
                         </Badge>
                       </td>
-                      <td className="text-base-content/50 text-right tabular-nums">
+                      <td className="text-base-content text-right tabular-nums">
                         {new Date(d.updatedAt).toLocaleDateString()}
                       </td>
                     </tr>
@@ -533,13 +533,13 @@ export default async function InvoicingPage() {
             <p className="text-[1.65rem] leading-none font-medium">
               {collections ? fmtMoneyCents(collections.collectedThisMonthCents, currency) : '—'}
             </p>
-            <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
+            <p className="text-base-content mt-1.5 mb-3 text-sm">
               Collected this month
               {collectedTrend != null ? (
                 <>
                   {' '}
                   ·{' '}
-                  <span className="text-base-content/70">
+                  <span className="text-base-content">
                     {collectedTrend >= 0 ? '+' : ''}
                     {fmtPercentRatio(collectedTrend)} vs. last
                   </span>

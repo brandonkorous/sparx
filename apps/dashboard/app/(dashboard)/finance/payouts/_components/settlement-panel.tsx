@@ -39,7 +39,7 @@ export function SettlementPanel({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>Marketplace earnings</CardTitle>
           {summary && (
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               {summary.orderCount.toLocaleString()} order{summary.orderCount === 1 ? '' : 's'} all
               time
             </p>
@@ -63,7 +63,7 @@ export function SettlementPanel({
               />
             </div>
           ) : (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Earnings will appear here once you make your first sale on sparx.market.
             </p>
           )}
@@ -71,7 +71,7 @@ export function SettlementPanel({
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium">Payout history</p>
             {runs.length === 0 ? (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 No payouts yet. Settlements run weekly — your net (gross minus commission and
                 refunds) is sent to your bank account on file.
               </p>
@@ -98,7 +98,7 @@ export function SettlementPanel({
                       <td className="text-right tabular-nums">
                         {formatMoney(run.grossCents, run.currency)}
                       </td>
-                      <td className="text-base-content/70 text-right tabular-nums">
+                      <td className="text-base-content text-right tabular-nums">
                         {formatMoney(run.commissionCents, run.currency)}
                       </td>
                       <td className="text-right tabular-nums">
@@ -109,7 +109,7 @@ export function SettlementPanel({
                           {statusLabel(run.status)}
                         </Badge>
                       </td>
-                      <td className="text-base-content/70 font-mono text-xs">
+                      <td className="text-base-content font-mono text-xs">
                         {run.disbursementRef ?? '—'}
                       </td>
                     </tr>

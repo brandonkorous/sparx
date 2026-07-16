@@ -288,7 +288,7 @@ function PurchaseOrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Supplier &amp; warehouse</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Who you’re buying from and where it lands.
               </p>
               <div className="flex flex-col gap-4">
@@ -343,14 +343,14 @@ function PurchaseOrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Lines</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Add the variants to order by SKU. Leave the cost blank to use the supplier’s agreed
                 cost (falls back to the variant cost). You can save an empty draft and add lines
                 later.
               </p>
               <div className="flex flex-col gap-4">
                 {lines.length === 0 ? (
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     No lines yet — you can still save an empty draft and add them later.
                   </p>
                 ) : (
@@ -362,10 +362,10 @@ function PurchaseOrderWizardInner({
                       >
                         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                           <p className="text-sm font-medium">{l.title ?? l.sku}</p>
-                          <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
+                          <p className="text-base-content font-mono text-xs">{l.sku}</p>
                         </div>
                         <p className="text-sm">×{l.quantity}</p>
-                        <p className="text-base-content/70 text-sm">
+                        <p className="text-base-content text-sm">
                           {l.unitCostCents !== undefined
                             ? formatMoney(l.unitCostCents, currency)
                             : 'default'}
@@ -381,7 +381,7 @@ function PurchaseOrderWizardInner({
                       </div>
                     ))}
                     <div className="flex flex-row justify-end">
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         Subtotal {formatMoney(knownSubtotal, currency)}
                         {hasDefaults ? ' + default-priced lines' : ''}
                       </p>
@@ -397,7 +397,7 @@ function PurchaseOrderWizardInner({
           <Card>
             <CardBody>
               <h3 className="text-xl font-semibold">Terms &amp; dates</h3>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 All optional — terms default onto the order and can be overridden per line later.
               </p>
               <div className="flex flex-col gap-3">

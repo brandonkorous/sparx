@@ -22,7 +22,7 @@ import { domainStatusTone, domainTypeLabel, siteStatusLabel, siteStatusTone } fr
 import { SiteStatusControl } from './_components/site-status-control';
 
 const backLink = (
-  <Link href="/sparx/sites" className="text-base-content/60 text-sm hover:underline">
+  <Link href="/sparx/sites" className="text-base-content text-sm hover:underline">
     ← All sites
   </Link>
 );

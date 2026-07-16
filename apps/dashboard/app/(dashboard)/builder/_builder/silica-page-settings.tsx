@@ -214,7 +214,7 @@ export function SilicaPageSettings({
 
         <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto px-6 py-2">
           {!materialized && (
-            <p className="text-base-content/70 text-base">
+            <p className="text-base-content text-base">
               These settings become available once your first change to this page has saved.
             </p>
           )}

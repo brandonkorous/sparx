@@ -85,11 +85,11 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
       cell: (c) =>
         c.company ? (
           <div className="flex flex-row items-center gap-1">
-            <Building2 className="text-base-content/50 h-3.5 w-3.5" />
+            <Building2 className="text-base-content h-3.5 w-3.5" />
             <p className="text-sm">{c.company}</p>
           </div>
         ) : (
-          <p className="text-base-content/70 text-sm">—</p>
+          <p className="text-base-content text-sm">—</p>
         ),
     },
     { header: 'Orders', align: 'right', cell: (c) => c.orderCount },
@@ -101,7 +101,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
     {
       header: 'Last order',
       cell: (c) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString() : '—'}
         </p>
       ),
@@ -109,7 +109,7 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
     {
       header: 'Updated',
       cell: (c) => (
-        <p className="text-base-content/70 text-sm">{new Date(c.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(c.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -128,17 +128,17 @@ export function CustomersSelectionTable({ customers, view }: CustomersSelectionT
     subtitle: (c) =>
       c.company ? (
         <div className="flex min-w-0 flex-row items-center gap-1">
-          <Building2 className="text-base-content/50 h-3.5 w-3.5 shrink-0" />
-          <p className="text-base-content/70 truncate text-xs">{c.company}</p>
+          <Building2 className="text-base-content h-3.5 w-3.5 shrink-0" />
+          <p className="text-base-content truncate text-xs">{c.company}</p>
         </div>
       ) : c.email ? (
-        <p className="text-base-content/70 truncate text-xs">{c.email}</p>
+        <p className="text-base-content truncate text-xs">{c.email}</p>
       ) : null,
     badge: typeBadge,
     body: (c) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {c.orderCount} order{c.orderCount === 1 ? '' : 's'}
           </p>
           <p className="text-sm tabular-nums">${Number(c.totalSpent).toLocaleString()}</p>

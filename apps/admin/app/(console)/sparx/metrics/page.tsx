@@ -94,7 +94,7 @@ export default async function MetricsPage({
               className={
                 w === windowDays
                   ? 'text-base-content text-sm font-medium underline'
-                  : 'text-base-content/60 text-sm font-medium hover:underline'
+                  : 'text-base-content text-sm font-medium hover:underline'
               }
             >
               {w} days

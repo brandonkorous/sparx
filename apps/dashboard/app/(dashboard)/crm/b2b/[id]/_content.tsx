@@ -155,7 +155,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
               />
             </div>
             <div className="flex flex-row justify-between">
-              <p className="text-base-content/70 text-sm">{utilization.toFixed(1)}% used</p>
+              <p className="text-base-content text-sm">{utilization.toFixed(1)}% used</p>
               {utilization >= 75 && (
                 <div className="flex flex-row items-center gap-1">
                   <AlertTriangle className="text-warning h-3.5 w-3.5" />
@@ -192,9 +192,7 @@ export async function B2bAccountDetailContent({ id }: Props) {
                     {(p as { make?: string }).make ?? '—'} {(p as { model?: string }).model ?? ''}
                   </p>
                   {(p as { engine?: string }).engine && (
-                    <p className="text-base-content/70 text-sm">
-                      {(p as { engine?: string }).engine}
-                    </p>
+                    <p className="text-base-content text-sm">{(p as { engine?: string }).engine}</p>
                   )}
                   {(p as { count?: number }).count !== undefined && (
                     <Badge color="neutral" variant="soft" size="sm" className="ml-auto">

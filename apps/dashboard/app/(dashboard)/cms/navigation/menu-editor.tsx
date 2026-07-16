@@ -259,7 +259,7 @@ export function MenuEditor({
             </Button>
           </div>
           {items.length === 0 ? (
-            <p className="text-base-content/70">
+            <p className="text-base-content">
               No items yet. Click &ldquo;Add item&rdquo; to start the tree.
             </p>
           ) : (
@@ -414,7 +414,7 @@ function ItemList({
 
             <div className="flex flex-col gap-2">
               <div className="flex flex-row items-center justify-between">
-                <p className="text-base-content/70 text-xs">Children · {item.children.length}</p>
+                <p className="text-base-content text-xs">Children · {item.children.length}</p>
                 <Button
                   type="button"
                   variant="ghost"

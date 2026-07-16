@@ -67,13 +67,13 @@ export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
     const text = (
       <span key="text" className="min-w-0">
         <span className="text-base-content block text-2xl leading-none font-medium">{count}</span>
-        <span className="text-base-content/70 mt-1 block truncate text-sm">{label}</span>
+        <span className="text-base-content mt-1 block truncate text-sm">{label}</span>
       </span>
     );
     const chevron = (
       <ChevronRight
         key="chevron"
-        className="text-base-content/50 group-hover:text-module ml-auto h-4 w-4 shrink-0 transition-colors"
+        className="text-base-content group-hover:text-module ml-auto h-4 w-4 shrink-0 transition-colors"
       />
     );
 
@@ -125,7 +125,7 @@ export const ActionQueue = React.forwardRef<HTMLElement, ActionQueueProps>(
             {icon && <span className="text-module">{icon}</span>}
             {title}
           </h2>
-          {meta && <span className="text-base-content/50 text-xs">{meta}</span>}
+          {meta && <span className="text-base-content text-xs">{meta}</span>}
         </div>
       )}
       <div className={cn('grid gap-3', COLUMN_CLASS[columns])}>{children}</div>

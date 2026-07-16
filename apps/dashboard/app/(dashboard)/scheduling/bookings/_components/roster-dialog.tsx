@@ -110,9 +110,9 @@ export function RosterDialog({
           </div>
 
           {roster === null ? (
-            <p className="text-base-content/70 text-xs">Loading…</p>
+            <p className="text-base-content text-xs">Loading…</p>
           ) : active.length === 0 ? (
-            <p className="text-base-content/70 text-xs">No one&rsquo;s booked yet.</p>
+            <p className="text-base-content text-xs">No one&rsquo;s booked yet.</p>
           ) : (
             <ul className="flex flex-col gap-2">
               {active.map((a) => (

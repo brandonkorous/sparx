@@ -32,7 +32,7 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
         <CardBody>
           <div className="flex flex-row items-center justify-between gap-4">
             <h3 className="text-xl font-semibold">Setup progress</h3>
-            <p className="text-base-content/70 text-sm">{completionPct}% complete</p>
+            <p className="text-base-content text-sm">{completionPct}% complete</p>
           </div>
           <ProgressBar value={progress.completion} />
         </CardBody>
@@ -46,7 +46,7 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
                 <span
                   aria-hidden
                   // eslint-disable-next-line no-restricted-syntax -- step indicator icon container, not a reimplemented control
-                  className="bg-base-200 text-base-content/70 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                  className="bg-base-200 text-base-content flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                 >
                   {step.done ? (
                     <Check className="text-success h-4 w-4" />
@@ -68,7 +68,7 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-base-content/70 text-sm">{step.description}</p>
+                  <p className="text-base-content text-sm">{step.description}</p>
                 </div>
                 {step.cta && !step.done && (
                   <Button
@@ -87,7 +87,7 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
       </div>
 
       <div className="flex flex-row items-center justify-between gap-4">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           You can finish the rest from the dashboard anytime.
         </p>
         <div className="flex flex-row gap-2">

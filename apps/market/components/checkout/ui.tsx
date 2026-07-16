@@ -59,7 +59,7 @@ export function TotalsRow({
   return (
     <div
       className={`flex items-center justify-between ${
-        tone === 'success' ? 'text-success' : 'text-base-content/70'
+        tone === 'success' ? 'text-success' : 'text-base-content'
       }`}
     >
       <span>{label}</span>

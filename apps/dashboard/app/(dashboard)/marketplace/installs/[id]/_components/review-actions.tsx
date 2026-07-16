@@ -26,7 +26,7 @@ export function ReviewActions({ installId, blueprintName, status, canManage }: P
 
   if (!canManage) {
     return (
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         Only an owner or admin can go live or delete this install.
       </p>
     );

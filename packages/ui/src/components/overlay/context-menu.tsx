@@ -102,7 +102,7 @@ export const ContextMenuLabel = React.forwardRef<
   <ContextMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'text-base-content/50 px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
+      'text-base-content px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
       inset && 'pl-8',
       className
     )}
@@ -127,10 +127,7 @@ export const ContextMenuShortcut = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cn('text-base-content/50 ml-auto text-xs tracking-wide', className)}
-    {...props}
-  />
+  <span className={cn('text-base-content ml-auto text-xs tracking-wide', className)} {...props} />
 );
 ContextMenuShortcut.displayName = 'ContextMenuShortcut';
 

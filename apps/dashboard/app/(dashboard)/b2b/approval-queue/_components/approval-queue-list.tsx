@@ -43,13 +43,13 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
         {order.companyName ?? order.b2bAccountId}
       </Link>
     ) : (
-      <p className="text-base-content/70 text-sm">—</p>
+      <p className="text-base-content text-sm">—</p>
     );
 
   const buyerCell = (order: QueuedOrder) => (
     <div className="flex flex-col gap-1">
       <p className="text-sm">{order.customerName ?? order.customerEmail}</p>
-      {order.customerName && <p className="text-base-content/70 text-xs">{order.customerEmail}</p>}
+      {order.customerName && <p className="text-base-content text-xs">{order.customerEmail}</p>}
     </div>
   );
 
@@ -69,7 +69,7 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
     {
       header: 'Submitted',
       cell: (order) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {new Date(order.createdAt).toLocaleDateString()}
         </p>
       ),
@@ -90,16 +90,16 @@ export function ApprovalQueueList({ orders, view }: ApprovalQueueListProps) {
     body: (order) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Account</p>
+          <p className="text-base-content text-sm">Account</p>
           {accountCell(order)}
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Amount</p>
+          <p className="text-base-content text-sm">Amount</p>
           <p className="text-sm font-medium tabular-nums">{formatCents(order.totalCents)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Submitted</p>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">Submitted</p>
+          <p className="text-base-content text-sm">
             {new Date(order.createdAt).toLocaleDateString()}
           </p>
         </div>

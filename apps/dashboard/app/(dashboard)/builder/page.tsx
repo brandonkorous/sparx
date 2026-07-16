@@ -147,7 +147,7 @@ function SitePreview() {
         <span className="bg-base-300 h-2 w-2 rounded-full" />
         <span className="bg-base-300 h-2 w-2 rounded-full" />
         <span className="bg-base-100 ml-2 flex-1 rounded px-2 py-0.5 font-mono text-[9px]">
-          <span className="text-base-content/50">switchback.coffee</span>
+          <span className="text-base-content">switchback.coffee</span>
         </span>
       </div>
       {/* ── tenant storefront brand (intentional warm palette, not sparx tokens) ── */}
@@ -493,16 +493,14 @@ export default async function BuilderOverviewPage() {
                     className="text-module mt-2 inline-flex items-center gap-2 text-sm font-medium"
                   >
                     <Lock
-                      className={`h-3.5 w-3.5 ${
-                        sslActive ? 'text-success' : 'text-base-content/50'
-                      }`}
+                      className={`h-3.5 w-3.5 ${sslActive ? 'text-success' : 'text-base-content'}`}
                     />
                     {siteDomain.host}
                   </a>
                 ) : (
-                  <p className="text-base-content/50 mt-2 text-sm">No domain connected yet</p>
+                  <p className="text-base-content mt-2 text-sm">No domain connected yet</p>
                 )}
-                <p className="text-base-content/70 mt-3 text-sm">
+                <p className="text-base-content mt-3 text-sm">
                   {siteDomain
                     ? `${siteDomain.type === 'custom' ? 'Custom domain' : 'sparx domain'} · ${
                         sslActive ? 'SSL active' : 'SSL pending'
@@ -619,9 +617,9 @@ export default async function BuilderOverviewPage() {
                 <>
                   <BarList items={sourceBars} color="module" />
                   {anLive && anSummary.topReferrerHost ? (
-                    <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
+                    <p className="border-base-300 text-base-content mt-4 border-t pt-3 text-xs">
                       Top referrer ·{' '}
-                      <span className="text-base-content/70 font-medium">
+                      <span className="text-base-content font-medium">
                         {anSummary.topReferrerHost}
                       </span>{' '}
                       — {fmtNumber(anSummary.topReferrerVisits)} visits
@@ -866,7 +864,13 @@ export default async function BuilderOverviewPage() {
                   </Text>
                 ) : null}
                 <div>
-                  <Button color="module" asChild>
+                  {/* `primary`, not `module`: /marketplace is module-LESS platform
+                      chrome, so an action leading there must not wear Builder's
+                      identity. (Builder indigo and primary indigo are the same hex —
+                      this reads identically, but it stops claiming the destination
+                      belongs to Builder.) This page's one `module` action is "Open
+                      editor". */}
+                  <Button color="primary" asChild>
                     <Link href="/marketplace">
                       Browse the marketplace
                       <ArrowRight className="ml-1.5 h-4 w-4" />

@@ -111,7 +111,7 @@ export function ProductMarketPanel({
             />
             <div className="flex flex-col gap-0">
               <Label>List on sparx.market</Label>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 {listed ? 'Visible on the marketplace.' : 'Not listed on the marketplace.'}
               </p>
             </div>
@@ -127,7 +127,7 @@ export function ProductMarketPanel({
                 disabled={pending}
                 items={Object.fromEntries(MARKET_CATEGORIES.map((c) => [c.slug, c.name]))}
               />
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Which marketplace aisle this product appears in.
               </p>
             </Field>

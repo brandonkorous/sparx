@@ -59,7 +59,7 @@ function StageFunnel({ stages }: { stages: PipelineStageRow[] }) {
             }}
           />
           <p className="text-sm">{stage.name}</p>
-          <p className="text-base-content/70 text-xs">{Number(stage.probability)}%</p>
+          <p className="text-base-content text-xs">{Number(stage.probability)}%</p>
         </div>
       ))}
     </div>
@@ -123,7 +123,7 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
       cell: (p) => (
         <div className="flex min-w-0 flex-col gap-1">
           {nameCell(p, 'text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             slug <code>{p.slug}</code>
           </p>
         </div>
@@ -150,7 +150,7 @@ export function PipelinesList({ pipelines, view }: PipelinesListProps) {
           <div className="flex flex-row flex-wrap items-center justify-between">
             <div className="flex flex-col gap-1">
               <CardTitle>{nameCell(p, 'hover:text-module hover:underline')}</CardTitle>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {p.stages.length} stage{p.stages.length === 1 ? '' : 's'} — slug{' '}
                 <code>{p.slug}</code>
               </p>

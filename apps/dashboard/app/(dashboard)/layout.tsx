@@ -31,14 +31,16 @@ export default async function DashboardLayout({
 
   // Mandatory onboarding: a tenant that hasn't finished setup is always routed
   // to the right onboarding front end before it can reach any dashboard page.
-  // `onboardingEntryHref` picks the natural-language story flow (the primary) for
-  // fresh/story tenants and the classic wizard for anyone mid-way through it.
+  // `onboardingEntryHref` honors an explicitly chosen front end (`flow`) first, and
+  // otherwise picks the natural-language story flow (the primary) for fresh/story
+  // tenants and the classic wizard for anyone mid-way through it.
   // `finishedAt` is set when onboarding finishes (or the user explicitly bows out).
   // Fail OPEN on a read error so an API hiccup can never lock anyone out or cause a
   // loop — the (onboarding) group has its own layout, so it's exempt from this guard.
   const onboarding = await api
     .get<{
       finishedAt: string | null;
+      flow: string | null;
       story: Record<string, unknown> | null;
       currentStep: string;
       completed: Record<string, boolean>;

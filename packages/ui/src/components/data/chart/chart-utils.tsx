@@ -88,7 +88,7 @@ export function ChartTooltipContent({
               className="h-2 w-2 shrink-0 rounded-full"
               style={{ background: entry.color }}
             />
-            <span className="text-base-content/70">{entry.name}</span>
+            <span className="text-base-content">{entry.name}</span>
             <span className="text-base-content ml-auto font-medium">
               {typeof entry.value === 'number' && valueFormatter
                 ? valueFormatter(entry.value)
@@ -118,7 +118,7 @@ export function ChartLegendContent({ payload }: { payload?: LegendEntry[] }) {
             className="h-2 w-2 shrink-0 rounded-full"
             style={{ background: entry.color }}
           />
-          <span className="text-base-content/70 text-xs">{entry.value}</span>
+          <span className="text-base-content text-xs">{entry.value}</span>
         </div>
       ))}
     </div>

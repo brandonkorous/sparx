@@ -64,11 +64,11 @@ export function CartsList({ rows, view }: CartsListProps) {
       <div className="flex flex-col gap-0">
         <p className="text-sm">{displayName ?? c.customer.email}</p>
         {displayName && displayName !== c.customer.email && (
-          <p className="text-base-content/70 text-xs">{c.customer.email}</p>
+          <p className="text-base-content text-xs">{c.customer.email}</p>
         )}
       </div>
     ) : c.guestToken ? (
-      <p className="text-base-content/70 text-xs">guest</p>
+      <p className="text-base-content text-xs">guest</p>
     ) : (
       <>—</>
     );
@@ -113,7 +113,7 @@ export function CartsList({ rows, view }: CartsListProps) {
     subtitle: (c) => {
       const displayName = customerName(c.customer);
       const label = displayName ?? c.customer?.email ?? (c.guestToken ? 'guest' : '—');
-      return <p className="text-base-content/70 text-xs">{label}</p>;
+      return <p className="text-base-content text-xs">{label}</p>;
     },
     badge: lifecycleBadge,
     body: (c) => (
@@ -124,7 +124,7 @@ export function CartsList({ rows, view }: CartsListProps) {
           </Badge>
           <p className="text-sm tabular-nums">{totalLabel(c)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {c.itemCount} item{c.itemCount === 1 ? '' : 's'} ·{' '}
           {new Date(c.updatedAt).toLocaleString()}
         </p>

@@ -27,17 +27,14 @@ export function PricingV2Enterprise() {
               Let&rsquo;s talk
               <span className="text-primary">.</span>
             </Heading>
-            <Text variant="lead" className="text-base-content/70 mt-5 max-w-xl">
+            <Text variant="lead" className="text-base-content mt-5 max-w-xl">
               For teams with security reviews, procurement, and uptime commitments. Custom pricing
               that still works like the switchboard: you pay for the modules you run.
             </Text>
 
             <div className="mt-7 grid max-w-xl grid-cols-1 gap-x-7 gap-y-3.5 sm:grid-cols-2">
               {ENTERPRISE_FEATS.map((f) => (
-                <span
-                  key={f}
-                  className="text-base-content/85 flex items-center gap-2.5 text-[15px]"
-                >
+                <span key={f} className="text-base-content flex items-center gap-2.5 text-[15px]">
                   <Check
                     size={16}
                     strokeWidth={2.4}

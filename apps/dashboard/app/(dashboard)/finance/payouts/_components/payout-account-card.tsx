@@ -40,7 +40,7 @@ export function PayoutAccountCard({ account }: { account: MarketPayoutAccount | 
     <>
       {account ? (
         <div className="rounded-box border-base-300 flex flex-wrap items-center gap-3 border p-3">
-          <Landmark className="text-base-content/70 h-5 w-5 shrink-0" />
+          <Landmark className="text-base-content h-5 w-5 shrink-0" />
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-medium">
@@ -52,7 +52,7 @@ export function PayoutAccountCard({ account }: { account: MarketPayoutAccount | 
                 {statusLabel(account.status)}
               </Badge>
             </div>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               {account.accountHolderName} · ACH, paid weekly
             </p>
           </div>
@@ -93,7 +93,7 @@ export function PayoutAccountCard({ account }: { account: MarketPayoutAccount | 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent side="right" className="w-full max-w-md">
           <div className="flex items-center gap-3">
-            <Landmark className="text-base-content/70 h-5 w-5 shrink-0" />
+            <Landmark className="text-base-content h-5 w-5 shrink-0" />
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <DrawerTitle>{account ? 'Replace payout account' : 'Add payout account'}</DrawerTitle>
               <DrawerDescription>ACH · sparx.market settles weekly</DrawerDescription>
@@ -105,7 +105,7 @@ export function PayoutAccountCard({ account }: { account: MarketPayoutAccount | 
             ) : null}
           </div>
           <div className="mt-5 flex flex-col gap-5">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {account
                 ? `Re-enter your bank details to replace the account ending ••••${account.accountLast4 ?? '????'}. Replacing resets verification to pending.`
                 : 'Where sparx.market sends your weekly marketplace earnings by ACH. We store only the last 4 digits in the clear; the rest is encrypted.'}

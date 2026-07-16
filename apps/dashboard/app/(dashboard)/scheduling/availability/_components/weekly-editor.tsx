@@ -99,7 +99,7 @@ export function WeeklyEditor({
               <div className="pt-2 text-sm font-medium">{label}</div>
               <div className="flex flex-col gap-2">
                 {days[d]!.length === 0 ? (
-                  <span className="text-base-content/70 pt-2 text-sm">Closed</span>
+                  <span className="text-base-content pt-2 text-sm">Closed</span>
                 ) : (
                   days[d]!.map((r, idx) => (
                     <div key={idx} className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function WeeklyEditor({
                           onChange={(e) => setRange(d, idx, { start: fromHHMM(e.target.value) })}
                         />
                       </Field>
-                      <span className="text-base-content/70">to</span>
+                      <span className="text-base-content">to</span>
                       <Field className="w-32">
                         <FieldControl
                           type="time"

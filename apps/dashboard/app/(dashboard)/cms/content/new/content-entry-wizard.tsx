@@ -368,7 +368,7 @@ function ContentEntryWizardInner({
       }}
     >
       <div className="flex flex-col gap-4">
-        {loadingSchema && <p className="text-base-content/70 text-sm">Loading schema…</p>}
+        {loadingSchema && <p className="text-base-content text-sm">Loading schema…</p>}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {types
             .filter((t) => !t.is_singleton)
@@ -386,7 +386,7 @@ function ContentEntryWizardInner({
                     <p className="font-medium">{t.name}</p>
                   </div>
                   {t.description && (
-                    <p className="text-base-content/70 line-clamp-2 text-xs">{t.description}</p>
+                    <p className="text-base-content line-clamp-2 text-xs">{t.description}</p>
                   )}
                 </div>
               </button>
@@ -518,7 +518,7 @@ function ContentEntryWizardInner({
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Attribute this content to an author, or create one on the fly. Optional.
                 </p>
                 <Field>
@@ -556,7 +556,7 @@ function ContentEntryWizardInner({
             <CardBody>
               <h3 className="text-xl font-semibold">Media</h3>
               <div className="flex flex-col gap-3">
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Add images and files — upload new or pick from your library.
                 </p>
                 <ContentEntryForm

@@ -225,9 +225,7 @@ export function InstallProviderForm({
                   <div className="flex flex-col gap-3">
                     <p className="text-sm font-medium">Provider configuration</p>
                     {propertyKeys.length === 0 ? (
-                      <p className="text-base-content/70 text-sm">
-                        No configuration fields declared.
-                      </p>
+                      <p className="text-base-content text-sm">No configuration fields declared.</p>
                     ) : (
                       propertyKeys.map((key) => (
                         <ConfigField
@@ -241,10 +239,8 @@ export function InstallProviderForm({
                     )}
                     <div className="bg-base-200 flex flex-col gap-1 rounded p-3">
                       <p className="text-xs font-medium">Webhook path</p>
-                      <p className="text-base-content/60 font-mono text-xs">
-                        {webhookPathTemplate}
-                      </p>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content font-mono text-xs">{webhookPathTemplate}</p>
+                      <p className="text-base-content text-xs">
                         After install, paste this URL into the provider&apos;s webhook configuration
                         so callbacks land at the right tenant.
                       </p>
@@ -286,7 +282,7 @@ function ConfigField({
         <FieldLabel required={required}>{label}</FieldLabel>
         <label className="flex items-center gap-2">
           <Checkbox color="module" name={id} defaultChecked={prop.default === true} />
-          <p className="text-base-content/70 text-sm">{prop.description ?? 'Enable'}</p>
+          <p className="text-base-content text-sm">{prop.description ?? 'Enable'}</p>
         </label>
       </Field>
     );

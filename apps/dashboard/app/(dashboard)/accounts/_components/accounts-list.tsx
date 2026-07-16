@@ -81,7 +81,7 @@ function AccountRow({ membership, isActive }: { membership: OrgMembership; isAct
                 <Badge color="neutral" variant="soft" size="sm">
                   {roleLabel(membership.role)}
                 </Badge>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   {memberTypeLabel(membership.memberType)}
                 </p>
               </div>
@@ -122,7 +122,7 @@ function InvitationRow({ invitation }: { invitation: PendingInvitation }) {
     <Card>
       <CardBody>
         <div className="flex flex-row items-center gap-2">
-          <span aria-hidden className="text-base-content/70">
+          <span aria-hidden className="text-base-content">
             <Mail className="h-4 w-4" />
           </span>
           <CardTitle>{invitation.orgName}</CardTitle>

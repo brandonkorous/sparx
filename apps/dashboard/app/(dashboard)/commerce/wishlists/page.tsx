@@ -72,7 +72,7 @@ export default async function WishlistsPage() {
                         {row.variantTitle ? (
                           <p className="text-sm">{row.variantTitle}</p>
                         ) : (
-                          <p className="text-base-content/70 text-sm">Default</p>
+                          <p className="text-base-content text-sm">Default</p>
                         )}
                       </td>
                       <td>

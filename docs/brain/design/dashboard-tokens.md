@@ -20,7 +20,7 @@ This is the **dashboard** system (silicaui + `@sparx/brand`, consumed via `@wize
 | `--color-primary` | `#6366f1` | `#818cf8` | the indigo. The wordmark **"x" is always `#6366F1`** (Geist 500, tracking `-0.03em`) |
 | `--color-primary-content` | `#eef2ff` | `#14122e` | ink on a primary fill |
 | `--color-secondary` | `#db2777` | `#f472b6` | deep-pink **brand** accent (marketing sparks) |
-| `--color-accent` | `#8b5cf6` | `#a78bfa` | violet |
+| `--color-accent` | `#c026d3` | `#e879f9` | fuchsia — the third brand voice. **Not violet:** violet sat ~19° from the indigo primary and was byte-identical to `--color-module-chat`, so it read as "primary, slightly off." Fuchsia is ~53° from indigo. Cool on purpose — every warm hue here already means urgency |
 
 The dark `--color-primary` (`#818cf8`) is defined **once** here — no app-level `:root` redefinition overrides it anymore (the historical bug where dark buttons rendered the light indigo is dead).
 
@@ -62,7 +62,7 @@ Each is `--color-<name>` + `--color-<name>-content` (ink on the solid fill), fro
 |---|---|---|---|
 | `primary` | `#6366f1` | `#818cf8` | `#eef2ff` / `#14122e` |
 | `secondary` | `#db2777` | `#f472b6` | `#ffffff` / `#2a0a1a` |
-| `accent` | `#8b5cf6` | `#a78bfa` | `#ffffff` / `#17102e` |
+| `accent` | `#c026d3` | `#e879f9` | `#ffffff` / `#2a0a2e` |
 | `neutral` | `#1f2937` | `#e5e7eb` | `#ffffff` / `#1f2937` |
 | `info` | `#0ea5e9` | `#38bdf8` | `#ffffff` / `#082438` |
 | `success` | `#10b981` | `#34d399` | `#ffffff` / `#052e22` |

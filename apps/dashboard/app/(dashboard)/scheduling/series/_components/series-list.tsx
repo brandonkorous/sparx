@@ -156,7 +156,7 @@ export function SeriesList({ series, view }: SeriesListProps) {
     },
     {
       header: 'Pattern',
-      cell: (s) => <span className="text-base-content/70">{describeRrule(s.rrule)}</span>,
+      cell: (s) => <span className="text-base-content">{describeRrule(s.rrule)}</span>,
     },
     { header: 'Status', cell: statusBadge },
     { header: 'Upcoming', cell: (s) => s.upcomingBookings },
@@ -166,11 +166,11 @@ export function SeriesList({ series, view }: SeriesListProps) {
 
   const card: SelectionCard<BookingSeriesSummary> = {
     title: (s) => <p className="font-medium">{s.serviceName ?? 'Service'}</p>,
-    subtitle: (s) => <p className="text-base-content/70 text-xs">{describeRrule(s.rrule)}</p>,
+    subtitle: (s) => <p className="text-base-content text-xs">{describeRrule(s.rrule)}</p>,
     badge: statusBadge,
     body: (s) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {s.upcomingBookings} upcoming · {s.totalBookings} total
         </p>
         {actionsMenu(s)}
@@ -197,12 +197,12 @@ export function SeriesList({ series, view }: SeriesListProps) {
             <DialogTitle>{detail ? (detail.serviceName ?? 'Series') : 'Loading…'}</DialogTitle>
           </div>
           {loadingDetail ? (
-            <div className="text-base-content/70 flex items-center gap-2 px-1 py-6 text-sm">
+            <div className="text-base-content flex items-center gap-2 px-1 py-6 text-sm">
               <Loading size="sm" /> Loading occurrences…
             </div>
           ) : detail ? (
             <div className="max-h-[60vh] overflow-y-auto px-1 py-2">
-              <p className="text-base-content/70 mb-3 text-sm">
+              <p className="text-base-content mb-3 text-sm">
                 {describeRrule(detail.rrule)} · {detail.bookings.length} occurrence
                 {detail.bookings.length === 1 ? '' : 's'}
               </p>

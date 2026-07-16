@@ -10,10 +10,17 @@ const textVariants = cva('', {
       md: 'text-base',
       lg: 'text-lg',
     },
+    // Text that is meant to be READ is `text-base-content`. `muted` and `subtle`
+    // used to fade it to /70 and /50 — but opacity is a filter, not a color: it
+    // composites against whatever is behind it, so the ink drifted per module on a
+    // tinted card and went near-invisible on the neutral inverse panel. Both now
+    // resolve to the real ink; rank is carried by `size` and `weight`, never by
+    // making the words harder to see. (Kept as variant names so ~570 call sites
+    // don't churn — they're aliases now, not a fading scale.)
     variant: {
       default: 'text-base-content',
-      muted: 'text-base-content/70',
-      subtle: 'text-base-content/50',
+      muted: 'text-base-content',
+      subtle: 'text-base-content',
       inverse: 'text-base-100',
       danger: 'text-danger',
       warning: 'text-warning',

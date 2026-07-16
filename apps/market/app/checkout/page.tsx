@@ -54,7 +54,7 @@ export default function CheckoutPage() {
       </h1>
 
       {status === 'loading' ? (
-        <div className="text-base-content/70 flex items-center justify-center gap-2 py-20">
+        <div className="text-base-content flex items-center justify-center gap-2 py-20">
           <Loader2 size={20} className="animate-spin" aria-hidden />
           Loading your cart…
         </div>

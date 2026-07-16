@@ -61,7 +61,7 @@ export function storyTotals(story: StoryState): { total: number; elsewhere: numb
 function Section({ label, children }: { label: string; children: ReactNode }): ReactNode {
   return (
     <div className="border-base-300 border-t px-6 py-4">
-      <div className="text-base-content/50 mb-2 text-[11px] font-medium tracking-wide">{label}</div>
+      <div className="text-base-content mb-2 text-[11px] font-medium tracking-wide">{label}</div>
       {children}
     </div>
   );
@@ -92,10 +92,10 @@ export function StoryExtras({
         {blueprint ? (
           <div>
             <div className="text-base-content text-sm font-medium">{blueprint.name}</div>
-            <div className="text-base-content/50 text-[13px]">{blueprint.summary}</div>
+            <div className="text-base-content text-[13px]">{blueprint.summary}</div>
           </div>
         ) : (
-          <div className="text-base-content/50 text-[13px]">
+          <div className="text-base-content text-[13px]">
             A blank Builder site — yours to design from scratch.
           </div>
         )}
@@ -138,9 +138,9 @@ export function StoryExtras({
 
       {selling && (
         <Section label="Getting paid">
-          <div className="text-base-content/50 text-[13px]">
-            Connect <span className="text-base-content/70 font-medium">Stripe</span> to take
-            payments — the next beat after you build.
+          <div className="text-base-content text-[13px]">
+            Connect <span className="text-base-content font-medium">Stripe</span> to take payments —
+            the next beat after you build.
           </div>
         </Section>
       )}

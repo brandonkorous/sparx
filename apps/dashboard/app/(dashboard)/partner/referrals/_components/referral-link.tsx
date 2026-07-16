@@ -30,7 +30,7 @@ export function ReferralLinkCard({ referralCode }: { referralCode: string }) {
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
             <Label htmlFor="referral-link">Your referral link</Label>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               Share this anywhere. When someone signs up through it, they’re credited to you and you
               earn on their first payment.
             </p>
@@ -53,7 +53,7 @@ export function ReferralLinkCard({ referralCode }: { referralCode: string }) {
               {copied ? 'Copied' : 'Copy link'}
             </Button>
           </div>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Referral code: <span className="font-mono">{referralCode}</span>
           </p>
         </div>

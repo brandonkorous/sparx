@@ -75,7 +75,7 @@ export async function TaxZoneDetailContent({ id }: Props) {
               {statusLabel(zone.nexusType)}
             </Badge>
             {zone.registrationNumber && (
-              <p className="text-base-content/70 font-mono text-xs">{zone.registrationNumber}</p>
+              <p className="text-base-content font-mono text-xs">{zone.registrationNumber}</p>
             )}
           </div>
         </div>
@@ -120,7 +120,7 @@ export async function TaxZoneDetailContent({ id }: Props) {
                       </td>
                       <td>{r.appliesToShipping ? 'yes' : 'no'}</td>
                       <td>
-                        {r.productTaxClass ?? <p className="text-base-content/70 text-xs">all</p>}
+                        {r.productTaxClass ?? <p className="text-base-content text-xs">all</p>}
                       </td>
                       <td>
                         <TaxRateDeleteButton rateId={r.id} zoneId={zone.id} />

@@ -34,8 +34,8 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           aria-pressed={visible}
           className={cn(
             'absolute inset-y-0 right-0 flex items-center rounded-r-md px-3',
-            'text-base-content/50 transition-colors',
-            'hover:text-base-content/70',
+            'text-base-content transition-colors',
+            'hover:text-base-content',
             'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
           )}
         >

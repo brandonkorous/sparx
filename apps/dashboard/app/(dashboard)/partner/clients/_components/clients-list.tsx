@@ -53,7 +53,7 @@ function ClientRow({ client }: { client: PartnerClient }) {
                   </Badge>
                 ) : null}
                 {client.commissionType === 'ongoing' ? (
-                  <p className="text-base-content/70 text-xs">5% ongoing</p>
+                  <p className="text-base-content text-xs">5% ongoing</p>
                 ) : null}
               </div>
             </div>
@@ -61,7 +61,7 @@ function ClientRow({ client }: { client: PartnerClient }) {
           {client.managed ? (
             <EnterButton orgId={client.orgId} name={client.name} />
           ) : (
-            <p className="text-base-content/70 text-sm">Referred — no direct access</p>
+            <p className="text-base-content text-sm">Referred — no direct access</p>
           )}
         </div>
       </CardBody>

@@ -209,7 +209,7 @@ export function TermsManager({
                 >
                   <div className="flex flex-col gap-0">
                     <p className="text-sm">{t.name}</p>
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       <code>{t.slug}</code>
                       {t.parent_term_id
                         ? ` · parent ${termNameById.get(t.parent_term_id) ?? t.parent_term_id.slice(0, 8)}`

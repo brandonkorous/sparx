@@ -160,7 +160,7 @@ function PricingSection({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold">{title}</h2>
-        <p className="text-base-content/70 text-sm">{description}</p>
+        <p className="text-base-content text-sm">{description}</p>
       </div>
       {children}
     </div>
@@ -184,7 +184,7 @@ const priceListChannel = (list: PriceListRow) =>
       {statusLabel(list.channel)}
     </Badge>
   ) : (
-    <p className="text-base-content/70 text-xs">all</p>
+    <p className="text-base-content text-xs">all</p>
   );
 
 // Status pill: color resolved from the canonical statusTone() map (docs/35 §9) so
@@ -214,7 +214,7 @@ function priceListTarget(
       {label}
     </Badge>
   ) : (
-    <p className="text-base-content/70 text-xs">everyone</p>
+    <p className="text-base-content text-xs">everyone</p>
   );
 }
 
@@ -251,8 +251,8 @@ function makePriceListCard(
           {priceListTarget(list, b2bAccountLabels, segmentLabels)}
         </div>
         <div className="flex flex-row flex-wrap gap-4">
-          <p className="text-base-content/70 text-xs">Priority: {list.priority}</p>
-          <p className="text-base-content/70 text-xs">Entries: {list.entryCount}</p>
+          <p className="text-base-content text-xs">Priority: {list.priority}</p>
+          <p className="text-base-content text-xs">Entries: {list.entryCount}</p>
         </div>
       </div>
     ),
@@ -279,5 +279,5 @@ const bulkTierColumns: SelectionColumn<BulkPriceTierRow>[] = [
 const bulkTierCard: SelectionCard<BulkPriceTierRow> = {
   title: (tier) => moneyFmt.format(tier.unitPriceCents / 100),
   badge: bulkTierScope,
-  body: (tier) => <p className="text-base-content/70 text-xs">Min qty: {tier.minQuantity}+</p>,
+  body: (tier) => <p className="text-base-content text-xs">Min qty: {tier.minQuantity}+</p>,
 };

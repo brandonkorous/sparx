@@ -112,7 +112,7 @@ const DOMAINS: { name: string; module?: MarketingModule; primary?: boolean }[] =
   { name: 'sparx.market' },
 ];
 
-const LINK_CLASS = 'text-base-content/70 hover:text-base-content text-sm';
+const LINK_CLASS = 'text-base-content hover:text-base-content text-sm';
 
 export function Footer() {
   return (
@@ -120,7 +120,7 @@ export function Footer() {
       <SilicaFooter className="bg-base-100 border-base-300 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:px-8">
         <aside className="flex w-full max-w-[340px] min-w-60 flex-col gap-5">
           <Wordmark size={48} />
-          <Text className="text-base-content/70 text-sm">
+          <Text className="text-base-content text-sm">
             Modular content and commerce OS by WizeWorks. Built in Visalia, California. Operating
             worldwide.
           </Text>
@@ -144,7 +144,7 @@ export function Footer() {
                   className={LINK_CLASS}
                 >
                   {link.label}
-                  {external ? <span className="text-base-content/50 ml-1">↗</span> : null}
+                  {external ? <span className="text-base-content ml-1">↗</span> : null}
                 </Link>
               );
             })}
@@ -167,7 +167,7 @@ export function Footer() {
                     />
                     <Text
                       variant="caption"
-                      className={d.primary ? 'text-base-content' : 'text-base-content/70'}
+                      className={d.primary ? 'text-base-content' : 'text-base-content'}
                     >
                       {d.name}
                     </Text>
@@ -184,7 +184,7 @@ export function Footer() {
             </Text>
             <div className="flex items-center gap-4">
               <Text variant="caption">v1.0 · 2026-05-27</Text>
-              <Text variant="caption" className="text-base-content/70">
+              <Text variant="caption" className="text-base-content">
                 EN · USD
               </Text>
             </div>

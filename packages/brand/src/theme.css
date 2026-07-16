@@ -29,12 +29,23 @@
  *
  * There is NO sparx alias layer and NO bespoke text/border colors: surfaces are
  * styled with silicaui utilities + components reading these tokens directly
- * (`bg-base-100`, `text-primary`, `<Card>`, …). The secondary / tertiary text inks
- * and the emphasis border are just OPACITY on the base ink —
- * `text-base-content/70`, `text-base-content/50`, `border-base-content/20` — which
- * silicaui supports natively, so no `muted` / `faint` color is invented. The
- * pre-migration `--color-bg-*` / `--color-text-*` / `--sparx-primary` chrome
- * aliases are retired. */
+ * (`bg-base-100`, `text-primary`, `<Card>`, …). The pre-migration `--color-bg-*` /
+ * `--color-text-*` / `--sparx-primary` chrome aliases are retired.
+ *
+ * TEXT COLOR IS silicaui + THESE TOKENS. THAT IS ALL IT TAKES.
+ * Text that is meant to be READ is `text-base-content` — full stop. There is no
+ * `muted` / `faint` ink to invent, and no secondary/tertiary ink tier: rank is
+ * carried by SCALE and WEIGHT, never by fading words toward the background.
+ * `/opacity` values and silicaui's `text-soft` are permitted ONLY on text that is
+ * not intended to be read (decoration, watermark, disabled).
+ *
+ * This block previously documented the opposite — it described `text-base-content/70`
+ * and `/50` as "the secondary / tertiary text inks." That was never an architecture,
+ * it was a habit written down: ~1,890 faded-ink instances across 572 files, removed
+ * 2026-07-16. Opacity is a FILTER, not a color — it composites against whatever sits
+ * behind it, so the ink drifted per module on a tinted card and went near-invisible
+ * on the `bg-neutral` inverse panel. A documented habit is still a habit; do not
+ * reintroduce one here. */
 
 [data-theme='sparx'],
 [data-theme='light'] {
@@ -64,7 +75,15 @@
   --color-secondary: #db2777;
   --color-secondary-content: #ffffff;
 
-  --color-accent: #8b5cf6;
+  /* accent — fuchsia-600. The third brand voice, alongside indigo primary and
+     pink-600 secondary. It is deliberately NOT violet: violet sat ~19° from the
+     indigo primary (and was byte-identical to `--color-module-chat`), so it read
+     as "primary, slightly off" rather than as its own color. Fuchsia is ~53° from
+     indigo — unmistakable at badge size — while staying a jewel tone that belongs
+     next to indigo + pink. Cool on purpose: every WARM hue on this platform is
+     already spoken for by urgency (warning amber, error red, commerce orange), so
+     a warm accent would read as caution forever. */
+  --color-accent: #119da4;
   --color-accent-content: #ffffff;
 
   --color-neutral: #1f2937;
@@ -107,8 +126,10 @@
   --color-secondary: #f472b6;
   --color-secondary-content: #2a0a1a;
 
-  --color-accent: #a78bfa;
-  --color-accent-content: #17102e;
+  /* fuchsia-400 — the light-theme accent lifted for a dark surface, same as every
+     other pair here. Dark ink: white fails AA on a fill this light. */
+  --color-accent: #e879f9;
+  --color-accent-content: #2a0a2e;
 
   --color-neutral: #e5e7eb;
   --color-neutral-content: #1f2937;

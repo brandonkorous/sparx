@@ -228,7 +228,7 @@ export async function OrderDetailContent({ id }: Props) {
               </div>
             </CardTitle>
             {payments.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No payments recorded.</p>
+              <p className="text-base-content text-sm">No payments recorded.</p>
             ) : (
               <Table>
                 <thead>
@@ -254,7 +254,7 @@ export async function OrderDetailContent({ id }: Props) {
                         {p.currency} {Number(p.amount).toLocaleString()}
                       </td>
                       <td>
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           {p.capturedAt ? new Date(p.capturedAt).toLocaleDateString() : '—'}
                         </p>
                       </td>
@@ -268,7 +268,7 @@ export async function OrderDetailContent({ id }: Props) {
                 <p className="text-sm font-medium">Refunds</p>
                 {refunds.map((r) => (
                   <div key={r.id} className="flex flex-row justify-between">
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {r.refundedAt ? new Date(r.refundedAt).toLocaleDateString() : '—'} ·{' '}
                       {r.reason ?? 'no reason'}
                     </p>
@@ -294,7 +294,7 @@ export async function OrderDetailContent({ id }: Props) {
             </CardTitle>
             <div className="flex flex-col gap-3">
               {fulfillments.length === 0 ? (
-                <p className="text-base-content/70 text-sm">No fulfillments yet.</p>
+                <p className="text-base-content text-sm">No fulfillments yet.</p>
               ) : (
                 fulfillments.map((f, i) => (
                   <div key={f.id} className="flex flex-col gap-2">
@@ -303,10 +303,10 @@ export async function OrderDetailContent({ id }: Props) {
                         <Badge color={statusTone(f.status)} variant="soft" size="sm">
                           {statusLabel(f.status)}
                         </Badge>
-                        {f.carrier && <p className="text-base-content/70 text-sm">{f.carrier}</p>}
+                        {f.carrier && <p className="text-base-content text-sm">{f.carrier}</p>}
                         {f.trackingNumber && <code className="text-xs">{f.trackingNumber}</code>}
                       </div>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         {f.shippedAt ? new Date(f.shippedAt).toLocaleDateString() : '—'}
                       </p>
                     </div>

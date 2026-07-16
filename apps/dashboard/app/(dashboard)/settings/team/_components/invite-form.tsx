@@ -94,7 +94,7 @@ export function InviteForm() {
                 Send invite
               </Button>
             </div>
-            <p className="text-base-content/70 text-sm">{ROLE_DESCRIPTIONS[role]}</p>
+            <p className="text-base-content text-sm">{ROLE_DESCRIPTIONS[role]}</p>
           </div>
         </form>
       </CardBody>

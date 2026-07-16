@@ -102,7 +102,7 @@ export function CalendarFeedDialog({
               </Button>
             </div>
           )}
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Keep this link private — anyone with it can see this resource&rsquo;s schedule.
             Subscribed calendars refresh on the provider&rsquo;s own cadence (Google ~12h, Outlook
             ~24h), so it can lag; sparx remains the source of truth for availability.

@@ -34,7 +34,7 @@ export function PayoutSetup({ connected }: { connected: boolean }) {
           <CheckCircle2 className="h-3.5 w-3.5" />
           Payout account connected
         </Badge>
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           Approved commissions are paid to your connected account each month.
         </p>
       </div>
@@ -43,7 +43,7 @@ export function PayoutSetup({ connected }: { connected: boolean }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         Connect a Stripe payout account to receive your commissions. We pay out monthly once your
         approved balance clears your threshold.
       </p>
@@ -60,7 +60,7 @@ export function PayoutSetup({ connected }: { connected: boolean }) {
         </Button>
       </div>
       {notice && (
-        <p className="text-base-content/70 text-sm" role="status" aria-live="polite">
+        <p className="text-base-content text-sm" role="status" aria-live="polite">
           {notice}
         </p>
       )}

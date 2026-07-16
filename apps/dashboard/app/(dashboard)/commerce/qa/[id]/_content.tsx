@@ -75,7 +75,7 @@ export async function QuestionDetailContent({ id }: Props) {
             <Badge color={statusTone(detail.status)} variant="soft" size="sm">
               {statusLabel(detail.status)}
             </Badge>
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               {displayCustomer(detail.customer)} · {new Date(detail.createdAt).toLocaleString()}
             </p>
           </div>
@@ -114,7 +114,7 @@ export async function QuestionDetailContent({ id }: Props) {
           </div>
           <div className="flex flex-col gap-4">
             {detail.answers.length === 0 ? (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 No answers yet — post the first one below.
               </p>
             ) : (
@@ -130,7 +130,7 @@ export async function QuestionDetailContent({ id }: Props) {
                         Customer
                       </Badge>
                     )}
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       {new Date(a.createdAt).toLocaleString()}
                     </p>
                   </div>

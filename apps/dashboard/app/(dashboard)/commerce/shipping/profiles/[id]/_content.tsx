@@ -48,7 +48,7 @@ export async function ShippingProfileDetailContent({ id }: Props) {
       <div className="flex flex-row flex-wrap items-end justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold">{profile.name}</h1>
-          {profile.description && <p className="text-base-content/70">{profile.description}</p>}
+          {profile.description && <p className="text-base-content">{profile.description}</p>}
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export async function ShippingProfileDetailContent({ id }: Props) {
                   ))}
                 </div>
               ) : (
-                <p className="text-base-content/70 text-sm">any</p>
+                <p className="text-base-content text-sm">any</p>
               )}
             </Field>
             <div className="flex flex-row gap-4">
@@ -122,7 +122,7 @@ export async function ShippingProfileDetailContent({ id }: Props) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       {children}
     </div>
   );
@@ -131,7 +131,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function Counter({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <h3 className="text-xl font-semibold">{value}</h3>
     </div>
   );

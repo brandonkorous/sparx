@@ -117,7 +117,7 @@ export function SearchAutocomplete({ className }: { className?: string }) {
           <Search
             size={17}
             aria-hidden
-            className="text-base-content/50 pointer-events-none absolute left-3 z-10"
+            className="text-base-content pointer-events-none absolute left-3 z-10"
           />
           <Input
             name="q"
@@ -160,7 +160,7 @@ export function SearchAutocomplete({ className }: { className?: string }) {
                     isActive ? 'bg-base-200' : 'hover:bg-base-200'
                   }`}
                 >
-                  <span className="text-base-content/50" aria-hidden>
+                  <span className="text-base-content" aria-hidden>
                     {opt.kind === 'merchant' ? (
                       <Store size={16} />
                     ) : opt.kind === 'product' ? (
@@ -179,11 +179,11 @@ export function SearchAutocomplete({ className }: { className?: string }) {
                     )}
                   </span>
                   {opt.kind === 'product' ? (
-                    <span className="text-base-content/50 shrink-0 text-xs">
+                    <span className="text-base-content shrink-0 text-xs">
                       {marketCategoryLabel(opt.category)}
                     </span>
                   ) : opt.kind === 'merchant' ? (
-                    <span className="text-base-content/50 shrink-0 text-xs">Shop</span>
+                    <span className="text-base-content shrink-0 text-xs">Shop</span>
                   ) : null}
                 </button>
               );

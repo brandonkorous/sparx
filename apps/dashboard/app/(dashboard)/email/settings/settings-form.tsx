@@ -132,7 +132,7 @@ export function SettingsForm({ initial }: SettingsFormProps) {
           <CardBody>
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Brand is set once, for everything</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Email colors, fonts, and logo come from your brand — there&apos;s nothing to set per
                 channel. Update your brand once and every transactional and marketing email adopts
                 it automatically.

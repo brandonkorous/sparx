@@ -66,7 +66,7 @@ export function CheckoutSessionsList({ rows, view }: CheckoutSessionsListProps) 
 
   const card: SelectionCard<CheckoutSessionRow> = {
     title: (s) => <p className="truncate font-mono text-sm">{s.id.slice(0, 8)}</p>,
-    subtitle: (s) => <p className="text-base-content/70 text-xs">{s.customerEmail ?? '—'}</p>,
+    subtitle: (s) => <p className="text-base-content text-xs">{s.customerEmail ?? '—'}</p>,
     badge: (s) => <StepBadge step={s.step} />,
     body: (s) => (
       <>
@@ -76,7 +76,7 @@ export function CheckoutSessionsList({ rows, view }: CheckoutSessionsListProps) 
           </Badge>
           <p className="text-sm tabular-nums">{totalLabel(s)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           updated {new Date(s.updatedAt).toLocaleString()}
         </p>
       </>

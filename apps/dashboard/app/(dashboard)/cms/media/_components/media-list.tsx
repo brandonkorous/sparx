@@ -88,7 +88,7 @@ function Thumb({
         />
       ) : (
         <ImageIcon
-          className={cn('text-base-content/60', iconSize === 'lg' ? 'h-10 w-10' : 'h-4 w-4')}
+          className={cn('text-base-content', iconSize === 'lg' ? 'h-10 w-10' : 'h-4 w-4')}
         />
       )}
     </div>
@@ -151,7 +151,7 @@ function MediaCard({
       <CardActions className="justify-start">
         <div className="flex w-full flex-row items-center gap-2">
           {usageBadge(asset)}
-          <p className="text-base-content/70 ml-auto text-xs">
+          <p className="text-base-content ml-auto text-xs">
             {formatBytes(Number(asset.byte_size))}
           </p>
         </div>
@@ -203,7 +203,7 @@ export function MediaList({ assets, view }: MediaListProps) {
           >
             {a.original_filename}
           </EntityRowLink>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {a.width && a.height ? `${a.width}×${a.height}` : a.mime_type}
           </p>
         </div>
@@ -217,7 +217,7 @@ export function MediaList({ assets, view }: MediaListProps) {
             {statusLabel(a.status)}
           </Badge>
         ) : (
-          <p className="text-base-content/50 text-sm">—</p>
+          <p className="text-base-content text-sm">—</p>
         ),
     },
     { header: 'Usage', cell: usageBadge },
@@ -229,9 +229,7 @@ export function MediaList({ assets, view }: MediaListProps) {
     {
       header: 'Updated',
       cell: (a) => (
-        <p className="text-base-content/70 text-sm">
-          {new Date(a.updated_at).toLocaleDateString()}
-        </p>
+        <p className="text-base-content text-sm">{new Date(a.updated_at).toLocaleDateString()}</p>
       ),
     },
   ];

@@ -110,7 +110,7 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
 
             <div className="flex flex-col gap-2">
               <Label>Cookie categories in use</Label>
-              <p className="text-base-content/70 text-xs">
+              <p className="text-base-content text-xs">
                 Strictly-necessary cookies are always on. Enable the categories your site actually
                 uses — enabling analytics or marketing turns the banner on.
               </p>
@@ -124,7 +124,7 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
                     />
                     <Label htmlFor={`consent-cat-${c.key}`} className="font-normal">
                       <p className="font-medium">{c.label}</p>
-                      <p className="text-base-content/70 text-xs">{c.desc}</p>
+                      <p className="text-base-content text-xs">{c.desc}</p>
                     </Label>
                   </div>
                 ))}

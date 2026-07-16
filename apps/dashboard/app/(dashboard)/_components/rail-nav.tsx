@@ -45,7 +45,7 @@ const RECENTS_LIMIT = 8;
 // `group` lets the icon adopt SidebarItem's two-tone hover coloring.
 const TILE_BASE =
   'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none';
-const TILE_INACTIVE = 'text-base-content/70 hover:bg-base-200 hover:text-base-content';
+const TILE_INACTIVE = 'text-base-content hover:bg-base-200 hover:text-base-content';
 const TILE_ACTIVE = 'bg-module bg-soft text-module';
 
 function tileClass(active: boolean, expanded: boolean) {
@@ -57,7 +57,7 @@ function tileClass(active: boolean, expanded: boolean) {
 // label — module color when active, a quiet tertiary→secondary on hover when not.
 function tileIconClass(active: boolean) {
   return `inline-flex h-4 w-4 shrink-0 items-center justify-center ${
-    active ? 'text-module' : 'text-base-content/50 group-hover:text-base-content/70'
+    active ? 'text-module' : 'text-base-content group-hover:text-base-content'
   }`;
 }
 
@@ -389,12 +389,12 @@ function RailGroup({ label, groupIcon: GroupIcon, items, pathname, expanded }: R
     // like the module tiles above; expanded, they stretch full-width for labels.
     <div className={`mt-1 flex w-full flex-col gap-1 ${expanded ? '' : 'items-center'}`}>
       {expanded ? (
-        <div className="text-base-content/50 px-3 pt-2 pb-0.5 text-xs font-medium tracking-wider uppercase">
+        <div className="text-base-content px-3 pt-2 pb-0.5 text-xs font-medium tracking-wider uppercase">
           {label}
         </div>
       ) : (
         <div className="my-0.5 flex justify-center" title={label}>
-          <GroupIcon className="text-base-content/50 h-3.5 w-3.5" />
+          <GroupIcon className="text-base-content h-3.5 w-3.5" />
         </div>
       )}
       {items.map((item) => {

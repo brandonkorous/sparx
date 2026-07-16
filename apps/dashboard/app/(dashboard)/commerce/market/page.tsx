@@ -47,7 +47,7 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
               <div className="flex flex-col gap-3">
                 <ParticipationToggle profile={profile} />
                 {!profile.enabled && (
-                  <p className="text-base-content/70 max-w-prose text-sm">
+                  <p className="text-base-content max-w-prose text-sm">
                     When you join, your eligible products can be listed on sparx.market and your
                     seller profile appears in the marketplace directory. You keep selling on your
                     own site too — sparx.market is an additional channel, not a replacement.
@@ -63,7 +63,7 @@ export default async function MarketPage(): Promise<React.JSX.Element> {
                 <CardBody>
                   <CardTitle>Earnings & payouts</CardTitle>
                   <div className="flex flex-col gap-3">
-                    <p className="text-base-content/70 max-w-prose text-sm">
+                    <p className="text-base-content max-w-prose text-sm">
                       Your marketplace settlement earnings, weekly payout history, and the bank
                       account sparx pays you to all live in Finance — alongside the rest of your
                       money.

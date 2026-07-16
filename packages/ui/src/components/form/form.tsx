@@ -145,7 +145,7 @@ export const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-base-content/70 text-xs', className)}
+      className={cn('text-base-content text-xs', className)}
       {...props}
     />
   );

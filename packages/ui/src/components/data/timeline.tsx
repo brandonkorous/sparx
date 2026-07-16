@@ -44,7 +44,7 @@ export const TimelineDescription = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn('text-base-content/70 mt-0.5 text-xs', className)} {...props} />
+  <p className={cn('text-base-content mt-0.5 text-xs', className)} {...props} />
 );
 TimelineDescription.displayName = 'TimelineDescription';
 
@@ -52,6 +52,6 @@ export const TimelineTime = ({
   className,
   ...props
 }: React.TimeHTMLAttributes<HTMLTimeElement>) => (
-  <time className={cn('text-base-content/50 text-xs', className)} {...props} />
+  <time className={cn('text-base-content text-xs', className)} {...props} />
 );
 TimelineTime.displayName = 'TimelineTime';

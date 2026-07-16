@@ -338,7 +338,7 @@ export default async function AiPage() {
                 <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
                   {activityFooter.map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -417,7 +417,7 @@ export default async function AiPage() {
                   </span>
                   <p className="text-sm font-medium">{step.title}</p>
                 </div>
-                <p className="text-base-content/70 text-sm">{step.body}</p>
+                <p className="text-base-content text-sm">{step.body}</p>
               </div>
             ))}
           </div>
@@ -431,8 +431,8 @@ export default async function AiPage() {
               <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
             <div className="flex flex-row items-center gap-2">
-              <ShieldCheck className="text-base-content/50 h-4 w-4" />
-              <p className="text-base-content/70 text-xs">
+              <ShieldCheck className="text-base-content h-4 w-4" />
+              <p className="text-base-content text-xs">
                 Keys are scoped and revocable — the assistant only does what you allow.
               </p>
             </div>

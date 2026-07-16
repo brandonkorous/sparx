@@ -119,7 +119,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
               </p>
               {trigger?.kind === 'schedule' && trigger.predicate.where.conditions.length > 0 && (
                 <div className="flex flex-col gap-1">
-                  <p className="text-base-content/70 text-sm">Scans rows where:</p>
+                  <p className="text-base-content text-sm">Scans rows where:</p>
                   <ConditionGroupView group={trigger.predicate.where} />
                 </div>
               )}
@@ -155,7 +155,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
               </span>
             </CardTitle>
             {runs.length === 0 ? (
-              <p className="text-base-content/70 text-sm">No runs yet.</p>
+              <p className="text-base-content text-sm">No runs yet.</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {runs.map((run) => (
@@ -166,11 +166,11 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                   >
                     <span className="flex items-center gap-3">
                       <RunStatusBadge status={run.status} />
-                      <span className="text-base-content/70 text-sm">
+                      <span className="text-base-content text-sm">
                         {formatTimestamp(run.startedAt)}
                       </span>
                     </span>
-                    <span className="text-base-content/70 text-sm">
+                    <span className="text-base-content text-sm">
                       {run.automationVersion != null ? `v${run.automationVersion} · ` : ''}
                       {run.actionsTotal} step{run.actionsTotal === 1 ? '' : 's'}
                     </span>

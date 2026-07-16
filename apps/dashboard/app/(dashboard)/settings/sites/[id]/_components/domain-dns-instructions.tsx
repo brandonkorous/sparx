@@ -37,9 +37,9 @@ function CopyField({ label, hint, value }: { label: string; hint?: string; value
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {label}
-        {hint ? <span className="text-base-content/50"> — {hint}</span> : null}
+        {hint ? <span className="text-base-content"> — {hint}</span> : null}
       </p>
       <div className="flex flex-row items-center gap-2">
         <Input
@@ -135,12 +135,12 @@ export function DomainDnsInstructions({
           <div className="flex flex-col gap-4 pt-1">
             {setupMode ? (
               <div className="flex flex-col gap-2">
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Add the {recordCount > 1 ? 'records' : 'record'} below wherever{' '}
                   <strong className="text-base-content font-medium">{domain.host}</strong> is
                   managed, then press <strong className="font-medium">Verify</strong>:
                 </p>
-                <ol className="text-base-content/70 list-decimal space-y-1.5 pl-5 text-sm">
+                <ol className="text-base-content list-decimal space-y-1.5 pl-5 text-sm">
                   <li>
                     Sign in to your <strong className="font-medium">domain provider</strong> — the
                     company you bought this domain from (GoDaddy, Namecheap, Cloudflare, Google
@@ -160,7 +160,7 @@ export function DomainDnsInstructions({
                 </ol>
               </div>
             ) : (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 <strong className="text-base-content font-medium">{domain.host}</strong> is
                 connected using the record below. Leave it in place at your domain provider — if
                 this site ever stops loading on this address, sign in and make sure the record still
@@ -187,7 +187,7 @@ export function DomainDnsInstructions({
 
             {canReissue && (
               <div className="flex flex-col gap-1">
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   Lost the verification record, or need to prove ownership again?
                 </p>
                 <Button
@@ -204,7 +204,7 @@ export function DomainDnsInstructions({
               </div>
             )}
 
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               DNS changes usually take a few minutes to take effect — occasionally up to a few
               hours.
             </p>

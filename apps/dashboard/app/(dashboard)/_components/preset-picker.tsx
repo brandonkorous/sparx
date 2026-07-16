@@ -140,7 +140,7 @@ export function PresetPicker({
                 <Card variant="subtle" padding="md" className="h-full">
                   <Stack gap={2} className="h-full">
                     <Stack direction="row" gap={2} align="center">
-                      <Icon className="text-base-content/60 h-4 w-4" />
+                      <Icon className="text-base-content h-4 w-4" />
                       <Text weight="medium">{preset.name}</Text>
                     </Stack>
                     <Text size="xs" variant="muted" className="flex-1">

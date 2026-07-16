@@ -69,7 +69,7 @@ export async function SourceDetailContent({ id }: { id: string }) {
               {source.status}
             </Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {SOURCE_TYPE_LABEL[source.type] ?? source.type}
             {endpoint ? (
               <>

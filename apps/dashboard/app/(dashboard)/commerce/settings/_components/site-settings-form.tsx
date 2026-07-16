@@ -94,7 +94,7 @@ export function CommerceSiteSettingsForm({
             onChange={(e) => set('defaultCurrency', e.target.value.toUpperCase())}
             maxLength={3}
           />
-          <p className="text-base-content/70 text-xs">ISO 4217 (USD, EUR, GBP).</p>
+          <p className="text-base-content text-xs">ISO 4217 (USD, EUR, GBP).</p>
         </div>
         <div className="flex min-w-[12rem] flex-1 flex-col gap-1">
           <Label htmlFor="locale">Default locale</Label>
@@ -104,7 +104,7 @@ export function CommerceSiteSettingsForm({
             onChange={(e) => set('defaultLocale', e.target.value)}
             maxLength={10}
           />
-          <p className="text-base-content/70 text-xs">BCP-47 (en-US, en-GB, fr-FR).</p>
+          <p className="text-base-content text-xs">BCP-47 (en-US, en-GB, fr-FR).</p>
         </div>
       </div>
 
@@ -123,7 +123,7 @@ export function CommerceSiteSettingsForm({
             </option>
           ))}
         </select>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           New carts default to this warehouse. Override per-order at checkout.
         </p>
       </div>
@@ -149,7 +149,7 @@ export function CommerceSiteSettingsForm({
             );
           })}
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Disabled channels return 404 for their routes. The retail storefront and B2B portal each
           have their own app; toggling here gates feature visibility tenant-wide.
         </p>
@@ -176,7 +176,7 @@ export function CommerceSiteSettingsForm({
             value={form.showStockBelow}
             onChange={(e) => set('showStockBelow', Number(e.target.value))}
           />
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Storefront PDP renders &ldquo;Only N left&rdquo; when on-hand is below this number.
           </p>
         </div>
@@ -186,7 +186,7 @@ export function CommerceSiteSettingsForm({
         <div className="flex flex-row items-center justify-between gap-3">
           <div className="flex flex-col gap-0">
             <Label htmlFor="hideprices">Hide prices when signed out</Label>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Useful for trade pricing; storefront prompts sign-in to reveal prices.
             </p>
           </div>
@@ -199,7 +199,7 @@ export function CommerceSiteSettingsForm({
         <div className="flex flex-row items-center justify-between gap-3">
           <div className="flex flex-col gap-0">
             <Label htmlFor="requireauth">Require auth for checkout</Label>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Guest carts work, but checkout forces sign-in / sign-up before placing the order.
             </p>
           </div>

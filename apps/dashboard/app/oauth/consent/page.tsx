@@ -65,7 +65,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
               <AlertDescription>{validation.error}</AlertDescription>
             </AlertContent>
           </Alert>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Close this window and start the connection again from your assistant.
           </p>
         </div>
@@ -113,7 +113,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
     <Shell>
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h2>
-        <p className="text-base-content/70">
+        <p className="text-base-content">
           {clientName} is requesting access to your sparx workspace through the MCP server. Choose
           exactly what it can do — you can revoke this anytime in AI Integrations.
         </p>
@@ -139,7 +139,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
 
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium">Signed in as</p>
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {session.user.email} · {role}
         </p>
       </div>

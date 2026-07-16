@@ -61,7 +61,7 @@ export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) 
             {connection.status}
           </Badge>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {connection.shopName ? `${connection.shopName} · ` : ''}
           {links} product{links === 1 ? '' : 's'} linked
           {connection.lastSyncedAt
@@ -69,7 +69,7 @@ export function ConnectedChannelRow({ connection, descriptor, metrics }: Props) 
             : ' · not synced yet'}
         </p>
         {metrics && metrics.orders > 0 && (
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Last 30 days · {fmtCents(metrics.grossRevenueCents, metrics.currency)} ·{' '}
             {metrics.orders.toLocaleString()} order{metrics.orders === 1 ? '' : 's'} ·{' '}
             {fmtCents(metrics.averageOrderValueCents, metrics.currency)} AOV

@@ -23,7 +23,7 @@
    with its `--color-<name>` / `--color-<name>-content` tokens in @sparx/brand/theme.css.
    Beyond silicaui's defaults we register `danger` (sparx's statusTone vocabulary).
    The text/border hierarchy needs no new colors — it's expressed with opacity
-   modifiers on the base ink (`text-base-content/70` muted, `/50` faint,
+   modifiers on the base ink (`text-base-content` muted, `/50` faint,
    `border-base-content/20` strong), which silicaui supports natively. */
 @plugin '@wizeworks/silicaui' {
   colors: primary, secondary, accent, neutral, info, success, warning, error, danger;

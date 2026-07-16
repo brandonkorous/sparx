@@ -80,7 +80,7 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
     r.customerName ? (
       <p className="text-sm">{r.customerName}</p>
     ) : r.customerId ? (
-      <p className="text-base-content/70 font-mono text-xs">{r.customerId.slice(0, 8)}</p>
+      <p className="text-base-content font-mono text-xs">{r.customerId.slice(0, 8)}</p>
     ) : (
       <>—</>
     );
@@ -108,7 +108,7 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
   const card: SelectionCard<ReturnSummary> = {
     title: (r) => idLink(r),
     subtitle: (r) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         order <span className="font-mono">{r.orderNumber ?? r.orderId.slice(0, 8)}</span>
       </p>
     ),
@@ -123,7 +123,7 @@ export function ReturnsList({ rows, view }: ReturnsListProps) {
             {r.itemCount} item{r.itemCount === 1 ? '' : 's'}
           </p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {r.customerName ? `${r.customerName} · ` : ''}requested{' '}
           {new Date(r.requestedAt).toLocaleDateString()}
         </p>

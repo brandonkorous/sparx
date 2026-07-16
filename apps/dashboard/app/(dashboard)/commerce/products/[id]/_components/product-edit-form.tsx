@@ -265,7 +265,7 @@ export function ProductEditForm({
                   customHint="Add this tag"
                   aria-label="Tags"
                 />
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   Pick from existing tags or type a new one. Up to 50.
                 </p>
                 {v.visibleError('tags') && (
@@ -284,7 +284,7 @@ export function ProductEditForm({
                   placeholder="Standard (default)"
                   aria-label="Tax class"
                 />
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   Matches a tax rate&apos;s product class. Blank uses the standard rate.
                 </p>
               </div>

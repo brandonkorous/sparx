@@ -43,6 +43,52 @@ function run<T>(ctx: CatalogContext, fn: (tx: TxClient) => Promise<T>): Promise<
   return ctx.tenantId ? withTenant({ tenantId: ctx.tenantId }, fn) : withSystem(fn);
 }
 
+// ── Public browse cache ─────────────────────────────────────────────────────
+//
+// The public (no-tenant, no-enrich) browse set is IDENTICAL for every caller — it
+// is the published catalog, nothing per-request. Without a cache each request
+// re-reads the category and re-materializes every row into a fresh listing object,
+// so N concurrent requests hold N copies of the whole catalog live at once. Under a
+// burst of distinct-but-equivalent facet queries that is what exhausted api-rest's
+// V8 heap on 2026-07-16 (the browse ALGEBRA is cheap and already runs outside the
+// transaction; it was the per-request row mapping that piled up).
+//
+// So the read is memoized per category for a short TTL, and it's the PROMISE that's
+// cached, not the value — a burst of concurrent misses then collapses into ONE
+// in-flight query instead of a thundering herd. A rejected read is evicted so a
+// transient DB error can't be served for the rest of the TTL.
+//
+// Callers never mutate the cached array: the filter/sort passes below all build new
+// arrays, and `enrich` (the only thing that writes to listings) is authed-only and
+// bypasses this path entirely.
+const PUBLIC_BROWSE_TTL_MS = 60_000;
+
+interface CacheEntry {
+  listings: Promise<MarketplaceListing[]>;
+  expiresAt: number;
+}
+
+const publicBrowseCache = new Map<MarketplaceCategory, CacheEntry>();
+
+/** The published listings for `category`, memoized for PUBLIC_BROWSE_TTL_MS. */
+function loadPublicVisible(category: MarketplaceCategory): Promise<MarketplaceListing[]> {
+  const now = Date.now();
+  const hit = publicBrowseCache.get(category);
+  if (hit && hit.expiresAt > now) return hit.listings;
+
+  const listings = withSystem((tx) => ADAPTERS[category].loadVisible(tx)).catch((err: unknown) => {
+    publicBrowseCache.delete(category);
+    throw err;
+  });
+  publicBrowseCache.set(category, { listings, expiresAt: now + PUBLIC_BROWSE_TTL_MS });
+  return listings;
+}
+
+/** Test-only — drop the public browse cache between suites. */
+export function _resetPublicBrowseCacheForTest(): void {
+  publicBrowseCache.clear();
+}
+
 /** Split one query value into facet tokens. A value is a string ("a,b") or a
  *  repeated-key array (["a","b"]); anything else contributes nothing. Typed
  *  narrowly so we never stringify an arbitrary object. */
@@ -114,11 +160,17 @@ export const marketplaceCatalogService = {
     const query = MarketplaceBrowseQuery.parse(rawQuery);
     const params = parseFacetParams(facetDefs, rawQuery);
 
-    const all = await run(ctx, async (tx) => {
-      const listings = await adapter.loadVisible(tx);
-      if (options?.enrich) await options.enrich(tx, listings);
-      return listings;
-    });
+    // The public path (no tenant, no overlay) is the same set for everyone, so it
+    // serves from the shared cache. Anything tenant-scoped or enriched reads live —
+    // its result is per-request by definition.
+    const cacheable = !ctx.tenantId && !options?.enrich;
+    const all = cacheable
+      ? await loadPublicVisible(category)
+      : await run(ctx, async (tx) => {
+          const listings = await adapter.loadVisible(tx);
+          if (options?.enrich) await options.enrich(tx, listings);
+          return listings;
+        });
 
     // 1. Free-text narrow. Facet COUNTS are computed over this set so the rail
     //    reflects the current search.

@@ -280,7 +280,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                       />
                     </Field>
                   </div>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     Collecting payment for a bootcamp is your responsibility — Sparx lists it and
                     drives registrations, but does not process the ticket price.
                   </p>
@@ -338,7 +338,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                   <div className="flex flex-row items-center justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1">
                       <Label htmlFor="bc-limited">Limit seats</Label>
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         Off means unlimited seats; on caps registrations and waitlists the rest.
                       </p>
                     </div>
@@ -396,7 +396,7 @@ export function BootcampForm({ mode, bootcamp, partnerTier }: BootcampFormProps)
                   )}
 
                   {partnerTier !== 'certified' && (
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       You can build and save this as a draft now. Publishing it to the public
                       directory unlocks at the Certified tier.
                     </p>
@@ -448,7 +448,7 @@ function RegOption({
       />
       <div className="flex min-w-0 flex-col gap-0">
         <Label htmlFor={`reg-${value}`}>{title}</Label>
-        <p className="text-base-content/70 text-xs">{hint}</p>
+        <p className="text-base-content text-xs">{hint}</p>
       </div>
     </div>
   );
@@ -457,7 +457,7 @@ function RegOption({
 function NewBootcampSummary() {
   return (
     <SurfaceSummary title="New bootcamp">
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         Save it as a draft first, then publish when you’re ready. On-platform RSVPs become leads in
         your CRM automatically.
       </p>

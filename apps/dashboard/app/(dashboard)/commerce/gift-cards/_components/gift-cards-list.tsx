@@ -39,10 +39,10 @@ function recipientCell(card: GiftCardSummary) {
   return card.recipientEmail ? (
     <div className="flex flex-col gap-0">
       <p className="text-sm">{card.recipientName ?? '—'}</p>
-      <p className="text-base-content/70 text-xs">{card.recipientEmail}</p>
+      <p className="text-base-content text-xs">{card.recipientEmail}</p>
     </div>
   ) : (
-    <p className="text-base-content/70 text-xs">none</p>
+    <p className="text-base-content text-xs">none</p>
   );
 }
 
@@ -65,23 +65,21 @@ export function GiftCardsList({ cards, view }: GiftCardsListProps) {
     {
       header: 'Initial',
       cell: (c) => (
-        <p className="text-base-content/70 text-xs">
-          {moneyFmt.format(c.initialBalanceCents / 100)}
-        </p>
+        <p className="text-base-content text-xs">{moneyFmt.format(c.initialBalanceCents / 100)}</p>
       ),
     },
     { header: 'Recipient', cell: recipientCell },
     { header: 'Status', cell: statusBadge },
     {
       header: 'Expires',
-      cell: (c) => <p className="text-base-content/70 text-xs">{expiresLabel(c)}</p>,
+      cell: (c) => <p className="text-base-content text-xs">{expiresLabel(c)}</p>,
     },
   ];
 
   const card: SelectionCard<GiftCardSummary> = {
     title: (c) => <span className="truncate font-mono text-sm">{c.code}</span>,
     subtitle: (c) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {c.recipientEmail ? (c.recipientName ?? c.recipientEmail) : 'No recipient'}
       </p>
     ),
@@ -90,11 +88,11 @@ export function GiftCardsList({ cards, view }: GiftCardsListProps) {
       <>
         <div className="flex flex-row items-center justify-between gap-2">
           <p className="text-sm tabular-nums">{moneyFmt.format(c.balanceCents / 100)}</p>
-          <p className="text-base-content/70 text-xs tabular-nums">
+          <p className="text-base-content text-xs tabular-nums">
             of {moneyFmt.format(c.initialBalanceCents / 100)}
           </p>
         </div>
-        <p className="text-base-content/70 text-xs">Expires {expiresLabel(c)}</p>
+        <p className="text-base-content text-xs">Expires {expiresLabel(c)}</p>
       </>
     ),
   };

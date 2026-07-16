@@ -33,7 +33,7 @@ export function SupplierArchiveButton({
   }
 
   if (!isActive) {
-    return <p className="text-base-content/70 text-xs">Already inactive</p>;
+    return <p className="text-base-content text-xs">Already inactive</p>;
   }
 
   return (

@@ -180,7 +180,7 @@ export function legacyNodeToSilica(node: BuilderNode, warnings: ConversionWarnin
         const platform = typeof rec.platform === 'string' ? rec.platform : '';
         return url
           ? [
-              el('a', 'text-base-content/60 hover:text-base-content', {
+              el('a', 'text-base-content hover:text-base-content', {
                 attrs: { href: url },
                 text: platform,
               }),
@@ -193,7 +193,7 @@ export function legacyNodeToSilica(node: BuilderNode, warnings: ConversionWarnin
     case 'Signup':
       return el('div', classOr(node, 'flex flex-col gap-3'), {
         children: [
-          el('p', 'text-base-content/70', { text: 'Get updates by email.' }),
+          el('p', 'text-base-content', { text: 'Get updates by email.' }),
           el('a', 'btn btn-primary', {
             attrs: { href: '/contact' },
             text: strOr(node, 'cta', 'Subscribe'),
@@ -235,14 +235,14 @@ export function legacyNodeToSilica(node: BuilderNode, warnings: ConversionWarnin
       return applyBinding(built, node.binding, false);
     }
     case 'Text': {
-      const built = el('p', classOr(node, 'text-base-content/70'), { text: str(node, 'text') });
+      const built = el('p', classOr(node, 'text-base-content'), { text: str(node, 'text') });
       return applyBinding(built, node.binding, false);
     }
     case 'Prose': {
       const paragraphs = proseParagraphs(node.props?.doc);
       if (paragraphs.length === 0) return null;
       return el('div', classOr(node, 'flex flex-col gap-3'), {
-        children: paragraphs.map((p) => el('p', 'text-base-content/70', { text: p })),
+        children: paragraphs.map((p) => el('p', 'text-base-content', { text: p })),
       });
     }
     case 'Button': {

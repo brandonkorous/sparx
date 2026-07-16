@@ -231,7 +231,7 @@ function OgImageField({
         <Button type="button" variant="outline" size="sm" onClick={onPick}>
           Pick image
         </Button>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           No image selected — Slack and OG cards will use the site default.
         </p>
       </div>
@@ -247,12 +247,12 @@ function OgImageField({
         />
       ) : (
         <div className="border-base-300 bg-base-200 flex h-14 w-14 flex-col items-center justify-center rounded-md border">
-          <ImageOff aria-hidden className="text-base-content/50 h-5 w-5" />
+          <ImageOff aria-hidden className="text-base-content h-5 w-5" />
         </div>
       )}
       <div className="flex flex-col gap-1">
         <p className="text-sm">{preview?.alt ?? preview?.caption ?? 'Image selected'}</p>
-        <p className="text-base-content/70 text-xs">Asset {assetId.slice(0, 8)}…</p>
+        <p className="text-base-content text-xs">Asset {assetId.slice(0, 8)}…</p>
       </div>
       <div className="ml-auto flex flex-row gap-1">
         <Button
@@ -278,7 +278,7 @@ function CharCount({ value, max }: { value: string; max: number }) {
   // back to danger when we're past the warning threshold too.
   const variant: 'danger' | 'muted' = len > max * 0.9 ? 'danger' : 'muted';
   return (
-    <p className={`text-xs ${variant === 'danger' ? 'text-danger' : 'text-base-content/70'}`}>
+    <p className={`text-xs ${variant === 'danger' ? 'text-danger' : 'text-base-content'}`}>
       {len} / {max}
     </p>
   );
@@ -307,7 +307,7 @@ function GooglePreview({
   // tokens.
   return (
     <div className="border-base-300 bg-base-200 flex flex-col gap-1 rounded-md border p-4">
-      <p className="text-base-content/70 text-xs">Google preview</p>
+      <p className="text-base-content text-xs">Google preview</p>
       <p className="text-xs text-[#202124]">{displayUrl}</p>
       <p className="text-lg font-medium text-[#1a0dab]">{truncate(title, 60)}</p>
       <p className="text-sm text-[#4d5156]">{truncate(description, 160)}</p>

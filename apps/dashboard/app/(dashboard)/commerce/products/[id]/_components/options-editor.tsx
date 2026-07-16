@@ -154,7 +154,7 @@ export function OptionsEditor({
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <h4 className="text-lg font-semibold">Edit option lattice — {productTitle}</h4>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Replace the option set. Existing variants stay but lose their option bindings — rebind
             them from the variants table afterwards.
           </p>
@@ -162,7 +162,7 @@ export function OptionsEditor({
 
         {drafts.length === 0 && (
           <div className="border-base-300 flex flex-col items-center gap-2 rounded border border-dashed p-6 text-center">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No options yet — single-SKU products work too.
             </p>
           </div>
@@ -218,7 +218,7 @@ export function OptionsEditor({
               </div>
 
               <div className="flex flex-col gap-2 pl-4">
-                <p className="text-base-content/70 text-xs">Values</p>
+                <p className="text-base-content text-xs">Values</p>
                 {opt.values.map((val, vi) => (
                   <div key={val.localKey} className="flex flex-row items-center gap-2">
                     <Input

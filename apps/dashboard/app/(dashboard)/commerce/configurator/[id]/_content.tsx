@@ -118,7 +118,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
               {statusLabel(template.status)}
             </Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Product:{' '}
             <Link
               href={`/commerce/products/${template.productId}`}
@@ -181,7 +181,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
             </p>
           </div>
           {template.rules.length === 0 ? (
-            <p className="text-base-content/70 text-sm">No rules — every option is independent.</p>
+            <p className="text-base-content text-sm">No rules — every option is independent.</p>
           ) : (
             <Table>
               <thead>
@@ -223,7 +223,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
             </p>
           </div>
           {template.addOns.length === 0 ? (
-            <p className="text-base-content/70 text-sm">No add-ons.</p>
+            <p className="text-base-content text-sm">No add-ons.</p>
           ) : (
             <Table>
               <thead>
@@ -240,7 +240,7 @@ export async function ConfiguratorTemplateDetailContent({ id }: Props) {
                       <div className="flex flex-col gap-0">
                         <p className="text-sm">{a.productTitle ?? a.variantId.slice(0, 8)}</p>
                         {a.variantSku && (
-                          <p className="text-base-content/70 font-mono text-xs">{a.variantSku}</p>
+                          <p className="text-base-content font-mono text-xs">{a.variantSku}</p>
                         )}
                       </div>
                     </td>

@@ -837,7 +837,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
             <div className="border-base-300 flex items-start justify-between gap-4 rounded-xl border p-4">
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium">Track inventory</span>
-                <span className="text-base-content/70 text-sm">
+                <span className="text-base-content text-sm">
                   Count stock and stop selling at zero. Turn off to always allow purchase.
                 </span>
               </span>
@@ -900,7 +900,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
                   </Field>
                 </div>
                 {warehouses.length === 0 && (
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     No warehouse yet — create one here to seed stock without leaving the wizard.
                   </p>
                 )}
@@ -1019,27 +1019,27 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
         <CardBody className="py-6">
           <div className="flex flex-col gap-4">
             <dl className="grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2.5 text-sm">
-              <dt className="text-base-content/60">Title</dt>
+              <dt className="text-base-content">Title</dt>
               <dd className="font-medium">{title.trim() || '—'}</dd>
-              <dt className="text-base-content/60">Type</dt>
+              <dt className="text-base-content">Type</dt>
               <dd className="font-medium">
                 {fulfillmentType}
                 {productType.trim() ? ` · ${productType.trim()}` : ''}
               </dd>
-              <dt className="text-base-content/60">SKU</dt>
+              <dt className="text-base-content">SKU</dt>
               <dd className="font-medium">{sku.trim() || '—'}</dd>
-              <dt className="text-base-content/60">Price</dt>
+              <dt className="text-base-content">Price</dt>
               <dd className="font-medium">
                 {centsToDisplay(dollarsToCents(priceStr))}
                 {dollarsToCents(compareAtStr) !== undefined && (
-                  <span className="text-base-content/60 ml-2 line-through">
+                  <span className="text-base-content ml-2 line-through">
                     {centsToDisplay(dollarsToCents(compareAtStr))}
                   </span>
                 )}
               </dd>
               {isPhysical && trackInventory && (
                 <>
-                  <dt className="text-base-content/60">Initial stock</dt>
+                  <dt className="text-base-content">Initial stock</dt>
                   <dd className="font-medium">
                     {toNonNegInt(quantityStr) ?? 0}
                     {warehouses.find((w) => w.id === warehouseId)
@@ -1051,7 +1051,7 @@ function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
             </dl>
 
             <div className="border-base-300 rounded-xl border p-4">
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Next, from the product’s tabs you can add{' '}
                 <span className="text-base-content">variants &amp; options</span>,{' '}
                 <span className="text-base-content">media</span>, and{' '}

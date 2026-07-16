@@ -48,12 +48,10 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
         {statusLabel(b.pricingMode)}
       </Badge>
       {b.pricingMode === 'fixed' && b.fixedPriceCents != null && (
-        <p className="text-base-content/70 mt-1 text-xs">
-          {moneyFmt.format(b.fixedPriceCents / 100)}
-        </p>
+        <p className="text-base-content mt-1 text-xs">{moneyFmt.format(b.fixedPriceCents / 100)}</p>
       )}
       {b.pricingMode === 'percent_off_sum' && b.percentOffSum != null && (
-        <p className="text-base-content/70 mt-1 text-xs">{b.percentOffSum}% off</p>
+        <p className="text-base-content mt-1 text-xs">{b.percentOffSum}% off</p>
       )}
     </>
   );
@@ -72,7 +70,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     {
       header: 'Updated',
       cell: (b) => (
-        <p className="text-base-content/70 text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-xs">{new Date(b.updatedAt).toLocaleDateString()}</p>
       ),
     },
   ];
@@ -83,7 +81,7 @@ export function BundlesList({ bundles, view }: BundlesListProps) {
     body: (b) => (
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">{pricingCell(b)}</div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {b.componentCount} component{b.componentCount === 1 ? '' : 's'} · updated{' '}
           {new Date(b.updatedAt).toLocaleDateString()}
         </p>

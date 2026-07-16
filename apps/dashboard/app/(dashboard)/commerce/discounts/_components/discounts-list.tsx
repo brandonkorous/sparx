@@ -56,7 +56,7 @@ function codeName(d: DiscountRow) {
           automatic
         </Badge>
       )}
-      <p className="text-base-content/70 text-xs">{d.name}</p>
+      <p className="text-base-content text-xs">{d.name}</p>
     </div>
   );
 }
@@ -115,7 +115,7 @@ export function DiscountsList({ discounts, view }: DiscountsListProps) {
           automatic
         </Badge>
       ),
-    subtitle: (d) => <p className="text-base-content/70 text-xs">{d.name}</p>,
+    subtitle: (d) => <p className="text-base-content text-xs">{d.name}</p>,
     badge: statusBadge,
     body: (d) => (
       <>
@@ -126,7 +126,7 @@ export function DiscountsList({ discounts, view }: DiscountsListProps) {
           <p className="text-sm tabular-nums">{valueLabel(d)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Used {usageLabel(d)}</p>
+          <p className="text-base-content text-xs">Used {usageLabel(d)}</p>
           <DiscountStatusToggle discountId={d.id} status={d.status} />
         </div>
       </>

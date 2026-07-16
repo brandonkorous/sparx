@@ -124,9 +124,15 @@ export async function getSitePreviewData(propertySlug?: string | null): Promise<
 // preview. Prefers a ~512w webp; if no transcoded variants exist (dev/local
 // where no media-worker runs, or a format the worker skips such as SVG) it
 // falls back to the original bytes (`original_url`, served by api-rest in local
-// mode) or, for a hot-linked external asset whose key is an absolute URL
-// (blueprint installs), the key itself. Returns null when the id is absent or
-// the asset can't be read.
+// mode) or, for an asset whose KEY is already a usable URL, the key itself.
+//
+// "Already a usable URL" is two cases, and missing either renders a set logo as an
+// empty tile: an absolute http(s) ref (a blueprint hot-link) AND an inline `data:`
+// URI. The latter is not exotic — an SVG brand mark is stored inline, carries no
+// transcoded variants (the worker skips SVG) and no `original_url`, so the key is
+// the ONLY way to see it. Matching http(s) alone silently returned null for every
+// such asset, which is why a tenant's uploaded SVG logo showed a blank preview
+// while its Remove button proved it was set (docs/122).
 export async function resolveMediaUrl(mediaId: string | null): Promise<string | null> {
   if (!mediaId) return null;
   try {
@@ -143,7 +149,7 @@ export async function resolveMediaUrl(mediaId: string | null): Promise<string | 
       return webp[0]?.url ?? variants[0]?.url ?? null;
     }
     if (asset.original_url) return asset.original_url;
-    if (asset.key && /^https?:\/\//i.test(asset.key)) return asset.key;
+    if (asset.key && /^(?:https?:|data:)/i.test(asset.key)) return asset.key;
     return null;
   } catch {
     return null;

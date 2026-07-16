@@ -65,18 +65,18 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
           <Avatar size="sm" alt={a.display_name} />
           <div className="flex min-w-0 flex-col gap-0">
             {nameLink(a, 'truncate text-sm font-medium hover:text-module hover:underline')}
-            <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
+            <p className="text-base-content truncate text-xs">/{a.slug}</p>
           </div>
         </div>
       ),
     },
     {
       header: 'Bio',
-      cell: (a) => <p className="text-base-content/70 line-clamp-2 text-sm">{a.bio ?? '—'}</p>,
+      cell: (a) => <p className="text-base-content line-clamp-2 text-sm">{a.bio ?? '—'}</p>,
     },
     {
       header: 'Added',
-      cell: (a) => <p className="text-base-content/70 text-sm">{formatAdded(a.created_at)}</p>,
+      cell: (a) => <p className="text-base-content text-sm">{formatAdded(a.created_at)}</p>,
     },
     {
       header: '',
@@ -92,15 +92,15 @@ export function AuthorsList({ rows, view }: AuthorsListProps) {
         <Avatar size="md" alt={a.display_name} />
         <div className="flex min-w-0 flex-col gap-0">
           {nameLink(a, 'truncate text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 truncate text-xs">/{a.slug}</p>
+          <p className="text-base-content truncate text-xs">/{a.slug}</p>
         </div>
       </div>
     ),
     body: (a) => (
       <div className="flex flex-col gap-2">
-        {a.bio ? <p className="text-base-content/70 line-clamp-3 text-sm">{a.bio}</p> : null}
+        {a.bio ? <p className="text-base-content line-clamp-3 text-sm">{a.bio}</p> : null}
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Added {formatAdded(a.created_at)}</p>
+          <p className="text-base-content text-xs">Added {formatAdded(a.created_at)}</p>
           {editButton(a)}
         </div>
       </div>

@@ -82,7 +82,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className={`text-sm font-medium ${isOpen ? '' : 'text-base-content/50 line-through'}`}>
+        <p className={`text-sm font-medium ${isOpen ? '' : 'text-base-content line-through'}`}>
           {task.title}
         </p>
         <div className="flex flex-row flex-wrap items-center gap-2">
@@ -92,7 +92,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
           {task.customerId && (
             <Link
               href={`/crm/customers/${task.customerId}`}
-              className="text-base-content/50 hover:text-module text-xs hover:underline"
+              className="text-base-content hover:text-module text-xs hover:underline"
             >
               Customer
             </Link>
@@ -100,7 +100,7 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
           {task.dealId && (
             <Link
               href={`/crm/deals/${task.dealId}`}
-              className="text-base-content/50 hover:text-module text-xs hover:underline"
+              className="text-base-content hover:text-module text-xs hover:underline"
             >
               Deal
             </Link>
@@ -109,8 +109,8 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
       </div>
       {dueText && (
         <div className="flex flex-row items-center gap-1">
-          <Calendar className="text-base-content/50 h-3.5 w-3.5" />
-          <p className="text-base-content/70 text-xs">{dueText}</p>
+          <Calendar className="text-base-content h-3.5 w-3.5" />
+          <p className="text-base-content text-xs">{dueText}</p>
         </div>
       )}
       {isOpen && !pending && (

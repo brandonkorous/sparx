@@ -47,7 +47,7 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
       }
       toolbar={
         <>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {total} suppressed address{total === 1 ? '' : 'es'}
           </p>
           <ListToolbar

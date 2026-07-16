@@ -118,7 +118,7 @@ export function CountLinesPanel({
         </div>
         <div className="flex flex-col gap-2">
           {lines.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No lines on this count yet{editable ? ' — add a SKU below.' : '.'}
             </p>
           ) : (
@@ -145,7 +145,7 @@ export function CountLinesPanel({
                 {saved && !error && (
                   <div className="flex flex-row items-center gap-1">
                     <CheckCircle2 className="text-success h-4 w-4" />
-                    <p className="text-base-content/70 text-sm">Counts saved</p>
+                    <p className="text-base-content text-sm">Counts saved</p>
                   </div>
                 )}
               </div>
@@ -193,7 +193,7 @@ function LineRow({
         <p className="text-sm font-medium">
           {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
         </p>
-        <p className="text-base-content/70 font-mono text-xs">{l.variantSku ?? l.variantId}</p>
+        <p className="text-base-content font-mono text-xs">{l.variantSku ?? l.variantId}</p>
       </div>
 
       <Stat label="Expected" value={String(l.expectedQuantity)} />
@@ -252,7 +252,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: 'po
   const color = tone === 'pos' ? 'text-success' : tone === 'neg' ? 'text-danger' : undefined;
   return (
     <div className="flex w-[5rem] flex-col gap-0 text-right">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className={color ? `text-sm font-medium ${color}` : 'text-sm font-medium'}>{value}</p>
     </div>
   );

@@ -23,7 +23,7 @@ export function ArAgingPanel({ aging }: { aging: AgingReport }) {
       <CardBody>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle>Accounts receivable</CardTitle>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {aging.totalCount} open invoice{aging.totalCount === 1 ? '' : 's'}
           </p>
         </div>
@@ -47,7 +47,7 @@ export function ArAgingPanel({ aging }: { aging: AgingReport }) {
                   key={b.key}
                   className="rounded-box border-base-300 flex flex-col gap-0.5 border p-3"
                 >
-                  <p className="text-base-content/70 text-xs">{b.label}</p>
+                  <p className="text-base-content text-xs">{b.label}</p>
                   <p
                     className={
                       pastDue
@@ -57,7 +57,7 @@ export function ArAgingPanel({ aging }: { aging: AgingReport }) {
                   >
                     {fmtDollars(b.balance)}
                   </p>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     {b.count} invoice{b.count === 1 ? '' : 's'}
                   </p>
                 </div>

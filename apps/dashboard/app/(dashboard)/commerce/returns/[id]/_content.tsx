@@ -146,7 +146,7 @@ export async function ReturnDetailContent({ id }: Props) {
               {statusLabel(ret.preferredOutcome)}
             </Badge>
           </div>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             Order{' '}
             <span className="font-mono text-sm">{ret.orderNumber ?? ret.orderId.slice(0, 8)}</span>
             {(ret.customerName ?? ret.customerId) && (
@@ -184,7 +184,7 @@ export async function ReturnDetailContent({ id }: Props) {
                 <tr key={it.id}>
                   <td>
                     {it.orderItemName ?? (
-                      <p className="text-base-content/70 font-mono text-xs">
+                      <p className="text-base-content font-mono text-xs">
                         {it.orderItemId.slice(0, 8)}
                       </p>
                     )}
@@ -196,7 +196,7 @@ export async function ReturnDetailContent({ id }: Props) {
                       {statusLabel(it.reasonCode)}
                     </Badge>
                   </td>
-                  <td>{it.customerNote ?? <p className="text-base-content/70 text-xs">—</p>}</td>
+                  <td>{it.customerNote ?? <p className="text-base-content text-xs">—</p>}</td>
                 </tr>
               ))}
             </tbody>
@@ -323,7 +323,7 @@ export async function ReturnDetailContent({ id }: Props) {
                   <tr key={ins.id}>
                     <td>
                       {ins.lineItemName ?? (
-                        <p className="text-base-content/70 font-mono text-xs">
+                        <p className="text-base-content font-mono text-xs">
                           {ins.returnLineItemId.slice(0, 8)}
                         </p>
                       )}
@@ -335,7 +335,7 @@ export async function ReturnDetailContent({ id }: Props) {
                     </td>
                     <td>{ins.restockable ? 'yes' : 'no'}</td>
                     <td>{ins.warehouseName ?? ins.warehouseId?.slice(0, 8) ?? '—'}</td>
-                    <td>{ins.note ?? <p className="text-base-content/70 text-xs">—</p>}</td>
+                    <td>{ins.note ?? <p className="text-base-content text-xs">—</p>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -386,7 +386,7 @@ export async function ReturnDetailContent({ id }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-row gap-4">
-      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-base-content w-40 text-sm">{label}</p>
       <p className="text-sm">{value}</p>
     </div>
   );

@@ -56,7 +56,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
         {inv.account.companyName}
       </Link>
     ) : (
-      <p className="text-base-content/70 text-sm">—</p>
+      <p className="text-base-content text-sm">—</p>
     );
 
   const statusBadge = (inv: InvoiceRow) => (
@@ -87,7 +87,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     {
       header: 'Overdue days',
       cell: (inv) => (
-        <p className={inv.overdueDays > 0 ? 'text-sm' : 'text-base-content/70 text-sm'}>
+        <p className={inv.overdueDays > 0 ? 'text-sm' : 'text-base-content text-sm'}>
           {inv.overdueDays > 0 ? `${inv.overdueDays}d` : '—'}
         </p>
       ),
@@ -95,7 +95,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     {
       header: 'Paid',
       cell: (inv) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {inv.paidAt ? new Date(inv.paidAt).toLocaleDateString() : '—'}
         </p>
       ),
@@ -108,7 +108,7 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
       inv.account ? (
         <Link
           href={`/b2b/accounts/${inv.account.id}`}
-          className="text-base-content/70 hover:text-module truncate text-xs hover:underline"
+          className="text-base-content hover:text-module truncate text-xs hover:underline"
         >
           {inv.account.companyName}
         </Link>
@@ -117,17 +117,17 @@ export function InvoicesList({ invoices, view }: InvoicesListProps) {
     body: (inv) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Amount</p>
+          <p className="text-base-content text-xs">Amount</p>
           <p className="text-sm tabular-nums">{formatCents(inv.amountCents)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">Due</p>
+          <p className="text-base-content text-xs">Due</p>
           <p className={`text-sm ${inv.status === 'overdue' ? 'text-danger' : ''}`}>
             {new Date(inv.dueAt).toLocaleDateString()}
             {inv.overdueDays > 0 ? ` · ${inv.overdueDays}d overdue` : ''}
           </p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {inv.paidAt ? `Paid ${new Date(inv.paidAt).toLocaleDateString()}` : 'Unpaid'}
         </p>
       </>

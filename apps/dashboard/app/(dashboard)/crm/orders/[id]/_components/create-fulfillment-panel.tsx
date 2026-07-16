@@ -66,10 +66,10 @@ export function CreateFulfillmentPanel({
           <div key={l.orderItemId} className="flex flex-row items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm">{l.name}</p>
-              <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
+              <p className="text-base-content font-mono text-xs">{l.sku}</p>
             </div>
             <div className="flex w-24 flex-col gap-1">
-              <Label htmlFor={`qty-${l.orderItemId}`} className="text-base-content/70 text-xs">
+              <Label htmlFor={`qty-${l.orderItemId}`} className="text-base-content text-xs">
                 Qty (of {l.remaining})
               </Label>
               <Input

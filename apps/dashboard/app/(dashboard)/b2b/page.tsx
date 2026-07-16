@@ -375,9 +375,9 @@ export default async function B2bPage() {
                 <p className="text-[1.65rem] leading-none font-medium">
                   {fmtMoneyCents(summary.invoices.outstandingCents)}
                 </p>
-                <p className="text-base-content/50 mt-1.5 mb-4 text-sm">
+                <p className="text-base-content mt-1.5 mb-4 text-sm">
                   Outstanding across{' '}
-                  <span className="text-base-content/70">
+                  <span className="text-base-content">
                     {fmtNumber(summary.invoices.outstandingCount)} invoices
                   </span>
                 </p>
@@ -385,7 +385,7 @@ export default async function B2bPage() {
                 {summary.invoices.overdueCount > 0 ? (
                   <div className="border-base-300 mt-4 flex items-center gap-2 border-t pt-3">
                     <AlertTriangle aria-hidden className="text-danger h-4 w-4" />
-                    <span className="text-base-content/50 text-xs">
+                    <span className="text-base-content text-xs">
                       <span className="text-danger font-medium">
                         {fmtNumber(summary.invoices.overdueCount)} past due
                       </span>{' '}
@@ -429,7 +429,7 @@ export default async function B2bPage() {
                     ],
                   ].map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -471,8 +471,8 @@ export default async function B2bPage() {
                       <td className="text-module font-mono text-xs">{q.label}</td>
                       <td className="font-medium">{q.account}</td>
                       <td className="text-right tabular-nums">{q.value}</td>
-                      <td className="text-base-content/50 text-right tabular-nums">{q.sent}</td>
-                      <td className="text-base-content/50 text-right tabular-nums">{q.expires}</td>
+                      <td className="text-base-content text-right tabular-nums">{q.sent}</td>
+                      <td className="text-base-content text-right tabular-nums">{q.expires}</td>
                       <td>
                         <Badge color={q.tone} variant="soft">
                           {q.status}

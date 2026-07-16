@@ -29,7 +29,7 @@ export function GovernanceTabs() {
               '-mb-px border-b-2 px-3 py-2 text-sm transition-colors',
               active
                 ? 'border-module text-base-content'
-                : 'text-base-content/70 hover:text-base-content border-transparent'
+                : 'text-base-content hover:text-base-content border-transparent'
             )}
           >
             {tab.label}

@@ -98,7 +98,7 @@ function Stars({ value }: { value: number }) {
           className={
             i <= value
               ? 'text-module h-3.5 w-3.5 fill-[var(--color-module)]'
-              : 'text-base-content/60 h-3.5 w-3.5'
+              : 'text-base-content h-3.5 w-3.5'
           }
         />
       ))}
@@ -164,7 +164,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
         {r.productTitle}
       </Link>
     ) : (
-      <p className="text-base-content/70 text-sm">Deleted product</p>
+      <p className="text-base-content text-sm">Deleted product</p>
     );
 
   const columns: SelectionColumn<ReviewListRow>[] = [
@@ -176,7 +176,7 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
     {
       header: 'Verified',
       cell: (r) =>
-        r.verifiedPurchase ? <VerifiedBadge /> : <p className="text-base-content/70 text-xs">—</p>,
+        r.verifiedPurchase ? <VerifiedBadge /> : <p className="text-base-content text-xs">—</p>,
     },
     { header: 'Submitted', cell: (r) => new Date(r.createdAt).toLocaleDateString() },
   ];
@@ -192,12 +192,10 @@ export function ReviewsList({ rows, view }: ReviewsListProps) {
     badge: (r) => <StatusBadge status={r.status} />,
     body: (r) => (
       <div className="flex flex-row items-center justify-between gap-2">
-        <p className="text-base-content/70 text-sm">{authorLabel(r)}</p>
+        <p className="text-base-content text-sm">{authorLabel(r)}</p>
         <div className="flex flex-row items-center gap-2">
           {r.verifiedPurchase ? <VerifiedBadge /> : null}
-          <p className="text-base-content/70 text-xs">
-            {new Date(r.createdAt).toLocaleDateString()}
-          </p>
+          <p className="text-base-content text-xs">{new Date(r.createdAt).toLocaleDateString()}</p>
         </div>
       </div>
     ),

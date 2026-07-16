@@ -32,7 +32,7 @@ export function ConversionFunnel({
                 <div className="mb-1 flex items-center justify-between gap-2">
                   <p className="text-sm font-medium">{s.label}</p>
                   <div className="flex items-center gap-2">
-                    {s.rate && i > 0 && <p className="text-base-content/70 text-xs">{s.rate}</p>}
+                    {s.rate && i > 0 && <p className="text-base-content text-xs">{s.rate}</p>}
                     <span className="text-base-content text-sm font-medium tabular-nums">
                       {fmtNumber(s.value)}
                     </span>

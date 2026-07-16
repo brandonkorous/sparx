@@ -430,7 +430,7 @@ function PriceListDraftSummary({
         }
       />
       <SurfaceSummaryDivider />
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         Per-variant prices are set on the detail page after the list exists.
       </p>
     </SurfaceSummary>

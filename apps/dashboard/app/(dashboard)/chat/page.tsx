@@ -422,7 +422,7 @@ export default async function ChatPage() {
                     ] as [string, string][]
                   ).map(([label, value]) => (
                     <div key={label}>
-                      <div className="text-base-content/50 text-xs">{label}</div>
+                      <div className="text-base-content text-xs">{label}</div>
                       <div className="font-medium">{value}</div>
                     </div>
                   ))}
@@ -484,18 +484,16 @@ export default async function ChatPage() {
                           </Badge>
                         )}
                       </td>
-                      <td className="text-base-content/70 max-w-[22rem] truncate">
+                      <td className="text-base-content max-w-[22rem] truncate">
                         {c.lastMessageSnippet ?? 'No messages yet'}
                       </td>
-                      <td className="text-base-content/50 capitalize">{c.source}</td>
+                      <td className="text-base-content capitalize">{c.source}</td>
                       <td>
                         <Badge color={meta.color} variant="soft">
                           {meta.label}
                         </Badge>
                       </td>
-                      <td className="text-base-content/50 text-right tabular-nums">
-                        {waitLabel(c)}
-                      </td>
+                      <td className="text-base-content text-right tabular-nums">{waitLabel(c)}</td>
                     </tr>
                   );
                 })}
@@ -510,9 +508,9 @@ export default async function ChatPage() {
             {channelRows ? (
               <>
                 <BarList items={channelRows} color="module" valueFormat="number" />
-                <p className="border-base-300 text-base-content/50 mt-4 border-t pt-3 text-xs">
+                <p className="border-base-300 text-base-content mt-4 border-t pt-3 text-xs">
                   Top source ·{' '}
-                  <span className="text-base-content/70 font-medium">
+                  <span className="text-base-content font-medium">
                     {channelRows[0]?.label ?? '—'}
                   </span>{' '}
                   — {fmtNumber(channelRows[0]?.value ?? 0)} chats

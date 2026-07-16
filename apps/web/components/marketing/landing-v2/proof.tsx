@@ -66,7 +66,7 @@ export function LandingV2Proof() {
                   key={r.label}
                   className="border-base-300 flex items-center justify-between gap-4 border-b border-dashed py-2.5 text-sm"
                 >
-                  <span className="text-base-content/70">{r.label}</span>
+                  <span className="text-base-content">{r.label}</span>
                   <span>{fmt(r.price)}</span>
                 </div>
               ))}

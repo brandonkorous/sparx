@@ -143,7 +143,7 @@ function FlowHeader({ title, description }: { title: string; description: string
   return (
     <div className="flex flex-col gap-1">
       <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-      <p className="text-base-content/70 text-sm">{description}</p>
+      <p className="text-base-content text-sm">{description}</p>
     </div>
   );
 }
@@ -298,7 +298,7 @@ function MoneyInCard({ o, currency }: { o: FinanceOverview; currency: string }) 
         <div className="border-base-300 mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t pt-3 text-sm">
           {footer.map((f) => (
             <div key={f.label}>
-              <div className="text-base-content/50 text-xs">{f.label}</div>
+              <div className="text-base-content text-xs">{f.label}</div>
               <div className="font-medium tabular-nums">{neg(f.cents, currency, f.negative)}</div>
             </div>
           ))}
@@ -326,7 +326,7 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           <p className="text-[1.65rem] leading-none font-medium tabular-nums">
             {fmtMoneyCents(b.availableCents, currency)}
           </p>
-          <p className="text-base-content/50 mt-1.5 mb-3 text-sm">
+          <p className="text-base-content mt-1.5 mb-3 text-sm">
             Available to pay out{cadence ? ` · ${cadence}` : ''}
           </p>
           <OverviewRow
@@ -352,7 +352,7 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           <p className="text-[1.65rem] leading-none font-medium tabular-nums">
             {fmtMoneyCents(o.settlement.pendingCents, currency)}
           </p>
-          <p className="text-base-content/50 mt-1.5 mb-3 text-sm">Pending marketplace settlement</p>
+          <p className="text-base-content mt-1.5 mb-3 text-sm">Pending marketplace settlement</p>
           <OverviewRow
             icon={<DollarSign className="h-4 w-4" />}
             tone="success"
@@ -362,7 +362,7 @@ function PayoutsCard({ o, currency }: { o: FinanceOverview; currency: string }) 
           />
         </>
       ) : (
-        <p className="text-base-content/70 py-1 text-sm">
+        <p className="text-base-content py-1 text-sm">
           No payouts yet — finish sparx Pay setup to start receiving money.
         </p>
       )}
@@ -380,7 +380,7 @@ function ReceivablesCard({ o, currency }: { o: FinanceOverview; currency: string
         right={<CardLink href="/finance/receivables">All</CardLink>}
         plain
       >
-        <p className="text-base-content/70 py-1 text-sm">
+        <p className="text-base-content py-1 text-sm">
           Nothing outstanding — every invoice is paid.
         </p>
       </OverviewCard>
@@ -416,7 +416,7 @@ function ReceivablesCard({ o, currency }: { o: FinanceOverview; currency: string
           />
         ))}
       {top ? (
-        <p className="text-base-content/50 mt-3 text-xs">
+        <p className="text-base-content mt-3 text-xs">
           {top.customerName} owes the most · {fmtMoneyCents(top.outstandingCents, currency)}
           {o.collections?.avgDaysToPay != null
             ? ` · ${o.collections.avgDaysToPay}d avg to pay`
@@ -449,9 +449,7 @@ function ChannelMixCard({ o, currency }: { o: FinanceOverview; currency: string 
           />
         ))
       ) : (
-        <p className="text-base-content/70 py-1 text-sm">
-          No channel sales in the last 30 days yet.
-        </p>
+        <p className="text-base-content py-1 text-sm">No channel sales in the last 30 days yet.</p>
       )}
     </OverviewCard>
   );
@@ -471,7 +469,7 @@ function PaymentsStatusCard({ o }: { o: FinanceOverview }) {
           {live ? 'Accepting payments' : 'Setup needed'}
         </Badge>
       </div>
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         {live
           ? 'Checkout is live — cards are being accepted.'
           : 'Finish payment setup so customers can check out.'}
@@ -497,7 +495,7 @@ function GrowGetPaid({
   return (
     <div className="flex flex-col gap-3">
       {!lead ? (
-        <p className="text-base-content/70 text-sm font-medium">Grow how you get paid</p>
+        <p className="text-base-content text-sm font-medium">Grow how you get paid</p>
       ) : null}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {upsells.map((u) => (
@@ -550,9 +548,7 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
           ) : (
             <p className="text-[1.65rem] leading-none font-medium tabular-nums">
               {sub ? fmtMoneyCents(sub.planTotalCents) : '—'}
-              <span className="text-base-content/50 text-base font-normal">
-                {sub ? interval : ''}
-              </span>
+              <span className="text-base-content text-base font-normal">{sub ? interval : ''}</span>
             </p>
           )}
           {status ? (
@@ -566,18 +562,16 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
             </Badge>
           ) : null}
         </div>
-        <p className="text-base-content/70 text-sm">{note}</p>
+        <p className="text-base-content text-sm">{note}</p>
       </div>
 
       {itemized ? (
         <>
-          <p className="text-base-content/70 mt-4 mb-1 text-xs">What you pay for</p>
+          <p className="text-base-content mt-4 mb-1 text-xs">What you pay for</p>
           <div className="grid gap-x-10 sm:grid-cols-2">
             {sub.planModules.map((m) => (
               <div key={m.moduleKey} className="flex items-center justify-between py-1.5 text-sm">
-                <span className="text-base-content/70">
-                  {PLAN_LABELS[m.moduleKey] ?? m.moduleKey}
-                </span>
+                <span className="text-base-content">{PLAN_LABELS[m.moduleKey] ?? m.moduleKey}</span>
                 <span className="font-medium tabular-nums">
                   {fmtMoneyCents(m.monthlyCents)}
                   {interval}
@@ -594,7 +588,7 @@ function PaySparxCards({ o }: { o: FinanceOverview }) {
           </div>
         </>
       ) : !enterprise ? (
-        <p className="text-base-content/70 pt-4 text-sm">
+        <p className="text-base-content pt-4 text-sm">
           No billable modules active yet. Turn one on from Settings → Modules.
         </p>
       ) : null}

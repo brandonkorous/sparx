@@ -192,7 +192,7 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
       >
         <Card>
           <CardBody className="py-6">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No active services to book. Create a service first.
             </p>
           </CardBody>
@@ -268,11 +268,11 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
               {loading ? (
                 <div className="flex flex-row items-center gap-2">
                   <Loading size="sm" />
-                  <p className="text-base-content/70 text-sm">Checking availability…</p>
+                  <p className="text-base-content text-sm">Checking availability…</p>
                 </div>
               ) : slots ? (
                 slots.length === 0 ? (
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     No open times that day. Try another date or adjust the resource&apos;s hours.
                   </p>
                 ) : (
@@ -294,7 +294,7 @@ export function BookingForm({ presentation, services }: BookingFormProps) {
               ) : null}
 
               {repeat ? (
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   A recurring series creates the schedule only — it doesn&apos;t book anyone in.
                   Customers reserve (or you book them into) each date individually once the series
                   exists.

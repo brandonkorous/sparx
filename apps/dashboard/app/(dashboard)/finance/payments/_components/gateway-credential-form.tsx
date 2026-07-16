@@ -110,7 +110,7 @@ export function GatewayCredentialForm({
             <Field key={f.key} {...v.field(f.key)}>
               <FieldLabel required={!f.optional}>
                 {f.label}
-                {f.optional ? <span className="text-base-content/50"> (optional)</span> : null}
+                {f.optional ? <span className="text-base-content"> (optional)</span> : null}
               </FieldLabel>
               <FieldControl
                 name={`${descriptor.id}-${f.key}`}
@@ -131,7 +131,7 @@ export function GatewayCredentialForm({
             href={descriptor.docsUrl}
             target="_blank"
             rel="noreferrer"
-            className="text-base-content/70 inline-flex items-center gap-1 text-sm hover:underline"
+            className="text-base-content inline-flex items-center gap-1 text-sm hover:underline"
           >
             Where do I find these? <ExternalLink className="h-3.5 w-3.5" />
           </a>

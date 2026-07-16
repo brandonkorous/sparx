@@ -129,7 +129,7 @@ export function ContentCard({
                     className="border-base-300 flex items-center justify-between gap-3 border-b py-2 last:border-b-0"
                   >
                     <span className="text-base-content truncate text-sm">{c.title}</span>
-                    <span className="text-base-content/50 shrink-0 text-xs tabular-nums">
+                    <span className="text-base-content shrink-0 text-xs tabular-nums">
                       {fmtNumber(c.views)} views
                     </span>
                   </div>

@@ -55,12 +55,12 @@ export function FeedbackThreadView({ id, onBack }: { id: string; onBack: () => v
       </div>
 
       {isLoading && (
-        <div className="text-base-content/50 flex items-center justify-center py-10">
+        <div className="text-base-content flex items-center justify-center py-10">
           <Loader2 className="h-5 w-5 animate-spin" />
         </div>
       )}
       {isError && (
-        <p className="text-base-content/50 py-8 text-center text-sm">
+        <p className="text-base-content py-8 text-center text-sm">
           Couldn’t load this conversation.
         </p>
       )}
@@ -69,7 +69,7 @@ export function FeedbackThreadView({ id, onBack }: { id: string; onBack: () => v
         <>
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-start gap-2">
-              {Icon && <Icon className="text-base-content/50 mt-0.5 h-4 w-4 shrink-0" />}
+              {Icon && <Icon className="text-base-content mt-0.5 h-4 w-4 shrink-0" />}
               <h3 className="text-base-content text-sm font-semibold">{deriveTitle(data)}</h3>
             </div>
             <FeedbackStatusBadge status={data.status} />
@@ -140,10 +140,10 @@ function ThreadEntry({
       }`}
     >
       <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="text-base-content/70 text-xs font-medium">
+        <span className="text-base-content text-xs font-medium">
           {isStaff ? `${author} · sparx` : author}
         </span>
-        <span className="text-base-content/50 text-xs">{when}</span>
+        <span className="text-base-content text-xs">{when}</span>
       </div>
       <p className="text-base-content text-sm whitespace-pre-wrap">{body}</p>
     </li>

@@ -81,7 +81,7 @@ export function PriceListTargetingCard({
     <Card>
       <CardBody>
         <CardTitle>Targeting</CardTitle>
-        <p className="text-base-content/70 -mt-2 text-sm">
+        <p className="text-base-content -mt-2 text-sm">
           Narrow this list to one B2B account or one customer segment. Leave it on
           &ldquo;everyone&rdquo; to apply to all eligible customers on the selected channel.
         </p>

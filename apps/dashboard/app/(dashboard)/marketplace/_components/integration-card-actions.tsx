@@ -17,7 +17,7 @@ export function IntegrationCardActions({
 }) {
   if (!canInstall) {
     return (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Only an owner or admin can connect an integration.
       </p>
     );

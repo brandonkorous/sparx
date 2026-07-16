@@ -122,10 +122,10 @@ function DomainBlock({ domain }: { domain: FitmentDomainRow }) {
         >
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
-        <Boxes className="text-base-content/60 h-4 w-4" />
+        <Boxes className="text-base-content h-4 w-4" />
         <div className="flex flex-1 flex-col gap-0">
           <p className="text-sm font-medium">{domain.displayName}</p>
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             {levels.map((l) => l.label).join(' → ')}
             {ranges.length > 0 ? ` · narrow by ${ranges.map((r) => r.label).join(', ')}` : ''}
           </p>
@@ -206,7 +206,7 @@ function NodeChildren({
   return (
     <div className="flex flex-col gap-1">
       {loading && nodes === null && (
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Loading {pluralizeLabel(levelLabel.toLowerCase(), 2)}…
         </p>
       )}
@@ -302,7 +302,7 @@ function NodeRow({
           {...attributes}
           {...listeners}
         >
-          <GripVertical className="text-base-content/50 h-4 w-4 shrink-0" />
+          <GripVertical className="text-base-content h-4 w-4 shrink-0" />
           {hasChildren ? (
             <Button
               shape="square"
@@ -321,7 +321,7 @@ function NodeRow({
             <span className="inline-block h-4 w-4" />
           )}
           <p className="flex-1 text-sm">{node.name}</p>
-          <p className="text-base-content/70 text-xs">/{node.slug}</p>
+          <p className="text-base-content text-xs">/{node.slug}</p>
           <Button
             shape="square"
             variant="ghost"
@@ -524,7 +524,7 @@ function AddNodeForm({
   return (
     <div className="border-base-300 flex flex-col gap-2 rounded border border-dashed p-2">
       <div className="flex flex-row items-center justify-between">
-        <p className="text-base-content/70 text-xs">Add a {label.toLowerCase()}</p>
+        <p className="text-base-content text-xs">Add a {label.toLowerCase()}</p>
         <Button
           type="button"
           color="neutral"

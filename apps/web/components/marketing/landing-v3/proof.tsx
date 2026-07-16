@@ -85,7 +85,7 @@ export function LandingV3Proof() {
               className="border-base-300 bg-base-100 text-base-content mx-6 mt-2 mb-6 border-x border-t px-6 pt-6 pb-10 font-mono text-sm shadow-2xl sm:absolute sm:right-6 sm:bottom-0 sm:mx-0 sm:mt-0 sm:mb-0 sm:w-[60%] sm:translate-y-30 sm:rotate-[-4deg]"
               style={{ clipPath: RECEIPT_TORN_EDGE }}
             >
-              <div className="text-base-content/50 text-center text-xs tracking-[0.2em]">
+              <div className="text-base-content text-center text-xs tracking-[0.2em]">
                 ★ YOUR STACK ★
               </div>
               <div className="border-base-300 mt-3 border-t border-dashed" />
@@ -94,7 +94,7 @@ export function LandingV3Proof() {
                   key={r.label}
                   className="border-base-300 flex items-center justify-between gap-4 border-b border-dashed py-2.5"
                 >
-                  <span className="text-base-content/70">{r.label}</span>
+                  <span className="text-base-content">{r.label}</span>
                   <span className="tabular-nums">{fmt(r.price)}</span>
                 </div>
               ))}
@@ -108,7 +108,7 @@ export function LandingV3Proof() {
                     <span key={i} className="bg-base-content h-full" style={{ width: `${w}px` }} />
                   ))}
                 </div>
-                <div className="text-base-content/40 mt-1.5 text-center text-[10px] tracking-[0.15em]">
+                <div className="text-base-content mt-1.5 text-center text-[10px] tracking-[0.15em]">
                   before sparx
                 </div>
               </div>

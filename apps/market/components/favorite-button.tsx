@@ -33,7 +33,7 @@ export function FavoriteButton({
       aria-label={favorited ? `Remove ${title} from favorites` : `Save ${title} to favorites`}
       title={favorited ? 'Saved to favorites' : 'Save to favorites'}
       className={`border-base-300 hover:border-base-content/20 bg-base-100/90 inline-flex items-center justify-center rounded-full border p-2 backdrop-blur-sm transition-colors ${
-        favorited ? 'text-danger' : 'text-base-content/70 hover:text-base-content'
+        favorited ? 'text-danger' : 'text-base-content hover:text-base-content'
       } ${className ?? ''}`}
     >
       <Heart size={size} aria-hidden fill={favorited ? 'currentColor' : 'none'} />

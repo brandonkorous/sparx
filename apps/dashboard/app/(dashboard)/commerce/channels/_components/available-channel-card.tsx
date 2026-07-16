@@ -58,8 +58,8 @@ export function AvailableChannelCard({ channel }: { channel: ChannelCatalogItem 
           </Badge>
         )}
       </div>
-      <p className="text-base-content/70 text-sm">{channel.tagline}</p>
-      <p className="text-base-content/70 text-xs">Best for: {channel.bestFor}</p>
+      <p className="text-base-content text-sm">{channel.tagline}</p>
+      <p className="text-base-content text-xs">Best for: {channel.bestFor}</p>
       {error && (
         <p className="text-danger text-xs" role="alert">
           {error}

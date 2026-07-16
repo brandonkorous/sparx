@@ -293,7 +293,7 @@ export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFor
                           checked={isSingleton}
                           onChange={(e) => setIsSingleton(e.target.checked)}
                         />
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           Only one entry of this type can ever exist.
                         </p>
                       </div>

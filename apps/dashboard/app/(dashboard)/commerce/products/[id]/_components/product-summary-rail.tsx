@@ -84,7 +84,7 @@ export function ProductSummaryRail({
       {inventory && (
         <>
           <SurfaceSummaryDivider />
-          <p className="text-base-content/70 mb-1 text-sm">Inventory</p>
+          <p className="text-base-content mb-1 text-sm">Inventory</p>
           <SurfaceSummaryRow label="On hand" value={inventory.onHand.toLocaleString()} />
           <SurfaceSummaryRow label="Available" value={inventory.available.toLocaleString()} />
           <SurfaceSummaryRow

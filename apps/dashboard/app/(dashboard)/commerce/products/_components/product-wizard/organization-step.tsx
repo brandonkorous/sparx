@@ -117,7 +117,7 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
       <Card>
         <CardBody className="py-6">
           {loading ? (
-            <div className="text-base-content/60 flex items-center gap-2 py-8">
+            <div className="text-base-content flex items-center gap-2 py-8">
               <Loading className="h-4 w-4" /> Loading collections & categories…
             </div>
           ) : (
@@ -196,7 +196,7 @@ function PickerSection({
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium">{title}</p>
       {items.length === 0 ? (
-        <p className="text-base-content/70 text-sm">{empty}</p>
+        <p className="text-base-content text-sm">{empty}</p>
       ) : (
         <div className="grid max-h-56 grid-cols-1 gap-1.5 overflow-y-auto sm:grid-cols-2">
           {items.map((it) => (

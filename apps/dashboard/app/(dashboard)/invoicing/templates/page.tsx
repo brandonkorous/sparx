@@ -52,7 +52,7 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
       <div className="flex flex-col gap-6">
         <TemplatesList rows={templates} view={view} />
 
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Templates reuse the builder framework (the same node-tree machinery as the page + email
           builders). The visual template editor is coming; today the default ships ready to publish,
           and you can preview any template against sample data.

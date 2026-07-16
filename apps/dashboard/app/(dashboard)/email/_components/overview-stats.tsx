@@ -42,7 +42,7 @@ export function OverviewStats({ overview }: { overview: OverviewResult }) {
             {tiles.map((t) => (
               <div key={t.label} className="flex flex-col gap-1">
                 <h2 className="text-2xl font-semibold tracking-tight">{t.value}</h2>
-                <p className="text-base-content/70 text-sm">{t.label}</p>
+                <p className="text-base-content text-sm">{t.label}</p>
               </div>
             ))}
           </div>

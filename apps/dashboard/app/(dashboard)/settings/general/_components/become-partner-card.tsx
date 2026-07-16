@@ -38,7 +38,7 @@ export async function BecomePartnerCard() {
               </span>
               <div className="flex min-w-0 flex-col gap-1">
                 <p className="font-medium">Become a Sparx Partner</p>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   {pending
                     ? 'Your application is in review — we’ll be in touch within 3 business days.'
                     : 'Refer clients, earn on every account you bring in, and get listed in the partner directory. Apply for review — every partner is vetted.'}

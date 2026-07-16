@@ -95,7 +95,7 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     {
       header: 'Expires',
       cell: (q) => (
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
         </p>
       ),
@@ -103,22 +103,22 @@ export function QuotesList({ quotes, view }: QuotesListProps) {
     {
       header: 'Created',
       cell: (q) => (
-        <p className="text-base-content/70 text-sm">{new Date(q.createdAt).toLocaleDateString()}</p>
+        <p className="text-base-content text-sm">{new Date(q.createdAt).toLocaleDateString()}</p>
       ),
     },
   ];
 
   const card: SelectionCard<QuoteRow> = {
     title: (q) => numberLink(q, 'truncate font-medium hover:text-module hover:underline'),
-    subtitle: (q) => <p className="text-base-content/70 truncate text-xs">{partyLabel(q)}</p>,
+    subtitle: (q) => <p className="text-base-content truncate text-xs">{partyLabel(q)}</p>,
     badge: stageBadge,
     body: (q) => (
       <>
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-sm">Total</p>
+          <p className="text-base-content text-sm">Total</p>
           <p className="text-sm tabular-nums">{formatTotal(q.total, q.currency)}</p>
         </div>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           {q.validUntil ? `Expires ${new Date(q.validUntil).toLocaleDateString()} · ` : ''}created{' '}
           {new Date(q.createdAt).toLocaleDateString()}
         </p>

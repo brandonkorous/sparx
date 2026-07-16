@@ -45,7 +45,7 @@ function hero(commerceEnabled: boolean): Node {
           el('h1', 'text-4xl font-bold tracking-tight text-base-content sm:text-5xl', {
             text: 'Your work, beautifully online.',
           }),
-          el('p', 'text-lg text-base-content/70', {
+          el('p', 'text-lg text-base-content', {
             text: commerceEnabled
               ? 'Publish your pages, tell your story, and sell when you are ready — all from one place. This is your homepage; edit every word to make it yours.'
               : 'Publish your pages and tell your story — all from one place. This is your homepage; edit every word to make it yours.',
@@ -104,7 +104,7 @@ function featureTrio(): Node {
     el('div', 'flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6', {
       children: [
         el('h3', 'text-lg font-semibold text-base-content', { text: title }),
-        el('p', 'text-base-content/70', { text: body }),
+        el('p', 'text-base-content', { text: body }),
       ],
     });
   return el('section', 'bg-base-200 px-6 py-16', {
@@ -146,10 +146,10 @@ function aboutContent(): Node {
           el('h1', 'text-4xl font-bold tracking-tight text-base-content', {
             text: 'About us',
           }),
-          el('p', 'text-lg text-base-content/70', {
+          el('p', 'text-lg text-base-content', {
             text: 'This is your story — who you are, what you make, and why it matters. Replace this text with a few honest sentences about your work; the people who find you here want to know the human behind it.',
           }),
-          el('p', 'text-lg text-base-content/70', {
+          el('p', 'text-lg text-base-content', {
             text: 'You can add sections, images, and links from the builder. When you are ready, connect a shop, a blog, or a contact form — this page grows with you.',
           }),
         ],
@@ -166,7 +166,7 @@ function contactContent(): Node {
       el('div', 'mx-auto flex max-w-xl flex-col items-center gap-4', {
         children: [
           el('h1', 'text-4xl font-bold tracking-tight text-base-content', { text: 'Get in touch' }),
-          el('p', 'text-lg text-base-content/70', {
+          el('p', 'text-lg text-base-content', {
             text: 'Have a question or want to work together? Tell visitors the best way to reach you — an email, a phone number, or a form you add from the builder.',
           }),
           el('a', 'btn btn-primary btn-lg mt-2', {

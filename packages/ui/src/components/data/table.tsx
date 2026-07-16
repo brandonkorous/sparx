@@ -68,7 +68,7 @@ export const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'text-base-content/50 h-9 px-3 text-left align-middle text-xs font-medium tracking-wider uppercase',
+      'text-base-content h-9 px-3 text-left align-middle text-xs font-medium tracking-wider uppercase',
       '[&:has([role=checkbox])]:pr-0',
       className
     )}
@@ -97,6 +97,6 @@ export const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption ref={ref} className={cn('text-base-content/70 mt-4 text-sm', className)} {...props} />
+  <caption ref={ref} className={cn('text-base-content mt-4 text-sm', className)} {...props} />
 ));
 TableCaption.displayName = 'TableCaption';

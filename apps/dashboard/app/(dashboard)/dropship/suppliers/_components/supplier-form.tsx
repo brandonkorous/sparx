@@ -380,7 +380,7 @@ export function SupplierForm({
                   <div className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2.5">
                     <div className="flex flex-row items-center gap-2">
                       <CheckCircle2 className="text-success h-4 w-4 shrink-0" />
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         Saved — you don&apos;t need to re-enter it to make changes.
                       </p>
                     </div>
@@ -421,7 +421,7 @@ export function SupplierForm({
                     ))}
 
                     {activeVendor?.credentialsHelpUrl && (
-                      <p className="text-base-content/70 text-xs">
+                      <p className="text-base-content text-xs">
                         Need help finding these?{' '}
                         <a
                           href={activeVendor.credentialsHelpUrl}
@@ -437,7 +437,7 @@ export function SupplierForm({
                     {isEdit && hasStoredCreds && replacingCreds && (
                       <button
                         type="button"
-                        className="text-base-content/60 self-start text-xs underline"
+                        className="text-base-content self-start text-xs underline"
                         onClick={() => {
                           setReplacingCreds(false);
                           setCreds((p) => {
@@ -466,7 +466,7 @@ export function SupplierForm({
                   <p className="text-sm font-medium">Limit this connection to specific sites</p>
                 </label>
                 {!limitSites && (
-                  <p className="text-base-content/70 text-xs">Available on all of your sites.</p>
+                  <p className="text-base-content text-xs">Available on all of your sites.</p>
                 )}
                 {limitSites && (
                   <div className="border-base-300 flex flex-col gap-2 border-l-2 pl-6">
@@ -479,7 +479,7 @@ export function SupplierForm({
                         />
                         <p className="text-sm">
                           {s.name}
-                          {s.isPrimary && <span className="text-base-content/60"> (primary)</span>}
+                          {s.isPrimary && <span className="text-base-content"> (primary)</span>}
                         </p>
                       </label>
                     ))}

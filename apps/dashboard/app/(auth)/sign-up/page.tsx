@@ -17,6 +17,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { AuthScreen, RailPoints } from '../_components/auth-screen';
 import { SocialAuthSection } from '../_components/social-auth';
+import { signupEntryHref } from '@/lib/onboarding-entry';
 import { rule, rules, useFieldValidation } from '@sparx/forms';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
@@ -85,14 +86,13 @@ export default function SignUpPage() {
         return;
       }
       if (result.userId) identifyWithFirstTouch(result.userId);
-      // The natural-language story flow (/story) is the primary onboarding entry. A
-      // visitor who arrived with a pre-picked blueprint (the marketplace/template
-      // funnel, docs/60 Ph5) instead lands in the classic wizard, whose template step
-      // honors that selection. Read the param from the URL at submit time (client-only)
-      // rather than useSearchParams, which would force this page out of static
-      // prerender and break `next build`.
+      // Where a brand-new tenant starts is `signupEntryHref`'s call, not ours — it's the
+      // one module that owns the story-vs-wizard rule (the dashboard guard and the
+      // resume banner defer to it too). Read `?blueprint=` from the URL at submit time
+      // (client-only) rather than useSearchParams, which would force this page out of
+      // static prerender and break `next build`.
       const blueprint = new URLSearchParams(window.location.search).get('blueprint');
-      router.push(blueprint ? `/onboarding?blueprint=${encodeURIComponent(blueprint)}` : '/story');
+      router.push(signupEntryHref(blueprint));
       router.refresh();
     });
   }
@@ -117,7 +117,7 @@ export default function SignUpPage() {
       <div className="flex flex-col gap-6">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Create your account</h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content">
             Start a 14-day free trial. Next, tell us about your business and we&apos;ll set it up.
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function SignUpPage() {
                   onChange={(e) => setAgreeLegal(e.target.checked)}
                   onBlur={() => v.touch('agreeLegal')}
                 />
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   I agree to the{' '}
                   <a
                     href={`${LEGAL_BASE}/terms`}
@@ -233,7 +233,7 @@ export default function SignUpPage() {
         </form>
 
         <div className="flex flex-row items-center gap-1">
-          <p className="text-base-content/70 text-sm">Already have an account?</p>
+          <p className="text-base-content text-sm">Already have an account?</p>
           <Button color="primary" variant="link" size="sm" render={<Link href="/sign-in" />}>
             Sign in
           </Button>

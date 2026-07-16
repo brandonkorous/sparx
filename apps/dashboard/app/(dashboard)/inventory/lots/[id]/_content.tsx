@@ -49,7 +49,7 @@ export async function LotDetailContent({ id }: { id: string }) {
               </Badge>
             ) : null}
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {lot.productTitle ?? lot.variantSku ?? lot.variantId.slice(0, 8)}
             {lot.variantSku ? ` · ${lot.variantSku}` : ''} ·{' '}
             {lot.warehouseName ?? lot.warehouseCode ?? 'Warehouse'}
@@ -64,7 +64,7 @@ export async function LotDetailContent({ id }: { id: string }) {
             <div className="flex flex-col gap-1 py-1">
               <p className="text-danger text-sm font-medium">Recall active</p>
               <p className="text-sm">{lot.recallReason ?? 'No reason recorded.'}</p>
-              <p className="text-base-content/70 text-xs">Recalled {formatDate(lot.recalledAt)}</p>
+              <p className="text-base-content text-xs">Recalled {formatDate(lot.recalledAt)}</p>
             </div>
           </CardBody>
         </Card>
@@ -80,7 +80,7 @@ export async function LotDetailContent({ id }: { id: string }) {
 
       {lot.serialCounts.length > 0 ? (
         <div className="flex flex-row flex-wrap items-center gap-2">
-          <p className="text-base-content/70 text-sm">Serial status:</p>
+          <p className="text-base-content text-sm">Serial status:</p>
           {lot.serialCounts.map((c) => (
             <Badge key={c.status} color={serialStatusColor(c.status)} variant="soft">
               {serialStatusLabel(c.status)} · {c.count}
@@ -104,7 +104,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[8rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

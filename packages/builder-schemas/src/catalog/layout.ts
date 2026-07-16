@@ -13,7 +13,7 @@ import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
 
 // A footer link — a muted column entry that warms to brand on hover.
 const footerLink = (label: string, href: string) =>
-  el('a', 'text-sm text-base-content/60 transition-colors hover:text-primary', {
+  el('a', 'text-sm text-base-content transition-colors hover:text-primary', {
     text: label,
     attrs: { href },
   });
@@ -39,7 +39,7 @@ const placeholderCard = (title: string, meta: string) =>
       el('div', 'flex flex-col gap-1 p-4', {
         children: [
           el('h3', 'text-sm font-semibold text-base-content', { text: title }),
-          el('p', 'text-sm text-base-content/60', { text: meta }),
+          el('p', 'text-sm text-base-content', { text: meta }),
         ],
       }),
     ],
@@ -65,7 +65,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
               level: 'h1',
               text: 'Build a storefront your customers remember',
             }),
-            atom('Text', 'max-w-xl text-lg text-base-content/70', {
+            atom('Text', 'max-w-xl text-lg text-base-content', {
               variant: 'body',
               text: 'Launch a polished, on-brand site in minutes — no code, no compromises. Everything you publish stays fast, accessible, and yours.',
             }),
@@ -111,7 +111,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                     text: 'Everything you sell, under one roof',
                   }
                 ),
-                atom('Text', 'text-lg text-base-content/70', {
+                atom('Text', 'text-lg text-base-content', {
                   variant: 'body',
                   text: 'Catalog, checkout, and customers in a single workspace. Spin up a new collection, price it, and ship it the same afternoon.',
                 }),
@@ -158,7 +158,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                 el('div', 'flex flex-col gap-4', {
                   children: [
                     bound(atom('Wordmark', '', { collapse: 'full' }), 'site.identity'),
-                    el('p', 'max-w-xs text-sm text-base-content/60', {
+                    el('p', 'max-w-xs text-sm text-base-content', {
                       text: 'The modular platform for content and commerce. Build once, publish everywhere, and grow on your terms.',
                     }),
                   ],
@@ -186,7 +186,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             // Bottom copyright row
             el(
               'div',
-              'mt-10 flex flex-col items-center justify-between gap-3 border-t border-base-200 pt-6 text-sm text-base-content/50 @2xl:flex-row',
+              'mt-10 flex flex-col items-center justify-between gap-3 border-t border-base-200 pt-6 text-sm text-base-content @2xl:flex-row',
               {
                 children: [
                   el('p', '', { text: '© 2026 Your Company. All rights reserved.' }),
@@ -221,7 +221,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el(
           'div',
-          'mx-auto flex max-w-site flex-col items-center justify-between gap-4 text-sm text-base-content/60 @2xl:flex-row',
+          'mx-auto flex max-w-site flex-col items-center justify-between gap-4 text-sm text-base-content @2xl:flex-row',
           {
             children: [
               el('p', '', { text: '© 2026 Your Company' }),
@@ -255,7 +255,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     tree: el('div', 'flex w-full items-center gap-4', {
       children: [
         el('span', 'h-px flex-1 bg-base-300', {}),
-        el('span', 'shrink-0 text-xs font-medium uppercase tracking-wide text-base-content/50', {
+        el('span', 'shrink-0 text-xs font-medium uppercase tracking-wide text-base-content', {
           text: 'OR',
         }),
         el('span', 'h-px flex-1 bg-base-300', {}),
@@ -282,7 +282,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
               level: 'h2',
               text: 'Section heading',
             }),
-            atom('Text', 'max-w-2xl text-base text-base-content/70', {
+            atom('Text', 'max-w-2xl text-base text-base-content', {
               variant: 'body',
               text: 'Drop any components into this section. The shared content rail keeps everything aligned with the rest of the page as it grows.',
             }),
@@ -314,11 +314,11 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   level: 'h2',
                   text: 'Getting started',
                 }),
-                atom('Text', 'text-base text-base-content/70', {
+                atom('Text', 'text-base text-base-content', {
                   variant: 'body',
                   text: 'The main column carries the primary reading content — articles, documentation, or a product description — while the sidebar holds secondary context.',
                 }),
-                atom('Text', 'text-base text-base-content/70', {
+                atom('Text', 'text-base text-base-content', {
                   variant: 'body',
                   text: 'On a narrow canvas the aside drops beneath this column so the reading width never gets squeezed.',
                 }),
@@ -381,7 +381,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   el('h3', 'text-base font-semibold text-base-content', {
                     text: 'Fast by default',
                   }),
-                  el('p', 'text-sm text-base-content/60', {
+                  el('p', 'text-sm text-base-content', {
                     text: 'Every page ships optimized — images, fonts, and scripts tuned without you lifting a finger.',
                   }),
                 ],
@@ -400,7 +400,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   el('h3', 'text-base font-semibold text-base-content', {
                     text: 'Secure foundation',
                   }),
-                  el('p', 'text-sm text-base-content/60', {
+                  el('p', 'text-sm text-base-content', {
                     text: 'Tenant isolation, encrypted data, and audited access come standard on every plan.',
                   }),
                 ],
@@ -419,7 +419,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                   el('h3', 'text-base font-semibold text-base-content', {
                     text: 'Modular by design',
                   }),
-                  el('p', 'text-sm text-base-content/60', {
+                  el('p', 'text-sm text-base-content', {
                     text: 'Turn on storefront, CRM, or email independently — you only pay for what you switch on.',
                   }),
                 ],
@@ -474,7 +474,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     tree: atom('Indicator', 'inline-flex', { label: '3', placement: 'top-end' }, [
       el(
         'button',
-        'flex h-11 w-11 items-center justify-center rounded-field border border-base-200 text-base-content/70 transition-colors hover:bg-base-200',
+        'flex h-11 w-11 items-center justify-center rounded-field border border-base-200 text-base-content transition-colors hover:bg-base-200',
         {
           attrs: { type: 'button', ariaLabel: 'Notifications' },
           children: [atom('Icon', 'h-5 w-5', { name: 'bell' })],
@@ -536,10 +536,10 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
         // Scrolling content under the bar
         el('div', 'flex flex-col gap-3 px-6 py-6', {
           children: [
-            el('p', 'text-sm text-base-content/70', {
+            el('p', 'text-sm text-base-content', {
               text: 'As this content scrolls, the header above stays pinned to the top of the surrounding scroll container.',
             }),
-            el('p', 'text-sm text-base-content/70', {
+            el('p', 'text-sm text-base-content', {
               text: 'Pair it with a long list, a table, or a settings form so the section title and its primary action are always reachable.',
             }),
           ],
@@ -571,7 +571,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             'max-w-2xl text-4xl font-bold tracking-tight text-base-content @2xl:text-6xl',
             { level: 'h1', text: 'Something good is on the way' }
           ),
-          atom('Text', 'max-w-xl text-lg text-base-content/70', {
+          atom('Text', 'max-w-xl text-lg text-base-content', {
             variant: 'body',
             text: 'We are putting the finishing touches on it. Leave your email and we will tell you the moment it goes live.',
           }),
@@ -615,7 +615,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             level: 'h1',
             text: 'This page wandered off',
           }),
-          atom('Text', 'max-w-md text-base text-base-content/70', {
+          atom('Text', 'max-w-md text-base text-base-content', {
             variant: 'body',
             text: 'The link may be broken, or the page may have moved. Let us get you back on track.',
           }),

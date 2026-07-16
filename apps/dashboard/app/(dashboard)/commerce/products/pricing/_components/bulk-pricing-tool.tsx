@@ -198,7 +198,7 @@ export function BulkPricingTool({
     return (
       <Card>
         <CardBody>
-          <p className="text-base-content/70 py-6 text-center">
+          <p className="text-base-content py-6 text-center">
             No catalog markup rules yet.{' '}
             <a className="underline" href="/commerce/markup-rules">
               Create one
@@ -333,7 +333,7 @@ function PreviewTable({ preview }: { preview: MarkupPreviewResult }) {
           </div>
         </div>
         {preview.truncated && (
-          <p className="text-base-content/70 mb-3 text-sm">
+          <p className="text-base-content mb-3 text-sm">
             Showing the first {preview.lines.length} of {preview.totalVariants}. Applying covers the
             whole scope (up to 5,000 per run).
           </p>
@@ -357,13 +357,13 @@ function PreviewTable({ preview }: { preview: MarkupPreviewResult }) {
                   <span className="text-sm font-medium">{l.sku}</span>
                 </td>
                 <td>
-                  <span className="text-base-content/70 text-sm">{l.title ?? '—'}</span>
+                  <span className="text-base-content text-sm">{l.title ?? '—'}</span>
                 </td>
                 <td className="text-right">{fmt(l.costCents)}</td>
                 <td className="text-right">{fmt(l.currentPriceCents)}</td>
                 <td className="text-right">
                   {l.unpriceable ? (
-                    <span className="text-base-content/70 text-sm">no cost</span>
+                    <span className="text-base-content text-sm">no cost</span>
                   ) : (
                     <PriceDelta from={l.currentPriceCents} to={l.newPriceCents} />
                   )}
@@ -408,7 +408,7 @@ function CollectionPicker({
 }) {
   if (collections.length === 0) {
     return (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         No collections yet — create one under Collections, or scope by product type / vendor.
       </p>
     );
@@ -492,9 +492,9 @@ function ProductPicker({
 
       {query.trim().length >= 2 && (
         <div className="border-base-300 flex max-h-56 flex-col gap-1 overflow-auto rounded border p-2">
-          {searching && <p className="text-base-content/70 px-1 py-1 text-sm">Searching…</p>}
+          {searching && <p className="text-base-content px-1 py-1 text-sm">Searching…</p>}
           {!searching && results.length === 0 && (
-            <p className="text-base-content/70 px-1 py-1 text-sm">No matches.</p>
+            <p className="text-base-content px-1 py-1 text-sm">No matches.</p>
           )}
           {results.map((p) => (
             <div

@@ -33,7 +33,7 @@ export function PurchaseOrdersList({ rows, view }: PurchaseOrdersListProps) {
   };
 
   const lines = (po: PurchaseOrderRow) => (
-    <p className="text-base-content/70 text-xs">
+    <p className="text-base-content text-xs">
       {po.lineCount} line{po.lineCount === 1 ? '' : 's'}
       {po.quantityOrdered > 0 ? ` · ${po.quantityReceived}/${po.quantityOrdered} recv` : ''}
     </p>
@@ -60,14 +60,12 @@ export function PurchaseOrdersList({ rows, view }: PurchaseOrdersListProps) {
     body: (po) => (
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <p className="text-base-content/70 text-xs">
-            {po.warehouseName ?? po.warehouseCode ?? '—'}
-          </p>
+          <p className="text-base-content text-xs">{po.warehouseName ?? po.warehouseCode ?? '—'}</p>
           <p className="text-sm font-medium">{formatMoney(po.totalCents, po.currency)}</p>
         </div>
         <div className="flex flex-row items-center justify-between gap-2">
           {lines(po)}
-          <p className="text-base-content/70 text-xs">exp {formatDate(po.expectedArrivalAt)}</p>
+          <p className="text-base-content text-xs">exp {formatDate(po.expectedArrivalAt)}</p>
         </div>
       </div>
     ),

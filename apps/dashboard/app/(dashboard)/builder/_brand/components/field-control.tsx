@@ -71,7 +71,7 @@ export function FieldControl({ field, value, onChange, config, onPatch }: FieldC
         config={config}
         onPatch={onPatch}
       />
-      {field.help ? <p className="text-base-content/60 text-xs">{field.help}</p> : null}
+      {field.help ? <p className="text-base-content text-xs">{field.help}</p> : null}
       {isLucideIconField(field.help) && <LucideIconLink />}
     </div>
   );
@@ -176,7 +176,7 @@ function Control({
             onValueChange={(v) => onChange(v[0])}
             className="flex-1"
           />
-          <span className="text-base-content/60 w-10 text-right text-sm tabular-nums">{n}</span>
+          <span className="text-base-content w-10 text-right text-sm tabular-nums">{n}</span>
         </div>
       );
     }
@@ -258,7 +258,7 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
           {preview ? (
             <img src={preview} alt="" className="h-full w-full object-cover" />
           ) : (
-            <ImageIcon className="text-base-content/50 h-5 w-5" />
+            <ImageIcon className="text-base-content h-5 w-5" />
           )}
         </div>
         <div className="flex flex-col gap-1.5">
@@ -281,9 +281,9 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
             ) : null}
           </div>
           {current && !isUrl ? (
-            <span className="text-base-content/60 font-mono text-[11px]">{current}</span>
+            <span className="text-base-content font-mono text-[11px]">{current}</span>
           ) : (
-            <span className="text-base-content/60 text-xs">
+            <span className="text-base-content text-xs">
               {isUrl ? 'External URL' : 'No image selected'}
             </span>
           )}
@@ -303,7 +303,7 @@ function MediaField({ field, value, onChange, config, onPatch }: FieldControlPro
             type="button"
             onClick={() => setFramingOpen(true)}
             disabled={!preview}
-            className="text-module disabled:text-base-content/60 self-start text-sm hover:underline disabled:cursor-not-allowed disabled:no-underline"
+            className="text-module disabled:text-base-content self-start text-sm hover:underline disabled:cursor-not-allowed disabled:no-underline"
           >
             Adjust framing…
           </button>
@@ -370,13 +370,13 @@ function ListField({ field, value, onChange }: FieldControlProps) {
       {items.map((item, i) => (
         <div key={i} className="border-base-300 flex flex-col gap-2 rounded-md border p-3">
           <div className="flex items-center justify-between">
-            <span className="text-base-content/60 text-xs font-medium">
+            <span className="text-base-content text-xs font-medium">
               {field.itemLabel ?? 'Item'} {i + 1}
             </span>
             <button
               type="button"
               onClick={() => removeItem(i)}
-              className="text-base-content/60 hover:text-base-content text-xs"
+              className="text-base-content hover:text-base-content text-xs"
             >
               Remove
             </button>

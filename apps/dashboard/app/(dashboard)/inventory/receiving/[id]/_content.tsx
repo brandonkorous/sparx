@@ -31,7 +31,7 @@ export async function GoodsReceiptDetailContent({ id }: { id: string }) {
             <h1 className="text-3xl font-semibold">{receipt.number}</h1>
             <Badge color="success">received</Badge>
           </div>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {receipt.purchaseOrderNumber ? (
               <>
                 against{' '}
@@ -70,13 +70,13 @@ export async function GoodsReceiptDetailContent({ id }: { id: string }) {
                     <p className="text-sm font-medium">
                       {l.productTitle ?? l.variantSku ?? l.variantId.slice(0, 8)}
                     </p>
-                    <p className="text-base-content/70 font-mono text-xs">
+                    <p className="text-base-content font-mono text-xs">
                       {l.variantSku ?? l.variantId}
                       {l.lotNumber ? ` · lot ${l.lotNumber}` : ''}
                     </p>
                   </div>
                   <p className="text-sm">×{l.quantityReceived}</p>
-                  <p className="text-base-content/70 w-[6rem] text-right text-sm">
+                  <p className="text-base-content w-[6rem] text-right text-sm">
                     {formatMoney(l.unitCostCents, 'USD')}
                   </p>
                   <p className="w-[6rem] text-right text-sm font-medium">
@@ -93,7 +93,7 @@ export async function GoodsReceiptDetailContent({ id }: { id: string }) {
         <Card>
           <CardBody>
             <div className="flex flex-col gap-1 py-2">
-              <p className="text-base-content/70 text-xs">Note</p>
+              <p className="text-base-content text-xs">Note</p>
               <p className="text-sm whitespace-pre-wrap">{receipt.note}</p>
             </div>
           </CardBody>
@@ -108,7 +108,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[9rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

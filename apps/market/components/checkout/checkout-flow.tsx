@@ -154,7 +154,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                 autoComplete="email"
               />
             </Field>
-            <label className="text-base-content/70 flex items-center gap-2 text-sm">
+            <label className="text-base-content flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 className="accent-primary"
@@ -183,7 +183,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
 
             {rates.length > 0 ? (
               <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-                <legend className="text-base-content/70 mb-1 text-xs font-semibold tracking-[0.04em] uppercase">
+                <legend className="text-base-content mb-1 text-xs font-semibold tracking-[0.04em] uppercase">
                   Shipping method
                 </legend>
                 {rates.map((rate) => {
@@ -205,7 +205,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                       <span className="flex-1">
                         <strong className="text-base-content">{rate.service}</strong>
                         {rate.estimatedDays != null ? (
-                          <span className="text-base-content/70"> · {rate.estimatedDays} days</span>
+                          <span className="text-base-content"> · {rate.estimatedDays} days</span>
                         ) : null}
                       </span>
                       <span className="text-base-content tabular-nums">

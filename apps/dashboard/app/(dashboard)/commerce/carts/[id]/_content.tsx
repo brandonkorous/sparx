@@ -71,7 +71,7 @@ export async function CartDetailContent({ id }: Props) {
             </Badge>
           )}
         </div>
-        <p className="text-base-content/70 text-base">
+        <p className="text-base-content text-base">
           {cart.customerId ? (
             <>
               Customer{' '}
@@ -169,7 +169,7 @@ function fmt(cents: number, currency: string): string {
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
     <div className="flex flex-row gap-4">
-      <p className="text-base-content/70 w-40 text-sm">{label}</p>
+      <p className="text-base-content w-40 text-sm">{label}</p>
       <p className={`text-sm ${bold ? 'font-semibold' : ''}`}>{value}</p>
     </div>
   );

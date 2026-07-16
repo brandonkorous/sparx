@@ -140,7 +140,7 @@ export function FeedbackCompose({
       />
 
       <div className="flex items-center justify-between gap-3">
-        <p className="text-base-content/50 text-xs">
+        <p className="text-base-content text-xs">
           Replies arrive by email and in your feedback history.
         </p>
         <Button type="submit" color="primary" loading={mutation.isPending} disabled={!body.trim()}>
@@ -178,12 +178,12 @@ function ContextChip({
         aria-expanded={expanded}
         className="flex w-full items-center justify-between gap-2 text-left"
       >
-        <span className="text-base-content/70 flex items-center gap-1.5 text-xs">
+        <span className="text-base-content flex items-center gap-1.5 text-xs">
           <MessageSquare className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">Sending from: {summary || context.route}</span>
         </span>
         <ChevronDown
-          className={`text-base-content/50 h-4 w-4 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`text-base-content h-4 w-4 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
         />
       </button>
       {expanded && (
@@ -192,8 +192,8 @@ function ContextChip({
             .filter(([, v]) => v)
             .map(([k, v]) => (
               <React.Fragment key={k}>
-                <dt className="text-base-content/50">{k}</dt>
-                <dd className="text-base-content/70 truncate">{v}</dd>
+                <dt className="text-base-content">{k}</dt>
+                <dd className="text-base-content truncate">{v}</dd>
               </React.Fragment>
             ))}
         </dl>

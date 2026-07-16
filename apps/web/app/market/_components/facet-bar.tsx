@@ -11,22 +11,22 @@
 
 import type { MarketplaceCategory } from '@/lib/marketplace-registry';
 import type { MarketplaceFacetBucket } from '@/lib/marketplace';
+import { canonicalQueryString, parseFacetList, type BrowseParams } from '@/lib/browse-params';
 
-/** The browse params that survive a facet toggle (everything but paging). */
-export type BrowseParams = Record<string, string>;
-
-function parseList(value: string | undefined): string[] {
-  return value ? value.split(',').filter(Boolean) : [];
-}
+export type { BrowseParams };
 
 /** Build a `/market/:cat?…` href from the current params with one key replaced
- *  (or removed when the new list is empty). Paging never carries across. */
+ *  (or removed when the new list is empty). Paging never carries across.
+ *
+ *  The href is CANONICAL (sorted keys + sorted facet values), so toggling the
+ *  same facets in a different order lands on the same URL rather than minting a
+ *  fresh one — see lib/browse-params for why that matters. */
 function hrefWith(categoryId: string, current: BrowseParams, key: string, list: string[]): string {
   const next: BrowseParams = { ...current };
   if (list.length) next[key] = list.join(',');
   else delete next[key];
   delete next.cursor;
-  const qs = new URLSearchParams(next).toString();
+  const qs = canonicalQueryString(categoryId, next);
   return `/market/${categoryId}${qs ? `?${qs}` : ''}`;
 }
 
@@ -39,14 +39,14 @@ export function FacetBar({
   facetCounts: Record<string, MarketplaceFacetBucket>;
   current: BrowseParams;
 }) {
-  const anySelected = category.facets.some((f) => parseList(current[f.key]).length > 0);
+  const anySelected = category.facets.some((f) => parseFacetList(current[f.key]).length > 0);
   if (category.facets.length === 0) return null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {category.facets.map((facet) => {
         const counts = facetCounts[facet.key] ?? {};
-        const selected = parseList(current[facet.key]);
+        const selected = parseFacetList(current[facet.key]);
         // Stable order: by count desc, then name. Hide values with no matches.
         const values = Object.keys(counts)
           .filter((v) => counts[v]! > 0 || selected.includes(v))
@@ -73,6 +73,11 @@ export function FacetBar({
                   <a
                     key={value}
                     href={hrefWith(category.id, current, facet.key, nextList)}
+                    // Canonical hrefs collapse permutations to combinations, but 2^n
+                    // combinations is still a space no crawler should walk — the
+                    // catalog's real content is reachable from the unfiltered page and
+                    // the sitemap. Filtering is for humans; nofollow says so.
+                    rel="nofollow"
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',

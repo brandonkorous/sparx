@@ -135,7 +135,7 @@ export function IssueKeyForm({ catalog }: IssueKeyFormProps) {
                 <Copy className="h-3.5 w-3.5" /> Copy
               </Button>
             </div>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Prefix <code>{issued.prefix}</code> identifies this key in the list.
             </p>
             <div className="flex flex-row justify-end">
@@ -169,7 +169,7 @@ export function IssueKeyForm({ catalog }: IssueKeyFormProps) {
                 <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-auto pr-1">
                   {groups.map((group) => (
                     <div key={group.module} className="flex flex-col gap-2">
-                      <p className="text-base-content/70 text-xs font-medium">{group.module}</p>
+                      <p className="text-base-content text-xs font-medium">{group.module}</p>
                       {group.scopes.map((s) => (
                         <label key={s.scope} className="flex items-start gap-2 text-sm">
                           <Checkbox

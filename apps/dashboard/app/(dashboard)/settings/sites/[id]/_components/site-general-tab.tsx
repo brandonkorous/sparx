@@ -180,7 +180,7 @@ export function SiteGeneralTab({
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-0">
               <p className="text-sm font-medium">Look &amp; branding</p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Name, logo, and links for this site are set in Site settings; colours and fonts are
                 set in the Builder.
               </p>
@@ -202,19 +202,19 @@ export function SiteGeneralTab({
         <CardBody>
           <h3 className="text-xl font-semibold">At a glance</h3>
           <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-3 text-sm">
-            <dt className="text-base-content/60">Status</dt>
+            <dt className="text-base-content">Status</dt>
             <dd>
               <Badge color={status.color} variant="soft">
                 {status.label}
               </Badge>
             </dd>
-            <dt className="text-base-content/60">Primary domain</dt>
+            <dt className="text-base-content">Primary domain</dt>
             <dd>{primaryHost ?? '—'}</dd>
-            <dt className="text-base-content/60">Handle</dt>
+            <dt className="text-base-content">Handle</dt>
             <dd>
               <Code>{slug}</Code>
             </dd>
-            <dt className="text-base-content/60">Created</dt>
+            <dt className="text-base-content">Created</dt>
             <dd>{formatDate(createdAt)}</dd>
           </dl>
         </CardBody>

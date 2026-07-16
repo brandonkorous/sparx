@@ -281,7 +281,7 @@ export function CountCreateForm({ surface, warehouses }: CountCreateFormProps) {
             ) : (
               <Card>
                 <CardBody>
-                  <p className="text-base-content/70 py-2 text-sm">
+                  <p className="text-base-content py-2 text-sm">
                     A full count snapshots every active level in the warehouse — you&apos;ll enter a
                     counted quantity for each on the next screen.
                   </p>
@@ -317,7 +317,7 @@ function CyclePicker({
         </div>
         <div className="flex flex-col gap-4">
           {variants.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No items yet — add a SKU below, or start empty and add them on the next screen.
             </p>
           ) : (
@@ -329,7 +329,7 @@ function CyclePicker({
                 >
                   <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                     <p className="text-sm font-medium">{v.title ?? v.sku}</p>
-                    <p className="text-base-content/70 font-mono text-xs">{v.sku}</p>
+                    <p className="text-base-content font-mono text-xs">{v.sku}</p>
                   </div>
                   <Button
                     variant="ghost"

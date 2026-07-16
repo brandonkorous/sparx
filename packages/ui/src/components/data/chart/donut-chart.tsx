@@ -97,7 +97,7 @@ export function DonutChart({
               </span>
             )}
             {centerLabel != null && (
-              <span className="text-base-content/50 mt-1 text-xs">{centerLabel}</span>
+              <span className="text-base-content mt-1 text-xs">{centerLabel}</span>
             )}
           </div>
         )}
@@ -112,7 +112,7 @@ export function DonutChart({
                 className="h-2.5 w-2.5 shrink-0 rounded-sm"
                 style={{ background: colors[i] }}
               />
-              <span className="text-base-content/70 truncate">{d.label}</span>
+              <span className="text-base-content truncate">{d.label}</span>
               <span className="text-base-content ml-auto pl-3 font-medium tabular-nums">
                 {valueFormatter ? valueFormatter(d.value) : d.value}
               </span>

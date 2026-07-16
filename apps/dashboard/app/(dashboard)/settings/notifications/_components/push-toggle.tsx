@@ -101,7 +101,7 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
 
   if (supported === false) {
     return (
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         {vapidPublicKey
           ? 'This browser doesn’t support web push notifications.'
           : 'Push notifications aren’t configured for this environment yet.'}
@@ -121,7 +121,7 @@ export function PushToggle({ vapidPublicKey }: { vapidPublicKey: string | null }
           disabled={busy || supported === null}
         />
         <div className="flex flex-row items-center gap-2">
-          <Bell className="text-base-content/70 h-4 w-4" />
+          <Bell className="text-base-content h-4 w-4" />
           <p className="text-sm">
             {enabled ? 'Browser notifications are on' : 'Enable browser notifications'}
           </p>

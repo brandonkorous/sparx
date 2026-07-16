@@ -26,9 +26,7 @@ export function ThemeCardActions({ themeSlug, themeName, canInstall }: Props) {
   const [applied, setApplied] = React.useState(false);
 
   if (!canInstall) {
-    return (
-      <p className="text-base-content/70 text-xs">Only an owner or admin can apply a theme.</p>
-    );
+    return <p className="text-base-content text-xs">Only an owner or admin can apply a theme.</p>;
   }
 
   // confirm() opens a dialog via React state — it MUST run outside startTransition
@@ -66,7 +64,7 @@ export function ThemeCardActions({ themeSlug, themeName, canInstall }: Props) {
   if (applied) {
     return (
       <div className="flex flex-row flex-wrap items-center gap-2">
-        <p className="text-base-content/70 text-sm">Applied to draft</p>
+        <p className="text-base-content text-sm">Applied to draft</p>
         <Button variant="outline" size="sm" render={<Link href="/builder/_brand" />}>
           Review &amp; publish
         </Button>

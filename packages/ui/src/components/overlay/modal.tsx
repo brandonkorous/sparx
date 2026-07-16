@@ -99,7 +99,7 @@ export function ModalContent({
             aria-label="Close"
             className={cn(
               'absolute top-3 right-3 rounded-md p-1',
-              'text-base-content/50 hover:text-base-content hover:bg-base-200',
+              'text-base-content hover:text-base-content hover:bg-base-200',
               'transition-colors duration-150',
               'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
             )}
@@ -145,7 +145,7 @@ export function ModalDescription({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SilicaDialogDescription>) {
   return (
-    <SilicaDialogDescription className={cn('text-base-content/70 text-sm', className)} {...props} />
+    <SilicaDialogDescription className={cn('text-base-content text-sm', className)} {...props} />
   );
 }
 

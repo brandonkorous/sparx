@@ -34,7 +34,7 @@ export function SeoAuditList({ rows, view }: SeoAuditListProps) {
     { header: 'Page', cell: rowLink },
     {
       header: 'Top fix',
-      cell: (r) => <p className="text-base-content/70 text-sm">{r.fixFirst ?? '—'}</p>,
+      cell: (r) => <p className="text-base-content text-sm">{r.fixFirst ?? '—'}</p>,
     },
   ];
 
@@ -48,7 +48,7 @@ export function SeoAuditList({ rows, view }: SeoAuditListProps) {
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               {rowLink(r)}
               {r.fixFirst ? (
-                <p className="text-base-content/70 text-xs">Top fix: {r.fixFirst}</p>
+                <p className="text-base-content text-xs">Top fix: {r.fixFirst}</p>
               ) : null}
             </div>
           </div>

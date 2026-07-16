@@ -85,7 +85,7 @@ export function StepBlueprint({
       {/* ── Filter bar ────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[200px] flex-1">
-          <Search className="text-base-content/50 pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <Search className="text-base-content pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -125,7 +125,7 @@ export function StepBlueprint({
         )}
       </div>
 
-      <p className="text-base-content/70 mt-4 mb-3.5 block text-sm">
+      <p className="text-base-content mt-4 mb-3.5 block text-sm">
         Showing <span className="text-base-content font-medium">{shown.length}</span> of{' '}
         {blueprints.length} blueprints that fit your modules
       </p>
@@ -176,8 +176,8 @@ export function StepBlueprint({
 
               <div className="flex flex-1 flex-col gap-2 p-4">
                 <p className="font-medium">{bp.name}</p>
-                <p className="text-base-content/70 line-clamp-2 text-sm">{bp.summary}</p>
-                <p className="text-base-content/70 mt-1 text-xs">{contentsLine(bp)}</p>
+                <p className="text-base-content line-clamp-2 text-sm">{bp.summary}</p>
+                <p className="text-base-content mt-1 text-xs">{contentsLine(bp)}</p>
                 {caps.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {caps.map((m) => (
@@ -200,8 +200,8 @@ export function StepBlueprint({
       {/* ── Locked hint ───────────────────────────────────────────────────── */}
       {hidden.length > 0 && lockedMods.size > 0 && (
         <div className="border-base-content/30 bg-base-200 mt-6 flex items-center gap-3 rounded-xl border border-dashed px-[18px] py-4">
-          <Lock className="text-base-content/50 h-[18px] w-[18px] shrink-0" />
-          <p className="text-base-content/70 text-sm">
+          <Lock className="text-base-content h-[18px] w-[18px] shrink-0" />
+          <p className="text-base-content text-sm">
             <span className="text-base-content font-medium">{hidden.length} more</span>{' '}
             {hidden.length === 1 ? 'blueprint' : 'blueprints'} unlock with{' '}
             <span className="text-base-content font-medium">
@@ -224,8 +224,8 @@ export function StepBlueprint({
         )}
       >
         <div className="flex items-center gap-3">
-          <PencilRuler className="text-base-content/50 h-[18px] w-[18px] shrink-0" />
-          <p className="text-base-content/70 text-sm">
+          <PencilRuler className="text-base-content h-[18px] w-[18px] shrink-0" />
+          <p className="text-base-content text-sm">
             Prefer a blank canvas? Use sparx headless or design it yourself.
           </p>
         </div>

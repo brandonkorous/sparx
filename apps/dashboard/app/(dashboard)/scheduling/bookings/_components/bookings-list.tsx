@@ -29,7 +29,7 @@ const DEPOSIT: Record<
 
 function DepositCell({ status }: { status: string | null }) {
   const dep = status ? DEPOSIT[status] : undefined;
-  if (!dep) return <span className="text-base-content/70">—</span>;
+  if (!dep) return <span className="text-base-content">—</span>;
   return (
     <Badge color={dep.color} variant="soft">
       {dep.label}
@@ -67,14 +67,14 @@ export function BookingsList({ bookings }: { bookings: Booking[] }) {
             <td>
               <span className="flex flex-col">
                 <span>{b.service.name}</span>
-                <span className="text-base-content/70 text-xs">
+                <span className="text-base-content text-xs">
                   {BOOKING_TYPE_LABEL[b.bookingType]}
                   {b.partySize ? ` · party of ${b.partySize}` : ''}
                 </span>
               </span>
             </td>
             <td>{customerLabel(b)}</td>
-            <td className="text-base-content/70">
+            <td className="text-base-content">
               {b.resources.map((r) => r.resource.name).join(', ') || '—'}
             </td>
             <td>

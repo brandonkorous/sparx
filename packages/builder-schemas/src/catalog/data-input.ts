@@ -51,7 +51,7 @@ const choiceRow = (control: 'Checkbox' | 'Radio', caption: string, name: string)
 
 // The bare control inside the bespoke search join — chromeless, blends into the join.
 const SEARCH_CONTROL =
-  'w-full bg-transparent text-sm text-base-content outline-none placeholder:text-base-content/40';
+  'w-full bg-transparent text-sm text-base-content outline-none placeholder:text-base-content';
 
 export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Text field — Field + Input atom ──────────────────────────────────────────
@@ -192,7 +192,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         el('span', 'flex flex-col', {
           children: [
             el('span', 'text-sm font-medium text-base-content', { text: 'Email notifications' }),
-            el('span', 'text-xs text-base-content/60', {
+            el('span', 'text-xs text-base-content', {
               text: 'Receive an email when something needs you.',
             }),
           ],
@@ -225,7 +225,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           ],
         }),
         atom('Range', 'st-c-primary w-full', { name: 'budget', min: '0', max: '10000' }),
-        el('span', 'flex items-center justify-between text-xs text-base-content/50', {
+        el('span', 'flex items-center justify-between text-xs text-base-content', {
           children: [el('span', '', { text: '$0' }), el('span', '', { text: '$10,000' })],
         }),
       ],
@@ -250,7 +250,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           'flex flex-1 items-center gap-2 rounded-l-field border border-r-0 border-base-300 bg-base-100 px-3 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30',
           {
             children: [
-              atom('Icon', 'h-4 w-4 shrink-0 text-base-content/40', { name: 'search' }),
+              atom('Icon', 'h-4 w-4 shrink-0 text-base-content', { name: 'search' }),
               el('input', `${SEARCH_CONTROL} py-2.5`, {
                 attrs: {
                   type: 'search',
@@ -298,7 +298,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
               level: 'h3',
               text: 'Get in touch',
             }),
-            el('p', 'text-sm text-base-content/60', {
+            el('p', 'text-sm text-base-content', {
               text: "Send us a note and we'll reply within one business day.",
             }),
           ],
@@ -362,7 +362,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
               level: 'h3',
               text: 'Request a quote',
             }),
-            el('p', 'text-sm text-base-content/60', {
+            el('p', 'text-sm text-base-content', {
               text: "Tell us what you need and we'll send over a tailored quote.",
             }),
           ],
@@ -430,7 +430,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
                 level: 'h2',
                 text: 'Welcome back',
               }),
-              el('p', 'text-sm text-base-content/60', { text: 'Sign in to manage your account.' }),
+              el('p', 'text-sm text-base-content', { text: 'Sign in to manage your account.' }),
             ],
           }),
           field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
@@ -456,7 +456,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full', {
             label: 'Sign in',
           }),
-          el('p', 'text-center text-sm text-base-content/60', {
+          el('p', 'text-center text-sm text-base-content', {
             children: [
               el('span', '', { text: "Don't have an account? " }),
               el('a', 'font-medium text-primary transition-colors hover:underline', {
@@ -487,7 +487,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         children: [
           el(
             'span',
-            'flex h-12 w-12 items-center justify-center rounded-full bg-base-100 text-base-content/60 shadow-sm',
+            'flex h-12 w-12 items-center justify-center rounded-full bg-base-100 text-base-content shadow-sm',
             {
               children: [atom('Icon', 'h-5 w-5', { name: 'upload-cloud' })],
             }
@@ -497,7 +497,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
               el('span', 'text-sm font-medium text-base-content', {
                 text: 'Click to upload or drag and drop',
               }),
-              el('span', 'text-xs text-base-content/50', { text: 'PNG, JPG, or PDF up to 10 MB' }),
+              el('span', 'text-xs text-base-content', { text: 'PNG, JPG, or PDF up to 10 MB' }),
             ],
           }),
           el('input', 'sr-only', { attrs: { type: 'file', name: 'attachment' } }),

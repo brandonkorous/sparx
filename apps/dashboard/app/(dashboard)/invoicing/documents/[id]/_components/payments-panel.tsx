@@ -201,7 +201,7 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
           )}
 
           {payments.length === 0 ? (
-            <p className="text-base-content/70 text-sm">No payments recorded yet.</p>
+            <p className="text-base-content text-sm">No payments recorded yet.</p>
           ) : (
             <div className="flex flex-col gap-1">
               {payments.map((p) => (
@@ -218,8 +218,8 @@ export function PaymentsPanel({ documentId, currency, balance, payments }: Payme
                       {KIND_LABEL[p.kind] ?? p.kind}
                     </Badge>
                     <p className="text-sm capitalize">{p.method.replace('_', ' ')}</p>
-                    {p.reference && <p className="text-base-content/70 text-xs">{p.reference}</p>}
-                    <p className="text-base-content/70 text-xs">
+                    {p.reference && <p className="text-base-content text-xs">{p.reference}</p>}
+                    <p className="text-base-content text-xs">
                       {new Date(p.receivedAt).toLocaleDateString()}
                     </p>
                   </div>

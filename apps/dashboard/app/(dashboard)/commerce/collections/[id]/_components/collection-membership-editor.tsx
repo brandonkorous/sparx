@@ -102,7 +102,7 @@ export function CollectionMembershipEditor({
       <div className="flex flex-col gap-3">
         {selectedRows.length === 0 ? (
           <div className="border-base-300 flex flex-col items-center gap-2 rounded border border-dashed p-6 text-center">
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               The rule hasn&apos;t projected any products yet. The indexer worker re-evaluates on
               its next tick (Phase 1.5).
             </p>
@@ -124,7 +124,7 @@ export function CollectionMembershipEditor({
         <p className="text-sm font-medium">In this collection ({selectedRows.length})</p>
         {selectedRows.length === 0 ? (
           <div className="border-base-300 flex flex-col items-center gap-1 rounded border border-dashed p-6 text-center">
-            <p className="text-base-content/70 text-sm">Add products from the picker below.</p>
+            <p className="text-base-content text-sm">Add products from the picker below.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-1">
@@ -133,10 +133,10 @@ export function CollectionMembershipEditor({
                 key={p.id}
                 className="border-base-300 bg-base-100 flex flex-row items-center gap-2 rounded border px-3 py-2"
               >
-                <GripVertical className="text-base-content/60 h-4 w-4" aria-hidden />
+                <GripVertical className="text-base-content h-4 w-4" aria-hidden />
                 <div className="flex flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{p.title}</p>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     /{p.handle}
                     {p.vendor ? ` · ${p.vendor}` : ''}
                   </p>
@@ -189,7 +189,7 @@ export function CollectionMembershipEditor({
           onChange={(e) => setFilter(e.target.value)}
         />
         {remaining.length === 0 ? (
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {allProducts.length === selectedRows.length
               ? 'Every product is already in this collection.'
               : 'No matches.'}
@@ -203,7 +203,7 @@ export function CollectionMembershipEditor({
               >
                 <div className="flex flex-1 flex-col gap-0">
                   <p className="text-sm">{p.title}</p>
-                  <p className="text-base-content/70 text-xs">
+                  <p className="text-base-content text-xs">
                     /{p.handle}
                     {p.vendor ? ` · ${p.vendor}` : ''}
                   </p>
@@ -253,7 +253,7 @@ function ProductRow({ product }: { product: ProductBrief }) {
     <div className="border-base-300 bg-base-100 flex flex-row items-center gap-2 rounded border px-3 py-2">
       <div className="flex flex-1 flex-col gap-0">
         <p className="text-sm font-medium">{product.title}</p>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           /{product.handle}
           {product.vendor ? ` · ${product.vendor}` : ''}
         </p>

@@ -161,7 +161,7 @@ export function ReceiveForm({
               >
                 <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                   <p className="text-sm font-medium">{r.label}</p>
-                  <p className="text-base-content/70 font-mono text-xs">
+                  <p className="text-base-content font-mono text-xs">
                     {r.sku ?? r.lineId.slice(0, 8)} · {r.alreadyReceived}/{r.ordered} received ·{' '}
                     {r.outstanding} outstanding
                   </p>
@@ -185,7 +185,7 @@ export function ReceiveForm({
                   className="w-[8rem]"
                   text
                 />
-                <p className="text-base-content/70 w-[6rem] text-right text-sm">
+                <p className="text-base-content w-[6rem] text-right text-sm">
                   {r.qty && Number(r.qty) > 0 && r.cost
                     ? formatMoney(Math.round(Number(r.cost) * 100) * Number(r.qty), currency)
                     : '—'}

@@ -104,14 +104,14 @@ export function MergeCandidatesGroup({ customers }: Props) {
                   <Badge color="neutral" variant="soft" size="sm">
                     {statusLabel(c.type)}
                   </Badge>
-                  {c.email && <p className="text-base-content/70 text-xs">{c.email}</p>}
+                  {c.email && <p className="text-base-content text-xs">{c.email}</p>}
                   {c.orderCount > 0 && (
                     <Badge color="success" variant="soft" size="sm">
                       {c.orderCount} order{c.orderCount === 1 ? '' : 's'}
                     </Badge>
                   )}
                 </div>
-                <p className="text-base-content/70 text-xs">
+                <p className="text-base-content text-xs">
                   Updated {new Date(c.updatedAt).toLocaleString()} · Total spent $
                   {Number(c.totalSpent).toLocaleString()}
                 </p>
@@ -147,7 +147,7 @@ export function MergeCandidatesGroup({ customers }: Props) {
         <Button onClick={onMerge} color="module" disabled={pending}>
           {pending ? 'Merging…' : `Merge ${duplicateIds.size} into primary`}
         </Button>
-        <p className="text-base-content/70 text-xs">
+        <p className="text-base-content text-xs">
           Activities, deals, tasks, and addresses on the duplicates reattach to the primary. The
           duplicates are soft-deleted with a pointer to the primary.
         </p>

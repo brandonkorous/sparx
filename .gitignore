@@ -66,3 +66,9 @@ apps/dashboard/_marketplace-assets.mjs
 **/.impeccable/*.cache.json
 # The live/ runtime dir (server port, sessions, annotations) is per-machine session state.
 **/.impeccable/live/
+
+# Local media storage — the LocalStorage driver's on-disk root (MEDIA_LOCAL_DIR) when
+# api-rest runs in `local` mode. Real tenant uploads (originals + transcoded variants)
+# land here at runtime; in prod the bytes live in GCS and this dir never exists. It is
+# machine-local runtime state, never source.
+**/.media-local/

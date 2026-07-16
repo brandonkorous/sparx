@@ -96,7 +96,7 @@ export function SparxPayHero({
                 </Badge>
                 {statusBadge}
               </div>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 Accept cards in minutes — sparx handles disputes, settlement, PCI, and payouts to
                 your bank. Flat 0.5% per transaction, no monthly fee.
               </p>
@@ -175,8 +175,8 @@ export function SparxPayHero({
 function StatusChip({ on, label }: { on: boolean; label: string }): React.JSX.Element {
   return (
     <div className="flex items-center gap-2">
-      <CheckCircle2 className={on ? 'text-success h-4 w-4' : 'text-base-content/50 h-4 w-4'} />
-      <p className={on ? 'text-sm' : 'text-base-content/70 text-sm'}>{label}</p>
+      <CheckCircle2 className={on ? 'text-success h-4 w-4' : 'text-base-content h-4 w-4'} />
+      <p className={on ? 'text-sm' : 'text-base-content text-sm'}>{label}</p>
     </div>
   );
 }

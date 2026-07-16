@@ -8,7 +8,7 @@ const kbdVariants = cva(
   [
     'inline-flex items-center justify-center rounded',
     'bg-base-200 border border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
-    'text-base-content/70 font-mono font-medium',
+    'text-base-content font-mono font-medium',
     'shadow-[0_1px_0_0_color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
   ],
   {

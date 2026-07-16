@@ -85,7 +85,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       {t.customerId && (
         <Link
           href={`/crm/customers/${t.customerId}`}
-          className="text-base-content/50 hover:text-module text-xs hover:underline"
+          className="text-base-content hover:text-module text-xs hover:underline"
         >
           Customer
         </Link>
@@ -93,25 +93,25 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       {t.dealId && (
         <Link
           href={`/crm/deals/${t.dealId}`}
-          className="text-base-content/50 hover:text-module text-xs hover:underline"
+          className="text-base-content hover:text-module text-xs hover:underline"
         >
           Deal
         </Link>
       )}
-      {!t.customerId && !t.dealId && <p className="text-base-content/70 text-xs">—</p>}
+      {!t.customerId && !t.dealId && <p className="text-base-content text-xs">—</p>}
     </div>
   );
 
   const dueCell = (t: TaskCard) =>
     t.dueAt ? (
       <div className="flex flex-row items-center gap-1">
-        <Calendar className="text-base-content/50 h-3.5 w-3.5" />
-        <p className="text-base-content/70 text-xs">
+        <Calendar className="text-base-content h-3.5 w-3.5" />
+        <p className="text-base-content text-xs">
           {new Date(t.dueAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
         </p>
       </div>
     ) : (
-      <p className="text-base-content/70 text-xs">—</p>
+      <p className="text-base-content text-xs">—</p>
     );
 
   const columns: SelectionColumn<TaskCard>[] = [
@@ -126,7 +126,7 @@ export function TasksList({ tasks, view, overdue }: TasksListProps) {
       cell: (t) => (
         <p
           className={`text-sm font-medium ${
-            t.status === 'open' ? '' : 'text-base-content/50 line-through'
+            t.status === 'open' ? '' : 'text-base-content line-through'
           }`}
         >
           {t.title}

@@ -259,7 +259,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
             <CardBody>
               <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-semibold">Route</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Choose where the stock moves from and to — they must be different warehouses.
                 </p>
               </div>
@@ -281,7 +281,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                       onChange={(e) => setFromId(e.target.value)}
                     />
                   </Field>
-                  <ArrowRight className="text-base-content/60 mb-2 h-5 w-5 shrink-0" />
+                  <ArrowRight className="text-base-content mb-2 h-5 w-5 shrink-0" />
                   <Field className="min-w-[12rem] flex-1">
                     <FieldLabel>To</FieldLabel>
                     <FieldControl
@@ -321,14 +321,14 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
             <CardBody>
               <div className="flex flex-col gap-1">
                 <h3 className="text-xl font-semibold">Items to move</h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content text-sm">
                   Add the variants to transfer by SKU and set a quantity — optional; you can add
                   items once the transfer is open.
                 </p>
               </div>
               <div className="flex flex-col gap-4">
                 {lines.length === 0 ? (
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content text-sm">
                     No items yet — add a SKU below, or start empty and add them later.
                   </p>
                 ) : (
@@ -340,7 +340,7 @@ function TransferWizardInner({ presentation = 'page', warehouses }: TransferWiza
                       >
                         <div className="flex min-w-[12rem] flex-1 flex-col gap-0">
                           <p className="text-sm font-medium">{l.title ?? l.sku}</p>
-                          <p className="text-base-content/70 font-mono text-xs">{l.sku}</p>
+                          <p className="text-base-content font-mono text-xs">{l.sku}</p>
                         </div>
                         <Field className="w-[6rem]">
                           <FieldLabel className="sr-only">Quantity</FieldLabel>

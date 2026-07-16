@@ -74,7 +74,7 @@ export function ReturnApprovalForm({
         {items.map((it) => (
           <div key={it.id} className="flex flex-row items-center gap-3">
             <p className="w-32 font-mono text-xs">{it.orderItemId.slice(0, 8)}</p>
-            <p className="text-base-content/70 w-20 text-xs">req {it.quantity}</p>
+            <p className="text-base-content w-20 text-xs">req {it.quantity}</p>
             <Input
               type="number"
               min={0}
@@ -85,7 +85,7 @@ export function ReturnApprovalForm({
               }
               className="w-24"
             />
-            <p className="text-base-content/70 text-xs">approved qty</p>
+            <p className="text-base-content text-xs">approved qty</p>
           </div>
         ))}
         <div className="flex flex-col gap-1">
@@ -97,7 +97,7 @@ export function ReturnApprovalForm({
           </label>
         </div>
         <div className="flex flex-col gap-1">
-          <p className="text-base-content/70 text-xs">Staff note (optional)</p>
+          <p className="text-base-content text-xs">Staff note (optional)</p>
           <Input name="staffNote" placeholder="Optional internal note" />
         </div>
         {error && (

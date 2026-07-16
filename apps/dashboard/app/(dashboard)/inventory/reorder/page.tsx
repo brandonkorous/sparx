@@ -61,7 +61,7 @@ function Stat({ label, value }: { label: string; value: string }) {
     <Card className="min-w-[10rem] flex-1">
       <CardBody>
         <div className="flex flex-col gap-1 py-2">
-          <p className="text-base-content/70 text-xs">{label}</p>
+          <p className="text-base-content text-xs">{label}</p>
           <p className="text-lg">{value}</p>
         </div>
       </CardBody>

@@ -159,7 +159,7 @@ export function AssetEditForm({
             />
           </div>
         ) : (
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {previewUrl ? 'Preview not available for this file type.' : 'No preview available.'}
           </p>
         )}
@@ -187,7 +187,7 @@ export function AssetEditForm({
         </Field>
 
         {isImage && (
-          <p className="text-base-content/70 text-xs">
+          <p className="text-base-content text-xs">
             Focal point: ({focal.x.toFixed(2)}, {focal.y.toFixed(2)})
           </p>
         )}

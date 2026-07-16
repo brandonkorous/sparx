@@ -21,7 +21,7 @@ import { SuspendControl } from './_components/suspend-control';
 import { StorageLimitControl } from './_components/storage-limit-control';
 
 const backLink = (
-  <Link href="/sparx/tenants" className="text-base-content/60 text-sm hover:underline">
+  <Link href="/sparx/tenants" className="text-base-content text-sm hover:underline">
     ← All tenants
   </Link>
 );

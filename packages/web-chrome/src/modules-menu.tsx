@@ -64,7 +64,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
       <div className="grid grid-cols-3 gap-7 p-6">
         {MODULE_GROUPS.map((group) => (
           <div key={group.title} className="flex flex-col gap-1">
-            <Text className="text-base-content/50 px-2.5 pb-1.5 text-xs font-semibold">
+            <Text className="text-base-content px-2.5 pb-1.5 text-xs font-semibold">
               {group.title}
             </Text>
             {group.items.map((m) => {
@@ -80,7 +80,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
                   </span>
                   <span className="flex flex-col gap-0.5">
                     <Text className="text-base-content text-sm font-medium">{m.label}</Text>
-                    <Text className="text-base-content/50 text-xs leading-snug">{m.desc}</Text>
+                    <Text className="text-base-content text-xs leading-snug">{m.desc}</Text>
                   </span>
                 </NavigationMenuLink>
               );
@@ -90,7 +90,7 @@ export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
       </div>
 
       <div className="border-base-300 bg-base-200 flex items-center justify-between gap-4 border-t px-6 py-3.5">
-        <Text className="text-base-content/70 text-sm">
+        <Text className="text-base-content text-sm">
           One platform. Activate only what you need.
         </Text>
         <NavigationMenuLink

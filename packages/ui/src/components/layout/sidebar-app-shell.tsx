@@ -308,7 +308,7 @@ function RailToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () =>
       aria-label={expanded ? 'Collapse navigation' : 'Expand navigation'}
       aria-expanded={expanded}
       className={cn(
-        'text-base-content/50 hover:text-base-content hover:bg-base-200 flex h-8 items-center rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+        'text-base-content hover:text-base-content hover:bg-base-200 flex h-8 items-center rounded-md text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         expanded ? 'w-full justify-start gap-2 px-2' : 'w-8 justify-center'
       )}
     >
@@ -366,7 +366,7 @@ function PanelToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle: ()
       aria-label={collapsed ? 'Show panel' : 'Hide panel'}
       aria-expanded={!collapsed}
       className={cn(
-        'text-base-content/50 hover:text-base-content border-base-300 hover:bg-base-200 flex h-9 shrink-0 items-center border-t text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+        'text-base-content hover:text-base-content border-base-300 hover:bg-base-200 flex h-9 shrink-0 items-center border-t text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
         collapsed ? 'justify-center' : 'w-full justify-start gap-2 px-3'
       )}
     >

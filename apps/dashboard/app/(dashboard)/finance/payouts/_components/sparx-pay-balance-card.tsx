@@ -45,7 +45,7 @@ export function SparxPayBalanceCard({ balance }: { balance: SparxPayBalance | nu
             </div>
             <div className="flex flex-col gap-2">
               <OpenDashboardButton />
-              <p className="text-base-content/70 max-w-prose text-xs">
+              <p className="text-base-content max-w-prose text-xs">
                 Manage your bank account, payout schedule, and full payout history in the secure
                 Stripe-hosted dashboard.
               </p>
@@ -53,7 +53,7 @@ export function SparxPayBalanceCard({ balance }: { balance: SparxPayBalance | nu
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <p className="text-base-content/70 max-w-prose text-sm">
+            <p className="text-base-content max-w-prose text-sm">
               No sparx Pay balance yet. Once you finish setup and take your first payment, your
               available and settling balances show here — sparx handles settlement and pays out to
               your bank automatically.

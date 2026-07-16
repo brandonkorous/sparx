@@ -90,7 +90,7 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
           </p>
           <div className="flex flex-col gap-3">
             {domains.length === 0 && (
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 No domains yet — connect one you own below.
               </p>
             )}
@@ -116,7 +116,7 @@ export function SiteDomainsTab({ propertyId, domains }: { propertyId: string; do
                   {/* Host owns its own line (+ status), so a long domain never has to
                       share a row with the actions and wrap awkwardly. */}
                   <div className="flex items-center gap-2">
-                    <Globe className="text-base-content/70 size-4 shrink-0" />
+                    <Globe className="text-base-content size-4 shrink-0" />
                     <span className="min-w-0 font-medium break-all">{d.host}</span>
                     <Badge color={status.color} variant="soft" size="sm" className="shrink-0">
                       {status.label}

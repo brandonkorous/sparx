@@ -87,7 +87,7 @@ export default async function BillingSettingsPage() {
                         ? 'No active subscription yet'
                         : 'Billing isn’t switched on for this workspace yet'}
                     </p>
-                    <p className="text-base-content/70 text-sm">
+                    <p className="text-base-content text-sm">
                       Modules activate freely for now — you won’t be charged until billing goes
                       live. The plan below is what you’ll pay then, based on the modules you have on
                       today.
@@ -113,20 +113,18 @@ export default async function BillingSettingsPage() {
                       <p className="text-5xl font-medium tracking-tight">
                         {money(state.planTotalCents)}
                       </p>
-                      <p className="text-base-content/70 text-lg">{intervalLabel}</p>
+                      <p className="text-base-content text-lg">{intervalLabel}</p>
                     </div>
 
                     {trialEnds && status === 'trialing' ? (
-                      <p className="text-base-content/70 text-sm">Free trial ends {trialEnds}.</p>
+                      <p className="text-base-content text-sm">Free trial ends {trialEnds}.</p>
                     ) : nextBilling ? (
-                      <p className="text-base-content/70 text-sm">
-                        Next billing date {nextBilling}.
-                      </p>
+                      <p className="text-base-content text-sm">Next billing date {nextBilling}.</p>
                     ) : null}
 
                     <div className="flex flex-col gap-2">
                       {state.planModules.length === 0 ? (
-                        <p className="text-base-content/70 text-sm">
+                        <p className="text-base-content text-sm">
                           No billable modules active. Turn one on from Settings → Modules.
                         </p>
                       ) : (
@@ -145,7 +143,7 @@ export default async function BillingSettingsPage() {
                       )}
                     </div>
 
-                    <p className="text-base-content/70 text-xs">
+                    <p className="text-base-content text-xs">
                       Invoicing is included free with Commerce or B2B, so it never appears as a line
                       item. One invoice covers everything.
                     </p>
@@ -154,13 +152,13 @@ export default async function BillingSettingsPage() {
                       <div>
                         <ManageBillingButton disabled={!state.configured || !state.billingActive} />
                         {!state.billingActive ? (
-                          <p className="text-base-content/70 mt-2 text-xs">
+                          <p className="text-base-content mt-2 text-xs">
                             The portal opens once a subscription exists.
                           </p>
                         ) : null}
                       </div>
                     ) : (
-                      <p className="text-base-content/70 text-sm">
+                      <p className="text-base-content text-sm">
                         Only owners and admins can manage billing.
                       </p>
                     )}

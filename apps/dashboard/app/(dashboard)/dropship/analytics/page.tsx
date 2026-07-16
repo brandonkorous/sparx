@@ -85,7 +85,7 @@ function SummaryCard({
   return (
     <Card>
       <CardBody className="p-5">
-        <p className="text-base-content/70 mb-1 text-xs font-medium">{label}</p>
+        <p className="text-base-content mb-1 text-xs font-medium">{label}</p>
         <p className={`text-2xl font-semibold tracking-tight ${valueClass ?? ''}`}>
           {prefix}
           {value}
@@ -143,7 +143,7 @@ export default async function DropshipAnalyticsPage() {
           <div>
             <p className="mb-4 text-lg font-semibold">By supplier</p>
             {summary.bySupplier.length === 0 ? (
-              <p className="text-base-content/70">No fulfilled dropship orders yet.</p>
+              <p className="text-base-content">No fulfilled dropship orders yet.</p>
             ) : (
               <Table>
                 <thead>
@@ -192,7 +192,7 @@ export default async function DropshipAnalyticsPage() {
           <div>
             <p className="mb-4 text-lg font-semibold">Recent orders</p>
             {orders.length === 0 ? (
-              <p className="text-base-content/70">No orders yet.</p>
+              <p className="text-base-content">No orders yet.</p>
             ) : (
               <>
                 <Table>
@@ -237,7 +237,7 @@ export default async function DropshipAnalyticsPage() {
                           </Badge>
                         </td>
                         <td>
-                          <p className="text-base-content/70 text-sm">
+                          <p className="text-base-content text-sm">
                             {new Date(row.createdAt).toLocaleDateString()}
                           </p>
                         </td>
@@ -246,7 +246,7 @@ export default async function DropshipAnalyticsPage() {
                   </tbody>
                 </Table>
                 {totalOrderCount > 50 && (
-                  <p className="text-base-content/70 mt-3 text-sm">
+                  <p className="text-base-content mt-3 text-sm">
                     Showing 50 of {totalOrderCount} orders.
                   </p>
                 )}

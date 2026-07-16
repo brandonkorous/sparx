@@ -107,7 +107,7 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
         'disabled:pointer-events-none disabled:opacity-40',
         active
           ? 'bg-module bg-soft text-module'
-          : 'text-base-content/70 hover:bg-base-200 hover:text-base-content'
+          : 'text-base-content hover:bg-base-200 hover:text-base-content'
       )}
     >
       {children}
@@ -173,7 +173,7 @@ function MenuItem({
         'focus-visible:bg-base-200 focus-visible:outline-none'
       )}
     >
-      {icon ? <span className="text-base-content/70">{icon}</span> : null}
+      {icon ? <span className="text-base-content">{icon}</span> : null}
       {label}
     </button>
   );

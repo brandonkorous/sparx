@@ -67,6 +67,10 @@ const LEDE: Record<TailStage, { title: string; blurb: string; context: string }>
 // SAME page continues IN-PAGE through the reused Payments + Launch steps — it never
 // bounces to the classic wizard. It rebuilds the plan from the committed story so the
 // summary rail + savings stay consistent, and drives the proven onboarding actions.
+//
+// Unlike the composer, the tail offers NO switch to the wizard: the setup is already
+// committed, and the wizard's last two steps ARE these two, so there'd be nothing on
+// the other side to switch to.
 // The page renders this directly when resuming after the Stripe OAuth reload; the
 // composer renders it in place the instant a story is built.
 export function StoryTail({
@@ -172,7 +176,7 @@ export function StoryTail({
       <div className="flex flex-col gap-7">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">Get paid</h2>
-          <p className="text-base-content/70 max-w-[58ch]">
+          <p className="text-base-content max-w-[58ch]">
             Connect your Stripe account so your site can take customer payments. Your site can go
             live now — checkout just stays off until you connect.
           </p>

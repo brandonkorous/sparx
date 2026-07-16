@@ -151,7 +151,7 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
         {groups.length === 0 ? (
           <Card>
             <CardBody>
-              <p className="text-base-content/70">This install recorded no artifacts.</p>
+              <p className="text-base-content">This install recorded no artifacts.</p>
             </CardBody>
           </Card>
         ) : (
@@ -171,7 +171,7 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
                       <Link
                         key={item.href + item.label}
                         href={item.href}
-                        className="text-base-content/70 hover:text-base-content block truncate text-sm hover:underline"
+                        className="text-base-content hover:text-base-content block truncate text-sm hover:underline"
                       >
                         {item.label}
                       </Link>

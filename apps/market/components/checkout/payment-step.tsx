@@ -97,7 +97,7 @@ export function PaymentStep({
     return (
       <div className="flex flex-col gap-4">
         <h2 className="text-base-content text-lg font-semibold">Payment</h2>
-        <div className="text-base-content/70 flex items-center gap-2 py-8 text-sm">
+        <div className="text-base-content flex items-center gap-2 py-8 text-sm">
           <Loader2 size={18} className="animate-spin" aria-hidden />
           Preparing secure payment…
         </div>

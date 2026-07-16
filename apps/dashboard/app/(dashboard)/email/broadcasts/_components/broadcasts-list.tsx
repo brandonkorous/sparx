@@ -69,7 +69,7 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
       cell: (b) => (
         <div className="flex flex-col gap-1">
           {nameLink(b, 'text-sm font-medium hover:text-module hover:underline')}
-          <p className="text-base-content/70 truncate text-xs">{b.subject}</p>
+          <p className="text-base-content truncate text-xs">{b.subject}</p>
         </div>
       ),
     },
@@ -77,7 +77,7 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
     {
       header: 'Recipients',
       align: 'right',
-      cell: (b) => <p className="text-base-content/70 text-sm">{recipientsLabel(b)}</p>,
+      cell: (b) => <p className="text-base-content text-sm">{recipientsLabel(b)}</p>,
     },
     {
       header: '',
@@ -94,12 +94,12 @@ export function BroadcastsList({ rows, view }: BroadcastsListProps) {
 
   const card: SelectionCard<BroadcastRow> = {
     title: (b) => nameLink(b, 'truncate text-sm font-medium hover:text-module hover:underline'),
-    subtitle: (b) => <p className="text-base-content/70 truncate text-xs">{b.subject}</p>,
+    subtitle: (b) => <p className="text-base-content truncate text-xs">{b.subject}</p>,
     badge: statusBadge,
     body: (b) => (
       <div className="flex flex-col gap-2">
         {b.status === 'sent' || b.status === 'scheduled' ? (
-          <p className="text-base-content/70 text-sm">{recipientsLabel(b)}</p>
+          <p className="text-base-content text-sm">{recipientsLabel(b)}</p>
         ) : null}
         <Button variant="outline" size="sm" render={<Link href={`/email/broadcasts/${b.id}`} />}>
           <Send className="mr-1.5 h-3.5 w-3.5" />

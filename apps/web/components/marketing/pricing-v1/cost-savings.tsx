@@ -34,7 +34,7 @@ export function PricingV1CostSavings() {
                 <span className="text-primary text-6xl leading-[0.9] font-medium tracking-[-0.03em] lg:text-7xl">
                   {s.value}
                   {s.suffix ? (
-                    <span className="text-base-content/40 text-3xl font-normal">{s.suffix}</span>
+                    <span className="text-base-content text-3xl font-normal">{s.suffix}</span>
                   ) : null}
                 </span>
                 <Text className="text-sm">{s.label}</Text>
@@ -80,7 +80,7 @@ function Ledger() {
             </span>
             <Text
               as="span"
-              className="text-base-content/70 order-last col-span-2 text-sm sm:order-none sm:col-span-1"
+              className="text-base-content order-last col-span-2 text-sm sm:order-none sm:col-span-1"
             >
               → {row.alt}
             </Text>
@@ -118,7 +118,7 @@ function ScenarioCard({ scenario: sc }: { scenario: (typeof SCENARIOS)[number] }
             <Text as="span" className="text-sm">
               Bought separately
             </Text>
-            <span className="text-base-content/45 text-xl line-through">{sc.separate}</span>
+            <span className="text-base-content text-xl line-through">{sc.separate}</span>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -127,7 +127,7 @@ function ScenarioCard({ scenario: sc }: { scenario: (typeof SCENARIOS)[number] }
             </Text>
             <span className="text-primary text-5xl font-medium tracking-[-0.02em] lg:text-6xl">
               {sc.sparx.replace('/mo', '')}
-              <span className="text-base-content/45 text-2xl font-normal">/mo</span>
+              <span className="text-base-content text-2xl font-normal">/mo</span>
             </span>
           </div>
 

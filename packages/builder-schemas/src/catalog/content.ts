@@ -40,7 +40,7 @@ function postCard(): PlatformCatalogEntry['tree'] {
               'item.title'
             ),
             bound(
-              atom('Text', 'text-sm text-base-content/70', {
+              atom('Text', 'text-sm text-base-content', {
                 variant: 'body',
                 text: 'Why the most considerate products do less, more deliberately — and how restraint reads as quality.',
               }),
@@ -92,7 +92,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
                   'item.title'
                 ),
                 bound(
-                  atom('Text', 'text-base leading-relaxed text-base-content/70', {
+                  atom('Text', 'text-base leading-relaxed text-base-content', {
                     variant: 'body',
                     text: 'The most considerate products do less, more deliberately. A look at how restraint — fewer prompts, gentler motion, quieter color — reads as quality and earns trust.',
                   }),
@@ -134,11 +134,11 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
               }),
               'item.title'
             ),
-            el('div', 'flex items-center gap-3 text-sm text-base-content/60', {
+            el('div', 'flex items-center gap-3 text-sm text-base-content', {
               name: 'Byline',
               children: [
                 el('span', '', { text: 'By the editorial team' }),
-                el('span', 'text-base-content/30', { text: '·' }),
+                el('span', 'text-base-content', { text: '·' }),
                 el('span', '', { text: '6 min read' }),
               ],
             }),
@@ -248,25 +248,25 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
                     level: 'h3',
                     text: 'Jordan Avery',
                   }),
-                  el('p', 'text-sm text-base-content/60', { text: 'Senior writer' }),
+                  el('p', 'text-sm text-base-content', { text: 'Senior writer' }),
                 ],
               }),
-              atom('Text', 'text-sm leading-relaxed text-base-content/70', {
+              atom('Text', 'text-sm leading-relaxed text-base-content', {
                 variant: 'body',
                 text: 'Jordan writes about design, craft, and the small decisions that add up to great products. Ten years in, still sweating the details.',
               }),
               el('div', 'flex justify-center gap-3 @xl:justify-start', {
                 name: 'Social links',
                 children: [
-                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                  el('a', 'text-base-content transition-colors hover:text-primary', {
                     attrs: { href: '#', ariaLabel: 'Twitter' },
                     children: [atom('Icon', 'h-4 w-4', { name: 'twitter' })],
                   }),
-                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                  el('a', 'text-base-content transition-colors hover:text-primary', {
                     attrs: { href: '#', ariaLabel: 'LinkedIn' },
                     children: [atom('Icon', 'h-4 w-4', { name: 'linkedin' })],
                   }),
-                  el('a', 'text-base-content/50 transition-colors hover:text-primary', {
+                  el('a', 'text-base-content transition-colors hover:text-primary', {
                     attrs: { href: '#', ariaLabel: 'Website' },
                     children: [atom('Icon', 'h-4 w-4', { name: 'globe' })],
                   }),
@@ -300,7 +300,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
             name: 'Contents',
             attrs: { ariaLabel: 'On this page' },
             children: [
-              el('p', 'mb-2 text-xs font-semibold text-base-content/50', { text: 'On this page' }),
+              el('p', 'mb-2 text-xs font-semibold text-base-content', { text: 'On this page' }),
               part(
                 el('div', 'st-toc__list', {
                   name: 'Links',
@@ -328,11 +328,11 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
                 ),
                 'item.title'
               ),
-              el('div', 'mb-8 flex items-center gap-3 text-sm text-base-content/60', {
+              el('div', 'mb-8 flex items-center gap-3 text-sm text-base-content', {
                 name: 'Byline',
                 children: [
                   el('span', '', { text: 'By the editorial team' }),
-                  el('span', 'text-base-content/30', { text: '·' }),
+                  el('span', 'text-base-content', { text: '·' }),
                   el('span', '', { text: '9 min read' }),
                 ],
               }),

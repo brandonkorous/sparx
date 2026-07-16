@@ -124,12 +124,12 @@ function renderForType(activity: CrmActivity): ActivityRender {
 
 export function ActivityTimeline({ activities }: Props) {
   if (activities.length === 0) {
-    return <p className="text-base-content/70 text-sm">No activity yet.</p>;
+    return <p className="text-base-content text-sm">No activity yet.</p>;
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         Activities are append-only — corrections appear as new entries marked Edited.
       </p>
       <Timeline>

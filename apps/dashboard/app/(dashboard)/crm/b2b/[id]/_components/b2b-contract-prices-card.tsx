@@ -113,7 +113,7 @@ export function B2bContractPricesCard({
     <Card>
       <CardBody>
         <CardTitle>Contract prices</CardTitle>
-        <p className="text-base-content/70 -mt-2 text-sm">
+        <p className="text-base-content -mt-2 text-sm">
           Negotiated per-variant prices for this account — the first thing checked when pricing an
           order, above price lists and bulk tiers.
         </p>

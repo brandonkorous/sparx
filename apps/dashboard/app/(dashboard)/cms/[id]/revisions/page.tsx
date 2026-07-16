@@ -69,7 +69,7 @@ export default async function RevisionsPage({ params }: { params: Promise<{ id: 
               </>
             }
           />
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             Editing: <strong>{entry.body.title ?? '(untitled)'}</strong>
             {entry.slug && (
               <>

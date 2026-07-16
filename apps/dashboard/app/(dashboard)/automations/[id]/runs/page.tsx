@@ -67,7 +67,7 @@ export default async function AutomationRunsPage({ params }: PageProps) {
                 <div className="flex flex-row flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-row items-center gap-3">
                     <RunStatusBadge status={run.status} />
-                    <span className="text-base-content/70 text-sm">
+                    <span className="text-base-content text-sm">
                       Started {formatTimestamp(run.startedAt)}
                     </span>
                   </div>
@@ -77,10 +77,10 @@ export default async function AutomationRunsPage({ params }: PageProps) {
                         {run.errorMessage}
                       </span>
                     )}
-                    <span className="text-base-content/70 text-sm">
+                    <span className="text-base-content text-sm">
                       {run.completedAt ? `Done ${formatTimestamp(run.completedAt)}` : 'In progress'}
                     </span>
-                    <span className="text-base-content/70 text-sm">
+                    <span className="text-base-content text-sm">
                       {run.actionsTotal} step{run.actionsTotal === 1 ? '' : 's'}
                     </span>
                   </div>

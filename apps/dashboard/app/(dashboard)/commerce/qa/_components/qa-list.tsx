@@ -90,7 +90,7 @@ export function QaList({ rows, view }: QaListProps) {
         {q.productTitle}
       </Link>
     ) : (
-      <p className="text-base-content/70 text-sm">Deleted product</p>
+      <p className="text-base-content text-sm">Deleted product</p>
     );
 
   const columns: SelectionColumn<DisplayRow>[] = [
@@ -105,11 +105,11 @@ export function QaList({ rows, view }: QaListProps) {
   const card: SelectionCard<DisplayRow> = {
     title: (q) => questionLink(q, 'truncate hover:text-module'),
     subtitle: (q) => (
-      <p className="text-base-content/70 text-xs">{q.productTitle ?? 'Deleted product'}</p>
+      <p className="text-base-content text-xs">{q.productTitle ?? 'Deleted product'}</p>
     ),
     badge: (q) => <StatusBadge status={q.status} />,
     body: (q) => (
-      <p className="text-base-content/70 text-xs">
+      <p className="text-base-content text-xs">
         {q.authorLabel} · {q.answerCount ?? '—'} answer{q.answerCount === 1 ? '' : 's'} · asked{' '}
         {new Date(q.createdAt).toLocaleDateString()}
       </p>

@@ -31,9 +31,9 @@ export function ActivityFeed({ items }: { items: ActivityItem[] }) {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="text-base-content truncate text-sm font-medium">{it.title}</div>
-                    <div className="text-base-content/50 truncate text-xs">{it.meta}</div>
+                    <div className="text-base-content truncate text-xs">{it.meta}</div>
                   </div>
-                  <p className="text-base-content/70 shrink-0 text-xs">{timeAgo(it.at)}</p>
+                  <p className="text-base-content shrink-0 text-xs">{timeAgo(it.at)}</p>
                 </div>
               </ModuleProvider>
             ))}

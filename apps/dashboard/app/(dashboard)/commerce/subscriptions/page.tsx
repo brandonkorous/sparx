@@ -87,7 +87,7 @@ export default async function SubscriptionsPage({
         </Card>
       ) : (
         <>
-          <p className="text-base-content/70 text-sm">
+          <p className="text-base-content text-sm">
             {status ? labelForStatus(status) : 'All subscriptions'} — MRR is normalized to a monthly
             cadence; annual / weekly / daily subs are converted.
           </p>

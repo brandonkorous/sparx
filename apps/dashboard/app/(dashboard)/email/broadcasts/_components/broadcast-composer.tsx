@@ -101,7 +101,7 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
         <Field>
           <FieldLabel>Audience (CRM segment)</FieldLabel>
           {segments.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No segments found. Create one in the CRM module to target an audience.
             </p>
           ) : (
@@ -120,7 +120,7 @@ export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
         <Field>
           <FieldLabel>Email</FieldLabel>
           {designedEmails.length === 0 ? (
-            <p className="text-base-content/70 text-sm">
+            <p className="text-base-content text-sm">
               No published emails yet.{' '}
               <Link href="/builder/email" className="underline">
                 Design one in the Email Builder

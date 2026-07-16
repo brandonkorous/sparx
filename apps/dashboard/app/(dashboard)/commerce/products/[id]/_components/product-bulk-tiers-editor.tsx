@@ -280,14 +280,14 @@ function BulkTierTable({
             <td>
               <div className="flex flex-col gap-0">
                 <span className="font-medium">{name}</span>
-                {sku && <span className="text-base-content/60 font-mono text-xs">{sku}</span>}
+                {sku && <span className="text-base-content font-mono text-xs">{sku}</span>}
               </div>
             </td>
             <td className="text-right tabular-nums">{tier.minQuantity}+</td>
             <td className="text-right tabular-nums">{priceLabel}</td>
             <td className="text-right">
               {offPct === null ? (
-                <span className="text-base-content/70 text-sm">—</span>
+                <span className="text-base-content text-sm">—</span>
               ) : offPct > 0 ? (
                 <Badge color="success" variant="soft" size="sm">
                   {offPct.toFixed(0)}% off

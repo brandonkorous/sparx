@@ -87,7 +87,7 @@ export function ToolPolicyManager({ tools }: ToolPolicyManagerProps) {
   return (
     <>
       <div className="flex flex-row flex-wrap items-center justify-between gap-3">
-        <p className="text-base-content/70 text-sm">
+        <p className="text-base-content text-sm">
           {tools.length} tool{tools.length === 1 ? '' : 's'} in your MCP catalog
           {disabledCount > 0 ? ` · ${disabledCount} disabled` : ' · all exposed'}.
         </p>
@@ -177,7 +177,7 @@ function ToolRow({ tool, isLast }: ToolRowProps) {
         isLast ? '' : 'border-base-300 border-b',
       ].join(' ')}
     >
-      <span aria-hidden className="text-base-content/50 mt-1 self-start">
+      <span aria-hidden className="text-base-content mt-1 self-start">
         {tool.write ? <Pencil className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
       </span>
       <div className="min-w-0 flex-1">
@@ -198,8 +198,8 @@ function ToolRow({ tool, isLast }: ToolRowProps) {
             </Badge>
           )}
         </div>
-        <p className="text-base-content/70 mt-1 text-sm">{tool.description}</p>
-        <p className="text-base-content/50 mt-1 font-mono text-xs">{tool.scope}</p>
+        <p className="text-base-content mt-1 text-sm">{tool.description}</p>
+        <p className="text-base-content mt-1 font-mono text-xs">{tool.scope}</p>
       </div>
       <Switch
         color="module"

@@ -137,7 +137,7 @@ export function AddStageForm({
       </div>
 
       <div className="flex flex-row flex-wrap items-center gap-4 px-1">
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={numberOnEnter}
@@ -155,7 +155,7 @@ export function AddStageForm({
             aria-label="Number prefix"
           />
         )}
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={snapshotOnEnter}
@@ -163,7 +163,7 @@ export function AddStageForm({
           />
           Freeze a snapshot
         </label>
-        <label className="text-base-content/60 flex items-center gap-1.5 text-xs">
+        <label className="text-base-content flex items-center gap-1.5 text-xs">
           <Checkbox
             color="module"
             checked={locksEditing}
@@ -171,7 +171,7 @@ export function AddStageForm({
           />
           Lock editing
         </label>
-        <p className="text-base-content/70 text-xs">Tune the color on the stage after adding.</p>
+        <p className="text-base-content text-xs">Tune the color on the stage after adding.</p>
       </div>
     </div>
   );

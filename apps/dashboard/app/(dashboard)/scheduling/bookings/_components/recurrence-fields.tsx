@@ -98,7 +98,7 @@ export function RecurrenceFields({
               value={value.interval}
               onChange={(e) => set({ interval: Math.max(1, Number(e.target.value) || 1) })}
             />
-            <span className="text-base-content/70 text-sm">{UNIT[value.frequency]}</span>
+            <span className="text-base-content text-sm">{UNIT[value.frequency]}</span>
           </div>
         </Field>
       </div>
@@ -122,7 +122,7 @@ export function RecurrenceFields({
               </Button>
             ))}
           </div>
-          <p className="text-base-content/70 mt-1 text-xs">
+          <p className="text-base-content mt-1 text-xs">
             Leave blank to repeat on the start day each week.
           </p>
         </div>
@@ -157,7 +157,7 @@ export function RecurrenceFields({
                   set({ end: { type: 'after', count: Math.max(1, Number(e.target.value) || 1) } })
                 }
               />
-              <span className="text-base-content/70 text-sm">occurrences</span>
+              <span className="text-base-content text-sm">occurrences</span>
             </div>
           ) : null}
           {value.end.type === 'on' ? (

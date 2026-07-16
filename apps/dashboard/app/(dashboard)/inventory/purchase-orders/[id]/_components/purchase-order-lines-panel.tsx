@@ -69,7 +69,7 @@ export function PurchaseOrderLinesPanel({
         </div>
         <div className="flex flex-col gap-4">
           {lines.length === 0 ? (
-            <p className="text-base-content/70 text-sm">No lines on this order.</p>
+            <p className="text-base-content text-sm">No lines on this order.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {lines.map((line) =>
@@ -157,7 +157,7 @@ function EditableLineRow({
         <p className="text-sm font-medium">
           {line.productTitle ?? line.description ?? line.variantSku ?? line.variantId.slice(0, 8)}
         </p>
-        <p className="text-base-content/70 font-mono text-xs">
+        <p className="text-base-content font-mono text-xs">
           {line.variantSku ?? line.variantId}
           {line.supplierSku ? ` · their #${line.supplierSku}` : ''}
         </p>
@@ -176,7 +176,7 @@ function EditableLineRow({
         onChange={(e) => setCost(e.target.value)}
         className="w-[6rem]"
       />
-      <p className="text-base-content/70 w-[5rem] text-right text-sm">
+      <p className="text-base-content w-[5rem] text-right text-sm">
         {formatMoney(line.lineTotalCents, currency)}
       </p>
       <Button color="module" variant="soft" size="sm" onClick={save} disabled={busy || !dirty}>
@@ -198,7 +198,7 @@ function ReadOnlyLineRow({ line, currency }: { line: PurchaseOrderLineRow; curre
         <p className="text-sm font-medium">
           {line.productTitle ?? line.description ?? line.variantSku ?? line.variantId.slice(0, 8)}
         </p>
-        <p className="text-base-content/70 font-mono text-xs">
+        <p className="text-base-content font-mono text-xs">
           {line.variantSku ?? line.variantId}
           {line.supplierSku ? ` · their #${line.supplierSku}` : ''}
         </p>
@@ -206,7 +206,7 @@ function ReadOnlyLineRow({ line, currency }: { line: PurchaseOrderLineRow; curre
       <Badge color={fullyReceived ? 'success' : line.quantityReceived > 0 ? 'warning' : 'neutral'}>
         {line.quantityReceived}/{line.quantityOrdered} recv
       </Badge>
-      <p className="text-base-content/70 w-[6rem] text-right text-sm">
+      <p className="text-base-content w-[6rem] text-right text-sm">
         {formatMoney(line.unitCostCents, currency)}
       </p>
       <p className="w-[6rem] text-right text-sm font-medium">
@@ -219,7 +219,7 @@ function ReadOnlyLineRow({ line, currency }: { line: PurchaseOrderLineRow; curre
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex flex-row justify-between gap-2">
-      <p className="text-base-content/70 text-sm">{label}</p>
+      <p className="text-base-content text-sm">{label}</p>
       <p className={strong ? 'text-sm font-semibold' : 'text-sm'}>{value}</p>
     </div>
   );

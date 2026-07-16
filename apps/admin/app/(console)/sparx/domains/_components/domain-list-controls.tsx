@@ -150,7 +150,7 @@ export function FilterTabs({
             'border-b-2 pb-1 text-sm font-medium transition-colors',
             tab.isActive
               ? 'border-module text-base-content'
-              : 'text-base-content/60 hover:text-base-content border-transparent'
+              : 'text-base-content hover:text-base-content border-transparent'
           )}
         >
           {tab.label}

@@ -75,7 +75,7 @@ export default async function BroadcastDetailPage({ params }: { params: Promise<
                 {STAT_LABELS.map(({ key, label }) => (
                   <div key={key} className="flex flex-col gap-1">
                     <h2 className="text-2xl font-semibold tracking-tight">{stats[key]}</h2>
-                    <p className="text-base-content/70 text-sm">{label}</p>
+                    <p className="text-base-content text-sm">{label}</p>
                   </div>
                 ))}
               </div>

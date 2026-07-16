@@ -314,7 +314,7 @@ export default async function AutomationsPage() {
           right={<CardLink href="/automations?status=error">All issues</CardLink>}
         >
           {attention.length === 0 ? (
-            <div className="text-base-content/70 flex items-center gap-3 py-2 text-sm">
+            <div className="text-base-content flex items-center gap-3 py-2 text-sm">
               <ShieldCheck className="text-success h-4 w-4" />
               Everything is running clean — no failed or paused automations.
             </div>
@@ -460,7 +460,7 @@ export default async function AutomationsPage() {
                           {a.name}
                         </Link>
                       </td>
-                      <td className="text-base-content/70">
+                      <td className="text-base-content">
                         {summarizeTrigger(a.triggerType, a.triggerConfig)}
                       </td>
                       <td className="text-right tabular-nums">{fmtNumber(a.runCount)}</td>

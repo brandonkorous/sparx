@@ -42,7 +42,7 @@ export function StepPayments({
               {stripeConnected ? (
                 <CheckCircle className="text-success h-5 w-5" />
               ) : (
-                <CreditCard className="text-base-content/70 h-5 w-5" />
+                <CreditCard className="text-base-content h-5 w-5" />
               )}
             </span>
             <div>
@@ -54,7 +54,7 @@ export function StepPayments({
                   </Badge>
                 )}
               </span>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content text-sm">
                 {stripeConnected
                   ? 'Your Stripe account is connected. Checkout is enabled.'
                   : 'Cards, wallets, and bank debits — paid out to your bank.'}
@@ -75,10 +75,10 @@ export function StepPayments({
         </div>
 
         <div className="border-base-300 mt-4 flex items-start gap-2.5 border-t pt-4">
-          <Info className="text-base-content/50 mt-0.5 h-4 w-4 shrink-0" />
-          <p className="text-base-content/70 text-xs">
+          <Info className="text-base-content mt-0.5 h-4 w-4 shrink-0" />
+          <p className="text-base-content text-xs">
             This is the account that{' '}
-            <span className="text-base-content/70 font-medium">
+            <span className="text-base-content font-medium">
               receives money from your customers
             </span>{' '}
             — separate from your own sparx subscription, which stays free for 14 days.

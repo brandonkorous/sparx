@@ -82,9 +82,9 @@ export function GatewayTile({
               <p className="truncate font-medium">{gateway.name}</p>
               <GatewayStatusBadge status={status} />
             </div>
-            <p className="text-base-content/70 truncate text-xs">{checkoutTag(gateway)}</p>
+            <p className="text-base-content truncate text-xs">{checkoutTag(gateway)}</p>
           </div>
-          <ChevronRight className="text-base-content/50 h-4 w-4 shrink-0" />
+          <ChevronRight className="text-base-content h-4 w-4 shrink-0" />
         </div>
       </CardBody>
     </Card>
@@ -105,9 +105,9 @@ export function PayPalTile(): React.JSX.Element {
             <GatewayMark gatewayId="paypal" size="md" />
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <p className="truncate font-medium">PayPal</p>
-              <p className="text-base-content/70 truncate text-xs">No sparx fee · Hosted page</p>
+              <p className="text-base-content truncate text-xs">No sparx fee · Hosted page</p>
             </div>
-            <ChevronRight className="text-base-content/50 h-4 w-4 shrink-0" />
+            <ChevronRight className="text-base-content h-4 w-4 shrink-0" />
           </div>
         </Link>
       </CardBody>
@@ -140,12 +140,12 @@ export function ManualRow({
                 </Badge>
               ) : null}
             </div>
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               Record check, cash, wire, or ACH by hand. No online card payments, no fee.
             </p>
           </div>
           {active ? (
-            <p className="text-base-content/70 text-sm">In use</p>
+            <p className="text-base-content text-sm">In use</p>
           ) : (
             <Button color="module" variant="outline" size="sm" onClick={onUse} disabled={disabled}>
               Use manual

@@ -122,7 +122,7 @@ export function JoinForm() {
                         <Label htmlFor={`tier-${t}`}>
                           {meta.label} · {meta.commission}
                         </Label>
-                        <p className="text-base-content/70 text-xs">
+                        <p className="text-base-content text-xs">
                           Reviewed before approval — we confirm within 3 business days.
                         </p>
                       </div>
@@ -132,7 +132,7 @@ export function JoinForm() {
               </div>
             </div>
 
-            <p className="text-base-content/70 text-xs">
+            <p className="text-base-content text-xs">
               We review every application to keep the partner directory high-quality. You’ll hear
               back within 3 business days — nothing activates until we approve it.
             </p>

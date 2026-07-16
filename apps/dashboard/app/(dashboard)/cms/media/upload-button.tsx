@@ -114,7 +114,7 @@ export function UploadButton() {
         <div className="flex flex-col gap-1">
           <p
             className={
-              progress.status === 'error' ? 'text-danger text-xs' : 'text-base-content/70 text-xs'
+              progress.status === 'error' ? 'text-danger text-xs' : 'text-base-content text-xs'
             }
           >
             {progress.filename}

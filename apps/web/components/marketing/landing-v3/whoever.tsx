@@ -28,7 +28,7 @@ export function LandingV3Whoever() {
               Whoever you are, it&apos;s already for you
               <span className="text-primary">.</span>
             </Heading>
-            <Text variant="lead" className="text-base-content/90 max-w-xl text-2xl">
+            <Text variant="lead" className="text-base-content max-w-xl text-2xl">
               A maker, a shop, a studio, a workshop, a wholesaler. sparx bends to the business you
               actually run, not the other way around.
             </Text>

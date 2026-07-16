@@ -33,7 +33,7 @@ const OUTCOMES: { key: keyof SchedulingReport['totals']; label: string; color: s
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
     <Card className="p-4">
-      <p className="text-base-content/70 text-xs">{label}</p>
+      <p className="text-base-content text-xs">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
     </Card>
   );
@@ -58,7 +58,7 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
 
   if (!report) {
     return (
-      <p className="text-base-content/70 text-sm">
+      <p className="text-base-content text-sm">
         Reports aren&rsquo;t available yet — once bookings come in they&rsquo;ll show here.
       </p>
     );
@@ -98,7 +98,7 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
         <div className="flex flex-col gap-2">
           {OUTCOMES.map((o) => (
             <div key={o.key} className="flex items-center gap-3">
-              <span className="text-base-content/70 w-20 text-xs">{o.label}</span>
+              <span className="text-base-content w-20 text-xs">{o.label}</span>
               <div className="bg-base-300 h-2 flex-1 overflow-hidden rounded-full">
                 <div
                   className="h-full rounded-full"
@@ -114,13 +114,13 @@ export function ReportView({ initial }: { initial: SchedulingReport | null }) {
       <Card className="p-4">
         <p className="mb-3 text-sm font-medium">Busiest services</p>
         {report.topServices.length === 0 ? (
-          <p className="text-base-content/70 text-xs">No bookings in this range.</p>
+          <p className="text-base-content text-xs">No bookings in this range.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {report.topServices.map((s) => (
               <li key={s.serviceId} className="flex items-center justify-between text-sm">
                 <span>{s.name}</span>
-                <span className="text-base-content/70 tabular-nums">{s.count}</span>
+                <span className="text-base-content tabular-nums">{s.count}</span>
               </li>
             ))}
           </ul>

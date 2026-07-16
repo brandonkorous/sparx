@@ -51,7 +51,7 @@ export default async function TenantBillingPage({ params }: { params: Promise<{ 
   }
 
   const backLink = (
-    <Link href={`/sparx/tenants/${id}`} className="text-base-content/60 text-sm hover:underline">
+    <Link href={`/sparx/tenants/${id}`} className="text-base-content text-sm hover:underline">
       ← Back to tenant
     </Link>
   );

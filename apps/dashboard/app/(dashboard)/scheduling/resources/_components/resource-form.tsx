@@ -355,7 +355,7 @@ function ToggleRow({
     <label className="flex items-center justify-between gap-4">
       <span>
         <p className="text-sm font-medium">{label}</p>
-        {hint ? <p className="text-base-content/70 text-xs">{hint}</p> : null}
+        {hint ? <p className="text-base-content text-xs">{hint}</p> : null}
       </span>
       <Switch color="module" checked={checked} onCheckedChange={onChange} />
     </label>

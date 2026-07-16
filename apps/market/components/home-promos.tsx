@@ -35,7 +35,7 @@ function PromoCard({ promo }: { promo: PromoCardData }) {
           />
         ) : (
           <span
-            className="text-base-content/50 flex h-full w-full items-center justify-center"
+            className="text-base-content flex h-full w-full items-center justify-center"
             aria-hidden
           >
             <ImageOff size={28} />
@@ -47,7 +47,7 @@ function PromoCard({ promo }: { promo: PromoCardData }) {
           <Icon size={18} aria-hidden className={hueText(promo.color)} />
           <span className="text-base-content text-lg font-semibold">{promo.label}</span>
         </div>
-        <span className="text-base-content/70 mt-1 block text-[0.875rem]">{promo.sub}</span>
+        <span className="text-base-content mt-1 block text-[0.875rem]">{promo.sub}</span>
       </div>
     </LinkCard>
   );
