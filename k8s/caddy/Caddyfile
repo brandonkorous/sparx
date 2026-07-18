@@ -104,6 +104,28 @@ sparx.works, www.sparx.works {
     on_demand
   }
   import security_headers
+
+  # Social-card images are proxied with response BUFFERING (`flush_interval -1`)
+  # so Caddy emits a real Content-Length instead of streaming them back chunked.
+  #
+  # Why this is needed: LinkedIn's image fetcher sizes an image from
+  # Content-Length before it will download it. Without the header it reports
+  # "cannot find an image" even though the URL returns 200 image/png and the
+  # og:image tags are complete — which is exactly the failure we hit. A HEAD on
+  # these paths was returning neither Content-Length nor Transfer-Encoding.
+  # Browsers, Slack, and X all tolerate the chunked response, so this presented
+  # as LinkedIn-only.
+  #
+  # Deliberately scoped to the two Next metadata-image conventions rather than
+  # applied to the whole site: `flush_interval -1` disables streaming, which
+  # would break Server-Sent Events / token streaming used by the chat widget.
+  # These cards are small (~60KB) and fully rendered before send, so buffering
+  # them costs nothing.
+  @social path */opengraph-image */twitter-image
+  reverse_proxy @social web.sparx-prod.svc.cluster.local:3000 {
+    flush_interval -1
+  }
+
   reverse_proxy web.sparx-prod.svc.cluster.local:3000
 }
 

@@ -3,7 +3,15 @@ import { BRAND } from '@sparx/brand';
 import { ModuleStrip } from '@/components/marketing/module-strip';
 import { OgWordmark } from '@/lib/og-wordmark';
 
-export const runtime = 'edge';
+// `nodejs`, not `edge` — this card is prerendered to a static .body file at build
+// time, which is what makes the response a buffered file with a real
+// Content-Length. On `edge` it was compiled per request (satori + the yoga/resvg
+// wasm), measured at ~2.4s vs ~0.24s static, and streamed back chunked with NO
+// Content-Length. LinkedIn's image fetcher validates size against Content-Length
+// before downloading, so a chunked OG response is rejected — which is why the
+// cards worked everywhere except LinkedIn. Nothing here needs the edge runtime
+// (system fonts, inline SVG, no network), so this matches the other module cards.
+export const runtime = 'nodejs';
 export const alt = 'sparx — Everything, ignited.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';

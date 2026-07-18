@@ -28,6 +28,17 @@ export function proxy(request: NextRequest): NextResponse {
 
 // Run on pages, not on static assets, the image optimizer, or files with an
 // extension (`.png`, `.svg`, …) — they don't need an attribution touch.
+//
+// `opengraph-image` / `twitter-image` are excluded explicitly because Next's
+// metadata-image routes are EXTENSIONLESS (`/pricing/opengraph-image`), so the
+// `\.[\w]+$` rule above never caught them and this proxy was attaching a
+// Set-Cookie to a PNG. Two things broke as a result: crawlers treat a
+// cookie-setting image response as suspect, and Cloudflare refuses to cache any
+// response carrying Set-Cookie — so every social card was a cold origin hit.
+// Anchored with `$` so only the metadata route itself is excluded, not an
+// ordinary page whose path happens to contain the word.
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.[\\w]+$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*(?:opengraph-image|twitter-image)$|.*\\.[\\w]+$).*)',
+  ],
 };

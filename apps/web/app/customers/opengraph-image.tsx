@@ -6,7 +6,10 @@ import { OgWordmark } from '@/lib/og-wordmark';
 // The /customers OG card. Mirrors the /platform and /pricing cards (wordmark +
 // tag, big headline, module-dot footer) with customers copy. system-ui fonts so
 // no remote font fetch is needed.
-export const runtime = 'edge';
+// nodejs so this card prerenders to a static .body with a real Content-Length —
+// LinkedIn rejects the chunked, no-Content-Length response an edge OG route
+// streams. See app/opengraph-image.tsx for the full reasoning.
+export const runtime = 'nodejs';
 export const alt = 'sparx — Who builds on sparx. Every kind of operator, one platform.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
