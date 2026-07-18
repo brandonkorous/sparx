@@ -16,37 +16,24 @@
 import fastifyJwt from '@fastify/jwt';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import { isModuleEnabled, verifyApiKey, verifyMcpOAuthToken } from '@sparx/auth';
+import {
+  grantableScopesForRole,
+  isModuleEnabled,
+  verifyApiKey,
+  verifyMcpOAuthToken,
+  type McpBusinessScope,
+} from '@sparx/auth';
 import { env } from './env.js';
 
 export type StaffRole = 'owner' | 'admin' | 'editor' | 'viewer' | 'api';
 
-// Platform-wide MCP scope vocabulary. Each module contributes its read/write
-// scopes; the server stores scopes as plain strings so a new module's scopes
-// don't require widening this type at every call site.
-export type McpScope =
-  | 'read:crm'
-  | 'write:crm'
-  | 'write:crm_bulk'
-  | 'read:commerce'
-  | 'write:commerce'
-  | 'write:commerce_bulk'
-  | 'read:inventory'
-  | 'write:inventory'
-  | 'read:builder'
-  | 'write:builder'
-  | 'read:email'
-  | 'write:email'
-  | 'write:email_bulk'
-  | 'read:search'
-  | 'read:automations'
-  | 'write:automations'
-  | 'read:domains'
-  | 'write:domains'
-  | 'read:invoicing'
-  | 'write:invoicing'
-  | 'read:scheduling'
-  | 'write:scheduling';
+// Platform-wide MCP scope vocabulary — RE-EXPORTED from @sparx/auth, never
+// re-declared. This used to be a hand-copied union, and the copy silently fell
+// behind: the CMS tools shipped requiring `read:cms`/`write:cms` while both this
+// list and the grantable-scope catalog still predated them, so the entire content
+// surface was unreachable over MCP. A module's scopes now reach every gate the
+// moment they land in the catalog.
+export type McpScope = McpBusinessScope;
 
 export interface McpAuthContext {
   tenantId: string;
@@ -65,91 +52,14 @@ interface InternalJwtPayload {
   scopes?: McpScope[];
 }
 
-const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
-  owner: [
-    'read:crm',
-    'write:crm',
-    'write:crm_bulk',
-    'read:commerce',
-    'write:commerce',
-    'write:commerce_bulk',
-    'read:inventory',
-    'write:inventory',
-    'read:builder',
-    'write:builder',
-    'read:email',
-    'write:email',
-    'write:email_bulk',
-    'read:search',
-    'read:automations',
-    'write:automations',
-    'read:domains',
-    'write:domains',
-    'read:invoicing',
-    'write:invoicing',
-    'read:scheduling',
-    'write:scheduling',
-  ],
-  admin: [
-    'read:crm',
-    'write:crm',
-    'write:crm_bulk',
-    'read:commerce',
-    'write:commerce',
-    'write:commerce_bulk',
-    'read:inventory',
-    'write:inventory',
-    'read:builder',
-    'write:builder',
-    'read:email',
-    'write:email',
-    'write:email_bulk',
-    'read:search',
-    'read:automations',
-    'write:automations',
-    'read:domains',
-    'write:domains',
-    'read:invoicing',
-    'write:invoicing',
-    'read:scheduling',
-    'write:scheduling',
-  ],
-  editor: [
-    'read:crm',
-    'write:crm',
-    'read:commerce',
-    'write:commerce',
-    'read:inventory',
-    'write:inventory',
-    'read:builder',
-    'write:builder',
-    'read:email',
-    'write:email',
-    'read:search',
-    'read:automations',
-    'write:automations',
-    'read:domains',
-    'read:invoicing',
-    'write:invoicing',
-    'read:scheduling',
-    'write:scheduling',
-  ],
-  viewer: [
-    'read:crm',
-    'read:commerce',
-    'read:inventory',
-    'read:builder',
-    'read:email',
-    'read:search',
-    'read:automations',
-    'read:domains',
-    'read:invoicing',
-    'read:scheduling',
-  ],
-  // External api keys have no role-derived default; their scope list is
-  // exactly what the dashboard issued.
-  api: [],
-};
+/** The MOST a staff role's JWT gets when the token carries no explicit `scopes`.
+ *  Delegates to @sparx/auth's `grantableScopesForRole` rather than restating the
+ *  policy — this table was previously hand-maintained here AND in the auth package,
+ *  and the two drifted (see the McpScope note above). One policy, one place:
+ *  owner/admin get everything, editor loses bulk + domain writes, viewer is
+ *  read-only, and an API key has no role default (its scopes are exactly what the
+ *  dashboard issued). */
+const defaultScopesForRole = (role: StaffRole): McpScope[] => grantableScopesForRole(role);
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -244,7 +154,7 @@ async function authenticateJwt(request: FastifyRequest): Promise<McpAuthContext>
   if (!payload.sub || !payload.tid) {
     throw new AuthError('Token is missing required claims');
   }
-  const granted = payload.scopes ?? DEFAULT_SCOPES_BY_ROLE[payload.role] ?? [];
+  const granted = payload.scopes ?? defaultScopesForRole(payload.role);
   return {
     tenantId: payload.tid,
     userId: payload.sub,

@@ -30,6 +30,8 @@ export type McpBusinessScope =
   | 'write:inventory'
   | 'read:builder'
   | 'write:builder'
+  | 'read:cms'
+  | 'write:cms'
   | 'read:email'
   | 'write:email'
   | 'write:email_bulk'
@@ -126,6 +128,26 @@ export const MCP_SCOPE_CATALOG: readonly McpScopeMeta[] = [
     kind: 'write',
     label: 'Edit site',
     description: 'Edit sections/pages, publish, and roll back the site.',
+  },
+  // Content (docs/12). These were MISSING from this catalog while ten CMS tools in
+  // the registry already required them and api-mcp already mapped them to the `cms`
+  // module gate — so the whole content surface was unreachable over MCP on BOTH auth
+  // paths at once: the API-key dialog renders this catalog (so the scope could never
+  // be picked) and MCP_ALL_OAUTH_SCOPES derives from it (so authorize rejected it).
+  // A content-only tenant could not let an assistant touch their content at all.
+  {
+    scope: 'read:cms',
+    module: 'Content',
+    kind: 'read',
+    label: 'Read content',
+    description: 'View content types, entries, and drafts.',
+  },
+  {
+    scope: 'write:cms',
+    module: 'Content',
+    kind: 'write',
+    label: 'Manage content',
+    description: 'Create and edit content types and entries, and publish them.',
   },
   {
     scope: 'read:email',
