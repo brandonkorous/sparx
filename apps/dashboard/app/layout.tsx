@@ -27,9 +27,14 @@ const interWordmark = Inter({
   display: 'swap',
 });
 
+// The dashboard is an authenticated application, never a public destination.
+// Every route sits behind auth, but `noindex` is cheap defence-in-depth against
+// a route that leaks (an unauthenticated error page, a public preview, a
+// misconfigured redirect) quietly ending up in an index. Mirrors apps/admin.
 export const metadata: Metadata = {
   title: 'sparx Dashboard',
   description: 'Admin for the sparx content and commerce platform.',
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

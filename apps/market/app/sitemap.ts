@@ -2,8 +2,7 @@ import type { MetadataRoute } from 'next';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 
 import { listMerchantSlugs, listProductSlugs } from '@/lib/sitemap-data';
-
-const BASE = 'https://sparx.market';
+import { SITE_ORIGIN as BASE } from '@/lib/site';
 
 // Static marketplace routes + one indexed landing page per market category +
 // the live catalog (every product + merchant). The category list comes from

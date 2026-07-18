@@ -6,6 +6,7 @@
 // long scroll reads as a rhythm rather than one flat wall. Every strip degrades to
 // nothing if empty, so the page always renders. Solid fills only — no gradients.
 
+import type { Metadata } from 'next';
 import { marketCategoryLabel } from '@sparx/commerce-schemas';
 
 import { HomeHero } from '@/components/home-hero';
@@ -27,6 +28,17 @@ export const revalidate = 60;
 // Consistent vertical rhythm for a contained (white) run of product sections
 // between the full-bleed colored bands.
 const FLOW_CLASS = 'flex flex-col gap-12 py-10 md:gap-16 md:py-14';
+
+// The highest-value URL on the domain gets its own title + canonical rather than
+// inheriting the layout defaults by accident. `title.absolute` opts out of the
+// layout's `%s · sparx.market` template — the homepage title already names the
+// site, so the template would render it twice.
+export const metadata: Metadata = {
+  title: { absolute: 'sparx.market — Shop thousands of independent sellers' },
+  description:
+    'Browse and buy from thousands of independent shops in one place. Real makers, shipped direct — discover products you won’t find on the big marketplaces.',
+  alternates: { canonical: '/' },
+};
 
 export default async function HomePage() {
   const {

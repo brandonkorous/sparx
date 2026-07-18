@@ -25,6 +25,7 @@ import {
   getRelatedProducts,
 } from '@/lib/market';
 import { formatPriceRange } from '@/lib/format';
+import { SITE_ORIGIN } from '@/lib/site';
 
 export const revalidate = 60;
 
@@ -115,11 +116,38 @@ export default async function ProductDetailPage({ params }: PageProps) {
     },
   };
 
+  // Mirrors the visual trail below exactly — Google requires the markup to match
+  // what the page actually shows. `item` must be an ABSOLUTE URL; a relative path
+  // invalidates the entry. The final crumb (this product) deliberately carries no
+  // `item`: the current page is not a link to itself.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Products', item: `${SITE_ORIGIN}/products` },
+      ...(product.category
+        ? [
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: marketCategoryLabel(product.category),
+              item: `${SITE_ORIGIN}/${product.category}`,
+            },
+          ]
+        : []),
+      { '@type': 'ListItem', position: product.category ? 3 : 2, name: product.title },
+    ],
+  };
+
   return (
     <Container className="py-8 md:py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <RecordView slug={product.slug} />
 
