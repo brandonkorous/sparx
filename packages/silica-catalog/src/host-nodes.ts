@@ -33,7 +33,7 @@
 // A key with no live mapping on either end is a half-built surface, so an entry is
 // added here only once its full vertical (skeleton + real component + route) lands.
 
-import { el, host, type Node } from '@wizeworks/silicaui-html';
+import { el, host, type HostNode, type Node } from '@wizeworks/silicaui-html';
 
 /** The host-component keys, namespaced by owning module. Matched verbatim against a
  *  `HostNode.component`; every key in `HOST_COMPONENTS` has a live mapping on BOTH
@@ -262,7 +262,7 @@ export function hostCore(
   key: HostComponentKey,
   cls?: string,
   props?: Record<string, unknown>
-): Node {
+): HostNode {
   const meta = HOST_COMPONENTS.find((c) => c.key === key);
   const node = host(key, cls ?? meta?.defaultClass ?? '', props ?? defaultHostProps(key));
   return meta?.pinned === false ? node : { ...node, locked: 'host' };

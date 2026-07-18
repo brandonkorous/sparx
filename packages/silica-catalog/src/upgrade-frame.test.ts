@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { atom, bind, el } from '@wizeworks/silicaui-html';
-import type { Node } from '@wizeworks/silicaui-html';
+import type { HostNode, Node } from '@wizeworks/silicaui-html';
 
 import { upgradeFrameChrome } from './upgrade-frame';
 import { HOST_KEYS, hostCore } from './host-nodes';
@@ -25,7 +25,9 @@ const legacyFrame = (wordmarkClass = 'wordmark'): Node =>
     ],
   });
 
-const findBrand = (node: Node): Node | null => {
+// Returns HostNode, not Node: the only thing it ever matches is a `kind: "host"`
+// brand core, so the tests can read `.component` without narrowing at each call.
+const findBrand = (node: Node): HostNode | null => {
   if (node.kind === 'host' && node.component === HOST_KEYS.siteBrand) return node;
   const children = node.kind === 'element' ? (node.children ?? []) : [];
   for (const c of children) {
