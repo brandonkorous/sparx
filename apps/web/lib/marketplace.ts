@@ -165,6 +165,42 @@ export function fetchListing(category: string, slug: string): Promise<Marketplac
   );
 }
 
+/** Hard bound on sitemap enumeration per category. The catalog is curated (tens
+ *  to low hundreds per category), so this is headroom rather than a real cap —
+ *  but it IS a cap, so `fetchListingSlugs` reports when it truncates instead of
+ *  silently under-reporting coverage. */
+const SITEMAP_PAGE_SIZE = 100;
+const SITEMAP_MAX_PER_CATEGORY = 1_000;
+
+/** Every published+public listing slug in a category, for sitemap coverage.
+ *  Walks `next_cursor` rather than taking the first page — a category that grew
+ *  past one page would otherwise drop out of the index silently. Degrades to the
+ *  slugs gathered so far on any error, so a mid-walk api-rest blip narrows
+ *  coverage instead of emptying it. `truncated` is surfaced (not swallowed) so
+ *  the caller can log an explicit coverage bound. */
+export async function fetchListingSlugs(
+  category: string
+): Promise<{ slugs: string[]; truncated: boolean }> {
+  const slugs: string[] = [];
+  let cursor: string | null = null;
+
+  do {
+    const query: Record<string, string> = { limit: String(SITEMAP_PAGE_SIZE) };
+    if (cursor) query.cursor = cursor;
+
+    const page = await fetchCategory(category, query);
+    if (page.items.length === 0) break;
+
+    slugs.push(...page.items.map((item) => item.slug));
+    cursor = page.next_cursor;
+  } while (cursor && slugs.length < SITEMAP_MAX_PER_CATEGORY);
+
+  return {
+    slugs: slugs.slice(0, SITEMAP_MAX_PER_CATEGORY),
+    truncated: slugs.length >= SITEMAP_MAX_PER_CATEGORY && cursor !== null,
+  };
+}
+
 /**
  * The signup funnel hand-off (docs/54 §15, docs/60 §10). A public listing's CTA
  * sends the visitor to the dashboard signup carrying the intent — `ref=market`

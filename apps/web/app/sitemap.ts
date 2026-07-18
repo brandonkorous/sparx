@@ -4,6 +4,8 @@ import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
 import { fetchPublishedBootcampSlugs } from '@/lib/bootcamp';
+import { fetchListingSlugs } from '@/lib/marketplace';
+import { LIVE_CATEGORIES } from '@/lib/marketplace-registry';
 import { ROLES, OPEN_APPLICATION } from './careers/roles';
 
 const BASE = 'https://sparx.works';
@@ -32,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    ...(await marketplacePages(now)),
     ...MODULE_ORDER.map((key) => ({
       url: `${BASE}/${MODULES[key].slug}`,
       lastModified: now,
@@ -79,6 +82,59 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 }
 
+// The platform extension catalog at /market — blueprints, themes, integrations,
+// and components a tenant can install. (Distinct from sparx.market, the separate
+// app where shoppers browse products sold BY tenants; that site carries its own
+// sitemap on its own domain.) Categories come from LIVE_CATEGORIES so a
+// `coming-soon` category is never listed, and each live category's listing slugs
+// are enumerated from the same public catalog API the pages render from.
+//
+// Only the UNFILTERED category URL is listed: /market/[category] sets
+// robots.index:false once facets are applied (page.tsx generateMetadata), and
+// robots.ts disallows `/market/*?*` outright, so emitting a faceted permutation
+// here would contradict both signals.
+//
+// Every fetch degrades to empty rather than throwing — a down catalog API must
+// narrow this sitemap, never fail the whole route and take all coverage with it.
+async function marketplacePages(now: Date): Promise<MetadataRoute.Sitemap> {
+  const perCategory = await Promise.all(
+    LIVE_CATEGORIES.map(async (category) => {
+      const { slugs, truncated } = await fetchListingSlugs(category.id);
+      if (truncated) {
+        // An explicit coverage bound, never a silent truncation (docs/50 §6).
+        console.warn(
+          `[sitemap] /market/${category.id}: listing enumeration hit its cap; ` +
+            `coverage is bounded at ${slugs.length} listings.`
+        );
+      }
+      return [
+        {
+          url: `${BASE}/market/${category.id}`,
+          lastModified: now,
+          changeFrequency: 'daily' as const,
+          priority: 0.7,
+        },
+        ...slugs.map((slug) => ({
+          url: `${BASE}/market/${category.id}/${slug}`,
+          lastModified: now,
+          changeFrequency: 'weekly' as const,
+          priority: 0.6,
+        })),
+      ];
+    })
+  );
+
+  return [
+    {
+      url: `${BASE}/market`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    ...perCategory.flat(),
+  ];
+}
+
 // Substantial, indexable static routes that aren't module pages. `ComingSoon`
 // stubs (/about, /press, …) are deliberately excluded — listing thin
 // placeholders in the sitemap invites soft-404 penalties (docs/50 §6: coverage
@@ -95,6 +151,12 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
   return [
     {
       url: `${BASE}/platform`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${BASE}/features`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.9,
@@ -134,6 +196,14 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.5,
+    },
+    // Public brand/press reference — real page with logo downloads, and llms.txt
+    // links it, so it must be crawlable coverage rather than an orphan.
+    {
+      url: `${BASE}/brand`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.4,
     },
     ...legal,
   ];

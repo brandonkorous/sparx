@@ -3,11 +3,11 @@
 //   GET /v1/sitemap.xml?tenant=<slug>[&property=<slug>]     (public — no auth)
 //
 // Streams a sitemap covering everything ONE web property (site) serves: the home
-// page, published CMS content entries (whose resolved content type carries a
-// `urlPattern`), active commerce products (`/products/{handle}`) and collections
-// (`/collections/{handle}`). The commerce index pages are only listed when the
-// site actually has commerce content, so a content-only site doesn't advertise
-// empty `/products` / `/collections` surfaces.
+// page, published CMS content entries (whose content type is routable — see
+// IMPLICIT_URL_PATTERNS for how routability is decided), active commerce products
+// (`/products/{handle}`) and collections (`/collections/{handle}`). The commerce
+// index pages are only listed when the site actually has commerce content, so a
+// content-only site doesn't advertise empty `/products` / `/collections` surfaces.
 //
 // Multi-site scoping (docs/49 §3 Model B): products + content entries are scoped
 // to the active property — global items (no scope rows) plus this site's
@@ -39,6 +39,25 @@ const Query = z.object({
 // Phase-1 catalogs are small; this is a guard against unbounded memory, not a
 // real cap. A tenant past this needs a paginated sitemap index — far future.
 const COMMERCE_URL_LIMIT = 20_000;
+
+// Content types the storefront serves from a HARDCODED route rather than from
+// the type's `urlPattern`.
+//
+// `urlPattern` is the CMS's "is this type routable" flag — the dashboard gates
+// the slug field on `Boolean(urlPattern)` — so a type without one is genuinely
+// non-routable and correctly absent from the sitemap. `blog_post` is the
+// exception: apps/site ships a literal `/blog/[slug]` route that resolves any
+// published blog_post by slug (see apps/site/lib/content.ts getBlogPostBySlug),
+// so those posts are reachable, render Article JSON-LD, and are indexable
+// whether or not anyone set a urlPattern on the type.
+//
+// Without this fallback a tenant whose blog_post type has a null urlPattern
+// serves a fully working blog that appears nowhere in its sitemap — silently,
+// per-tenant, and invisible until someone asks why the blog never indexed.
+// The type's own urlPattern still WINS when set; this only fills the gap.
+const IMPLICIT_URL_PATTERNS: Record<string, string> = {
+  blog_post: '/blog/{slug}',
+};
 
 interface SitemapEntry {
   path: string;
@@ -187,9 +206,11 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     // Home first.
     push({ path: '/', changefreq: 'daily', priority: 1.0, lastmod: new Date() });
 
-    // CMS content entries.
+    // CMS content entries. The type's configured urlPattern wins; a type the
+    // storefront serves from a hardcoded route falls back to that route's shape
+    // so its entries are never silently uncovered (see IMPLICIT_URL_PATTERNS).
     for (const r of entries) {
-      const pattern = patterns.get(r.typeKey);
+      const pattern = patterns.get(r.typeKey) ?? IMPLICIT_URL_PATTERNS[r.typeKey];
       if (!pattern || !r.slug) continue;
       push({
         path: pattern.replace('{slug}', r.slug),

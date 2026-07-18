@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
-export async function GET() {
+export async function GET(request: Request) {
   const site = await resolveSite();
   if (!site) {
     return new Response('Not found', { status: 404 });
@@ -21,22 +21,65 @@ export async function GET() {
   upstream.searchParams.set('tenant', site.slug);
   if (propertySlug) upstream.searchParams.set('property', propertySlug);
 
-  const res = await fetch(upstream, {
-    next: {
-      revalidate: 300,
-      tags: propertySlug
-        ? [`tenant:${site.slug}`, `tenant:${site.slug}:${propertySlug}`, 'sparx-storefront']
-        : [`tenant:${site.slug}`, 'sparx-storefront'],
-    },
-  });
-  if (!res.ok) {
-    return new Response('', { status: 502 });
+  let xml: string | null = null;
+  try {
+    const res = await fetch(upstream, {
+      next: {
+        revalidate: 300,
+        tags: propertySlug
+          ? [`tenant:${site.slug}`, `tenant:${site.slug}:${propertySlug}`, 'sparx-storefront']
+          : [`tenant:${site.slug}`, 'sparx-storefront'],
+      },
+    });
+    if (res.ok) xml = await res.text();
+  } catch {
+    // Network-level failure (api-rest unreachable, DNS, timeout). Falls through
+    // to the degraded sitemap below — an unhandled throw here would 500 the
+    // route, which is strictly worse for a crawler than a thin-but-valid index.
   }
-  const xml = await res.text();
+
+  if (xml === null) {
+    return degradedSitemap(request);
+  }
+
   return new Response(xml, {
     headers: {
       'content-type': 'application/xml; charset=utf-8',
       'cache-control': 'public, max-age=300, stale-while-revalidate=86400',
+    },
+  });
+}
+
+// api-rest is unreachable or erroring. Previously this returned a bare 502,
+// which meant a transient blip served every crawler an error for the whole
+// 5-minute cache window — and repeated errors on a sitemap URL are a signal
+// search engines act on. Serve a VALID sitemap containing the homepage instead:
+// the crawler gets a usable document, discovers the site, and re-crawls to find
+// the rest once the API recovers.
+//
+// The short max-age is the point — 60s rather than the healthy path's 300s, so
+// a recovered API is picked up quickly instead of the degraded document being
+// cached for the full window. `must-revalidate` keeps a CDN from serving it stale
+// past that.
+function degradedSitemap(request: Request): Response {
+  // `<loc>` must be a fully-qualified URL — a relative path is invalid and the
+  // whole document gets rejected. Behind the cluster ingress `request.url` is
+  // the internal bind address, so derive the public origin from the forwarded
+  // headers exactly as app/robots.txt/route.ts does.
+  const url = new URL(request.url);
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? url.host;
+  const forwardedProto = request.headers.get('x-forwarded-proto');
+  const origin = `${forwardedProto ? `${forwardedProto}:` : url.protocol}//${host}`;
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${origin}/</loc></url>
+</urlset>`;
+  return new Response(xml, {
+    status: 200,
+    headers: {
+      'content-type': 'application/xml; charset=utf-8',
+      'cache-control': 'public, max-age=60, must-revalidate',
     },
   });
 }
