@@ -9,37 +9,47 @@
 import { MODULES, MODULE_ORDER } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOLS } from '@/components/marketing/tools/registry';
+import { LIVE_CATEGORIES } from '@/lib/marketplace-registry';
 
 export const dynamic = 'force-static';
 
 const BASE = 'https://sparx.works';
 
+// Substantial, indexable pages only. This list MUST stay in sync with the
+// sitemap's coverage policy (app/sitemap.ts): a `ComingSoon` stub carries
+// `robots: index:false` and is deliberately excluded from the sitemap, so
+// handing that same page to an answer engine here contradicts our own signal
+// and burns crawl trust on thin content. Before adding a path, confirm the page
+// is real and indexable — not a placeholder and not a redirect.
 const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
-  { path: '/about', label: 'About WizeWorks', note: 'The team behind sparx — Visalia, CA.' },
-  { path: '/enterprise', label: 'Enterprise', note: 'B2B, fleet, and high-volume deployments.' },
   {
-    path: '/hosting',
-    label: 'Managed hosting',
-    note: 'On-call infrastructure support for production stores.',
+    path: '/platform',
+    label: 'Platform',
+    note: 'How the modular content + commerce OS fits together.',
   },
+  {
+    path: '/features',
+    label: 'Features',
+    note: 'Capability-by-capability breakdown across every module.',
+  },
+  { path: '/pricing', label: 'Pricing', note: 'Per-module pricing — pay only for what you use.' },
   {
     path: '/security',
     label: 'Security',
     note: 'Row-level multi-tenancy, data ownership, backups, SLAs.',
   },
   {
-    path: '/migrate',
-    label: 'Migrate to sparx',
-    note: 'Native importers for Shopify, HubSpot, Mailchimp, WordPress.',
+    path: '/partners',
+    label: 'Partners',
+    note: 'Agency and implementation partners, plus the partner directory.',
   },
+  { path: '/customers', label: 'Customers', note: 'Businesses running on sparx today.' },
   {
-    path: '/marketplace',
-    label: 'Marketplace',
-    note: 'Integrations and add-ons for the platform.',
+    path: '/bootcamp',
+    label: 'Bootcamp',
+    note: 'Free guided courses for getting a site and store live.',
   },
-  { path: '/themes', label: 'Themes', note: 'Starter storefront themes for the Builder.' },
-  { path: '/open-source', label: 'Open source', note: "What's open about the sparx stack." },
-  { path: '/contact', label: 'Contact', note: 'Talk to the team — no high-pressure demos.' },
+  { path: '/careers', label: 'Careers', note: 'Open roles at WizeWorks.' },
 ];
 
 export function GET(): Response {
@@ -53,6 +63,10 @@ export function GET(): Response {
   ).join('\n');
 
   const docLines = DOC_PAGES.map((p) => `- [${p.title}](${BASE}${p.href})`).join('\n');
+
+  const catalogLines = LIVE_CATEGORIES.map(
+    (c) => `- [${c.label}](${BASE}/market/${c.id}): ${c.tagline}`
+  ).join('\n');
 
   const toolLines = TOOLS.map((t) => `- [${t.name}](${BASE}/tools/${t.slug}): ${t.tagline}`).join(
     '\n'
@@ -84,9 +98,22 @@ Developer documentation — guides, REST & GraphQL API reference, SDKs, and the 
 
 ${docLines}
 
+## Extension catalog
+
+The catalog of things a business can install into its own sparx site — browse at ${BASE}/market. Blueprints are whole themed sites; themes restyle a site; integrations connect outside services; components are building blocks for the Builder canvas.
+
+${catalogLines}
+
+## sparx.market
+
+A separate site — the public marketplace where shoppers browse products sold BY businesses running on sparx. It is a different destination from the extension catalog above, on its own domain with its own index.
+
+- [sparx.market](https://sparx.market): Shop products from every sparx seller.
+- [Marketplace index](https://sparx.market/llms.txt): Machine-readable map of the marketplace.
+
 ## More
 
-- [Changelog](${BASE}/changelog): What shipped recently.
+- [Full reference](${BASE}/llms-full.txt): Every module, the complete capability catalog with build status, tools, and docs — expanded content in one file. Fetch this if you need to answer a question about sparx rather than navigate to a page.
 - [Brand](${BASE}/brand): The sparx brand and design language.
 - [Terms](${BASE}/legal/terms): Platform terms of service.
 - [Privacy](${BASE}/legal/privacy): Platform privacy policy.
