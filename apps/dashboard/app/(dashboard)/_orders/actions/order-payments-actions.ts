@@ -1,12 +1,12 @@
 'use server';
 
 // Order payment + refund Server Actions — adapters over api-rest nested
-// /v1/crm/orders/:id/payments and /v1/crm/orders/:id/refunds endpoints.
+// /v1/orders/:id/payments and /v1/orders/:id/refunds endpoints.
 // recordPayment / voidPayment / recordRefund all eventually go through
 // recomputeOrderPaymentRollup inside the service, so amountPaid /
 // paymentStatus / refundTotal / paidAt stay consistent.
 
-import { revalidatePath } from 'next/cache';
+import { revalidateOrder } from './revalidate';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -28,8 +28,8 @@ export async function recordPaymentAction(
 ): Promise<ActionResult<{ id: string; orderId: string }>> {
   return restAction(async () => {
     const { orderId } = input as { orderId: string };
-    const payment = await api.post<PaymentResponse>(`/v1/crm/orders/${orderId}/payments`, input);
-    revalidatePath(`/crm/orders/${payment.orderId}`);
+    const payment = await api.post<PaymentResponse>(`/v1/orders/${orderId}/payments`, input);
+    revalidateOrder(payment.orderId);
     return { id: payment.id, orderId: payment.orderId };
   });
 }
@@ -40,10 +40,10 @@ export async function voidPaymentAction(
   return restAction(async () => {
     const { orderId, paymentId } = input as { orderId: string; paymentId: string };
     const payment = await api.post<PaymentResponse>(
-      `/v1/crm/orders/${orderId}/payments/${paymentId}/void`,
+      `/v1/orders/${orderId}/payments/${paymentId}/void`,
       input
     );
-    revalidatePath(`/crm/orders/${payment.orderId}`);
+    revalidateOrder(payment.orderId);
     return { id: payment.id, orderId: payment.orderId };
   });
 }
@@ -53,8 +53,8 @@ export async function recordRefundAction(
 ): Promise<ActionResult<{ id: string; orderId: string }>> {
   return restAction(async () => {
     const { orderId } = input as { orderId: string };
-    const refund = await api.post<RefundResponse>(`/v1/crm/orders/${orderId}/refunds`, input);
-    revalidatePath(`/crm/orders/${refund.orderId}`);
+    const refund = await api.post<RefundResponse>(`/v1/orders/${orderId}/refunds`, input);
+    revalidateOrder(refund.orderId);
     return { id: refund.id, orderId: refund.orderId };
   });
 }

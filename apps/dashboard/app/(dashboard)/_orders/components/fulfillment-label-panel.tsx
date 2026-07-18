@@ -15,7 +15,7 @@ import {
   voidOutboundLabelAction,
   type FulfillmentLabelDTO,
   type RateOptionDTO,
-} from '../../../order-label-actions';
+} from '../actions/order-label-actions';
 
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3100';
 

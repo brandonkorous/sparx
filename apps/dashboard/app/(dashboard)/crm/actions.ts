@@ -12,9 +12,10 @@ export type { ActionResult } from './_action-helpers';
 export * from './customer-actions';
 export * from './deal-actions';
 export * from './activity-task-actions';
-export * from './order-actions';
-export * from './order-payments-actions';
-export * from './order-fulfillment-actions';
+// Order actions are NOT re-exported here. Orders left the CRM module — they
+// are a shared spine rendered by Commerce, B2B, and CRM alike, and now live in
+// _orders/actions/. Importing them through a CRM barrel would recreate exactly
+// the coupling that move removed.
 export * from './pipeline-actions';
 export * from './b2b-actions';
 export * from './segment-actions';

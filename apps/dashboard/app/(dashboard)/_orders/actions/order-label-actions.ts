@@ -1,11 +1,11 @@
 'use server';
 
 // Outbound carrier label Server Actions — adapters over api-rest's
-// /v1/crm/orders/:id/fulfillments/:fulfillmentId/{rates,buy-label,void-label,track}
+// /v1/orders/:id/fulfillments/:fulfillmentId/{rates,buy-label,void-label,track}
 // endpoints (the real Shippo integration, docs/09). Mirrors the pattern in
 // order-fulfillment-actions.ts.
 
-import { revalidatePath } from 'next/cache';
+import { revalidateOrder } from './revalidate';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -49,7 +49,7 @@ export async function quoteOutboundRatesAction(input: {
 }): Promise<ActionResult<RateOptionDTO[]>> {
   return restAction(() =>
     api.get<RateOptionDTO[]>(
-      `/v1/crm/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/rates`
+      `/v1/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/rates`
     )
   );
 }
@@ -60,7 +60,7 @@ export async function listFulfillmentLabelsAction(input: {
 }): Promise<ActionResult<FulfillmentLabelDTO[]>> {
   return restAction(() =>
     api.get<FulfillmentLabelDTO[]>(
-      `/v1/crm/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/labels`
+      `/v1/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/labels`
     )
   );
 }
@@ -72,10 +72,10 @@ export async function buyOutboundLabelAction(input: {
 }): Promise<ActionResult<LabelResultDTO>> {
   return restAction(async () => {
     const result = await api.post<LabelResultDTO>(
-      `/v1/crm/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/buy-label`,
+      `/v1/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/buy-label`,
       { rateRef: input.rateRef }
     );
-    revalidatePath(`/crm/orders/${input.orderId}`);
+    revalidateOrder(input.orderId);
     return result;
   });
 }
@@ -87,10 +87,10 @@ export async function voidOutboundLabelAction(input: {
 }): Promise<ActionResult<{ voided: boolean }>> {
   return restAction(async () => {
     const result = await api.post<{ voided: boolean }>(
-      `/v1/crm/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/void-label`,
+      `/v1/orders/${input.orderId}/fulfillments/${input.fulfillmentId}/void-label`,
       { labelRef: input.labelRef }
     );
-    revalidatePath(`/crm/orders/${input.orderId}`);
+    revalidateOrder(input.orderId);
     return result;
   });
 }

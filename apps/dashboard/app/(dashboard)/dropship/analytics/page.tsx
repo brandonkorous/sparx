@@ -213,7 +213,7 @@ export default async function DropshipAnalyticsPage() {
                       <tr key={row.id}>
                         <td>
                           <Link
-                            href={`/crm/orders/${row.orderId}`}
+                            href={`/commerce/orders/${row.orderId}`}
                             className="font-mono text-sm hover:underline"
                           >
                             #{row.orderNumber}

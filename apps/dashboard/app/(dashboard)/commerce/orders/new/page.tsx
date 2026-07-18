@@ -1,8 +1,8 @@
 import { OrderWizard } from '../../../_orders/components/order-wizard';
 import { loadOrderWizardData } from '../../../_orders/wizard-data';
-import { CRM_ORDER_LENS as LENS } from '../../../_orders/lens';
+import { COMMERCE_ORDER_LENS as LENS } from '../../../_orders/lens';
 
-// Full-page surface for creating an order through the crm lens. The in-app
+// Full-page surface for creating an order through the commerce lens. The in-app
 // `embedded` top stepper (docs/86) composes the whole order — customer + channel
 // + currency, priced line items, shipping/notes — then commits it on finish (the
 // service emits `order.created` after the transaction commits).

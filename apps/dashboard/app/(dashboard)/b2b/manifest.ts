@@ -1,5 +1,5 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Building2, CheckCircle, DollarSign, FileText, Receipt } from 'lucide-react';
+import { Building2, CheckCircle, DollarSign, FileText, Receipt, ShoppingCart } from 'lucide-react';
 
 export const b2bManifest: ModuleManifest = {
   id: 'b2b',
@@ -12,6 +12,19 @@ export const b2bManifest: ModuleManifest = {
       label: 'Accounts',
       icon: Building2,
       href: '/b2b/accounts',
+    },
+    // B2B's own order route — the receivables desk, scoped to orders placed by
+    // customers who belong to a B2B account. Orders are a shared spine (one
+    // /v1/orders API root) but Commerce, B2B, and CRM are separately billed
+    // modules with different jobs, so each owns a real route. This one leads
+    // with balance + terms rather than fulfillment. See _orders/lens.ts.
+    // Sits after Accounts and before Quotes: accounts → their orders → the
+    // quotes that become them.
+    {
+      id: 'orders',
+      label: 'Orders',
+      icon: ShoppingCart,
+      href: '/b2b/orders',
     },
     {
       id: 'quotes',
@@ -41,6 +54,8 @@ export const b2bManifest: ModuleManifest = {
   actions: [],
   entityTypes: [
     { id: 'b2b-account', label: 'B2B Account', routePrefix: '/b2b/accounts' },
+    // Order detail opens in the drawer/modal chrome like the other two lenses.
+    { id: 'order', label: 'Order', routePrefix: '/b2b/orders', hasDetailView: true },
     // Create-only overlays (no detail view: the lists edit via a self-owned modal).
     { id: 'b2b-pricing-tier', label: 'Pricing tier', routePrefix: '/b2b/pricing-tiers' },
   ],

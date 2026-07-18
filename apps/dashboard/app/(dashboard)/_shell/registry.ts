@@ -60,9 +60,12 @@ function matchManifestByRoutePrefix(pathname: string): ModuleManifest | undefine
 // that's just the routePrefix owner (Commerce owns everything under
 // /commerce). But a handful of pages are cross-listed in a SECOND module's
 // `sections` even though they live outside that module's own routePrefix —
-// e.g. Orders lives at /crm/orders (unified with the CRM customer/order data
-// model) but is also listed in Commerce's sections so a commerce-only tenant
-// without the CRM module can still find + fulfill their own orders. When the
+// Orders used to be the example here: one page at /crm/orders cross-listed into
+// Commerce's sections. It no longer is — Commerce, B2B, and CRM are separately
+// billed and now each own a REAL order route (/commerce/orders, /b2b/orders,
+// /crm/orders) over one shared /v1/orders API root, so each resolves by plain
+// routePrefix. The cross-listing mechanism below stays for the pages that still
+// rely on it. When the
 // routePrefix owner isn't enabled for this tenant, prefer whichever ENABLED
 // manifest cross-lists this path instead — that's what makes the sidebar,
 // breadcrumb, and mobile nav resolve to "Commerce" (not a blank/orphaned

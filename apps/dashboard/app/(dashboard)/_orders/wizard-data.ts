@@ -1,6 +1,6 @@
 import { api } from '@/lib/api-rest-client';
 
-import type { CustomerOption } from './_components/order-wizard';
+import type { CustomerOption } from './components/order-wizard';
 
 // Server-side data the order wizard needs, resolved once and shared by BOTH
 // surfaces: the full-page `/new` route and the Orders-list drawer/modal create

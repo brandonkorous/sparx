@@ -31,8 +31,47 @@ import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { computeLine, computeTotals } from './order-totals';
 import { nextOrderNumber } from './record-numbers';
 
+/** The customer summary joined onto both the list rows and a single order —
+ *  enough to name the buyer and, when they belong to one, their B2B account and
+ *  its terms. */
+export interface OrderCustomerSummary {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  email: string | null;
+  b2bAccountId: string | null;
+  b2bAccount: {
+    id: string;
+    companyName: string;
+    paymentTerms: string | null;
+    status: string;
+  } | null;
+}
+
+const ORDER_CUSTOMER_SELECT = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  company: true,
+  email: true,
+  b2bAccountId: true,
+  // paymentTerms rides along so the B2B lens can show what an order is owed
+  // under without a second query.
+  b2bAccount: { select: { id: true, companyName: true, paymentTerms: true, status: true } },
+} as const;
+
 export interface OrderWithItems extends Order {
   items: OrderItem[];
+  customer: OrderCustomerSummary;
+}
+
+/** A list row carries just enough of the customer (and, for a customer who
+ *  belongs to one, their B2B account) to render the Customer / Account columns
+ *  without an N+1 per row. Additive over `Order`, so existing consumers that
+ *  only read order fields are unaffected. */
+export interface OrderListRow extends Order {
+  customer: OrderCustomerSummary;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -42,7 +81,7 @@ export interface OrderWithItems extends Order {
 export async function list(
   ctx: ServiceContext,
   rawFilter: unknown = {}
-): Promise<{ items: Order[]; total: number }> {
+): Promise<{ items: OrderListRow[]; total: number }> {
   const filter = ListOrdersInput.parse(rawFilter);
   return withTenant(ctx, async (tx) => {
     const where: Prisma.OrderWhereInput = {
@@ -75,6 +114,11 @@ export async function list(
         orderBy: { [filter.sortBy]: 'desc' },
         take: filter.take,
         skip: filter.skip,
+        // Joined so the Customer / Account columns render from the list query
+        // itself — the alternative is a lookup per row. `select` rather than a
+        // bare include: an order list has no business shipping the customer's
+        // full record (addresses, notes, marketing state) to the browser.
+        include: { customer: { select: ORDER_CUSTOMER_SELECT } },
       }),
       tx.order.count({ where }),
     ]);
@@ -83,8 +127,15 @@ export async function list(
 }
 
 export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWithItems> {
+  // The customer is joined here rather than fetched separately by the caller:
+  // /v1/crm/customers is CRM-gated, so a commerce-only or B2B-only tenant could
+  // not resolve the buyer's name on their own order at all. Joining it makes the
+  // order detail self-sufficient across all three order lenses.
   const order = await withTenant(ctx, (tx) =>
-    tx.order.findUnique({ where: { id: orderId }, include: { items: true } })
+    tx.order.findUnique({
+      where: { id: orderId },
+      include: { items: true, customer: { select: ORDER_CUSTOMER_SELECT } },
+    })
   );
   if (!order) throw new CrmNotFoundError('Order', orderId);
   return order;
@@ -157,7 +208,10 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
           }),
         },
       },
-      include: { items: true },
+      // Same customer join as get()/list() — a created order is returned
+      // straight to the caller, which renders it through an order lens that
+      // expects the buyer to be present.
+      include: { items: true, customer: { select: ORDER_CUSTOMER_SELECT } },
     });
 
     await writeAuditLog({

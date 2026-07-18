@@ -138,7 +138,7 @@ export function DocumentActionsBar({
           size="sm"
           color="module"
           iconStart={<FileOutput className="h-4 w-4" />}
-          render={<Link href={`/crm/orders/${convertedOrder.id}`} />}
+          render={<Link href={`/commerce/orders/${convertedOrder.id}`} />}
         >
           View order {convertedOrder.orderNumber ?? ''}
         </Button>

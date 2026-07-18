@@ -62,15 +62,12 @@ export const commerceManifest: ModuleManifest = {
       icon: CreditCard,
       href: '/commerce/checkout-sessions',
     },
-    // Order management/fulfillment lives at /crm/orders (unified with the CRM
-    // customer/order data model, docs/11 §1) rather than under /commerce — but
-    // a commerce-only tenant with no CRM module must still be able to find and
-    // fulfill their own orders. Cross-listing the same route here (rather than
-    // moving it) keeps ONE Orders page instead of forking the UI; registry.ts's
-    // getManifestForPath() resolves this module as the nav "owner" of the page
-    // whenever CRM isn't enabled for the tenant, so the sidebar/breadcrumb stay
-    // coherent either way.
-    { id: 'orders', label: 'Orders', icon: Receipt, href: '/crm/orders' },
+    // Commerce's own order route — the fulfillment desk. Orders are a shared
+    // spine (one /v1/orders API root), but Commerce, B2B, and CRM are three
+    // separately billed modules with three different jobs, so each owns a real
+    // route with its own columns, filters, and panels. This one leads with
+    // payment + fulfillment + shipping. See the dashboard's _orders/lens.ts.
+    { id: 'orders', label: 'Orders', icon: Receipt, href: '/commerce/orders' },
     {
       id: 'subscriptions',
       label: 'Subscriptions',
@@ -123,6 +120,7 @@ export const commerceManifest: ModuleManifest = {
       routePrefix: '/commerce/collections',
       hasDetailView: true,
     },
+    { id: 'order', label: 'Order', routePrefix: '/commerce/orders', hasDetailView: true },
     { id: 'discount', label: 'Discount', routePrefix: '/commerce/discounts' },
     { id: 'gift-card', label: 'Gift card', routePrefix: '/commerce/gift-cards' },
     { id: 'account-credit', label: 'Account credit', routePrefix: '/commerce/account-credit' },

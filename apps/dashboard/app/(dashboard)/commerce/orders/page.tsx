@@ -1,7 +1,7 @@
 import { OrderListPage } from '../../_orders/order-list';
-import { CRM_ORDER_LENS } from '../../_orders/lens';
+import { COMMERCE_ORDER_LENS } from '../../_orders/lens';
 
-// CRM's account-history record — one of three lenses over the shared
+// Commerce's fulfillment desk — one of three lenses over the shared
 // /v1/orders root. The view differs (scope, columns, filters); the components
 // do not. See _orders/lens.ts for why three routes exist rather than one.
 
@@ -12,5 +12,5 @@ interface PageProps {
 }
 
 export default async function OrdersPage({ searchParams }: PageProps) {
-  return <OrderListPage lens={CRM_ORDER_LENS} searchParams={await searchParams} />;
+  return <OrderListPage lens={COMMERCE_ORDER_LENS} searchParams={await searchParams} />;
 }

@@ -6,14 +6,14 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Create an order',
   description:
-    'POST /v1/crm/orders — create an order in the sparx CRM. Parameters, line items, computed totals, the response shape, and error codes.',
+    'POST /v1/orders — create an order in sparx. Parameters, line items, computed totals, the response shape, and error codes.',
   alternates: { canonical: '/docs/api/orders/create' },
 };
 
 const REQUEST_TABS = [
   {
     label: 'cURL',
-    code: `curl https://api.sparx.works/v1/crm/orders \\
+    code: `curl https://api.sparx.works/v1/orders \\
   -H "Authorization: Bearer $SPARX_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -27,7 +27,7 @@ const REQUEST_TABS = [
   },
   {
     label: 'Node',
-    code: `const res = await fetch("https://api.sparx.works/v1/crm/orders", {
+    code: `const res = await fetch("https://api.sparx.works/v1/orders", {
   method: "POST",
   headers: {
     Authorization: \`Bearer \${process.env.SPARX_KEY}\`,
@@ -47,7 +47,7 @@ const { data: order } = await res.json();`,
   {
     label: 'Python',
     code: `order = requests.post(
-  "https://api.sparx.works/v1/crm/orders",
+  "https://api.sparx.works/v1/orders",
   headers={"Authorization": f"Bearer {os.environ['SPARX_KEY']}"},
   json={
     "customerId": "8a1f0b2c-9d3e-4a5b-8c6d-1e2f3a4b5c6d",
@@ -104,7 +104,7 @@ export default function CreateOrderPage() {
       breadcrumb={[{ label: 'API reference' }, { label: 'CRM' }, { label: 'Orders' }]}
       title="Create an order"
       method="POST"
-      url="https://api.sparx.works/v1/crm/orders"
+      url="https://api.sparx.works/v1/orders"
       description={
         <>
           Creates an order in the CRM, which owns the order spine. Post a customer and one or more

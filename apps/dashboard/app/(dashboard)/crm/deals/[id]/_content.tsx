@@ -108,7 +108,7 @@ export async function DealDetailContent({ id }: Props) {
     deal.customerId
       ? api.get<CustomerSummary>(`/v1/crm/customers/${deal.customerId}`).catch(() => null)
       : Promise.resolve(null),
-    api.getPaged<OrderSummary[]>(`/v1/crm/orders?take=100&sort_by=placedAt${customerFilter}`),
+    api.getPaged<OrderSummary[]>(`/v1/orders?take=100&sort_by=placedAt${customerFilter}`),
     // Invoicing is bundled-free with commerce/b2b, so a CRM-only tenant (e.g.
     // salon-spa, consulting-group, bookkeeping-micro) has it off — degrade to
     // an empty list instead of letting MODULE_DISABLED fail the whole page,

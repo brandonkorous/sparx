@@ -3,9 +3,9 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 
 import { OrderDetailContent } from '../../../_orders/order-detail';
-import { CRM_ORDER_LENS as LENS } from '../../../_orders/lens';
+import { COMMERCE_ORDER_LENS as LENS } from '../../../_orders/lens';
 
-// Order detail through the crm lens — the panels it renders and the links
+// Order detail through the commerce lens — the panels it renders and the links
 // it emits come from LENS, so this stays a thin frame.
 
 export const dynamic = 'force-dynamic';

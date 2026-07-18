@@ -10,6 +10,8 @@
 
 import { api } from '@/lib/api-rest-client';
 
+import { resolveTenantOrderLens } from '../_orders/resolve-lens';
+
 export interface PaletteHit {
   id: string;
   /** Detail-route href the palette navigates to on select. */
@@ -69,7 +71,14 @@ function humanizeType(t: string): string {
 
 async function fetchRich(enc: string): Promise<Omit<PaletteResults, 'other'>> {
   try {
-    const res = await api.get<PaletteResponse>(`/v1/search?q=${enc}&limit=5`);
+    // Global search is module-agnostic, so an order hit has no route to infer
+    // from — resolve which of the three order surfaces this tenant actually has
+    // (Commerce > B2B > CRM) rather than hardcoding one and dead-ending a
+    // tenant who doesn't hold that module.
+    const [res, orderLens] = await Promise.all([
+      api.get<PaletteResponse>(`/v1/search?q=${enc}&limit=5`),
+      resolveTenantOrderLens(),
+    ]);
     return {
       products: res.products.map((p) => ({
         id: p.product_id,
@@ -85,7 +94,7 @@ async function fetchRich(enc: string): Promise<Omit<PaletteResults, 'other'>> {
       })),
       orders: res.orders.map((o) => ({
         id: o.order_id,
-        href: `/crm/orders/${o.order_id}`,
+        href: `${orderLens.basePath}/${o.order_id}`,
         label: o.order_number,
         sublabel: o.customer_name,
       })),

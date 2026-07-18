@@ -45,7 +45,8 @@ const CREATE_VIEW_TYPES = new Set<string>([
   // deal opens into its detail view. Full page: /crm/deals/new.
   'deal',
   // Order creation is a multi-step SurfaceFrame (full-bleed below); a created
-  // order opens into its detail view. Full page: /crm/orders/new.
+  // order opens into its detail view. Full page: <module>/orders/new — the
+  // three order routes each have one; the overlay resolves the tenant's lens.
   'order',
   // Purchase order + transfer creation are multi-step SurfaceFrames (full-bleed
   // below); their editors stay full-page. Full pages live under /inventory/.

@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { b2bAccountContactService, b2bAccountService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { requireCrmModule, requireCrmOrB2bModule, toCrmContext } from '../../../lib/crm-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathContactId = z.object({ id: z.string().uuid(), contactId: z.string().uuid() });
@@ -32,9 +32,11 @@ const ListQuery = z.object({
 });
 
 const b2bAccountRoutes: FastifyPluginAsync = (app) => {
+  // Readable by a B2B tenant without CRM — accounts are a B2B concept sitting in
+  // the /v1/crm namespace. The /b2b/orders Account filter depends on this.
   app.get('/v1/crm/b2b-accounts', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrB2bModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await b2bAccountService.list(toCrmContext(request), {
       status: q.status,
@@ -48,7 +50,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
 
   app.get('/v1/crm/b2b-accounts/:id', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmModule(request);
+    await requireCrmOrB2bModule(request);
     const { id } = PathId.parse(request.params);
     const account = await b2bAccountService.get(toCrmContext(request), id);
     return ok(account);

@@ -1,14 +1,14 @@
 'use server';
 
 // Order fulfillment Server Actions — adapters over api-rest nested
-// /v1/crm/orders/:id/fulfillments endpoints.
+// /v1/orders/:id/fulfillments endpoints.
 //
 // Creating or updating a fulfillment promotes the parent Order's status
 // from `placed` → `fulfilled` (all items fully fulfilled) or `fulfilled`
 // → `delivered` (every fulfillment delivered) inside the service, so the
 // caller never has to manage that invariant by hand.
 
-import { revalidatePath } from 'next/cache';
+import { revalidateOrder } from './revalidate';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -26,10 +26,10 @@ export async function createFulfillmentAction(
   return restAction(async () => {
     const { orderId } = input as { orderId: string };
     const fulfillment = await api.post<FulfillmentResponse>(
-      `/v1/crm/orders/${orderId}/fulfillments`,
+      `/v1/orders/${orderId}/fulfillments`,
       input
     );
-    revalidatePath(`/crm/orders/${fulfillment.orderId}`);
+    revalidateOrder(fulfillment.orderId);
     return { id: fulfillment.id, orderId: fulfillment.orderId };
   });
 }
@@ -43,10 +43,10 @@ export async function updateFulfillmentAction(
       fulfillmentId: string;
     };
     const fulfillment = await api.patch<FulfillmentResponse>(
-      `/v1/crm/orders/${orderId}/fulfillments/${fulfillmentId}`,
+      `/v1/orders/${orderId}/fulfillments/${fulfillmentId}`,
       input
     );
-    revalidatePath(`/crm/orders/${fulfillment.orderId}`);
+    revalidateOrder(fulfillment.orderId);
     return { id: fulfillment.id, orderId: fulfillment.orderId };
   });
 }

@@ -13,7 +13,7 @@ import { PackagePlus } from 'lucide-react';
 import { Button, Input, Label } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
 
-import { createFulfillmentAction } from '../../../order-fulfillment-actions';
+import { createFulfillmentAction } from '../actions/order-fulfillment-actions';
 
 export interface UnfulfilledLine {
   orderItemId: string;

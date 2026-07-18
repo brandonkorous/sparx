@@ -18,8 +18,9 @@ import { ContentEntryWizard } from '../cms/content/new/content-entry-wizard';
 import { loadAuthorOptions } from '../cms/content/new/author-options';
 import { InvoiceWizard } from '../invoicing/documents/new/_components/invoice-wizard';
 import { loadInvoiceWizardData } from '../invoicing/documents/new/wizard-data';
-import { OrderWizard } from '../crm/orders/new/_components/order-wizard';
-import { loadOrderWizardData } from '../crm/orders/new/wizard-data';
+import { OrderWizard } from '../_orders/components/order-wizard';
+import { loadOrderWizardData } from '../_orders/wizard-data';
+import { resolveTenantOrderLens } from '../_orders/resolve-lens';
 import { PurchaseOrderWizard } from '../inventory/purchase-orders/new/_components/purchase-order-wizard';
 import { loadPurchaseOrderWizardData } from '../inventory/purchase-orders/new/wizard-data';
 import { TransferWizard } from '../inventory/transfers/new/_components/transfer-wizard';
@@ -78,7 +79,7 @@ import { TaxonomyDetailContent } from '../cms/taxonomy/[key]/_content';
 import { B2bAccountDetailContent } from '../crm/b2b/[id]/_content';
 import { CustomerDetailContent } from '../crm/customers/[id]/_content';
 import { DealDetailContent } from '../crm/deals/[id]/_content';
-import { OrderDetailContent } from '../crm/orders/[id]/_content';
+import { OrderDetailContent } from '../_orders/order-detail';
 import { SegmentDetailContent } from '../crm/segments/[id]/_content';
 import { BundleDetailContent } from '../commerce/bundles/[id]/_content';
 import { CartDetailContent } from '../commerce/carts/[id]/_content';
@@ -126,7 +127,7 @@ const detailComponents: Record<string, DetailComponent> = {
   customer: CustomerDetailContent,
   'b2b-account': B2bAccountDetailContent,
   deal: DealDetailContent,
-  order: OrderDetailContent,
+  order: OrderOverlayDetail,
   segment: SegmentDetailContent,
   // Commerce
   product: ProductDetailContent,
@@ -181,13 +182,15 @@ const detailModules: Record<string, SparxModule> = {
   customer: 'crm',
   'b2b-account': 'crm',
   deal: 'crm',
-  order: 'crm',
   segment: 'crm',
   // Task create-only overlay (no detail view) — wears the crm accent.
   task: 'crm',
   // Pipeline create-only overlay (detail is a full-width Kanban, not a drawer) —
   // wears the crm accent.
   pipeline: 'crm',
+  // Orders span three separately billed modules; the overlay wears the accent of
+  // the module that PRODUCES them.
+  order: 'commerce',
   // Commerce
   product: 'commerce',
   category: 'commerce',
@@ -386,11 +389,22 @@ async function BillingDocumentCreateOverlay() {
   return <InvoiceWizard presentation="overlay" {...data} />;
 }
 
+// Order detail in the overlay chrome. Unlike the three order ROUTES, this slot
+// serves every module, so it asks which of Commerce / B2B / CRM the tenant has
+// and renders that lens — otherwise a CRM-only tenant would get commerce
+// fulfillment/label panels they hold no entitlement to.
+async function OrderOverlayDetail({ id }: { id: string }) {
+  const lens = await resolveTenantOrderLens();
+  return <OrderDetailContent id={id} lens={lens} />;
+}
+
 // Order create is the multi-step SurfaceFrame; a created order opens into its
-// detail view. The customer picker needs the tenant's customers.
+// detail view. The customer picker needs the tenant's customers. `basePath`
+// follows the same resolved lens so a created order lands on the order list the
+// tenant actually has.
 async function OrderCreateOverlay() {
-  const data = await loadOrderWizardData();
-  return <OrderWizard presentation="overlay" {...data} />;
+  const [data, lens] = await Promise.all([loadOrderWizardData(), resolveTenantOrderLens()]);
+  return <OrderWizard presentation="overlay" {...data} basePath={lens.basePath} />;
 }
 
 // Purchase-order + transfer create are multi-step SurfaceFrames; their editors are

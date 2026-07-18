@@ -1,12 +1,14 @@
 'use server';
 
-// Order core Server Actions — adapters over api-rest /v1/crm/orders.
+// Order core Server Actions — adapters over api-rest /v1/orders.
 //
 // Payment, refund, and fulfillment subresources live in their own action
 // files so each one stays under the 200-line target and the page-level
 // imports remain explicit about which subresource a form mutates.
 
 import { revalidatePath } from 'next/cache';
+
+import { revalidateOrder, revalidateOrderLists } from './revalidate';
 
 import { api } from '@/lib/api-rest-client';
 
@@ -23,8 +25,8 @@ export async function createOrderAction(
   input: unknown
 ): Promise<ActionResult<{ id: string; orderNumber: string }>> {
   return restAction(async () => {
-    const order = await api.post<OrderResponse>('/v1/crm/orders', input);
-    revalidatePath('/crm/orders');
+    const order = await api.post<OrderResponse>('/v1/orders', input);
+    revalidateOrderLists();
     revalidatePath(`/crm/customers/${order.customerId}`);
     return { id: order.id, orderNumber: order.orderNumber };
   });
@@ -35,9 +37,8 @@ export async function updateOrderAction(
   input: unknown
 ): Promise<ActionResult<{ id: string }>> {
   return restAction(async () => {
-    const order = await api.patch<OrderResponse>(`/v1/crm/orders/${orderId}`, input);
-    revalidatePath('/crm/orders');
-    revalidatePath(`/crm/orders/${orderId}`);
+    const order = await api.patch<OrderResponse>(`/v1/orders/${orderId}`, input);
+    revalidateOrder(orderId);
     return { id: order.id };
   });
 }
@@ -45,9 +46,8 @@ export async function updateOrderAction(
 export async function cancelOrderAction(input: unknown): Promise<ActionResult<{ id: string }>> {
   return restAction(async () => {
     const { orderId } = input as { orderId: string };
-    const order = await api.post<OrderResponse>(`/v1/crm/orders/${orderId}/cancel`, input);
-    revalidatePath('/crm/orders');
-    revalidatePath(`/crm/orders/${order.id}`);
+    const order = await api.post<OrderResponse>(`/v1/orders/${orderId}/cancel`, input);
+    revalidateOrder(order.id);
     revalidatePath(`/crm/customers/${order.customerId}`);
     return { id: order.id };
   });
@@ -58,11 +58,9 @@ export async function bulkCancelOrdersAction(
 ): Promise<ActionResult<{ cancelled: number }>> {
   return restAction(async () => {
     await Promise.all(
-      ids.map((id) =>
-        api.post<OrderResponse>(`/v1/crm/orders/${id}/cancel`, { reason: 'Bulk cancel' })
-      )
+      ids.map((id) => api.post<OrderResponse>(`/v1/orders/${id}/cancel`, { reason: 'Bulk cancel' }))
     );
-    revalidatePath('/crm/orders');
+    revalidateOrderLists();
     return { cancelled: ids.length };
   });
 }

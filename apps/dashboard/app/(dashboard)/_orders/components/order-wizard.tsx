@@ -41,12 +41,12 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 
-import { createOrderAction } from '../../../order-actions';
-import { LineItemsEditor, type LineItem } from '../../../_components/line-items-editor';
-import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
-import { useDetailFooterNode } from '../../../../_components/detail-header-slot';
-import { CREATE_SENTINEL } from '../../../../_shell/detail-registry';
-import { ViewSwitcher } from '../../../../_components/detail-panel';
+import { createOrderAction } from '../actions/order-actions';
+import { LineItemsEditor, type LineItem } from './line-items-editor';
+import { useUnsavedGuard } from '../../_components/unsaved-guard';
+import { useDetailFooterNode } from '../../_components/detail-header-slot';
+import { CREATE_SENTINEL } from '../../_shell/detail-registry';
+import { ViewSwitcher } from '../../_components/detail-panel';
 
 // ─── Public option shape (resolved server-side, passed in) ────────────────────────
 
@@ -62,6 +62,12 @@ export interface OrderWizardProps {
   presentation?: 'page' | 'overlay';
   customers: CustomerOption[];
   preselectedCustomerId?: string | null;
+  /** Route prefix of the lens that opened this wizard (/commerce/orders,
+   *  /b2b/orders, /crm/orders). Cancel and post-create navigation resolve
+   *  against it, so creating an order never drops the user into a different
+   *  module's list. Defaults to the commerce desk for the overlay chrome,
+   *  which has no route of its own. */
+  basePath?: string;
 }
 
 type Channel = 'admin' | 'storefront' | 'b2b_portal' | 'import' | 'mcp';
@@ -114,6 +120,7 @@ function OrderWizardInner({
   presentation = 'page',
   customers,
   preselectedCustomerId,
+  basePath = '/commerce/orders',
 }: OrderWizardProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -178,9 +185,9 @@ function OrderWizardInner({
       const qs = next.toString();
       router.replace(qs ? `${pathname}?${qs}` : (pathname ?? '/'));
     } else {
-      router.push('/crm/orders');
+      router.push(basePath);
     }
-  }, [presentation, pathname, searchParams, router]);
+  }, [presentation, pathname, searchParams, router, basePath]);
 
   // Guarded leave for the frame-owned Cancel: confirm a discard before dropping
   // entered work. The create path (router.push) leaves on its own, unguarded.
@@ -219,7 +226,7 @@ function OrderWizardInner({
       }
       // Created → go view the order. Navigating away clears the overlay token,
       // so the drawer/modal closes on its own.
-      router.push(`/crm/orders/${result.data.id}`);
+      router.push(`${basePath}/${result.data.id}`);
       router.refresh();
     } catch {
       setError('Unexpected error. Please try again.');

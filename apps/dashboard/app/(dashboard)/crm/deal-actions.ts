@@ -9,6 +9,8 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { revalidateOrder } from '../_orders/actions/revalidate';
+
 import { api } from '@/lib/api-rest-client';
 
 import type { ActionResult } from './_action-helpers';
@@ -89,7 +91,7 @@ export async function attachOrderToDealAction(
       order_id: orderId,
     });
     revalidatePath(`/crm/deals/${link.dealId}`);
-    revalidatePath(`/crm/orders/${link.orderId}`);
+    revalidateOrder(link.orderId);
     return { dealId: link.dealId, orderId: link.orderId };
   });
 }
@@ -101,7 +103,7 @@ export async function detachOrderFromDealAction(
     const { dealId, orderId } = input as AttachOrderInputShape;
     await api.delete<void>(`/v1/crm/deals/${dealId}/orders/${orderId}`);
     revalidatePath(`/crm/deals/${dealId}`);
-    revalidatePath(`/crm/orders/${orderId}`);
+    revalidateOrder(orderId);
     return { dealId, orderId };
   });
 }

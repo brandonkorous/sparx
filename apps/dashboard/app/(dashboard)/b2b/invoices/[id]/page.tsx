@@ -104,7 +104,7 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
                   <div>
                     <p className="text-base-content text-xs">Order</p>
                     <Link
-                      href={`/crm/orders/${invoice.orderId}`}
+                      href={`/b2b/orders/${invoice.orderId}`}
                       className="hover:text-module text-sm hover:underline"
                     >
                       View order →
