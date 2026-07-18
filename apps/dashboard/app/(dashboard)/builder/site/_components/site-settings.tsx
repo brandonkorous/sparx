@@ -20,10 +20,11 @@
 
 import * as React from 'react';
 import { Save } from 'lucide-react';
-import { Alert, Button, Input, Label, toast } from '@sparx/ui';
+import { Alert, Button, Input, Label, toast, useConfirm } from '@sparx/ui';
 import { BrandImageField } from '../../_brand/components/brand-image-field';
 import { SocialLinksEditor, type SocialLink } from '../../_brand/components/social-links-editor';
 import { updateBrand, updateSettings, updateSiteIdentity } from '../../_brand/lib/actions';
+import { resetSiteFrame } from '../../_lib/actions';
 import { computeBrandOverride } from '../../_brand/lib/site-brand';
 import type { AppearancePolicy, BrandDto, BrandMediaUrls, SiteDto } from '../../_brand/lib/types';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
@@ -306,6 +307,80 @@ export function SiteSettings({
         >
           <AppearancePicker value={policy} onChange={setPolicy} />
         </Card>
+
+        <Card
+          title="Header & footer"
+          hint="The bar across the top of your site and the strip along the bottom."
+        >
+          <RestoreChrome />
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// The way out for a site whose header was built before logos were supported.
+//
+// A header is a saved arrangement of pieces, frozen the day the site was created.
+// When we later taught the header's name area to show an uploaded logo, sites
+// built beforehand kept their older, text-only version — so an author can upload a
+// logo here, save, and see nothing change. We heal the headers we can recognise
+// automatically, but on some older sites the name is an ordinary link and we can't
+// tell it apart from a real menu link, so we leave it alone rather than risk
+// rewriting the wrong thing. For those, rebuilding is the only fix.
+//
+// Immediate, not part of this page's draft — it edits the site layout, not these
+// settings — so it confirms first and says so. It only changes the working copy;
+// the live site is untouched until the author publishes.
+function RestoreChrome() {
+  const confirm = useConfirm();
+  const [busy, setBusy] = React.useState(false);
+
+  const onRestore = async () => {
+    const go = await confirm({
+      title: 'Rebuild your header and footer?',
+      description:
+        'Anything you have changed in your header or footer will be replaced with the standard design, using your current name and logo. Your pages are not affected, and your live site stays exactly as it is until you publish.',
+      confirmLabel: 'Rebuild them',
+      cancelLabel: 'Keep mine',
+      // Genuinely destructive: an author's own header customisations are replaced,
+      // and there is no undo for it on this surface.
+      tone: 'danger',
+    });
+    if (!go) return;
+    setBusy(true);
+    const res = await resetSiteFrame();
+    setBusy(false);
+    if (res.ok) {
+      toast.success('Your header and footer were rebuilt. Publish to make them live.');
+    } else {
+      toast.error(res.error ?? 'Could not rebuild your header and footer.');
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-base-content text-sm">
+        Added a logo but your header still shows your name as plain text? Your header was built
+        before logos were supported. Rebuilding it starts from the standard design again, with your
+        current name and logo already in place.
+      </p>
+      <Alert color="warning" variant="soft" size="sm">
+        This replaces any changes you have made to your header or footer. Your pages stay as they
+        are, and nothing changes for visitors until you publish. If you have the site editor open in
+        another tab, refresh that tab afterwards so it picks up the rebuilt header.
+      </Alert>
+      <div>
+        <Button
+          type="button"
+          size="sm"
+          color="warning"
+          variant="soft"
+          disabled={busy}
+          onClick={() => void onRestore()}
+        >
+          {busy ? 'Rebuilding…' : 'Rebuild header & footer'}
+        </Button>
       </div>
     </div>
   );

@@ -14,24 +14,19 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { useEditor } from '@wizeworks/silicaui-builder/react';
-import type { BadgeColor } from '@wizeworks/silicaui-react';
 import type { BuilderPageDto, DataSource } from '@sparx/builder-schemas';
 
 import { SilicaPageSettings } from './silica-page-settings';
+import { badgeView, type PublishView, type SaveState } from './publish-badge';
 
-/** The host-side persistence state the badge reflects — distinct from the engine's
- *  own local-edit tracking. `idle` = nothing to save yet (no badge). */
-export type SaveState = 'idle' | 'unsaved' | 'saving' | 'saved' | 'error';
-
-const SAVE_BADGE: Record<Exclude<SaveState, 'idle'>, { label: string; color: BadgeColor }> = {
-  unsaved: { label: 'Unsaved changes', color: 'warning' },
-  saving: { label: 'Saving…', color: 'info' },
-  saved: { label: 'All changes saved', color: 'success' },
-  error: { label: 'Save failed — retrying', color: 'danger' },
-};
+// Re-exported so the studio (the only consumer) imports both the component and the
+// state types from one place; the decision itself lives in `publish-badge.ts`.
+export type { PublishView, SaveState };
 
 export interface SilicaToolbarProps {
   saveState: SaveState;
+  /** Whether what visitors see matches what the author has built (see `badgeView`). */
+  publish: PublishView;
   /** Server-fetched page metadata (recordType / isDefault / SEO), keyed by id — the
    *  seed for the page-settings drawer. */
   pages: BuilderPageDto[];
@@ -46,7 +41,13 @@ export interface SilicaToolbarProps {
   initialPageId?: string;
 }
 
-export function SilicaToolbar({ saveState, pages, sources, initialPageId }: SilicaToolbarProps) {
+export function SilicaToolbar({
+  saveState,
+  publish,
+  pages,
+  sources,
+  initialPageId,
+}: SilicaToolbarProps) {
   const editor = useEditor();
   // Re-render on every committed edit so the active page + its name stay live
   // (page switches and renames both fire the engine's change event).
@@ -68,14 +69,25 @@ export function SilicaToolbar({ saveState, pages, sources, initialPageId }: Sili
   const activeId = editor.activePage;
   const activeName = editor.pagesView.pages.find((p) => p.id === activeId)?.name ?? 'Page';
   const meta = pages.find((p) => p.id === activeId);
-  const badge = saveState === 'idle' ? null : SAVE_BADGE[saveState];
+  const badge = badgeView(saveState, publish);
 
   return (
     <div className="flex items-center gap-3">
       {badge && (
-        <Badge color={badge.color} variant="soft" aria-live="polite">
-          {badge.label}
-        </Badge>
+        // One live region over both, so a screen reader hears "Saved — not live yet.
+        // Visitors still see…" as a single announcement rather than two fragments.
+        <div className="flex items-center gap-2" aria-live="polite">
+          <Badge color={badge.color} variant="soft">
+            {badge.label}
+          </Badge>
+          {/* Full-strength ink, not muted: this sentence is the whole point of the
+              badge — it's the line that tells an author their work isn't live. It's
+              hidden on narrow viewports (where the toolbar has no room) but the
+              badge label alone still carries the state. */}
+          {badge.detail && (
+            <span className="text-base-content hidden text-sm lg:inline">{badge.detail}</span>
+          )}
+        </div>
       )}
       <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(true)}>
         Page settings

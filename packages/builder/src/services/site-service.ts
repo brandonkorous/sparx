@@ -23,6 +23,7 @@ import {
   STARTER_LAYOUT,
   SiteSyncInput,
   blankPageTree,
+  type SitePublishState,
   type PublishedSilicaFrameDto,
   type PublishedSilicaPageDto,
   type SilicaFrame,
@@ -40,6 +41,9 @@ import { Prisma, withTenant, type TxClient } from '@sparx/db';
 // the 3 primitives needed to turn a caller's section list into a stamped page
 // body; every other kit helper stays in @sparx/silica-catalog / the MCP tools.
 import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
+// The starter chrome factory — the one definition of "the default header + footer",
+// shared with the studio's seed path so a reset restores today's chrome, not a copy.
+import { starterFrame, type SiteChromeOptions } from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
@@ -522,6 +526,96 @@ export async function reset(ctx: PropertyContext): Promise<void> {
       entityId: ctx.propertyId,
       diff: { before: { pages: silicaRows.length } },
     });
+  });
+}
+
+/**
+ * Restore the property's header + footer to the CURRENT starter chrome, leaving
+ * every page body, the theme, and the symbols exactly as they are.
+ *
+ * Why this exists, and why it is not `reset`. Catalog composites are STAMPED: the
+ * frame a tenant is using was copied out of `starterFrame()` at seed time and has
+ * been frozen ever since. When the platform improves that chrome — teaching the
+ * brand mark to read the tenant's uploaded logo, say — `upgradeFrameChrome` heals
+ * the trees it can recognize on read, but it deliberately does NOT match a frame
+ * whose brand is a bare text `<a>`: any anchor in a nav could be a real menu link,
+ * and silently rewriting one would be worse than leaving it. That cohort has no
+ * path forward at all — no amount of logo uploading reaches their header. This is
+ * that path.
+ *
+ * BLAST RADIUS, deliberately narrow (`reset` is the whole-site sledgehammer and is
+ * NOT what an author asking for "put my header back" means):
+ *   · ONLY the active layout's silica DRAFT tree is rewritten.
+ *   · The layout's PUBLISHED tree is untouched, so visitors keep the header they
+ *     have until the author reviews the restored chrome and publishes it — the same
+ *     draft-only contract `upgradeFrameChrome` follows on read.
+ *   · No page row is read, written, or deleted. No theme, no symbols, no
+ *     `publishedAt`.
+ *
+ * The module flags shape the restored nav exactly as they shape the starter seed:
+ * a tenant with no Commerce module must not get a Shop link back.
+ */
+export async function resetFrame(
+  ctx: PropertyContext,
+  opts: SiteChromeOptions = {}
+): Promise<SilicaFrame> {
+  const frame = starterFrame(opts);
+  await withTenant(ctx, async (tx) => {
+    const layout = await activeLayoutTx(tx, ctx);
+    await tx.builderLayout.update({
+      where: { id: layout.id },
+      data: { silicaDraftTree: asJson(frame.root) },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.site.frame.reset',
+      entityType: 'BuilderLayout',
+      entityId: layout.id,
+      diff: { before: { frame: layout.silicaDraftTree ?? null } },
+    });
+  });
+  return frame;
+}
+
+/** Deep-equal for two stored trees. `JSON.stringify` is exact HERE (though not in
+ *  general — key order matters) precisely because the published tree is a verbatim
+ *  copy of the draft: same producer, same key order. A false "changed" would only
+ *  ever nag; it can't lose work. */
+const treeDiffers = (draft: unknown, published: unknown): boolean =>
+  JSON.stringify(draft ?? null) !== JSON.stringify(published ?? null);
+
+/** Compare every silica draft tree against its published counterpart. Read-only. */
+export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
+  return withTenant(ctx, async (tx) => {
+    const [allPages, layout] = await Promise.all([
+      tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } }),
+      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+    ]);
+    const pages = allPages.filter(isSilica);
+    const unpublishedPages = pages.filter((r) =>
+      treeDiffers(r.silicaDraftTree, r.silicaPublishedTree)
+    ).length;
+    const frameUnpublished =
+      layout?.silicaDraftTree != null &&
+      treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree);
+
+    // The most recent publish across pages + frame — the timestamp the author reads
+    // as "what visitors currently see".
+    const stamps = [...pages.map((r) => r.publishedAt), layout?.publishedAt ?? null].filter(
+      (d): d is Date => d != null
+    );
+    const last = stamps.length ? new Date(Math.max(...stamps.map((d) => d.getTime()))) : null;
+
+    return {
+      hasUnpublished: unpublishedPages > 0 || frameUnpublished,
+      unpublishedPages,
+      frameUnpublished,
+      lastPublishedAt: last?.toISOString() ?? null,
+      neverPublished: last === null,
+    };
   });
 }
 

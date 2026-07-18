@@ -6,7 +6,7 @@ import { ensureUniqueIds, upgradeFrameChrome, starterSite } from '@sparx/silica-
 import { isModuleEnabled, requireSession } from '@sparx/auth';
 
 import { getActiveProperty } from '@/lib/sites';
-import { getBindingCatalog, getBuilderSite, listPages } from '../_lib/api';
+import { getBindingCatalog, getBuilderSite, getPublishState, listPages } from '../_lib/api';
 import { getBrand, getConfig, getSitePreviewData } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
@@ -88,6 +88,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     activeProperty,
     storedSite,
     pages,
+    publishState,
     commerceEnabled,
     schedulingEnabled,
   ] = await Promise.all([
@@ -104,6 +105,16 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     // seed for the header page-settings drawer. Empty on failure (drawer still opens,
     // just without pre-filled values until the first save).
     listPages().catch(() => []),
+    // Draft-vs-published, so the toolbar can say whether visitors actually see this
+    // work. Degrades to "everything is live": a failed read must never invent an
+    // unpublished-changes warning, nor arm the leave guard, on no evidence.
+    getPublishState().catch(() => ({
+      hasUnpublished: false,
+      unpublishedPages: 0,
+      frameUnpublished: false,
+      lastPublishedAt: null,
+      neverPublished: false,
+    })),
     // Only shapes the STARTER seed (below) for a tenant with no silica site yet —
     // fails open to `true` (today's unconditional-Shop behavior) so a lookup
     // failure never hides real Commerce chrome from a paying tenant.
@@ -196,6 +207,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
       pages={pages}
       sources={pageSources}
       initialPageId={initialPageId}
+      initialPublishState={publishState}
     />
   );
 }

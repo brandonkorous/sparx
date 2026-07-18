@@ -126,7 +126,12 @@ export const SILICA_STYLE_GUIDE = {
     houseStyle:
       'sparx bans EYEBROWS (a small uppercase kicker label above a heading) — hierarchy is carried by scale/weight/' +
       'color. `native.content_prose` and `native.feature_media` ship an eyebrow node: DELETE it when you stamp them. ' +
-      'Also banned: gradients as a visual device. Body text floors at 16px.',
+      'Also banned: gradients as a visual device. Body text floors at 16px. ' +
+      'FADED TEXT IS BANNED TOO, and this one bites on nearly every block: the native blocks ship subheads, stat ' +
+      'labels, and captions as `text-base-content/70` (or /60, /50). Strip the opacity suffix when you stamp them — ' +
+      '`text-base-content/70` becomes `text-base-content`. An opacity modifier is only for text NOT meant to be read; ' +
+      'dimming real copy to signal hierarchy is the single most-repeated design defect on this platform. Carry ' +
+      'hierarchy with size and weight, which the blocks already do.',
     sparxComposites: [
       'products — THE one configurable product listing. Repeats the product card over a chosen SOURCE, laid out as a ' +
         "grid or a rail. Source options (change the repeat's ref): `commerce.product` (whole catalog / shop-all grid), " +
@@ -141,7 +146,7 @@ export const SILICA_STYLE_GUIDE = {
         'native navbar/footer blocks for the FRAME so the wordmark/social links resolve per-tenant automatically.',
     ],
     forms:
-      "There is NO sparx-authored form composite — use silica's native `contactSection` block as-is for a contact " +
+      "There is NO sparx-authored form composite — use silica's native `contact_section` block as-is for a contact " +
       'page. It is pre-wired end to end (the "contact" action ref is already handled by the storefront\'s behavior ' +
       'runtime + the CMS-backed form-submission pipeline); do not build a new form from raw elements.',
   },

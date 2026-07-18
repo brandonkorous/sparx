@@ -11,14 +11,14 @@ packages:
 # local `pnpm.overrides` link block has been removed). Bump here when a new
 # version ships; keep every entry on the same version so the family stays unified.
 catalog:
-  '@wizeworks/silicaui': ^0.24.0
-  '@wizeworks/silicaui-react': ^0.24.0
-  '@wizeworks/silicaui-html': ^0.24.0
-  '@wizeworks/silicaui-behaviors': ^0.24.0
-  '@wizeworks/silicaui-mcp': ^0.24.0
-  '@wizeworks/silicaui-editor': ^0.24.0
-  '@wizeworks/silicaui-dnd': ^0.24.0
-  '@wizeworks/silicaui-panels': ^0.24.0
-  '@wizeworks/silicaui-charts': ^0.24.0
-  '@wizeworks/silicaui-table': ^0.24.0
-  '@wizeworks/silicaui-builder': ^0.24.0
+  '@wizeworks/silicaui': ^0.26.0
+  '@wizeworks/silicaui-react': ^0.26.0
+  '@wizeworks/silicaui-html': ^0.26.0
+  '@wizeworks/silicaui-behaviors': ^0.26.0
+  '@wizeworks/silicaui-mcp': ^0.26.0
+  '@wizeworks/silicaui-editor': ^0.26.0
+  '@wizeworks/silicaui-dnd': ^0.26.0
+  '@wizeworks/silicaui-panels': ^0.26.0
+  '@wizeworks/silicaui-charts': ^0.26.0
+  '@wizeworks/silicaui-table': ^0.26.0
+  '@wizeworks/silicaui-builder': ^0.26.0

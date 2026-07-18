@@ -9,6 +9,7 @@ import type {
   BuilderLayoutDto,
   BuilderPageDto,
   ComponentDto,
+  SitePublishState,
   StoredSilicaSite,
 } from '@sparx/builder-schemas';
 
@@ -50,6 +51,17 @@ export async function getActiveLayout(): Promise<BuilderLayoutDto | null> {
 export async function getBuilderSite(): Promise<StoredSilicaSite | null> {
   const { site } = await api.get<{ site: StoredSilicaSite | null }>('/v1/builder/site');
   return site;
+}
+
+/** What differs between the author's draft and what visitors are actually served —
+ *  the studio's "saved isn't live" signal. Read once at load; the studio tracks its
+ *  own edits + publishes from there rather than re-polling.
+ *
+ *  Degrades to "nothing outstanding" on failure, the opposite of `getBuilderSite`
+ *  above: this drives a BADGE, so a failed read must never block the editor or
+ *  invent a scary "unpublished changes" warning the author can't act on. */
+export async function getPublishState(): Promise<SitePublishState> {
+  return api.get<SitePublishState>('/v1/builder/site/publish-state');
 }
 
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS

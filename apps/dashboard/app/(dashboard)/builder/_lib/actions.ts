@@ -81,6 +81,20 @@ export async function publishBuilderSite(): Promise<ActionResult<{ published: bo
   return run(() => api.post<{ published: boolean }>('/v1/builder/site/publish'), true);
 }
 
+/** Restore the header + footer to the current starter chrome — the recovery path
+ *  for a frame stamped before the brand mark became a live host core, which no
+ *  amount of logo uploading can reach. Rewrites the DRAFT only: pages, theme, and
+ *  what visitors are served all stay put, so the author reviews the restored chrome
+ *  and publishes it themselves.
+ *
+ *  Revalidates the studio route, but the CALLER must reload rather than rely on it:
+ *  silica's engine reads `document` once at mount, so a refreshed server tree alone
+ *  would leave the editor holding the old frame — and its next autosave would write
+ *  that old frame straight back over the reset. See `resetFrame` in silica-studio. */
+export async function resetSiteFrame(): Promise<ActionResult<{ frame: unknown }>> {
+  return run(() => api.post<{ frame: unknown }>('/v1/builder/site/frame/reset'), true);
+}
+
 export async function renamePage(id: string, name: string): Promise<ActionResult<BuilderPageDto>> {
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { name }), true);
 }

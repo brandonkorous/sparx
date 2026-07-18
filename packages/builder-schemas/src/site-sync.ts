@@ -101,6 +101,28 @@ export const SiteSyncInput = z.object({
 });
 export type SiteSyncInput = z.infer<typeof SiteSyncInput>;
 
+/** What the author has changed since they last published — the "your visitors are
+ *  still seeing the old version" signal the studio surfaces.
+ *
+ *  A stored draft and a published tree are the SAME editor state at two points in
+ *  time (publishing copies the draft verbatim), so this is a real comparison rather
+ *  than a heuristic — and it stays honest across an edit-then-undo, where the tree
+ *  comes back identical and the site correctly reads as fully published. */
+export interface SitePublishState {
+  /** True when ANY page, or the frame, differs from what visitors are served. */
+  hasUnpublished: boolean;
+  /** Pages whose body differs from the published one, INCLUDING pages never
+   *  published at all (a new page no visitor can reach yet). */
+  unpublishedPages: number;
+  /** Whether the site chrome (header/footer) differs from the published frame. */
+  frameUnpublished: boolean;
+  /** When the site was last published; null if it never has been. */
+  lastPublishedAt: string | null;
+  /** True when nothing has EVER been published — visitors see no site at all,
+   *  a materially different message from "your changes aren't live yet". */
+  neverPublished: boolean;
+}
+
 // ── Public storefront reads (docs/118 Stage 6, the render cutover) ────────────
 // The published silica trees the storefront renders through `renderSilicaBody`.
 // The frame (chrome) is read ONCE by the site layout; each route reads its page

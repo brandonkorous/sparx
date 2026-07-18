@@ -15,10 +15,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder } from '@wizeworks/silicaui-builder/react';
 import type { DataSource as SilicaDataSource, Document, Site } from '@wizeworks/silicaui-html';
+import { useConfirm } from '@sparx/ui';
 import type {
   BuilderPageDto,
   DataSource,
   DataSources,
+  SitePublishState,
   SiteSyncInput,
 } from '@sparx/builder-schemas';
 
@@ -27,7 +29,8 @@ import { publishBuilderSite, syncBuilderSite } from '../_lib/actions';
 import { buildSilicaHost, defaultSilicaFormat } from './silica-host';
 import { makeRenderHostNode } from './host-cores';
 import { makeFormPanels } from './form-settings-panel';
-import { SilicaToolbar, type SaveState } from './silica-toolbar';
+import { SilicaToolbar, type PublishView, type SaveState } from './silica-toolbar';
+import { useUnpublishedGuard } from './use-unpublished-guard';
 
 /** Project silica's extracted `Site` onto the sync wire shape — near-identity:
  *  silica's `Page` is already `{ id, name, slug, root }`; the frame contributes its
@@ -79,6 +82,9 @@ export interface SilicaStudioProps {
    *  engine holds the active page, so the toolbar (which sits inside the engine's
    *  provider) applies it; see `SilicaToolbar`. */
   initialPageId?: string;
+  /** Draft-vs-published as of page load, from the server. The studio takes it from
+   *  here: an edit makes the site unpublished, a publish makes it live. */
+  initialPublishState: SitePublishState;
 }
 
 export function SilicaStudio({
@@ -89,9 +95,18 @@ export function SilicaStudio({
   pages,
   sources,
   initialPageId,
+  initialPublishState,
 }: SilicaStudioProps) {
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [picker, setPicker] = useState<PickerRequest | null>(null);
+  // Seeded from the server, then owned locally. Re-reading after every edit would be
+  // a request per keystroke to answer a question we already know the answer to: an
+  // edit means unpublished, a publish means live.
+  const [publish, setPublish] = useState<PublishView>({
+    hasUnpublished: initialPublishState.hasUnpublished,
+    lastPublishedAt: initialPublishState.lastPublishedAt,
+    neverPublished: initialPublishState.neverPublished,
+  });
 
   // The media picker silica invokes when an image/video field asks for a source —
   // returns a promise that settles when the author picks an asset (or cancels).
@@ -162,6 +177,12 @@ export function SilicaStudio({
     (next: Site) => {
       pending.current = next;
       setSaveState('unsaved');
+      // Any edit makes the site differ from what visitors are served. Deliberately
+      // NOT reconciled back to false on undo: proving "this is byte-identical to the
+      // published tree again" needs the server, and erring toward "you have something
+      // to publish" costs one harmless click, while erring the other way is exactly
+      // the silent-staleness bug this feature exists to kill.
+      setPublish((p) => (p.hasUnpublished ? p : { ...p, hasUnpublished: true }));
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(flush, AUTOSAVE_MS);
     },
@@ -190,8 +211,51 @@ export function SilicaStudio({
     }
     pending.current = null;
     setSaveState('saved');
-    await publishBuilderSite();
+    const done = await publishBuilderSite();
+    // Only claim "live" if the publish actually succeeded — a failed publish that
+    // still flipped the badge to green would recreate the exact lie this fixes.
+    if (done.ok) {
+      setPublish({
+        hasUnpublished: false,
+        lastPublishedAt: new Date().toISOString(),
+        neverPublished: false,
+      });
+    }
   }, []);
+
+  // The leave warning, part one: closing or reloading the tab. The browser shows its
+  // own generic dialog and ignores custom text, so the toolbar badge carries the real
+  // explanation — this only ensures the author is asked at all.
+  useEffect(() => {
+    if (!publish.hasUnpublished) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Legacy assignment kept: Safari still gates the prompt on returnValue.
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [publish.hasUnpublished]);
+
+  // Part two: navigating elsewhere in the dashboard, which never reaches the browser's
+  // navigation lifecycle. Here we own the dialog, so it says what's actually at stake —
+  // nothing is lost, it just isn't live.
+  const confirm = useConfirm();
+  const confirmLeave = useCallback(
+    () =>
+      confirm({
+        title: 'Leave without publishing?',
+        description:
+          'Your changes are saved, so nothing will be lost — but visitors won’t see them until you publish.',
+        confirmLabel: 'Leave anyway',
+        cancelLabel: 'Stay here',
+        // Not `danger`: leaving destroys nothing. Red here would teach authors to
+        // fear a dialog whose real answer is usually "yes, that's fine".
+        tone: 'module',
+      }),
+    [confirm]
+  );
+  useUnpublishedGuard({ active: publish.hasUnpublished, confirmLeave });
 
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
@@ -203,12 +267,18 @@ export function SilicaStudio({
         // Server-authoritative — the debounced onChange is the durable store; no
         // local IndexedDB crash-recovery layer duplicating it.
         persistKey={null}
+        // Hide silica's canvas data on/off toggle (silicaui 0.26). It's a real
+        // control, but its effect is invisible on a tree with no bindings — which
+        // is most trees — so to a non-technical author it reads as a dead button.
+        // Authors here see resolved data always; debugging a resolver is our job.
+        dataToggle={false}
         onChange={onChange}
         onActivePageChange={onActivePageChange}
         onPublish={onPublish}
         toolbarSlot={
           <SilicaToolbar
             saveState={saveState}
+            publish={publish}
             pages={pages}
             sources={sources}
             initialPageId={initialPageId}
