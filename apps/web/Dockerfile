@@ -28,6 +28,7 @@ COPY packages/legal/package.json packages/legal/
 COPY packages/attribution/package.json packages/attribution/
 COPY packages/chat-widget/package.json packages/chat-widget/
 COPY packages/site-themes/package.json packages/site-themes/
+COPY packages/story-schemas/package.json packages/story-schemas/
 
 # Install only the @sparx/web subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -41,6 +42,7 @@ COPY packages/legal packages/legal
 COPY packages/attribution packages/attribution
 COPY packages/chat-widget packages/chat-widget
 COPY packages/site-themes packages/site-themes
+COPY packages/story-schemas packages/story-schemas
 COPY apps/web apps/web
 
 # PostHog analytics — NEXT_PUBLIC_* is inlined at build time, so the key must be

@@ -13,14 +13,14 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   if (!b) {
     return renderSimpleOg({
       tag: 'Bootcamp',
-      accent: '#6366F1',
+      accent: '#e04631',
       title: 'Business OS Bootcamp',
       footerRight: 'sparx.works/bootcamp',
     });
   }
   return renderSimpleOg({
     tag: 'Bootcamp',
-    accent: '#6366F1',
+    accent: '#e04631',
     title: b.title,
     subtitle: `${FORMAT_LABEL[b.format]} · ${bootcampDates(b)} · ${bootcampLocation(b)}`,
     footerLeft: `Hosted by ${b.host.displayName}`,

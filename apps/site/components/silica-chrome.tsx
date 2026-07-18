@@ -200,11 +200,16 @@ export function SilicaChrome({
   frame,
   symbols,
   host,
+  renderHost,
   children,
 }: {
   frame: SilicaNode;
   symbols?: Record<string, SymbolDef>;
   host?: ResolveHost;
+  /** Mounts a `kind:"host"` node in the CHROME (the brand mark). Without it the walk's
+   *  host case renders an empty wrapper — the frame carried host nodes as dead divs
+   *  until this was threaded through. */
+  renderHost?: HostRenderer;
   children: React.ReactNode;
 }): React.ReactNode {
   const flat = flattenSymbols(frame, symbols ?? {});
@@ -212,7 +217,10 @@ export function SilicaChrome({
   // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
-  return walk(hoistAttrBindings(resolved), 'frame', { outlet: children });
+  return walk(hoistAttrBindings(resolved), 'frame', {
+    outlet: children,
+    ...(renderHost ? { renderHost } : {}),
+  });
 }
 
 // ── SilicaFunctionalBody: a page body with pinned cores → a React tree ───────

@@ -8,13 +8,13 @@ import type { PartnerTier } from '@/lib/partners';
  * transposed to three stacked tier panels on tablet/mobile. One source array
  * drives both, so the two representations can never diverge. Not pricing cards,
  * not a $/mo table — a clean capability comparison, Certified column tinted with
- * the platform indigo (it sits top of the directory).
+ * the platform Ember (it sits top of the directory).
  */
 
 const SANS = 'var(--font-sans)';
-const INDIGO = 'var(--color-primary)';
-const INDIGO_TEXT = 'var(--color-primary)';
-const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const EMBER = 'var(--color-primary)';
+const EMBER_TEXT = 'var(--color-primary)';
+const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
 const BORDER = 'var(--color-base-300)';
 const CERT_CELL = 'color-mix(in oklab, var(--color-primary) 5%, var(--color-base-100))';
 
@@ -57,7 +57,7 @@ const HEADS: TierHead[] = [
     commission: (
       <>
         30%
-        <span style={{ color: INDIGO_TEXT }}> + 5%</span>
+        <span style={{ color: EMBER_TEXT }}> + 5%</span>
         <small style={SMALL}> ongoing</small>
       </>
     ),
@@ -146,7 +146,7 @@ function cellContent(cell: Cell): ReactNode {
     <span
       style={{
         color: cell.strong
-          ? INDIGO_TEXT
+          ? EMBER_TEXT
           : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
       }}
     >
@@ -227,7 +227,7 @@ function HeadCell({ head }: { head: TierHead }) {
       style={{
         padding: '30px 26px',
         borderLeft: `1px solid ${BORDER}`,
-        backgroundColor: certified ? INDIGO_TINT : undefined,
+        backgroundColor: certified ? EMBER_TINT : undefined,
       }}
     >
       <TierBadge tier={head.tier} />
@@ -280,7 +280,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
   return (
     <div
       style={{
-        border: `1px solid ${certified ? INDIGO : BORDER}`,
+        border: `1px solid ${certified ? EMBER : BORDER}`,
         borderRadius: '16px',
         overflow: 'hidden',
         backgroundColor: 'var(--color-base-100)',
@@ -290,7 +290,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
         style={{
           padding: '24px',
           borderBottom: `1px solid ${BORDER}`,
-          backgroundColor: certified ? INDIGO_TINT : undefined,
+          backgroundColor: certified ? EMBER_TINT : undefined,
         }}
       >
         <TierBadge tier={head.tier} />
@@ -331,7 +331,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
                 color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
               }}
             >
-              <span style={{ color: INDIGO, flexShrink: 0 }}>✓</span>
+              <span style={{ color: EMBER, flexShrink: 0 }}>✓</span>
               <span>
                 <span style={{ color: 'var(--color-base-content)' }}>{r.label}</span>
                 {detail ? ` — ${detail}` : ''}

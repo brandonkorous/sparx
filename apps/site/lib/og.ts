@@ -15,7 +15,7 @@ export interface OgCardParams {
   eyebrow?: string;
   /** Store display name, rendered as the card's footer signature. */
   brand?: string;
-  /** Tenant brand colour (#rrggbb); falls back to sparx indigo in the route. */
+  /** Tenant brand colour (#rrggbb); falls back to sparx Ember in the route. */
   accent?: string | null;
 }
 

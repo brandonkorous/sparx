@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { Section, SectionHeader, Display, Spark } from '../primitives';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Section, SectionHeader, Display, Spark, Text } from '../primitives';
 
 const ROTATION = ['Commerce', 'Content', 'Customers', 'Email', 'Wholesale', 'AI', 'Everything'];
 
@@ -26,7 +26,7 @@ const PERMANENCE = [
 export function VoiceSection() {
   return (
     <Section id="voice" surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
+      <div className="flex flex-col gap-14">
         <SectionHeader
           accent="var(--color-primary)"
           headline="sparx speaks directly"
@@ -42,89 +42,53 @@ export function VoiceSection() {
 
 function TaglineBand() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        padding: 'clamp(28px, 5vw, 48px)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 'var(--radius-xl)',
-        backgroundColor: 'var(--color-base-100)',
-      }}
-    >
-      <Display size={56} lineHeight={56}>
-        Everything, ignited
-        <Spark />
-      </Display>
-      <p style={lede}>
-        The hero rotates the leading noun through the offerings — each landing on{' '}
-        <em style={{ fontStyle: 'normal', color: 'var(--color-base-content)' }}>ignited.</em> with
-        the indigo spark. Static form for titles, OG, and social:{' '}
-        <strong style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
-          Everything, ignited.
-        </strong>
-      </p>
-      <div className="mkt-cluster" style={{ gap: '8px' }}>
-        {ROTATION.map((w) => (
-          <span
-            key={w}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              padding: '6px 12px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'var(--color-base-200)',
-            }}
-          >
-            {w}, ignited.
-          </span>
-        ))}
-      </div>
-    </div>
+    <Card>
+      <CardBody className="flex flex-col gap-6">
+        <Display size={56} lineHeight={56}>
+          Everything, ignited
+          <Spark />
+        </Display>
+        <Text size={17} tone="muted" className="max-w-[640px]">
+          The hero rotates the leading noun through the offerings — each landing on{' '}
+          <em className="text-base-content not-italic">ignited.</em> with the Ember spark. Static
+          form for titles, OG, and social:{' '}
+          <strong className="text-base-content font-medium">Everything, ignited.</strong>
+        </Text>
+        <div className="flex flex-wrap items-center gap-2">
+          {ROTATION.map((w) => (
+            <Badge key={w} variant="soft" size="sm">
+              {w}, ignited.
+            </Badge>
+          ))}
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 
 function VoiceTable() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="flex flex-col">
       {TABLE.map((row, i) => (
         <div
           key={row.says}
-          className="mkt-grid-2-1"
-          style={{
-            gap: '16px',
-            padding: '20px 0',
-            borderTop: i === 0 ? '1px solid var(--color-base-300)' : 'none',
-            borderBottom: '1px solid var(--color-base-300)',
-          }}
+          className={`mkt-grid-2-1 border-base-300 border-b py-5 ${i === 0 ? 'border-t' : ''}`}
         >
-          <span
+          <Text
+            as="span"
+            size={15}
+            tone="subtle"
+            className="line-through"
             style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '15px',
-              lineHeight: '24px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textDecoration: 'line-through',
               textDecorationColor:
                 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
             }}
           >
             {row.instead}
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '15px',
-              lineHeight: '24px',
-              color: 'var(--color-base-content)',
-            }}
-          >
+          </Text>
+          <Text as="span" size={15} weight={500} tone="default">
             {row.says}
-          </span>
+          </Text>
         </div>
       ))}
     </div>
@@ -133,67 +97,32 @@ function VoiceTable() {
 
 function PermanenceBand() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        padding: 'clamp(32px, 5vw, 56px)',
-        borderRadius: 'var(--radius-xl)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Display size={48} lineHeight={50} color="#FFFFFF">
-        AI builds it. sparx keeps it
-        <Spark color="#818CF8" />
-      </Display>
-      <p style={{ ...lede, color: '#A1A1AA', maxWidth: '680px' }}>
-        The durability story, for the era of disposable AI-generated sites. sparx is MCP-native —
-        this is AI <em style={{ fontStyle: 'normal', color: '#fff' }}>plus</em> permanence, never AI
-        versus AI. Easy to create is table stakes now; easy to keep — maintain, enhance, own — is
-        ours.
-      </p>
-      <ul
-        style={{
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
-        {PERMANENCE.map((line) => (
-          <li
-            key={line}
-            style={{
-              display: 'flex',
-              gap: '12px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '15px',
-              lineHeight: '24px',
-              color: '#D4D4D8',
-            }}
-          >
-            <span aria-hidden style={{ color: '#818CF8' }}>
-              —
-            </span>
-            <span>{line}</span>
-          </li>
-        ))}
-      </ul>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#52525B' }}>
-        Use one supporting line at a time, never stacked.
-      </span>
-    </div>
+    <Card data-theme="dark" className="bg-base-100">
+      <CardBody className="flex flex-col gap-6">
+        <Display size={48} lineHeight={50}>
+          AI builds it. sparx keeps it
+          <Spark />
+        </Display>
+        <Text size={15} className="max-w-[680px]">
+          The durability story, for the era of disposable AI-generated sites. sparx is MCP-native —
+          this is AI <em className="text-base-content not-italic">plus</em> permanence, never AI
+          versus AI. Easy to create is table stakes now; easy to keep — maintain, enhance, own — is
+          ours.
+        </Text>
+        <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+          {PERMANENCE.map((line) => (
+            <Text as="li" key={line} size={15} className="flex gap-3">
+              <span aria-hidden className="text-primary">
+                —
+              </span>
+              <span>{line}</span>
+            </Text>
+          ))}
+        </ul>
+        <Text as="span" size={12} mono tone="subtle">
+          Use one supporting line at a time, never stacked.
+        </Text>
+      </CardBody>
+    </Card>
   );
 }
-
-const lede: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '17px',
-  lineHeight: '28px',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-  margin: 0,
-  maxWidth: '640px',
-};

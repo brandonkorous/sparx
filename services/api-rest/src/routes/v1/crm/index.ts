@@ -1,5 +1,10 @@
 // Mounts every /v1/crm/* route group. One register call from app.ts so the
 // CRM URL space lives behind a single registration point.
+//
+// Orders are NOT here. They live at the top-level /v1/orders root
+// (routes/v1/orders.ts) because an order is a shared spine produced by Commerce
+// or B2B checkout and merely READ by CRM — three separately billed modules, so
+// no one of them owns the namespace. See lib/order-context.ts.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { pipelineService, segmentService } from '@sparx/crm';
@@ -14,7 +19,6 @@ import activityRoutes from './activities.js';
 import taskRoutes from './tasks.js';
 import segmentRoutes from './segments.js';
 import reportRoutes from './reports.js';
-import orderRoutes from './orders.js';
 import crmImportExportRoutes from './import.js';
 import { toCrmContext } from '../../../lib/crm-context.js';
 
@@ -27,7 +31,6 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   await app.register(taskRoutes);
   await app.register(segmentRoutes);
   await app.register(reportRoutes);
-  await app.register(orderRoutes);
   await app.register(crmImportExportRoutes);
 
   // Idempotent seed for tenants that just enabled CRM. Same functions also

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { getModuleColor, Section, SectionHeader } from './primitives';
 
 /**
  * Two more structural devices for the /email page:
@@ -47,23 +47,23 @@ export function EmailKinds() {
         {panels.map((p, i) => (
           <div
             key={p.title}
+            className={i === 0 ? `${E.bg} bg-soft` : 'bg-base-100'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               padding: '30px',
-              backgroundColor: i === 0 ? moduleTint(E.color) : 'var(--color-base-100)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
             <span
+              className={E.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: E.text,
               }}
             >
               {p.tag}
@@ -119,15 +119,15 @@ function FlowLine({ steps }: { steps: [string, string, string] }) {
       {steps.map((s, i) => (
         <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
           <span
+            className={i === 1 ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-100'}
             style={{
               padding: '4px 9px',
               borderRadius: '6px',
               whiteSpace: 'nowrap',
-              backgroundColor: i === 1 ? E.tint : 'var(--color-base-100)',
               border: `1px solid ${i === 1 ? E.color : 'var(--color-base-300)'}`,
               color:
                 i === 1
-                  ? E.text
+                  ? undefined
                   : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
             }}
           >
@@ -233,12 +233,11 @@ function HealthRow({
       }}
     >
       <span
+        className={`${E.bg} bg-soft ${E.ink}`}
         style={{
           width: 20,
           height: 20,
           borderRadius: 9999,
-          backgroundColor: E.tint,
-          color: E.text,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -258,15 +257,15 @@ function HealthRow({
 function Pill({ label, tone }: { label: string; tone: 'email' | 'muted' }) {
   return (
     <span
+      className={tone === 'email' ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200'}
       style={{
         fontFamily: MONO,
         fontSize: '11px',
         padding: '3px 9px',
         borderRadius: '9999px',
-        backgroundColor: tone === 'email' ? E.tint : 'var(--color-base-200)',
         color:
           tone === 'email'
-            ? E.text
+            ? undefined
             : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
       }}
     >

@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -180,11 +180,11 @@ export function DropshipInventory() {
             }}
           >
             <span
+              className={`${M.bg} bg-soft`}
               style={{
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: M.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -259,8 +259,8 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
   const activeIdx = Math.max(0, steps.indexOf(d.routed.status));
   return (
     <div
+      className={`${M.bg} bg-soft`}
       style={{
-        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
@@ -320,11 +320,11 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
               </span>
               {i === activeIdx ? (
                 <span
+                  className={M.ink}
                   style={{
                     marginLeft: 'auto',
                     fontFamily: MONO,
                     fontSize: '11px',
-                    color: M.text,
                   }}
                 >
                   current
@@ -401,7 +401,7 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
             gap: '12px',
           }}
         >
-          <TruckGlyph size={16} color={M.text} />
+          <TruckGlyph size={16} color={M.color} />
           <span style={{ minWidth: 0 }}>
             <span
               style={{
@@ -424,6 +424,7 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
             </span>
           </span>
           <span
+            className={`${M.bg} bg-soft ${M.ink}`}
             style={{
               marginLeft: 'auto',
               fontFamily: SANS,
@@ -431,8 +432,6 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
               fontWeight: 500,
               padding: '6px 12px',
               borderRadius: '9999px',
-              backgroundColor: M.tint,
-              color: M.text,
               flexShrink: 0,
             }}
           >

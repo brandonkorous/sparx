@@ -50,12 +50,12 @@ export function EmailHero() {
   ];
   return (
     <section
+      className={`${E.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: E.tint,
       }}
     >
       <Container>
@@ -199,11 +199,11 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
         }}
       >
         <span
+          className={`${E.bg} bg-soft ${E.ink}`}
           style={{
             width: 40,
             height: 40,
             borderRadius: '9999px',
-            backgroundColor: E.tint,
             border: `1.5px solid ${E.color}`,
             flexShrink: 0,
             display: 'flex',
@@ -212,7 +212,6 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontWeight: 500,
             fontSize: '14px',
-            color: E.text,
           }}
         >
           {initials}
@@ -243,11 +242,11 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           }}
         >
           <span
+            className={`${E.bg} bg-soft`}
             style={{
               width: 26,
               height: 26,
               borderRadius: '7px',
-              backgroundColor: E.tint,
               border: `1px solid ${E.color}`,
             }}
           />
@@ -311,12 +310,12 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             }}
           >
             <div
+              className={i === 2 ? E.ink : 'text-base-content'}
               style={{
                 fontFamily: SANS,
                 fontWeight: 500,
                 fontSize: '17px',
                 letterSpacing: '-0.01em',
-                color: i === 2 ? E.text : 'var(--color-base-content)',
               }}
             >
               {v}
@@ -376,7 +375,8 @@ export function EmailPipeline() {
         {stages.map((s) => (
           <div key={s.n} className="mkt-stage" style={{ padding: '28px 24px' }}>
             <span
-              style={{ fontFamily: MONO, fontSize: '11px', letterSpacing: '0.04em', color: E.text }}
+              className={E.ink}
+              style={{ fontFamily: MONO, fontSize: '11px', letterSpacing: '0.04em' }}
             >
               {s.n}
             </span>

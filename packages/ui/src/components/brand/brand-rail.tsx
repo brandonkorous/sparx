@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Wordmark } from '@sparx/brand/react';
 import { cn } from '../../utils/cn';
 
 // The colored brand panel for the auth split-screen — a flat fill of the active
@@ -17,24 +18,17 @@ import { cn } from '../../utils/cn';
 // contrast above AA. A single flat color — no gradient (sparx is flat).
 export const RAIL_BG = 'color-mix(in oklab, var(--color-module) 86%, #000)';
 
-// The inverted sparx wordmark for a colored rail: white "spar" + a light tint of
-// the module color "x". The "x" keeps its brand role even on the rail. The
-// wordmark is all-lowercase by design.
+// The inverted sparx wordmark for a colored rail: the real vector lockup drawn
+// white, with a light tint of the module color for the "x" (it keeps its brand
+// role even on the rail). Body is `currentColor`, so the inline white wins over
+// the component's default ink class.
 export function RailWordmark() {
   return (
-    <span
-      style={{
-        fontFamily: "var(--font-wordmark, 'Inter', system-ui, sans-serif)",
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
-        fontSize: 21,
-        lineHeight: 1,
-        color: '#fff',
-      }}
-    >
-      spar
-      <span style={{ color: 'color-mix(in oklab, #fff 55%, var(--color-module))' }}>x</span>
-    </span>
+    <Wordmark
+      size={22}
+      accentColor="color-mix(in oklab, #fff 55%, var(--color-module))"
+      style={{ color: '#fff' }}
+    />
   );
 }
 

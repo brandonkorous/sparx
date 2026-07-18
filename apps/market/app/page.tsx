@@ -2,7 +2,7 @@
 // marketplace. Server component; PURE COMPOSITION — the data assembly lives in
 // ./home-data (loadHomeData). The page alternates full-bleed colored bands (a pink
 // hero with a real seller portrait, a warm maker-story band, a mood-first lifestyle
-// trio, an indigo sell CTA) with contained white runs of product sections, so the
+// trio, an Ember sell CTA) with contained white runs of product sections, so the
 // long scroll reads as a rhythm rather than one flat wall. Every strip degrades to
 // nothing if empty, so the page always renders. Solid fills only — no gradients.
 

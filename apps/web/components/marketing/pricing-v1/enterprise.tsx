@@ -1,5 +1,10 @@
 import { Check } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Display, Spark } from '../primitives';
 import { Reveal } from '../reveal';
 import { PLATFORM_HREF, SALES_HREF } from '../cta';
@@ -50,22 +55,21 @@ export function PricingV1Enterprise() {
           </div>
 
           <div className="flex shrink-0 flex-col items-start gap-3">
-            <Button
-              size="lg"
-              color="primary"
-              variant="solid"
-              render={<a href={SALES_HREF} aria-label="Talk to sales" />}
+            <a
+              href={SALES_HREF}
+              aria-label="Talk to sales"
+              className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
             >
               Talk to sales
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
+            </a>
+            <a
+              href={PLATFORM_HREF}
+              aria-label="See the platform"
+              className={buttonClasses({ size: 'lg', variant: 'outline' })}
               style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-              render={<a href={PLATFORM_HREF} aria-label="See the platform" />}
             >
               See the platform →
-            </Button>
+            </a>
           </div>
         </Reveal>
       </Container>

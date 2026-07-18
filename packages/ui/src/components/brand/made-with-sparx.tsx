@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { BRAND } from '@sparx/brand';
 
 // "Made with sparx" — the platform attribution badge that reads as a small tab
 // welded to the bottom edge of the viewport on every tenant public site (apps/site
@@ -15,9 +16,10 @@ import * as React from 'react';
 // Two constraints that keep it safe to drop onto ANY tenant site:
 //
 //  1. SELF-CONTAINED. It depends on nothing from the host theme (no `currentColor`,
-//     no `--st-*`/`--sparx-*` tokens): fixed dark surface + light text + literal
-//     indigo "x". So it's legible and consistent regardless of the surface behind
-//     it, and immune to the tenant's CSS (inline styles beat any stylesheet).
+//     no `--st-*`/`--sparx-*` tokens): fixed dark surface + light text + the brand
+//     spark "x" as a literal. So it's legible and consistent regardless of the
+//     surface behind it, and immune to the tenant's CSS (inline styles beat any
+//     stylesheet).
 //
 //  2. BRANDED ANCHOR. The link's accessible name is the BRAND ("Made with sparx"),
 //     never keyword-stuffed. A branded credit link across many distinct domains is
@@ -27,8 +29,9 @@ import * as React from 'react';
 // Server component (no client JS): the base look is inline styles, and a colocated
 // <style> adds the hover/focus lift.
 
-// sparx Indigo, as a literal (constraint 1). Bright enough to read on the dark chip.
-const SPARX_INDIGO = '#6366F1';
+// The brand spark color, as a literal (constraint 1) from the single source of
+// truth. Bright enough to read on the dark chip.
+const SPARX_SPARK = BRAND.primary;
 
 // Attribution destination: the marketing home, UTM-tagged so referral clicks from
 // tenant sites are measurable (referral traffic + brand exposure is the real value
@@ -48,7 +51,7 @@ const STYLE = `
   box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.28) !important;
 }
 .sx-made-with-sparx:focus-visible {
-  outline: 2px solid ${SPARX_INDIGO};
+  outline: 2px solid ${SPARX_SPARK};
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -148,7 +151,7 @@ export function MadeWithSparx({
         <span
           style={{ fontWeight: 700, letterSpacing: '-0.03em', color: 'rgba(255, 255, 255, 0.96)' }}
         >
-          spar<span style={{ color: SPARX_INDIGO }}>x</span>
+          spar<span style={{ color: SPARX_SPARK }}>x</span>
         </span>
       </a>
     </>

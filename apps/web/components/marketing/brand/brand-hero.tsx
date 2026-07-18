@@ -1,5 +1,12 @@
-import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Spark } from '../primitives';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as `render` crosses the
+// Server→Client boundary and arrives as a lazy client reference, so its `.type`
+// is undefined and silica's `cloneElement(render, …)` throws "Element type is
+// invalid… got: undefined" (its `theirs = {}` guard only covers `.props`, and
+// would silently drop `href` anyway). The class builders are React-free; import
+// them from `/server` because the package ROOT is a 'use client' bundle.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Container, Display, Spark, Text } from '../primitives';
 import { CopyValue } from './interactive';
 import { OfficialWordmark } from './assets';
 
@@ -7,7 +14,8 @@ import { OfficialWordmark } from './assets';
  *  <Section id> below the hero so the chips deep-link cleanly. */
 export const BRAND_SECTIONS = [
   { id: 'wordmark', label: 'Wordmark' },
-  { id: 'monogram', label: 'Monogram' },
+  { id: 'monogram', label: 'Spark mark' },
+  { id: 'mascot', label: 'Sparky' },
   { id: 'misuse', label: 'Misuse' },
   { id: 'color', label: 'Primary color' },
   { id: 'modules', label: 'Module colors' },
@@ -28,57 +36,30 @@ const IDENTITY: { label: string; value: string }[] = [
 
 export function BrandHero() {
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(104px, 13vw, 168px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+    <section className="px-page pb-section-lg bg-base-200 border-base-300 border-b pt-[clamp(104px,13vw,168px)]">
+      <Container className="flex flex-col gap-10">
         <OfficialWordmark style={{ width: 'clamp(208px, 32vw, 332px)' }} />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '880px' }}>
+        <div className="flex max-w-[880px] flex-col gap-6">
           <Display as="h1" size={84} lineHeight={80}>
             The system behind the spark
             <Spark />
           </Display>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '19px',
-              lineHeight: '31px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '660px',
-              margin: 0,
-            }}
-          >
+          <Text size={19} className="max-w-[660px]">
             The wordmark, the color system, the Geist type scale, and the voice that keep sparx
             coherent across thirteen modules, a dozen domains, and every surface a tenant touches.
             This page is the source of truth — for us, and for anyone building with the sparx brand.
-          </p>
+          </Text>
         </div>
 
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <a href="#downloads">
-            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
-              Download brand assets
-            </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <a href="#downloads" className={buttonClasses({ color: 'neutral', size: 'lg' })}>
+            Download brand assets
           </a>
-          <a
-            href="mailto:brand@sparx.works"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textDecoration: 'none',
-              padding: '12px 0',
-            }}
-          >
-            Press kit → brand@sparx.works
+          <a href="mailto:brand@sparx.works">
+            <Text as="span" mono size={13} tone="subtle" className="py-3 no-underline">
+              Press kit → brand@sparx.works
+            </Text>
           </a>
         </div>
 
@@ -86,20 +67,11 @@ export function BrandHero() {
 
         <SectionIndex />
 
-        <div
-          className="mkt-cluster"
-          style={{ gap: '10px', alignItems: 'center', paddingTop: '4px' }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+        <div className="flex flex-wrap items-center gap-2.5 pt-1">
+          <Text as="span" size={13} tone="subtle">
             Tap any swatch, hex, or token to copy it.
-          </span>
-          <CopyValue value="#6366F1" label="Copy the sparx Indigo hex" />
+          </Text>
+          <CopyValue value="#e04631" label="Copy the sparx Ember hex" />
         </div>
       </Container>
     </section>
@@ -108,39 +80,15 @@ export function BrandHero() {
 
 function IdentityList() {
   return (
-    <dl
-      className="mkt-grid-4-2-1"
-      style={{
-        margin: '8px 0 0',
-        paddingTop: '8px',
-        borderTop: '1px solid var(--color-base-300)',
-      }}
-    >
+    <dl className="mkt-grid-4-2-1 border-base-300 mt-2 border-t pt-2">
       {IDENTITY.map((row) => (
-        <div
-          key={row.label}
-          style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '24px' }}
-        >
-          <dt
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+        <div key={row.label} className="flex flex-col gap-1.5 pt-6">
+          <Text as="dt" size={12.5} tone="subtle">
             {row.label}
-          </dt>
-          <dd
-            style={{
-              margin: 0,
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '15px',
-              color: 'var(--color-base-content)',
-            }}
-          >
+          </Text>
+          <Text as="dd" size={15} weight={500} tone="default">
             {row.value}
-          </dd>
+          </Text>
         </div>
       ))}
     </dl>
@@ -149,25 +97,12 @@ function IdentityList() {
 
 function SectionIndex() {
   return (
-    <nav
-      aria-label="On this page"
-      className="mkt-cluster"
-      style={{ gap: '8px', paddingTop: '4px' }}
-    >
+    <nav aria-label="On this page" className="flex flex-wrap items-center gap-2 pt-1">
       {BRAND_SECTIONS.map((s) => (
         <a
           key={s.id}
           href={`#${s.id}`}
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            textDecoration: 'none',
-            padding: '7px 13px',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: 'var(--radius-full)',
-            backgroundColor: 'var(--color-base-100)',
-          }}
+          className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'sm' })}
         >
           {s.label}
         </a>

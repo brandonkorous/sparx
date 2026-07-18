@@ -13,7 +13,7 @@ import {
 
 /**
  * The /partners marketing page — the Partner Program recruit surface, told as a
- * confident, left-aligned earnings ledger and carried by platform indigo. Held
+ * confident, left-aligned earnings ledger and carried by platform Ember. Held
  * to the bespoke /ai + /builder bar. Section devices vary down the page: tinted
  * hero → stat proof strip → argument ledger → numbered rail → tier comparison
  * matrix → directory-CTA split → self-serve apply split → FAQ → dark final CTA.
@@ -48,8 +48,8 @@ export function PartnersPage({ partnerCount }: { partnerCount?: number }) {
 }
 
 const SANS = 'var(--font-sans)';
-const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const INDIGO_TEXT = 'var(--color-primary)';
+const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const EMBER_TEXT = 'var(--color-primary)';
 
 function PartnersTiersSection() {
   return (
@@ -106,8 +106,8 @@ function PartnersApply() {
                     height: 28,
                     flexShrink: 0,
                     borderRadius: '8px',
-                    backgroundColor: INDIGO_TINT,
-                    color: INDIGO_TEXT,
+                    backgroundColor: EMBER_TINT,
+                    color: EMBER_TEXT,
                     fontFamily: 'var(--font-mono)',
                     fontSize: '12px',
                     display: 'flex',

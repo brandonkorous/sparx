@@ -1,24 +1,37 @@
-// CRM orders — list / get / create / update / cancel + nested payments /
-// fulfillments / refunds.
+// Orders — the shared order root. List / get / create / update / cancel, plus
+// nested payments / fulfillments / refunds.
 //
-//   GET    /v1/crm/orders                       → list (filterable)
-//   POST   /v1/crm/orders                       → create
-//   GET    /v1/crm/orders/:id                   → fetch one (with items)
-//   PATCH  /v1/crm/orders/:id                   → update
-//   POST   /v1/crm/orders/:id/cancel            → cancel
-//   GET    /v1/crm/orders/:id/payments          → list payments for order
-//   POST   /v1/crm/orders/:id/payments          → record a payment
-//   POST   /v1/crm/orders/:id/payments/:paymentId/void  → void a payment
-//   GET    /v1/crm/orders/:id/fulfillments      → list fulfillments
-//   POST   /v1/crm/orders/:id/fulfillments      → create a fulfillment
-//   PATCH  /v1/crm/orders/:id/fulfillments/:fId → update a fulfillment
-//   GET    /v1/crm/orders/:id/fulfillments/:fId/rates       → live carrier rate quotes
-//   GET    /v1/crm/orders/:id/fulfillments/:fId/labels      → purchased labels
-//   POST   /v1/crm/orders/:id/fulfillments/:fId/buy-label   → buy a label from a rate
-//   POST   /v1/crm/orders/:id/fulfillments/:fId/void-label  → void a purchased label
-//   GET    /v1/crm/orders/:id/fulfillments/:fId/track       → live tracking status
-//   GET    /v1/crm/orders/:id/refunds           → list refunds
-//   POST   /v1/crm/orders/:id/refunds           → record a refund
+// Top-level (not /v1/commerce/orders or /v1/crm/orders) because an order is a
+// shared spine: Commerce checkout and B2B PO checkout both produce one, CRM
+// reads it as customer history, and invoicing/inventory/dropship draw on it.
+// Any module prefix here would imply an ownership — and a charge — that doesn't
+// hold. Access is gated on Commerce OR B2B OR CRM via requireOrderAccess.
+//
+// The dashboard composes THREE page routes over this one root
+// (/commerce/orders, /b2b/orders, /crm/orders), each a different lens.
+//
+//   GET    /v1/orders                       → list (filterable)
+//   POST   /v1/orders                       → create
+//   GET    /v1/orders/:id                   → fetch one (with items)
+//   PATCH  /v1/orders/:id                   → update
+//   POST   /v1/orders/:id/cancel            → cancel
+//   GET    /v1/orders/:id/payments          → list payments for order
+//   POST   /v1/orders/:id/payments          → record a payment
+//   POST   /v1/orders/:id/payments/:paymentId/void  → void a payment
+//   GET    /v1/orders/:id/fulfillments      → list fulfillments
+//   POST   /v1/orders/:id/fulfillments      → create a fulfillment
+//   PATCH  /v1/orders/:id/fulfillments/:fId → update a fulfillment
+//   GET    /v1/orders/:id/fulfillments/:fId/rates       → live carrier rate quotes
+//   GET    /v1/orders/:id/fulfillments/:fId/labels      → purchased labels
+//   POST   /v1/orders/:id/fulfillments/:fId/buy-label   → buy a label from a rate
+//   POST   /v1/orders/:id/fulfillments/:fId/void-label  → void a purchased label
+//   GET    /v1/orders/:id/fulfillments/:fId/track       → live tracking status
+//   GET    /v1/orders/:id/refunds           → list refunds
+//   POST   /v1/orders/:id/refunds           → record a refund
+//
+// The carrier-label endpoints additionally require Commerce (requireCommerceModule)
+// on top of the shared gate — buying and voiding labels is commerce machinery a
+// CRM-only tenant has no entitlement to.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -31,8 +44,8 @@ import {
 import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireCrmOrCommerceModule, toCrmContext } from '../../../lib/crm-context.js';
-import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
+import { requireCommerceModule, toCommerceContext } from '../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PaymentPath = z.object({
@@ -52,7 +65,13 @@ const TrackQuery = z.object({
 
 const ListQuery = z.object({
   customer_id: z.string().uuid().optional(),
+  // B2B scoping — resolved through Customer.b2bAccountId (an Order has no
+  // account column). `b2b_only=true` is what the /b2b/orders lens sends.
   b2b_account_id: z.string().uuid().optional(),
+  b2b_only: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   status: z.string().optional(),
   payment_status: z.string().optional(),
   // High-level origin bucket — storefront | b2b_portal | admin | import | mcp |
@@ -68,13 +87,14 @@ const ListQuery = z.object({
 });
 
 const orderRoutes: FastifyPluginAsync = (app) => {
-  app.get('/v1/crm/orders', async (request) => {
+  app.get('/v1/orders', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const q = ListQuery.parse(request.query);
-    const { items, total } = await orderService.list(toCrmContext(request), {
+    const { items, total } = await orderService.list(toOrderContext(request), {
       customerId: q.customer_id,
       b2bAccountId: q.b2b_account_id,
+      b2bOnly: q.b2b_only,
       status: q.status,
       paymentStatus: q.payment_status,
       channel: q.channel,
@@ -86,58 +106,58 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return paged(items, { total, per_page: q.take ?? 50 });
   });
 
-  app.get('/v1/crm/orders/:id', async (request) => {
+  app.get('/v1/orders/:id', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
-    const order = await orderService.get(toCrmContext(request), id);
+    const order = await orderService.get(toOrderContext(request), id);
     return ok(order);
   });
 
-  app.post('/v1/crm/orders', async (request, reply) => {
+  app.post('/v1/orders', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
-    const order = await orderService.create(toCrmContext(request), request.body);
+    await requireOrderAccess(request);
+    const order = await orderService.create(toOrderContext(request), request.body);
     reply.code(201);
     return ok(order);
   });
 
-  app.patch('/v1/crm/orders/:id', async (request) => {
+  app.patch('/v1/orders/:id', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
-    const order = await orderService.update(toCrmContext(request), id, request.body);
+    const order = await orderService.update(toOrderContext(request), id, request.body);
     return ok(order);
   });
 
-  app.post('/v1/crm/orders/:id/cancel', async (request) => {
+  app.post('/v1/orders/:id/cancel', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     // The service takes a free-form input that already includes the orderId.
     // Pass it through, but make sure the URL param wins so callers can't pass
     // a body whose `orderId` doesn't match the path.
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const order = await orderService.cancel(toCrmContext(request), { ...body, orderId: id });
+    const order = await orderService.cancel(toOrderContext(request), { ...body, orderId: id });
     return ok(order);
   });
 
   // ── payments ────────────────────────────────────────────────────────────
 
-  app.get('/v1/crm/orders/:id/payments', async (request) => {
+  app.get('/v1/orders/:id/payments', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
-    const rows = await orderPaymentsService.listForOrder(toCrmContext(request), id);
+    const rows = await orderPaymentsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });
 
-  app.post('/v1/crm/orders/:id/payments', async (request, reply) => {
+  app.post('/v1/orders/:id/payments', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const payment = await orderPaymentsService.recordPayment(toCrmContext(request), {
+    const payment = await orderPaymentsService.recordPayment(toOrderContext(request), {
       ...body,
       orderId: id,
     });
@@ -145,12 +165,12 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return ok(payment);
   });
 
-  app.post('/v1/crm/orders/:id/payments/:paymentId/void', async (request) => {
+  app.post('/v1/orders/:id/payments/:paymentId/void', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id, paymentId } = PaymentPath.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const payment = await orderPaymentsService.voidPayment(toCrmContext(request), {
+    const payment = await orderPaymentsService.voidPayment(toOrderContext(request), {
       ...body,
       orderId: id,
       paymentId,
@@ -160,20 +180,20 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   // ── fulfillments ────────────────────────────────────────────────────────
 
-  app.get('/v1/crm/orders/:id/fulfillments', async (request) => {
+  app.get('/v1/orders/:id/fulfillments', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
-    const rows = await orderFulfillmentsService.listForOrder(toCrmContext(request), id);
+    const rows = await orderFulfillmentsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });
 
-  app.post('/v1/crm/orders/:id/fulfillments', async (request, reply) => {
+  app.post('/v1/orders/:id/fulfillments', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const fulfillment = await orderFulfillmentsService.createFulfillment(toCrmContext(request), {
+    const fulfillment = await orderFulfillmentsService.createFulfillment(toOrderContext(request), {
       ...body,
       orderId: id,
     });
@@ -181,12 +201,12 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return ok(fulfillment);
   });
 
-  app.patch('/v1/crm/orders/:id/fulfillments/:fulfillmentId', async (request) => {
+  app.patch('/v1/orders/:id/fulfillments/:fulfillmentId', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id, fulfillmentId } = FulfillmentPath.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const fulfillment = await orderFulfillmentsService.updateFulfillment(toCrmContext(request), {
+    const fulfillment = await orderFulfillmentsService.updateFulfillment(toOrderContext(request), {
       ...body,
       orderId: id,
       fulfillmentId,
@@ -196,27 +216,27 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   // ── carrier labels (real Shippo integration — docs/09) ────────────────────
 
-  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/rates', async (request) => {
+  app.get('/v1/orders/:id/fulfillments/:fulfillmentId/rates', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const rates = await quoteOutboundRates(toCommerceContext(request), fulfillmentId);
     return ok(rates);
   });
 
-  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/labels', async (request) => {
+  app.get('/v1/orders/:id/fulfillments/:fulfillmentId/labels', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const labels = await listFulfillmentLabels(toCommerceContext(request), fulfillmentId);
     return ok(labels);
   });
 
-  app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/buy-label', async (request, reply) => {
+  app.post('/v1/orders/:id/fulfillments/:fulfillmentId/buy-label', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const { rateRef } = BuyLabelBody.parse(request.body);
@@ -228,9 +248,9 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return ok(result);
   });
 
-  app.post('/v1/crm/orders/:id/fulfillments/:fulfillmentId/void-label', async (request) => {
+  app.post('/v1/orders/:id/fulfillments/:fulfillmentId/void-label', async (request) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     await requireCommerceModule(request);
     const { fulfillmentId } = FulfillmentPath.parse(request.params);
     const { labelRef } = VoidLabelBody.parse(request.body);
@@ -238,9 +258,9 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return ok({ voided: true });
   });
 
-  app.get('/v1/crm/orders/:id/fulfillments/:fulfillmentId/track', async (request) => {
+  app.get('/v1/orders/:id/fulfillments/:fulfillmentId/track', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     await requireCommerceModule(request);
     const { trackingNumber, carrier } = TrackQuery.parse(request.query);
     const status = await shippingService.trackShipment(toCommerceContext(request), {
@@ -252,20 +272,20 @@ const orderRoutes: FastifyPluginAsync = (app) => {
 
   // ── refunds ─────────────────────────────────────────────────────────────
 
-  app.get('/v1/crm/orders/:id/refunds', async (request) => {
+  app.get('/v1/orders/:id/refunds', async (request) => {
     requireRole(request, 'viewer');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
-    const rows = await orderRefundsService.listForOrder(toCrmContext(request), id);
+    const rows = await orderRefundsService.listForOrder(toOrderContext(request), id);
     return ok(rows);
   });
 
-  app.post('/v1/crm/orders/:id/refunds', async (request, reply) => {
+  app.post('/v1/orders/:id/refunds', async (request, reply) => {
     requireRole(request, 'editor');
-    await requireCrmOrCommerceModule(request);
+    await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const refund = await orderRefundsService.recordRefund(toCrmContext(request), {
+    const refund = await orderRefundsService.recordRefund(toOrderContext(request), {
       ...body,
       orderId: id,
     });

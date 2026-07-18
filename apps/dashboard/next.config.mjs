@@ -26,6 +26,7 @@ const config = {
     '@sparx/cms-schemas',
     '@sparx/section-template-react',
     '@sparx/builder-render',
+    '@sparx/story-schemas',
   ],
   serverExternalPackages: [
     '@prisma/client',

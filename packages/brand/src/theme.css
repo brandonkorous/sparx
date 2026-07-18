@@ -46,10 +46,95 @@
  * behind it, so the ink drifted per module on a tinted card and went near-invisible
  * on the `bg-neutral` inverse panel. A documented habit is still a habit; do not
  * reintroduce one here. */
-
 [data-theme='sparx'],
 [data-theme='light'] {
   color-scheme: light;
+  --color-primary: #e04631;
+  --color-primary-content: #ffffff;
+  --color-module: var(--color-primary);
+  --color-module-content: var(--color-primary-content);
+
+  --color-secondary: #0c1433;
+  --color-secondary-content: #ffffff;
+
+  --color-accent: #36d2ff;
+  --color-accent-content: #0c1433;
+
+  /* Semantic */
+  --color-success: #16865a;
+  --color-success-content: #ffffff;
+
+  --color-info: #147ea3;
+  --color-info-content: #ffffff;
+
+  --color-warning: #f2b84b;
+  --color-warning-content: #0c1433;
+
+  --color-error: #b42318;
+  --color-error-content: #ffffff;
+
+  /* danger — the N-th named color. sparx `statusTone()` returns `danger`, so we
+     register it (see the plugin `colors:` list) and pair it here. Same hue as
+     `error`; kept as its own name so the platform's status vocabulary is exact.
+     Without this pair `.badge-danger` / `.btn-danger` render colorless. */
+  --color-danger: #b42318;
+  --color-danger-content: #ffffff;
+
+  --color-module-builder: #6366f1; /* indigo — the site-building foundation module */
+  --color-module-builder-content: #ffffff;
+  --color-module-commerce: #f97316; /* orange */
+  --color-module-commerce-content: #ffffff;
+  --color-module-cms: #14b8a6; /* teal */
+  --color-module-cms-content: #ffffff;
+  --color-module-crm: #06b6d4; /* cyan */
+  --color-module-crm-content: #ffffff;
+
+  /* Surfaces */
+  --color-base-100: #fcfcfd;
+  --color-base-200: #f5f7fa;
+  --color-base-300: #e9edf3;
+}
+
+[data-theme='sparx-dark'],
+[data-theme='dark'] {
+  color-scheme: dark;
+  /* Brand */
+  --color-primary: #e04631;
+  --color-primary-content: #ffffff;
+
+  --color-secondary: #36d2ff;
+  --color-secondary-content: #08111f;
+
+  --color-accent: #4fe0ff;
+  --color-accent-content: #08111f;
+
+  /* Semantic */
+  --color-success: #22c55e;
+  --color-success-content: #08111f;
+
+  --color-info: #38bdf8;
+  --color-info-content: #08111f;
+
+  --color-warning: #fbbf24;
+  --color-warning-content: #08111f;
+
+  --color-error: #ef4444;
+  --color-error-content: #ffffff;
+
+  /* danger — see the light theme's note; same hue as `error`, own name so the
+     platform's `statusTone()` vocabulary resolves. */
+  --color-danger: #ef4444;
+  --color-danger-content: #ffffff;
+
+  /* Surfaces */
+  --color-base-100: #0c1433;
+  --color-base-200: #161f42;
+  --color-base-300: #242e57;
+}
+
+[data-theme='sparx2'],
+[data-theme='light2'] {
+  color-scheme: light2;
 
   /* ── silicaui standard palette (source of truth) ─────────────────────────── */
 
@@ -111,9 +196,9 @@
 /* Dark variant of the sparx brand — production-complete so a dark island (or a
    future surface-wide dark toggle) resolves correctly. The chrome adapts because
    every silicaui object reads the tokens below. */
-[data-theme='sparx-dark'],
-[data-theme='dark'] {
-  color-scheme: dark;
+[data-theme='sparx-dark2'],
+[data-theme='dark2'] {
+  color-scheme: dark2;
 
   --color-base-100: #1a1a1a;
   --color-base-200: #1f1f1f;

@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import { Badge, Card, CardBody, CardTitle, Switch, Text } from '@wizeworks/silicaui-react';
+import { MODULE_BACKGROUND_COLOR, MODULE_BORDER_COLOR, MODULE_COLOR } from './modules-catalog';
 
 /**
  * One module tile in a switchboard card grid — icon, name, blurb, an on/off
@@ -17,31 +18,28 @@ export function ModuleToggleCard({
   disabled,
   onToggle,
   badgeText,
-  badgeColor = 'neutral',
   reason,
 }: {
   icon: LucideIcon;
-  color: string;
+  color: keyof typeof MODULE_COLOR;
   label: string;
   title: string;
   active: boolean;
   disabled?: boolean;
   onToggle: () => void;
   badgeText: string;
-  badgeColor?: 'primary' | 'success' | 'neutral';
   reason?: string;
 }) {
   return (
-    <Card>
+    <Card className={`gap-4 border border-1 ${MODULE_BORDER_COLOR[color]}`}>
       <CardBody className="gap-4">
         <div className="flex items-start justify-between">
           <span
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: color }}
+            className={`flex h-10 w-10 items-center justify-center rounded-lg ${MODULE_BACKGROUND_COLOR[color]}`}
           >
             <Icon size={20} color="#FFFFFF" strokeWidth={2} aria-hidden />
           </span>
-          <Switch checked={active} onCheckedChange={onToggle} color="primary" disabled={disabled} />
+          <Switch checked={active} onCheckedChange={onToggle} color={color} disabled={disabled} />
         </div>
 
         <div className="flex flex-col gap-1">
@@ -54,7 +52,7 @@ export function ModuleToggleCard({
           ) : null}
         </div>
 
-        <Badge color={badgeColor} variant="soft" className="w-fit">
+        <Badge color={MODULE_COLOR[color]} variant="soft" className="w-fit">
           {badgeText}
         </Badge>
       </CardBody>

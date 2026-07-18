@@ -23,9 +23,9 @@ import { Spark } from './primitives';
 
 const INITIAL: ApplyState = { status: 'idle' };
 const SANS = 'var(--font-sans)';
-const INDIGO = 'var(--color-primary)';
-const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const INDIGO_TEXT = 'var(--color-primary)';
+const EMBER = 'var(--color-primary)';
+const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const EMBER_TEXT = 'var(--color-primary)';
 
 const TIERS: { value: PartnerTier; label: string }[] = [
   { value: 'informal', label: 'Informal' },
@@ -155,10 +155,10 @@ export function PartnersApplyForm() {
                 style={{
                   padding: '10px 8px',
                   borderRadius: '8px',
-                  border: `1px solid ${on ? INDIGO : 'var(--color-base-300)'}`,
-                  backgroundColor: on ? INDIGO_TINT : 'var(--color-base-100)',
+                  border: `1px solid ${on ? EMBER : 'var(--color-base-300)'}`,
+                  backgroundColor: on ? EMBER_TINT : 'var(--color-base-100)',
                   color: on
-                    ? INDIGO_TEXT
+                    ? EMBER_TEXT
                     : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
                   fontFamily: SANS,
                   fontSize: '13px',
@@ -231,8 +231,8 @@ function Confirmation() {
           width: 44,
           height: 44,
           borderRadius: 9999,
-          backgroundColor: INDIGO_TINT,
-          color: INDIGO,
+          backgroundColor: EMBER_TINT,
+          color: EMBER,
           fontSize: 22,
         }}
       >

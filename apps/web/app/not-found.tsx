@@ -16,7 +16,7 @@ export default function NotFound() {
     >
       <div style={{ maxWidth: '460px', textAlign: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-          <SparkMascot expression="surprised" tone="indigo" size={120} bob={false} />
+          <SparkMascot expression="surprised" tone="light" size={120} bob={false} />
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 600, margin: '0 0 10px', color: 'inherit' }}>
           This page wandered off
@@ -28,7 +28,7 @@ export default function NotFound() {
           href="/"
           style={{
             display: 'inline-block',
-            background: '#6366f1',
+            background: '#e04631',
             color: '#fff',
             borderRadius: '8px',
             padding: '10px 18px',

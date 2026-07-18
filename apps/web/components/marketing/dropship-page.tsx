@@ -5,7 +5,6 @@ import {
   Display,
   Dot,
   getModuleColor,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -125,7 +124,15 @@ const DROPSHIP_FAQ: FaqItem[] = [
 
 // ── WORKS ALONGSIDE COMMERCE ────────────────────────────────────────────────
 function DropshipWithCommerce() {
-  const panels: { tag: string; title: string; body: string; points: string[]; dot: string }[] = [
+  const panels: {
+    tag: string;
+    title: string;
+    body: string;
+    points: string[];
+    dot: string;
+    bg: string;
+    ink: string;
+  }[] = [
     {
       tag: 'commerce',
       title: 'Commerce runs the store',
@@ -136,6 +143,8 @@ function DropshipWithCommerce() {
         'One customer record, one order timeline, one set of reports.',
       ],
       dot: C.color,
+      bg: C.bg,
+      ink: C.ink,
     },
     {
       tag: 'dropship',
@@ -147,6 +156,8 @@ function DropshipWithCommerce() {
         'Per-supplier profitability — cost, revenue, profit, margin.',
       ],
       dot: M.color,
+      bg: M.bg,
+      ink: M.ink,
     },
   ];
   return (
@@ -160,23 +171,23 @@ function DropshipWithCommerce() {
         {panels.map((p) => (
           <div
             key={p.title}
+            className={`${p.bg} bg-soft`}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: moduleTint(p.dot),
               border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
             <span
+              className={p.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: p.dot === C.color ? C.text : M.text,
               }}
             >
               {p.tag}
@@ -306,12 +317,11 @@ function DropshipPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

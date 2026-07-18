@@ -5,14 +5,14 @@ import { Container, Display, Section, SectionHeader, Spark } from './primitives'
  * The /partners section components (hero, social proof, the opportunity ledger,
  * the numbered how-it-works rail, the directory-CTA split, the dark final CTA).
  * The tiers matrix and the apply form live in their own files; the orchestrator
- * in partners-page.tsx assembles all of them. Platform indigo is the through-line.
+ * in partners-page.tsx assembles all of them. Platform Ember is the through-line.
  */
 
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
-const INDIGO = 'var(--color-primary)';
-const INDIGO_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const INDIGO_TEXT = 'var(--color-primary)';
+const EMBER = 'var(--color-primary)';
+const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
+const EMBER_TEXT = 'var(--color-primary)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function PartnersHero() {
@@ -24,7 +24,7 @@ export function PartnersHero() {
   return (
     <section
       style={{
-        backgroundColor: INDIGO_TINT,
+        backgroundColor: EMBER_TINT,
         paddingTop: 'clamp(56px, 8vw, 104px)',
         paddingBottom: 'clamp(72px, 10vw, 120px)',
         paddingLeft: 'var(--gutter-page)',
@@ -71,12 +71,12 @@ export function PartnersHero() {
             marginTop: '12px',
             fontFamily: MONO,
             fontSize: '12.5px',
-            color: INDIGO_TEXT,
+            color: EMBER_TEXT,
           }}
         >
           {earn.map((e) => (
             <span key={e} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: INDIGO }} />
+              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: EMBER }} />
               {e}
             </span>
           ))}
@@ -166,7 +166,7 @@ export function PartnersOpportunity() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={INDIGO}
+        accent={EMBER}
         headline={<>An easier sale, and a better one</>}
         lede="sparx pays you to do what you already do — set businesses up right. Three reasons the math works in your favor."
       />
@@ -201,7 +201,7 @@ export function PartnersOpportunity() {
                 fontSize: 'clamp(19px, 2.3vw, 28px)',
                 fontWeight: 500,
                 letterSpacing: '-0.02em',
-                color: INDIGO_TEXT,
+                color: EMBER_TEXT,
                 whiteSpace: 'nowrap',
               }}
             >
@@ -241,7 +241,7 @@ export function PartnersSteps() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={INDIGO}
+        accent={EMBER}
         headline={<>How it works</>}
         lede="From application to your first payout, four steps — no gatekeeping, no long onboarding."
       />
@@ -262,8 +262,8 @@ export function PartnersSteps() {
               style={{
                 fontFamily: MONO,
                 fontSize: '13px',
-                color: INDIGO,
-                borderTop: `2px solid ${INDIGO}`,
+                color: EMBER,
+                borderTop: `2px solid ${EMBER}`,
                 paddingTop: '14px',
                 display: 'inline-block',
                 width: '40px',
@@ -395,8 +395,8 @@ function Chip({ label, tone }: { label: string; tone: 'cert' | 'reg' }) {
         fontFamily: SANS,
         fontSize: '11px',
         fontWeight: 500,
-        backgroundColor: cert ? INDIGO_TINT : '#ECFEFF',
-        color: cert ? INDIGO_TEXT : '#0E7490',
+        backgroundColor: cert ? EMBER_TINT : '#ECFEFF',
+        color: cert ? EMBER_TEXT : '#0E7490',
       }}
     >
       {label}
@@ -421,7 +421,7 @@ export function PartnersFinalCta() {
       >
         <Display size={78} lineHeight={76} color="#FFFFFF">
           Start earning on sparx
-          <Spark color={INDIGO} />
+          <Spark color={EMBER} />
         </Display>
         <p
           style={{

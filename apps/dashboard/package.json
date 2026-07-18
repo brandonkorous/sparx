@@ -53,6 +53,7 @@
     "@sparx/sitebuilder-schemas": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/site-ui": "workspace:*",
+    "@sparx/story-schemas": "workspace:*",
     "@sparx/surface-compile": "workspace:*",
     "@sparx/ui": "workspace:*",
     "@tanstack/react-table": "^8.21.3",

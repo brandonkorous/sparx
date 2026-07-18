@@ -42,7 +42,7 @@ export default function Error({
             fontSize: '12px',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: '#6366F1',
+            color: '#e04631',
             margin: '0 0 12px',
           }}
         >
@@ -61,7 +61,7 @@ export default function Error({
             type="button"
             onClick={reset}
             style={{
-              background: '#6366F1',
+              background: '#e04631',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
@@ -73,7 +73,7 @@ export default function Error({
           >
             Try again
           </button>
-          <a href="/" style={{ color: '#6366F1', fontSize: '14px', textDecoration: 'underline' }}>
+          <a href="/" style={{ color: '#e04631', fontSize: '14px', textDecoration: 'underline' }}>
             Dashboard home
           </a>
         </div>

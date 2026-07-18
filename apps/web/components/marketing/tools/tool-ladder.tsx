@@ -1,5 +1,10 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section, Display, getModuleColor } from '../primitives';
 import { getModule } from '@/lib/modules';
 import type { ToolMeta } from './registry';
@@ -17,26 +22,25 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
   return (
     <Section surface="page" padding="md">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${color.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '28px',
           padding: '36px',
           borderRadius: 'var(--radius-xl)',
-          backgroundColor: color.tint,
           border: `1px solid ${color.color}`,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '620px' }}>
           <span
+            className={color.ink}
             style={{
               fontFamily: 'var(--font-sans)',
               fontWeight: 500,
               fontSize: '12px',
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
-              color: color.text,
             }}
           >
             {mod?.label ?? tool.module}
@@ -56,16 +60,15 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
             {tool.ladder.body}
           </p>
         </div>
-        <Button
-          color={tool.module}
-          variant="solid"
-          size="lg"
+        <a
+          href={href}
+          aria-label={tool.ladder.cta}
+          className={buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })}
           style={{ flexShrink: 0 }}
-          render={<a href={href} aria-label={tool.ladder.cta} />}
         >
           {tool.ladder.cta}
           <ArrowRight className="h-4 w-4" />
-        </Button>
+        </a>
       </div>
     </Section>
   );

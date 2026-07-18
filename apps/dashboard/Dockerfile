@@ -60,6 +60,7 @@ COPY packages/cms-schemas/package.json packages/cms-schemas/
 COPY packages/email-platform/package.json packages/email-platform/
 COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/site-ui/package.json packages/site-ui/
+COPY packages/story-schemas/package.json packages/story-schemas/
 COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
@@ -125,6 +126,7 @@ COPY packages/cms-schemas packages/cms-schemas
 COPY packages/email-platform packages/email-platform
 COPY packages/site-themes packages/site-themes
 COPY packages/site-ui packages/site-ui
+COPY packages/story-schemas packages/story-schemas
 COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Section, SectionHeader } from '../primitives';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Section, SectionHeader, Text } from '../primitives';
 import { CopyValue } from './interactive';
 
 interface Role {
@@ -57,7 +58,7 @@ const ROLES: Role[] = [
           fontWeight: 400,
           fontSize: '17px',
           lineHeight: 1.6,
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100))',
         }}
       >
         sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
@@ -77,7 +78,7 @@ const ROLES: Role[] = [
           fontSize: '11px',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+          color: 'color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100))',
         }}
       >
         Badge · metadata
@@ -91,76 +92,36 @@ const ROLES: Role[] = [
 export function TypeSection() {
   return (
     <Section id="type" surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader
           accent="var(--color-module-cms)"
           headline="Geist, doing the heavy lifting"
           lede="Geist is Vercel’s open-source interface typeface — geometric precision with editorial warmth. Hierarchy comes from size and spacing, never from heavy weights."
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="flex flex-col">
           {ROLES.map((r, i) => (
             <div
               key={r.role}
-              className="mkt-stack-on-tablet"
-              style={{
-                alignItems: 'baseline',
-                justifyContent: 'space-between',
-                gap: '24px',
-                padding: '28px 0',
-                borderTop: i === 0 ? 'none' : '1px solid var(--color-base-300)',
-              }}
+              className={`flex items-baseline justify-between gap-6 py-7 max-lg:flex-col ${i === 0 ? '' : 'border-base-300 border-t'}`}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '14px',
-                  flex: 1,
-                  minWidth: 0,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+              <div className="flex min-w-0 flex-1 flex-col gap-3.5">
+                <Text as="span" size={13} tone="subtle">
                   {r.role}
-                </span>
+                </Text>
                 {r.specimen}
               </div>
-              <div
-                style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '220px' }}
-              >
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              <div className="flex min-w-[220px] flex-col gap-3">
+                <div className="flex flex-wrap gap-1.5">
                   {r.specs.map((s) => (
-                    <span
-                      key={s}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '12px',
-                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                        padding: '4px 9px',
-                        border: '1px solid var(--color-base-300)',
-                        borderRadius: 'var(--radius-md)',
-                      }}
-                    >
+                    <Badge key={s} variant="soft" size="sm" className="font-mono">
                       {s}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    lineHeight: '20px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                <Text as="span" size={13} tone="subtle">
                   {r.use}
-                </span>
+                </Text>
               </div>
             </div>
           ))}
@@ -173,7 +134,7 @@ export function TypeSection() {
             so its letterforms match the monogram.
           </Note>
           <Note title="Fallback stack">
-            <div className="mkt-cluster" style={{ gap: '8px' }}>
+            <div className="flex flex-wrap items-center gap-2">
               <CopyValue value="'Geist', 'Inter', system-ui, -apple-system, sans-serif" />
               <CopyValue value="--font-mono" />
             </div>
@@ -186,38 +147,15 @@ export function TypeSection() {
 
 function Note({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        padding: '24px',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 'var(--radius-xl)',
-      }}
-    >
-      <h3
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '15px',
-          color: 'var(--color-base-content)',
-          margin: 0,
-        }}
-      >
-        {title}
-      </h3>
-      <div
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
-        {children}
-      </div>
-    </div>
+    <Card>
+      <CardBody className="flex flex-col gap-3">
+        <Text as="h3" size={15} weight={500} tone="default">
+          {title}
+        </Text>
+        <Text as="div" size={14}>
+          {children}
+        </Text>
+      </CardBody>
+    </Card>
   );
 }

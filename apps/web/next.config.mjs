@@ -11,6 +11,7 @@ const config = {
     '@sparx/brand',
     '@sparx/forms',
     '@sparx/chat-widget',
+    '@sparx/story-schemas',
     '@wizeworks/silicaui-react',
   ],
   typedRoutes: true,

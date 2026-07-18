@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -54,8 +54,8 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
   ];
   return (
     <div
+      className={`${M.bg} bg-soft`}
       style={{
-        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
@@ -66,12 +66,12 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
       }}
     >
       <span
+        className={M.ink}
         style={{
           fontFamily: MONO,
           fontSize: '11px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: M.text,
         }}
       >
         logged-in account
@@ -220,8 +220,8 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
           {b2b.priceList.account}
         </span>
         <span
-          className="mkt-pricerow-cell"
-          style={{ fontFamily: SANS, fontSize: '13px', fontWeight: 500, color: M.text }}
+          className={`mkt-pricerow-cell ${M.ink}`}
+          style={{ fontFamily: SANS, fontSize: '13px', fontWeight: 500 }}
         >
           {save}
         </span>

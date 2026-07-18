@@ -1,15 +1,20 @@
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// In a Server Component the `render` element crosses the RSC boundary as a lazy
+// client reference whose `.type` is undefined, and silica's cloneElement throws.
 import type { ReactNode } from 'react';
-import { Button } from '@wizeworks/silicaui-react';
 import {
-  Container,
+  Button,
+  Card,
+  CardBody,
   Display,
-  Dot,
-  getModuleColor,
-  moduleTint,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+  Heading,
+  Stat,
+  Stats,
+  StatValue,
+  Text,
+} from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
 import { SchedulingHero } from './scheduling-hero';
 import {
   SchedulingShapes,
@@ -80,8 +85,6 @@ export function SchedulingPage() {
 }
 
 const M = getModuleColor('scheduling');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // Page-specific FAQ. Real evaluation questions for sparx Scheduling, answered
 // straight and grounded in docs/79 (PRD) + docs/17 (billing) — no tier/plan
@@ -169,73 +172,27 @@ function SchedulingStandalone() {
         headline="Complete on its own, better with the rest"
         lede="Scheduling is never bundled and never required by another module — it stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {panels.map((p, i) => (
-          <div
-            key={p.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                color: M.text,
-              }}
-            >
-              {p.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '24px',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {p.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
-              {p.points.map((pt) => (
-                <li key={pt} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
-                    <Dot color={M.color} size={7} />
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {pt}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="mkt-grid-2-1 mt-14">
+        {panels.map((p) => (
+          <Card key={p.title} className="bg-base-100">
+            <CardBody className="flex flex-col gap-4">
+              <Heading level={6} className={`${M.ink} font-mono tracking-[0.05em] uppercase`}>
+                {p.tag}
+              </Heading>
+              <Heading level={3}>{p.title}</Heading>
+              <Text>{p.body}</Text>
+              <ul className="grid list-none gap-3">
+                {p.points.map((pt) => (
+                  <li key={pt} className="flex items-start gap-[11px]">
+                    <span className="shrink-0 pt-[7px]">
+                      <Dot color={M.color} size={7} />
+                    </span>
+                    <Text as="span">{pt}</Text>
+                  </li>
+                ))}
+              </ul>
+            </CardBody>
+          </Card>
         ))}
       </div>
     </Section>
@@ -255,61 +212,29 @@ function SchedulingProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Heading level={2}>
           One flat fee, unlimited everything
           <Spark color={M.color} />
-        </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        </Heading>
+        <Text variant="lead" className="mt-[22px] max-w-[640px]">
           The two things people hate most about booking software — features yanked into higher tiers
           and per-seat pricing that punishes growth — are impossible here by policy. Add the staff,
           add the rooms, add the locations. The price doesn’t move.
-        </p>
+        </Text>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
-        {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(34px, 5vw, 52px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
-              {s.n}
-            </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
-          </div>
+      {/* `Stats` brings its own dividers and sizing. Below `sm` the blocks stack,
+          so the inline-start rule between them becomes a top rule. */}
+      <Stats className="mt-14 w-full max-sm:flex-col max-sm:[&>*:not(:first-child)]:border-t max-sm:[&>*:not(:first-child)]:border-l-0">
+        {stats.map((s) => (
+          <Stat key={s.l}>
+            <StatValue>{s.n}</StatValue>
+            {/* The label is meant to be read, so it is body `Text` at full ink —
+                not `StatDesc`, which is deliberately small and muted. */}
+            <Text className="mt-3">{s.l}</Text>
+          </Stat>
         ))}
-      </div>
+      </Stats>
     </Section>
   );
 }
@@ -318,68 +243,33 @@ function SchedulingProof() {
 function SchedulingPricing() {
   return (
     <Section padding="lg">
-      <div
-        className="mkt-stack-on-tablet"
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          backgroundColor: moduleTint(M.color),
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              $29
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+      <Card>
+        <CardBody className="mkt-stack-on-tablet items-center justify-between p-10">
+          <div className="flex flex-1 flex-col gap-3">
+            {/* Transparent so the card's module wash reads through the Stats block. */}
+            <Stats className="border-0 bg-transparent">
+              <Stat className="p-0">
+                <StatValue>$29</StatValue>
+                <Text as="span">/mo</Text>
+              </Stat>
+            </Stats>
+            <Text className="max-w-[660px]">
+              A flat $29/mo — unlimited staff, resources, locations, and bookings, with every
+              feature included and nothing ever tier-gated. No per-seat, per-staff, or per-cover
+              fee. Requires nothing else; always standalone. The only metered cost is SMS send
+              volume. Start free for 14 days; no card to begin.
+            </Text>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '660px',
-            }}
-          >
-            A flat $29/mo — unlimited staff, resources, locations, and bookings, with every feature
-            included and nothing ever tier-gated. No per-seat, per-staff, or per-cover fee. Requires
-            nothing else; always standalone. The only metered cost is SMS send volume. Start free
-            for 14 days; no card to begin.
-          </p>
-        </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <a href="/pricing">
-            <Button size="lg" variant="outline">
+          <div className="mkt-cluster">
+            <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
               See all plans →
+            </a>
+            <Button size="lg" color="neutral">
+              Activate Scheduling
             </Button>
-          </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
-            Activate Scheduling
-          </Button>
-        </div>
-      </div>
+          </div>
+        </CardBody>
+      </Card>
     </Section>
   );
 }
@@ -387,51 +277,26 @@ function SchedulingPricing() {
 // ── FINAL CTA (dark) ────────────────────────────────────────────────────────
 function SchedulingCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display>
           Take your first booking today
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <Text variant="lead" className="max-w-[640px]">
           Add a service, set your hours, embed the widget — and take a booking that reminds the
           customer, holds a deposit, and writes to their record automatically. No per-seat math, no
           migration weekend. Turn Scheduling off the day you stop, and your bookings stay yours.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: M.color }}>
+        </Text>
+        <div className="mkt-cluster">
+          <Button size="xl" color="module-scheduling">
             Activate Scheduling →
           </Button>
-          <a href="#loop">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
-              See the whole loop
-            </Button>
+          <a href="#loop" className={buttonClasses({ size: 'xl', variant: 'outline' })}>
+            See the whole loop
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

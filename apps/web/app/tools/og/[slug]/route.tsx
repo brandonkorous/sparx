@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og';
+import { BRAND } from '@sparx/brand';
 import { getTool } from '@/components/marketing/tools/registry';
+import { OgWordmark } from '@/lib/og-wordmark';
 
 /**
  * Per-tool Open Graph card (1200×630). Tool pages set their own openGraph block,
@@ -12,7 +14,7 @@ export const runtime = 'nodejs';
 const SIZE = { width: 1200, height: 630 };
 
 const ACCENT: Record<string, string> = {
-  builder: '#6366F1',
+  builder: BRAND.primary,
   commerce: '#F97316',
   cms: '#14B8A6',
   crm: '#06B6D4',
@@ -27,7 +29,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const tool = getTool(slug);
   if (!tool) return new Response('Not found', { status: 404 });
 
-  const accent = ACCENT[tool.module] ?? '#6366F1';
+  const accent = ACCENT[tool.module] ?? BRAND.primary;
   const tagline = tool.tagline.length > 132 ? `${tool.tagline.slice(0, 131)}…` : tool.tagline;
 
   return new ImageResponse(
@@ -44,17 +46,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div
-          style={{
-            display: 'flex',
-            fontSize: 34,
-            fontWeight: 700,
-            color: '#FFFFFF',
-            letterSpacing: '-0.03em',
-          }}
-        >
-          spar<span style={{ color: '#6366F1' }}>x</span>
-        </div>
+        <OgWordmark height={34} />
         <div
           style={{
             display: 'flex',

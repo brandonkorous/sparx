@@ -1,4 +1,5 @@
-import { Section, SectionHeader } from '../primitives';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Section, SectionHeader, Text } from '../primitives';
 import { CopyValue } from './interactive';
 
 interface ModuleColor {
@@ -6,6 +7,10 @@ interface ModuleColor {
   colorName: string;
   hex: string;
   token: string;
+  /** The silica color utility for this module, as a LITERAL string so Tailwind's
+   *  scanner emits it (a computed `bg-module-${x}` would never be generated).
+   *  Stack with `bg-soft` for the 15% wash — no hand-rolled color-mix. */
+  bg: string;
   why: string;
 }
 
@@ -14,98 +19,112 @@ const MODULES: ModuleColor[] = [
     module: 'Site / Builder',
     colorName: 'Indigo',
     hex: '#6366F1',
-    token: '--module-builder',
-    why: 'The platform color — the site is the foundation.',
+    token: '--color-module-builder',
+    bg: 'bg-module-builder',
+    why: 'The site-building foundation — where every tenant starts.',
   },
   {
     module: 'Commerce',
     colorName: 'Orange',
     hex: '#F97316',
-    token: '--module-commerce',
+    token: '--color-module-commerce',
+    bg: 'bg-module-commerce',
     why: 'Action, conversion, energy — every “Buy Now” ever.',
   },
   {
     module: 'CMS',
     colorName: 'Teal',
     hex: '#14B8A6',
-    token: '--module-cms',
+    token: '--color-module-cms',
+    bg: 'bg-module-cms',
     why: 'Editorial, calm, focused — content-creation energy.',
   },
   {
     module: 'CRM',
     colorName: 'Cyan',
     hex: '#06B6D4',
-    token: '--module-crm',
+    token: '--color-module-crm',
+    bg: 'bg-module-crm',
     why: 'Connective, relational, people-centric.',
   },
   {
     module: 'Email',
     colorName: 'Sky',
     hex: '#0EA5E9',
-    token: '--module-email',
+    token: '--color-module-email',
+    bg: 'bg-module-email',
     why: 'Communication, reach, delivery.',
   },
   {
     module: 'B2B / Wholesale',
     colorName: 'Slate',
     hex: '#475569',
-    token: '--module-b2b',
+    token: '--color-module-b2b',
+    bg: 'bg-module-b2b',
     why: 'Serious, industrial, business-grade.',
   },
   {
     module: 'AI / MCP',
     colorName: 'Pink',
     hex: '#EC4899',
-    token: '--module-ai',
+    token: '--color-module-ai',
+    bg: 'bg-module-ai',
     why: 'Premium, intelligent, unexpected — different in kind.',
   },
   {
     module: 'Dropship',
     colorName: 'Emerald',
     hex: '#10B981',
-    token: '--module-dropship',
+    token: '--color-module-dropship',
+    bg: 'bg-module-dropship',
     why: 'Growth, supply chain, organic.',
   },
   {
     module: 'Invoicing',
     colorName: 'Lime',
     hex: '#65A30D',
-    token: '--module-invoicing',
+    token: '--color-module-invoicing',
+    bg: 'bg-module-invoicing',
     why: 'Getting paid — cashflow, money in.',
   },
   {
     module: 'Inventory',
     colorName: 'Amber',
     hex: '#F59E0B',
-    token: '--module-inventory',
+    token: '--color-module-inventory',
+    bg: 'bg-module-inventory',
     why: 'Stock, supply, the warehouse.',
   },
   {
     module: 'Live Chat',
     colorName: 'Violet',
     hex: '#8B5CF6',
-    token: '--module-chat',
+    token: '--color-module-chat',
+    bg: 'bg-module-chat',
     why: 'Conversational, responsive, human.',
   },
   {
     module: 'Scheduling',
     colorName: 'Rose',
     hex: '#F43F5E',
-    token: '--module-scheduling',
+    token: '--color-module-scheduling',
+    bg: 'bg-module-scheduling',
     why: 'Time, rhythm, the calendar — booking and cadence.',
   },
   {
     module: 'Automations',
     colorName: 'Fuchsia',
     hex: '#D946EF',
-    token: '--module-automations',
+    token: '--color-module-automations',
+    bg: 'bg-module-automations',
     why: 'Workflows firing — work happening on its own.',
   },
   {
     module: 'SEO',
     colorName: 'Yellow',
     hex: '#EAB308',
-    token: '--module-seo',
+    token: '--color-module-seo',
+    bg: 'bg-module-seo',
     why: 'Visibility, getting found, daylight.',
   },
 ];
@@ -113,17 +132,12 @@ const MODULES: ModuleColor[] = [
 export function ModulesSection() {
   return (
     <Section id="modules" surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader
           accent="var(--color-module-commerce)"
           headline={
             <>
-              Fourteen modules.{' '}
-              <span
-                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-              >
-                One color each
-              </span>
+              Fourteen modules. <span className="text-ink-subtle">One color each</span>
             </>
           }
           lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
@@ -131,77 +145,42 @@ export function ModulesSection() {
 
         <div className="mkt-grid-4-2-1">
           {MODULES.map((m) => (
-            <div
-              key={m.module}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                padding: '20px',
-                // Legend exception: a module catalog is the one place a per-card
-                // tint reads as a color key rather than the "wall of washes" the
-                // rule bans elsewhere — every card legitimately IS its module.
-                // Softer 8% wash (matching modules-grid) than a lead card's 12%.
-                backgroundColor: `color-mix(in oklab, ${m.hex} 8%, var(--color-base-100))`,
-                border: '1px solid var(--color-base-300)',
-                borderRadius: 'var(--radius-lg)',
-              }}
-            >
-              <div
-                style={{
-                  height: '56px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: m.hex,
-                  boxShadow: 'inset 0 0 0 1px rgba(9,9,11,0.08)',
-                }}
-              />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '15px',
-                    color: 'var(--color-base-content)',
-                  }}
-                >
-                  {m.module}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '12.5px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  {m.colorName}
-                </span>
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                <CopyValue value={m.hex} tone="strong" />
-                <CopyValue value={m.token} />
-              </div>
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '12.5px',
-                  lineHeight: '18px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {m.why}
-              </span>
-            </div>
+            // Legend exception: a module catalog is the one place a per-card tint
+            // reads as a color key rather than the "wall of washes" the rule bans
+            // elsewhere — every card legitimately IS its module. The wash is
+            // silica's own `bg-soft` treatment stacked on the module color, not a
+            // hand-rolled color-mix.
+            <Card key={m.module} className={`${m.bg} bg-soft`}>
+              <CardBody className="flex flex-col gap-4">
+                <div className={`h-14 rounded-md ${m.bg}`} />
+                <div className="flex flex-col gap-2">
+                  <Text as="span" size={15} weight={500} tone="default">
+                    {m.module}
+                  </Text>
+                  <Badge variant="soft" size="sm" className="self-start font-sans">
+                    {m.colorName}
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  <CopyValue value={m.hex} tone="strong" />
+                  <CopyValue value={m.token} />
+                </div>
+                <Text as="span" size={12.5}>
+                  {m.why}
+                </Text>
+              </CardBody>
+            </Card>
           ))}
         </div>
 
         <div className="mkt-grid-2-1">
-          <Callout accent="#EC4899" title="The AI / MCP exception">
+          <Callout bg="bg-module-ai" title="The AI / MCP exception">
             Rose stays reserved for AI / MCP even though the palette has since grown to cover the
             full spectrum. Every other AI product reached for purple, teal, or blue; rose is unused
             in B2B SaaS AI branding and signals “different in kind” — the module that thinks, not
-            just functions. sparx Indigo + Rose is near-complementary, so it reads as hierarchy.
+            just functions. Builder Indigo + Rose is near-complementary, so it reads as hierarchy.
           </Callout>
-          <Callout accent="#F59E0B" title="When a module color is also a semantic hue">
+          <Callout bg="bg-module-inventory" title="When a module color is also a semantic hue">
             Inventory’s Amber is the warning hue, so inside Inventory, stock alerts use danger/red
             to stay distinct from the module chrome. On a solid Amber or Yellow fill (Inventory,
             SEO), text and icons use dark ink — white fails AA. Warning, danger, and success keep
@@ -213,50 +192,29 @@ export function ModulesSection() {
   );
 }
 
+/**
+ * Module-accented callout. Carries its module hue as silica's `bg-soft` wash —
+ * NOT a 3px side stripe: the stripe is a retired brand device (and the single
+ * most recognizable AI-generated-UI tell). `bg` is a literal utility class so
+ * Tailwind's scanner emits it.
+ */
 function Callout({
-  accent,
+  bg,
   title,
   children,
 }: {
-  accent: string;
+  bg: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        padding: '28px',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderLeft: `3px solid ${accent}`,
-        borderRadius: 'var(--radius-xl)',
-      }}
-    >
-      <h3
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '16px',
-          color: 'var(--color-base-content)',
-          margin: 0,
-        }}
-      >
-        {title}
-      </h3>
-      <p
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          margin: 0,
-        }}
-      >
-        {children}
-      </p>
-    </div>
+    <Card className={`${bg} bg-soft`}>
+      <CardBody className="flex flex-col gap-3">
+        <Text as="h3" size={16} weight={500} tone="default">
+          {title}
+        </Text>
+        <Text size={14}>{children}</Text>
+      </CardBody>
+    </Card>
   );
 }

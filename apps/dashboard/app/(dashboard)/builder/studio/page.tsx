@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
 import { COMMERCE_SOURCES, SITE_SOURCES, toSilicaDataSources } from '@sparx/builder-schemas';
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
-import { ensureUniqueIds, starterSite } from '@sparx/silica-catalog';
+import { ensureUniqueIds, upgradeFrameChrome, starterSite } from '@sparx/silica-catalog';
 import { isModuleEnabled, requireSession } from '@sparx/auth';
 
 import { getActiveProperty } from '@/lib/sites';
@@ -166,8 +166,19 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
         // Idempotent for already-stamped trees; the healed ids persist on the next autosave,
         // so the stored data self-corrects after one edit.
         pages: storedSite.pages.map((p) => ({ ...p, root: ensureUniqueIds(p.root) })),
+        // Same upgrade-on-read contract, one layer up: a frame stamped before the brand
+        // became a live host core still carries a text-only mark, so the tenant's logo
+        // can never reach their header no matter what they upload (docs/122). Heal the
+        // DRAFT only — the published tree is untouched, so nothing changes for visitors
+        // until they publish themselves. Ordered inside `ensureUniqueIds` so the node it
+        // swaps in gets stamped like any other.
         ...(storedSite.frame
-          ? { frame: { ...storedSite.frame, root: ensureUniqueIds(storedSite.frame.root) } }
+          ? {
+              frame: {
+                ...storedSite.frame,
+                root: ensureUniqueIds(upgradeFrameChrome(storedSite.frame.root).root),
+              },
+            }
           : {}),
       }
     : starterSite(theme, { commerceEnabled, schedulingEnabled });

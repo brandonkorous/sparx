@@ -55,6 +55,7 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
               <span
                 aria-hidden
+                className={`${color.bg} bg-soft ${color.ink}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -63,8 +64,6 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
                   height: '56px',
                   flexShrink: 0,
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: color.tint,
-                  color: color.text,
                   boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.06)',
                 }}
               >

@@ -12,6 +12,27 @@ import { MODULE_HEX } from './modules-catalog';
  * (nesting a second `<footer>` inside the first isn't valid HTML). Content
  * (columns, links, domain list, copyright) is unchanged. Domain dot colors
  * reference the shared `MODULE_HEX` map instead of re-typed hex literals.
+ *
+ * The grid utilities here are load-bearing, not taste. silicaui's `.footer` is
+ * `grid; grid-auto-flow: column; grid-auto-columns: max-content` with no
+ * vertical/stacking variant, which broke two ways and scrolled the page
+ * sideways:
+ *
+ *   • `grid-flow-row` (→ `xl:grid-flow-col`) makes it actually stack. Left
+ *     alone the link columns stay in ONE row at every width and run off narrow
+ *     screens. The breakpoint is `xl` because the six columns plus the brand
+ *     aside measure ~1085px — `lg` (1024) is measurably too narrow for them.
+ *     Below that the explicit 1 → 2 → 3 column tracks keep a tablet from
+ *     reading one endless ~60-link ribbon.
+ *   • `grid-cols-1` (→ `xl:grid-cols-none`, back to auto) is the one that fixes
+ *     the legal bar. The flow direction was never the bar's problem —
+ *     `grid-auto-columns: max-content` sizes its implicit column to the
+ *     UNWRAPPED domain list (~1330px) no matter which way the grid flows, so
+ *     the row's `flex-wrap` had infinite room and never wrapped. An explicit
+ *     `minmax(0, 1fr)` track is what bounds it to the viewport.
+ *
+ * This is layout composition, not a re-skin. Delete it if silicaui ever grows a
+ * real responsive footer.
  */
 interface FooterLink {
   label: string;
@@ -117,7 +138,7 @@ const LINK_CLASS = 'text-base-content hover:text-base-content text-sm';
 export function Footer() {
   return (
     <>
-      <SilicaFooter className="bg-base-100 border-base-300 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:px-8">
+      <SilicaFooter className="bg-base-100 border-base-300 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-flow-col xl:grid-cols-none">
         <aside className="flex w-full max-w-[340px] min-w-60 flex-col gap-5">
           <Wordmark size={48} />
           <Text className="text-base-content text-sm">
@@ -152,7 +173,7 @@ export function Footer() {
         ))}
       </SilicaFooter>
 
-      <SilicaFooter className="bg-base-100 px-6 pb-8 sm:px-8">
+      <SilicaFooter className="bg-base-100 grid-flow-row grid-cols-1 px-6 pb-8 sm:px-8">
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-col gap-5">
             <FooterTitle>The sparx domain network</FooterTitle>

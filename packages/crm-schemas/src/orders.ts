@@ -81,6 +81,14 @@ export const ListOrdersInput = z.object({
   paymentStatus: OrderPaymentStatus.optional(),
   channel: OrderChannel.optional(),
   propertyId: Uuid.optional(), // origin-site filter (docs/58 — the dashboard Site filter)
+  // B2B scoping. An Order has no b2bAccountId of its own — the link runs
+  // through its customer (Customer.b2bAccountId), so both of these resolve as
+  // relation filters. `b2bAccountId` narrows to one account; `b2bOnly` is the
+  // /b2b/orders lens: every order placed by a customer who belongs to ANY B2B
+  // account, regardless of which channel it came in through (a rep placing an
+  // order via admin for a fleet account is still a B2B order).
+  b2bAccountId: Uuid.optional(),
+  b2bOnly: z.boolean().optional(),
   placedSince: z.string().datetime().optional(),
   placedUntil: z.string().datetime().optional(),
   q: z.string().max(255).optional(), // matches order_number prefix

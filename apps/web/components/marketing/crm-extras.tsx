@@ -194,11 +194,11 @@ export function CrmCapabilities() {
               }}
             >
               <span
+                className={`${hue.bg} bg-soft`}
                 style={{
                   width: 32,
                   height: 32,
                   borderRadius: '8px',
-                  backgroundColor: hue.tint,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

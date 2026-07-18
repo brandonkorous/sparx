@@ -58,10 +58,14 @@ export interface SilicaHostOptions {
   renderHostNode?: BuilderHost['renderHostNode'];
 }
 
-/** The pinned functional cores the Insert palette offers (docs/122) — `HOST_COMPONENTS`
- *  (the React-free registry in @sparx/silica-catalog) mapped onto the builder's
- *  `HostComponentDef`. Every core is `pinned: true`, so it inserts `locked: "host"`: the
- *  engine refuses to remove/move it and the author UI offers no unlock. */
+/** The host cores the Insert palette offers (docs/122) — `HOST_COMPONENTS` (the
+ *  React-free registry in @sparx/silica-catalog) mapped onto the builder's
+ *  `HostComponentDef`. A core is `pinned` by default, so it inserts `locked: "host"`:
+ *  the engine refuses to remove/move it and the author UI offers no unlock. The registry
+ *  may opt a core OUT (`pinned: false`) when it is live-rendered for improvability
+ *  rather than to protect a transaction — the brand mark. Read the flag rather than
+ *  forcing it here: whether a core is protected is the registry's call, not this
+ *  mapper's. */
 function hostComponentDefs(): ReturnType<NonNullable<BuilderHost['hostComponents']>> {
   return HOST_COMPONENTS.map((c) => ({
     name: c.key,
@@ -69,7 +73,7 @@ function hostComponentDefs(): ReturnType<NonNullable<BuilderHost['hostComponents
     category: c.category,
     icon: c.icon,
     hint: c.hint,
-    pinned: true,
+    pinned: c.pinned ?? true,
     defaultClass: c.defaultClass,
     ...(c.props ? { props: c.props } : {}),
   }));

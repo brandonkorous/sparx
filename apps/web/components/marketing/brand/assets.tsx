@@ -2,16 +2,16 @@ import * as React from 'react';
 
 /**
  * Renderers for the canonical, press-ready brand artwork that ships under
- * apps/web/public/brand/ (sourced from images/SVG/*). The marketing <Wordmark>
- * primitive renders the wordmark live in the UI font; these render the OUTLINED
- * lockups — the exact letterforms used for press, OG, and large editorial
- * display, with the "x" baked in sparx Indigo.
+ * apps/web/public/brand/ (the static files derived from @sparx/brand's mark
+ * geometry). The <Wordmark> component renders the same lockup live from vector
+ * paths; these render the static PNG/SVG files for press downloads and previews,
+ * with the "x" in the brand spark color.
  *
  * Variants (wordmark and monogram share the scheme):
- *   color    — dark letters + indigo "x" (primary, for light surfaces)
- *   light    — white letters + indigo "x" (reversed, for dark surfaces)
- *   black    — one-color black; the "x" stays distinct at 50% opacity
- *   white    — one-color white; the "x" stays distinct at 50% opacity
+ *   color    — dark letters + spark "x" (primary, for light surfaces)
+ *   light    — white letters + spark "x" (reversed, for dark surfaces)
+ *   black    — dark-on-light lockup (one-color use)
+ *   white    — white-on-dark lockup (one-color use)
  */
 
 export type ArtworkVariant = 'color' | 'light' | 'black' | 'white';

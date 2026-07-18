@@ -101,26 +101,32 @@ export const SILICA_STYLE_GUIDE = {
       "sparx's domain COMPOSITES (@sparx/silica-catalog — commerce/content patterns silica has no concept of: product " +
       'grid/card, buy box, featured products, collection header, the sparx-branded navbar/footer). Prefer a native ' +
       'block for anything generic; reach for a sparx composite only when the section needs real commerce/CMS data.',
+    // The REAL block keys, as `listBlocks()`/`getBlock()` key them — snake_case, and
+    // `get_silica_block` takes them `native.`-prefixed (e.g. `native.hero_split_cta`).
+    // Do NOT guess a camelCase name here: an unknown key is a hard BuilderNotFoundError,
+    // and these strings ARE the contract an agent copies from.
     nativeBlocks: [
-      'heroSplitCta',
-      'faqAccordion',
-      'featureGrid',
-      'navbar',
-      'footer',
-      'ctaBand',
-      'testimonialQuote',
-      'testimonialsGrid',
-      'pricingTiers',
-      'statsBand',
-      'logoCloud',
-      'teamGrid',
-      'contactSection',
-      'contentProse',
-      'featureMedia',
-      'tabs',
-      'accordion',
-      'dropdown',
+      'native.hero_split_cta — hero: copy + primary action beside an image.',
+      'native.feature_grid — a grid that REPEATS over a collection ref.',
+      'native.feature_media — one feature: copy + checklist beside an image. Ships an `eyebrow` slot.',
+      'native.content_prose — titled long-form section, two body columns. Ships an `eyebrow` slot.',
+      'native.cta_band — centered call-to-action band.',
+      'native.stats_band — a row of headline metrics.',
+      'native.testimonial_quote — one large centered quote.',
+      'native.testimonials_grid — three-up testimonial cards.',
+      'native.pricing_tiers — three-column pricing, featured middle plan.',
+      'native.logo_cloud — social-proof wordmark strip.',
+      'native.team_grid — team members with avatars.',
+      'native.faq_accordion — Q/A disclosure list (behavior: disclosure).',
+      'native.contact_section — copy + a WORKING validating form (behavior: form). See `forms` below.',
+      'native.tabs / native.accordion / native.dropdown — interactive primitives.',
+      'native.navbar / native.footer — AVOID for the frame: they hardcode "SilicaUI" demo branding. Use the sparx ' +
+        'chrome composites (sparx.navbar / sparx.footer), which bind to the tenant’s own identity.',
     ],
+    houseStyle:
+      'sparx bans EYEBROWS (a small uppercase kicker label above a heading) — hierarchy is carried by scale/weight/' +
+      'color. `native.content_prose` and `native.feature_media` ship an eyebrow node: DELETE it when you stamp them. ' +
+      'Also banned: gradients as a visual device. Body text floors at 16px.',
     sparxComposites: [
       'products — THE one configurable product listing. Repeats the product card over a chosen SOURCE, laid out as a ' +
         "grid or a rail. Source options (change the repeat's ref): `commerce.product` (whole catalog / shop-all grid), " +
@@ -199,14 +205,35 @@ export const SILICA_STYLE_GUIDE = {
     description:
       "A node's `data` marker (set by `bind`/`repeat`/`action`) carries an opaque `ref` the storefront host resolves " +
       'against live data. Cardinality: a COLLECTION ref on a container (`repeat`) renders once per item, with the ' +
-      "item's own fields in scope; a VALUE ref (`bind`) fills one node's content. Inside an item scope, use the " +
-      "field's own short key (`title`, `price`), not `item.title` — the resolver already scopes it.",
+      "item's own fields in scope; a VALUE ref (`bind`) fills one node's content.",
+    refsAreRootedPaths:
+      'A ref is ALWAYS a path from the DATA ROOT, qualified by its source — `commerce.product.title`, ' +
+      '`site.identity.logo`, `cms.blog_post.excerpt`. A bare field key (`title`, `logo`) is a ref FRAGMENT, not a ref: ' +
+      'at the root it resolves against `root.title` — nothing — and a bound node whose value comes back empty replaces ' +
+      'its authored content. That is the exact defect that blanked a tenant wordmark (the picker wrote `logo`). ' +
+      'ALWAYS author the fully-qualified path. Inside a `repeat`, the resolver peels the source prefix and takes the ' +
+      'first suffix that resolves, so the SAME qualified ref works in an item scope — which is why bare refs from ' +
+      'older code-authored composites still function. That peel is BACK-COMPAT, not the contract: do not write new ' +
+      'bare refs. An unresolvable ref is reported as `UnknownRef` + a diagnostic and KEEPS the authored content, ' +
+      'rather than silently blanking (silicaui >= 0.24).',
     sources: [
-      "commerce.product / commerce.collection — the tenant's catalog.",
-      "cms.<type> — a CMS content type's entries, e.g. cms.blog_post.",
-      'site.identity — name/logo (Wordmark/Logo-style nodes).',
-      'site.social — social links (SocialLinks-style nodes).',
+      "commerce.product — the tenant's catalog (whole). Fields: id, handle, title, price, compareAtPrice, " +
+        'description, image, images, sku, variantId, url.',
+      'commerce.featured / commerce.new / commerce.related — BOUNDED product sources (capped, and the in-scope PDP ' +
+        'product is excluded). "Featured" means products the tenant TAGGED `featured`.',
+      'commerce.category.<collectionHandle> — one category, keyed by the collection HANDLE (kebab-case), not its id.',
+      'commerce.collection / commerce.category — array sources; `collection` / `category` / `product` are the ' +
+        'matching OBJECT sources used inside a record-scoped template.',
+      'scheduling.service — bookable services (array); `service` is the object form.',
+      "cms.<type> — a CMS content type's entries, e.g. cms.blog_post (array). `<type>` alone (e.g. blog_post) is the " +
+        "single in-scope record on that type's collection template.",
+      'site.identity — name / tagline / logo. site.social — social links (platform, url). Always supplied by the ' +
+        'host; never tree-derived.',
     ],
+    unfetchedSources:
+      'The storefront only fetches sources it RECOGNIZES by walking the tree for refs (`collectSilicaSourceNeeds`): ' +
+      'the `commerce.*`, `cms.*` roots above. `site.*` is always supplied. A ref outside that set is never loaded, so ' +
+      'it can never resolve — invent no new source roots.',
     collectionTemplates:
       'A page with `recordType` set (via set_page_record_type) is a COLLECTION TEMPLATE — the record of that type is ' +
       "injected as the object scope (e.g. commerce.product → the current product's fields are directly bound, no " +

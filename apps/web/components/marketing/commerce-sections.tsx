@@ -178,17 +178,19 @@ export function CommerceCheckout() {
                 display: 'flex',
                 gap: '13px',
                 padding: '18px 20px',
-                backgroundColor: 'var(--color-base-100)',
                 border: '1px solid var(--color-base-300)',
-                borderLeft: `3px solid ${C.color}`,
                 borderRadius: '12px',
               }}
+              // The module hue rides the soft wash, NOT a 3px left stripe — the
+              // stripe is a retired brand device (and the most recognizable
+              // generated-UI tell). Same treatment as every other module card.
+              className={`${C.bg} bg-soft`}
             >
               <span
+                className={C.ink}
                 style={{
                   fontFamily: MONO,
                   fontSize: '12px',
-                  color: C.text,
                   flexShrink: 0,
                   paddingTop: '1px',
                 }}
@@ -300,12 +302,12 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
   );
   const step = (label: string) => (
     <span
+      className={C.ink}
       style={{
         fontFamily: MONO,
         fontSize: '11px',
         letterSpacing: '0.05em',
         textTransform: 'uppercase',
-        color: C.text,
       }}
     >
       {label}

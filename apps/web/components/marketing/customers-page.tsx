@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Section, SectionHeader, Display, Spark, moduleTint } from './primitives';
+import { Section, SectionHeader, Display, Spark } from './primitives';
 
 /**
  * The /customers page. Leads with *who* sparx is for — organized by user-type,
@@ -12,10 +12,14 @@ import { Section, SectionHeader, Display, Spark, moduleTint } from './primitives
  * they actually run on the platform.
  */
 
-const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] = [
+// `color` is the token VALUE (the inline dot needs a value, not a class); `bg`
+// is the literal silica class the card wash is built from — Tailwind's scanner
+// can only see class names spelled out in full, never `bg-module-${key}`.
+const SEGMENTS: { name: string; color: string; bg: string; blurb: string; runs: string }[] = [
   {
     name: 'Publishers & creators',
     color: 'var(--color-module-cms)',
+    bg: 'bg-module-cms',
     blurb:
       'Words, media, and SEO with no cart in sight. Publish on your own domain, send the newsletter, own the audience — selling stays optional.',
     runs: 'Builder · CMS · Email',
@@ -23,6 +27,7 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
   {
     name: 'Online retailers',
     color: 'var(--color-module-commerce)',
+    bg: 'bg-module-commerce',
     blurb:
       'Products, fast checkout, and one customer record that ties every order to email and support. One system, one bill, nothing taped together in the middle.',
     runs: 'Builder · Commerce · CRM · Email',
@@ -30,6 +35,7 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
   {
     name: 'B2B & wholesale',
     color: 'var(--color-module-b2b)',
+    bg: 'bg-module-b2b',
     blurb:
       'Account pricing, net terms, purchase orders, and RFQ — wholesale the way it actually works. Native to the platform, not a four-figure bolt-on.',
     runs: 'Builder · Commerce · B2B · CRM',
@@ -37,6 +43,7 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
   {
     name: 'Service & fleet',
     color: 'var(--color-module-crm)',
+    bg: 'bg-module-crm',
     blurb:
       'Fleet vehicles tracked by VIN and cost center, bookable service bays, and net-30 invoicing for the accounts you serve. Built for how industrial actually runs.',
     runs: 'Commerce · B2B · CRM',
@@ -44,6 +51,7 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
   {
     name: 'Agencies & multi-brand',
     color: 'var(--color-module-builder)',
+    bg: 'bg-module-builder',
     blurb:
       'Run many themed sites under one tenant. Hand each client a finished site, and manage the whole portfolio from one dashboard.',
     runs: 'Builder · CMS · multi-site',
@@ -51,6 +59,7 @@ const SEGMENTS: { name: string; color: string; blurb: string; runs: string }[] =
   {
     name: 'AI-first & headless',
     color: 'var(--color-module-ai)',
+    bg: 'bg-module-ai',
     blurb:
       'Drive everything from the API or a native MCP server. Build your own frontend, and let agents read and write live data with scoped, audited keys.',
     runs: 'AI · MCP · Builder (headless)',
@@ -98,12 +107,12 @@ export function CustomersPage() {
             {SEGMENTS.map((s) => (
               <div
                 key={s.name}
+                className={`${s.bg} bg-soft`}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '12px',
                   padding: '28px 26px',
-                  backgroundColor: moduleTint(s.color),
                   border: '1px solid var(--color-base-300)',
                   borderRadius: '12px',
                   minHeight: '230px',
@@ -162,12 +171,12 @@ export function CustomersPage() {
       {/* Flagship: Gillett Diesel */}
       <Section surface="page" padding="xl">
         <div
+          className="bg-module-b2b bg-soft"
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '28px',
             padding: 'clamp(32px, 5vw, 56px)',
-            backgroundColor: moduleTint('var(--color-module-b2b)'),
             border: '1px solid var(--color-base-300)',
             borderRadius: '16px',
           }}

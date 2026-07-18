@@ -24,6 +24,8 @@ import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
+import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
+import { mediaUrl } from '@/lib/media';
 import type { ResolvedSite } from '@/lib/site-context';
 
 /** Route-supplied context a core may need beyond its author-set `node.props` — the
@@ -82,6 +84,20 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         // Mode-parameterized: the composite/route bakes `mode` into the node's props
         // (signin | register | forgot | reset); the form reads its own URL params.
         return <AccountAuth mode={toAuthMode(node.props?.mode)} />;
+      case HOST_KEYS.siteBrand:
+        // The brand mark — resolved straight off the site the route already has, so the
+        // header always reflects what's in Site settings right now. `show` is the
+        // author's Inspector choice; `node.class` is their styling, which wins over the
+        // component's default so the mark stays theirs to place.
+        return (
+          <SiteBrand
+            name={ctx.site.name}
+            logoUrl={mediaUrl(ctx.site.theme?.logoMediaId ?? null, ctx.site.slug)}
+            logoDarkUrl={mediaUrl(ctx.site.theme?.logoDarkMediaId ?? null, ctx.site.slug)}
+            show={toBrandShow(node.props?.show)}
+            {...(node.class ? { className: node.class } : {})}
+          />
+        );
       default:
         return null;
     }

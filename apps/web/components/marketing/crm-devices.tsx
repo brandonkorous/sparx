@@ -107,11 +107,11 @@ export function CrmOneRecord() {
                 }}
               >
                 <span
+                  className={`${M.bg} bg-soft ${M.ink}`}
                   style={{
                     width: 30,
                     height: 30,
                     borderRadius: '9999px',
-                    backgroundColor: M.tint,
                     border: `1.5px solid ${M.color}`,
                     flexShrink: 0,
                     display: 'flex',
@@ -120,7 +120,6 @@ export function CrmOneRecord() {
                     fontFamily: SANS,
                     fontWeight: 500,
                     fontSize: '11px',
-                    color: M.text,
                   }}
                 >
                   DR
@@ -145,13 +144,12 @@ export function CrmOneRecord() {
                   <Dot color={hue(row.module)} size={8} />
                   <span>{row.label}</span>
                   <span
+                    className={`${M.bg} bg-soft ${M.ink}`}
                     style={{
                       marginLeft: 'auto',
                       fontFamily: MONO,
                       fontSize: '10.5px',
-                      color: M.text,
                       padding: '3px 8px',
-                      backgroundColor: M.tint,
                       borderRadius: '9999px',
                     }}
                   >

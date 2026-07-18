@@ -158,7 +158,7 @@ function Confirmation({ email }: { email?: string }) {
           height: 44,
           borderRadius: 9999,
           backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-          color: 'var(--color-primary, #6366F1)',
+          color: 'var(--color-primary, #e04631)',
           fontSize: 22,
         }}
       >

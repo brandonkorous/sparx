@@ -28,12 +28,12 @@ export function DropshipHero() {
   const chips = ['supplier connectors', 'auto order routing', 'margin rules', 'tracking sync'];
   return (
     <section
+      className={`${M.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
       }}
     >
       <Container>
@@ -166,14 +166,13 @@ function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
         </span>
       </span>
       <span
+        className={`${M.bg} bg-soft ${M.ink}`}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '7px',
           padding: '5px 11px',
           borderRadius: '9999px',
-          backgroundColor: M.tint,
-          color: M.text,
           fontFamily: SANS,
           fontSize: '12px',
           fontWeight: 500,
@@ -209,12 +208,12 @@ function RoutedProfit({ d }: { d: D }) {
           }}
         >
           <div
+            className={i === 2 ? M.ink : 'text-base-content'}
             style={{
               fontFamily: SANS,
               fontWeight: 500,
               fontSize: '17px',
               letterSpacing: '-0.01em',
-              color: i === 2 ? M.text : 'var(--color-base-content)',
             }}
           >
             {v}
@@ -249,7 +248,7 @@ function RoutedTracking({ d }: { d: D }) {
           borderRadius: '10px',
         }}
       >
-        <TruckIcon size={16} color={M.text} />
+        <TruckIcon size={16} color={M.color} />
         <span style={{ minWidth: 0 }}>
           <span
             style={{
@@ -273,12 +272,12 @@ function RoutedTracking({ d }: { d: D }) {
           </span>
         </span>
         <span
+          className={M.ink}
           style={{
             marginLeft: 'auto',
             fontFamily: SANS,
             fontSize: '11.5px',
             fontWeight: 500,
-            color: M.text,
             flexShrink: 0,
           }}
         >

@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og';
+import { OgWordmark } from './og-wordmark';
 
 // Shared OG/Twitter card renderer for the bespoke non-module marketing pages
 // (Partner Program, Bootcamp directory, and per-bootcamp detail). Mirrors the
-// module OG (lib/og-module.tsx) — near-black canvas, the sparx wordmark with the
-// indigo "x", a colored tag pill, a big headline, and a footer rule — but takes
+// module OG (lib/og-module.tsx) — near-black canvas, the sparx wordmark (the real
+// vector lockup via <OgWordmark>), a colored tag pill, a big headline, and a
+// footer rule — but takes
 // plain strings so a dynamic page (a bootcamp title + host + date) can render one
 // per slug. Edge-safe: no marketing-component imports (they pull React DOM).
 
@@ -41,19 +43,7 @@ export function renderSimpleOg(opts: {
     >
       {/* Top: wordmark + tag pill */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            fontWeight: 500,
-            fontSize: 40,
-            color: '#FFFFFF',
-            letterSpacing: '-0.03em',
-          }}
-        >
-          <span>spar</span>
-          <span style={{ color: '#6366F1' }}>x</span>
-        </div>
+        <OgWordmark height={40} />
         <div
           style={{
             display: 'flex',

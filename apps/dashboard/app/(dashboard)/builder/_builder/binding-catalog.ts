@@ -351,13 +351,20 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
 }
 
 /** The tenant's REAL brand identity, shaped exactly like the storefront's
- *  `site.identity` resolver root (apps/site loadSiteData) — name + optional logo
- *  image. Overlaid onto the placeholder preview data so the canvas header (Logo)
- *  matches the live/published site instead of showing a generic placeholder. */
+ *  `site.identity` resolver root (apps/site `siteRoot`) — name, tagline, and both
+ *  logos. Overlaid onto the placeholder preview data so the canvas header matches the
+ *  live/published site instead of showing a generic placeholder.
+ *
+ *  Must stay field-for-field in step with `siteRoot()` and with `SITE_SOURCES`: the
+ *  picker offering a field is a promise that it resolves, and a field the canvas
+ *  resolves but the storefront doesn't (or vice versa) makes the editor lie. */
 export interface SiteIdentityPreview {
   name: string;
-  tagline: string;
+  /** `null`, not '': an empty string is a known-but-empty value that the resolver
+   *  fills over the authored content, blanking the node. */
+  tagline: string | null;
   logo: { url: string; alt: string } | null;
+  logoDark: { url: string; alt: string } | null;
 }
 
 /** The tenant's REAL site-chrome data — the `site.*` resolver roots the storefront

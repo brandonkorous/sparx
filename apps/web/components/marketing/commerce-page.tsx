@@ -5,7 +5,6 @@ import {
   Display,
   Dot,
   getModuleColor,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -121,12 +120,12 @@ function CommerceHero() {
   ];
   return (
     <section
+      className={`${C.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: C.tint,
       }}
     >
       <Container>
@@ -260,20 +259,19 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
           </span>
         </span>
         <span
+          className={`${C.bg} bg-soft ${C.ink}`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '7px',
             padding: '5px 11px',
             borderRadius: '9999px',
-            backgroundColor: C.tint,
-            color: C.text,
             fontFamily: SANS,
             fontSize: '12px',
             fontWeight: 500,
           }}
         >
-          <Check size={13} color={C.text} /> Paid
+          <Check size={13} color={C.color} /> Paid
         </span>
       </div>
       {order.products.map((it) => (
@@ -429,11 +427,11 @@ function PaymentsRail() {
             }}
           >
             <span
+              className={`${C.bg} bg-soft`}
               style={{
                 width: 34,
                 height: 34,
                 borderRadius: '9px',
-                backgroundColor: C.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -477,7 +475,7 @@ function PaymentsRail() {
       >
         Test mode runs against staging, payment intents confirm on submit, and refunds return to the
         original method. Need net terms or a PO at checkout instead?{' '}
-        <a href="/b2b" style={{ color: C.text, fontWeight: 500 }}>
+        <a href="/b2b" className={C.ink} style={{ fontWeight: 500 }}>
           That&rsquo;s B2B
         </a>
         , layered on the same engine.
@@ -596,7 +594,7 @@ function FeeLadder() {
       >
         The fee is taken through Stripe Connect and is separate from Stripe&rsquo;s own processing
         rate. No per-seat charges, no per-product metering — see{' '}
-        <a href="/pricing" style={{ color: C.text, fontWeight: 500 }}>
+        <a href="/pricing" className={C.ink} style={{ fontWeight: 500 }}>
           full pricing
         </a>
         .
@@ -656,11 +654,11 @@ function Operations() {
             }}
           >
             <span
+              className={`${C.bg} bg-soft`}
               style={{
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: C.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -743,23 +741,23 @@ function HeadlessOrHosted() {
         {ways.map((w, i) => (
           <div
             key={w.title}
+            className={i === 0 ? `${C.bg} bg-soft` : 'bg-base-100'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(C.color) : 'var(--color-base-100)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
             <span
+              className={C.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: C.text,
               }}
             >
               {w.tag}
@@ -899,12 +897,11 @@ function CommercePricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${C.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(C.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

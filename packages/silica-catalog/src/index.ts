@@ -12,6 +12,7 @@ export * from './commerce';
 export * from './scheduling';
 export * from './host-nodes';
 export * from './ensure-ids';
+export * from './upgrade-frame';
 export * from './catalog';
 export * from './site-chrome';
 export * from './site';

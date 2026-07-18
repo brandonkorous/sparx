@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Dot, getModuleColor, moduleTint, Section, Spark } from './primitives';
+import { Container, Display, Dot, getModuleColor, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
 
 /**
@@ -118,11 +118,11 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
           {meta.features.map((f, i) => (
             <div
               key={f.number}
+              className={i === 0 ? `${color.bg} bg-soft` : 'bg-base-200'}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '32px',
-                backgroundColor: i === 0 ? moduleTint(color.color) : 'var(--color-base-200)',
                 border: '1px solid var(--color-base-300)',
                 borderRadius: '8px',
                 gap: '14px',
@@ -136,13 +136,13 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
                 }}
               >
                 <span
+                  className={`${color.bg} bg-soft`}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: 28,
                     height: 28,
-                    backgroundColor: color.tint,
                     borderRadius: '6px',
                   }}
                 >
@@ -195,12 +195,11 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${color.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(color.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',

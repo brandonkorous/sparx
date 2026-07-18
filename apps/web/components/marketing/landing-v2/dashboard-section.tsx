@@ -3,7 +3,7 @@ import { Container } from '../primitives';
 import { DashboardFrame } from '../dashboard-showcase';
 import { SECTION_DISPLAY_STYLE } from './heading-style';
 
-// "One pane of glass" — the product-proof beat. A bold indigo full-bleed
+// "One pane of glass" — the product-proof beat. A bold Ember full-bleed
 // backdrop (the same brand hue as the video band earlier on the page) so the
 // light dashboard mockup floats off it like a real screenshot, rather than
 // blending into a plain gray "stage" tier the way the homepage renders it.
@@ -33,7 +33,9 @@ export function LandingV2DashboardSection() {
             a module-tinted card — you always know where you are.
           </Text>
         </div>
-        <DashboardFrame />
+        {/* `bleed` is correct HERE and only here: this section pads by
+            `--gutter-page`, which is exactly what the pull cancels against. */}
+        <DashboardFrame bleed />
       </Container>
     </section>
   );

@@ -1,4 +1,5 @@
-import { Section, SectionHeader } from '../primitives';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
+import { Section, SectionHeader, Text } from '../primitives';
 
 const PRINCIPLES: { n: string; title: string; body: string }[] = [
   {
@@ -36,7 +37,7 @@ const PRINCIPLES: { n: string; title: string; body: string }[] = [
 export function PrinciplesSection() {
   return (
     <Section id="principles" surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader
           accent="var(--color-primary)"
           headline="Six principles that hold it together"
@@ -45,51 +46,19 @@ export function PrinciplesSection() {
 
         <div className="mkt-grid-3-2-1">
           {PRINCIPLES.map((p) => (
-            <div
-              key={p.n}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-                padding: '28px',
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: 'var(--radius-xl)',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '12px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {p.n}
-              </span>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '18px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                  margin: 0,
-                }}
-              >
-                {p.title}
-              </h3>
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  lineHeight: '22px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  margin: 0,
-                }}
-              >
-                {p.body}
-              </p>
-            </div>
+            <Card key={p.n} className="bg-base-200">
+              <CardBody className="flex flex-col gap-3.5">
+                <Text as="span" size={12} mono tone="subtle">
+                  {p.n}
+                </Text>
+                <Text as="h3" size={18} weight={500} tone="default" className="tracking-[-0.01em]">
+                  {p.title}
+                </Text>
+                <Text size={14} tone="muted">
+                  {p.body}
+                </Text>
+              </CardBody>
+            </Card>
           ))}
         </div>
       </div>

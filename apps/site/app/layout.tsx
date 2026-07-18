@@ -30,6 +30,7 @@ import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { BuilderSiteChrome } from '@/components/builder-renderer';
 import { SilicaChrome } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
 import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtime';
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
@@ -285,11 +286,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ? await buildSilicaHost(site.slug, silicaFrame.frame.root, {
           currency: site.commerce.defaultCurrency,
           locale: site.commerce.defaultLocale,
-          // The frame binds site.* (brand name, logo, socials) — supply it so the
-          // navbar/footer render the tenant's identity, not a placeholder.
+          // The frame binds site.* (brand name, logo, tagline, socials) — supply it
+          // so the navbar/footer render the tenant's identity, not a placeholder.
+          // Every field Site settings COLLECTS must be supplied here: a declared
+          // binding the host never fills resolves empty, and an empty value blanks
+          // the node it is bound to.
           site: {
             name: site.name,
+            tagline: site.tagline,
             logoUrl: mediaUrl(site.theme?.logoMediaId ?? null, site.slug),
+            logoDarkUrl: mediaUrl(site.theme?.logoDarkMediaId ?? null, site.slug),
             socials: site.socials,
           },
         })
@@ -542,6 +548,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         frame={silicaFrame.frame.root}
                         symbols={silicaFrame.symbols}
                         host={silicaHost ?? undefined}
+                        // The chrome's host cores (the brand mark) render live from the
+                        // resolved site, so Site settings reach the header with no
+                        // re-publish.
+                        renderHost={storefrontHostRenderer({
+                          site,
+                          ...(activePropertySlug ? { propertySlug: activePropertySlug } : {}),
+                        })}
                       >
                         {children}
                       </SilicaChrome>

@@ -10,7 +10,7 @@ export type DirectoryParams = Record<string, string>;
 
 const BASE = '/partners/directory';
 const SANS = 'var(--font-sans)';
-const INDIGO = 'var(--color-primary)';
+const EMBER = 'var(--color-primary)';
 
 const TIER_LABEL: Record<string, string> = {
   certified: 'Certified',
@@ -66,7 +66,7 @@ function Chip({
         padding: '5px 12px',
         borderRadius: '9999px',
         border: '1px solid',
-        borderColor: on ? INDIGO : 'var(--color-base-300)',
+        borderColor: on ? EMBER : 'var(--color-base-300)',
         backgroundColor: on
           ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)'
           : 'var(--color-base-100)',

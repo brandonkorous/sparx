@@ -1,5 +1,22 @@
-import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
+import {
+  Badge,
+  Button,
+  Card,
+  Display,
+  Divider,
+  Heading,
+  List,
+  ListColGrow,
+  ListRow,
+  Text,
+} from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as `render` crosses the
+// Server→Client boundary and arrives as a lazy client reference, so its `.type`
+// is undefined and silica's `cloneElement(render, …)` throws. The class builders
+// are React-free; import them from `/server` because the ROOT is 'use client'.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Container, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { SCHEDULING_SCENES, type SchedulingScene } from './scheduling-data';
 
@@ -14,93 +31,59 @@ import { SCHEDULING_SCENES, type SchedulingScene } from './scheduling-data';
  *
  * Grounded in docs/79: the unified booking model (§5), the per-service policy
  * model (§9.2), multi-channel reminders (§10). Rose is a signal, not fill; the
- * band is the light rose tint with near-black ink. See the rotation rule +
- * feedback-industry-agnostic-no-diesel.
+ * band is silica's own `bg-soft` wash over the Scheduling hue, with real ink.
+ * See the rotation rule + feedback-industry-agnostic-no-diesel.
+ *
+ * Typography is silica's semantic scale end to end — Display / Text lead / Text,
+ * with Heading level={6} for the field-NAME half of a label/value pair. No px
+ * sizes and no app-local ink tones. Nothing here is `variant="caption"`: every
+ * line in the booking card is content a visitor actually reads, and muted ink is
+ * reserved for text that isn't. See SILICA-VOCABULARY.md.
  */
 
 const M = getModuleColor('scheduling');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 export function SchedulingHero() {
   const lede =
     'Appointments, classes, reservations, and rentals run on one booking engine — with deposits, reminders, waitlists, and policies built in. Because it lives on sparx, every booking writes to the customer you already have: the deposit, the reminder, the no-show, the re-book all land in one system, not five disconnected tools.';
   const chips = ['appointments', 'classes', 'reservations', 'rentals'];
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
-      }}
-    >
+    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Display as="h1" size={84} lineHeight={80}>
+        {/* `mkt-*` rules are UNLAYERED, so a `gap-*` utility cannot beat their
+            gap — the fluid column gap stays inline by design. */}
+        <div className="mkt-stack-on-tablet items-center" style={{ gap: 'clamp(40px, 6vw, 72px)' }}>
+          <div className="min-w-0 flex-1">
+            <Display level={1}>
               Every booking, one engine
               <Spark color={M.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '580px',
-                margin: '28px 0 0',
-              }}
-            >
+            <Text variant="lead" className="mt-7 max-w-[580px]">
               {lede}
-            </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            </Text>
+            <div className="mkt-cluster mt-[34px]" style={{ gap: '12px' }}>
+              <Button size="lg" color="neutral">
                 Activate Scheduling →
               </Button>
-              <a href="#shapes">
-                <Button size="lg" variant="outline">
-                  See the booking shapes
-                </Button>
+              <a href="#shapes" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                See the booking shapes
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mkt-cluster mt-[26px] list-none p-0" style={{ gap: '10px' }}>
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-[13px] py-[7px]"
                 >
                   <Dot color={M.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
+                  <Text as="span" className="font-mono">
                     {c}
-                  </span>
+                  </Text>
                 </li>
               ))}
             </ul>
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+          <div className="w-full min-w-0 flex-1">
             <Cycle
               items={SCHEDULING_SCENES.map((s) => (
                 <BookingCard key={s.ref} scene={s} />
@@ -117,67 +100,37 @@ export function SchedulingHero() {
  *  which resource and slot, the deposit taken and the reminders queued. */
 function BookingCard({ scene: s }: { scene: SchedulingScene }) {
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
+    // No CardBody: the card is three rule-separated bands whose own components
+    // (List rows / the resource grid) carry their padding.
+    <Card className="overflow-hidden">
       <BookingHeader s={s} />
+      <Divider className="my-0" />
       <BookingResource s={s} />
+      <Divider className="my-0" />
       <BookingFooter s={s} />
-    </div>
+    </Card>
   );
 }
 
 function BookingHeader({ s }: { s: SchedulingScene }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 20px',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
-      <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+    <List>
+      <ListRow>
         <Dot color={M.color} size={9} />
-        <span style={{ minWidth: 0 }}>
-          <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>{s.service}</span>
-          <br />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+        <ListColGrow className="min-w-0">
+          <Text as="div" className="font-medium">
+            {s.service}
+          </Text>
+          <Text as="div">
             {s.customer} · {s.business}
-          </span>
-        </span>
-      </span>
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '7px',
-          padding: '5px 11px',
-          borderRadius: '9999px',
-          backgroundColor: M.tint,
-          color: M.text,
-          fontFamily: SANS,
-          fontSize: '12px',
-          fontWeight: 500,
-          flexShrink: 0,
-        }}
-      >
-        <Dot color={M.color} size={6} /> confirmed
-      </span>
-    </div>
+          </Text>
+        </ListColGrow>
+        {/* `confirmed` is booking STATE, not module identity — semantic success. */}
+        <Badge color="success" size="sm" className="shrink-0 gap-[7px]">
+          <Dot color="currentColor" size={6} /> confirmed
+        </Badge>
+      </ListRow>
+    </List>
   );
 }
 
@@ -188,43 +141,16 @@ function BookingResource({ s }: { s: SchedulingScene }) {
     [s.duration, 'duration'],
   ];
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
+    <div className="grid grid-cols-3">
       {cells.map(([v, l], i) => (
-        <div
-          key={l}
-          style={{
-            padding: '14px 16px',
-            borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-            minWidth: 0,
-          }}
-        >
-          <div
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '14.5px',
-              letterSpacing: '-0.01em',
-              color: 'var(--color-base-content)',
-            }}
-          >
+        <div key={l} className={`min-w-0 px-4 py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`}>
+          <Text as="div" className="font-medium">
             {v}
-          </div>
-          <div
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              marginTop: '3px',
-            }}
-          >
+          </Text>
+          {/* The field NAME half of a label/value pair — small, but full ink. */}
+          <Heading level={6} className="mt-[3px] font-mono">
             {l}
-          </div>
+          </Heading>
         </div>
       ))}
     </div>
@@ -233,67 +159,30 @@ function BookingResource({ s }: { s: SchedulingScene }) {
 
 function BookingFooter({ s }: { s: SchedulingScene }) {
   return (
-    <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '12px 14px',
-          backgroundColor: 'var(--color-base-200)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '10px',
-        }}
-      >
-        <BellIcon size={16} color={M.text} />
-        <span style={{ minWidth: 0 }}>
-          <span
-            style={{
-              display: 'block',
-              fontFamily: SANS,
-              fontSize: '13px',
-              fontWeight: 500,
-              color: 'var(--color-base-content)',
-            }}
-          >
+    <List>
+      <ListRow>
+        <BellIcon size={16} color={M.color} />
+        <ListColGrow className="min-w-0">
+          <Text as="div" className="font-medium">
             {s.deposit === '—' ? 'No deposit · free booking' : `${s.deposit} taken`}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="div" className="font-mono">
             reminders {s.reminders}
-          </span>
-        </span>
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontFamily: SANS,
-            fontSize: '11.5px',
-            fontWeight: 500,
-            color: M.text,
-            flexShrink: 0,
-          }}
-        >
+          </Text>
+        </ListColGrow>
+        <Text as="span" className={`${M.ink} shrink-0 font-medium`}>
           {s.policy}
-        </span>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+        </Text>
+      </ListRow>
+      <ListRow>
         <Dot color={M.color} size={6} />
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          {s.ref} · {s.capacityNote}
-        </span>
-      </div>
-    </div>
+        <ListColGrow className="min-w-0">
+          <Text as="span" className="font-mono">
+            {s.ref} · {s.capacityNote}
+          </Text>
+        </ListColGrow>
+      </ListRow>
+    </List>
   );
 }
 
@@ -309,7 +198,7 @@ function BellIcon({ size, color }: { size: number; color: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      style={{ flexShrink: 0 }}
+      className="shrink-0"
     >
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
       <path d="M13.73 21a2 2 0 0 1-3.46 0" />

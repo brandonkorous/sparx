@@ -163,23 +163,55 @@ export const MODULES: ModuleEntry[] = [
   },
 ];
 
-/** Module brand hex, mirroring @sparx/ui ModuleProvider's MODULE_COLORS. These
- *  are the CONSTANT brand hues (the `--module-*` tokens resolve to exactly these
- *  in every theme), kept as literal hex because the module strip also renders in
- *  the edge-runtime OG images, where Satori cannot resolve CSS custom properties. */
-export const MODULE_HEX: Record<MarketingModule, string> = {
-  builder: '#6366F1',
-  commerce: '#F97316',
-  cms: '#14B8A6',
-  crm: '#06B6D4',
-  invoicing: '#65A30D',
-  email: '#0EA5E9',
-  b2b: '#475569',
-  dropship: '#10B981',
-  inventory: '#F59E0B',
-  chat: '#8B5CF6',
-  scheduling: '#F43F5E',
-  ai: '#EC4899',
+/** Module brand hex — re-exported from @sparx/brand, the single TS source. Only
+ *  for contexts where CSS custom properties don't resolve (the module strip also
+ *  renders in edge-runtime OG images, where Satori can't read a `var()`). In the
+ *  DOM use `MODULE_COLOR` / `MODULE_BACKGROUND_COLOR` below instead. */
+export { MODULE_HEX } from '@sparx/brand';
+
+export const MODULE_COLOR: Record<MarketingModule, string> = {
+  builder: 'module-builder',
+  commerce: 'module-commerce',
+  cms: 'module-cms',
+  crm: 'module-crm',
+  invoicing: 'module-invoicing',
+  email: 'module-email',
+  b2b: 'module-b2b',
+  dropship: 'module-dropship',
+  inventory: 'module-inventory',
+  chat: 'module-chat',
+  scheduling: 'module-scheduling',
+  ai: 'module-ai',
+};
+
+export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
+  builder: 'bg-module-builder',
+  commerce: 'bg-module-commerce',
+  cms: 'bg-module-cms',
+  crm: 'bg-module-crm',
+  invoicing: 'bg-module-invoicing',
+  email: 'bg-module-email',
+  b2b: 'bg-module-b2b',
+  dropship: 'bg-module-dropship',
+  inventory: 'bg-module-inventory',
+  chat: 'bg-module-chat',
+  scheduling: 'bg-module-scheduling',
+  ai: 'bg-module-ai',
+};
+
+export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
+  builder: 'border-module-builder',
+  commerce: 'border-module-commerce',
+  cms: 'border-module-cms',
+  crm: 'border-module-crm',
+  invoicing: 'border-module-invoicing',
+  email: 'border-module-email',
+  b2b: 'border-module-b2b',
+  dropship: 'border-module-dropship',
+  inventory: 'border-module-inventory',
+  chat: 'border-module-chat',
+  scheduling: 'border-module-scheduling',
+  ai: 'border-module-ai',
 };
 
 /** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each

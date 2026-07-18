@@ -151,14 +151,13 @@ export function PricingSwitchboard() {
             <ModuleToggleCard
               key={m.id}
               icon={MODULE_ICON[m.id]}
-              color={MODULE_HEX[m.id]}
+              color={m.id}
               label={m.label}
               title={m.title}
               active={isOn}
               disabled={lock !== null}
               onToggle={() => toggle(m.id)}
               badgeText={lock === 'included' ? 'Included' : `$${m.price}/mo`}
-              badgeColor={lock === 'included' ? 'success' : isOn ? 'primary' : 'neutral'}
               reason={reasonOf(m.id) ?? undefined}
             />
           );

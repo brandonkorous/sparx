@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -57,14 +57,15 @@ export function DropshipConnect() {
 function VendorPicker() {
   return (
     <div
+      className={`${M.bg} bg-soft`}
       style={{
-        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
     >
       <div
+        className={M.ink}
         style={{
           padding: '16px 20px',
           borderBottom: '1px solid var(--color-base-300)',
@@ -72,7 +73,6 @@ function VendorPicker() {
           fontSize: '11px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: M.text,
         }}
       >
         choose a supplier
@@ -80,13 +80,13 @@ function VendorPicker() {
       {VENDORS.map((v, i) => (
         <div
           key={v.name}
+          className={i === 0 ? `${M.bg} bg-soft` : 'bg-transparent'}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
             padding: '14px 20px',
             borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-            backgroundColor: i === 0 ? M.tint : 'transparent',
           }}
         >
           <span
@@ -126,6 +126,7 @@ function VendorPicker() {
             </span>
           </span>
           <span
+            className={v.mode === 'API' ? M.ink : undefined}
             style={{
               marginLeft: 'auto',
               fontFamily: MONO,
@@ -134,7 +135,7 @@ function VendorPicker() {
               textTransform: 'uppercase',
               color:
                 v.mode === 'API'
-                  ? M.text
+                  ? undefined
                   : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               flexShrink: 0,
             }}
@@ -200,14 +201,13 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
           </span>
         </span>
         <span
+          className={`${M.bg} bg-soft ${M.ink}`}
           style={{
             marginLeft: 'auto',
             display: 'inline-flex',
             alignItems: 'center',
             padding: '5px 11px',
             borderRadius: '9999px',
-            backgroundColor: M.tint,
-            color: M.text,
             fontFamily: SANS,
             fontSize: '11.5px',
             fontWeight: 500,
@@ -361,7 +361,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
         {d.pricing.sell}
       </span>
       <span className="mkt-margin-cell">
-        <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500, color: M.text }}>
+        <span className={M.ink} style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
           {d.pricing.margin}
         </span>
         <span

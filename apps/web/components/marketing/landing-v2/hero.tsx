@@ -1,4 +1,9 @@
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Display } from '../primitives';
 import { signupHref } from '../cta';
 import { BusinessDemoCard } from './hero-device';
@@ -66,26 +71,25 @@ export function LandingV2Hero() {
               with you.
             </p>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button
-                size="xl"
-                color="primary"
-                variant="solid"
-                render={<a href={signupHref('landing-v2-hero')} aria-label="Launch your site" />}
+              <a
+                href={signupHref('landing-v2-hero')}
+                aria-label="Launch your site"
+                className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
               >
                 Launch your site
-              </Button>
-              <Button
-                size="xl"
-                variant="outline"
+              </a>
+              <a
+                href="#day"
+                aria-label="See a day on sparx"
+                className={buttonClasses({ size: 'xl', variant: 'outline' })}
                 style={{
                   backgroundColor: 'transparent',
                   color: '#FFFFFF',
                   borderColor: 'rgba(255, 255, 255, 0.28)',
                 }}
-                render={<a href="#day" aria-label="See a day on sparx" />}
               >
                 See a day on sparx &darr;
-              </Button>
+              </a>
             </div>
             <span style={{ fontSize: '13px', color: ON_MUTED }}>
               No credit card &middot; Live in minutes &middot; Start with only what you need

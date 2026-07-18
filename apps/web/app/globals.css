@@ -22,7 +22,11 @@
    the wrapping module's hue, so `color="module"` resolves through the standard
    silica color machinery). Per-module solid hues live in @sparx/brand/theme.css. */
 @plugin '@wizeworks/silicaui' {
-  colors: primary, secondary, accent, neutral, info, success, warning, error, danger, module;
+  colors:
+    primary, secondary, accent, neutral, info, success, warning, error, danger, module,
+    module-builder, module-commerce, module-cms, module-crm, module-invoicing, module-email,
+    module-b2b, module-dropship, module-inventory, module-chat, module-scheduling, module-ai,
+    module-automations, module-seo;
 }
 
 /* Tailwind v4 needs to see @sparx/ui sources so utility classes used inside the
@@ -53,6 +57,63 @@
 
   --radius-box: 1.5rem; /* cards, alerts, larger surfaces (rounded-box) */
   --depth: 0;
+}
+
+/* ── Marketing utility vocabulary ────────────────────────────────────────────
+   apps/web is CLASS-BASED: components emit `className`, never inline `style`.
+   These @theme entries turn the marketing-specific values (page gutter, section
+   rhythm, the editorial type scale, and the two real-ink secondary text colors)
+   into first-class Tailwind utilities, so there are no arbitrary values and a
+   design change is a single edit here — not a hunt through stamped inline styles.
+
+   • spacing  → `px-page`, `py-section-lg`, `gap-…`      (clamp()-fluid)
+   • text     → `text-body`, `text-lede`, `text-caption` (size + paired leading)
+   • color    → `text-ink-muted` / `text-ink-subtle`     (mix into base-100, NOT
+     transparent — the no-faded-text rule holds by construction, and both flip
+     with `data-theme="dark"` because they resolve from --color-base-*)
+   • width    → `max-w-container` (the 1280px content cap)                       */
+@theme {
+  --spacing-page: var(--gutter-page);
+  --spacing-section-md: var(--section-py-md);
+  --spacing-section-lg: var(--section-py-lg);
+  --spacing-section-xl: var(--section-py-xl);
+
+  --container-content: var(--container-max);
+
+  --text-micro: 11px;
+  --text-micro--line-height: 16px;
+  --text-mini: 12px;
+  --text-mini--line-height: 18px;
+  --text-caption: 13px;
+  --text-caption--line-height: 20px;
+  --text-small: 14px;
+  --text-small--line-height: 22px;
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 24px;
+  --text-body: 16px;
+  --text-body--line-height: 26px;
+  --text-body-lg: 17px;
+  --text-body-lg--line-height: 28px;
+  --text-lede: 18px;
+  --text-lede--line-height: 30px;
+  --text-lede-lg: 19px;
+  --text-lede-lg--line-height: 31px;
+
+  /* Section-heading steps. Without these the scale stopped at 19px and every
+     20–27px heading SILENTLY rendered at 19 — `<Text size={24}>` looked correct
+     in source and shrank in the browser. Above 28px use `<Display>`, which is
+     fluid-clamped. */
+  --text-h4: 20px;
+  --text-h4--line-height: 28px;
+  --text-h3: 22px;
+  --text-h3--line-height: 30px;
+  --text-h2: 24px;
+  --text-h2--line-height: 32px;
+  --text-h1: 28px;
+  --text-h1--line-height: 36px;
+
+  --color-ink-muted: color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100));
+  --color-ink-subtle: color-mix(in oklab, var(--color-base-content) 50%, var(--color-base-100));
 }
 
 html {

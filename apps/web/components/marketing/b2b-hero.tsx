@@ -26,12 +26,12 @@ export function B2bHero() {
   const chips = ['account price lists', 'net terms + credit', 'RFQ → quote', 'layered on commerce'];
   return (
     <section
+      className={`${M.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
       }}
     >
       <Container>
@@ -144,11 +144,11 @@ function AccountHeader({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
       }}
     >
       <span
+        className={`${M.bg} bg-soft`}
         style={{
           width: 42,
           height: 42,
           borderRadius: '10px',
-          backgroundColor: M.tint,
           border: `1.5px solid ${M.color}`,
           flexShrink: 0,
           display: 'flex',
@@ -173,14 +173,13 @@ function AccountHeader({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         </span>
       </span>
       <span
+        className={`${M.bg} bg-soft ${M.ink}`}
         style={{
           marginLeft: 'auto',
           display: 'inline-flex',
           alignItems: 'center',
           padding: '5px 11px',
           borderRadius: '9999px',
-          backgroundColor: M.tint,
-          color: M.text,
           fontFamily: SANS,
           fontSize: '12px',
           fontWeight: 500,
@@ -256,7 +255,7 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         >
           credit · {b2b.creditUsed} of {b2b.creditLimit}
         </span>
-        <span style={{ fontFamily: MONO, fontSize: '11px', color: M.text }}>
+        <span className={M.ink} style={{ fontFamily: MONO, fontSize: '11px' }}>
           {b2b.creditUsedPct}
         </span>
       </div>
@@ -291,7 +290,7 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
           borderRadius: '10px',
         }}
       >
-        <span style={{ fontFamily: MONO, fontSize: '12px', color: M.text, flexShrink: 0 }}>
+        <span className={M.ink} style={{ fontFamily: MONO, fontSize: '12px', flexShrink: 0 }}>
           {b2b.quote.number}
         </span>
         <span
@@ -304,6 +303,7 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
           {b2b.quote.lines} lines · {b2b.quote.total}
         </span>
         <span
+          className={`${M.bg} bg-soft ${M.ink}`}
           style={{
             marginLeft: 'auto',
             fontFamily: SANS,
@@ -311,8 +311,6 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
             fontWeight: 500,
             padding: '3px 9px',
             borderRadius: '9999px',
-            backgroundColor: M.tint,
-            color: M.text,
             flexShrink: 0,
           }}
         >

@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og';
+import { BRAND } from '@sparx/brand';
 import { capabilityCounts } from '@/lib/capabilities';
 import { ModuleStrip } from '@/components/marketing/module-strip';
+import { OgWordmark } from '@/lib/og-wordmark';
 
 // Per-route OG image. Without this file the /features page emits no og:image —
 // a page-level `openGraph` block in page.tsx stops Next from inheriting the root
@@ -34,37 +36,25 @@ export default function Image() {
     >
       {/* Top: wordmark + count badge */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            fontWeight: 500,
-            fontSize: 40,
-            color: '#FFFFFF',
-            letterSpacing: '-0.03em',
-          }}
-        >
-          <span>spar</span>
-          <span style={{ color: '#6366F1' }}>x</span>
-        </div>
+        <OgWordmark height={40} />
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 12,
             padding: '8px 18px',
-            border: '1px solid #1E1B4B',
+            border: `1px solid ${BRAND.primary}33`,
             borderRadius: 9999,
-            backgroundColor: '#0F0B2E',
+            backgroundColor: `${BRAND.primary}1A`,
           }}
         >
-          <div style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: '#818CF8' }} />
+          <div style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: BRAND.primary }} />
           <span
             style={{
               fontWeight: 500,
               fontSize: 16,
               letterSpacing: '0.08em',
-              color: '#818CF8',
+              color: BRAND.primary,
               textTransform: 'uppercase',
             }}
           >
@@ -94,7 +84,7 @@ export default function Image() {
                 width: 28,
                 height: 28,
                 borderRadius: 9999,
-                backgroundColor: '#6366F1',
+                backgroundColor: BRAND.primary,
                 marginLeft: 4,
                 marginBottom: 14,
               }}

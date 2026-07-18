@@ -142,7 +142,7 @@ generic — rewrite it so only sparx could have said it.
 - **`sparx` is always lowercase** — in headlines, body, titles, and metadata.
   Never "Sparx", never sentence-case at the start of a sentence. (Code
   identifiers like `@sparx/ui` keep their casing — that's not brand text.)
-- The **"x" is the brand spark** (rendered in indigo `#6366F1` where the surface
+- The **"x" is the brand spark** (rendered in sparx Ember `#e04631` where the surface
   supports color). You write words, not colors, but know the "x" is the moment —
   don't bury the wordmark mid-clause where it loses force.
 - **No eyebrow/kicker labels** as a copy crutch — especially not uppercase

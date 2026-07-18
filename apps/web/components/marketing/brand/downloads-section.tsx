@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { Container, Display, Spark } from '../primitives';
+import { CardBody } from '@wizeworks/silicaui-react';
+// Server-safe class builder (package root is a 'use client' bundle).
+import { clickableCardClasses } from '@wizeworks/silicaui-react/server';
+import { Container, Display, Spark, Text } from '../primitives';
 import { OfficialWordmark, OfficialMark } from './assets';
 
 interface Asset {
@@ -80,128 +83,79 @@ export function DownloadsSection() {
   return (
     <section
       id="downloads"
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-        scrollMarginTop: '80px',
-      }}
+      data-theme="dark"
+      className="px-page py-section-xl bg-base-100 scroll-mt-20"
     >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '760px' }}>
-          <Display size={72} lineHeight={68} color="#FFFFFF">
+      <Container className="flex flex-col gap-14">
+        <div className="flex max-w-[760px] flex-col gap-6">
+          <Display size={72} lineHeight={68}>
             Take the assets
-            <Spark color="#818CF8" />
+            <Spark />
           </Display>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '18px',
-              lineHeight: '29px',
-              color: '#A1A1AA',
-              margin: 0,
-            }}
-          >
-            The wordmark, monogram, and icon set, ready to drop in. Keep the “x” indigo, keep the
-            clear space, and don’t recolor the letterforms. Need editable source, a one-color
-            variant, or something bespoke? Email{' '}
-            <a href="mailto:brand@sparx.works" style={{ color: '#fff' }}>
+          <Text size={18}>
+            The wordmark, monogram, and icon set, ready to drop in. Keep the “x” its spark color,
+            keep the clear space, and don’t recolor the letterforms. Need editable source, a
+            one-color variant, or something bespoke? Email{' '}
+            <a href="mailto:brand@sparx.works" className="text-base-content">
               brand@sparx.works
             </a>
             .
-          </p>
+          </Text>
         </div>
 
         <div className="mkt-grid-3-2-1">
           {ASSETS.map((a) => (
+            // A real <a> wearing the clickable-card classes, NOT
+            // `<ClickableCard render={<a/>}>` — this is a Server Component, so a
+            // `render` element crosses the RSC boundary as a lazy client
+            // reference (its `.type` is undefined) and cloneElement throws.
             <a
               key={`${a.name}-${a.format}`}
               href={a.href}
               download
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                textDecoration: 'none',
-                border: '1px solid #2A2A2A',
-                borderRadius: 'var(--radius-xl)',
-                overflow: 'hidden',
-                backgroundColor: '#0F0F0F',
-              }}
+              // The whole band is a data-theme="dark" island, so the tile lifts off
+              // the surface with token surfaces/borders — no literal dark hexes.
+              className={clickableCardClasses({
+                className: 'bg-base-200 overflow-hidden no-underline',
+              })}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  minHeight: '120px',
-                  padding: '28px',
-                  borderBottom: '1px solid #1A1A1A',
-                  backgroundColor: a.bg === 'light' ? '#FFFFFF' : '#0A0A0A',
-                }}
-              >
-                {a.preview}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                  padding: '16px 20px',
-                }}
-              >
-                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#FFFFFF',
-                    }}
-                  >
-                    {a.name}
-                  </span>
-                  <span
-                    style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#52525B' }}
-                  >
-                    {a.format}
-                  </span>
-                </span>
-                <span
-                  aria-hidden
-                  style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#818CF8' }}
+              <CardBody className="flex flex-col p-0">
+                <div
+                  // Specimen stage: show the mark on a light vs dark surface as its
+                  // own nested theme island, so both backgrounds are real tokens.
+                  data-theme={a.bg}
+                  className="border-base-300 bg-base-100 flex min-h-[120px] items-center justify-center border-b p-7"
                 >
-                  Download ↓
-                </span>
-              </div>
+                  {a.preview}
+                </div>
+                <div className="flex items-center justify-between gap-3 px-5 py-4">
+                  <span className="flex flex-col gap-0.5">
+                    <Text as="span" size={14} weight={500} tone="default">
+                      {a.name}
+                    </Text>
+                    <Text as="span" mono size={11} tone="subtle">
+                      {a.format}
+                    </Text>
+                  </span>
+                  <span aria-hidden>
+                    <Text as="span" size={13} color="var(--color-primary)">
+                      Download ↓
+                    </Text>
+                  </span>
+                </div>
+              </CardBody>
             </a>
           ))}
         </div>
 
-        <div
-          className="mkt-cluster"
-          style={{
-            justifyContent: 'space-between',
-            gap: '24px',
-            paddingTop: '32px',
-            borderTop: '1px solid #1A1A1A',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#52525B' }}>
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-6 border-t pt-8">
+          <Text as="span" size={13} tone="subtle">
             © 2026 WizeWorks, Inc. · sparx is a registered trademark of WizeWorks.
-          </span>
-          <a
-            href="mailto:brand@sparx.works"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              color: '#A1A1AA',
-              textDecoration: 'none',
-            }}
-          >
-            brand@sparx.works
+          </Text>
+          <a href="mailto:brand@sparx.works">
+            <Text as="span" mono size={12} tone="muted" className="no-underline">
+              brand@sparx.works
+            </Text>
           </a>
         </div>
       </Container>

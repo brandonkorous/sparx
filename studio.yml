@@ -1,0 +1,548 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - navigation "Primary navigation" [ref=e4]:
+        - img [ref=e6]
+        - button "Search" [ref=e9]:
+          - img [ref=e11]
+        - link "Home" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - img [ref=e16]
+        - generic [ref=e20]:
+          - link "Builder" [ref=e22] [cursor=pointer]:
+            - /url: /builder
+            - img [ref=e24]
+          - link "Commerce" [ref=e35] [cursor=pointer]:
+            - /url: /commerce
+            - img [ref=e37]
+          - link "CMS" [ref=e42] [cursor=pointer]:
+            - /url: /cms
+            - img [ref=e44]
+          - link "CRM" [ref=e48] [cursor=pointer]:
+            - /url: /crm
+            - img [ref=e50]
+          - link "Invoicing" [ref=e56] [cursor=pointer]:
+            - /url: /invoicing
+            - img [ref=e58]
+          - link "Email" [ref=e61] [cursor=pointer]:
+            - /url: /email
+            - img [ref=e63]
+          - link "B2B" [ref=e67] [cursor=pointer]:
+            - /url: /b2b
+            - img [ref=e69]
+          - link "Dropship" [ref=e74] [cursor=pointer]:
+            - /url: /dropship
+            - img [ref=e76]
+          - link "Inventory" [ref=e82] [cursor=pointer]:
+            - /url: /inventory
+            - img [ref=e84]
+          - link "Live Chat" [ref=e88] [cursor=pointer]:
+            - /url: /chat
+            - img [ref=e90]
+          - link "Scheduling" [ref=e94] [cursor=pointer]:
+            - /url: /scheduling
+            - img [ref=e96]
+          - link "AI" [ref=e101] [cursor=pointer]:
+            - /url: /ai
+            - img [ref=e103]
+          - link "Automations" [ref=e107] [cursor=pointer]:
+            - /url: /automations
+            - img [ref=e109]
+          - link "SEO" [ref=e114] [cursor=pointer]:
+            - /url: /seo
+            - img [ref=e116]
+          - generic [ref=e119]:
+            - generic "Favorites" [ref=e120]:
+              - img [ref=e121]
+            - link "Reviews" [ref=e124] [cursor=pointer]:
+              - /url: /commerce/reviews
+              - img [ref=e126]
+            - link "Products" [ref=e129] [cursor=pointer]:
+              - /url: /commerce/products
+              - img [ref=e131]
+          - generic [ref=e135]:
+            - generic "Recents" [ref=e136]:
+              - img [ref=e137]
+            - link "Editor" [ref=e141] [cursor=pointer]:
+              - /url: /builder/studio
+              - img [ref=e143]
+            - link "Site" [ref=e147] [cursor=pointer]:
+              - /url: /builder/site
+              - img [ref=e149]
+            - link "Components" [ref=e153] [cursor=pointer]:
+              - /url: /builder/components
+              - img [ref=e155]
+            - link "Products" [ref=e161] [cursor=pointer]:
+              - /url: /commerce/products
+              - img [ref=e163]
+            - link "Blueprints" [ref=e168] [cursor=pointer]:
+              - /url: /builder/blueprints
+              - img [ref=e170]
+            - link "Quotes / RFQ" [ref=e175] [cursor=pointer]:
+              - /url: /b2b/quotes
+              - img [ref=e177]
+            - link "Documents" [ref=e181] [cursor=pointer]:
+              - /url: /invoicing/documents
+              - img [ref=e183]
+            - link "Customers" [ref=e187] [cursor=pointer]:
+              - /url: /crm/customers
+              - img [ref=e189]
+        - link "Finance" [ref=e196] [cursor=pointer]:
+          - /url: /finance
+          - img [ref=e198]
+        - link "Marketplace" [ref=e200] [cursor=pointer]:
+          - /url: /marketplace
+          - img [ref=e202]
+        - link "Settings" [ref=e206] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e208]
+        - button "Expand navigation" [ref=e211]:
+          - img [ref=e212]
+      - generic [ref=e215]:
+        - generic [ref=e217]:
+          - generic [ref=e218]:
+            - paragraph [ref=e219]: Module
+            - paragraph [ref=e222]: Builder
+          - navigation "Sections" [ref=e224]:
+            - link "Overview" [ref=e225] [cursor=pointer]:
+              - /url: /builder
+              - img [ref=e227]
+              - generic [ref=e237]: Overview
+            - link "Blueprints" [ref=e238] [cursor=pointer]:
+              - /url: /builder/blueprints
+              - img [ref=e240]
+              - generic [ref=e244]: Blueprints
+            - link "Site" [ref=e245] [cursor=pointer]:
+              - /url: /builder/site
+              - img [ref=e247]
+              - generic [ref=e250]: Site
+            - link "Editor" [ref=e251] [cursor=pointer]:
+              - /url: /builder/studio
+              - img [ref=e253]
+              - generic [ref=e256]: Editor
+            - link "Email" [ref=e257] [cursor=pointer]:
+              - /url: /builder/email
+              - img [ref=e259]
+              - generic [ref=e262]: Email
+            - link "Components" [ref=e263] [cursor=pointer]:
+              - /url: /builder/components
+              - img [ref=e265]
+              - generic [ref=e270]: Components
+            - link "Form submissions" [ref=e271] [cursor=pointer]:
+              - /url: /builder/forms
+              - img [ref=e273]
+              - generic [ref=e276]: Form submissions
+        - button "Hide panel" [expanded] [ref=e277]:
+          - img [ref=e278]
+          - generic [ref=e281]: Collapse
+    - main [ref=e282]:
+      - generic [ref=e283]:
+        - navigation "breadcrumb" [ref=e286]:
+          - list [ref=e287]:
+            - listitem [ref=e288]:
+              - button "WizeWorks LLC" [ref=e289] [cursor=pointer]:
+                - generic [ref=e290]: WizeWorks LLC
+                - img [ref=e291]
+            - listitem [ref=e293]:
+              - img [ref=e294]
+            - listitem [ref=e296]:
+              - button "WizeWorks" [ref=e297] [cursor=pointer]:
+                - img [ref=e298]
+                - generic [ref=e301]: WizeWorks
+                - img [ref=e302]
+            - listitem [ref=e304]:
+              - img [ref=e305]
+            - listitem [ref=e307]:
+              - generic [ref=e309]:
+                - link "Builder" [ref=e310] [cursor=pointer]:
+                  - /url: /builder
+                - 'button "Switch module — current: Builder" [ref=e311] [cursor=pointer]':
+                  - img [ref=e312]
+            - listitem [ref=e314]:
+              - img [ref=e315]
+            - listitem [ref=e317]:
+              - link "Editor" [disabled] [ref=e318]
+        - generic [ref=e319]:
+          - button "Last activity" [disabled] [ref=e320]:
+            - img [ref=e321]
+          - button "Actions" [ref=e324] [cursor=pointer]:
+            - img [ref=e325]
+          - button "Add to favorites" [ref=e329] [cursor=pointer]:
+            - img [ref=e330]
+          - button "Send feedback" [ref=e333] [cursor=pointer]:
+            - img [ref=e334]
+          - button "Switch to dark theme" [ref=e336] [cursor=pointer]:
+            - img [ref=e337]
+          - button "Account menu for E2E Staff" [ref=e339]:
+            - generic [ref=e341]: ES
+      - generic [ref=e357]:
+        - generic [ref=e358]:
+          - group "Editor mode" [ref=e359]:
+            - button "Theme" [ref=e360] [cursor=pointer]:
+              - generic [ref=e361]:
+                - img [ref=e363]
+                - text: Theme
+            - button "Layout" [ref=e369] [cursor=pointer]:
+              - generic [ref=e370]:
+                - img [ref=e372]
+                - text: Layout
+            - button "Page" [pressed] [ref=e374] [cursor=pointer]:
+              - generic [ref=e375]:
+                - img [ref=e377]
+                - text: Page
+            - button "Component" [ref=e380] [cursor=pointer]:
+              - generic [ref=e381]:
+                - img [ref=e383]
+                - text: Component
+          - button "Undo" [disabled] [ref=e386]:
+            - img [ref=e388]
+          - button "Redo" [disabled] [ref=e391]:
+            - img [ref=e393]
+          - group "Canvas device width" [ref=e396]:
+            - button "Desktop" [pressed] [ref=e397] [cursor=pointer]:
+              - generic [ref=e398]:
+                - img [ref=e400]
+                - text: Desktop
+            - button "Tablet" [ref=e402] [cursor=pointer]:
+              - generic [ref=e403]:
+                - img [ref=e405]
+                - text: Tablet
+            - button "Mobile" [ref=e407] [cursor=pointer]:
+              - generic [ref=e408]:
+                - img [ref=e410]
+                - text: Mobile
+          - button "Preview data" [pressed] [ref=e412] [cursor=pointer]:
+            - img [ref=e414]
+          - generic [ref=e419]:
+            - img [ref=e421]
+            - text: /
+          - group "Appearance" [ref=e423]:
+            - button "Light" [pressed] [ref=e424] [cursor=pointer]:
+              - generic [ref=e425]:
+                - img [ref=e427]
+                - text: Light
+            - button "Dark" [ref=e433] [cursor=pointer]:
+              - generic [ref=e434]:
+                - img [ref=e436]
+                - text: Dark
+          - button "Page settings" [ref=e439] [cursor=pointer]
+          - button "Publish" [ref=e440] [cursor=pointer]
+        - generic [ref=e441]:
+          - generic [ref=e442]:
+            - generic [ref=e444]:
+              - combobox "Current page" [ref=e445] [cursor=pointer]:
+                - generic [ref=e446]: Home
+                - img [ref=e448]
+              - textbox [ref=e450]: d08f0c38-a886-486c-9cd2-7fca073255b4
+              - button "Rename page" [ref=e451] [cursor=pointer]:
+                - img [ref=e453]
+              - button "Add page" [ref=e456] [cursor=pointer]:
+                - img [ref=e458]
+              - button "Delete page" [ref=e459] [cursor=pointer]:
+                - img [ref=e461]
+            - group "Left panel" [ref=e465]:
+              - button "Layers" [pressed] [ref=e466] [cursor=pointer]:
+                - generic [ref=e467]:
+                  - img [ref=e469]
+                  - text: Layers
+              - button "Insert" [ref=e470] [cursor=pointer]:
+                - generic [ref=e471]:
+                  - img [ref=e473]
+                  - text: Insert
+            - tree [ref=e475]:
+              - treeitem "Page" [expanded] [ref=e476]:
+                - generic [ref=e477] [cursor=pointer]:
+                  - button [ref=e478]:
+                    - img [ref=e479]
+                  - img [ref=e483]
+                  - generic [ref=e488]: Page
+                - group [ref=e489]:
+                  - treeitem "section" [expanded] [ref=e490]:
+                    - generic [ref=e491] [cursor=pointer]:
+                      - button [ref=e492]:
+                        - img [ref=e493]
+                      - img [ref=e497]
+                      - generic [ref=e503]: section
+                    - group [ref=e504]:
+                      - treeitem "div" [expanded] [ref=e505]:
+                        - generic [ref=e506] [cursor=pointer]:
+                          - button [ref=e507]:
+                            - img [ref=e508]
+                          - img [ref=e512]
+                          - generic [ref=e517]: div
+                        - group [ref=e518]:
+                          - treeitem "h1 Your work, beautifully o…" [ref=e519]:
+                            - generic [ref=e520] [cursor=pointer]:
+                              - img [ref=e523]
+                              - generic [ref=e525]:
+                                - generic [ref=e526]: h1
+                                - generic [ref=e527]: Your work, beautifully o…
+                          - treeitem "p Publish your pages, tell…" [ref=e528]:
+                            - generic [ref=e529] [cursor=pointer]:
+                              - img [ref=e532]
+                              - generic [ref=e535]:
+                                - generic [ref=e536]: p
+                                - generic [ref=e537]: Publish your pages, tell…
+                          - treeitem "div" [expanded] [ref=e538]:
+                            - generic [ref=e539] [cursor=pointer]:
+                              - button [ref=e540]:
+                                - img [ref=e541]
+                              - img [ref=e545]
+                              - generic [ref=e550]: div
+                            - group [ref=e551]:
+                              - treeitem "a Browse the shop" [ref=e552]:
+                                - generic [ref=e553] [cursor=pointer]:
+                                  - img [ref=e556]
+                                  - generic [ref=e560]:
+                                    - generic [ref=e561]: a
+                                    - generic [ref=e562]: Browse the shop
+                              - treeitem "a Learn more" [ref=e563]:
+                                - generic [ref=e564] [cursor=pointer]:
+                                  - img [ref=e567]
+                                  - generic [ref=e571]:
+                                    - generic [ref=e572]: a
+                                    - generic [ref=e573]: Learn more
+                  - treeitem "section" [expanded] [ref=e574]:
+                    - generic [ref=e575] [cursor=pointer]:
+                      - button [ref=e576]:
+                        - img [ref=e577]
+                      - img [ref=e581]
+                      - generic [ref=e587]: section
+                    - group [ref=e588]:
+                      - treeitem "h2 Shop our products" [ref=e589]:
+                        - generic [ref=e590] [cursor=pointer]:
+                          - img [ref=e593]
+                          - generic [ref=e595]:
+                            - generic [ref=e596]: h2
+                            - generic [ref=e597]: Shop our products
+                      - treeitem "div" [expanded] [ref=e598]:
+                        - generic [ref=e599] [cursor=pointer]:
+                          - button [ref=e600]:
+                            - img [ref=e601]
+                          - img [ref=e605]
+                          - generic [ref=e610]: div
+                        - group [ref=e611]:
+                          - treeitem "a" [expanded] [ref=e612]:
+                            - generic [ref=e613] [cursor=pointer]:
+                              - button [ref=e614]:
+                                - img [ref=e615]
+                              - img [ref=e619]
+                              - generic [ref=e624]: a
+                            - group [ref=e625]:
+                              - treeitem "input" [ref=e626]:
+                                - generic [ref=e627] [cursor=pointer]:
+                                  - img [ref=e630]
+                                  - generic [ref=e637]: input
+                              - treeitem "Image" [ref=e638]:
+                                - generic [ref=e639] [cursor=pointer]:
+                                  - img [ref=e642]
+                                  - generic [ref=e648]: Image
+                              - treeitem "div" [expanded] [ref=e649]:
+                                - generic [ref=e650] [cursor=pointer]:
+                                  - button [ref=e651]:
+                                    - img [ref=e652]
+                                  - img [ref=e656]
+                                  - generic [ref=e661]: div
+                                - group [ref=e662]:
+                                  - treeitem "h3 Product name" [ref=e663]:
+                                    - generic [ref=e664] [cursor=pointer]:
+                                      - img [ref=e667]
+                                      - generic [ref=e669]:
+                                        - generic [ref=e670]: h3
+                                        - generic [ref=e671]: Product name
+                                  - treeitem "p $0.00" [ref=e672]:
+                                    - generic [ref=e673] [cursor=pointer]:
+                                      - img [ref=e676]
+                                      - generic [ref=e679]:
+                                        - generic [ref=e680]: p
+                                        - generic [ref=e681]: $0.00
+                  - treeitem "section" [expanded] [ref=e682]:
+                    - generic [ref=e683] [cursor=pointer]:
+                      - button [ref=e684]:
+                        - img [ref=e685]
+                      - img [ref=e689]
+                      - generic [ref=e695]: section
+                    - group [ref=e696]:
+                      - treeitem "h2 Featured" [ref=e697]:
+                        - generic [ref=e698] [cursor=pointer]:
+                          - img [ref=e701]
+                          - generic [ref=e703]:
+                            - generic [ref=e704]: h2
+                            - generic [ref=e705]: Featured
+                      - treeitem "div" [expanded] [ref=e706]:
+                        - generic [ref=e707] [cursor=pointer]:
+                          - button [ref=e708]:
+                            - img [ref=e709]
+                          - img [ref=e713]
+                          - generic [ref=e718]: div
+                        - group [ref=e719]:
+                          - treeitem "a" [expanded] [ref=e720]:
+                            - generic [ref=e721] [cursor=pointer]:
+                              - button [ref=e722]:
+                                - img [ref=e723]
+                              - img [ref=e727]
+                              - generic [ref=e732]: a
+                            - group [ref=e733]:
+                              - treeitem "input" [ref=e734]:
+                                - generic [ref=e735] [cursor=pointer]:
+                                  - img [ref=e738]
+                                  - generic [ref=e745]: input
+                              - treeitem "Image" [ref=e746]:
+                                - generic [ref=e747] [cursor=pointer]:
+                                  - img [ref=e750]
+                                  - generic [ref=e756]: Image
+                              - treeitem "div" [expanded] [ref=e757]:
+                                - generic [ref=e758] [cursor=pointer]:
+                                  - button [ref=e759]:
+                                    - img [ref=e760]
+                                  - img [ref=e764]
+                                  - generic [ref=e769]: div
+                                - group [ref=e770]:
+                                  - treeitem "h3 Product name" [ref=e771]:
+                                    - generic [ref=e772] [cursor=pointer]:
+                                      - img [ref=e775]
+                                      - generic [ref=e777]:
+                                        - generic [ref=e778]: h3
+                                        - generic [ref=e779]: Product name
+                                  - treeitem "p $0.00" [ref=e780]:
+                                    - generic [ref=e781] [cursor=pointer]:
+                                      - img [ref=e784]
+                                      - generic [ref=e787]:
+                                        - generic [ref=e788]: p
+                                        - generic [ref=e789]: $0.00
+                  - treeitem "section" [expanded] [ref=e790]:
+                    - generic [ref=e791] [cursor=pointer]:
+                      - button [ref=e792]:
+                        - img [ref=e793]
+                      - img [ref=e797]
+                      - generic [ref=e803]: section
+                    - group [ref=e804]:
+                      - treeitem "div" [expanded] [ref=e805]:
+                        - generic [ref=e806] [cursor=pointer]:
+                          - button [ref=e807]:
+                            - img [ref=e808]
+                          - img [ref=e812]
+                          - generic [ref=e817]: div
+                        - group [ref=e818]:
+                          - treeitem "h2 Ready when you are." [ref=e819]:
+                            - generic [ref=e820] [cursor=pointer]:
+                              - img [ref=e823]
+                              - generic [ref=e825]:
+                                - generic [ref=e826]: h2
+                                - generic [ref=e827]: Ready when you are.
+                          - treeitem "p Add a product, publish a…" [ref=e828]:
+                            - generic [ref=e829] [cursor=pointer]:
+                              - img [ref=e832]
+                              - generic [ref=e835]:
+                                - generic [ref=e836]: p
+                                - generic [ref=e837]: Add a product, publish a…
+                          - treeitem "a Get in touch" [ref=e838]:
+                            - generic [ref=e839] [cursor=pointer]:
+                              - img [ref=e842]
+                              - generic [ref=e846]:
+                                - generic [ref=e847]: a
+                                - generic [ref=e848]: Get in touch
+          - separator [ref=e849]
+          - generic [ref=e854]:
+            - navigation "Primary" [ref=e855]:
+              - generic [ref=e858]: WizeWorks
+              - generic [ref=e859]:
+                - generic [ref=e860]:
+                  - link "Shop" [ref=e861] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Book" [ref=e862] [cursor=pointer]:
+                    - /url: "#"
+                  - link "About" [ref=e863] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Contact" [ref=e864] [cursor=pointer]:
+                    - /url: "#"
+                - button "Get in touch" [ref=e865] [cursor=pointer]
+            - main [ref=e866]:
+              - generic [ref=e868]:
+                - generic [ref=e870]:
+                  - heading "Your work, beautifully online." [level=1] [ref=e871]
+                  - paragraph [ref=e872]: Publish your pages, tell your story, and sell when you are ready — all from one place. This is your homepage; edit every word to make it yours.
+                  - generic [ref=e873]:
+                    - link "Browse the shop" [ref=e874] [cursor=pointer]:
+                      - /url: "#"
+                    - link "Learn more" [ref=e875] [cursor=pointer]:
+                      - /url: "#"
+                - generic [ref=e876]:
+                  - heading "Shop our products" [level=2] [ref=e877]
+                  - generic [ref=e879]:
+                    - img "Product image" [ref=e880]
+                    - generic [ref=e881]:
+                      - heading "Product name" [level=3] [ref=e882]
+                      - paragraph [ref=e883]: $0.00
+                - generic [ref=e884]:
+                  - heading "Featured" [level=2] [ref=e885]
+                  - generic [ref=e887]:
+                    - img "Product image" [ref=e888]
+                    - generic [ref=e889]:
+                      - heading "Product name" [level=3] [ref=e890]
+                      - paragraph [ref=e891]: $0.00
+                - generic [ref=e893]:
+                  - heading "Ready when you are." [level=2] [ref=e894]
+                  - paragraph [ref=e895]: Add a product, publish a page, or invite your team — start with whatever comes first.
+                  - link "Get in touch" [ref=e896] [cursor=pointer]:
+                    - /url: "#"
+            - generic [ref=e897]:
+              - generic [ref=e898]:
+                - generic [ref=e899]:
+                  - generic [ref=e900]: WizeWorks
+                  - paragraph [ref=e901]: Everything you publish and sell, in one place.
+                - generic [ref=e902]:
+                  - heading "Explore" [level=3] [ref=e903]
+                  - link "Shop" [ref=e904] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Book" [ref=e905] [cursor=pointer]:
+                    - /url: "#"
+                  - link "About" [ref=e906] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Contact" [ref=e907] [cursor=pointer]:
+                    - /url: "#"
+                - generic [ref=e908]:
+                  - heading "Account" [level=3] [ref=e909]
+                  - link "Sign in" [ref=e910] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Orders" [ref=e911] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Cart" [ref=e912] [cursor=pointer]:
+                    - /url: "#"
+                - generic [ref=e913]:
+                  - heading "More" [level=3] [ref=e914]
+                  - link "Search" [ref=e915] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Privacy" [ref=e916] [cursor=pointer]:
+                    - /url: "#"
+                  - link "Terms" [ref=e917] [cursor=pointer]:
+                    - /url: "#"
+              - paragraph [ref=e919]: WizeWorks
+            - link "Home" [ref=e920] [cursor=pointer]:
+              - /url: "#"
+              - img "Logo" [ref=e921]
+              - generic [ref=e922]: WizeWorks
+          - separator [ref=e923]
+          - generic [ref=e925]:
+            - generic [ref=e926]:
+              - img [ref=e928]
+              - text: Design
+            - generic [ref=e931]:
+              - img [ref=e934]
+              - generic [ref=e935]: No selection
+              - generic [ref=e936]: Select an element on the canvas to edit it.
+        - generic [ref=e937]:
+          - generic [ref=e938]: page
+          - generic [ref=e939]: desktop
+          - link "silicaui" [ref=e940] [cursor=pointer]:
+            - /url: https://silicaui.com
+            - text: silicaui
+  - generic [ref=e942]:
+    - img [ref=e944]
+    - button "Open Tanstack query devtools" [ref=e992] [cursor=pointer]:
+      - img [ref=e993]
+  - button "Open Next.js Dev Tools" [ref=e353] [cursor=pointer]:
+    - img [ref=e354]
+  - alert [ref=e1041]
+  - generic:
+    - region "Notifications"

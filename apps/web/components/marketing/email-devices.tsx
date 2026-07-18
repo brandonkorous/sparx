@@ -125,12 +125,11 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
           </span>
         </span>
         <span
+          className={`${E.bg} bg-soft ${E.ink}`}
           style={{
             marginLeft: 'auto',
             fontFamily: MONO,
             fontSize: '11px',
-            color: E.text,
-            backgroundColor: E.tint,
             padding: '3px 9px',
             borderRadius: '9999px',
             flexShrink: 0,
@@ -238,7 +237,7 @@ export function EmailAutomations() {
       >
         {rows.map((r) => (
           <div key={r.title} className="mkt-auto-grid">
-            <span className="mono" style={{ fontFamily: MONO, fontSize: '12px', color: E.text }}>
+            <span className={`mono ${E.ink}`} style={{ fontFamily: MONO, fontSize: '12px' }}>
               {r.when}
             </span>
             <span className="mkt-auto-chev" aria-hidden>
@@ -258,7 +257,7 @@ export function EmailAutomations() {
               </small>
             </span>
             <span
-              className="mkt-auto-badge"
+              className={`mkt-auto-badge ${r.on ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200'}`}
               style={{
                 justifySelf: 'end',
                 fontFamily: MONO,
@@ -266,9 +265,8 @@ export function EmailAutomations() {
                 padding: '4px 11px',
                 borderRadius: '9999px',
                 color: r.on
-                  ? E.text
+                  ? undefined
                   : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                backgroundColor: r.on ? E.tint : 'var(--color-base-200)',
               }}
             >
               {r.on ? 'Active' : 'Optional'}
@@ -331,11 +329,11 @@ export function EmailCapabilities() {
             }}
           >
             <span
+              className={`${E.bg} bg-soft`}
               style={{
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: E.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

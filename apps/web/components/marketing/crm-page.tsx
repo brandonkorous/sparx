@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
+import { Container, Display, getModuleColor, Section, Spark } from './primitives';
 import { CrmHero } from './crm-sections';
 import { CrmOneRecord } from './crm-devices';
 import { CrmTimeline } from './crm-timeline';
@@ -178,12 +178,11 @@ function CrmPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

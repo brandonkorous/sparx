@@ -45,10 +45,13 @@ describe('toSilicaDataSources — ambient vs scope-relative field keys', () => {
 
   it('the key the picker emits for the logo actually resolves through the resolver', () => {
     const identity = toSilicaDataSources([find(SITE_SOURCES, 'site.identity')])[0]!;
-    const logoKey = (identity.fields ?? []).find((f) => f.label === 'Logo')?.key ?? '';
+    // Keyed off the REF, not the label: the label is display copy that tracks the
+    // Site settings wording, and a test that breaks when copy changes teaches
+    // people to edit the test rather than read it.
+    const logoKey = (identity.fields ?? []).find((f) => f.key === 'site.identity.logo')?.key ?? '';
     const url = 'https://cdn.example.test/logo.svg';
     const resolver = createSilicaResolver({
-      root: { site: { identity: { name: 'Acme', tagline: '', logo: { url, alt: 'Acme' } } } },
+      root: { site: { identity: { name: 'Acme', tagline: null, logo: { url, alt: 'Acme' } } } },
       format: defaultSilicaFormat,
     });
     // The full round trip: the ref the PICKER writes → what the CANVAS renders.
@@ -56,6 +59,36 @@ describe('toSilicaDataSources — ambient vs scope-relative field keys', () => {
     // here would mean the picker offers a binding the canvas can't resolve, which is
     // exactly the bug this file guards.
     expect(resolver.resolveBinding(logoKey, {})!.value).toBe(url);
+  });
+
+  it('EVERY brand-identity field the picker offers resolves against the host root', () => {
+    // The generalisation of the logo bug: the picker offering a field is a PROMISE
+    // that the host fills it. `tagline` was advertised here but never supplied by
+    // the storefront layout, so binding it resolved empty — and an empty bound value
+    // replaces the authored content, blanking the node. A field in this source and a
+    // field in `siteRoot()` (apps/site/lib/silica-data.ts) must stay in lockstep.
+    const identity = toSilicaDataSources([find(SITE_SOURCES, 'site.identity')])[0]!;
+    const resolver = createSilicaResolver({
+      root: {
+        site: {
+          identity: {
+            name: 'Acme',
+            tagline: 'We make good things.',
+            logo: { url: 'https://cdn.example.test/light.svg', alt: 'Acme' },
+            logoDark: { url: 'https://cdn.example.test/dark.svg', alt: 'Acme' },
+          },
+        },
+      },
+      format: defaultSilicaFormat,
+    });
+    for (const field of identity.fields ?? []) {
+      const resolved = resolver.resolveBinding(field.key, {});
+      expect(
+        resolved,
+        `${field.key} is offered by the picker but unknown to the resolver`
+      ).toBeDefined();
+      expect(resolved!.value, `${field.key} resolves empty — it would blank its node`).toBeTruthy();
+    }
   });
 });
 

@@ -72,6 +72,7 @@ export function ToolsValue() {
               >
                 <span
                   aria-hidden
+                  className={`${color.bg} bg-soft ${color.ink}`}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -80,8 +81,6 @@ export function ToolsValue() {
                     height: '44px',
                     flexShrink: 0,
                     borderRadius: 'var(--radius-lg)',
-                    backgroundColor: color.tint,
-                    color: color.text,
                     boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.06)',
                   }}
                 >

@@ -141,6 +141,7 @@ import schedulingCalendarPushRoutes from './routes/v1/public/scheduling-calendar
 import uploadRoutes from './routes/v1/media/uploads.js';
 import mediaAssetRoutes from './routes/v1/media/assets.js';
 import crmRoutes from './routes/v1/crm/index.js';
+import orderRoutes from './routes/v1/orders.js';
 import invoicingRoutes from './routes/v1/invoicing/index.js';
 import b2bRoutes from './routes/v1/b2b/index.js';
 import chatRoutes from './routes/v1/chat/index.js';
@@ -862,6 +863,9 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(uploadRoutes);
   await app.register(mediaAssetRoutes);
   await app.register(crmRoutes);
+  // Shared order root — gated on Commerce OR B2B OR CRM, not owned by any of
+  // them. Registered alongside the modules rather than inside one.
+  await app.register(orderRoutes);
   await app.register(invoicingRoutes);
   await app.register(b2bRoutes);
   await app.register(chatRoutes);

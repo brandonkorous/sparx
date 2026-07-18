@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -44,8 +44,8 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
   const { b2b } = business;
   return (
     <div
+      className={`${M.bg} bg-soft`}
       style={{
-        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         padding: '24px',
@@ -123,18 +123,18 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
         </span>
       </div>
       <div
+        className={`${M.bg} bg-soft`}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '9px',
           marginTop: 'auto',
           padding: '12px 14px',
-          backgroundColor: M.tint,
           borderRadius: '10px',
         }}
       >
         <Dot color={M.color} size={7} />
-        <span style={{ fontFamily: SANS, fontSize: '12.5px', color: M.text }}>
+        <span className={M.ink} style={{ fontFamily: SANS, fontSize: '12.5px' }}>
           New PO checks the limit before it’s placed
         </span>
       </div>
@@ -282,11 +282,11 @@ export function B2bBulkPo() {
             }}
           >
             <span
+              className={`${M.bg} bg-soft`}
               style={{
                 width: 34,
                 height: 34,
                 borderRadius: '9px',
-                backgroundColor: M.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

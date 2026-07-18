@@ -1,5 +1,10 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section, SectionHeader, getModuleColor } from '../primitives';
 import { getModule } from '@/lib/modules';
 import type { ToolMeta } from './registry';
@@ -43,11 +48,11 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
               }}
             >
               <span
+                className={color.ink}
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '12px',
                   fontWeight: 500,
-                  color: color.text,
                 }}
               >
                 {feature.number}
@@ -97,23 +102,21 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
             CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <Button
-              color={tool.module}
-              variant="solid"
-              size="md"
-              render={<a href="/platform" aria-label="Explore the platform" />}
+            <a
+              href="/platform"
+              aria-label="Explore the platform"
+              className={buttonClasses({ color: tool.module, variant: 'solid', size: 'md' })}
             >
               Explore the platform
               <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button
-              color="neutral"
-              variant="outline"
-              size="md"
-              render={<a href="/pricing" aria-label="See pricing" />}
+            </a>
+            <a
+              href="/pricing"
+              aria-label="See pricing"
+              className={buttonClasses({ color: 'neutral', variant: 'outline', size: 'md' })}
             >
               See pricing
-            </Button>
+            </a>
           </div>
         </div>
       </div>

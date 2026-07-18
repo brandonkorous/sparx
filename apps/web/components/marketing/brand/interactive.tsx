@@ -1,19 +1,21 @@
 'use client';
 
 import * as React from 'react';
+import { Button } from '@wizeworks/silicaui-react';
+import { Text } from '../primitives';
 
 /**
  * Brand-page interactive primitives.
  *
  * The brand guide is a working reference: every token should be one click away
  * from a designer's or partner's clipboard. These two client components carry
- * that affordance — a copyable mono chip (`CopyValue`) and a color tile that
- * stacks the live swatch over its copyable hex + token (`Swatch`).
+ * that affordance — a copyable mono chip (`CopyValue`, a silica <Button>) and a
+ * color tile that stacks the live swatch over its copyable hex + token
+ * (`Swatch`).
  *
- * Bespoke chrome on the marketing surface — inline styles reference silica/brand
- * tokens (colors from @sparx/brand/theme.css; type/radius/motion from
- * packages/ui/src/tokens.css, docs/23 §1). The copy interaction is the only
- * reason these live outside the server-rendered sections.
+ * Controls are silicaui components; the color specimen block is the one bespoke
+ * piece (there is no design-system component for a raw swatch). Type/radius come
+ * from the silica tokens.
  */
 
 function useCopy() {
@@ -48,109 +50,124 @@ export interface CopyValueProps {
 
 /**
  * A monospace chip that copies its value on click and flips to "Copied" for a
- * beat. Used for every hex, CSS variable, and font string on the page.
+ * beat. A silica <Button> (outline for the strong tone, ghost for subtle) so it
+ * carries the system's radius, focus ring, and hover — used for every hex, CSS
+ * variable, and font string on the page.
  */
 export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
   const { copied, copy } = useCopy();
-  const [hover, setHover] = React.useState(false);
   return (
-    <button
+    <Button
       type="button"
+      size="sm"
+      color="neutral"
+      variant={tone === 'strong' ? 'outline' : 'ghost'}
       onClick={() => copy(value)}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
       aria-label={label ?? `Copy ${value}`}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '7px',
-        padding: '4px 9px',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '12px',
-        lineHeight: 1,
-        color:
-          tone === 'strong'
-            ? 'var(--color-base-content)'
-            : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        backgroundColor: hover ? 'var(--color-base-200)' : 'transparent',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 'var(--radius-md)',
-        cursor: 'pointer',
-        transition: 'background-color var(--transition-fast), color var(--transition-fast)',
-      }}
+      className="font-mono font-normal"
+      iconEnd={
+        <span aria-hidden style={{ color: copied ? 'var(--color-success)' : undefined }}>
+          {copied ? '✓' : '⧉'}
+        </span>
+      }
     >
-      <span>{value}</span>
-      <span
-        aria-hidden
-        style={{
-          color: copied
-            ? 'var(--color-success)'
-            : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
-        {copied ? '✓' : '⧉'}
-      </span>
-    </button>
+      {value}
+    </Button>
   );
+}
+
+// Normalize ANY computed CSS color to an uppercase hex, so a swatch DISPLAYS the
+// value the browser actually resolved the token to — never a hand-typed hex that
+// drifts from @sparx/brand/theme.css.
+//
+// Canvas does the color-space conversion for us: assigning to `fillStyle`
+// normalizes rgb()/lab()/oklab()/color() alike down to sRGB. An rgb()-only regex
+// is not enough — modern browsers return `lab(...)` for some resolved tokens
+// (that's why the base-content swatch showed no hex at all).
+function cssColorToHex(input: string): string | null {
+  if (!input) return null;
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return null;
+  ctx.fillStyle = '#000000';
+  try {
+    ctx.fillStyle = input;
+  } catch {
+    return null;
+  }
+  const v = ctx.fillStyle;
+  if (typeof v !== 'string') return null;
+  if (v.startsWith('#')) return v.toUpperCase();
+  // Translucent colors normalize to `rgba(...)` instead of a hex.
+  const m = /rgba?\(([^)]+)\)/i.exec(v);
+  if (!m?.[1]) return null;
+  const [r, g, b] = m[1].split(',').map((p) => parseFloat(p.trim()));
+  if ([r, g, b].some((n) => n === undefined || Number.isNaN(n))) return null;
+  const to = (n: number) => Math.round(n).toString(16).padStart(2, '0');
+  return `#${to(r!)}${to(g!)}${to(b!)}`.toUpperCase();
 }
 
 export interface SwatchProps {
   /** Display name, e.g. "Primary" or "Page background". */
   name: string;
-  /** CSS color painted into the tile (a hex or a var()). */
+  /** CSS color painted into the tile. Pass a `var(--color-*)` so the tile stays
+   *  live — the displayed hex is read back from what it actually resolves to. */
   value: string;
-  /** Hex string shown + copied. */
-  hex: string;
+  /** SSR/fallback hex shown until the live value is read on the client. */
+  hex?: string;
   /** Optional CSS variable name shown + copied below the hex. */
   token?: string;
   /** One-line usage note under the swatch. */
   note?: string;
   /** Height of the color block in px. Default 88. */
   height?: number;
+  /** Resolve the tile under a specific theme (e.g. `dark`) so a dark-mode token
+   *  can be previewed on the light page. Only the tile flips, not the labels. */
+  theme?: 'light' | 'dark';
 }
 
 /**
- * A color tile: the live swatch over its name, copyable hex, copyable token,
- * and an optional usage note. The block carries an inset hairline so very light
- * tints (e.g. #EEF2FF) still read as a bounded surface.
+ * A color tile: the LIVE swatch over its name, the resolved hex (read from the
+ * painted `var()` so it can't drift), the copyable token, and an optional note.
+ * The block carries an inset hairline so very light tints still read as bounded.
  */
-export function Swatch({ name, value, hex, token, note, height = 88 }: SwatchProps) {
+export function Swatch({ name, value, hex, token, note, height = 88, theme }: SwatchProps) {
+  const tileRef = React.useRef<HTMLDivElement>(null);
+  const [resolved, setResolved] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!tileRef.current) return;
+    const bg = getComputedStyle(tileRef.current).backgroundColor;
+    const asHex = cssColorToHex(bg);
+    if (asHex) setResolved(asHex);
+  }, [value, theme]);
+
+  const shownHex = resolved ?? hex;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
+    <div className="flex min-w-0 flex-col gap-3">
       <div
+        ref={tileRef}
+        data-theme={theme}
+        className="rounded-lg"
         style={{
           height,
-          borderRadius: 'var(--radius-lg)',
           backgroundColor: value,
-          boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.08)',
+          boxShadow:
+            'inset 0 0 0 1px color-mix(in oklab, var(--color-base-content) 12%, transparent)',
         }}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 500,
-            fontSize: '14px',
-            color: 'var(--color-base-content)',
-          }}
-        >
+      <div className="flex flex-col gap-2">
+        <Text as="span" size={14} weight={500} tone="default">
           {name}
-        </span>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          <CopyValue value={hex} tone="strong" />
+        </Text>
+        <div className="flex flex-wrap gap-1.5">
+          {shownHex ? <CopyValue value={shownHex} tone="strong" /> : null}
           {token ? <CopyValue value={token} /> : null}
         </div>
         {note ? (
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              lineHeight: '18px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <Text as="span" size={12.5} tone="muted">
             {note}
-          </span>
+          </Text>
         ) : null}
       </div>
     </div>

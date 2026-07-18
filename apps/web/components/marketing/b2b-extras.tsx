@@ -1,11 +1,4 @@
-import {
-  Dot,
-  getModuleColor,
-  type MarketingModule,
-  moduleTint,
-  Section,
-  SectionHeader,
-} from './primitives';
+import { Dot, getModuleColor, type MarketingModule, Section, SectionHeader } from './primitives';
 
 /**
  * Two more structural devices for the /b2b page, split out of b2b-devices.tsx:
@@ -65,11 +58,11 @@ export function B2bFleet() {
             }}
           >
             <span
+              className={`${M.bg} bg-soft`}
               style={{
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: M.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -164,7 +157,7 @@ export function B2bSameEngine() {
       >
         B2B requires Commerce — it’s wholesale on top of the commerce engine, so they run as one and
         bill as one. See{' '}
-        <a href="/commerce" style={{ color: M.text, fontWeight: 500 }}>
+        <a href="/commerce" className={M.ink} style={{ fontWeight: 500 }}>
           Commerce
         </a>{' '}
         for the retail side.
@@ -177,23 +170,23 @@ function EngineColumn({ col }: { col: EngineCol }) {
   const accent = getModuleColor(col.accent);
   return (
     <div
+      className={`${accent.bg} bg-soft`}
       style={{
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
         padding: '32px',
-        backgroundColor: moduleTint(accent.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
       }}
     >
       <span
+        className={accent.ink}
         style={{
           fontFamily: MONO,
           fontSize: '11px',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
-          color: accent.text,
         }}
       >
         {col.tag}

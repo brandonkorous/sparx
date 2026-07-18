@@ -1,8 +1,11 @@
-// The story's state model + pure reducers. The composer holds ONE `StoryState`; every
-// edit (add/remove/swap a clause, start a new sentence) returns a fresh state through
-// these helpers. Also derives the module set the story implies and the rendered prose
-// we persist. Pure + client-safe — no React, no server import.
+// The composer's pure reducers over the shared `StoryState` (which, with the clause
+// grammar, lives in `@sparx/story-schemas` — the marketing hero renders the same
+// model read-only). Every edit (add/remove/swap a clause, start a new sentence)
+// returns a fresh state through these helpers. Also derives the module set the story
+// implies and the rendered prose we persist — the parts that need this app's module
+// catalog, which is why they stay here. Pure + client-safe: no React, no server import.
 
+import { EMPTY_STORY, connector as oxford, type StoryState } from '@sparx/story-schemas';
 import { SWITCHBOARD_MODULES, MODULE_BY_KEY } from '@/lib/modules';
 import type { WizardBlueprint } from '../../onboarding/_lib/types';
 import {
@@ -18,30 +21,8 @@ import {
   type AudienceKey,
 } from './clauses';
 
-export interface StoryState {
-  tense: TenseKey | null;
-  /** Industry slug (one of INDUSTRIES). The load-bearing spine. */
-  industry: string | null;
-  audience: AudienceKey | null;
-  /** Customer clauses → the opening's "…where they can A, B, and C". */
-  cust: string[];
-  /** Owner sentences, in order → "I'll …" then "I also …". Each is its own line. */
-  lines: string[][];
-  /** Inline object slots (e.g. dropship → "branded swag"), keyed by clause id. */
-  slots: Record<string, string>;
-  /** The chosen web handle → `<slug>.sparx.zone`. */
-  name: string;
-}
-
-export const EMPTY_STORY: StoryState = {
-  tense: null,
-  industry: null,
-  audience: null,
-  cust: [],
-  lines: [],
-  slots: {},
-  name: '',
-};
+export { EMPTY_STORY };
+export type { StoryState };
 
 /** The narrative as persisted under `settings.onboarding.story` (the api-rest
  *  `StoryNarrative` shape). The composer's live `StoryState` is the editable subset;
@@ -259,11 +240,6 @@ export function fulfillment(s: StoryState): Set<string> {
 }
 
 // ── prose (what we persist as story.text) ───────────────────────────────────────
-function oxford(i: number, n: number): string {
-  if (i === 0) return '';
-  if (i === n - 1) return n > 2 ? ', and ' : ' and ';
-  return ', ';
-}
 function phrase(id: string, slots: Record<string, string>): string {
   const cl = CLAUSE[id];
   if (!cl) return id;

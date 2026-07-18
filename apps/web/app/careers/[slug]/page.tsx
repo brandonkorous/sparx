@@ -6,7 +6,7 @@ import { Section, Display, Spark, Dot } from '@/components/marketing/primitives'
 import { ROLES, OPEN_APPLICATION, getRole, type Role } from '../roles';
 import { ApplyForm } from './apply-form';
 
-const INDIGO = 'var(--color-primary)';
+const EMBER = 'var(--color-primary)';
 const MEASURE = '720px';
 
 export function generateStaticParams() {
@@ -51,7 +51,7 @@ function BulletList({ items }: { items: string[] }) {
       {items.map((item) => (
         <li key={item} style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
           <span style={{ position: 'relative', top: '7px', flexShrink: 0 }}>
-            <Dot color={INDIGO} />
+            <Dot color={EMBER} />
           </span>
           <span
             style={{
@@ -131,7 +131,7 @@ function RoleHeader({ role }: { role: Role }) {
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', ...headingStyle }}>
-          <Dot color={INDIGO} />
+          <Dot color={EMBER} />
           The honest deal
         </span>
         <p

@@ -1,5 +1,11 @@
 import { Check } from 'lucide-react';
-import { Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { Heading, Text } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Reveal } from '../reveal';
 import { PLATFORM_HREF, SALES_HREF } from '../cta';
 import { ENTERPRISE_FEATS } from '../pricing-v1/data';
@@ -48,21 +54,20 @@ export function PricingV2Enterprise() {
           </div>
 
           <div className="flex shrink-0 flex-col items-start gap-3">
-            <Button
-              size="xl"
-              color="primary"
-              variant="solid"
-              render={<a href={SALES_HREF} aria-label="Talk to sales" />}
+            <a
+              href={SALES_HREF}
+              aria-label="Talk to sales"
+              className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
             >
               Talk to sales
-            </Button>
-            <Button
-              size="xl"
-              variant="outline"
-              render={<a href={PLATFORM_HREF} aria-label="See the platform" />}
+            </a>
+            <a
+              href={PLATFORM_HREF}
+              aria-label="See the platform"
+              className={buttonClasses({ size: 'xl', variant: 'outline' })}
             >
               See the platform &rarr;
-            </Button>
+            </a>
           </div>
         </Reveal>
       </div>

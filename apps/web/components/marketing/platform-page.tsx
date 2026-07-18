@@ -46,8 +46,9 @@ export function PlatformPage() {
   );
 }
 
-// Module colors, resolved once. getModuleColor returns { color, tint, text }
-// where `color` is a CSS var (var(--module-*)) so it tracks the token system.
+// Module colors, resolved once. getModuleColor returns { color, bg, ink } where
+// `color` is a CSS var (var(--color-module-*)) for the few places that need a
+// VALUE, and `bg`/`ink` are the literal silica utility classes.
 const MODS = {
   builder: getModuleColor('builder'),
   commerce: getModuleColor('commerce'),
@@ -989,32 +990,31 @@ function ModulesStrip() {
                 flexDirection: 'column',
                 gap: '8px',
                 padding: '22px',
-                // Module menu: each tile wears a soft 8% wash of its module hue
-                // (a color legend, like modules-grid) — not the retired stripe.
-                backgroundColor: `color-mix(in oklab, ${c.color} 8%, var(--color-base-100))`,
                 border: '1px solid var(--color-base-300)',
                 borderRadius: '10px',
                 minHeight: '142px',
                 textDecoration: 'none',
               }}
+              // Module menu: each tile wears its module hue as a color legend,
+              // via silica's own `soft` wash — not a hand-rolled percentage.
+              className={`${c.bg} bg-soft`}
             >
               <div
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
               >
                 <span
+                  className={`${c.bg} bg-soft ${c.ink}`}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
                     padding: '4px 10px',
                     borderRadius: '9999px',
-                    backgroundColor: c.tint,
                     fontFamily: SANS,
                     fontSize: '11px',
                     fontWeight: 500,
                     letterSpacing: '0.04em',
                     textTransform: 'uppercase',
-                    color: c.text,
                   }}
                 >
                   <Dot color={c.color} size={7} />

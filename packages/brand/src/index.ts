@@ -2,8 +2,12 @@
 //
 // The palette + layer order live in the sibling CSS files, imported by each app's
 // globals.css (`@import '@sparx/brand/theme.css'` / `'@sparx/brand/layers.css'`).
-// This module exports only the theme-name constants so app layouts + a future
-// theme toggle reference the names in one place instead of stringly-typing them.
+// This module exports the theme-name constants + the brand MARK geometry/colors
+// (./marks) so app layouts, a future theme toggle, and the edge OG generators
+// reference them in one place instead of stringly-typing them. The React brand
+// components (Wordmark, Spark, SparkMascot) live at `@sparx/brand/react`.
+
+export * from './marks';
 
 /** The `data-theme` value set on `<html>` for the light sparx brand. */
 export const SPARX_THEME = 'sparx' as const;

@@ -1,4 +1,4 @@
-import { getModuleColor, moduleTint, Section, SectionHeader, Dot } from './primitives';
+import { getModuleColor, Section, SectionHeader, Dot } from './primitives';
 
 /**
  * Two /crm structural devices (split for cohesion / line budget):
@@ -40,8 +40,8 @@ export function CrmSegments() {
       />
       <div className="mkt-seg-grid" style={{ marginTop: '52px' }}>
         <div
+          className={`${M.bg} bg-soft`}
           style={{
-            backgroundColor: moduleTint(M.color),
             border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
             overflow: 'hidden',
@@ -60,12 +60,12 @@ export function CrmSegments() {
           >
             <Dot color={M.color} size={8} />
             <span
+              className={M.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: M.text,
               }}
             >
               segment · win-back at-risk
@@ -85,12 +85,11 @@ export function CrmSegments() {
             >
               {p.join ? (
                 <span
+                  className={`${M.bg} bg-soft ${M.ink}`}
                   style={{
                     fontFamily: MONO,
                     fontSize: '11px',
-                    color: M.text,
                     padding: '3px 9px',
-                    backgroundColor: M.tint,
                     borderRadius: '6px',
                   }}
                 >
@@ -151,13 +150,13 @@ export function CrmSegments() {
         >
           <div style={{ padding: '24px 22px 18px' }}>
             <div
+              className={M.ink}
               style={{
                 fontFamily: SANS,
                 fontSize: '52px',
                 fontWeight: 500,
                 letterSpacing: '-0.03em',
                 lineHeight: 1,
-                color: M.text,
               }}
             >
               218
@@ -319,7 +318,7 @@ export function CrmPipeline() {
                     height="13"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke={M.text}
+                    stroke={M.color}
                     strokeWidth={2.4}
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -370,7 +369,7 @@ export function CrmPipeline() {
                   }}
                 >
                   <span>{d.v}</span>
-                  <span style={{ color: M.text }}>{d.p}</span>
+                  <span className={M.ink}>{d.p}</span>
                 </div>
               </div>
             ))}

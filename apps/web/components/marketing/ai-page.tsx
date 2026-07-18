@@ -5,7 +5,6 @@ import {
   Dot,
   getModuleColor,
   type MarketingModule,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -211,25 +210,26 @@ function ContrastCard({
   const accent = tone === 'accent';
   return (
     <div
+      className={accent ? `${AI.bg} bg-soft` : 'bg-base-200'}
       style={{
         display: 'flex',
         flexDirection: 'column',
         gap: '18px',
         padding: '32px',
-        backgroundColor: accent ? moduleTint(AI.color) : 'var(--color-base-200)',
         border: '1px solid var(--color-base-300)',
         borderRadius: '12px',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <span
+          className={accent ? AI.ink : undefined}
           style={{
             fontFamily: MONO,
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
             color: accent
-              ? AI.text
+              ? undefined
               : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
           }}
         >
@@ -315,12 +315,12 @@ function HowItWorks() {
         {steps.map((s, i) => (
           <div
             key={s.n}
+            className={i === 0 ? `${AI.bg} bg-soft` : 'bg-base-100'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: i === 0 ? moduleTint(AI.color) : 'var(--color-base-100)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '210px',
@@ -364,17 +364,18 @@ function HowItWorks() {
 
       {/* endpoint callout */}
       <div
-        className="mkt-stack-on-tablet"
+        // Dark endpoint exhibit. `bg-soft` mixes into `--color-base-100`, so
+        // making this a `data-theme="dark"` island flips that token to the brand
+        // navy and the SAME soft treatment lands on a dark surface — no
+        // hand-mixed hue, and no hardcoded near-black to drift from the theme.
+        data-theme="dark"
+        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
         style={{
           marginTop: '24px',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '24px',
           padding: '26px 30px',
-          // Dark endpoint exhibit: the soft module card translated to a dark
-          // surface — mix the hue into the near-black bg instead of the retired
-          // 3px stripe (moduleTint() targets the light surface token).
-          backgroundColor: `color-mix(in oklab, ${AI.color} 12%, #0A0A0A)`,
           borderRadius: '14px',
         }}
       >
@@ -435,7 +436,7 @@ function HowItWorks() {
       >
         The exact config for each client — Claude, ChatGPT, Copilot — is generated with your real
         key in the dashboard and spelled out step by step in the{' '}
-        <a href="/docs" style={{ color: AI.text, fontWeight: 500 }}>
+        <a href="/docs" className={AI.ink} style={{ fontWeight: 500 }}>
           connection guide
         </a>
         .
@@ -629,6 +630,7 @@ function ChatWindow({
               {answer}
             </div>
             <span
+              className={confirm ? AI.ink : undefined}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -637,7 +639,7 @@ function ChatWindow({
                 fontFamily: SANS,
                 fontSize: '12px',
                 color: confirm
-                  ? AI.text
+                  ? undefined
                   : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
               }}
             >
@@ -836,6 +838,7 @@ function ToolSurface() {
               }}
             >
               <span
+                className={`${c.bg} bg-soft`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -843,7 +846,6 @@ function ToolSurface() {
                   width: 30,
                   height: 30,
                   borderRadius: '8px',
-                  backgroundColor: c.tint,
                 }}
               >
                 <Dot color={c.color} size={9} />
@@ -1057,12 +1059,11 @@ function AiPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(AI.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',

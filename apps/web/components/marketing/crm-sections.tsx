@@ -41,12 +41,12 @@ export function CrmHero() {
   ];
   return (
     <section
+      className={`${M.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
       }}
     >
       <Container>
@@ -151,11 +151,11 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
         }}
       >
         <span
+          className={`${M.bg} bg-soft ${M.ink}`}
           style={{
             width: 42,
             height: 42,
             borderRadius: '9999px',
-            backgroundColor: M.tint,
             border: `1.5px solid ${M.color}`,
             flexShrink: 0,
             display: 'flex',
@@ -164,7 +164,6 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
             fontFamily: SANS,
             fontWeight: 500,
             fontSize: '15px',
-            color: M.text,
           }}
         >
           {crm.initials}

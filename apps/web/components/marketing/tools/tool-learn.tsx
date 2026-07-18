@@ -98,6 +98,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                 >
                   <span
                     aria-hidden
+                    className={`${color.bg} bg-soft ${color.ink}`}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -106,8 +107,6 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                       height: '26px',
                       flexShrink: 0,
                       borderRadius: '9999px',
-                      backgroundColor: color.tint,
-                      color: color.text,
                       fontFamily: 'var(--font-sans)',
                       fontWeight: 600,
                       fontSize: '13px',
@@ -174,7 +173,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
                 >
                   {item.q}
                 </span>
-                <Plus className="mkt-faq-icon" size={18} style={{ color: color.text }} />
+                <Plus className={`mkt-faq-icon ${color.ink}`} size={18} />
               </summary>
               <p
                 style={{

@@ -73,7 +73,7 @@ const FAQ_ITEMS: FaqItem[] = [
  * their own AI chat). Reusable per page: pass page-specific `items` (never clone
  * one boilerplate FAQ across pages — duplicate Q&A is an anti-signal) and the
  * page's `accent` (the active rail dot + the "?" punctuation). Defaults: the
- * homepage set, indigo accent.
+ * homepage set, Ember accent.
  */
 export function Faq({
   items = FAQ_ITEMS,
@@ -90,7 +90,7 @@ export function Faq({
   lede?: ReactNode;
   /** Anchor id for in-page nav (e.g. "faq"). */
   id?: string;
-  /** Section accent — the active rail dot + the "?" punctuation. Defaults to indigo. */
+  /** Section accent — the active rail dot + the "?" punctuation. Defaults to the Ember primary. */
   accent?: string;
   /** Override the headline's Display size (defaults to SectionHeader's own
    *  56px). Callers on a bigger-type page can pass a larger value so this

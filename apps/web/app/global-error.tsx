@@ -38,7 +38,7 @@ export default function GlobalError({
               fontSize: '12px',
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              color: '#6366F1',
+              color: '#e04631',
               margin: '0 0 12px',
             }}
           >
@@ -54,7 +54,7 @@ export default function GlobalError({
             type="button"
             onClick={reset}
             style={{
-              background: '#6366F1',
+              background: '#e04631',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',

@@ -1,33 +1,97 @@
 /**
  * Marketing-only primitives.
  *
- * These wrap @sparx/ui tokens for the editorial register the marketing site
- * needs (massive display headlines, eyebrow labels, the colored "x" wordmark).
- * Bespoke chrome that doesn't belong in @sparx/ui — feature dashboards never
- * need an "x"-tinted wordmark or a 104px display font.
+ * apps/web is CLASS-BASED: these primitives emit `className` built from the
+ * marketing utility vocabulary registered in app/globals.css (`@theme`) — the
+ * editorial type scale (`text-body`/`text-lede`/`text-caption`…), the section
+ * rhythm + page gutter (`py-section-lg`/`px-page`), the real-ink secondary
+ * colors (`text-ink-muted`/`text-ink-subtle`), and silica's color utilities
+ * (`text-base-content`/`bg-base-200`/`text-primary`). Appearance lives in CSS,
+ * so a design change is one edit there — NOT a hunt through stamped inline
+ * styles. The only inline `style` left is genuinely per-instance dynamic values
+ * (a Display headline's fluid clamp, a Dot's size, a module-specific tint).
  *
- * No raw Tailwind composition per docs/23 §1; inline styles reference CSS
- * variables from packages/ui/src/tokens.css.
+ * IMPORTANT: class names must be STATIC literals — Tailwind's scanner cannot see
+ * an interpolated class like `leading-[${x}px]`. Dynamic sizing therefore maps
+ * to a fixed set of literal utility classes (see `textSizeClass`), never a
+ * computed class string.
  */
 import * as React from 'react';
-import { SparxMark } from '@sparx/ui';
-// Mirrors the canonical per-module identity in @sparx/ui's ModuleProvider
-// (MODULE_COLORS) — the full billable set, kept in sync by hand because the
-// marketing bundle must not import the server-coupled @sparx/ui shell graph.
-// `color` is the shared token; `tint`/`text` are the light-mode chip values.
+// Silica owns typography. These are aliased because this file still exports its
+// OWN legacy `Text`/`Display` for the ~143 un-swept marketing files; as those
+// convert, the local pair goes away and the aliases collapse to plain imports.
+import { Heading as SilicaHeading, Text as SilicaText } from '@wizeworks/silicaui-react';
+// NOTE: the vector wordmark/mark live in `@sparx/brand/react` — import them from
+// there DIRECTLY where needed. This file deliberately does NOT re-export them:
+// `primitives` is imported by both server sections and the `'use client'`
+// interactive components, and re-exporting the mixed server/client
+// `@sparx/brand/react` barrel (it includes the stateful `SparkMascot`) through a
+// no-directive module dragged that whole barrel into both module graphs — which
+// Turbopack resolves to a phantom `undefined` export. Keep this file barrel-free.
+
+/** Join class fragments, dropping falsy ones. */
+function cx(...parts: (string | false | null | undefined)[]): string {
+  return parts.filter(Boolean).join(' ');
+}
+
+/**
+ * Per-module identity, expressed as SILICA CLASSES — not colors.
+ *
+ * The `--color-module-*` tokens are registered with the silicaui plugin in
+ * globals.css, so every module gets the full utility family for free. This map
+ * exists only to hand a component the right LITERAL class name (Tailwind's
+ * scanner cannot see an interpolated `bg-module-${key}`), never to carry a hue.
+ *
+ *   bg   → `bg-module-crm`                 solid fill (+ auto `-content` ink)
+ *   bg + `bg-soft` → the tinted card wash  (silica's own 15% color-mix)
+ *   ink  → `text-module-crm`               the hue as text/icon ink
+ *   color → `var(--color-module-crm)`      the token, for the few places that
+ *           need a VALUE (an SVG `stroke`, a canvas fill) rather than a class
+ *
+ * There are deliberately NO hex values here. A hand-mirrored `tint: '#EEF2FF'`
+ * / `text: '#4338CA'` pair used to live in this map: it duplicated the tokens,
+ * ignored dark mode, and drifted from silica's own `soft` treatment — three
+ * different washes for one idea. The literal hues survive in exactly one TS
+ * place, `MODULE_HEX` in @sparx/brand, for satori/canvas contexts where CSS
+ * custom properties genuinely don't resolve.
+ */
 const MODULE_COLORS = {
-  builder: { color: 'var(--color-module-builder)', tint: '#EEF2FF', text: '#4338CA' },
-  commerce: { color: 'var(--color-module-commerce)', tint: '#FFF7ED', text: '#C2410C' },
-  cms: { color: 'var(--color-module-cms)', tint: '#F0FDFA', text: '#0F766E' },
-  crm: { color: 'var(--color-module-crm)', tint: '#ECFEFF', text: '#0E7490' },
-  invoicing: { color: 'var(--color-module-invoicing)', tint: '#F7FEE7', text: '#3F6212' },
-  email: { color: 'var(--color-module-email)', tint: '#F0F9FF', text: '#0369A1' },
-  b2b: { color: 'var(--color-module-b2b)', tint: '#F1F5F9', text: '#334155' },
-  dropship: { color: 'var(--color-module-dropship)', tint: '#ECFDF5', text: '#065F46' },
-  inventory: { color: 'var(--color-module-inventory)', tint: '#FFFBEB', text: '#B45309' },
-  chat: { color: 'var(--color-module-chat)', tint: '#F5F3FF', text: '#6D28D9' },
-  scheduling: { color: 'var(--color-module-scheduling)', tint: '#FFF1F2', text: '#BE123C' },
-  ai: { color: 'var(--color-module-ai)', tint: '#FDF2F8', text: '#9D174D' },
+  builder: {
+    color: 'var(--color-module-builder)',
+    bg: 'bg-module-builder',
+    ink: 'text-module-builder',
+  },
+  commerce: {
+    color: 'var(--color-module-commerce)',
+    bg: 'bg-module-commerce',
+    ink: 'text-module-commerce',
+  },
+  cms: { color: 'var(--color-module-cms)', bg: 'bg-module-cms', ink: 'text-module-cms' },
+  crm: { color: 'var(--color-module-crm)', bg: 'bg-module-crm', ink: 'text-module-crm' },
+  invoicing: {
+    color: 'var(--color-module-invoicing)',
+    bg: 'bg-module-invoicing',
+    ink: 'text-module-invoicing',
+  },
+  email: { color: 'var(--color-module-email)', bg: 'bg-module-email', ink: 'text-module-email' },
+  b2b: { color: 'var(--color-module-b2b)', bg: 'bg-module-b2b', ink: 'text-module-b2b' },
+  dropship: {
+    color: 'var(--color-module-dropship)',
+    bg: 'bg-module-dropship',
+    ink: 'text-module-dropship',
+  },
+  inventory: {
+    color: 'var(--color-module-inventory)',
+    bg: 'bg-module-inventory',
+    ink: 'text-module-inventory',
+  },
+  chat: { color: 'var(--color-module-chat)', bg: 'bg-module-chat', ink: 'text-module-chat' },
+  scheduling: {
+    color: 'var(--color-module-scheduling)',
+    bg: 'bg-module-scheduling',
+    ink: 'text-module-scheduling',
+  },
+  ai: { color: 'var(--color-module-ai)', bg: 'bg-module-ai', ink: 'text-module-ai' },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;
@@ -36,70 +100,68 @@ export function getModuleColor(module: MarketingModule) {
   return MODULE_COLORS[module];
 }
 
-/**
- * The soft module-tint background — the sanctioned replacement for the retired
- * 3px top stripe. Mixes the module hue into the live surface token, so it reads
- * as a tinted-white card in light mode and a tinted-dark card in dark mode
- * (never a fixed light hex).
- *
- * This is a HAND-MIRROR of @sparx/ui's `<Card variant="module">` recipe
- * (`color-mix(in oklab, var(--color-module) 12%, var(--color-base-100))`),
- * kept in sync by hand for the same reason MODULE_COLORS is: the marketing
- * bundle must not import the server-coupled @sparx/ui shell graph
- * (ModuleProvider). A marketing lead card and a dashboard module card therefore
- * wear the identical tint.
- *
- * Brand rule: at most ONE tinted card per module hue per section (the section's
- * lead card) — the rest stay neutral, so the tint reads as wayfinding, not a
- * wall of competing washes. The module *menu/legend* in modules-grid.tsx is the
- * one sanctioned exception (every tile legitimately IS its module) and uses a
- * softer 8% wash for that density.
- */
-export function moduleTint(color: string) {
-  return `color-mix(in oklab, ${color} 12%, var(--color-base-100))`;
+// ── Text scale mapping ───────────────────────────────────────────────────────
+// A numeric px `size` maps to one of the editorial `text-*` utilities registered
+// in globals.css (each carries its own paired line-height). Half-sizes round to
+// the nearest step. Kept as a switch of LITERAL class names so Tailwind's scanner
+// emits every one.
+function textSizeClass(size: number): string {
+  if (size < 11.5) return 'text-micro';
+  if (size < 12.75) return 'text-mini';
+  if (size < 13.75) return 'text-caption';
+  if (size < 14.75) return 'text-small';
+  if (size < 15.75) return 'text-body-sm';
+  if (size < 16.75) return 'text-body';
+  if (size < 17.75) return 'text-body-lg';
+  if (size < 18.75) return 'text-lede';
+  if (size < 19.75) return 'text-lede-lg';
+  // Heading steps. Before these existed the ladder ended at `text-lede-lg`, so
+  // ANY size ≥ 18.75 collapsed to 19px — `<Text as="h3" size={24}>` read as
+  // correct in source and silently shrank in the browser. Past 26px hand back
+  // to <Display>, which is fluid-clamped and owns the big end.
+  if (size < 21) return 'text-h4';
+  if (size < 23) return 'text-h3';
+  if (size < 26) return 'text-h2';
+  return 'text-h1';
 }
 
 /**
- * The sparx wordmark. The "x" is always indigo. Brand guide §2.
+ * The ink axis. `none` emits NO color class at all — use it when the CALLER
+ * supplies the color as a utility (a module ink, `text-warning`, …):
+ *
+ *   <Text tone="none" className={M.ink} mono size={11}>
+ *
+ * Without it, `<Text>` always stamped a tone class, so adding `M.ink` via
+ * `className` put two same-specificity color utilities on one element — and CSS
+ * resolves that by stylesheet order, not className order, so the module hue
+ * could lose non-deterministically. That gap was pushing callers back to raw
+ * hand-styled `<span>`s, which is exactly what these primitives exist to stop.
  */
-export function Wordmark({ size = 22, icon = false }: { size?: number; icon?: boolean }) {
-  return (
-    <span
-      style={{
-        fontFamily: "var(--font-wordmark, 'Inter', system-ui, sans-serif)",
-        fontWeight: 700,
-        fontSize: `${size}px`,
-        letterSpacing: '-0.03em',
-        color: 'var(--color-base-content)',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: icon ? Math.round(size * 0.28) : 0,
-        lineHeight: 1,
-      }}
-    >
-      {icon ? <SparxMark size={Math.round(size * 1.18)} /> : null}
-      <span>
-        spar<span style={{ color: 'var(--color-primary)' }}>x</span>
-      </span>
-    </span>
-  );
+type TextTone = 'default' | 'muted' | 'subtle' | 'none';
+
+const TONE_CLASS: Record<TextTone, string | null> = {
+  default: 'text-base-content',
+  muted: 'text-ink-muted',
+  subtle: 'text-ink-subtle',
+  none: null,
+};
+
+function weightClass(weight: 400 | 500 | 600): string {
+  return weight === 600 ? 'font-semibold' : weight === 500 ? 'font-medium' : 'font-normal';
 }
 
 /**
- * Editorial eyebrow label — small uppercase tag above section headings.
- * Brand guide §4 typography: Geist 500, 11px, 0.08em tracking.
+ * Editorial eyebrow label — small uppercase tag. (Deprecated brand-wide; kept
+ * for the handful of un-migrated callers.)
  */
 export function Eyebrow({ children, color }: { children: React.ReactNode; color?: string }) {
   return (
     <span
-      style={{
-        fontFamily: 'var(--font-sans)',
-        fontWeight: 500,
-        fontSize: '11px',
-        letterSpacing: '0.08em',
-        color: color ?? 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        textTransform: 'uppercase',
-      }}
+      className={cx(
+        'text-micro font-sans font-medium tracking-[0.08em] uppercase',
+        color ? null : 'text-ink-muted'
+      )}
+      style={color ? { color } : undefined}
     >
       {children}
     </span>
@@ -107,13 +169,13 @@ export function Eyebrow({ children, color }: { children: React.ReactNode; color?
 }
 
 /**
- * Marketing display heading — sizes well past @sparx/ui's Heading variants.
+ * Marketing display heading — sizes well past silica's Heading variants.
  * Brand guide §4: Geist 500, -0.025em to -0.035em tracking.
  *
- * `size` and `lineHeight` are the **desktop max**. Display clamps internally
- * so the same headline reads correctly on a 320px phone and a 2560px monitor.
- * The min is roughly 0.4× the desktop max (with a floor of 28px) and the
- * preferred is a viewport-relative midpoint. See docs/23 §13.
+ * `size`/`lineHeight` are the desktop MAX; Display clamps internally so the same
+ * headline reads on a 320px phone and a 2560px monitor. The fluid `font-size` /
+ * `line-height` are the one legitimately-dynamic inline style here (a computed
+ * clamp per instance); everything static is a utility class.
  */
 export function Display({
   children,
@@ -133,15 +195,12 @@ export function Display({
   const lh = `clamp(${Math.max(30, Math.round(lhMax * 0.5))}px, ${(lhMax / 12).toFixed(2)}vw, ${lhMax}px)`;
   return (
     <Tag
-      style={{
-        fontFamily: 'var(--font-sans)',
-        fontWeight: 500,
-        fontSize,
-        letterSpacing: size > 80 ? '-0.035em' : '-0.025em',
-        lineHeight: lh,
-        color: color ?? 'var(--color-base-content)',
-        margin: 0,
-      }}
+      className={cx(
+        'font-sans font-medium',
+        size > 80 ? 'tracking-[-0.035em]' : 'tracking-[-0.025em]',
+        color ? null : 'text-base-content'
+      )}
+      style={{ fontSize, lineHeight: lh, ...(color ? { color } : {}) }}
     >
       {children}
     </Tag>
@@ -149,7 +208,71 @@ export function Display({
 }
 
 /**
- * Indigo dot used as a bullet/decorative accent (eyebrow row, hero strip).
+ * Marketing body-copy primitive — the one place running text, labels, and
+ * captions resolve their type + ink. `size` (px) maps to an editorial `text-*`
+ * utility; `tone` maps to a real-ink color utility. Both are DRIFT-PROOF: the
+ * ink tones mix into `--color-base-100` (never `transparent`), so the no-faded-
+ * text rule holds, and they flip inside a `data-theme="dark"` island on their
+ * own — there is deliberately no "invert" tone. The 16px body floor lives in the
+ * scale (`text-body` = 16); smaller steps are for genuine captions/labels.
+ */
+export function Text({
+  children,
+  size = 16,
+  tone = 'muted',
+  weight = 400,
+  mono = false,
+  color,
+  as: Tag = 'p',
+  className,
+  style,
+}: {
+  children: React.ReactNode;
+  /** Font size in px → nearest editorial `text-*` utility. Defaults to 16 (body floor). */
+  size?: number;
+  /** Ink axis — every value resolves to real ink, never transparent. */
+  tone?: TextTone;
+  weight?: 400 | 500 | 600;
+  /** Render in the mono face (hex/token/caption chips). */
+  mono?: boolean;
+  /** Escape hatch for a one-off ink expressed as a TOKEN (e.g. `var(--color-primary)`),
+   *  not a literal hex. Wins over `tone`; emitted as an inline color only. */
+  color?: string;
+  as?: 'p' | 'span' | 'div' | 'li' | 'dt' | 'dd' | 'figcaption' | 'label' | 'small' | 'h3' | 'h4';
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <Tag
+      className={cx(
+        mono ? 'font-mono' : 'font-sans',
+        textSizeClass(size),
+        weightClass(weight),
+        color ? null : TONE_CLASS[tone],
+        className
+      )}
+      style={color ? { color, ...style } : style}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * Inline code/token chip — the mono pill used to name a CSS variable or symbol
+ * inside running copy (e.g. `<Spark>`, `@sparx/brand`).
+ */
+export function Code({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="text-mini text-base-content bg-base-200 rounded-sm px-[5px] py-px font-mono">
+      {children}
+    </code>
+  );
+}
+
+/**
+ * Ember dot used as a bullet/decorative accent. Size + color are per-instance
+ * dynamic, so they stay inline; structure is utilities.
  */
 export function Dot({
   color = 'var(--color-primary)',
@@ -161,58 +284,44 @@ export function Dot({
   return (
     <span
       aria-hidden
-      style={{
-        display: 'inline-block',
-        width: size,
-        height: size,
-        borderRadius: 9999,
-        backgroundColor: color,
-        flexShrink: 0,
-      }}
+      className="inline-block shrink-0 rounded-full"
+      style={{ width: size, height: size, backgroundColor: color }}
     />
   );
 }
 
 /**
- * Centered content container. Used inside `<Section>` automatically; exposed
- * for inline `<section>` / `<nav>` / `<footer>` components that own their own
- * outer band (background, border) but still want the standard content cap.
- *
- * Max-width comes from `--container-max` in tokens.css (1280px); padding/
- * gutter is the responsive `--gutter-page` clamp() token.
+ * Centered content container. Used inside `<Section>` automatically; exposed for
+ * inline `<section>`/`<nav>`/`<footer>` that own their outer band but want the
+ * standard 1280px content cap (`max-w-content`) + responsive page gutter.
  */
 export function Container({
   children,
-  style,
   className,
+  style,
 }: {
   children: React.ReactNode;
-  style?: React.CSSProperties;
   className?: string;
+  /** Migration bridge for un-converted pages still passing layout inline.
+   *  Converted pages use utilities and omit this. */
+  style?: React.CSSProperties;
 }) {
   return (
-    <div
-      className={className}
-      style={{
-        maxWidth: 'var(--container-max)',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: '100%',
-        ...style,
-      }}
-    >
+    <div className={cx('max-w-content mx-auto w-full', className)} style={style}>
       {children}
     </div>
   );
 }
 
 /**
- * Standard marketing section wrapper. Page gutter and vertical rhythm both
- * use clamp()-based responsive tokens — the section breathes from a 320px
- * phone up to a 2560px monitor without per-component breakpoint logic.
- * See docs/23 §13.
+ * Standard marketing section wrapper. Page gutter (`px-page`) and vertical rhythm
+ * (`py-section-*`) are clamp()-fluid utilities, so the section breathes from a
+ * 320px phone to a 2560px monitor with no per-component breakpoints.
  *
- * Pass `bleed` for sections that must span gutter-to-gutter (rare).
+ * `surface="dark"` is a themed island (`data-theme="dark"`): the whole
+ * `--color-base-*` ramp flips to brand navy, so the surface, border, and every
+ * descendant resolve on-brand with zero literal hexes. Pass `bleed` for sections
+ * that must span gutter-to-gutter (rare).
  */
 export function Section({
   id,
@@ -220,52 +329,34 @@ export function Section({
   surface = 'page',
   padding = 'lg',
   bleed,
-  style,
   className,
+  style,
 }: {
   id?: string;
   children: React.ReactNode;
   surface?: 'page' | 'surface' | 'dark';
   padding?: 'md' | 'lg' | 'xl';
   bleed?: boolean;
-  style?: React.CSSProperties;
-  /** Surface-depth tier hook for the `.mkt-paneled` system — e.g. `mkt-stage`
-   *  to drop a visual exhibit onto the recessed surface-200 stage. The accent/
-   *  brand tiers live on raw `<section>` elements; this lets a primitive-based
-   *  section opt into a tier too. */
+  /** Extra utilities / surface-depth tier hook for the `.mkt-paneled` system. */
   className?: string;
+  /** Migration bridge for un-converted pages still passing layout inline.
+   *  Converted pages use utilities and omit this. */
+  style?: React.CSSProperties;
 }) {
-  const surfaceBg =
-    surface === 'page'
-      ? 'var(--color-base-200)'
-      : surface === 'surface'
-        ? 'var(--color-base-100)'
-        : '#0A0A0A';
-  const py =
-    padding === 'md'
-      ? 'var(--section-py-md)'
-      : padding === 'lg'
-        ? 'var(--section-py-lg)'
-        : 'var(--section-py-xl)';
+  const surfaceClass =
+    surface === 'surface'
+      ? 'bg-base-100 border-t border-base-300'
+      : surface === 'dark'
+        ? 'bg-base-100 border-t border-base-300'
+        : 'bg-base-200';
+  const pyClass =
+    padding === 'md' ? 'py-section-md' : padding === 'lg' ? 'py-section-lg' : 'py-section-xl';
   return (
     <section
       id={id}
-      className={className}
-      style={{
-        backgroundColor: surfaceBg,
-        paddingTop: py,
-        paddingBottom: py,
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        borderTop:
-          surface === 'surface'
-            ? '1px solid var(--color-base-300)'
-            : surface === 'dark'
-              ? '1px solid #1A1A1A'
-              : undefined,
-        scrollMarginTop: '80px',
-        ...style,
-      }}
+      data-theme={surface === 'dark' ? 'dark' : undefined}
+      className={cx(surfaceClass, pyClass, 'px-page scroll-mt-20', className)}
+      style={style}
     >
       {bleed ? children : <Container>{children}</Container>}
     </section>
@@ -273,86 +364,62 @@ export function Section({
 }
 
 /**
- * Editorial section header. Vertical stack — eyebrow, display headline, lede.
- *
- * The headline sets a maxWidth so it can wrap onto a second line at our content
- * widths instead of stretching to the gutter. The lede sits narrower than the
- * headline (640px vs 960px) so the eye gets a clean rag from headline to body.
- *
- * `lede` accepts any ReactNode so callers can interpolate spans / Spark accents.
- * For sections that need a colored chip above the headline (MCP, B2B, Final
- * CTA), pass an <EyebrowBadge> as `eyebrow` instead of a plain string.
+ * Editorial section header — display headline (+ optional colored spark accent)
+ * over a narrower lede. The headline caps at 960px so it wraps to a second line
+ * at content width; the lede sits narrower (640px) for a clean rag.
  */
 export function SectionHeader({
   headline,
   lede,
-  invert,
-  headlineSize,
-  headlineLineHeight,
   accent,
   ledeColor,
 }: {
-  /** @deprecated Eyebrows are removed brand-wide (the uppercase kicker reads as
-   *  generic-SaaS slop). Kept so existing callers still type-check; the value
-   *  is ignored. Use `accent` for the section's colored spark instead. */
+  /** @deprecated Eyebrows are removed brand-wide; value ignored. Use `accent`. */
   eyebrow?: React.ReactNode;
   /** @deprecated see `eyebrow`. */
   eyebrowColor?: string;
   headline: React.ReactNode;
   lede?: React.ReactNode;
+  /** @deprecated Dark sections are `data-theme="dark"` islands now; value ignored. */
   invert?: boolean;
   headlineSize?: number;
   headlineLineHeight?: number;
-  /** Section identity. Renders the closing "spark" period in this color at the
-   *  end of the headline — carries the section's color with no kicker tier. */
+  /** Section identity — renders the closing "spark" period in this color. */
   accent?: string;
-  /** Override the lede color. Defaults to the invert/page secondary gray; pass a
-   *  brighter value when the header sits over media (e.g. the full-bleed video
-   *  section) where the default gray loses contrast against bright frames. */
+  /** Override the lede ink (token only) — e.g. over bright media. */
   ledeColor?: string;
 }) {
-  const textPrimary = invert ? '#FFFFFF' : 'var(--color-base-content)';
-  const textSecondary =
-    ledeColor ??
-    (invert ? '#A1A1AA' : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)');
+  // Composes SILICA typography — `Heading` + `Text variant="lead"` — not the
+  // app-local `Display`, which stamps a computed `clamp()` `fontSize`/`lineHeight`
+  // inline on every section headline. Since every band on every page renders
+  // through here, that one inline style was the largest remaining source of
+  // px-driven type on the marketing site. `headlineSize`/`headlineLineHeight` are
+  // now ignored: the size comes from the heading level, which is the point.
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        alignItems: 'flex-start',
-      }}
-    >
-      <div style={{ maxWidth: '960px' }}>
-        <Display color={textPrimary} size={headlineSize} lineHeight={headlineLineHeight}>
+    <div className="flex flex-col items-start gap-6">
+      <div className="max-w-[960px]">
+        <SilicaHeading level={2}>
           {headline}
           {accent ? <Spark color={accent} /> : null}
-        </Display>
+        </SilicaHeading>
       </div>
       {lede ? (
-        <p
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: textSecondary,
-            maxWidth: '640px',
-            margin: 0,
-            paddingTop: '8px',
-          }}
+        <SilicaText
+          variant="lead"
+          className="max-w-[640px] pt-2"
+          style={ledeColor ? { color: ledeColor } : undefined}
         >
           {lede}
-        </p>
+        </SilicaText>
       ) : null}
     </div>
   );
 }
 
 /**
- * Colored eyebrow chip — dot + uppercase label inside a tinted pill. Used by
- * sections that want their module color (or another accent) to lead the
- * header rather than the default subdued uppercase label.
+ * Colored eyebrow chip — dot + uppercase label inside a tinted pill. The pill
+ * fill + label ink are module-specific (dynamic), so they stay inline; structure
+ * is utilities.
  */
 export function EyebrowBadge({
   children,
@@ -367,26 +434,13 @@ export function EyebrowBadge({
 }) {
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '5px 12px',
-        backgroundColor: background,
-        borderRadius: '9999px',
-        width: 'fit-content',
-      }}
+      className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-[5px]"
+      style={{ backgroundColor: background }}
     >
       <Dot color={color} />
       <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          color: text,
-          textTransform: 'uppercase',
-        }}
+        className="text-micro font-sans font-medium tracking-[0.05em] uppercase"
+        style={{ color: text }}
       >
         {children}
       </span>
@@ -395,9 +449,14 @@ export function EyebrowBadge({
 }
 
 /**
- * Indigo period — the recurring "spark" brand moment from the design.
- * Used at the end of display headlines: "ignited." "live." etc.
+ * Ember period — the recurring "spark" brand moment at the end of display
+ * headlines. Defaults to the primary hue via `text-primary`; a passed `color`
+ * (a token) renders inline for section-accent sparks.
  */
-export function Spark({ color = 'var(--color-primary)' }: { color?: string }) {
-  return <span style={{ color }}>.</span>;
+export function Spark({ color }: { color?: string }) {
+  return (
+    <span className={color ? undefined : 'text-primary'} style={color ? { color } : undefined}>
+      .
+    </span>
+  );
 }

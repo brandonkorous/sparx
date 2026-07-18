@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
+import { Container, Display, getModuleColor, Section, Spark } from './primitives';
 import { EmailHero, EmailPipeline } from './email-sections';
 import { EmailKinds, EmailDeliverability } from './email-deliverability';
 import { EmailBroadcast, EmailAutomations, EmailCapabilities } from './email-devices';
@@ -179,12 +179,11 @@ function EmailPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${E.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(E.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

@@ -1,101 +1,47 @@
 import * as React from 'react';
-import { Section, SectionHeader } from '../primitives';
+import { Section, SectionHeader, Text } from '../primitives';
 import { Swatch } from './interactive';
 
+// Every swatch paints a LIVE `var(--color-*)` and reads its hex back from what
+// the browser resolves — so these can never drift from @sparx/brand/theme.css.
 const SEMANTIC = [
   {
     name: 'Success',
-    value: '#10B981',
-    hex: '#10B981',
+    value: 'var(--color-success)',
     token: '--color-success',
     note: 'Confirmations, healthy states.',
   },
   {
     name: 'Warning',
-    value: '#F59E0B',
-    hex: '#F59E0B',
+    value: 'var(--color-warning)',
     token: '--color-warning',
     note: 'Caution, approaching limits. Dark ink on fill.',
   },
   {
     name: 'Danger',
-    value: '#EF4444',
-    hex: '#EF4444',
+    value: 'var(--color-danger)',
     token: '--color-danger',
     note: 'Errors, destructive actions.',
   },
 ] as const;
 
-const LIGHT = [
-  {
-    name: 'Page',
-    value: '#F4F4F5',
-    hex: '#F4F4F5',
-    token: '--color-base-200',
-    note: 'Page ground.',
-  },
-  {
-    name: 'Surface',
-    value: '#FFFFFF',
-    hex: '#FFFFFF',
-    token: '--color-base-100',
-    note: 'Cards and panels.',
-  },
-  {
-    name: 'Border',
-    value: '#E4E4E7',
-    hex: '#E4E4E7',
-    token: '--color-base-300',
-    note: 'Hairlines and dividers.',
-  },
-  {
-    name: 'Text',
-    value: '#0A0A0A',
-    hex: '#0A0A0A',
-    token: '--color-base-content',
-    note: 'Body text.',
-  },
-] as const;
-
-const DARK = [
-  {
-    name: 'Page',
-    value: '#1F1F1F',
-    hex: '#1F1F1F',
-    token: '--color-base-200',
-    note: 'Page ground.',
-  },
-  {
-    name: 'Surface',
-    value: '#1A1A1A',
-    hex: '#1A1A1A',
-    token: '--color-base-100',
-    note: 'Cards and panels.',
-  },
-  {
-    name: 'Border',
-    value: '#2A2A2A',
-    hex: '#2A2A2A',
-    token: '--color-base-300',
-    note: 'Hairlines and dividers.',
-  },
-  {
-    name: 'Text',
-    value: '#F0F0F0',
-    hex: '#F0F0F0',
-    token: '--color-base-content',
-    note: 'Body text.',
-  },
+// Named for the silica tokens they ARE — the retired sparx vocabulary
+// ("Surface / Page / Border / Text") is gone; the human meaning lives in `note`.
+const NEUTRALS = [
+  { name: 'Base 100', token: '--color-base-100', note: 'Cards and panels.' },
+  { name: 'Base 200', token: '--color-base-200', note: 'Page ground.' },
+  { name: 'Base 300', token: '--color-base-300', note: 'Hairlines and dividers.' },
+  { name: 'Base content', token: '--color-base-content', note: 'Body text.' },
 ] as const;
 
 export function PaletteSection() {
   return (
     <Section id="palette" surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
+      <div className="flex flex-col gap-14">
         <SectionHeader
           accent="var(--color-success)"
           headline="Semantic & neutral palette"
-          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Supporting and hint text aren’t separate colors; they’re that same ink dialed back to 70% and 50% (text-base-content and /50)."
+          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Every tile below is painted from the live token, so what you see is exactly what ships."
         />
 
         <Group title="Semantic — reserved, never decorative">
@@ -108,31 +54,22 @@ export function PaletteSection() {
 
         <Group title="Neutrals — light mode">
           <div className="mkt-grid-4-2-1">
-            {LIGHT.map((s) => (
-              <Swatch key={s.name} {...s} height={72} />
+            {NEUTRALS.map((s) => (
+              <Swatch key={s.name} value={`var(${s.token})`} {...s} height={72} />
             ))}
           </div>
         </Group>
 
         <Group title="Neutrals — dark mode">
           <div className="mkt-grid-4-2-1">
-            {DARK.map((s) => (
-              <Swatch key={s.name} {...s} height={72} />
+            {NEUTRALS.map((s) => (
+              <Swatch key={s.name} value={`var(${s.token})`} theme="dark" {...s} height={72} />
             ))}
           </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <Text size={14} className="max-w-[640px]">
             Neither pure white nor pure black — near-white and near-black backgrounds feel
             intentional in both modes, never like an inverted screenshot.
-          </p>
+          </Text>
         </Group>
       </div>
     </Section>
@@ -141,18 +78,10 @@ export function PaletteSection() {
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <h3
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '15px',
-          color: 'var(--color-base-content)',
-          margin: 0,
-        }}
-      >
+    <div className="flex flex-col gap-6">
+      <Text as="h3" size={15} weight={500} tone="default">
         {title}
-      </h3>
+      </Text>
       {children}
     </div>
   );

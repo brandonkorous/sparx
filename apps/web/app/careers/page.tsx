@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Card, CardBody } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<Link/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
 import { ROLES, OPEN_APPLICATION, CAREERS_COPY, type Role } from './roles';
 
@@ -11,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/careers' },
 };
 
-const INDIGO = 'var(--color-primary)';
+const EMBER = 'var(--color-primary)';
 
 const ledeStyle: React.CSSProperties = {
   margin: 0,
@@ -103,7 +109,7 @@ function StepRow({ index, text }: { index: number; text: string }) {
           fontFamily: 'var(--font-mono)',
           fontSize: '14px',
           fontWeight: 500,
-          color: INDIGO,
+          color: EMBER,
           flexShrink: 0,
           width: '28px',
         }}
@@ -188,9 +194,12 @@ export default function CareersPage() {
             {OPEN_APPLICATION.summary}
           </p>
           <div style={{ paddingTop: '4px' }}>
-            <Button size="lg" render={<Link href={`/careers/${OPEN_APPLICATION.slug}`} />}>
+            <Link
+              href={`/careers/${OPEN_APPLICATION.slug}`}
+              className={buttonClasses({ size: 'lg' })}
+            >
               {OPEN_APPLICATION.title} →
-            </Button>
+            </Link>
           </div>
         </div>
       </Section>

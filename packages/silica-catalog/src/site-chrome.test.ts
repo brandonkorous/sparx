@@ -1,58 +1,81 @@
-// Locks the logo-capable brand wordmark (docs/122 — the wordmark-logo gap) against the
-// REAL silica engine: `brandWordmark` must bind the tenant logo into the `<img>` src and the
-// site name into the text, resolving through the shared render primitive exactly as the
-// storefront frame does. This is what makes "drop the Brand element into the navbar and your
-// logo appears" true — no author binding step.
+// The site chrome's brand mark — the `site.brand` HOST core.
+//
+// What these lock is the SORT, not the styling: the mark must be a host node, because a
+// stamped mark freezes at publish. That is not hypothetical — it is how tenants who
+// published before silica's `Wordmark` could hold a logo ended up with a text-only
+// header that no fix to the composite could ever reach. If someone "simplifies" this
+// back into a stamped lockup, that whole class of bug returns silently, and these tests
+// are the alarm.
 
 import { describe, expect, it } from 'vitest';
-import type { ResolveHost } from '@wizeworks/silicaui-html';
 
-import { renderSilicaBody } from './render';
-import { brandWordmark } from './site-chrome';
+import { siteNavbar } from './site-chrome';
+import { HOST_COMPONENTS, HOST_KEYS, hostCore } from './host-nodes';
 
-/** A host resolving the site-identity chrome refs (logo as the storefront shapes it — the
- *  format hook unwraps `{url}`; here a plain string is enough to prove the src wire). */
-const host: ResolveHost = {
-  resolveCollection: () => [],
-  resolveBinding: (ref: string) => {
-    if (ref === 'site.identity.logo') return { value: 'https://cdn.test/logo.png' };
-    if (ref === 'site.identity.name') return { value: 'Acme Co' };
-    return { value: '' };
-  },
+const navBrand = (opts = {}) => {
+  const nav = siteNavbar(opts) as { children?: unknown[] };
+  return (nav.children ?? [])[0] as Record<string, unknown>;
 };
 
-describe('brandWordmark — the logo-capable wordmark', () => {
-  it('binds the tenant logo into the img src and the name into the text', () => {
-    const html = renderSilicaBody(brandWordmark(), { host });
-    expect(html).toContain('https://cdn.test/logo.png'); // logo → <img src>
-    expect(html).toContain('Acme Co'); // name → the wordmark text
-    expect(html).toContain('href="/"'); // the brand links home
-    // The neutral "Logo" placeholder is overwritten the moment the logo resolves.
-    expect(html).not.toContain('>Logo</text>');
+describe('siteNavbar — the brand mark', () => {
+  it('seeds the brand as a HOST node, so the platform renders it live', () => {
+    const brand = navBrand();
+    // `kind: "host"` is the whole point: the tree stores a mount point, so a logo
+    // uploaded in Site settings reaches the header with no re-author and no re-publish.
+    expect(brand.kind).toBe('host');
+    expect(brand.component).toBe(HOST_KEYS.siteBrand);
   });
 
-  it('is a REAL silica Wordmark (children path), not a hand-rolled lockup', () => {
-    // The `wordmark` class is what earns silica's mark-sizing CSS. Lowering through the
-    // component (rather than a bare <a>) is the difference between a Wordmark and
-    // something that merely resembles one — and the children path is the ONLY way to
-    // bind the logo AND the name, since a node carries one ref and `primary: "text"`
-    // claims a bare bind for the name.
-    const html = renderSilicaBody(brandWordmark(), { host });
-    expect(html).toContain('wordmark');
-    // `href` lowers the Wordmark to an <a>, so the mark links home.
-    expect(html).toMatch(/<a[^>]*href="\/"/);
-    // Both bound children survive the children path.
-    expect(html).toMatch(/<img[^>]*src="https:\/\/cdn\.test\/logo\.png"/);
+  it('does NOT lock the brand — the tenant owns where their own mark sits', () => {
+    // Unlike a functional core, the brand protects no transaction. Locking it would
+    // forbid MOVE as well as remove (silicaui: "a locked node cannot be removed, moved,
+    // or reparented"), so the tenant could not center their logo or place it after the
+    // nav links. Improvability comes from `kind:"host"`; `locked` is orthogonal.
+    expect(navBrand().locked).toBeUndefined();
   });
 
-  it('keeps the site name (and never a broken img) when no logo is set', () => {
-    const noLogo: ResolveHost = {
-      resolveCollection: () => [],
-      resolveBinding: (ref: string) =>
-        ref === 'site.identity.name' ? { value: 'Acme Co' } : { value: '' },
-    };
-    const html = renderSilicaBody(brandWordmark(), { host: noLogo });
-    // The wordmark still reads as the brand — the text carries when there is no logo.
-    expect(html).toContain('Acme Co');
+  it('is the FIRST child of the nav, so the header leads with the brand', () => {
+    expect(navBrand({ commerceEnabled: true, schedulingEnabled: true }).component).toBe(
+      HOST_KEYS.siteBrand
+    );
+    // …and independent of which modules are on: the brand is not module-gated.
+    expect(navBrand({ commerceEnabled: false, schedulingEnabled: false }).component).toBe(
+      HOST_KEYS.siteBrand
+    );
+  });
+
+  it('carries the registered `show` default, matching a palette insert', () => {
+    // A seeded core must behave identically to one dragged from the palette (which gets
+    // its defaults from the Inspector). Without this the storefront would be relying on
+    // its own fallback, and the two could drift.
+    expect(navBrand().props).toEqual({ show: 'both' });
+  });
+
+  it('keeps the `wordmark` class — silicaui sizes the mark through it', () => {
+    // `.wordmark & :is(svg,img)` is what makes this a real Wordmark rather than a
+    // lookalike lockup; dropping the class silently un-sizes every tenant's logo.
+    expect(String(navBrand().class)).toContain('wordmark');
+  });
+});
+
+describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
+  it('locks a functional core by default', () => {
+    // Safe by omission: a NEW core is protected unless someone deliberately says
+    // otherwise, so forgetting `pinned` can never ship a deletable checkout.
+    expect(hostCore(HOST_KEYS.commerceCart).locked).toBe('host');
+    expect(hostCore(HOST_KEYS.commerceAuth).locked).toBe('host');
+  });
+
+  it('leaves an opted-out core unlocked', () => {
+    expect(hostCore(HOST_KEYS.siteBrand).locked).toBeUndefined();
+  });
+
+  it('the brand is the ONLY unpinned core in the registry', () => {
+    // A tripwire, not a style rule: every other core wraps a live transaction the
+    // tenant must not be able to delete. If this fails, either a functional core just
+    // became deletable, or a second improvability-only core landed and this comment
+    // needs rewriting — both are worth a human look.
+    const unpinned = HOST_COMPONENTS.filter((c) => c.pinned === false).map((c) => c.key);
+    expect(unpinned).toEqual([HOST_KEYS.siteBrand]);
   });
 });

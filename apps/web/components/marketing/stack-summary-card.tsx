@@ -130,7 +130,7 @@ export function StackSummaryCard({
               Start 14-day free trial
             </Button>
             <Text variant="caption" className="text-center">
-              No card to start &middot; cancel anytime
+              14 day free trial &middot; cancel anytime
             </Text>
           </div>
         </div>

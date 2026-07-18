@@ -391,7 +391,11 @@ export const SITE_SOURCES: DataSource[] = [
     fields: [
       { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
       { key: 'tagline', label: 'Tagline', kind: 'text', cardinality: 'scalar' },
-      { key: 'logo', label: 'Logo', kind: 'image', cardinality: 'scalar' },
+      // Both logos the tenant uploads in Site settings. Only offer a field the
+      // host actually fills — a bound node whose ref resolves empty loses its
+      // authored content, so a decorative field here is a blanked node there.
+      { key: 'logo', label: 'Logo (light backgrounds)', kind: 'image', cardinality: 'scalar' },
+      { key: 'logoDark', label: 'Logo (dark backgrounds)', kind: 'image', cardinality: 'scalar' },
     ],
   },
   {

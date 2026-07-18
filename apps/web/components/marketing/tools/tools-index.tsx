@@ -1,5 +1,10 @@
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Section, Display, Spark, getModuleColor } from '../primitives';
 import { TOOLS } from './registry';
 import { ToolCard } from './tool-card';
@@ -75,16 +80,15 @@ export function ToolsIndex() {
               one bill. These tools handle a single job for free. sparx handles the rest, for years.
             </p>
           </div>
-          <Button
-            color="primary"
-            variant="solid"
-            size="lg"
+          <a
+            href="/platform"
+            aria-label="Explore the platform"
+            className={buttonClasses({ color: 'primary', variant: 'solid', size: 'lg' })}
             style={{ flexShrink: 0 }}
-            render={<a href="/platform" aria-label="Explore the platform" />}
           >
             Explore the platform
             <ArrowRight className="h-4 w-4" />
-          </Button>
+          </a>
         </div>
       </Section>
     </main>

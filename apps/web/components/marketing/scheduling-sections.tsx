@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primitives';
+import { Alert, Badge, Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
+import { Dot, getModuleColor, Section, Spark } from './primitives';
 
 /**
  * The core capability devices for the /scheduling page, split out of
@@ -23,11 +24,17 @@ import { Dot, getModuleColor, moduleTint, Section, SectionHeader } from './primi
  * (the shipped calendar scope), §2 (the all-in-one loop), §12 (vertical
  * playbooks). Rose is a signal, not fill. (The hero lives in scheduling-hero.tsx;
  * the no-overlap + reminder/waitlist devices live in scheduling-devices.tsx.)
+ *
+ * 100% SILICA: type is `Heading`/`Text` (semantic steps, no px anywhere), panels
+ * are `Card`/`CardBody`/`CardTitle`, every chip is a `Badge`, the gateway notice
+ * is an `Alert`, and module identity rides `M.bg`/`M.ink` literals. `Section`,
+ * `Spark`, and `Dot` stay app-local — they carry the marketing band rhythm and
+ * the brand accent, not appearance silica already owns. No inline `style`, no
+ * hand-rolled color-mix, no faded ink: every string here is meant to be read, so
+ * every string is full-ink `<Text>` rather than a shrunk-and-dimmed caption.
  */
 
 const M = getModuleColor('scheduling');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── THE FOUR BOOKING SHAPES (one engine) ────────────────────────────────────
 export function SchedulingShapes() {
@@ -59,77 +66,32 @@ export function SchedulingShapes() {
   ];
   return (
     <Section id="shapes" surface="surface" padding="lg">
-      <SectionHeader
-        accent={M.color}
-        headline="Four booking shapes, one engine"
-        lede="An appointment, a class, a reservation, and a rental aren't four products — they're one booking engine with a type discriminator. The same availability math, the same deposits and reminders, the same reports. Switch on the shapes a business needs; nothing is a separate tool to learn or pay for."
-      />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
-        {shapes.map((s, i) => (
-          <div
-            key={s.type}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              padding: '26px',
-              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '236px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                color: M.text,
-              }}
-            >
-              {s.type}
-            </span>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '23px',
-                color: 'var(--color-base-content)',
-                fontWeight: 500,
-              }}
-            >
-              {s.what}
-            </p>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '5px 11px',
-                width: 'fit-content',
-                borderRadius: '9999px',
-                backgroundColor: M.tint,
-                color: M.text,
-                fontFamily: MONO,
-                fontSize: '11px',
-              }}
-            >
-              {s.capacity}
-            </span>
-            <span
-              style={{
-                marginTop: 'auto',
-                fontFamily: SANS,
-                fontSize: '12.5px',
-                lineHeight: '19px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.verticals}
-            </span>
-          </div>
+      <div className="flex flex-col items-start gap-6">
+        <Heading level={2} className="max-w-[960px]">
+          Four booking shapes, one engine
+          <Spark color={M.color} />
+        </Heading>
+        <Text variant="lead" className="max-w-[640px] pt-2">
+          An appointment, a class, a reservation, and a rental aren&apos;t four products —
+          they&apos;re one booking engine with a type discriminator. The same availability math, the
+          same deposits and reminders, the same reports. Switch on the shapes a business needs;
+          nothing is a separate tool to learn or pay for.
+        </Text>
+      </div>
+      <div className="mkt-grid-4-2-1 mt-13">
+        {shapes.map((s) => (
+          <Card key={s.type} className="bg-base-100">
+            <CardBody className="flex min-h-[236px] flex-col gap-3.5">
+              <CardTitle className={M.ink}>{s.type}</CardTitle>
+              <Text>{s.what}</Text>
+              <Badge color="module-scheduling" size="sm" className="w-fit gap-2 font-mono">
+                {s.capacity}
+              </Badge>
+              <Text as="span" className="mt-auto">
+                {s.verticals}
+              </Text>
+            </CardBody>
+          </Card>
         ))}
       </div>
     </Section>
@@ -166,89 +128,39 @@ export function SchedulingDeposits() {
   ];
   return (
     <Section surface="surface" padding="lg">
-      <SectionHeader
-        accent={M.color}
-        headline="Deposits stop no-shows — pick the policy per service"
-        lede="No-show protection is the single highest-ROI feature in booking. Choose it per service and mix it across your catalog: a free slot here, a deposit there, a card hold for the ones that hurt. When a fee fires, the policy the customer accepted, the reminders sent, and the booking timeline are all on record — the evidence you need, captured automatically."
-      />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
+      <div className="flex flex-col items-start gap-6">
+        <Heading level={2} className="max-w-[960px]">
+          Deposits stop no-shows — pick the policy per service
+          <Spark color={M.color} />
+        </Heading>
+        <Text variant="lead" className="max-w-[640px] pt-2">
+          No-show protection is the single highest-ROI feature in booking. Choose it per service and
+          mix it across your catalog: a free slot here, a deposit there, a card hold for the ones
+          that hurt. When a fee fires, the policy the customer accepted, the reminders sent, and the
+          booking timeline are all on record — the evidence you need, captured automatically.
+        </Text>
+      </div>
+      <div className="mkt-grid-4-2-1 mt-13">
         {ladder.map((p) => (
-          <div
+          <Card
             key={p.name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: p.emphasis ? M.tint : 'var(--color-base-100)',
-              border: p.emphasis ? `1px solid ${M.color}` : '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '208px',
-            }}
+            className={p.emphasis ? 'bg-base-100 border-module-scheduling' : 'bg-base-100'}
           >
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '20px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                color: p.emphasis ? M.text : 'var(--color-base-content)',
-              }}
-            >
-              {p.name}
-            </h3>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.03em',
-                color: p.emphasis
-                  ? M.text
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {p.tag}
-            </span>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p.body}
-            </p>
-          </div>
+            <CardBody className="flex min-h-[208px] flex-col gap-3">
+              <CardTitle className={p.emphasis ? M.ink : undefined}>{p.name}</CardTitle>
+              <Text as="span" className="font-mono">
+                {p.tag}
+              </Text>
+              <Text>{p.body}</Text>
+            </CardBody>
+          </Card>
         ))}
       </div>
-      <div
-        className="mkt-cluster"
-        style={{
-          marginTop: '24px',
-          gap: '10px',
-          padding: '16px 20px',
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-        }}
-      >
-        <Dot color={M.color} size={7} />
-        <span
-          style={{
-            fontFamily: SANS,
-            fontSize: '13.5px',
-            lineHeight: '21px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
-          Deposits need only a connected payment gateway &mdash; Stripe, sparx Pay, PayPal, or
-          Square at your own rates. Not the Commerce module, not a locked-in processor. Scheduling
-          stays standalone.
-        </span>
-      </div>
+      <Alert color="info" className="mt-6">
+        Deposits need only a connected payment gateway &mdash; Stripe, sparx Pay, PayPal, or Square
+        at your own rates. Not the Commerce module, not a locked-in processor. Scheduling stays
+        standalone.
+      </Alert>
     </Section>
   );
 }
@@ -279,78 +191,39 @@ export function SchedulingCalendar() {
   ];
   return (
     <Section surface="surface" padding="lg">
-      <SectionHeader
-        accent={M.color}
-        headline="Works with the calendar you already keep"
-        lede="No spreadsheet, no copy-paste. Subscribe to your sparx schedule in any calendar, and import the busy time from the calendars you already keep so external commitments block your slots. And whatever a synced feed says, the double-booking guarantee holds at the database — degraded sync never degrades the core promise."
-      />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px' }}>
-        {panels.map((p, i) => (
-          <div
-            key={p.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(M.color) : 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                color: M.text,
-              }}
-            >
-              {p.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '22px',
-                fontWeight: 500,
-                letterSpacing: '-0.015em',
-              }}
-            >
-              {p.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
-              {p.points.map((pt) => (
-                <li key={pt} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
-                    <Dot color={M.color} size={7} />
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {pt}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div className="flex flex-col items-start gap-6">
+        <Heading level={2} className="max-w-[960px]">
+          Works with the calendar you already keep
+          <Spark color={M.color} />
+        </Heading>
+        <Text variant="lead" className="max-w-[640px] pt-2">
+          No spreadsheet, no copy-paste. Subscribe to your sparx schedule in any calendar, and
+          import the busy time from the calendars you already keep so external commitments block
+          your slots. And whatever a synced feed says, the double-booking guarantee holds at the
+          database — degraded sync never degrades the core promise.
+        </Text>
+      </div>
+      <div className="mkt-grid-2-1 mt-13">
+        {panels.map((p) => (
+          <Card key={p.title} className="bg-base-100">
+            <CardBody className="flex flex-col gap-4">
+              <Badge color="module-scheduling" size="sm" className="w-fit gap-2 font-mono">
+                {p.tag}
+              </Badge>
+              <CardTitle>{p.title}</CardTitle>
+              <Text>{p.body}</Text>
+              <ul className="grid list-none gap-3">
+                {p.points.map((pt) => (
+                  <li key={pt} className="flex items-start gap-[11px]">
+                    <span className="shrink-0 pt-[9px]">
+                      <Dot color={M.color} size={7} />
+                    </span>
+                    <Text as="span">{pt}</Text>
+                  </li>
+                ))}
+              </ul>
+            </CardBody>
+          </Card>
         ))}
       </div>
     </Section>
@@ -399,74 +272,35 @@ export function SchedulingLoop() {
   ];
   return (
     <Section id="loop" padding="lg">
-      <SectionHeader
-        accent={M.color}
-        headline="One booking, one loop — not five disconnected tools"
-        lede="Every scheduling SaaS is an island: the booking is in a booking app, the customer in a CRM, the deposit in a payment tool, the reminder in an SMS tool, and the no-show never updates lifetime value. On sparx it's one loop, because sparx already owns the customer, the money, the messaging, and the site."
-      />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="flex flex-col items-start gap-6">
+        <Heading level={2} className="max-w-[960px]">
+          One booking, one loop — not five disconnected tools
+          <Spark color={M.color} />
+        </Heading>
+        <Text variant="lead" className="max-w-[640px] pt-2">
+          Every scheduling SaaS is an island: the booking is in a booking app, the customer in a
+          CRM, the deposit in a payment tool, the reminder in an SMS tool, and the no-show never
+          updates lifetime value. On sparx it&apos;s one loop, because sparx already owns the
+          customer, the money, the messaging, and the site.
+        </Text>
+      </div>
+      <div className="mkt-grid-3-2-1 mt-13">
         {stages.map((s) => (
-          <div
-            key={s.n}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '11px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '196px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '9px',
-              }}
-            >
-              <Dot color={M.color} size={8} />
-              {s.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
-            <span
-              style={{
-                marginTop: 'auto',
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: M.text,
-              }}
-            >
-              lives in {s.where}
-            </span>
-          </div>
+          <Card key={s.n} className="bg-base-100">
+            <CardBody className="flex min-h-[196px] flex-col gap-3">
+              <Badge color="module-scheduling" size="sm" className="w-fit gap-2 font-mono">
+                {s.n}
+              </Badge>
+              <CardTitle className="flex items-center gap-2.5">
+                <Dot color={M.color} size={8} />
+                {s.title}
+              </CardTitle>
+              <Text>{s.body}</Text>
+              <Text as="span" className={`${M.ink} mt-auto font-mono`}>
+                lives in {s.where}
+              </Text>
+            </CardBody>
+          </Card>
         ))}
       </div>
     </Section>
@@ -509,61 +343,30 @@ export function SchedulingVerticals() {
   ];
   return (
     <Section padding="lg">
-      <SectionHeader
-        accent={M.color}
-        headline="The same engine, configured for your business"
-        lede="A salon, a restaurant, a studio, a clinic, a makerspace, and a fleet shop all run on this one engine. They differ only in which booking shapes and capabilities they switch on — never in which product they had to buy."
-      />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="flex flex-col items-start gap-6">
+        <Heading level={2} className="max-w-[960px]">
+          The same engine, configured for your business
+          <Spark color={M.color} />
+        </Heading>
+        <Text variant="lead" className="max-w-[640px] pt-2">
+          A salon, a restaurant, a studio, a clinic, a makerspace, and a fleet shop all run on this
+          one engine. They differ only in which booking shapes and capabilities they switch on —
+          never in which product they had to buy.
+        </Text>
+      </div>
+      <div className="mkt-grid-3-2-1 mt-13">
         {verticals.map((v) => (
-          <div
-            key={v.name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                {v.name}
-              </h3>
-              <span
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '10.5px',
-                  letterSpacing: '0.03em',
-                  color: M.text,
-                  flexShrink: 0,
-                }}
-              >
-                {v.shape}
-              </span>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {v.note}
-            </p>
-          </div>
+          <Card key={v.name} className="bg-base-100">
+            <CardBody className="flex flex-col gap-3">
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle>{v.name}</CardTitle>
+                <Badge color="module-scheduling" size="sm" className="shrink-0 gap-2 font-mono">
+                  {v.shape}
+                </Badge>
+              </div>
+              <Text>{v.note}</Text>
+            </CardBody>
+          </Card>
         ))}
       </div>
     </Section>

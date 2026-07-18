@@ -5,7 +5,6 @@ import {
   Display,
   Dot,
   getModuleColor,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -167,11 +166,11 @@ function CmsCapabilities() {
             }}
           >
             <span
+              className={`${M.bg} bg-soft`}
               style={{
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: M.tint,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -254,23 +253,23 @@ function CmsStandalone() {
         {ways.map((w) => (
           <div
             key={w.title}
+            className={`${w.dot === M.color ? M.bg : BUILDER.bg} bg-soft`}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
               padding: '32px',
-              backgroundColor: moduleTint(w.dot),
               border: '1px solid var(--color-base-300)',
               borderRadius: '14px',
             }}
           >
             <span
+              className={w.dot === M.color ? M.ink : BUILDER.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: w.dot === M.color ? M.text : BUILDER.text,
               }}
             >
               {w.tag}
@@ -411,12 +410,11 @@ function CmsPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

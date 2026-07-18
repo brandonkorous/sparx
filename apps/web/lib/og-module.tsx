@@ -1,25 +1,17 @@
 import { ImageResponse } from 'next/og';
+import { MODULE_HEX, type ModuleKey } from '@sparx/brand';
 import { type ModuleMeta } from './modules';
+import { OgWordmark } from './og-wordmark';
 
-// Color map duplicated here so the edge-runtime OG generator doesn't import
-// the marketing components (which pull React DOM). Keep in sync with
-// MODULE_COLORS in components/marketing/primitives.tsx.
-const MODULE_COLORS: Record<string, { color: string; tint: string; text: string }> = {
-  builder: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
-  commerce: { color: '#F97316', tint: '#FFF7ED', text: '#C2410C' },
-  cms: { color: '#14B8A6', tint: '#F0FDFA', text: '#0F766E' },
-  crm: { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490' },
-  email: { color: '#0EA5E9', tint: '#F0F9FF', text: '#0369A1' },
-  b2b: { color: '#475569', tint: '#F1F5F9', text: '#334155' },
-  ai: { color: '#EC4899', tint: '#FDF2F8', text: '#9D174D' },
-  dropship: { color: '#10B981', tint: '#ECFDF5', text: '#065F46' },
-  scheduling: { color: '#F43F5E', tint: '#FFF1F2', text: '#BE123C' },
-};
+// Satori cannot resolve CSS custom properties, so this is one of the few places
+// that legitimately needs a literal hue rather than `bg-module-*`. It reads the
+// single TS source in @sparx/brand (pure data, zero deps — safe on the edge
+// runtime) instead of keeping yet another hand-mirrored copy.
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
 export function renderModuleOgImage(meta: ModuleMeta) {
-  const color = MODULE_COLORS[meta.module]!;
+  const color = { color: MODULE_HEX[meta.module as ModuleKey] ?? MODULE_HEX.builder };
   return new ImageResponse(
     <div
       style={{
@@ -41,19 +33,7 @@ export function renderModuleOgImage(meta: ModuleMeta) {
           justifyContent: 'space-between',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            fontWeight: 500,
-            fontSize: 40,
-            color: '#FFFFFF',
-            letterSpacing: '-0.03em',
-          }}
-        >
-          <span>spar</span>
-          <span style={{ color: '#6366F1' }}>x</span>
-        </div>
+        <OgWordmark height={40} />
         <div
           style={{
             display: 'flex',

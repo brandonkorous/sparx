@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, moduleTint, Section, Spark } from './primitives';
+import { Container, Display, getModuleColor, Section, Spark } from './primitives';
 import { B2bHero } from './b2b-hero';
 import { B2bPriceList, B2bRfq } from './b2b-sections';
 import { B2bTerms, B2bBulkPo } from './b2b-devices';
@@ -185,12 +185,11 @@ function B2bPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(M.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '14px',
           gap: '32px',

@@ -51,6 +51,14 @@ export async function list(
       ...(filter.paymentStatus ? { paymentStatus: filter.paymentStatus } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
+      // B2B scoping rides the customer relation — an Order carries no
+      // b2bAccountId of its own. A specific account wins over the broad
+      // "any B2B account" lens when both are supplied.
+      ...(filter.b2bAccountId
+        ? { customer: { b2bAccountId: filter.b2bAccountId } }
+        : filter.b2bOnly
+          ? { customer: { b2bAccountId: { not: null } } }
+          : {}),
       ...(filter.placedSince || filter.placedUntil
         ? {
             placedAt: {

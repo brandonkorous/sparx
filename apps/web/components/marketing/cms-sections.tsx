@@ -4,7 +4,6 @@ import {
   Display,
   Dot,
   getModuleColor,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -40,12 +39,12 @@ export function CmsHero() {
   const chips = ['standalone, no shop', 'structured content', 'SEO built in', 'REST + GraphQL'];
   return (
     <section
+      className={`${M.bg} bg-soft`}
       style={{
         paddingTop: 'clamp(56px, 9vw, 96px)',
         paddingBottom: 'var(--section-py-lg)',
         paddingLeft: 'var(--gutter-page)',
         paddingRight: 'var(--gutter-page)',
-        backgroundColor: M.tint,
       }}
     >
       <Container>
@@ -151,14 +150,13 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
       >
         <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
           <span
+            className={`${M.bg} bg-soft ${M.ink}`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '7px',
               padding: '5px 11px',
               borderRadius: '9999px',
-              backgroundColor: M.tint,
-              color: M.text,
               fontFamily: SANS,
               fontSize: '12px',
               fontWeight: 500,
@@ -201,17 +199,16 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
         {tools.map((t, i) => (
           <span
             key={t}
+            className={i === 1 ? `${M.bg} bg-soft ${M.ink}` : 'bg-base-100'}
             style={{
               fontFamily: MONO,
               fontSize: '12px',
-              color:
-                i === 1
-                  ? M.text
-                  : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
+              ...(i === 1
+                ? {}
+                : { color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }),
               padding: '3px 8px',
               borderRadius: '6px',
               border: `1px solid ${i === 1 ? M.color : 'var(--color-base-300)'}`,
-              backgroundColor: i === 1 ? M.tint : 'var(--color-base-100)',
             }}
           >
             {t}
@@ -220,12 +217,12 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
       </div>
       <div style={{ padding: '22px 22px 8px' }}>
         <span
+          className={M.ink}
           style={{
             fontFamily: MONO,
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
-            color: M.text,
           }}
         >
           {article.category}
@@ -287,6 +284,7 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           }}
         >
           <span
+            className={`${M.bg} bg-soft ${M.ink}`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -297,8 +295,6 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
               fontFamily: SANS,
               fontSize: '12px',
               fontWeight: 500,
-              color: M.text,
-              backgroundColor: M.tint,
               border: `1.5px solid ${M.color}`,
             }}
           >
@@ -459,8 +455,8 @@ export function CmsStructured() {
 function SchemaPanel({ fields }: { fields: [string, string][] }) {
   return (
     <div
+      className={`${M.bg} bg-soft`}
       style={{
-        backgroundColor: moduleTint(M.color),
         border: '1px solid var(--color-base-300)',
         borderRadius: '14px',
         overflow: 'hidden',
@@ -479,12 +475,12 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
       >
         <Dot color={M.color} size={8} />
         <span
+          className={M.ink}
           style={{
             fontFamily: MONO,
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
-            color: M.text,
           }}
         >
           content type · case study
@@ -553,12 +549,12 @@ function ResponsePanel() {
       >
         <Dot color={M.color} size={8} />
         <span
+          className={M.ink}
           style={{
             fontFamily: MONO,
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
-            color: M.text,
           }}
         >
           GET /v1/case-studies/atlas-supply
@@ -629,18 +625,20 @@ export function CmsEditor() {
                 display: 'flex',
                 gap: '13px',
                 padding: '18px 20px',
-                backgroundColor: 'var(--color-base-200)',
                 border: '1px solid var(--color-base-300)',
-                borderLeft: `3px solid ${M.color}`,
                 borderRadius: '12px',
                 marginBottom: '14px',
               }}
+              // The module hue rides the soft wash, NOT a 3px left stripe — the
+              // stripe is a retired brand device (and the most recognizable
+              // generated-UI tell). Same treatment as every other module card.
+              className={`${M.bg} bg-soft`}
             >
               <span
+                className={M.ink}
                 style={{
                   fontFamily: MONO,
                   fontSize: '12px',
-                  color: M.text,
                   flexShrink: 0,
                   paddingTop: '1px',
                 }}
@@ -730,12 +728,12 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
       </div>
       <div style={{ padding: '26px 30px 30px' }}>
         <span
+          className={M.ink}
           style={{
             fontFamily: MONO,
             fontSize: '11px',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
-            color: M.text,
           }}
         >
           {article.category}
@@ -863,24 +861,24 @@ export function CmsSeoAudit() {
       />
       <div className="mkt-seo-grid" style={{ marginTop: '52px' }}>
         <div
+          className={`${M.bg} bg-soft`}
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '18px',
             padding: '30px',
-            backgroundColor: moduleTint(M.color),
             border: '1px solid var(--color-base-300)',
             borderRadius: '14px',
           }}
         >
           <span
+            className={M.ink}
             style={{
               fontFamily: SANS,
               fontSize: '64px',
               fontWeight: 500,
               letterSpacing: '-0.03em',
               lineHeight: 1,
-              color: M.text,
             }}
           >
             98
@@ -925,6 +923,7 @@ export function CmsSeoAudit() {
               }}
             >
               <span
+                className={c.warn ? 'bg-warning bg-soft text-warning' : `${M.bg} bg-soft ${M.ink}`}
                 style={{
                   width: 22,
                   height: 22,
@@ -933,11 +932,9 @@ export function CmsSeoAudit() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  backgroundColor: c.warn ? '#FFFBEB' : M.tint,
-                  color: c.warn ? '#B45309' : M.text,
                 }}
               >
-                {c.warn ? <Bang size={12} /> : <Check size={12} color={M.text} />}
+                {c.warn ? <Bang size={12} /> : <Check size={12} color={M.color} />}
               </span>
               <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{c.label}</span>
               <span

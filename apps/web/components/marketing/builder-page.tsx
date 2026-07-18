@@ -4,7 +4,6 @@ import {
   Display,
   Dot,
   getModuleColor,
-  moduleTint,
   Section,
   SectionHeader,
   Spark,
@@ -176,24 +175,24 @@ function TheArc() {
         {cards.map((c, i) => (
           <div
             key={c.title}
+            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '18px',
               padding: '32px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-200)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <span
+                className={B.ink}
                 style={{
                   fontFamily: MONO,
                   fontSize: '11px',
                   letterSpacing: '0.05em',
                   textTransform: 'uppercase',
-                  color: B.text,
                 }}
               >
                 {c.kicker}
@@ -283,12 +282,12 @@ function HowItWorks() {
         {steps.map((s, i) => (
           <div
             key={s.n}
+            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '14px',
               padding: '30px 26px 34px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-100)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '210px',
@@ -384,6 +383,7 @@ function Capabilities() {
             }}
           >
             <span
+              className={`${B.bg} bg-soft`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -391,7 +391,6 @@ function Capabilities() {
                 width: 32,
                 height: 32,
                 borderRadius: '8px',
-                backgroundColor: B.tint,
               }}
             >
               <Dot color={B.color} size={9} />
@@ -461,24 +460,24 @@ function CodeOptional() {
         {rungs.map((r, i) => (
           <div
             key={r.tag}
+            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 24px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-100)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '200px',
             }}
           >
             <span
+              className={B.ink}
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: B.text,
               }}
             >
               {r.tag}
@@ -656,12 +655,12 @@ function WhatYouCanBuild() {
         {uses.map((u, i) => (
           <div
             key={u.title}
+            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'}
             style={{
               display: 'flex',
               flexDirection: 'column',
               gap: '12px',
               padding: '28px 26px',
-              backgroundColor: i === 0 ? moduleTint(B.color) : 'var(--color-base-200)',
               border: '1px solid var(--color-base-300)',
               borderRadius: '12px',
               minHeight: '200px',
@@ -712,12 +711,11 @@ function BuilderPricing() {
   return (
     <Section padding="lg">
       <div
-        className="mkt-stack-on-tablet"
+        className={`mkt-stack-on-tablet ${B.bg} bg-soft`}
         style={{
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '40px',
-          backgroundColor: moduleTint(B.color),
           border: '1px solid var(--color-base-300)',
           borderRadius: '12px',
           gap: '32px',

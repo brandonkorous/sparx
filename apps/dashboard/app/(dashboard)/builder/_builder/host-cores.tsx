@@ -12,6 +12,7 @@
 // labeled frame, so a newly-registered core is always at least legible on the canvas.
 
 import type { BuilderHost } from '@wizeworks/silicaui-builder/react';
+import type { HostNode } from '@wizeworks/silicaui-html';
 import { HOST_COMPONENTS, HOST_KEYS } from '@sparx/silica-catalog';
 
 // `HostRenderCtx` isn't re-exported by the builder, so derive the exact hook signature
@@ -190,12 +191,56 @@ function CardGridSkeleton() {
   );
 }
 
-/** The studio's `renderHostNode`: draw the skeleton for a pinned core, keyed by the
- *  node's `component`. A registered-but-unhandled key still renders a labeled frame. */
-export const renderHostSkeleton: RenderHostNode = (node, _ctx) => {
+/** The tenant's real brand mark on the canvas — logo and/or name, exactly as the
+ *  storefront's `site.brand` core renders it.
+ *
+ *  NOT a skeleton, deliberately. A grey chip would be worse than useless here: the whole
+ *  point of the core is "your logo shows up automatically", and an author who sees a
+ *  placeholder can't tell whether it worked. The data is already in the canvas resolver
+ *  root (`buildPreviewData` merges `getSitePreviewData`'s `site.identity`), so drawing
+ *  the truth costs nothing. Every other core stays a skeleton because it is a live
+ *  transaction that can't run on a canvas; a brand mark is just a logo and a word. */
+function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
+  const identity = (root as { site?: { identity?: { name?: unknown; logo?: unknown } } })?.site
+    ?.identity;
+  const name = typeof identity?.name === 'string' && identity.name ? identity.name : 'Your site';
+  const logo = identity?.logo as { url?: unknown } | null | undefined;
+  const logoUrl = typeof logo?.url === 'string' ? logo.url : null;
+  const show =
+    node.props?.show === 'logo' || node.props?.show === 'name' ? node.props.show : 'both';
+  // Mirror the storefront's degradation: "logo only" with no logo set would render an
+  // empty box, so fall back to the name.
+  const mode = show === 'logo' && !logoUrl ? 'name' : show;
+
+  return (
+    <span className="inline-flex items-center gap-2.5">
+      {logoUrl && (mode === 'logo' || mode === 'both') ? (
+        // A raw <img>, not next/image: an arbitrary tenant media URL, usually an SVG.
+        <img src={logoUrl} alt="" className="h-8 w-auto object-contain" />
+      ) : null}
+      {mode === 'name' || mode === 'both' ? (
+        <span className="text-base-content font-semibold">{name}</span>
+      ) : null}
+    </span>
+  );
+}
+
+/** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
+ *  brand core can draw the tenant's real mark. Every other core draws a skeleton, keyed
+ *  by the node's `component`; a registered-but-unhandled key still renders a labeled
+ *  frame. */
+export function makeRenderHostNode(root: unknown): RenderHostNode {
+  return (node, _ctx) => renderHostNodeInner(node, root);
+}
+
+function renderHostNodeInner(node: HostNode, root: unknown): React.ReactNode {
   const meta = HOST_COMPONENTS.find((c) => c.key === node.component);
   const label = meta?.label ?? node.component;
   switch (node.component) {
+    case HOST_KEYS.siteBrand:
+      // No CoreFrame: the brand sits inline in the navbar, and wrapping it in a labeled
+      // dashed box would misrepresent its real footprint in the chrome.
+      return <BrandMark root={root} node={node} />;
     case HOST_KEYS.commerceCart:
       return (
         <CoreFrame label={label}>
@@ -252,4 +297,4 @@ export const renderHostSkeleton: RenderHostNode = (node, _ctx) => {
         </CoreFrame>
       );
   }
-};
+}

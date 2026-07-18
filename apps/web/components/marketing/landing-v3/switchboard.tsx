@@ -63,10 +63,10 @@ export function LandingV3Switchboard() {
   );
 
   return (
-    <section id="modules" className="bg-accent m-6 rounded-4xl px-6 py-24 sm:px-8 lg:py-32">
+    <section id="modules" className="bg-base-100 m-6 rounded-4xl px-6 py-24 sm:px-8 lg:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-14">
-          <div className="max-w-3xl">
+          <div className="max-w-8xl">
             <Heading
               level={2}
               size="display"
@@ -81,6 +81,11 @@ export function LandingV3Switchboard() {
             >
               Switch on the rest when you&apos;re ready.
             </Heading>
+            <p className="text-accent-content/70 mt-6 text-2xl">
+              Switch a part on and it joins the story you already have. No migration, no second
+              login, no re-typing. Switch it off and your data stays exactly where it is. Pay for
+              the parts you use, nothing else.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -88,13 +93,12 @@ export function LandingV3Switchboard() {
               <ModuleToggleCard
                 key={m.id}
                 icon={MODULE_ICON[m.id]}
-                color={MODULE_HEX[m.id]}
+                color={m.id}
                 label={m.label}
                 title={m.title}
                 active={active.has(m.id)}
                 onToggle={() => toggle(m.id)}
                 badgeText={m.includedWith ? `Free with ${m.includedWith[0]}` : `$${m.price}/mo`}
-                badgeColor={active.has(m.id) ? 'primary' : 'neutral'}
               />
             ))}
             <StackSummaryCard

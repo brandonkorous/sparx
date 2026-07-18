@@ -1049,7 +1049,7 @@ const PAGES = MODULES.flatMap((m) => [
 // (Commerce overview) view. Section item + rail styles live in classes (not
 // inline) so the `:checked` rules can win on specificity.
 const INTERACTIVE_CSS = `
-.dsx-frame{position:relative;--m:${DEFAULT.color};--m-tint:${DEFAULT.tint};--m-text:${DEFAULT.text};}
+.dsx-frame{position:relative;--m:${DEFAULT.color};--m-tint:color-mix(in oklab, var(--m) 15%, var(--color-base-100));--m-text:var(--m);}
 .dsx-radio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 .dsx-railtile{color:color-mix(in oklab, var(--color-base-content) 50%, transparent);cursor:pointer;transition:background .15s ease,color .15s ease;}
 .dsx-railtile:hover{background:var(--color-base-200);color:color-mix(in oklab, var(--color-base-content) 70%, transparent);}
@@ -1068,7 +1068,7 @@ ${MODULES.map((m) => {
   const has = (suffix: string) =>
     ids.map((id) => `.dsx-frame:has(#dsx-${id}:checked)${suffix}`).join(',');
   return `
-${has('')}{--m:${m.color};--m-tint:${m.tint};--m-text:${m.text};}
+${has('')}{--m:${m.color};}
 ${has(` .dsx-panel--${m.key}`)}{display:flex;}
 ${has(` .dsx-railtile--${m.key}`)}{background:var(--m-tint);color:var(--m);}`;
 }).join('')}
@@ -1142,7 +1142,7 @@ function statusColor(value: string) {
  * wrap it in their own section shell/header/copy (the homepage's dashboard
  * section does this) rather than forking these ~2,200 lines.
  */
-export function DashboardFrame() {
+export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
   return (
     <>
       {/* The board is a wide, faithful recreation of the real app; on phones it
@@ -1160,12 +1160,22 @@ export function DashboardFrame() {
         Swipe to explore the dashboard →
       </span>
 
+      {/* `bleed` pulls the scroller out to the page gutter so the board can use the
+          full width on a phone. It is OPT-IN because it only cancels out if the
+          caller's section pads by exactly `--gutter-page` (clamp(20px, 5vw, 80px)) —
+          a section on Tailwind `px-6` gets a ~40px overshoot that escapes the
+          section and scrolls the whole page sideways. It's also wrong inside a
+          rounded card, where a full-bleed child spills past the corners. */}
       <div
         style={{
           overflowX: 'auto',
           WebkitOverflowScrolling: 'touch',
-          margin: '0 calc(var(--gutter-page) * -1)',
-          padding: '0 var(--gutter-page)',
+          ...(bleed
+            ? {
+                margin: '0 calc(var(--gutter-page) * -1)',
+                padding: '0 var(--gutter-page)',
+              }
+            : {}),
         }}
       >
         <div

@@ -38,7 +38,7 @@ export default function Error({
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-          <SparkMascot expression="sad" tone="indigo" size={104} bob={false} />
+          <SparkMascot expression="sad" tone="light" size={104} bob={false} />
         </div>
         <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px', color: 'inherit' }}>
           This page hit an error
@@ -53,7 +53,7 @@ export default function Error({
             type="button"
             onClick={reset}
             style={{
-              background: '#6366F1',
+              background: '#e04631',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
@@ -65,7 +65,7 @@ export default function Error({
           >
             Try again
           </button>
-          <a href="/" style={{ color: '#6366F1', fontSize: '14px', textDecoration: 'underline' }}>
+          <a href="/" style={{ color: '#e04631', fontSize: '14px', textDecoration: 'underline' }}>
             Back to sparx
           </a>
         </div>

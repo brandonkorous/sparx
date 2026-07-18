@@ -76,7 +76,10 @@ interface PublicTenantChrome {
   // The customer-facing SITE name (docs/49) — the active site, else the primary.
   // This is what the canvas chrome shows, NOT the tenant's legal/brand name.
   propertyName: string | null;
-  theme: { logoMediaId: string | null } | null;
+  /** The brand tagline — bindable as `site.identity.tagline`, so the canvas must
+   *  resolve it to the same value the storefront does. */
+  tagline?: string | null;
+  theme: { logoMediaId: string | null; logoDarkMediaId?: string | null } | null;
   socials?: { platform: string; url: string }[];
 }
 
@@ -107,16 +110,26 @@ export async function getSitePreviewData(propertySlug?: string | null): Promise<
       [payload.propertyName, payload.businessName].map((s) => s?.trim()).find((s) => s) ??
       payload.name;
     const logoUrl = publicMediaUrl(payload.theme?.logoMediaId ?? null, tenant.slug);
+    const logoDarkUrl = publicMediaUrl(payload.theme?.logoDarkMediaId ?? null, tenant.slug);
     const social = (payload.socials ?? []).filter(
       (s) =>
         typeof s?.platform === 'string' && typeof s?.url === 'string' && s.url.trim().length > 0
     );
     return {
-      identity: { name, tagline: '', logo: logoUrl ? { url: logoUrl, alt: name } : null },
+      identity: {
+        name,
+        // `null`, not '' — an empty string is a KNOWN-but-empty value that the
+        // resolver fills OVER the authored content, blanking the node. Previewing
+        // the tenant's real tagline is also the point: this root is what the canvas
+        // resolves `site.identity.*` against, so a hardcoded '' made the studio lie.
+        tagline: payload.tagline?.trim() ? payload.tagline : null,
+        logo: logoUrl ? { url: logoUrl, alt: name } : null,
+        logoDark: logoDarkUrl ? { url: logoDarkUrl, alt: name } : null,
+      },
       social,
     };
   } catch {
-    return { identity: { name: 'Brand', tagline: '', logo: null }, social: [] };
+    return { identity: { name: 'Brand', tagline: null, logo: null, logoDark: null }, social: [] };
   }
 }
 

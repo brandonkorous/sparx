@@ -62,6 +62,9 @@ export interface ResolvedSite {
   id: string;
   slug: string;
   name: string;
+  // The brand tagline (per-site override applied), bound as `site.identity.tagline`
+  // by the chrome. Nullable: an older api-rest doesn't return it.
+  tagline: string | null;
   settings: Record<string, unknown>;
   theme: SiteTheme | null;
   commerce: SiteCommerce;
@@ -285,6 +288,9 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).
       socials: data.socials ?? [],
+      // Defaults null on an older api-rest that doesn't return it — the chrome
+      // then renders whatever the node was authored with, rather than blanking.
+      tagline: data.tagline ?? null,
       // Defaults true so a storefront on an older api-rest (pre-`showSparxCredit`)
       // keeps showing the credit — the badge is always-on by default.
       showSparxCredit: data.showSparxCredit ?? true,

@@ -1,4 +1,9 @@
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Display, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { EARLY_HREF, SALES_HREF, signupHref } from './cta';
@@ -56,21 +61,21 @@ export function FinalCta() {
               alignItems: 'flex-start',
             }}
           >
-            <Button
-              size="xl"
-              variant="solid"
-              render={<a href={signupHref('final')} aria-label="Start your site" />}
+            <a
+              href={signupHref('final')}
+              aria-label="Start your site"
+              className={buttonClasses({ size: 'xl', variant: 'solid' })}
             >
               Start your site →
-            </Button>
-            <Button
-              size="xl"
-              variant="outline"
+            </a>
+            <a
+              href={SALES_HREF}
+              aria-label="Book a 20-min call"
+              className={buttonClasses({ size: 'xl', variant: 'outline' })}
               style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-              render={<a href={SALES_HREF} aria-label="Book a 20-min call" />}
             >
               Book a 20-min call
-            </Button>
+            </a>
             <span
               style={{
                 fontFamily: 'var(--font-mono)',

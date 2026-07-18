@@ -178,6 +178,9 @@ function makeFormat(currency: string, locale: string) {
 export interface SilicaSiteData {
   name: string;
   logoUrl?: string | null;
+  /** The dark-background logo. The tenant sets it in Site settings alongside the
+   *  light one; without it here, a dark-themed site has no way to bind it. */
+  logoDarkUrl?: string | null;
   tagline?: string | null;
   socials?: { platform: string; url: string }[];
 }
@@ -186,8 +189,12 @@ function siteRoot(site: SilicaSiteData): DataSources {
   const root: DataSources = {};
   setAtPath(root, 'site.identity', {
     name: site.name,
-    tagline: site.tagline ?? '',
+    // `null`, NOT '' — an empty string is a KNOWN-but-empty value, which the
+    // resolver fills over the authored content (blanking the node). `null` on a
+    // tenant with no tagline set reads as unset and leaves the authoring intact.
+    tagline: site.tagline ?? null,
     logo: site.logoUrl ? { url: site.logoUrl, alt: site.name } : null,
+    logoDark: site.logoDarkUrl ? { url: site.logoDarkUrl, alt: site.name } : null,
   });
   setAtPath(
     root,

@@ -26,7 +26,9 @@
    modifiers on the base ink (`text-base-content` muted, `/50` faint,
    `border-base-content/20` strong), which silicaui supports natively. */
 @plugin '@wizeworks/silicaui' {
-  colors: primary, secondary, accent, neutral, info, success, warning, error, danger;
+  colors:
+    primary, secondary, accent, neutral, info, success, warning, error, danger, module-builder,
+    module-commerce, module-dropship, module-inventory, module-chat, module-scheduling, module-ai;
 }
 
 html {

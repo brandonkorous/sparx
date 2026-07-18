@@ -82,6 +82,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { getActiveProperty } from '@/lib/sites';
 import type { SeoAuditRow } from '@/components/seo/types';
 import {
   CardLink,
@@ -338,7 +339,17 @@ export default async function BuilderOverviewPage() {
     listLayouts().catch(() => null),
     listComponentsFull().catch(() => null),
     api.get<SeoAuditRow[]>('/v1/seo/audits?type=builder_page').catch(() => null),
-    api.get<DomainView[]>('/v1/domains').catch(() => null),
+    // `/v1/domains` is a TENANT-wide route — it ignores the active-property header
+    // every other call here rides on, so it must be filtered explicitly. Resolve
+    // the property rather than reading the switcher cookie directly: the cookie is
+    // absent until someone switches sites, and an unfiltered call makes a
+    // multi-site tenant's overview report whichever site's canonical domain sorts
+    // first as "your site".
+    getActiveProperty()
+      .then((p) =>
+        api.get<DomainView[]>(`/v1/domains${p ? `?propertyId=${encodeURIComponent(p.id)}` : ''}`)
+      )
+      .catch(() => null),
     api.get<SiteAnalyticsSummary>('/v1/builder/analytics/summary').catch(() => null),
     api
       .get<SiteAnalyticsTimeseries>('/v1/builder/analytics/timeseries?grain=day')
@@ -456,7 +467,11 @@ export default async function BuilderOverviewPage() {
           <PageHeader
             icon={<Boxes className="h-5 w-5" />}
             title="Builder"
-            description="Design and manage everything visitors see on switchback.coffee."
+            description={
+              siteDomain
+                ? `Design and manage everything visitors see on ${siteDomain.host}.`
+                : 'Design and manage everything visitors see on your site.'
+            }
             actions={
               <>
                 <Button asChild variant="outline" leftIcon={<Eye className="h-4 w-4" />}>

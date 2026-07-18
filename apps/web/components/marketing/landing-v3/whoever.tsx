@@ -1,4 +1,10 @@
-import { Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { Heading, Text } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { signupHref } from '../cta';
 import { WhoeverVideo } from './whoever-video';
 
@@ -35,21 +41,20 @@ export function LandingV3Whoever() {
           </div>
           <div className="flex flex-col gap-3.5">
             <div className="flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                color="primary"
-                variant="solid"
-                render={<a href={signupHref('landing-v3-whoever')} aria-label="Start free" />}
+              <a
+                href={signupHref('landing-v3-whoever')}
+                aria-label="Start free"
+                className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
               >
                 Start free &rarr;
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                render={<a href="#modules" aria-label="Explore the modules" />}
+              </a>
+              <a
+                href="#modules"
+                aria-label="Explore the modules"
+                className={buttonClasses({ size: 'lg', variant: 'outline' })}
               >
                 Explore the modules
-              </Button>
+              </a>
             </div>
             <Text variant="caption">
               No card &middot; Cancel anytime &middot; Pay only for what you use

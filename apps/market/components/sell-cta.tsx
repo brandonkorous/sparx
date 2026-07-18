@@ -1,5 +1,5 @@
 // The "Sell on sparx.market" band that closes the home page (and is reusable on
-// other discovery surfaces). A bold solid primary (sparx indigo) surface + a real
+// other discovery surfaces). A bold solid primary (sparx Ember) surface + a real
 // photo of a small-business owner fulfilling orders, so the seller pitch lands with
 // a human image rather than a flat panel. Server component; solid fills only — no
 // gradient. The photo is stock (see lib/editorial), reserved for narrative.

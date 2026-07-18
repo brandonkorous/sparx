@@ -1,4 +1,5 @@
-import { Section, SectionHeader } from '../primitives';
+import { Badge } from '@wizeworks/silicaui-react';
+import { Section, SectionHeader, Text } from '../primitives';
 
 const NOTS: { not: string; because: string }[] = [
   { not: 'Not corporate blue', because: 'We left that on the table deliberately.' },
@@ -12,7 +13,7 @@ const NOTS: { not: string; because: string }[] = [
 export function NotSection() {
   return (
     <Section id="not" surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader
           accent="var(--color-module-ai)"
           headline="What sparx is not"
@@ -21,56 +22,25 @@ export function NotSection() {
 
         <div className="mkt-grid-2-1">
           {NOTS.map((n) => (
-            <div
-              key={n.not}
-              style={{
-                display: 'flex',
-                gap: '16px',
-                alignItems: 'flex-start',
-                padding: '22px 0',
-                borderTop: '1px solid var(--color-base-300)',
-              }}
-            >
-              <span
+            <div key={n.not} className="border-base-300 flex items-start gap-4 border-t py-[22px]">
+              {/* Same Badge, same variant as the Misuse markers — one treatment
+                  for "this is the wrong thing", not two hand-rolled circles. */}
+              <Badge
                 aria-hidden
-                style={{
-                  flexShrink: 0,
-                  marginTop: '2px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '22px',
-                  height: '22px',
-                  borderRadius: 'var(--radius-full)',
-                  border:
-                    '1px solid color-mix(in oklab, var(--color-base-content) 30%, transparent)',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  fontSize: '12px',
-                }}
+                color="danger"
+                variant="soft"
+                size="sm"
+                className="mt-0.5 shrink-0"
               >
                 ✕
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '16px',
-                    color: 'var(--color-base-content)',
-                  }}
-                >
+              </Badge>
+              <div className="flex flex-col gap-1">
+                <Text as="span" weight={500} tone="default">
                   {n.not}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text as="span" size={14} tone="muted">
                   {n.because}
-                </span>
+                </Text>
               </div>
             </div>
           ))}

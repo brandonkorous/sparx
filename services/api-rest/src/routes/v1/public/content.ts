@@ -521,6 +521,11 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       name: tenant.name,
       businessName: identity.businessName,
       propertyName: propertyNameRow?.name ?? null,
+      // The brand tagline, with the per-site override applied. Bindable as
+      // `site.identity.tagline` — it was resolved here but never returned, so the
+      // binding the picker offers could only ever resolve to an empty string (and
+      // an empty bound value REPLACES the authored text, blanking the node).
+      tagline: identity.tagline,
       // Platform attribution: whether this site shows the "Made with sparx" footer
       // credit. Defaults true so a site predating the column still shows it.
       showSparxCredit: propertyNameRow?.showSparxCredit ?? true,

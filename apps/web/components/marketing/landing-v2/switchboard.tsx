@@ -96,13 +96,12 @@ export function LandingV2Switchboard() {
               <ModuleToggleCard
                 key={m.id}
                 icon={MODULE_ICON[m.id]}
-                color={MODULE_HEX[m.id]}
+                color={m.id}
                 label={m.label}
                 title={m.title}
                 active={active.has(m.id)}
                 onToggle={() => toggle(m.id)}
                 badgeText={m.includedWith ? `Free with ${m.includedWith[0]}` : `$${m.price}/mo`}
-                badgeColor={active.has(m.id) ? 'primary' : 'neutral'}
               />
             ))}
             <StackSummaryCard

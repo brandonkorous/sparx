@@ -12,6 +12,10 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./react": {
+      "types": "./src/react/index.ts",
+      "default": "./src/react/index.ts"
+    },
     "./theme.css": "./src/theme.css",
     "./layers.css": "./src/layers.css"
   },
@@ -24,8 +28,18 @@
     "test": "vitest run --passWithNoTests",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.7"
   }

@@ -1,4 +1,9 @@
-import { Button } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Container, SectionHeader, Spark } from './primitives';
 import { Reveal } from './reveal';
 import { VideoMontage } from './video-montage';
@@ -58,22 +63,20 @@ export function WhoeverYouAre({
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button
-                size="lg"
-                color="primary"
-                variant="solid"
-                render={<a href={signupHref('whoever')} aria-label="Start free" />}
+              <a
+                href={signupHref('whoever')}
+                aria-label="Start free"
+                className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
               >
                 Start free →
-              </Button>
-              {/* <Button
-                                size="lg"
-                                color="secondary"
-                                variant="outline"
-                                render={<a href="#modules" aria-label="Explore the modules" />}
+              </a>
+              {/* <a
+                                href="#modules"
+                                aria-label="Explore the modules"
+                                className={buttonClasses({ size: 'lg', color: 'secondary', variant: 'outline' })}
                             >
                                 Explore the modules
-                            </Button> */}
+                            </a> */}
             </div>
             <span className="text-base-content">
               No card · Cancel anytime · Pay only for what you use

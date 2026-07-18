@@ -9,19 +9,22 @@ import { Badge, Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/sili
  */
 const PAINS = [
   {
-    num: '01',
+    num: 'Scattered',
     title: 'Your customers live in one app. Their order lives in another.',
     body: 'Every disconnected tool is another place to search, another bill to pay, and another chance for something important to fall through.',
+    color: 'error',
   },
   {
-    num: '02',
-    title: '"Simple" software made you the IT department.',
+    num: 'Complicated',
+    title: 'Every new tool solved one problem, and created another.',
     body: 'Evenings go to syncing lists, patching automations, updating stock counts, and figuring out which report is actually telling the truth.',
+    color: 'warning',
   },
   {
-    num: '03',
-    title: 'Growth means bolting on another subscription — and another login.',
-    body: 'Your business should get more capable as it grows, not more fragmented. sparx replaces the stack with one connected system instead.',
+    num: 'Connected',
+    title: "Growth shouldn't make your business more complicated.",
+    body: 'One story. One platform. One connected system that grows with you, so you can focus on building your business instead of managing software.',
+    color: 'success',
   },
 ];
 
@@ -41,8 +44,8 @@ export function LandingV3Story() {
               So did the mess.
             </Heading>
             <Text variant="lead" className="max-w-xl text-2xl">
-              Every tool you add to keep up ends up working against you. Here&apos;s the version of
-              that story most owners recognize.
+              Every new customer brought another tool. Every new tool brought another login. Before
+              long, running the business meant managing software instaed of servicng customers.
             </Text>
           </div>
 
@@ -50,8 +53,8 @@ export function LandingV3Story() {
             {PAINS.map((p) => (
               <Card key={p.num}>
                 <CardBody>
-                  <div className="flex items-start gap-5">
-                    <Badge color="secondary" variant="soft" size="lg" className="shrink-0">
+                  <div className="flex flex-col items-start gap-5">
+                    <Badge color={p.color} variant="soft" size="lg" className="shrink-0">
                       {p.num}
                     </Badge>
                     <div className="flex flex-col gap-2">

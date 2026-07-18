@@ -33,7 +33,7 @@ marketing site only.
    to kill. Before you design a section, write one line naming its **visual
    argument** — the device that makes the point _with layout_, the way
    [mockups/consolidate.html](mockups/consolidate.html) collapses six
-   module-colored tools into one indigo panel (before/after, struck-through
+   module-colored tools into one Ember panel (before/after, struck-through
    totals), or shows one customer record with seven module-colored signals to
    prove "one database." A section with no device is not designed yet. Vary the
    devices down the page — split layouts, ledgers, comparison panels, annotated
@@ -104,8 +104,8 @@ only — there is no bold-700 in this design language; weight 500 _is_ the
 `-0.025em` below. Mono is for labels, code, prices' fine print, "source" tags —
 small, used sparingly as an engineered accent. Headlines are sentence case.
 
-**The spark.** `sparx` is **always lowercase**; the **"x" is indigo `#6366F1`**.
-The recurring brand moment is the **indigo period** — a colored `.` closing a
+**The spark.** `sparx` is **always lowercase**; the **"x" is sparx Ember `#e04631`**.
+The recurring brand moment is the **Ember period** — a colored `.` closing a
 headline ("live**.**" "ignited**.**"). On a colored or dark surface the spark
 flips to white. Don't overuse it — one spark per headline, where it punctuates.
 
@@ -116,7 +116,7 @@ a section tag where one is truly needed; an empty "THE PLATFORM" category label
 is not.)
 
 **Color = identity, used with restraint.** The canvas is near-white
-(`#FAFAFA` page / `#FFFFFF` surface) on near-black ink (`#0A0A0A`); indigo is the
+(`#FAFAFA` page / `#FFFFFF` surface) on near-black ink (`#0A0A0A`); Ember is the
 one brand accent. Each **module owns a hue** that appears as signals (dots, the
 spark, a card's top stripe) — not flood fill. **A module page's hero takes that
 module's TINTED background** — the hue's light tint (`getModuleColor(module).tint`,
@@ -281,7 +281,7 @@ templates; they are the bespoke-page quality bar.
   `--color-bg-page` `--color-bg-surface` `--color-bg-subtle`,
   `--color-text-primary` `--color-text-secondary` `--color-text-tertiary`,
   `--color-border-default` `--color-border-strong`,
-  `--sparx-primary` (`#6366F1`) `--sparx-primary-hover`,
+  `--color-primary` (`#e04631`) `--sparx-primary-hover`,
   `--module-{builder|commerce|cms|crm|email|b2b|ai|dropship}`,
   `--font-sans` `--font-mono`, `--radius-{sm..xl|full}`,
   `--shadow-{sm|md|lg}`, `--gutter-page` `--container-max`,
@@ -315,7 +315,7 @@ makeMetadata('<slug>')`. Keep/maintain the page's entry in
   repeated? Is there at least one band change and one near-black beat?
 - **Hierarchy**: does the eye land on the headline, then the proof, then the CTA —
   in that order — without a kicker label propping it up?
-- **Color discipline**: is indigo the accent and module hues used as _signals_,
+- **Color discipline**: is Ember the accent and module hues used as _signals_,
   or is the page flooded with fill? Is the spark used once per headline, on
   purpose?
 - **Density & rhythm**: enough whitespace; sections breathe; nothing cramped or

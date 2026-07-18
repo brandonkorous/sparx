@@ -7,6 +7,8 @@
 // then template → workspace → domain → payments → launch. Payments is conditional
 // on a selling module being on; launch is the preview-and-publish screen.
 
+import type { BlueprintVertical } from '@sparx/story-schemas';
+
 export type OnboardingStepKey =
   | 'modules'
   | 'template'
@@ -23,7 +25,9 @@ export interface OnboardingCompleted {
   payments: boolean;
 }
 
-export type BlueprintVertical = 'retail' | 'b2b' | 'content' | 'services';
+/** The story grammar's industry starters pick a vertical, so `@sparx/story-schemas`
+ *  owns the union; re-exported here as the wizard's own vocabulary. */
+export type { BlueprintVertical };
 
 /** A blueprint as the template gallery renders it — the catalog summary plus its
  *  "what's inside" counts and this site's install state. Mirrors one element of

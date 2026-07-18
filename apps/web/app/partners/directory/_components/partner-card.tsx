@@ -2,7 +2,7 @@
 // state, so it's usable from the SSR directory page AND the client load-more
 // island (it imports only TYPES from lib/partners). Shows the tier badge,
 // location or Remote, a short bio, specialty tags, and a "Visit website" CTA when
-// the partner lists a URL. Certified partners carry the platform-indigo badge.
+// the partner lists a URL. Certified partners carry the platform-Ember badge.
 
 import { Badge } from '@wizeworks/silicaui-react';
 import { partnerLocation, TIER_META, type PartnerCard as Card } from '@/lib/partners';

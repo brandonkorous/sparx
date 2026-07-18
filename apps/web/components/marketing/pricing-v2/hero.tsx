@@ -1,4 +1,10 @@
-import { Badge, Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { Badge, Heading, Text } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { signupHref } from '../cta';
 import { MODULE_HEX } from '../modules-catalog';
 
@@ -55,21 +61,20 @@ export function PricingV2Hero() {
               </Badge>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button
-                size="xl"
-                color="primary"
-                variant="solid"
-                render={<a href={signupHref('pricing-v2-hero')} aria-label="Start free" />}
+              <a
+                href={signupHref('pricing-v2-hero')}
+                aria-label="Start free"
+                className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
               >
                 Start free &rarr;
-              </Button>
-              <Button
-                size="xl"
-                variant="outline"
-                render={<a href="#switchboard" aria-label="Price your stack" />}
+              </a>
+              <a
+                href="#switchboard"
+                aria-label="Price your stack"
+                className={buttonClasses({ size: 'xl', variant: 'outline' })}
               >
                 Price your stack &darr;
-              </Button>
+              </a>
             </div>
           </div>
 

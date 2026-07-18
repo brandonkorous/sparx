@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
+import { connector as conn } from '@sparx/story-schemas';
 import { CLAUSE, TENSE, AUDIENCE, industryOf, type AudienceKey } from '../_lib/clauses';
 import { flatUnused, type StoryState } from '../_lib/story-state';
 import { tintStyle } from './colors';
@@ -26,12 +27,6 @@ const NEUTRAL_TINT: CSSProperties = {
   color: 'color-mix(in oklch, var(--color-base-content) 60%, transparent)',
 };
 const audienceTint = (a: AudienceKey): CSSProperties => tintStyle(AUDIENCE[a].kind);
-
-function conn(i: number, n: number): string {
-  if (i === 0) return '';
-  if (i === n - 1) return n > 2 ? ', and ' : ' and ';
-  return ', ';
-}
 
 export function StoryCanvas({
   story,

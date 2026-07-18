@@ -21,7 +21,7 @@ export const EMAIL_DESIGN = {
    *  falls back to it when no brand font is compiled. */
   fontFamily: 'Helvetica, Arial, sans-serif',
   colors: {
-    brand: '#6366F1', // sparx Indigo — accent only, never large fills.
+    brand: '#e04631', // sparx spark — accent only, never large fills.
     textPrimary: '#0F172A',
     textMuted: '#64748B',
     textInverse: '#FFFFFF',

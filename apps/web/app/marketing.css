@@ -1307,6 +1307,12 @@ a.mkt-module-tile:hover {
   transform-origin: center;
   transition: transform 0.14s ease;
 }
+/* The wink expression: the left eye winks closed-and-open on a loop (a live
+   gesture, not a permanently-closed eye). Drives the eye's own transform, so the
+   component omits its inline scaleY when winking. */
+.spark-mascot__eye--wink {
+  animation: spark-wink 2.8s ease-in-out infinite;
+}
 .spark-mascot__mouth {
   transition: d 0.3s ease;
 }
@@ -1329,9 +1335,22 @@ a.mkt-module-tile:hover {
     transform: scaleY(0.12);
   }
 }
+@keyframes spark-wink {
+  0%,
+  36%,
+  64%,
+  100% {
+    transform: scaleY(1);
+  }
+  46%,
+  54% {
+    transform: scaleY(0.1);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .spark-mascot--bob,
-  .spark-mascot__eyes--blink {
+  .spark-mascot__eyes--blink,
+  .spark-mascot__eye--wink {
     animation: none;
   }
 }

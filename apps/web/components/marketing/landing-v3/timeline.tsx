@@ -55,10 +55,15 @@ export function LandingV3Timeline() {
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           <Reveal className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+            {/* Starts a step below the other sections' `text-6xl`: this headline owns
+                the page's longest unbreakable word ("extraordinary"), which at 60px
+                is ~353px and overflowed a 294px phone column — inline text overflow
+                doesn't grow the box, so it scrolled the page without any element
+                visibly sticking out. */}
             <Heading
               level={2}
               size="display"
-              className="text-neutral-content text-6xl leading-[0.95] tracking-tight sm:text-7xl"
+              className="text-neutral-content text-5xl leading-[0.95] tracking-tight sm:text-6xl md:text-7xl"
             >
               One ordinary day. One extraordinary advantage.
             </Heading>

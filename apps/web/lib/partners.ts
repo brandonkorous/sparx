@@ -109,7 +109,7 @@ export function fetchPartner(id: string): Promise<PartnerProfile | null> {
 }
 
 /** Tier display metadata — label + the @sparx/ui Badge color slot. Certified
- *  wears the platform indigo (primary, top of directory); registered reads as a
+ *  wears the platform Ember (primary, top of directory); registered reads as a
  *  reviewed cyan/info; informal is a neutral, unverified pill. */
 export const TIER_META: Record<PartnerTier, { label: string; color: string }> = {
   certified: { label: 'Certified', color: 'primary' },

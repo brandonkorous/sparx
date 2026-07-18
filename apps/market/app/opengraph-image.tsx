@@ -4,6 +4,13 @@
 // merchant banner) override this with their own opengraph-image later.
 
 import { ImageResponse } from 'next/og';
+import {
+  BRAND,
+  WORDMARK_ASPECT,
+  WORDMARK_BODY_PATHS,
+  WORDMARK_VIEWBOX,
+  WORDMARK_X_PATH,
+} from '@sparx/brand';
 
 export const runtime = 'edge';
 export const alt = 'sparx.market — Shop independent sellers';
@@ -14,7 +21,7 @@ export const contentType = 'image/png';
 // imported from @sparx/commerce-schemas) so the edge bundle stays tiny and the
 // card never pulls a zod dependency into the OG runtime.
 const CATEGORY_DOTS = [
-  '#6366F1', // auto — sparx indigo
+  BRAND.primary, // auto — sparx spark
   '#EC4899', // beauty
   '#14B8A6', // home
   '#F97316', // fashion
@@ -55,8 +62,19 @@ export default function Image() {
             letterSpacing: '-0.03em',
           }}
         >
-          <span>spar</span>
-          <span style={{ color: '#6366F1' }}>x</span>
+          <div style={{ display: 'flex' }}>
+            <svg
+              width={Math.round(40 * WORDMARK_ASPECT)}
+              height={40}
+              viewBox={WORDMARK_VIEWBOX}
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {WORDMARK_BODY_PATHS.map((d) => (
+                <path key={d} d={d} fill="#ffffff" />
+              ))}
+              <path d={WORDMARK_X_PATH} fill={BRAND.primary} />
+            </svg>
+          </div>
           <span style={{ color: '#A1A1AA' }}>.market</span>
         </div>
         <div
@@ -65,9 +83,9 @@ export default function Image() {
             alignItems: 'center',
             gap: 12,
             padding: '8px 18px',
-            border: '1px solid #1E1B4B',
+            border: `1px solid ${BRAND.primary}33`,
             borderRadius: 9999,
-            backgroundColor: '#0F0B2E',
+            backgroundColor: `${BRAND.primary}1A`,
           }}
         >
           <div
@@ -75,7 +93,7 @@ export default function Image() {
               width: 8,
               height: 8,
               borderRadius: 9999,
-              backgroundColor: '#818CF8',
+              backgroundColor: BRAND.primary,
             }}
           />
           <span
@@ -83,7 +101,7 @@ export default function Image() {
               fontWeight: 500,
               fontSize: 16,
               letterSpacing: '0.08em',
-              color: '#818CF8',
+              color: BRAND.primary,
               textTransform: 'uppercase',
             }}
           >
@@ -113,7 +131,7 @@ export default function Image() {
                 width: 24,
                 height: 24,
                 borderRadius: 9999,
-                backgroundColor: '#6366F1',
+                backgroundColor: BRAND.primary,
                 marginLeft: 4,
                 marginBottom: 14,
               }}
