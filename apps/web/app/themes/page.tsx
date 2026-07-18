@@ -1,6 +1,7 @@
-// Themes are now a marketplace category (docs/60 Phase 5). This standalone route
-// permanently redirects to the marketplace's themes browse (a coming-soon teaser
-// until the themes catalog is seeded in Phase 4).
+// Themes are now an extension-catalog category (docs/60 Phase 5). This standalone
+// route permanently redirects to the catalog's themes browse, which is live
+// (`status: 'live'` in lib/marketplace-registry.ts) — not the coming-soon teaser
+// it was when this redirect was written.
 
 import { permanentRedirect } from 'next/navigation';
 

@@ -31,12 +31,22 @@ export async function generateMetadata({
   const { category, slug } = await params;
   const item = await fetchListing(category, slug);
   if (!item) return { title: 'Marketplace — sparx' };
-  const image = item.media.find((m) => m.kind === 'image')?.url;
+  const description = item.tagline ?? item.description ?? undefined;
   return {
     title: `${item.name} — sparx Marketplace`,
-    description: item.tagline ?? item.description ?? undefined,
+    description,
     alternates: { canonical: `/market/${category}/${slug}` },
-    openGraph: image ? { images: [{ url: image }] } : undefined,
+    // No `images` here on purpose. Setting it would override the generated card
+    // in ./opengraph-image.tsx with the listing's raw media URL — an
+    // arbitrary-dimension CDN asset with no og:image:width/height/type, which
+    // LinkedIn drops. `url` must be per-page: LinkedIn de-duplicates shares by
+    // og:url, so inheriting the layout's site-root value collapsed every listing
+    // share onto the homepage's cached preview.
+    openGraph: {
+      title: `${item.name} — sparx Marketplace`,
+      description,
+      url: `https://sparx.works/market/${category}/${slug}`,
+    },
   };
 }
 

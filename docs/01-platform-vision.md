@@ -1,8 +1,8 @@
 # sparx Platform — Vision & Strategy
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -136,4 +136,4 @@ sparx owns a portfolio of domains creating independent SEO acquisition channels:
 - **sparx.host** — Managed hosting product marketing (currently 301 → sparx.works/hosting)
 - **sparx.software** — Developer portal: SDK docs, API reference, MCP guides (currently 301 → sparx.works/docs)
 - **sparx.exchange** — Defensive registration (currently 301 → sparx.works)
-- **sparx.market** — Future theme/plugin/connector marketplace
+- **sparx.market** — The public product marketplace, live as its own app (`apps/market`): shoppers browse and buy across every tenant selling publicly. Note this is NOT the theme/plugin/connector catalog the domain was originally reserved for — that shipped as the extension catalog at `sparx.works/market`, and the two are separate products.

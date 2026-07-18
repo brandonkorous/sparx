@@ -35,7 +35,13 @@ The per-tenant `sitemap.xml` previously listed only CMS `content_entries`. It no
 the site serves, all read in one RLS-scoped round-trip:
 
 - the home page (`/`);
-- published CMS entries (unchanged — via the content type's `urlPattern`);
+- published CMS entries — via the content type's `urlPattern`, which doubles as the CMS's
+  "is this type routable" flag (the dashboard gates the slug field on `Boolean(urlPattern)`), so a
+  type without one is correctly absent. **Exception (2026-07-18):** `apps/site` ships a hardcoded
+  `/blog/[slug]` route that resolves any published `blog_post` by slug regardless of `urlPattern`,
+  so those posts were reachable and indexable while being silently missing from the sitemap.
+  `IMPLICIT_URL_PATTERNS` in the route supplies `/blog/{slug}` as a fallback; a type's own
+  `urlPattern` still wins when set. Any future hardcoded content route needs an entry there;
 - **active products** (`/products/{handle}`, mirroring the public PDP filter `status='active' AND deleted_at IS NULL`);
 - **collections** (`/collections/{handle}`, `deleted_at IS NULL`);
 - **published Builder singleton pages** that own a slug (`/{slug}`), excluding any flagged `noindex`.
@@ -138,10 +144,23 @@ A second pass landed the lower-risk web-best-practice gaps:
   skipped** for now (no DSN/dependency).
 - **Core Web Vitals** — `useReportWebVitals` → PostHog (`web_vitals` event) on marketing + dashboard.
   Site CWV waits on its consent-gated analytics path ([42](42-legal-and-consent.md)).
-- **Marketing sitemap completeness** — `apps/web/app/sitemap.ts` now lists the substantial static
-  routes (`/security`, `/legal/{privacy,terms,dpa,aup}`) alongside the home + module pages; legal
-  `lastModified` tracks the document revision from `@sparx/legal`. `ComingSoon` stubs stay excluded
-  on purpose (thin placeholders → soft-404 risk).
+- **Marketing sitemap completeness** — `apps/web/app/sitemap.ts` lists the substantial static
+  routes (`/platform`, `/features`, `/pricing`, `/partners{,/directory}`, `/bootcamp`, `/customers`,
+  `/security`, `/brand`, `/legal/{privacy,terms,dpa,aup}`) alongside the home + module pages, plus
+  the registry-driven `/tools`, `/careers`, and published bootcamp slugs; legal `lastModified`
+  tracks the document revision from `@sparx/legal`. `ComingSoon` stubs stay excluded on purpose
+  (thin placeholders → soft-404 risk).
+- **Extension-catalog coverage (2026-07-18)** — the `/market` tree (the blueprints/themes/
+  integrations/components catalog) was shipped in Phase 5 but never added to the sitemap, so the
+  whole catalog was uncrawlable while `robots.ts` carried a comment asserting the opposite.
+  `sitemap.ts` now enumerates `/market`, each `LIVE_CATEGORIES` entry, and every listing slug from
+  the public catalog API (`lib/marketplace.ts → fetchListingSlugs`, which walks `next_cursor` so a
+  category past one page is never silently dropped, and logs when it hits its bound). Only the
+  UNFILTERED category URL is listed — faceted views are `noindex` and robots-disallowed.
+  **Do not confuse `sparx.works/market` with `sparx.market`**: the former is the extension catalog,
+  the latter a separately deployed app (`apps/market`) where shoppers buy tenant products. An early
+  plan had `sparx.market` 301 into `sparx.works/market`; that was abandoned and the redirect no
+  longer exists.
 - **Tenant social cards (dynamic OG fallback)** — a tenant-branded Satori card so every shareable
   site URL has a real social image even with no asset of its own. `apps/site/app/api/og`
   is a pure renderer (title/eyebrow/brand/accent as query params — no tenant lookup, no data

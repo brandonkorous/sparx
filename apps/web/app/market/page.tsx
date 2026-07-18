@@ -1,8 +1,14 @@
-// The public marketplace home (docs/60 §4 Home tier, Phase 5). Curated entry:
-// hero, the category grid (live + coming-soon), and a featured strip of the most
-// popular blueprints. Served at /market so the sparx.market vanity domain (Caddy
-// 301 → sparx.works/market) lands directly here. Indexed — this is the top of the
-// acquisition funnel.
+// The public extension-catalog home (docs/60 §4 Home tier, Phase 5). Curated
+// entry: hero, the category grid (live + coming-soon), and a featured strip of
+// the most popular blueprints. Indexed — this is the top of the acquisition
+// funnel.
+//
+// NOT the same product as sparx.market. This catalog sells blueprints, themes,
+// integrations, and components TO businesses building a site; sparx.market is a
+// separate deployed app (apps/market) where shoppers buy products FROM those
+// businesses, reverse-proxied on its own domain by Caddy. An earlier plan had
+// sparx.market 301 into this path — that was abandoned when the marketplace
+// became its own app, so do not reintroduce a redirect between the two.
 
 import type { Metadata } from 'next';
 import { Button } from '@wizeworks/silicaui-react';

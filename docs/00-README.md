@@ -3,7 +3,7 @@
 **Platform:** sparx (sparx.works)
 **Company:** WizeWorks (wize.works)
 **Author:** Brandon Korous (me@brandonkorous.com)
-**Last Updated:** 2026-06-26
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -15,19 +15,19 @@ sparx is to WizeWorks what Shopify is to its parent company — except sparx spa
 
 ## Domain Portfolio
 
-| Domain           | Purpose                                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `sparx.works`    | Primary brand: marketing site, `app`, `api`, `mcp`                                                                                    |
-| `sparx.zone`     | Tenant sites (`acme.sparx.zone`) + `customers.sparx.zone` (custom-domain CNAME target). Shopify-style split for reputation isolation. |
-| `sparx.email`    | Postal sending infrastructure + platform→tenant transactional emails (replaces planned `sparx.mx` which was unavailable)              |
-| `sparx.host`     | Managed hosting product marketing (301 → sparx.works/hosting until built)                                                             |
-| `sparx.software` | Developer portal: SDK docs, API reference, MCP guides (301 → sparx.works/docs until built)                                            |
-| `sparx.exchange` | Defensive registration (301 → sparx.works)                                                                                            |
-| `sparx.market`   | Future theme/plugin/connector marketplace                                                                                             |
-| `sparxcms.com`   | CMS module marketing site                                                                                                             |
-| `sparxcrm.com`   | CRM module marketing site                                                                                                             |
-| `sparxemail.com` | Email module marketing site                                                                                                           |
-| `sparxb2b.com`   | B2B/wholesale module marketing site                                                                                                   |
+| Domain           | Purpose                                                                                                                                                                                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sparx.works`    | Primary brand: marketing site, `app`, `api`, `mcp`                                                                                                                                                                                                                    |
+| `sparx.zone`     | Tenant sites (`acme.sparx.zone`) + `customers.sparx.zone` (custom-domain CNAME target). Shopify-style split for reputation isolation.                                                                                                                                 |
+| `sparx.email`    | Postal sending infrastructure + platform→tenant transactional emails (replaces planned `sparx.mx` which was unavailable)                                                                                                                                              |
+| `sparx.host`     | Managed hosting product marketing (301 → sparx.works/hosting until built)                                                                                                                                                                                             |
+| `sparx.software` | Developer portal: SDK docs, API reference, MCP guides (301 → sparx.works/docs until built)                                                                                                                                                                            |
+| `sparx.exchange` | Defensive registration (301 → sparx.works)                                                                                                                                                                                                                            |
+| `sparx.market`   | **Live** — the public product marketplace (`apps/market`, its own GKE deployment). Shoppers browse and buy from every tenant selling publicly. The theme/blueprint/integration catalog this domain was originally reserved for lives at `sparx.works/market` instead. |
+| `sparxcms.com`   | CMS module marketing site                                                                                                                                                                                                                                             |
+| `sparxcrm.com`   | CRM module marketing site                                                                                                                                                                                                                                             |
+| `sparxemail.com` | Email module marketing site                                                                                                                                                                                                                                           |
+| `sparxb2b.com`   | B2B/wholesale module marketing site                                                                                                                                                                                                                                   |
 
 ## WizeWorks Portfolio Context
 

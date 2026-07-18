@@ -72,3 +72,8 @@ apps/dashboard/_marketplace-assets.mjs
 # land here at runtime; in prod the bytes live in GCS and this dir never exists. It is
 # machine-local runtime state, never source.
 **/.media-local/
+
+# Adobe Illustrator lock/scratch files — written while a .ai doc is open and
+# regenerated automatically. They are ~duplicates of the .ai (multi-MB) and must
+# never be versioned.
+~ai-*.tmp

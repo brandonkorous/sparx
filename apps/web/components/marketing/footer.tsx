@@ -66,7 +66,11 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Pricing', href: '/pricing' },
       { label: 'Free tools', href: '/tools' },
       { label: 'Themes', href: '/market/themes' },
-      { label: 'Marketplace', href: '/market' },
+      // "Blueprints & add-ons", not "Marketplace": /market is the catalog of
+      // things you install into your own site, while sparx.market is the separate
+      // shopping destination. Labelling this one "Marketplace" made the two read
+      // as the same product.
+      { label: 'Blueprints & add-ons', href: '/market' },
       { label: 'Managed hosting', href: '/hosting' },
       { label: 'Enterprise', href: '/enterprise' },
       { label: 'Migration tools', href: '/migrate' },
