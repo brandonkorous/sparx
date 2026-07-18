@@ -20,7 +20,7 @@ const legacyFrame = (wordmarkClass = 'wordmark'): Node =>
           el('div', 'flex gap-6', { children: [el('a', '', { text: 'About' })] }),
         ],
       }),
-      el('main', 'flex-1', { children: [{ kind: 'outlet' } as Node] }),
+      el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
       el('footer', '', { children: [el('span', '', { text: 'Acme' })] }),
     ],
   });
@@ -72,7 +72,7 @@ describe('upgradeFrameChrome — healing a stale frame', () => {
     const frame = el('div', '', {
       children: [
         el('nav', '', { children: [el('a', '', { text: 'About' })] }),
-        el('main', '', { children: [{ kind: 'outlet' } as Node] }),
+        el('main', '', { children: [{ kind: 'outlet' }] }),
         el('footer', '', {
           children: [bind(atom('Wordmark', '', { text: 'Acme' }), 'site.identity.name')],
         }),
