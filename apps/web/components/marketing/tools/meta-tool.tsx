@@ -2,22 +2,15 @@
 
 import * as React from 'react';
 import { Input, Textarea } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
 function counter(len: number, max: number): React.ReactNode {
-  const over = len > max;
   return (
-    <span
-      style={{
-        color: over
-          ? 'var(--color-danger)'
-          : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
-    >
+    <span className={len > max ? 'text-danger' : 'text-ink-subtle'}>
       {len}/{max}
     </span>
   );
@@ -103,94 +96,40 @@ export function MetaTool() {
 
       <OutputPane>
         <Panel title="Google preview">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-            <span style={{ fontFamily: 'arial, sans-serif', fontSize: '12px', color: '#202124' }}>
+          {/* SIMULATION — a Google result. Deliberately NOT silica: Google's own
+              arial + link/URL/snippet hexes, so the preview reads as the real thing. */}
+          <div className="flex flex-col gap-[3px] font-[arial,sans-serif]">
+            <span className="text-[12px] text-[#202124]">
               {host}
-              {crumb ? <span style={{ color: '#5f6368' }}> › {crumb}</span> : null}
+              {crumb ? <span className="text-[#5f6368]"> › {crumb}</span> : null}
             </span>
-            <span
-              style={{
-                fontFamily: 'arial, sans-serif',
-                fontSize: '20px',
-                color: '#1a0dab',
-                lineHeight: 1.3,
-              }}
-            >
+            <span className="text-[20px] leading-[1.3] text-[#1a0dab]">
               {clip(title || 'Your page title', 60)}
             </span>
-            <span
-              style={{
-                fontFamily: 'arial, sans-serif',
-                fontSize: '14px',
-                color: '#4d5156',
-                lineHeight: 1.5,
-              }}
-            >
+            <span className="text-[14px] leading-[1.5] text-[#4d5156]">
               {clip(description || 'Your meta description shows here.', 160)}
             </span>
           </div>
         </Panel>
 
         <Panel title="Social card">
-          <div
-            style={{
-              borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden',
-              border: '1px solid var(--color-base-300)',
-            }}
-          >
+          {/* SIMULATION — a social share unfurl (image over a compact meta block).
+              Kept bespoke so it reads as another platform's card, not a sparx Card. */}
+          <div className="border-base-300 overflow-hidden rounded-lg border">
             <div
-              style={{
-                aspectRatio: '1200 / 630',
-                backgroundColor: 'var(--color-base-200)',
-                backgroundImage: image ? `url("${image}")` : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              className="bg-base-200 flex aspect-[1200/630] items-center justify-center bg-cover bg-center"
+              style={image ? { backgroundImage: `url("${image}")` } : undefined}
             >
               {!image ? (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  og:image preview
-                </span>
+                <span className="text-ink-subtle text-[13px]">og:image preview</span>
               ) : null}
             </div>
-            <div style={{ padding: '12px 14px', backgroundColor: 'var(--color-base-100)' }}>
-              <div
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '11px',
-                  textTransform: 'uppercase',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {host}
-              </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '15px',
-                  fontWeight: 600,
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div className="bg-base-100 px-3.5 py-3">
+              <div className="text-ink-subtle text-[11px] uppercase">{host}</div>
+              <div className="text-base-content text-[15px] font-semibold">
                 {clip(title || 'Your page title', 70)}
               </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              <div className="text-ink-muted text-[13px]">
                 {clip(description || 'Your description.', 120)}
               </div>
             </div>
@@ -209,7 +148,7 @@ export function MetaTool() {
             />
           }
         >
-          <pre className="tool-code">{snippet}</pre>
+          <CodeBlock>{snippet}</CodeBlock>
         </Panel>
       </OutputPane>
     </Workbench>

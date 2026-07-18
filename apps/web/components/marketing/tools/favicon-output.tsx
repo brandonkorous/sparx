@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 import { Download, Package } from 'lucide-react';
-import { Button } from '@wizeworks/silicaui-react';
-import { Panel, CopyButton } from './ui-kit';
+import { Button, Card, CardBody } from '@wizeworks/silicaui-react';
+import { Text } from '../primitives';
+import { Panel, CopyButton, CodeBlock } from './ui-kit';
 import { FaviconPreviews } from './favicon-previews';
 import type { FaviconResult } from './lib/favicon';
 import { downloadBlob, downloadText } from './lib/download';
@@ -77,79 +78,37 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
           </Button>
         }
       >
-        <ul
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-            gap: '10px',
-            listStyle: 'none',
-            margin: 0,
-            padding: 0,
-          }}
-        >
+        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2.5 p-0">
           {result.assets.map((asset) => (
-            <li
-              key={asset.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '8px 10px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-base-300)',
-              }}
-            >
-              <span
-                className="tool-checkerboard"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '6px',
-                  flexShrink: 0,
-                  overflow: 'hidden',
-                }}
-              >
-                {urls[asset.name] ? (
-                  <img src={urls[asset.name]} alt="" width={28} height={28} />
-                ) : null}
-              </span>
-              <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '11.5px',
-                    color: 'var(--color-base-content)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {asset.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '11px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  {asset.label}
-                </span>
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                color="neutral"
-                size="sm"
-                shape="square"
-                aria-label={`Download ${asset.name}`}
-                onClick={() => downloadBlob(asset.blob, asset.name)}
-              >
-                <Download className="h-4 w-4" />
-              </Button>
+            <li key={asset.name}>
+              <Card className="h-full">
+                <CardBody className="flex-row items-center gap-2.5 p-2">
+                  <span className="tool-checkerboard inline-flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md">
+                    {urls[asset.name] ? (
+                      <img src={urls[asset.name]} alt="" width={28} height={28} />
+                    ) : null}
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <Text as="span" size={12} mono tone="default" className="truncate">
+                      {asset.name}
+                    </Text>
+                    <Text as="span" size={11} tone="subtle">
+                      {asset.label}
+                    </Text>
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    color="neutral"
+                    size="sm"
+                    shape="square"
+                    aria-label={`Download ${asset.name}`}
+                    onClick={() => downloadBlob(asset.blob, asset.name)}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </CardBody>
+              </Card>
             </li>
           ))}
         </ul>
@@ -170,7 +129,7 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
       <Panel
         title="Add it to your site"
         action={
-          <span style={{ display: 'inline-flex', gap: '6px' }}>
+          <span className="inline-flex gap-1.5">
             <Button
               type="button"
               size="sm"
@@ -192,7 +151,7 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
           </span>
         }
       >
-        <pre className="tool-code">{snippet}</pre>
+        <CodeBlock>{snippet}</CodeBlock>
         <div>
           <CopyButton value={snippet} label="Copy snippet" toastLabel="Snippet copied" />
         </div>

@@ -1,9 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { FileUpload, ColorPicker, toast } from '@sparx/ui';
-import { Input, Switch, Range } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
+import { toast } from '@sparx/ui';
+import { EmptyState, FileUpload, Input, Switch } from '@wizeworks/silicaui-react';
+import { ImageUp } from 'lucide-react';
+import { Text } from '../primitives';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  NumberRange,
+  HexColorField,
+} from './ui-kit';
 import { loadImageFromFile } from './lib/canvas';
 import { generateFavicons, type FaviconResult } from './lib/favicon';
 import { FaviconOutput } from './favicon-output';
@@ -81,22 +91,20 @@ export function FaviconTool() {
           <FileUpload
             accept="image/png,image/svg+xml,image/jpeg,image/webp"
             maxSize={10 * 1024 * 1024}
+            multiple={false}
             onFilesChange={handleFiles}
-            onReject={({ reason }) =>
-              toast.error(reason === 'size' ? 'That file is over 10 MB.' : 'Unsupported file type.')
+            onReject={(rejections) =>
+              toast.error(
+                rejections[0]?.reason === 'size'
+                  ? 'That file is over 10 MB.'
+                  : 'Unsupported file type.'
+              )
             }
           />
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Text size={13} tone="subtle">
             PNG, SVG, JPG, or WebP. A square image of at least 512×512 looks best. Everything is
             processed in your browser — the file never leaves your device.
-          </p>
+          </Text>
         </Panel>
 
         <Panel title="Look">
@@ -108,26 +116,14 @@ export function FaviconTool() {
           </Field>
           {!transparent ? (
             <Field label="Background fill">
-              <ColorPicker value={bgColor} onChange={setBgColor} ariaLabel="Background fill" />
+              <HexColorField value={bgColor} onChange={setBgColor} label="Background fill" />
             </Field>
           ) : null}
           <Field label="Padding" adornment={`${padding}%`}>
-            <Range
-              value={[padding]}
-              onValueChange={(vals) => setPadding((vals as number[])[0] ?? 0)}
-              min={0}
-              max={40}
-              step={1}
-            />
+            <NumberRange value={padding} onValueChange={setPadding} min={0} max={40} step={1} />
           </Field>
           <Field label="Corner radius" adornment={`${radius}%`}>
-            <Range
-              value={[radius]}
-              onValueChange={(vals) => setRadius((vals as number[])[0] ?? 0)}
-              min={0}
-              max={50}
-              step={1}
-            />
+            <NumberRange value={radius} onValueChange={setRadius} min={0} max={50} step={1} />
           </Field>
         </Panel>
 
@@ -147,13 +143,13 @@ export function FaviconTool() {
           </div>
           <div className="tool-fieldgrid">
             <Field label="Theme color" hint="Browser UI tint.">
-              <ColorPicker value={themeColor} onChange={setThemeColor} ariaLabel="Theme color" />
+              <HexColorField value={themeColor} onChange={setThemeColor} label="Theme color" />
             </Field>
             <Field label="Splash background" hint="PWA launch screen.">
-              <ColorPicker
+              <HexColorField
                 value={manifestBg}
                 onChange={setManifestBg}
-                ariaLabel="Splash background"
+                label="Splash background"
               />
             </Field>
           </div>
@@ -170,35 +166,11 @@ export function FaviconTool() {
           />
         ) : (
           <Panel>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '48px 24px',
-                textAlign: 'center',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  color: 'var(--color-base-content)',
-                }}
-              >
-                {img ? 'Rendering your favicons…' : 'Upload an image to begin'}
-              </span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                Live previews, the full icon package, and copy-paste markup appear here.
-              </span>
-            </div>
+            <EmptyState
+              icon={<ImageUp className="h-8 w-8" />}
+              title={img ? 'Rendering your favicons…' : 'Upload an image to begin'}
+              description="Live previews, the full icon package, and copy-paste markup appear here."
+            />
           </Panel>
         )}
       </OutputPane>

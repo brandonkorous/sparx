@@ -2,8 +2,19 @@
 
 import * as React from 'react';
 import { Check, X, AlertTriangle, Search } from 'lucide-react';
-import { Button, Input, NativeSelect, Badge, Loading } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import {
+  Alert,
+  Badge,
+  Button,
+  EmptyState,
+  Input,
+  List,
+  ListColGrow,
+  ListRow,
+  Loading,
+  NativeSelect,
+} from '@wizeworks/silicaui-react';
+import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
 import { lookupTxt, cleanDomain } from './lib/dns';
 
 type Status = 'found' | 'missing' | 'error' | 'skip';
@@ -22,6 +33,13 @@ const SPF_PROVIDERS: Record<string, string> = {
   custom: '',
 };
 
+const STATUS_MAP = {
+  found: { color: 'success', icon: <Check className="h-3.5 w-3.5" />, text: 'Found' },
+  missing: { color: 'danger', icon: <X className="h-3.5 w-3.5" />, text: 'Missing' },
+  error: { color: 'warning', icon: <AlertTriangle className="h-3.5 w-3.5" />, text: 'Error' },
+  skip: { color: 'neutral', icon: null, text: 'Not checked' },
+} as const;
+
 function classify(records: string[] | null, error: string | undefined, re: RegExp): CheckResult {
   if (records === null) return { status: 'skip' };
   if (error) return { status: 'error', error };
@@ -30,85 +48,30 @@ function classify(records: string[] | null, error: string | undefined, re: RegEx
 }
 
 function ResultRow({ label, full, result }: { label: string; full: string; result: CheckResult }) {
-  const map = {
-    found: { color: 'success' as const, icon: <Check className="h-3.5 w-3.5" />, text: 'Found' },
-    missing: { color: 'danger' as const, icon: <X className="h-3.5 w-3.5" />, text: 'Missing' },
-    error: {
-      color: 'warning' as const,
-      icon: <AlertTriangle className="h-3.5 w-3.5" />,
-      text: 'Error',
-    },
-    skip: { color: 'neutral' as const, icon: null, text: 'Not checked' },
-  }[result.status];
+  const map = STATUS_MAP[result.status];
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        padding: '14px',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--color-base-300)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 500,
-            fontSize: '14px',
-            color: 'var(--color-base-content)',
-          }}
-        >
-          {full}
-        </span>
-        <Badge color={map.color} variant="soft" size="sm">
-          {map.icon}
-          {map.text}
-        </Badge>
-      </div>
-      {result.record ? (
-        <code
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            wordBreak: 'break-all',
-          }}
-        >
-          {result.record}
-        </code>
-      ) : null}
-      {result.status === 'missing' ? (
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '12.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          No {label} record published — generate one on the left.
-        </span>
-      ) : null}
-      {result.error ? (
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '12.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          {result.error}
-        </span>
-      ) : null}
-    </div>
+    <ListRow className="items-start px-0">
+      <ListColGrow className="flex flex-col gap-2">
+        <span className="text-body font-medium">{full}</span>
+        {result.record ? (
+          <code className="text-caption text-ink-muted font-mono break-all">{result.record}</code>
+        ) : null}
+        {result.status === 'missing' ? (
+          <Alert color="danger" variant="soft" size="sm">
+            No {label} record published — generate one on the left.
+          </Alert>
+        ) : null}
+        {result.error ? (
+          <Alert color="warning" variant="soft" size="sm">
+            {result.error}
+          </Alert>
+        ) : null}
+      </ListColGrow>
+      <Badge color={map.color} variant="soft" size="sm" className="mt-0.5 shrink-0">
+        {map.icon}
+        {map.text}
+      </Badge>
+    </ListRow>
   );
 }
 
@@ -240,56 +203,43 @@ export function DeliverabilityTool() {
       <OutputPane>
         <Panel title="Results">
           {results ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <List className="bg-transparent [&_.list-row]:px-0">
               <ResultRow label="SPF" full="SPF — authorized senders" result={results.spf} />
               <ResultRow label="DKIM" full="DKIM — message signature" result={results.dkim} />
               <ResultRow label="DMARC" full="DMARC — failure policy" result={results.dmarc} />
-            </div>
+            </List>
           ) : (
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              Enter a domain and check to see its live SPF, DKIM, and DMARC records.
-            </span>
+            <EmptyResults />
           )}
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              lineHeight: '19px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Alert color="info" variant="soft" size="sm">
             DKIM lives at a selector your provider chooses (e.g. <code>google._domainkey</code>). If
             DKIM shows as missing, try a different selector — your provider lists it in their setup
             docs.
-          </p>
+          </Alert>
         </Panel>
       </OutputPane>
     </Workbench>
   );
 }
 
+function EmptyResults() {
+  return (
+    <EmptyState
+      size="sm"
+      icon={<Search className="h-8 w-8" />}
+      title="Nothing checked yet"
+      description="Enter a domain and check to see its live SPF, DKIM, and DMARC records."
+    />
+  );
+}
+
 function RecordOut({ host, record }: { host: string; record: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
-        Add a TXT record — host <code style={{ fontFamily: 'var(--font-mono)' }}>{host}</code>:
+    <div className="flex flex-col gap-2">
+      <span className="text-caption text-ink-muted">
+        Add a TXT record — host <code className="font-mono">{host}</code>:
       </span>
-      <pre className="tool-code" style={{ maxHeight: 'none' }}>
-        {record}
-      </pre>
+      <CodeBlock height="none">{record}</CodeBlock>
       <div>
         <CopyButton value={record} label="Copy record" toastLabel="Record copied" />
       </div>

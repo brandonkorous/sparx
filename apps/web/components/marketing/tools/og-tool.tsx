@@ -2,9 +2,18 @@
 
 import * as React from 'react';
 import { Download, Trash2 } from 'lucide-react';
-import { ColorPicker, FileUpload, toast } from '@sparx/ui';
-import { Button, Input, Textarea } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { toast } from '@sparx/ui';
+import { Button, FileUpload, Input, Textarea } from '@wizeworks/silicaui-react';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  CopyButton,
+  CodeBlock,
+  HexColorField,
+} from './ui-kit';
 import { renderOgCanvas, type OgOptions } from './lib/og-image';
 import { downloadBlob, readAsDataUrl } from './lib/download';
 
@@ -78,7 +87,7 @@ export function OgTool() {
 
         <Panel title="Style">
           <Field label="Theme">
-            <span style={{ display: 'inline-flex', gap: '6px' }}>
+            <span className="inline-flex gap-1.5">
               <Button
                 type="button"
                 size="sm"
@@ -100,17 +109,12 @@ export function OgTool() {
             </span>
           </Field>
           <Field label="Accent color">
-            <ColorPicker value={accent} onChange={setAccent} ariaLabel="Accent color" />
+            <HexColorField value={accent} onChange={setAccent} label="Accent color" />
           </Field>
           <Field label="Logo" hint="Optional — sits in the top-right corner.">
             {logo ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <img
-                  src={logo}
-                  alt=""
-                  height={36}
-                  style={{ maxHeight: '36px', objectFit: 'contain' }}
-                />
+              <div className="flex items-center gap-3">
+                <img src={logo} alt="" height={36} className="max-h-9 w-auto object-contain" />
                 <Button
                   type="button"
                   variant="outline"
@@ -141,19 +145,12 @@ export function OgTool() {
         >
           <canvas
             ref={canvasRef}
-            style={{
-              width: '100%',
-              height: 'auto',
-              aspectRatio: '1200 / 630',
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-base-300)',
-              display: 'block',
-            }}
+            className="border-base-300 block aspect-[1200/630] h-auto w-full rounded-lg border"
           />
         </Panel>
 
         <Panel title="Add it to your <head>">
-          <pre className="tool-code">{META_SNIPPET}</pre>
+          <CodeBlock height="short">{META_SNIPPET}</CodeBlock>
           <div>
             <CopyButton value={META_SNIPPET} label="Copy meta tags" toastLabel="Meta tags copied" />
           </div>

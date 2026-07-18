@@ -1,10 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { Bookmark, Download, Trash2 } from 'lucide-react';
+import { Bookmark, Download, Link2 } from 'lucide-react';
 import { toast } from '@sparx/ui';
-import { Button, Input, Switch } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { Alert, Button, EmptyState, Input, Switch } from '@wizeworks/silicaui-react';
+import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, CodeBlock } from './ui-kit';
+import { SavedLinks, type SavedLink } from './utm-saved-links';
 import { renderQrCanvas, renderQrSvg, type QrStyle } from './lib/qr';
 import { useLocalStorageState } from './lib/use-local-storage';
 import { downloadBlob, downloadText } from './lib/download';
@@ -15,11 +16,6 @@ interface UtmParams {
   campaign: string;
   term: string;
   content: string;
-}
-
-interface SavedLink {
-  url: string;
-  campaign: string;
 }
 
 const EMPTY: UtmParams = { source: '', medium: '', campaign: '', term: '', content: '' };
@@ -122,20 +118,14 @@ export function UtmTool() {
             />
           </Field>
           {base.trim() && !valid ? (
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '12.5px',
-                color: 'var(--color-danger)',
-              }}
-            >
+            <Alert color="danger" variant="soft" size="sm">
               That doesn&apos;t look like a valid URL.
-            </span>
+            </Alert>
           ) : null}
         </Panel>
 
         <Panel title="Campaign parameters">
-          <div className="mkt-cluster" style={{ gap: '8px' }}>
+          <div className="flex flex-wrap items-center gap-2">
             {PRESETS.map((preset) => (
               <Button
                 key={preset.label}
@@ -203,13 +193,10 @@ export function UtmTool() {
         <Panel title="Your campaign URL">
           {ready ? (
             <>
-              <p
-                className="tool-code"
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: 'none' }}
-              >
+              <CodeBlock height="none" className="break-all whitespace-pre-wrap">
                 {url}
-              </p>
-              <div className="mkt-cluster" style={{ gap: '10px' }}>
+              </CodeBlock>
+              <div className="flex flex-wrap items-center gap-2.5">
                 <CopyButton
                   value={url}
                   label="Copy link"
@@ -222,23 +209,10 @@ export function UtmTool() {
                   Save
                 </Button>
               </div>
-              <div
-                className="tool-checkerboard"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  padding: '20px',
-                  borderRadius: 'var(--radius-lg)',
-                }}
-              >
-                <div style={{ position: 'relative', width: '160px', height: '160px' }}>
-                  <canvas
-                    ref={canvasRef}
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-                  />
-                </div>
+              <div className="tool-checkerboard flex justify-center rounded-lg p-5">
+                <canvas ref={canvasRef} className="h-40 w-40" />
               </div>
-              <div className="mkt-cluster" style={{ gap: '10px' }}>
+              <div className="flex flex-wrap items-center gap-2.5">
                 <Button
                   type="button"
                   color="module"
@@ -263,101 +237,20 @@ export function UtmTool() {
               </div>
             </>
           ) : (
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              Add a URL and at least a source, medium, or campaign to build your link.
-            </span>
+            <EmptyState
+              size="sm"
+              icon={<Link2 className="h-8 w-8" />}
+              title="No link yet"
+              description="Add a URL and at least a source, medium, or campaign to build your link."
+            />
           )}
         </Panel>
 
-        {history.length > 0 ? (
-          <Panel
-            title="Saved links"
-            action={
-              <Button
-                type="button"
-                variant="ghost"
-                color="neutral"
-                size="sm"
-                onClick={() => setHistory([])}
-              >
-                Clear all
-              </Button>
-            }
-          >
-            <ul
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                listStyle: 'none',
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {history.map((link) => (
-                <li
-                  key={link.url}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-base-300)',
-                  }}
-                >
-                  <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '13px',
-                        color: 'var(--color-base-content)',
-                      }}
-                    >
-                      {link.campaign}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '11px',
-                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {link.url}
-                    </span>
-                  </span>
-                  <CopyButton
-                    value={link.url}
-                    label=""
-                    copiedLabel=""
-                    aria-label="Copy link"
-                    shape="square"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    color="neutral"
-                    size="sm"
-                    shape="square"
-                    aria-label="Remove link"
-                    onClick={() => setHistory((prev) => prev.filter((l) => l.url !== link.url))}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        ) : null}
+        <SavedLinks
+          links={history}
+          onRemove={(u) => setHistory((prev) => prev.filter((l) => l.url !== u))}
+          onClear={() => setHistory([])}
+        />
       </OutputPane>
     </Workbench>
   );

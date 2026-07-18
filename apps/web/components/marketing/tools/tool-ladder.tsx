@@ -13,6 +13,10 @@ import type { ToolMeta } from './registry';
  * The "ladder" — connects a free tool up to the paid sparx module it belongs to.
  * This is what turns the tools hub from a utility drawer into a funnel: every
  * tool ends with a tasteful hand-off to the module that does the real version.
+ *
+ * The module name above the headline used to be an uppercase mono kicker; it is
+ * now sentence case in the module's own ink, carrying hierarchy with weight +
+ * color instead of letterspaced caps.
  */
 export function ToolLadder({ tool }: { tool: ToolMeta }) {
   const color = getModuleColor(tool.module);
@@ -22,49 +26,25 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
   return (
     <Section surface="page" padding="md">
       <div
-        className={`mkt-stack-on-tablet ${color.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '28px',
-          padding: '36px',
-          borderRadius: 'var(--radius-xl)',
-          border: `1px solid ${color.color}`,
-        }}
+        className={`mkt-stack-on-tablet items-center justify-between gap-7 rounded-xl border p-9 ${color.bg} bg-soft`}
+        // The panel hairline is this tool's module hue — a per-module value, so
+        // it cannot be a static utility class (Tailwind can't see an
+        // interpolated `border-module-${key}`).
+        style={{ borderColor: color.color }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '620px' }}>
-          <span
-            className={color.ink}
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '12px',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-            }}
-          >
+        <div className="flex max-w-[620px] flex-col gap-3">
+          <span className={`text-small font-sans font-medium ${color.ink}`}>
             {mod?.label ?? tool.module}
           </span>
           <Display as="h2" size={28} color="var(--color-base-content)">
             {tool.ladder.headline}
           </Display>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '15.5px',
-              lineHeight: '25px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-            }}
-          >
-            {tool.ladder.body}
-          </p>
+          <p className="text-body-lg text-ink-muted m-0 font-sans">{tool.ladder.body}</p>
         </div>
         <a
           href={href}
           aria-label={tool.ladder.cta}
-          className={buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })}
-          style={{ flexShrink: 0 }}
+          className={`${buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })} shrink-0`}
         >
           {tool.ladder.cta}
           <ArrowRight className="h-4 w-4" />

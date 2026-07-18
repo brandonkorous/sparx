@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ModuleProvider } from '@sparx/ui';
-import { Section, Display, Spark, getModuleColor } from '../primitives';
+import { Section, Container, Display, getModuleColor } from '../primitives';
 import type { ToolMeta } from './registry';
 import { ToolLadder } from './tool-ladder';
 import { ToolUpsell } from './tool-upsell';
@@ -13,9 +13,42 @@ import { TrustRow } from './trust-row';
  * Shared page frame for every tool. Server-rendered chrome (hero, ladder CTA,
  * related strip) wraps the interactive client tool passed as `children`; Nav/
  * Footer come from the root layout. The tool area is wrapped in
- * <ModuleProvider> so @sparx/ui controls (and the FileUpload/ColorPicker
- * active states) adopt this tool's module color.
+ * <ModuleProvider> so the controls (and the FileUpload/ColorPicker active
+ * states) adopt this tool's module color — silica has no equivalent, so that
+ * one @sparx/ui import stays.
+ *
+ * Class-based per apps/web: the hero chrome is utilities + the editorial type
+ * scale.
+ *
+ * THE HERO IS A SOLID BRAND BAND. It fills with `primary` / `secondary` /
+ * `accent` at FULL saturation (never `bg-soft`, never a gradient) paired with
+ * silica's matching `*-content` foreground, so the type keeps real contrast in
+ * both themes. Everything BELOW the band stays neutral — the point is one
+ * confident band on top, not a tinted page.
  */
+
+/**
+ * The three brand fills, as LITERAL class pairs — Tailwind's scanner cannot see
+ * an interpolated `bg-${tone}`, and the paired `*-content` token is what makes
+ * the fill legible rather than a contrast gamble.
+ */
+const HERO_TONES = [
+  'bg-primary text-primary-content',
+  'bg-secondary text-secondary-content',
+  'bg-accent text-accent-content',
+] as const;
+
+/**
+ * Pick a hero fill from the tool's SLUG, so /tools/qr-code is the same color on
+ * every render — server and client, today and next deploy. Deriving it from the
+ * registry index would reshuffle every hero the moment a tool is inserted, and
+ * `Math.random()` would hydration-mismatch outright.
+ */
+function heroTone(slug: string): string {
+  let hash = 0;
+  for (const char of slug) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return HERO_TONES[hash % HERO_TONES.length]!;
+}
 export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.ReactNode }) {
   const color = getModuleColor(tool.module);
   const Icon = tool.icon;
@@ -24,73 +57,45 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
     <>
       <ToolJsonLd tool={tool} />
       <main>
-        <Section surface="page" padding="md">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <nav
-              aria-label="Breadcrumb"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              <a href="/tools" className="mkt-navlink" style={{ fontSize: '13px' }}>
-                Free tools
-              </a>
-              <span
-                style={{
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  fontSize: '13px',
-                }}
-              >
-                /
-              </span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {tool.name}
-              </span>
-            </nav>
+        {/* Rendered as a bare <section> rather than <Section surface="page">:
+            the band owns its own fill, and stacking `bg-primary` on Section's
+            `bg-base-200` would be two same-specificity utilities racing on
+            stylesheet order. */}
+        <section className={`px-page py-section-md ${heroTone(tool.slug)}`}>
+          <Container>
+            <div className="flex flex-col gap-6">
+              <nav aria-label="Breadcrumb" className="text-small flex items-center gap-2">
+                <a href="/tools" className="font-sans underline underline-offset-4">
+                  Free tools
+                </a>
+                <span aria-hidden>/</span>
+                <span className="font-sans font-medium">{tool.name}</span>
+              </nav>
 
-            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-              <span
-                aria-hidden
-                className={`${color.bg} bg-soft ${color.ink}`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '56px',
-                  height: '56px',
-                  flexShrink: 0,
-                  borderRadius: 'var(--radius-xl)',
-                  boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.06)',
-                }}
-              >
-                <Icon size={26} strokeWidth={1.6} />
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', minWidth: 0 }}>
-                <Display as="h1" size={46}>
-                  {tool.name}
-                  <Spark color={color.color} />
-                </Display>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '18px',
-                    lineHeight: '29px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    maxWidth: '660px',
-                    margin: 0,
-                  }}
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+                {/* A solid neutral chip on the band, with the MODULE hue as the
+                    icon ink — module identity stays a discrete element while the
+                    band itself carries the brand palette. */}
+                <span
+                  aria-hidden
+                  className={`bg-base-100 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${color.ink}`}
                 >
-                  {tool.tagline}
-                </p>
-                <TrustRow />
+                  <Icon size={26} strokeWidth={1.6} />
+                </span>
+                <div className="flex min-w-0 flex-col gap-3.5">
+                  {/* `currentColor` inherits the band's `*-content` ink; without
+                      it Display stamps `text-base-content`, which is the neutral
+                      page ink and unreadable here. */}
+                  <Display as="h1" size={46} color="currentColor">
+                    {tool.name}.
+                  </Display>
+                  <p className="text-lede m-0 max-w-[660px] font-sans">{tool.tagline}</p>
+                  <TrustRow tone="oncolor" />
+                </div>
               </div>
             </div>
-          </div>
-        </Section>
+          </Container>
+        </section>
 
         <Section surface="surface" padding="lg">
           <ModuleProvider module={tool.module}>{children}</ModuleProvider>

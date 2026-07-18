@@ -47,7 +47,7 @@ const PILLARS: Pillar[] = [
 export function ToolsValue() {
   return (
     <Section surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <div className="flex flex-col gap-10">
         <SectionHeader
           headline="The tools are free. The platform behind them runs the whole business"
           lede="Every tool here is built on sparx — one platform for your website, your content, and, when you sell, your commerce. Activate the modules you need, on one login, one bill, and one data layer. Publish a content site with no checkout, run a CRM on its own, or sell to the world. It's all first-class."
@@ -58,58 +58,23 @@ export function ToolsValue() {
           {PILLARS.map((pillar) => {
             const color = getModuleColor(pillar.module);
             return (
-              <div
-                key={pillar.title}
-                style={{
-                  display: 'flex',
-                  gap: '16px',
-                  alignItems: 'flex-start',
-                  padding: '24px',
-                  borderRadius: 'var(--radius-xl)',
-                  backgroundColor: 'var(--color-base-100)',
-                  border: '1px solid var(--color-base-300)',
-                }}
-              >
-                <span
-                  aria-hidden
-                  className={`${color.bg} bg-soft ${color.ink}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '44px',
-                    height: '44px',
-                    flexShrink: 0,
-                    borderRadius: 'var(--radius-lg)',
-                    boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.06)',
-                  }}
-                >
-                  <pillar.icon size={22} strokeWidth={1.6} />
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontWeight: 500,
-                      fontSize: '17px',
-                      letterSpacing: '-0.01em',
-                      color: 'var(--color-base-content)',
-                      margin: 0,
-                    }}
+              // The surface is silica's card (plugin-emitted `card`/`card-body`
+              // classes — this is a Server Component, and the silicaui-react
+              // barrel is `'use client'`).
+              <div key={pillar.title} className="card">
+                <div className="card-body flex-row items-start gap-4">
+                  <span
+                    aria-hidden
+                    className={`ring-base-300 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset ${color.bg} bg-soft ${color.ink}`}
                   >
-                    {pillar.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      margin: 0,
-                    }}
-                  >
-                    {pillar.body}
-                  </p>
+                    <pillar.icon size={22} strokeWidth={1.6} />
+                  </span>
+                  <div className="flex min-w-0 flex-col gap-1.5">
+                    <h3 className="text-body-lg text-base-content m-0 font-sans font-medium tracking-tight">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-body text-ink-muted m-0 font-sans">{pillar.body}</p>
+                  </div>
                 </div>
               </div>
             );

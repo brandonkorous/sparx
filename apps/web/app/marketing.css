@@ -1115,10 +1115,20 @@ a.mkt-module-tile:hover {
 }
 
 /* ── FREE TOOLS (/tools) ─────────────────────────────────────────
-   Structural layout for the client-side tools — the two-pane
-   workbench, the hub/related cards, code-snippet blocks, and a
-   transparency checkerboard for icon previews. Controls themselves
-   are @sparx/ui components; these classes only do layout + surface. */
+   LAYOUT ONLY for the client-side tools — the two-pane workbench,
+   the panel/field stacks, and a transparency checkerboard for icon
+   previews.
+
+   Every SURFACE here is a silicaui component: panels and hub cards
+   are `Card` (`.card` owns background + hairline + radius), code
+   blocks are `MockupCode`, tags are `Badge`. These classes only
+   declare grid/flex, gaps, sticky, and clamping — never a
+   background+foreground pair, a border, or a radius. A cosmetic rule
+   added here re-skins ~18 tools at once and takes them straight back
+   out of the design system, which is exactly the drift this section
+   was rebuilt to remove. The one deliberate exception is
+   `.tool-checkerboard`, whose fixed neutral squares must NOT follow
+   the theme (see its note). */
 
 /* Two-pane workbench: controls left, live output right → stacks. */
 .tool-workbench {
@@ -1144,6 +1154,64 @@ a.mkt-module-tile:hover {
   }
 }
 
+/* Vertical stack of panels inside one workbench column. */
+.tool-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+/* Panel internals. The surface is silica `Card`; `.card-body` already supplies
+   the padding, so these only widen its stack rhythm (controls need more air
+   than the 0.5rem card default) and lay out the header row. */
+.tool-panel__body {
+  gap: 18px;
+}
+.tool-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* Panel titles sit above controls, not above prose — a notch below the
+   `.card-title` default so the control labels stay the loudest thing in view. */
+.tool-panel__title {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+/* Preview panels whose CONTENT is edge-to-edge (a rendered document, a mock).
+   The header keeps its padding — a naive `padding: 0` on the whole card body
+   also flushes the panel's title and actions against the card edge, which is
+   never what an edge-to-edge preview wants. */
+.tool-panel__body--flush {
+  padding: 0;
+  overflow: hidden;
+}
+.tool-panel__body--flush > .tool-panel__head {
+  padding: 1.5rem 1.5rem 0;
+}
+
+/* Field internals: label row + optional right-aligned adornment. */
+.tool-field {
+  min-width: 0;
+}
+.tool-field__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* Numeric read-out beside a slider label. Mono + tabular so the value doesn't
+   jitter the row width as it counts; color comes from the field-label token. */
+.tool-field__adornment {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-base-content);
+}
+
 /* Paired fields that collapse to a single column on narrow screens. */
 .tool-fieldgrid {
   display: grid;
@@ -1156,21 +1224,14 @@ a.mkt-module-tile:hover {
   }
 }
 
-/* Generated code/markup snippet — scrollable, monospace, bounded height. */
+/* Generated code/markup snippet. The surface is composed from silica tokens in
+   ui-kit's `CodeBlock`; these only bound the height so a long snippet scrolls
+   inside its panel instead of stretching the whole workbench column. */
 .tool-code {
-  margin: 0;
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  background-color: var(--color-base-200);
-  border: 1px solid var(--color-base-300);
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  line-height: 1.6;
-  color: var(--color-base-content);
-  overflow: auto;
   max-height: 340px;
-  white-space: pre;
-  tab-size: 2;
+}
+.tool-code--short {
+  max-height: 220px;
 }
 
 /* Transparency backdrop for icon/QR previews with an alpha channel. */
@@ -1189,25 +1250,15 @@ a.mkt-module-tile:hover {
     -8px 0;
 }
 
-/* Hub + related tool cards. */
+/* Hub + related tool cards. The surface, hairline, hover lift, and focus ring
+   all come from silica's clickable `Card` (`clickableCardClasses()`); these
+   rules only lay out the card's contents and add the arrow's nudge-on-hover,
+   which is the one bit of motion `Card` doesn't own. */
 .tool-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 22px;
-  background-color: var(--color-base-100);
-  border: 1px solid var(--color-base-300);
-  border-radius: var(--radius-xl);
   text-decoration: none;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
 }
-.tool-card:hover {
-  border-color: color-mix(in oklab, var(--color-base-content) 30%, transparent);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.tool-card__body {
+  gap: 12px;
 }
 .tool-card__top {
   display: flex;
@@ -1220,11 +1271,8 @@ a.mkt-module-tile:hover {
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-lg);
-  box-shadow: inset 0 0 0 1px rgba(9, 9, 11, 0.06);
 }
 .tool-card__arrow {
-  color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
   transition:
     transform 0.15s ease,
     color 0.15s ease;
@@ -1233,20 +1281,8 @@ a.mkt-module-tile:hover {
   color: var(--color-base-content);
   transform: translate(2px, -2px);
 }
-.tool-card__name {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.01em;
-  color: var(--color-base-content);
-}
+/* Three-line clamp so a long tagline can't make one grid cell taller. */
 .tool-card__desc {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 13.5px;
-  line-height: 20px;
-  color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;
@@ -1254,28 +1290,12 @@ a.mkt-module-tile:hover {
   overflow: hidden;
 }
 .tool-card__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+  align-self: flex-start;
   margin-top: 2px;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.tool-card__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .tool-card,
   .tool-card__arrow {
     transition: none;
-  }
-  .tool-card:hover {
-    transform: none;
   }
 }
 

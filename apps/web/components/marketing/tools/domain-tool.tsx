@@ -2,7 +2,17 @@
 
 import * as React from 'react';
 import { Check, X, Minus, Search } from 'lucide-react';
-import { Button, Input, Badge, Loading } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  Badge,
+  Button,
+  EmptyState,
+  Input,
+  List,
+  ListColGrow,
+  ListRow,
+  Loading,
+} from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 
 const TLDS = ['com', 'co', 'io', 'app', 'dev', 'net', 'org', 'ai', 'xyz', 'store'];
@@ -75,7 +85,7 @@ export function DomainTool() {
             />
           </Field>
           <Field label="Extensions">
-            <div className="mkt-cluster" style={{ gap: '8px' }}>
+            <div className="flex flex-wrap items-center gap-2">
               {TLDS.map((tld) => (
                 <Button
                   key={tld}
@@ -109,31 +119,12 @@ export function DomainTool() {
       <OutputPane>
         <Panel title="Availability">
           {ordered.length && (loading || Object.keys(results).length) ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <List className="bg-transparent [&_.list-row]:px-0">
               {ordered.map((domain) => {
                 const r = results[domain];
                 return (
-                  <div
-                    key={domain}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '12px',
-                      padding: '12px 14px',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--color-base-300)',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '14px',
-                        color: 'var(--color-base-content)',
-                      }}
-                    >
-                      {domain}
-                    </span>
+                  <ListRow key={domain}>
+                    <ListColGrow className="text-body truncate font-mono">{domain}</ListColGrow>
                     {!r ? (
                       <Loading className="h-4 w-4" />
                     ) : r.available === true ? (
@@ -152,32 +143,22 @@ export function DomainTool() {
                         Unknown
                       </Badge>
                     )}
-                  </div>
+                  </ListRow>
                 );
               })}
-            </div>
+            </List>
           ) : (
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              Enter a name and pick the extensions to check across them at once.
-            </span>
+            <EmptyState
+              size="sm"
+              icon={<Search className="h-8 w-8" />}
+              title="No names checked yet"
+              description="Enter a name and pick the extensions to check across them at once."
+            />
           )}
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Alert color="info" variant="soft" size="sm">
             Availability comes from live registry (RDAP) data. Register the name you want at any
             registrar — premium names may carry special pricing.
-          </p>
+          </Alert>
         </Panel>
       </OutputPane>
     </Workbench>

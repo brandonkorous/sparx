@@ -1,11 +1,17 @@
 'use client';
 
 import * as React from 'react';
+import { Card, CardBody, MockupBrowser, MockupPhone } from '@wizeworks/silicaui-react';
+import { Text } from '../primitives';
 
 /**
  * Live device mockups for the favicon tool — the part that lets someone judge
  * the result before downloading. Browser tab, Google result, Android (using the
  * maskable icon in a squircle), and iOS home screen, all fed live data URLs.
+ *
+ * The browser and phone chrome are silica's `MockupBrowser` / `MockupPhone`; the
+ * search-result row is bespoke because it deliberately imitates a specific
+ * third-party result layout, which no design-system primitive expresses.
  */
 export interface FaviconPreviewProps {
   /** Data URL of the 32px icon (used for tab + search result). */
@@ -19,24 +25,19 @@ export interface FaviconPreviewProps {
   domain: string;
 }
 
-const cardStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-  padding: '16px',
-  borderRadius: 'var(--radius-lg)',
-  border: '1px solid var(--color-base-300)',
-  backgroundColor: 'var(--color-base-100)',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '11px',
-  fontWeight: 500,
-  letterSpacing: '0.04em',
-  textTransform: 'uppercase',
-  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-};
+/** One labeled preview cell — caption above, mock below. */
+function Preview({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <Card>
+      <CardBody className="gap-2.5">
+        <Text size={13} tone="subtle">
+          {label}
+        </Text>
+        {children}
+      </CardBody>
+    </Card>
+  );
+}
 
 export function FaviconPreviews({
   small,
@@ -47,97 +48,54 @@ export function FaviconPreviews({
   domain,
 }: FaviconPreviewProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      {/* Browser tab */}
-      <div style={cardStyle}>
-        <span style={labelStyle}>Browser tab</span>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            maxWidth: '260px',
-            padding: '8px 12px',
-            borderRadius: '8px 8px 0 0',
-            borderTop: `2px solid ${themeColor}`,
-            backgroundColor: 'var(--color-base-200)',
-            border: '1px solid var(--color-base-300)',
-          }}
+    <div className="flex flex-col gap-3.5">
+      <Preview label="Browser tab">
+        <MockupBrowser
+          toolbar={
+            <div
+              className="bg-base-100 border-base-300 flex max-w-[240px] min-w-0 flex-1 items-center gap-2 rounded-t-lg border border-b-0 px-3 py-1.5"
+              // The tab's top edge takes the user's chosen theme color — the one
+              // genuinely runtime-dynamic value in this mock.
+              style={{ borderTop: `2px solid ${themeColor}` }}
+            >
+              <img src={small} alt="" width={16} height={16} className="flex-shrink-0" />
+              <span className="text-base-content text-mini min-w-0 truncate font-sans">{name}</span>
+              <span aria-hidden className="text-ink-subtle text-small ml-auto">
+                ×
+              </span>
+            </div>
+          }
         >
-          <img src={small} alt="" width={16} height={16} style={{ flexShrink: 0 }} />
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'var(--color-base-content)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {name}
-          </span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              fontSize: '14px',
-            }}
-          >
-            ×
-          </span>
-        </div>
-      </div>
+          <div className="px-4 py-5">
+            <Text size={13} tone="subtle">
+              {domain}
+            </Text>
+          </div>
+        </MockupBrowser>
+      </Preview>
 
-      {/* Google result */}
-      <div style={cardStyle}>
-        <span style={labelStyle}>Search result</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '26px',
-              height: '26px',
-              borderRadius: '9999px',
-              border: '1px solid var(--color-base-300)',
-              backgroundColor: '#fff',
-              flexShrink: 0,
-            }}
-          >
+      <Preview label="Search result">
+        <div className="flex items-center gap-2.5">
+          <span className="border-base-300 inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full border bg-white">
             <img src={small} alt="" width={16} height={16} />
           </span>
-          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3, minWidth: 0 }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '12px',
-                color: 'var(--color-base-content)',
-              }}
-            >
+          <div className="flex min-w-0 flex-col">
+            <Text size={12} tone="default">
               {name}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '11px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            </Text>
+            <Text size={11} tone="subtle">
               {domain}
-            </span>
+            </Text>
           </div>
         </div>
-        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: '#1a0dab' }}>
+        <Text size={15} className="text-[#1a0dab]" tone="none">
           {name} — official site
-        </span>
-      </div>
+        </Text>
+      </Preview>
 
-      {/* Home screens */}
       <div className="tool-fieldgrid">
-        <HomeScreen label="Android" icon={maskable} name={name} radius="22%" />
-        <HomeScreen label="iOS" icon={apple} name={name} radius="22.5%" />
+        <HomeScreen label="Android" icon={maskable} name={name} iconClassName="rounded-[22%]" />
+        <HomeScreen label="iOS" icon={apple} name={name} iconClassName="rounded-[22.5%]" />
       </div>
     </div>
   );
@@ -147,49 +105,23 @@ function HomeScreen({
   label,
   icon,
   name,
-  radius,
+  iconClassName,
 }: {
   label: string;
   icon: string;
   name: string;
-  radius: string;
+  iconClassName: string;
 }) {
   return (
-    <div style={cardStyle}>
-      <span style={labelStyle}>{label} home screen</span>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '20px',
-          borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(135deg, #3b4a6b 0%, #1f2740 100%)',
-        }}
-      >
-        <img
-          src={icon}
-          alt=""
-          width={60}
-          height={60}
-          style={{ borderRadius: radius, boxShadow: '0 6px 16px rgba(0,0,0,0.35)' }}
-        />
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '11px',
-            color: '#fff',
-            maxWidth: '90px',
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {name}
-        </span>
-      </div>
-    </div>
+    <Preview label={`${label} home screen`}>
+      {/* The stock display is 15rem wide — too wide for two side-by-side inside
+          the output pane, so the sizing (not the skin) is overridden here. */}
+      <MockupPhone className="mx-auto [&_.mockup-phone-display]:w-40">
+        <div className="bg-neutral text-neutral-content flex h-full flex-col items-center justify-center gap-2 p-4">
+          <img src={icon} alt="" width={60} height={60} className={`shadow-lg ${iconClassName}`} />
+          <span className="text-micro max-w-[90px] truncate text-center font-sans">{name}</span>
+        </div>
+      </MockupPhone>
+    </Preview>
   );
 }

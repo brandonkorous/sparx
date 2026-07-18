@@ -1,11 +1,31 @@
 'use client';
 
 import * as React from 'react';
-import { ColorPicker } from '@sparx/ui';
-import { Input, NativeSelect, Range, Button } from '@wizeworks/silicaui-react';
+import {
+  Button,
+  Input,
+  Kbd,
+  Link,
+  NativeSelect,
+  ToggleGroup,
+  ToggleGroupItem,
+  Tooltip,
+  TooltipProvider,
+} from '@wizeworks/silicaui-react';
 import { Shuffle, Lock, LockOpen } from 'lucide-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton, useCopy } from './ui-kit';
-import { serializeBrandPalette } from '@sparx/site-themes/brand-palette';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  CopyButton,
+  useCopy,
+  NumberRange,
+  CodeBlock,
+  HexColorField,
+} from './ui-kit';
+import { buildExports, buildSilicaTheme, buildSparxExport } from './palette-exports';
 import {
   buildPalette,
   readableTextOn,
@@ -42,6 +62,7 @@ export function PaletteTool() {
   const active = p.colors[p.selected]!;
   const name = (p.prefix.trim() || 'brand').replace(/[^a-z0-9-]/gi, '').toLowerCase();
   const { css, tailwind } = buildExports(name, p.colors);
+  const silica = buildSilicaTheme(name, p.colors);
   const sparx = buildSparxExport(name, p.colors);
 
   return (
@@ -49,13 +70,22 @@ export function PaletteTool() {
       <Workbench>
         <ControlsPane>
           <Panel title="Base color">
-            <Field label="Primary color" hint="Anchored as step 500. Unlocked accents follow it.">
-              <ColorPicker value={p.primaryHex} onChange={p.setPrimary} ariaLabel="Primary color" />
+            <Field
+              label="Primary color"
+              htmlFor="pal-primary"
+              hint="Anchored as step 500. Unlocked accents follow it."
+            >
+              <HexColorField
+                id="pal-primary"
+                label="Primary color"
+                value={p.primaryHex}
+                onChange={p.setPrimary}
+              />
             </Field>
             <Field
               label="Name"
               htmlFor="pal-name"
-              hint="Used in the CSS variable and Tailwind key."
+              hint="Names your theme and each color in the files below."
             >
               <Input id="pal-name" value={p.prefix} onChange={(e) => p.setPrefix(e.target.value)} />
             </Field>
@@ -84,9 +114,9 @@ export function PaletteTool() {
               adornment={String(p.accentCount)}
               hint="One to four colors generated alongside your primary."
             >
-              <Range
-                value={[p.accentCount]}
-                onValueChange={(vals) => p.setAccentCount((vals as number[])[0] ?? 1)}
+              <NumberRange
+                value={p.accentCount}
+                onValueChange={p.setAccentCount}
                 min={1}
                 max={4}
                 step={1}
@@ -94,25 +124,46 @@ export function PaletteTool() {
             </Field>
           </Panel>
 
-          <Panel title="Export">
+          <Panel title="Take your colors with you">
             <ExportBlock
-              title="sparx — paste into Builder"
-              code={sparx}
-              copyLabel="Copy for sparx"
-              toast="sparx palette copied"
-              hint="Paste this into your site’s Builder → Brand → Import palette to apply these colors to your brand."
-            />
-            <ExportBlock
-              title="CSS variables"
-              code={css}
-              copyLabel="Copy CSS"
-              toast="CSS variables copied"
+              title="Ready-made theme for silicaui"
+              code={silica}
+              copyLabel="Copy theme"
+              toast="silicaui theme copied"
+              hint={
+                <>
+                  silicaui is a design system — it turns one set of colors into every button, badge
+                  and card on a site, so you set your colors once instead of hunting them down
+                  screen by screen. Paste this into the stylesheet that controls how your site looks
+                  and your palette takes over, in both light and dark mode. sparx itself is built on
+                  silicaui, so this same theme works on your sparx site. More at{' '}
+                  <Link href="https://silicaui.com" color="module">
+                    silicaui.com
+                  </Link>
+                  .
+                </>
+              }
             />
             <ExportBlock
               title="Tailwind config"
               code={tailwind}
               copyLabel="Copy Tailwind"
               toast="Tailwind config copied"
+              hint="For a site built with Tailwind CSS. Every color comes as a full range of light-to-dark shades, ready to drop into your config file."
+            />
+            <ExportBlock
+              title="Plain CSS variables"
+              code={css}
+              copyLabel="Copy CSS"
+              toast="CSS variables copied"
+              hint="The same shades as plain CSS, for a site that doesn’t use either of the above."
+            />
+            <ExportBlock
+              title="Already using sparx?"
+              code={sparx}
+              copyLabel="Copy for sparx"
+              toast="sparx palette copied"
+              hint="Your Builder can read this directly. Copy it, then open your site and go to Builder → Brand → Import palette to recolor your brand."
             />
           </Panel>
         </ControlsPane>
@@ -121,17 +172,17 @@ export function PaletteTool() {
           <Panel
             title="Palette"
             action={
-              <span style={metaStyle}>
+              <span className="text-caption text-ink-muted font-mono">
                 {p.colors.length} {p.colors.length === 1 ? 'color' : 'colors'}
               </span>
             }
           >
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div className="flex flex-wrap items-center gap-2.5">
               <Button type="button" color="module" variant="solid" size="sm" onClick={shuffle}>
                 <Shuffle className="h-4 w-4" /> Shuffle
               </Button>
-              <span style={hintStyle}>
-                or press <kbd style={kbdStyle}>Space</kbd> — lock the colors you want to keep
+              <span className="text-body-sm text-ink-muted">
+                or press <Kbd size="sm">Space</Kbd> — lock the colors you want to keep
               </span>
             </div>
             <PaletteSwatches
@@ -141,7 +192,7 @@ export function PaletteTool() {
               onSelect={p.setSelected}
               onToggleLock={p.toggleLock}
             />
-            <p style={hintStyle}>
+            <p className="text-body-sm text-ink-muted m-0">
               Click a bar to preview its full scale below; lock it to keep it through shuffles.
             </p>
           </Panel>
@@ -157,7 +208,7 @@ export function PaletteTool() {
             }
           >
             <ScaleSwatches hex={active.hex} />
-            <p style={hintStyle}>
+            <p className="text-body-sm text-ink-muted m-0">
               Click any step to copy its hex. 50 is the lightest tint, 950 the darkest shade.
             </p>
           </Panel>
@@ -167,53 +218,13 @@ export function PaletteTool() {
   );
 }
 
-const hintStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '13px',
-  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-  margin: 0,
-};
-
-const metaStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: '12px',
-  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-};
-
-const kbdStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: '11px',
-  padding: '2px 6px',
-  borderRadius: '4px',
-  border: '1px solid var(--color-base-300)',
-  backgroundColor: 'var(--color-base-100)',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-};
-
-const SWATCH_ROLE: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: 'clamp(9px, 2vw, 10.5px)',
-  fontWeight: 600,
-  letterSpacing: '0.04em',
-  textTransform: 'uppercase',
-  opacity: 0.8,
-  maxWidth: '100%',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-};
-
-const SWATCH_HEX: React.CSSProperties = {
-  fontFamily: 'var(--font-mono)',
-  fontSize: 'clamp(11px, 2.3vw, 13px)',
-  fontWeight: 600,
-  letterSpacing: '0.02em',
-  maxWidth: '100%',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-};
-
+/**
+ * The palette strip — a single-select segmented control whose "segments" are
+ * the generated colors. Selection, roving focus, and focus-visible all come
+ * from silica's `ToggleGroup`; the only inline values are the swatch fill and
+ * the WCAG-readable ink on it, which are the user's colors by definition. The
+ * selected ring is `inset-ring-current`, so it inherits that same readable ink.
+ */
 function PaletteSwatches({
   colors,
   locked,
@@ -228,119 +239,113 @@ function PaletteSwatches({
   onToggleLock: (i: number) => void;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        height: 'clamp(220px, 34vw, 320px)',
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden',
-        border: '1px solid var(--color-base-300)',
-      }}
-    >
-      {colors.map((c, i) => {
-        const text = readableTextOn(c.hex);
-        const isActive = i === selected;
-        const isLocked = locked[i] ?? false;
-        return (
-          <div key={c.role} style={{ position: 'relative', flex: '1 1 0', minWidth: 0 }}>
-            <button
-              type="button"
-              aria-pressed={isActive}
-              onClick={() => onSelect(i)}
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                gap: '3px',
-                padding: '14px 8px',
-                overflow: 'hidden',
-                backgroundColor: c.hex,
-                color: text,
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: isActive ? `inset 0 0 0 3px ${text}` : 'none',
-              }}
-            >
-              <span style={SWATCH_ROLE}>{c.role}</span>
-              <span style={SWATCH_HEX}>{c.hex}</span>
-            </button>
-            <button
-              type="button"
-              aria-pressed={isLocked}
-              aria-label={`${isLocked ? 'Unlock' : 'Lock'} ${c.role}`}
-              title={isLocked ? 'Locked — kept on shuffle' : 'Unlocked — changes on shuffle'}
-              onClick={() => onToggleLock(i)}
-              style={{
-                position: 'absolute',
-                top: '10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                borderRadius: '9999px',
-                border: 'none',
-                cursor: 'pointer',
-                backgroundColor: isLocked
-                  ? text
-                  : text === '#000000'
-                    ? 'rgba(0,0,0,0.14)'
-                    : 'rgba(255,255,255,0.24)',
-                color: isLocked ? c.hex : text,
-              }}
-            >
-              {isLocked ? <Lock size={14} /> : <LockOpen size={14} />}
-            </button>
-          </div>
-        );
-      })}
-    </div>
+    <TooltipProvider>
+      <ToggleGroup
+        value={[String(selected)]}
+        onValueChange={(next: unknown[]) => {
+          // Base UI types the group value as `any[]`; ours is always the index
+          // as a string. An empty array means "deselected" — the strip always
+          // has one active bar, so that is ignored rather than cleared.
+          const first = next[0];
+          if (typeof first === 'string') onSelect(Number(first));
+        }}
+        className="flex h-56 w-full gap-0 overflow-hidden rounded-lg p-0 sm:h-72 lg:h-80"
+      >
+        {colors.map((c, i) => {
+          const text = readableTextOn(c.hex);
+          return (
+            <div key={c.role} className="relative flex min-w-0 flex-1">
+              <ToggleGroupItem
+                value={String(i)}
+                className="flex h-auto w-full min-w-0 flex-col items-center justify-end gap-0.5 rounded-none px-2 py-3.5 inset-ring-current data-[pressed]:shadow-none data-[pressed]:inset-ring-4"
+                style={{ backgroundColor: c.hex, color: text }}
+              >
+                <span className="text-micro w-full truncate text-center font-semibold tracking-wide uppercase">
+                  {c.role}
+                </span>
+                <span className="text-caption w-full truncate text-center font-mono font-semibold">
+                  {c.hex}
+                </span>
+              </ToggleGroupItem>
+              <LockToggle
+                role={c.role}
+                hex={c.hex}
+                ink={text}
+                locked={locked[i] ?? false}
+                onToggle={() => onToggleLock(i)}
+              />
+            </div>
+          );
+        })}
+      </ToggleGroup>
+    </TooltipProvider>
   );
 }
 
+/**
+ * Keep-through-shuffle toggle pinned to a swatch. Locked reads as a filled
+ * inverse pill, unlocked as a ghost — both are silica `Button` variants driven
+ * by the button's own `--btn-*` tokens, pointed at the swatch's color pair so
+ * the control stays legible on any fill the generator produces.
+ */
+function LockToggle({
+  role,
+  hex,
+  ink,
+  locked,
+  onToggle,
+}: {
+  role: string;
+  hex: string;
+  ink: string;
+  locked: boolean;
+  onToggle: () => void;
+}) {
+  const tokens = locked
+    ? ({ '--btn-bg': ink, '--btn-fg': hex } as React.CSSProperties)
+    : ({ '--btn-accent': ink } as React.CSSProperties);
+  return (
+    <Tooltip content={locked ? 'Locked — kept on shuffle' : 'Unlocked — changes on shuffle'}>
+      <Button
+        type="button"
+        size="xs"
+        shape="circle"
+        variant={locked ? 'solid' : 'ghost'}
+        aria-pressed={locked}
+        aria-label={`${locked ? 'Unlock' : 'Lock'} ${role}`}
+        onClick={onToggle}
+        className="absolute top-2.5 left-1/2 -translate-x-1/2"
+        style={tokens}
+      >
+        {locked ? <Lock size={14} /> : <LockOpen size={14} />}
+      </Button>
+    </Tooltip>
+  );
+}
+
+/**
+ * The 50–950 ramp for the selected color. Each step is a silica `Button` (so
+ * hover, focus-visible, and press feedback are the design system's) laid out as
+ * a full-bleed bar; only the fill and its readable ink are inline.
+ */
 function ScaleSwatches({ hex }: { hex: string }) {
   const { copy } = useCopy();
   const scale = buildPalette(hex);
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden',
-        border: '1px solid var(--color-base-300)',
-      }}
-    >
-      {scale.map((swatch) => {
-        const text = readableTextOn(swatch.hex);
-        return (
-          <button
-            key={swatch.step}
-            type="button"
-            onClick={() => copy(swatch.hex, `${swatch.hex} copied`)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '12px 16px',
-              backgroundColor: swatch.hex,
-              color: text,
-              border: 'none',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-            }}
-          >
-            <span style={{ fontWeight: 600 }}>{swatch.step}</span>
-            <span>{swatch.hex}</span>
-          </button>
-        );
-      })}
+    <div className="border-base-300 flex flex-col overflow-hidden rounded-lg border">
+      {scale.map((swatch) => (
+        <Button
+          key={swatch.step}
+          type="button"
+          variant="ghost"
+          onClick={() => copy(swatch.hex, `${swatch.hex} copied`)}
+          className="text-caption flex h-auto w-full items-center justify-between rounded-none px-4 py-3 font-mono font-normal"
+          style={{ backgroundColor: swatch.hex, color: readableTextOn(swatch.hex) }}
+        >
+          <span className="font-semibold">{swatch.step}</span>
+          <span>{swatch.hex}</span>
+        </Button>
+      ))}
     </div>
   );
 }
@@ -356,70 +361,16 @@ function ExportBlock({
   code: string;
   copyLabel: string;
   toast: string;
-  hint?: string;
+  hint?: React.ReactNode;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '13px',
-          fontWeight: 500,
-          color: 'var(--color-base-content)',
-        }}
-      >
-        {title}
-      </span>
-      <pre className="tool-code" style={{ maxHeight: '220px' }}>
-        {code}
-      </pre>
+    <div className="flex flex-col gap-2">
+      <span className="text-body-sm text-base-content font-medium">{title}</span>
+      <CodeBlock height="short">{code}</CodeBlock>
       <div>
         <CopyButton value={code} label={copyLabel} toastLabel={toast} />
       </div>
-      {hint ? <p style={hintStyle}>{hint}</p> : null}
+      {hint ? <p className="text-body-sm text-ink-muted m-0">{hint}</p> : null}
     </div>
   );
-}
-
-/**
- * The sparx interchange export — the same palette as a `sparx.brand-palette` JSON
- * that the Builder's brand importer can paste-apply. Content (foreground) colors
- * are the WCAG-readable pick for each fill. Shares one format module with the
- * dashboard, so the two never drift.
- */
-function buildSparxExport(name: string, colors: PaletteColor[]): string {
-  const toColor = (c: PaletteColor) => ({ fill: c.hex, content: readableTextOn(c.hex) });
-  return serializeBrandPalette({
-    name,
-    source: 'https://sparx.works/tools/color-palette',
-    primary: toColor(colors[0]!),
-    accents: colors.slice(1).map(toColor),
-  });
-}
-
-/**
- * Build the export strings. Every color — primary and each accent — ships as a
- * full 50–950 ramp so the whole palette is dev-ready, not just the primary.
- * The primary uses the bare name; accents are suffixed `-accent-1`, `-accent-2`…
- */
-function buildExports(name: string, colors: PaletteColor[]): { css: string; tailwind: string } {
-  const cssLines: string[] = [':root {'];
-  const twLines: string[] = ['colors: {'];
-
-  colors.forEach((c, i) => {
-    const key = i === 0 ? name : `${name}-accent-${i}`;
-    const ramp = buildPalette(c.hex);
-
-    if (i > 0) cssLines.push('');
-    cssLines.push(`  /* ${c.role} */`);
-    ramp.forEach((s) => cssLines.push(`  --${key}-${s.step}: ${s.hex.toLowerCase()};`));
-
-    twLines.push(i === 0 ? `  ${name}: {` : `  '${name}-accent-${i}': {`);
-    ramp.forEach((s) => twLines.push(`    ${s.step}: '${s.hex.toLowerCase()}',`));
-    twLines.push('  },');
-  });
-
-  cssLines.push('}');
-  twLines.push('}');
-  return { css: cssLines.join('\n'), tailwind: twLines.join('\n') };
 }

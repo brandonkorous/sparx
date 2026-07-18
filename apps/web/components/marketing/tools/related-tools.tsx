@@ -9,7 +9,7 @@ export function RelatedTools({ currentSlug }: { currentSlug: string }) {
 
   return (
     <Section surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="flex flex-col gap-8">
         <SectionHeader
           headline="More free tools"
           accent={getModuleColor('builder').color}

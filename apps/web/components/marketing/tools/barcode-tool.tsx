@@ -1,10 +1,18 @@
 'use client';
 
 import * as React from 'react';
-import { Download } from 'lucide-react';
-import { ColorPicker } from '@sparx/ui';
-import { Button, Input, NativeSelect, Switch, Range } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { AlertTriangle, Download } from 'lucide-react';
+import { Alert, Button, Input, NativeSelect, Switch } from '@wizeworks/silicaui-react';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  CopyButton,
+  NumberRange,
+  HexColorField,
+} from './ui-kit';
 import {
   renderBarcodeCanvas,
   renderBarcodeSvg,
@@ -76,24 +84,14 @@ export function BarcodeTool() {
         <Panel title="Style">
           <div className="tool-fieldgrid">
             <Field label="Bars">
-              <ColorPicker value={lineColor} onChange={setLineColor} ariaLabel="Bar color" />
+              <HexColorField value={lineColor} onChange={setLineColor} label="Bar color" />
             </Field>
             <Field label="Background">
-              <ColorPicker
-                value={background}
-                onChange={setBackground}
-                ariaLabel="Background color"
-              />
+              <HexColorField value={background} onChange={setBackground} label="Background color" />
             </Field>
           </div>
           <Field label="Height" adornment={`${height}px`}>
-            <Range
-              value={[height]}
-              onValueChange={(v) => setHeight((v as number[])[0] ?? 40)}
-              min={40}
-              max={160}
-              step={5}
-            />
+            <NumberRange value={height} onValueChange={setHeight} min={40} max={160} step={5} />
           </Field>
           <Field label="Show number">
             <Switch checked={displayValue} onCheckedChange={setDisplayValue} />
@@ -103,36 +101,26 @@ export function BarcodeTool() {
 
       <OutputPane>
         <Panel title="Your barcode">
+          {/* The canvas stays mounted even while the value is invalid — the render
+              effect draws into it, and an unmounted ref would leave the preview
+              blank on the next valid keystroke. Only the frame is hidden. */}
           <div
-            className="tool-checkerboard"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '24px',
-              borderRadius: 'var(--radius-lg)',
-              minHeight: '160px',
-            }}
+            className={
+              valid
+                ? 'tool-checkerboard flex min-h-40 items-center justify-center rounded-lg p-6'
+                : 'hidden'
+            }
           >
-            <canvas
-              ref={canvasRef}
-              style={{ maxWidth: '100%', height: 'auto', display: valid ? 'block' : 'none' }}
-            />
-            {!valid ? (
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13.5px',
-                  color: 'var(--color-danger)',
-                  textAlign: 'center',
-                }}
-              >
-                {error}
-              </span>
-            ) : null}
+            <canvas ref={canvasRef} className="block h-auto max-w-full" />
           </div>
+          {!valid ? (
+            <Alert color="danger" variant="soft">
+              <AlertTriangle />
+              {error}
+            </Alert>
+          ) : null}
           {valid ? (
-            <div className="mkt-cluster" style={{ gap: '10px' }}>
+            <div className="flex flex-wrap items-center gap-2.5">
               <Button type="button" color="module" variant="solid" size="sm" onClick={downloadPng}>
                 <Download className="h-4 w-4" />
                 PNG

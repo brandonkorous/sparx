@@ -1,44 +1,25 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
+import {
+  Button,
+  Input,
+  NativeSelect,
+  Stat,
+  Stats,
+  StatTitle,
+  StatValue,
+  Text,
+} from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
 import { CURRENCIES, formatMoney } from './lib/invoice';
 
-function StatTile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px',
-        padding: '18px',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--color-base-300)',
-        backgroundColor: 'var(--color-base-100)',
-      }}
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 600,
-          fontSize: '24px',
-          letterSpacing: '-0.02em',
-          color: accent ? 'var(--color-module)' : 'var(--color-base-content)',
-        }}
-      >
-        {value}
-      </span>
-    </div>
+    <Stat>
+      <StatTitle>{label}</StatTitle>
+      <StatValue className={accent ? 'text-module' : undefined}>{value}</StatValue>
+    </Stat>
   );
 }
 
@@ -114,26 +95,10 @@ export function MarginTool() {
               onChange={(e) => setTargetMargin(e.target.value)}
             />
           </Field>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              Charge{' '}
-              <strong style={{ color: 'var(--color-base-content)' }}>
-                {money(priceForTarget)}
-              </strong>
-            </span>
+          <div className="flex items-center justify-between gap-3">
+            <Text as="span" className="text-ink-muted">
+              Charge <strong className="text-base-content">{money(priceForTarget)}</strong>
+            </Text>
             <Button
               type="button"
               color="module"
@@ -162,31 +127,18 @@ export function MarginTool() {
 
       <OutputPane>
         <Panel title="Results">
-          <div className="tool-fieldgrid">
-            <StatTile label="Profit margin" value={pct(margin)} accent />
-            <StatTile label="Markup" value={pct(markup)} />
-          </div>
-          <div className="tool-fieldgrid">
-            <StatTile label="Profit per unit" value={money(profit)} />
-            <StatTile
-              label="Break-even units"
-              value={breakEven !== null ? String(breakEven) : '—'}
-            />
-          </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              lineHeight: '20px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Stats className="w-full grid-flow-row grid-cols-1 sm:grid-cols-2">
+            <Metric label="Profit margin" value={pct(margin)} accent />
+            <Metric label="Markup" value={pct(markup)} />
+            <Metric label="Profit per unit" value={money(profit)} />
+            <Metric label="Break-even units" value={breakEven !== null ? String(breakEven) : '—'} />
+          </Stats>
+          <Text className="text-ink-muted m-0">
             Margin is profit as a share of price; markup is profit as a share of cost.{' '}
             {breakEven !== null
               ? `At ${money(profit)} profit per unit, you cover ${money(fixed)} of fixed costs after ${breakEven} units.`
               : 'Add fixed costs to see how many units you need to break even.'}
-          </p>
+          </Text>
         </Panel>
       </OutputPane>
     </Workbench>

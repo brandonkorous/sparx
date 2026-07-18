@@ -2,9 +2,17 @@
 
 import * as React from 'react';
 import { Copy, Trash2 } from 'lucide-react';
-import { ColorPicker, FileUpload, toast } from '@sparx/ui';
-import { Button, Input } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { toast } from '@sparx/ui';
+import { Button, FileUpload, Input, Text } from '@wizeworks/silicaui-react';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  CopyButton,
+  HexColorField,
+} from './ui-kit';
 import {
   buildSignatureHtml,
   buildSignatureText,
@@ -69,14 +77,74 @@ async function copyHtml(html: string, text: string): Promise<boolean> {
   }
 }
 
+type SetField = (key: keyof SignatureData, value: string | null) => void;
+
+/** One labeled text input bound to a `SignatureData` key. */
+function TextField({
+  id,
+  label,
+  field,
+  data,
+  set,
+  type,
+  hint,
+}: {
+  id: string;
+  label: string;
+  field: keyof SignatureData;
+  data: SignatureData;
+  set: SetField;
+  type?: string;
+  hint?: string;
+}) {
+  return (
+    <Field label={label} htmlFor={id} hint={hint}>
+      <Input
+        id={id}
+        type={type}
+        value={data[field] ?? ''}
+        onChange={(e) => set(field, e.target.value)}
+      />
+    </Field>
+  );
+}
+
+/** An image slot: a dropzone until something is picked, then a Remove button. */
+function ImageField({
+  label,
+  hint,
+  value,
+  onFiles,
+  onClear,
+  clearLabel,
+}: {
+  label: string;
+  hint: string;
+  value: string | null;
+  onFiles: (files: File[]) => void;
+  onClear: () => void;
+  clearLabel: string;
+}) {
+  return (
+    <Field label={label} hint={hint}>
+      {value ? (
+        <Button type="button" variant="outline" color="neutral" size="sm" onClick={onClear}>
+          <Trash2 className="h-4 w-4" /> {clearLabel}
+        </Button>
+      ) : (
+        <FileUpload accept="image/*" maxSize={4 * 1024 * 1024} onFilesChange={onFiles} />
+      )}
+    </Field>
+  );
+}
+
 export function SignatureTool() {
   const [data, setData] = useLocalStorageState<SignatureData>('sparx-signature', DEFAULT_DATA);
   const [layout, setLayout] = useLocalStorageState<SignatureLayout>(
     'sparx-signature-layout',
     'horizontal'
   );
-  const set = (k: keyof SignatureData, v: string | null) =>
-    setData((prev) => ({ ...prev, [k]: v }));
+  const set: SetField = (k, v) => setData((prev) => ({ ...prev, [k]: v }));
 
   const html = buildSignatureHtml(data, layout);
 
@@ -91,89 +159,37 @@ export function SignatureTool() {
     else toast.error('Copy failed — use “Copy HTML” and paste the source instead');
   };
 
+  const field = (id: string, label: string, key: keyof SignatureData, type?: string) => (
+    <TextField id={id} label={label} field={key} data={data} set={set} type={type} />
+  );
+
   return (
     <Workbench>
       <ControlsPane>
         <Panel title="You">
           <div className="tool-fieldgrid">
-            <Field label="Name" htmlFor="sig-name">
-              <Input
-                id="sig-name"
-                value={data.name}
-                onChange={(e) => set('name', e.target.value)}
-              />
-            </Field>
-            <Field label="Job title" htmlFor="sig-title">
-              <Input
-                id="sig-title"
-                value={data.title}
-                onChange={(e) => set('title', e.target.value)}
-              />
-            </Field>
+            {field('sig-name', 'Name', 'name')}
+            {field('sig-title', 'Job title', 'title')}
           </div>
-          <Field label="Company" htmlFor="sig-company">
-            <Input
-              id="sig-company"
-              value={data.company}
-              onChange={(e) => set('company', e.target.value)}
-            />
-          </Field>
+          {field('sig-company', 'Company', 'company')}
           <div className="tool-fieldgrid">
-            <Field label="Email" htmlFor="sig-email">
-              <Input
-                id="sig-email"
-                type="email"
-                value={data.email}
-                onChange={(e) => set('email', e.target.value)}
-              />
-            </Field>
-            <Field label="Phone" htmlFor="sig-phone">
-              <Input
-                id="sig-phone"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => set('phone', e.target.value)}
-              />
-            </Field>
+            {field('sig-email', 'Email', 'email', 'email')}
+            {field('sig-phone', 'Phone', 'phone', 'tel')}
           </div>
-          <Field label="Website" htmlFor="sig-web">
-            <Input
-              id="sig-web"
-              value={data.website}
-              onChange={(e) => set('website', e.target.value)}
-            />
-          </Field>
+          {field('sig-web', 'Website', 'website')}
         </Panel>
 
         <Panel title="Links">
           <div className="tool-fieldgrid">
-            <Field label="LinkedIn URL" htmlFor="sig-li">
-              <Input
-                id="sig-li"
-                value={data.linkedin}
-                onChange={(e) => set('linkedin', e.target.value)}
-              />
-            </Field>
-            <Field label="X / Twitter URL" htmlFor="sig-x">
-              <Input
-                id="sig-x"
-                value={data.twitter}
-                onChange={(e) => set('twitter', e.target.value)}
-              />
-            </Field>
+            {field('sig-li', 'LinkedIn URL', 'linkedin')}
+            {field('sig-x', 'X / Twitter URL', 'twitter')}
           </div>
-          <Field label="Instagram URL" htmlFor="sig-ig">
-            <Input
-              id="sig-ig"
-              value={data.instagram}
-              onChange={(e) => set('instagram', e.target.value)}
-            />
-          </Field>
+          {field('sig-ig', 'Instagram URL', 'instagram')}
         </Panel>
 
         <Panel title="Style">
           <Field label="Layout">
-            <span style={{ display: 'inline-flex', gap: '6px', flexWrap: 'wrap' }}>
+            <span className="inline-flex flex-wrap gap-1.5">
               {LAYOUTS.map((l) => (
                 <Button
                   key={l.value}
@@ -189,85 +205,54 @@ export function SignatureTool() {
             </span>
           </Field>
           <Field label="Accent color">
-            <ColorPicker
+            <HexColorField
               value={data.accent}
               onChange={(c) => set('accent', c)}
-              ariaLabel="Accent color"
+              label="Accent color"
             />
           </Field>
           <div className="tool-fieldgrid">
-            <Field label="Photo" hint="Used by the Photo layout.">
-              {data.photo ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  color="neutral"
-                  size="sm"
-                  onClick={() => set('photo', null)}
-                >
-                  <Trash2 className="h-4 w-4" /> Remove photo
-                </Button>
-              ) : (
-                <FileUpload
-                  accept="image/*"
-                  maxSize={4 * 1024 * 1024}
-                  onFilesChange={upload('photo')}
-                />
-              )}
-            </Field>
-            <Field label="Logo" hint="Optional company mark.">
-              {data.logo ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  color="neutral"
-                  size="sm"
-                  onClick={() => set('logo', null)}
-                >
-                  <Trash2 className="h-4 w-4" /> Remove logo
-                </Button>
-              ) : (
-                <FileUpload
-                  accept="image/*"
-                  maxSize={4 * 1024 * 1024}
-                  onFilesChange={upload('logo')}
-                />
-              )}
-            </Field>
+            <ImageField
+              label="Photo"
+              hint="Used by the Photo layout."
+              value={data.photo}
+              onFiles={upload('photo')}
+              onClear={() => set('photo', null)}
+              clearLabel="Remove photo"
+            />
+            <ImageField
+              label="Logo"
+              hint="Optional company mark."
+              value={data.logo}
+              onFiles={upload('logo')}
+              onClear={() => set('logo', null)}
+              clearLabel="Remove logo"
+            />
           </div>
         </Panel>
       </ControlsPane>
 
       <OutputPane>
         <Panel title="Preview">
+          {/* The signature itself is inline-styled table markup — that is a hard
+              requirement of email clients, not a style choice, so it is rendered
+              verbatim. The white plate is deliberate: it simulates the email
+              client's canvas, so the preview must NOT follow the site theme. */}
           <div
-            style={{
-              padding: '24px',
-              backgroundColor: '#ffffff',
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-base-300)',
-              overflowX: 'auto',
-            }}
+            className="border-base-300 overflow-x-auto rounded-lg border bg-white p-6"
             dangerouslySetInnerHTML={{ __html: html }}
           />
-          <div className="mkt-cluster" style={{ gap: '10px' }}>
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button type="button" color="module" variant="solid" size="sm" onClick={copySignature}>
               <Copy className="h-4 w-4" />
               Copy signature
             </Button>
             <CopyButton value={html} label="Copy HTML" toastLabel="HTML source copied" />
           </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Text variant="caption" className="text-ink-muted m-0">
             “Copy signature” puts formatted HTML on your clipboard — paste it straight into Gmail,
             Outlook, or Apple Mail signature settings. Your details are saved on this device only.
-          </p>
+          </Text>
         </Panel>
       </OutputPane>
     </Workbench>

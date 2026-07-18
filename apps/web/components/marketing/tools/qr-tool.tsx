@@ -1,10 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { Download, Trash2 } from 'lucide-react';
-import { ColorPicker, FileUpload, toast } from '@sparx/ui';
-import { Button, NativeSelect, Range } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
+import { Download, QrCode, Trash2 } from 'lucide-react';
+import { toast } from '@sparx/ui';
+import { Button, EmptyState, FileUpload, NativeSelect } from '@wizeworks/silicaui-react';
+import {
+  Workbench,
+  ControlsPane,
+  OutputPane,
+  Panel,
+  Field,
+  CopyButton,
+  NumberRange,
+  HexColorField,
+} from './ui-kit';
 import { QrFieldSet } from './qr-fields';
 import { buildQrPayload, renderQrCanvas, renderQrSvg, type QrType, type QrStyle } from './lib/qr';
 import { downloadBlob, downloadText, readAsDataUrl } from './lib/download';
@@ -74,7 +83,7 @@ export function QrTool() {
     <Workbench>
       <ControlsPane>
         <Panel title="Content">
-          <div className="mkt-cluster" style={{ gap: '8px' }}>
+          <div className="flex flex-wrap items-center gap-2">
             {TYPES.map((t) => (
               <Button
                 key={t.value}
@@ -94,10 +103,10 @@ export function QrTool() {
         <Panel title="Style">
           <div className="tool-fieldgrid">
             <Field label="Foreground">
-              <ColorPicker value={fg} onChange={setFg} ariaLabel="Foreground color" />
+              <HexColorField value={fg} onChange={setFg} label="Foreground color" />
             </Field>
             <Field label="Background">
-              <ColorPicker value={bg} onChange={setBg} ariaLabel="Background color" />
+              <HexColorField value={bg} onChange={setBg} label="Background color" />
             </Field>
           </div>
           <div className="tool-fieldgrid">
@@ -110,13 +119,7 @@ export function QrTool() {
               </NativeSelect>
             </Field>
             <Field label="Quiet zone" adornment={`${margin}`}>
-              <Range
-                value={[margin]}
-                onValueChange={(v) => setMargin((v as number[])[0] ?? 0)}
-                min={0}
-                max={8}
-                step={1}
-              />
+              <NumberRange value={margin} onValueChange={setMargin} min={0} max={8} step={1} />
             </Field>
           </div>
           <Field
@@ -124,13 +127,13 @@ export function QrTool() {
             hint="Optional. We bump error correction to High so it still scans."
           >
             {logo ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="flex items-center gap-3">
                 <img
                   src={logo}
                   alt=""
                   width={40}
                   height={40}
-                  style={{ borderRadius: '6px', objectFit: 'contain' }}
+                  className="h-10 w-10 rounded-md object-contain"
                 />
                 <Button
                   type="button"
@@ -152,56 +155,30 @@ export function QrTool() {
 
       <OutputPane>
         <Panel title="Your QR code">
-          <div
-            className="tool-checkerboard"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '24px',
-              borderRadius: 'var(--radius-lg)',
-              minHeight: '240px',
-            }}
-          >
-            {hasData ? (
-              // Responsive square canvas: the square aspect-ratio lives on the
-              // wrapper, and the canvas is absolutely positioned to fill it. A
-              // canvas is a replaced element with an intrinsic 1024px height, so
-              // an in-flow `height:100%` would force the wrapper to grow to 1024
-              // and override aspect-ratio — taking it out of flow fixes that.
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  maxWidth: '300px',
-                  aspectRatio: '1 / 1',
-                }}
-              >
-                <canvas
-                  ref={canvasRef}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    display: 'block',
-                  }}
-                />
-              </div>
-            ) : (
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                Fill in the content to generate your code
-              </span>
-            )}
-          </div>
           {hasData ? (
-            <div className="mkt-cluster" style={{ gap: '10px' }}>
+            // The checkerboard supplies the alpha backdrop; it is a fixed light
+            // surface that deliberately does NOT follow the theme, so nothing but
+            // the rendered artifact sits on it.
+            <div className="tool-checkerboard flex min-h-60 items-center justify-center rounded-lg p-6">
+              {/* Responsive square canvas: the square aspect-ratio lives on the
+                  wrapper, and the canvas is absolutely positioned to fill it. A
+                  canvas is a replaced element with an intrinsic 1024px height, so
+                  an in-flow `height:100%` would force the wrapper to grow to 1024
+                  and override aspect-ratio — taking it out of flow fixes that. */}
+              <div className="relative aspect-square w-full max-w-[300px]">
+                <canvas ref={canvasRef} className="absolute inset-0 block h-full w-full" />
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              size="sm"
+              icon={<QrCode />}
+              title="Nothing to encode yet"
+              description="Fill in the content above and your QR code appears here."
+            />
+          )}
+          {hasData ? (
+            <div className="flex flex-wrap items-center gap-2.5">
               <Button type="button" color="module" variant="solid" size="sm" onClick={downloadPng}>
                 <Download className="h-4 w-4" />
                 PNG

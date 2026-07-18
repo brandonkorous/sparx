@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Download } from 'lucide-react';
-import { Button, Input } from '@wizeworks/silicaui-react';
+import { Button, Input, Text } from '@wizeworks/silicaui-react';
 import { Workbench, ControlsPane, OutputPane, Panel, Field, CopyButton } from './ui-kit';
 import { renderQrCanvas } from './lib/qr';
 import { downloadBlob, downloadText } from './lib/download';
@@ -111,72 +111,28 @@ export function DigitalCardTool() {
 
       <OutputPane>
         <Panel title="Your card">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px',
-              padding: '22px',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--color-base-100)',
-              borderLeft: '4px solid var(--color-module)',
-              border: '1px solid var(--color-base-300)',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 600,
-                fontSize: '18px',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              {full}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+          {/* SIMULATION — how the contact renders once saved to a phone: a business
+              card, not sparx chrome. Kept bespoke (card typography) rather than
+              converted to a silica Card nested inside this Panel. */}
+          <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-[22px]">
+            <span className="text-base-content text-[18px] font-semibold">{full}</span>
+            <span className="text-ink-muted text-[13px]">
               {[data.title, data.company].filter(Boolean).join(' · ')}
             </span>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-                marginTop: '8px',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            <div className="text-ink-muted mt-2 flex flex-col gap-0.5 text-[13px]">
               {data.phone ? <span>{data.phone}</span> : null}
               {data.email ? <span>{data.email}</span> : null}
               {data.website ? <span>{data.website}</span> : null}
             </div>
           </div>
 
-          <div
-            className="tool-checkerboard"
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              padding: '20px',
-              borderRadius: 'var(--radius-lg)',
-            }}
-          >
-            <div style={{ position: 'relative', width: '180px', height: '180px' }}>
-              <canvas
-                ref={canvasRef}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-              />
+          <div className="tool-checkerboard flex justify-center rounded-lg p-5">
+            <div className="relative h-[180px] w-[180px]">
+              <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
             </div>
           </div>
 
-          <div className="mkt-cluster" style={{ gap: '10px' }}>
+          <div className="mkt-cluster gap-2.5">
             <Button type="button" color="module" variant="solid" size="sm" onClick={downloadVcf}>
               <Download className="h-4 w-4" />
               Download .vcf
@@ -187,16 +143,9 @@ export function DigitalCardTool() {
             </Button>
             <CopyButton value={vcard} label="Copy vCard" toastLabel="vCard copied" />
           </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <Text className="text-ink-muted m-0">
             Scan the QR to save the contact, or share the .vcf file. Saved on this device only.
-          </p>
+          </Text>
         </Panel>
       </OutputPane>
     </Workbench>

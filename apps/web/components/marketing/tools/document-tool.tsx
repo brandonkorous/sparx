@@ -1,13 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { Download, Trash2 } from 'lucide-react';
-import { ColorPicker, FileUpload, toast } from '@sparx/ui';
-import { Button, Input, Textarea, NativeSelect, Loading } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
+import { Download } from 'lucide-react';
+import { toast } from '@sparx/ui';
+import { Button, Textarea, Loading } from '@wizeworks/silicaui-react';
+import { Workbench, ControlsPane, OutputPane, Panel } from './ui-kit';
+import { DocumentFields } from './document-fields';
 import { InvoiceItems } from './invoice-items';
 import { InvoicePreview } from './invoice-preview';
-import { CURRENCIES, type InvoiceData } from './lib/invoice';
+import { type InvoiceData } from './lib/invoice';
 import { generateInvoicePdf } from './lib/invoice-pdf';
 import { useLocalStorageState } from './lib/use-local-storage';
 import { downloadBlob, readAsDataUrl } from './lib/download';
@@ -88,139 +89,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
   return (
     <Workbench>
       <ControlsPane>
-        <Panel title="Your business">
-          <Field label="Business name" htmlFor="doc-bn">
-            <Input
-              id="doc-bn"
-              value={data.businessName}
-              onChange={(e) => set({ businessName: e.target.value })}
-            />
-          </Field>
-          <Field label="Address" htmlFor="doc-ba">
-            <Textarea
-              id="doc-ba"
-              rows={2}
-              value={data.businessAddress}
-              onChange={(e) => set({ businessAddress: e.target.value })}
-            />
-          </Field>
-          <div className="tool-fieldgrid">
-            <Field label="Email" htmlFor="doc-be">
-              <Input
-                id="doc-be"
-                type="email"
-                value={data.businessEmail}
-                onChange={(e) => set({ businessEmail: e.target.value })}
-              />
-            </Field>
-            <Field label="Logo">
-              {data.logo ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  color="neutral"
-                  size="sm"
-                  onClick={() => set({ logo: null })}
-                >
-                  <Trash2 className="h-4 w-4" /> Remove
-                </Button>
-              ) : (
-                <FileUpload accept="image/*" maxSize={4 * 1024 * 1024} onFilesChange={handleLogo} />
-              )}
-            </Field>
-          </div>
-        </Panel>
-
-        <Panel title={config.docTitle === 'QUOTE' ? 'Quote for' : 'Bill to'}>
-          <Field label="Client name" htmlFor="doc-cn">
-            <Input
-              id="doc-cn"
-              value={data.clientName}
-              onChange={(e) => set({ clientName: e.target.value })}
-            />
-          </Field>
-          <Field label="Client address" htmlFor="doc-ca">
-            <Textarea
-              id="doc-ca"
-              rows={2}
-              value={data.clientAddress}
-              onChange={(e) => set({ clientAddress: e.target.value })}
-            />
-          </Field>
-        </Panel>
-
-        <Panel title="Details">
-          <div className="tool-fieldgrid">
-            <Field label={config.numberLabel} htmlFor="doc-no">
-              <Input
-                id="doc-no"
-                value={data.invoiceNumber}
-                onChange={(e) => set({ invoiceNumber: e.target.value })}
-              />
-            </Field>
-            <Field label="Currency" htmlFor="doc-cur">
-              <NativeSelect
-                id="doc-cur"
-                value={data.currency}
-                onChange={(e) => set({ currency: e.target.value })}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </NativeSelect>
-            </Field>
-          </div>
-          <div className="tool-fieldgrid">
-            <Field label="Issue date" htmlFor="doc-issue">
-              <Input
-                id="doc-issue"
-                type="date"
-                value={data.issueDate}
-                onChange={(e) => set({ issueDate: e.target.value })}
-              />
-            </Field>
-            <Field label={config.dateFieldLabel} htmlFor="doc-due">
-              <Input
-                id="doc-due"
-                type="date"
-                value={data.dueDate}
-                onChange={(e) => set({ dueDate: e.target.value })}
-              />
-            </Field>
-          </div>
-          <div className="tool-fieldgrid">
-            <Field label="Tax rate (%)" htmlFor="doc-tax">
-              <Input
-                id="doc-tax"
-                type="number"
-                min={0}
-                step="0.1"
-                value={data.taxRate}
-                onChange={(e) => set({ taxRate: Number(e.target.value) })}
-              />
-            </Field>
-            <Field label="Discount" htmlFor="doc-disc" hint="Flat amount.">
-              <Input
-                id="doc-disc"
-                type="number"
-                min={0}
-                step="0.01"
-                value={data.discount}
-                onChange={(e) => set({ discount: Number(e.target.value) })}
-              />
-            </Field>
-          </div>
-          <Field label="Accent color">
-            <ColorPicker
-              value={data.accent}
-              onChange={(c) => set({ accent: c })}
-              ariaLabel="Accent color"
-            />
-          </Field>
-        </Panel>
-
+        <DocumentFields config={config} data={data} set={set} onLogo={handleLogo} />
         <Panel title="Line items">
           <InvoiceItems
             items={data.items}
@@ -257,14 +126,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
           }
         >
           <InvoicePreview data={data} title={config.docTitle} dateLabel={config.pdfDateLabel} />
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          <p className="text-caption text-ink-subtle m-0 font-sans">
             Your details are saved on this device only, ready for the next one. The PDF is built
             entirely in your browser.
           </p>

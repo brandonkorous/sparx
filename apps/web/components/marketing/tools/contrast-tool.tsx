@@ -2,38 +2,50 @@
 
 import * as React from 'react';
 import { Check, X, ArrowLeftRight } from 'lucide-react';
-import { ColorPicker } from '@sparx/ui';
-import { Button, Badge } from '@wizeworks/silicaui-react';
-import { Workbench, ControlsPane, OutputPane, Panel, Field } from './ui-kit';
+import {
+  Badge,
+  Button,
+  List,
+  ListColGrow,
+  ListRow,
+  Stat,
+  StatDesc,
+  StatTitle,
+  StatValue,
+  Stats,
+} from '@wizeworks/silicaui-react';
+import { Workbench, ControlsPane, OutputPane, Panel, Field, HexColorField } from './ui-kit';
 import { contrastRatio, rateContrast } from './lib/color';
 
+/** One WCAG threshold and whether the current pair clears it. */
 function Verdict({ label, pass }: { label: string; pass: boolean }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '12px',
-        padding: '12px 14px',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--color-base-300)',
-      }}
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '14px',
-          color: 'var(--color-base-content)',
-        }}
-      >
-        {label}
-      </span>
+    <ListRow>
+      <ListColGrow className="text-body-sm text-base-content">{label}</ListColGrow>
       <Badge color={pass ? 'success' : 'danger'} variant="soft" size="sm">
         {pass ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
         {pass ? 'Pass' : 'Fail'}
       </Badge>
-    </div>
+    </ListRow>
+  );
+}
+
+/** Labeled hex entry — the shared swatch+input control inside a `Field`. */
+function HexField({
+  label,
+  value,
+  onChange,
+  id,
+}: {
+  label: string;
+  value: string;
+  onChange: (hex: string) => void;
+  id: string;
+}) {
+  return (
+    <Field label={label} htmlFor={id}>
+      <HexColorField id={id} label={label} value={value} onChange={onChange} />
+    </Field>
   );
 }
 
@@ -43,6 +55,13 @@ export function ContrastTool() {
 
   const ratio = contrastRatio(fg, bg) ?? 1;
   const rating = rateContrast(ratio);
+  const summary = rating.normalAAA
+    ? 'Clears every WCAG level'
+    : rating.normalAA
+      ? 'Clears AA for all text sizes'
+      : rating.largeAA
+        ? 'Large text only — too low for body copy'
+        : 'Below every WCAG level';
 
   return (
     <Workbench>
@@ -65,37 +84,21 @@ export function ContrastTool() {
             </Button>
           }
         >
-          <Field label="Text color">
-            <ColorPicker value={fg} onChange={setFg} ariaLabel="Text color" />
-          </Field>
-          <Field label="Background color">
-            <ColorPicker value={bg} onChange={setBg} ariaLabel="Background color" />
-          </Field>
+          <HexField id="contrast-fg" label="Text color" value={fg} onChange={setFg} />
+          <HexField id="contrast-bg" label="Background color" value={bg} onChange={setBg} />
         </Panel>
 
         <Panel title="Preview">
+          {/* The surface fill IS the color under test — the one legitimately
+              dynamic value here; the hairline and radius come from utilities. */}
           <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '28px',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: bg,
-              border: '1px solid var(--color-base-300)',
-            }}
+            className="border-base-300 flex flex-col gap-3 rounded-lg border p-7"
+            style={{ backgroundColor: bg }}
           >
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '16px', color: fg }}>
+            <span className="text-body" style={{ color: fg }}>
               Normal text — the quick brown fox jumps over the lazy dog.
             </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '24px',
-                fontWeight: 700,
-                color: fg,
-              }}
-            >
+            <span className="text-h2 font-bold" style={{ color: fg }}>
               Large text — Aa Bb Cc
             </span>
           </div>
@@ -104,43 +107,22 @@ export function ContrastTool() {
 
       <OutputPane>
         <Panel title="Contrast ratio">
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 600,
-                fontSize: '44px',
-                letterSpacing: '-0.03em',
-                color: 'var(--color-module)',
-              }}
-            >
-              {ratio.toFixed(2)}
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              : 1
-            </span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Stats vertical className="w-full">
+            <Stat>
+              <StatTitle>Measured ratio</StatTitle>
+              <StatValue className="text-module text-4xl">{ratio.toFixed(2)} : 1</StatValue>
+              <StatDesc>{summary}</StatDesc>
+            </Stat>
+          </Stats>
+
+          <List>
             <Verdict label="Normal text — AA (4.5:1)" pass={rating.normalAA} />
             <Verdict label="Normal text — AAA (7:1)" pass={rating.normalAAA} />
             <Verdict label="Large text — AA (3:1)" pass={rating.largeAA} />
             <Verdict label="Large text — AAA (4.5:1)" pass={rating.largeAAA} />
-          </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              lineHeight: '20px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: 0,
-            }}
-          >
+          </List>
+
+          <p className="text-body-sm text-ink-muted m-0">
             Large text is 24px+, or 18.66px and bold. AA is the common legal and procurement bar;
             AAA is the stricter target for body text.
           </p>
