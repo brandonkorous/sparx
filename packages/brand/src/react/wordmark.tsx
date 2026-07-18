@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { cx } from './cx';
 import { Spark } from './spark';
-import {
-  WORDMARK_ASPECT,
-  WORDMARK_BODY_PATHS,
-  WORDMARK_VIEWBOX,
-  WORDMARK_X_PATH,
-} from '../marks';
+import { WORDMARK_ASPECT, WORDMARK_BODY_PATHS, WORDMARK_VIEWBOX, WORDMARK_X_PATH } from '../marks';
 
 // The sparx wordmark — the real vector "sparx" lockup, the single source of
 // truth for the marketing site, the dashboard chrome, and every sidebar rail.

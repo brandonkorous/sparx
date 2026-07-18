@@ -19,16 +19,16 @@ together" actually is — a systems failure, not a taste failure.
 Silica's type system is **semantic, and has no px anywhere**. There are exactly
 these steps. Never write `fontSize`.
 
-| Use | Component |
-|---|---|
-| Hero headline | `<Display>` |
-| Section headline | `<Heading level={2}>` |
-| Card / panel title | `<Heading level={3}>` — or `<CardTitle>` inside a `Card` |
-| Sub-heading | `<Heading level={4}>` |
-| Small label / field name / spec key **that is meant to be read** | `<Heading level={5}>` or `<Heading level={6}>` |
-| Intro / lede paragraph | `<Text variant="lead">` |
-| Body copy, list items, values, table cells, chips | `<Text>` |
-| Text NOT meant to be read | `<Text variant="caption">` |
+| Use                                                              | Component                                                |
+| ---------------------------------------------------------------- | -------------------------------------------------------- |
+| Hero headline                                                    | `<Display>`                                              |
+| Section headline                                                 | `<Heading level={2}>`                                    |
+| Card / panel title                                               | `<Heading level={3}>` — or `<CardTitle>` inside a `Card` |
+| Sub-heading                                                      | `<Heading level={4}>`                                    |
+| Small label / field name / spec key **that is meant to be read** | `<Heading level={5}>` or `<Heading level={6}>`           |
+| Intro / lede paragraph                                           | `<Text variant="lead">`                                  |
+| Body copy, list items, values, table cells, chips                | `<Text>`                                                 |
+| Text NOT meant to be read                                        | `<Text variant="caption">`                               |
 
 `<Heading>` takes `level` (semantics → `<h1>`…`<h6>`) and an optional `size`
 (`1`–`6` or `"display"`) when the visual size must differ from the outline level.
@@ -61,21 +61,21 @@ the plugin (including `text-module-<name>`). Nothing else.
 
 ## Components — reach for these, never rebuild them
 
-| Need | Use | Not |
-|---|---|---|
-| Surface / panel | `Card` + `CardBody` + `CardTitle` | a `<div>` with border+radius+padding |
-| Clickable surface | `ClickableCard` (or `clickableCardClasses`) | a wrapping `<a>` |
-| Pill / status chip | `Badge color variant="soft" size` | a `<span>` with a fill + radius |
-| Metric block | `Stats` + `Stat` + `StatValue` + `StatTitle` + `StatDesc` | a hand-built numeral + label rail |
-| Terminal / code panel | `MockupCode` + `MockupCodeLine prefix` | a dark `<div>` around a `<pre>` |
-| Browser / device frame | `MockupBrowser` (`url`), `MockupWindow`, `MockupPhone` | a hand-drawn chrome |
-| Dated sequence | `Timeline` + `TimelineItem` + `TimelineStart`/`Middle`/`End box` | a hand-built rail |
-| Ordered process | `Steps` + `Step color data-content` | numbered divs |
-| Notice / callout | `Alert color variant="soft"` (+ `AlertContent`/`AlertTitle`/`AlertDescription`) | a tinted div |
-| Row list | `List` + `ListRow` + `ListColGrow` + `ListTitle` | a `<ul>` with flex rows |
-| Rule / separator | `Divider` | a bordered div |
-| Accordion / FAQ | `Accordion` + `AccordionItem`/`Trigger`/`Panel` | `<details>` |
-| Inline link | `Link` | a styled `<a>` |
+| Need                   | Use                                                                             | Not                                  |
+| ---------------------- | ------------------------------------------------------------------------------- | ------------------------------------ |
+| Surface / panel        | `Card` + `CardBody` + `CardTitle`                                               | a `<div>` with border+radius+padding |
+| Clickable surface      | `ClickableCard` (or `clickableCardClasses`)                                     | a wrapping `<a>`                     |
+| Pill / status chip     | `Badge color variant="soft" size`                                               | a `<span>` with a fill + radius      |
+| Metric block           | `Stats` + `Stat` + `StatValue` + `StatTitle` + `StatDesc`                       | a hand-built numeral + label rail    |
+| Terminal / code panel  | `MockupCode` + `MockupCodeLine prefix`                                          | a dark `<div>` around a `<pre>`      |
+| Browser / device frame | `MockupBrowser` (`url`), `MockupWindow`, `MockupPhone`                          | a hand-drawn chrome                  |
+| Dated sequence         | `Timeline` + `TimelineItem` + `TimelineStart`/`Middle`/`End box`                | a hand-built rail                    |
+| Ordered process        | `Steps` + `Step color data-content`                                             | numbered divs                        |
+| Notice / callout       | `Alert color variant="soft"` (+ `AlertContent`/`AlertTitle`/`AlertDescription`) | a tinted div                         |
+| Row list               | `List` + `ListRow` + `ListColGrow` + `ListTitle`                                | a `<ul>` with flex rows              |
+| Rule / separator       | `Divider`                                                                       | a bordered div                       |
+| Accordion / FAQ        | `Accordion` + `AccordionItem`/`Trigger`/`Panel`                                 | `<details>`                          |
+| Inline link            | `Link`                                                                          | a styled `<a>`                       |
 
 `MockupCode` is already a dark terminal — it needs no `data-theme` island and no
 dark hexes.
@@ -97,7 +97,7 @@ inline and do not introduce a mono "variant" of your own.
 ## Component gotchas found in practice
 
 - **`List` paints its own surface.** `.list` sets `background-color:
-  var(--color-base-100)` and `border-radius: var(--radius-box)`. Inside a `Card`
+var(--color-base-100)` and `border-radius: var(--radius-box)`. Inside a `Card`
   that is a no-op (same surface), but a `List` dropped onto a tinted or dark band
   will punch an opaque base-100 rectangle. Check the surface underneath first.
 - **`Divider` carries block margin.** Flush bands inside a card need
@@ -138,7 +138,7 @@ Never a hex. Never `rgba()`. Never a hand-rolled `color-mix()`.
 
 - Module hue: `getModuleColor(m)` → `{ color, bg: 'bg-module-x', ink: 'text-module-x' }`.
   The tinted wash is **`${M.bg} bg-soft`** — silica's own treatment. `M.color` is
-  only for places needing a *value* (an SVG `stroke`, a canvas fill).
+  only for places needing a _value_ (an SVG `stroke`, a canvas fill).
 - Status: the semantic colors (`success`/`warning`/`error`/`info`/`danger`).
 - Near-black CTA: `<Button color="neutral">`. **Not** `style={{backgroundColor:'#0A0A0A'}}`.
 - Dark bands: `<Section surface="dark">` or `data-theme="dark"`, which flips the
@@ -153,7 +153,9 @@ crosses the RSC boundary as a lazy client reference. Use the class builders:
 
 ```tsx
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-<a href={x} className={buttonClasses({ size: 'lg', color: 'primary' })}>Label</a>
+<a href={x} className={buttonClasses({ size: 'lg', color: 'primary' })}>
+  Label
+</a>;
 ```
 
 Import from `/server`, never the package root (the root is `'use client'`).

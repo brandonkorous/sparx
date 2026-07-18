@@ -58,7 +58,12 @@ const FACES: Record<
   // Exactly the delivered sparky: open eyes + the filled smile.
   happy: { mouth: SMILE, lY: 1, rY: 1, fill: true },
   // A calmer, shallower smile — same crescent, eyes a touch relaxed.
-  neutral: { mouth: 'M203,196c.6,15-24,15-23.5,0,0,4,23.5,4,23.5,0Z', lY: 0.9, rY: 0.9, fill: true },
+  neutral: {
+    mouth: 'M203,196c.6,15-24,15-23.5,0,0,4,23.5,4,23.5,0Z',
+    lY: 0.9,
+    rY: 0.9,
+    fill: true,
+  },
   content: { mouth: 'M201,197c.5,11-18.5,11-18,0,0,3,18,3,18,0Z', lY: 0.55, rY: 0.55, fill: true },
   // The left eye WINKS (animates closed↔open via CSS); the right stays open. A
   // static closed eye reads as a defect, so this is a live gesture, not a held pose.

@@ -1,4 +1,10 @@
-import { BRAND, WORDMARK_ASPECT, WORDMARK_BODY_PATHS, WORDMARK_VIEWBOX, WORDMARK_X_PATH } from '@sparx/brand';
+import {
+  BRAND,
+  WORDMARK_ASPECT,
+  WORDMARK_BODY_PATHS,
+  WORDMARK_VIEWBOX,
+  WORDMARK_X_PATH,
+} from '@sparx/brand';
 
 // The sparx wordmark as an inline SVG for the edge OG generators (satori /
 // next/og), so every social card renders the REAL vector lockup instead of a
@@ -22,7 +28,12 @@ export function OgWordmark({
   const width = Math.round(height * WORDMARK_ASPECT);
   return (
     <div style={{ display: 'flex' }}>
-      <svg width={width} height={height} viewBox={WORDMARK_VIEWBOX} xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width={width}
+        height={height}
+        viewBox={WORDMARK_VIEWBOX}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         {WORDMARK_BODY_PATHS.map((d) => (
           <path key={d} d={d} fill={bodyColor} />
         ))}

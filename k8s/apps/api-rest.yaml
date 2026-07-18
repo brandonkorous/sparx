@@ -103,20 +103,34 @@ spec:
             limits:
               cpu: '1000m'
               memory: '512Mi'
+          # timeoutSeconds is set explicitly — the k8s default is 1s, and that
+          # default is what CrashLooped api-rest for 30h (v1.149.0/.1 deploys,
+          # 2026-07-18, ~400 restarts, exit 137 "failed liveness probe").
+          # /health is a static handler with no DB roundtrip (src/routes/health.ts),
+          # so it can only exceed 1s when the event loop is stalled — which it is,
+          # because this pod is guaranteed just 100m CPU on a node packed to 99%
+          # of allocatable CPU requests. Ordinary public reads were taking
+          # 1.5–2.2s. Restarting never recovered it: startup is the most
+          # CPU-hungry phase, so each new container failed the probe again.
+          # 5s tolerates event-loop stalls without masking a genuinely wedged
+          # process; the liveness failureThreshold of 5 means a real hang still
+          # gets killed within ~2.5min.
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30
             periodSeconds: 30
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
             periodSeconds: 10
-            failureThreshold: 2
+            timeoutSeconds: 5
+            failureThreshold: 3
           lifecycle:
             preStop:
               exec:

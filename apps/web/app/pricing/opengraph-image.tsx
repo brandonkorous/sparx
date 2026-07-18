@@ -39,7 +39,9 @@ export default function Image() {
             backgroundColor: `${BRAND.primary}1A`,
           }}
         >
-          <div style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: BRAND.primary }} />
+          <div
+            style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: BRAND.primary }}
+          />
           <span
             style={{
               fontWeight: 500,
