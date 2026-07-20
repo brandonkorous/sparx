@@ -28,6 +28,10 @@ const VariantParam = z.object({ variant_id: z.string().uuid() });
 const ListQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   q: z.string().max(255).optional(),
+  // Every level for ONE product in a single request — what a product-scoped
+  // stock view reads. `q` is not a substitute: it matches product title as a
+  // substring, so "Camp Mug" and "Camp Mug XL" come back together.
+  product_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -56,6 +60,7 @@ const inventoryApiRoutes: FastifyPluginAsync = async (app) => {
     const { items, total } = await inventoryService.listInventory(toInventoryContext(request), {
       ...(q.warehouse_id ? { warehouseId: q.warehouse_id } : {}),
       ...(q.q ? { q: q.q } : {}),
+      ...(q.product_id ? { productId: q.product_id } : {}),
       take,
       skip,
     });

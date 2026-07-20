@@ -47,10 +47,6 @@ export function PartnersPage({ partnerCount }: { partnerCount?: number }) {
   );
 }
 
-const SANS = 'var(--font-sans)';
-const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const EMBER_TEXT = 'var(--color-primary)';
-
 function PartnersTiersSection() {
   return (
     <Section padding="lg">
@@ -84,12 +80,7 @@ function PartnersApply() {
     },
   ];
   return (
-    <Section
-      id="apply"
-      surface="page"
-      padding="lg"
-      style={{ borderTop: '1px solid var(--color-base-300)' }}
-    >
+    <Section id="apply" surface="page" padding="lg" className="border-base-300 border-t">
       <div className="mkt-apply-grid">
         <div>
           <SectionHeader
@@ -97,53 +88,23 @@ function PartnersApply() {
             headline={<>Apply in two minutes</>}
             lede="This isn't a job application. Tell us who you are and how you'll use sparx with clients."
           />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginTop: '32px' }}>
+          <div className="mt-8 flex flex-col gap-[18px]">
             {what.map((w) => (
-              <div key={w.n} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                <span
-                  style={{
-                    width: 28,
-                    height: 28,
-                    flexShrink: 0,
-                    borderRadius: '8px',
-                    backgroundColor: EMBER_TINT,
-                    color: EMBER_TEXT,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+              <div key={w.n} className="flex items-start gap-3.5">
+                {/* A leading list marker beside the item — not a step eyebrow
+                    above a heading (the item title is a sibling, not a child). */}
+                <span className="bg-primary bg-soft text-primary text-mini flex size-7 shrink-0 items-center justify-center rounded-lg font-mono">
                   {w.n}
                 </span>
                 <div>
-                  <div style={{ fontFamily: SANS, fontWeight: 500, fontSize: '15px' }}>{w.t}</div>
-                  <div
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14px',
-                      lineHeight: '21px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      marginTop: '3px',
-                    }}
-                  >
-                    {w.d}
-                  </div>
+                  <div className="text-body-sm font-medium">{w.t}</div>
+                  <div className="text-ink-muted text-small mt-[3px]">{w.d}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div
-          style={{
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '18px',
-            padding: 'clamp(24px, 3vw, 34px)',
-            boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-          }}
-        >
+        <div className="bg-base-100 border-base-300 rounded-[18px] border p-[clamp(24px,3vw,34px)] shadow-lg">
           <PartnersApplyForm />
         </div>
       </div>

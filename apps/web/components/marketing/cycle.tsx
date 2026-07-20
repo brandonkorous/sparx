@@ -54,11 +54,11 @@ export function Cycle({
 
   return (
     <div
-      className={className}
       // minmax(0, 1fr) lets the single stacked column shrink below its
       // content's intrinsic width, so a wide focal surface (e.g. a product
       // frame with a long URL) never forces page overflow on narrow viewports.
-      style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', ...style }}
+      className={['grid grid-cols-[minmax(0,1fr)]', className].filter(Boolean).join(' ')}
+      style={style}
     >
       {items.map((item, i) => (
         <div
@@ -66,9 +66,9 @@ export function Cycle({
           // eslint-disable-next-line react/no-array-index-key
           key={i}
           aria-hidden={i === index ? undefined : true}
+          className="col-start-1 row-start-1 min-w-0"
+          // Crossfade state is per-item and index-driven, so it stays inline.
           style={{
-            gridArea: '1 / 1',
-            minWidth: 0,
             opacity: i === index ? 1 : 0,
             transition: `opacity ${fadeMs}ms ease`,
             pointerEvents: i === index ? undefined : 'none',

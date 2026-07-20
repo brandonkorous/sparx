@@ -45,7 +45,7 @@ export function PaletteSection() {
         />
 
         <Group title="Semantic — reserved, never decorative">
-          <div className="mkt-grid-3-2-1">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {SEMANTIC.map((s) => (
               <Swatch key={s.name} {...s} />
             ))}
@@ -53,7 +53,7 @@ export function PaletteSection() {
         </Group>
 
         <Group title="Neutrals — light mode">
-          <div className="mkt-grid-4-2-1">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {NEUTRALS.map((s) => (
               <Swatch key={s.name} value={`var(${s.token})`} {...s} height={72} />
             ))}
@@ -61,7 +61,7 @@ export function PaletteSection() {
         </Group>
 
         <Group title="Neutrals — dark mode">
-          <div className="mkt-grid-4-2-1">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {NEUTRALS.map((s) => (
               <Swatch key={s.name} value={`var(${s.token})`} theme="dark" {...s} height={72} />
             ))}

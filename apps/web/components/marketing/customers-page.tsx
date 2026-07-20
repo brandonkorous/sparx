@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Section, SectionHeader, Display, Spark } from './primitives';
+import { Section, SectionHeader, Display, Spark, Text, Dot } from './primitives';
 
 /**
  * The /customers page. Leads with *who* sparx is for — organized by user-type,
@@ -66,102 +66,56 @@ const SEGMENTS: { name: string; color: string; bg: string; blurb: string; runs: 
   },
 ];
 
-const GILLETT_RUNS = ['Commerce', 'B2B · Fleet', 'CRM', 'AI · MCP', 'Managed hosting'];
+const GILLETT_RUNS = ['Commerce', 'B2B · Fleet', 'CRM', 'AI', 'Managed hosting'];
 
 export function CustomersPage() {
   return (
     <>
       {/* Hero */}
       <Section surface="page" padding="lg">
-        <div style={{ maxWidth: '820px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="flex max-w-[820px] flex-col gap-6">
           <Display as="h1" size={64}>
             Who runs on sparx
             <Spark />
           </Display>
-          <p
-            style={{
-              margin: 0,
-              maxWidth: '640px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <Text size={18} className="max-w-[640px]">
             Publishers, retailers, distributors, agencies, AI-first teams. sparx isn&apos;t a store
             with extras bolted on. Each one turns on the modules they need, and pays for nothing
             they don&apos;t.
-          </p>
+          </Text>
         </div>
       </Section>
 
       {/* User-type segments */}
       <Section surface="surface" padding="xl">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+        <div className="flex flex-col gap-12">
           <SectionHeader
             headline="However you operate"
             accent="var(--color-primary)"
             lede="A CMS-only publisher, a CRM-only team, a B2B distributor — all first-class. Here's the shape it usually takes."
           />
-          <div className="mkt-grid-3-2-1">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {SEGMENTS.map((s) => (
               <div
                 key={s.name}
-                className={`${s.bg} bg-soft`}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  padding: '28px 26px',
-                  border: '1px solid var(--color-base-300)',
-                  borderRadius: '12px',
-                  minHeight: '230px',
-                }}
+                className={`${s.bg} border-base-300 bg-soft flex min-h-[230px] flex-col gap-3 rounded-xl border px-[26px] py-7`}
               >
-                <span
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '17px',
-                    letterSpacing: '-0.01em',
-                    color: 'var(--color-base-content)',
-                  }}
+                <Text
+                  as="span"
+                  size={17}
+                  weight={500}
+                  tone="default"
+                  className="flex items-center gap-2.5 tracking-[-0.01em]"
                 >
-                  <span
-                    style={{
-                      width: 9,
-                      height: 9,
-                      borderRadius: 9999,
-                      backgroundColor: s.color,
-                      flexShrink: 0,
-                    }}
-                  />
+                  <Dot color={s.color} size={9} />
                   {s.name}
-                </span>
-                <p
-                  style={{
-                    margin: 0,
-                    flex: 1,
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '14px',
-                    lineHeight: '22px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text size={14} className="flex-1">
                   {s.blurb}
-                </p>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text as="span" mono size={12} tone="subtle">
                   {s.runs}
-                </span>
+                </Text>
               </div>
             ))}
           </div>
@@ -170,84 +124,33 @@ export function CustomersPage() {
 
       {/* Flagship: Gillett Diesel */}
       <Section surface="page" padding="xl">
-        <div
-          className="bg-module-b2b bg-soft"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '28px',
-            padding: 'clamp(32px, 5vw, 56px)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '16px',
-          }}
-        >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              width: 'fit-content',
-              padding: '5px 12px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '9999px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: 9999,
-                backgroundColor: 'var(--color-module-b2b)',
-              }}
-            />
-            First enterprise client
-          </span>
-
+        {/* RULE #2: the uppercase mono "First enterprise client" pill that used to
+            sit directly above this headline was an eyebrow badge — removed. */}
+        <div className="bg-module-b2b border-base-300 bg-soft flex flex-col gap-7 rounded-2xl border p-[clamp(32px,5vw,56px)]">
           <Display as="h2" size={40}>
             Gillett Diesel Service
             <Spark color="var(--color-module-b2b)" />
           </Display>
 
-          <p
-            style={{
-              margin: 0,
-              maxWidth: '720px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '17px',
-              lineHeight: '28px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <Text size={17} className="max-w-[720px]">
             A diesel service and parts operation running the full industrial playbook on sparx:
             wholesale accounts with net terms and PO checkout, a fleet module tracking vehicles by
             VIN and cost center, bookable service bays, and a native MCP server so the team can ask
             about parts and orders in plain language. It runs on a custom frontend with managed
             hosting on the Enterprise plan — the requirements that shaped sparx&apos;s first B2B and
             fleet features.
-          </p>
+          </Text>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div className="flex flex-wrap gap-2">
             {GILLETT_RUNS.map((r) => (
-              <span
+              <Text
                 key={r}
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  padding: '6px 12px',
-                  backgroundColor: 'var(--color-base-200)',
-                  border: '1px solid var(--color-base-300)',
-                  borderRadius: '9999px',
-                }}
+                as="span"
+                size={13}
+                className="bg-base-200 border-base-300 rounded-full border px-3 py-1.5"
               >
                 {r}
-              </span>
+              </Text>
             ))}
           </div>
         </div>
@@ -255,15 +158,15 @@ export function CustomersPage() {
 
       {/* CTA */}
       <Section surface="surface" padding="xl">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '720px' }}>
+        <div className="flex max-w-[720px] flex-col gap-6">
           <SectionHeader
             headline="Your story goes here"
             accent="var(--color-primary)"
             lede="Running something that doesn't fit a template? That's the point. Tell us what you operate and we'll map it onto sparx."
           />
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap gap-3">
             <a href="/contact">
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+              <Button color="neutral" size="lg">
                 Talk to us →
               </Button>
             </a>

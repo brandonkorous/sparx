@@ -72,6 +72,8 @@ import {
   resolveMarkup,
   SELECT_CLASS,
 } from '../../_lib/markup';
+import { DocumentPreview } from '../../_components/document-preview';
+import { buildWizardDraft } from './wizard-draft';
 
 // ─── Public option shapes (resolved server-side, passed in) ──────────────────────
 
@@ -456,416 +458,500 @@ function InvoiceWizardInner({
     </SurfaceSummary>
   );
 
+  // ── Live preview (the real branded artifact) ─────────────────────────────────
+  // The frame runs `width="full"`, which widens the summary aside enough to hold a
+  // page-sized document, so the preview lives IN the column beneath the numeric
+  // summary rather than behind a button — the merchant watches the real artifact
+  // build itself as they type. The draft is recomputed on every state change.
+  const previewDraft = React.useMemo(
+    () =>
+      buildWizardDraft({
+        startStageId,
+        currency,
+        customerId,
+        b2bAccountId,
+        taxRatePct,
+        shippingTotal: shippingNum,
+        surchargeTotal: surchargeNum,
+        depositKind,
+        depositAmount: depositNum,
+        dueAt: toIsoDate(dueAt),
+        validUntil: toIsoDate(validUntil),
+        notes,
+        lines,
+        lineTypes,
+      }),
+    [
+      startStageId,
+      currency,
+      customerId,
+      b2bAccountId,
+      taxRatePct,
+      shippingNum,
+      surchargeNum,
+      depositKind,
+      depositNum,
+      dueAt,
+      validUntil,
+      notes,
+      lines,
+      lineTypes,
+    ]
+  );
+
+  // Previewing a document with nothing on it shows an empty shell — not useful.
+  // A line, or a party to bill, is the point at which there's something to look at.
+  const canPreview = !createdDocId && (lines.length > 0 || hasParty);
+
+  // The aside content: the numbers first (a glanceable check), the document under
+  // it (the thing the customer actually receives).
+  // Only the full-page presentation gets the inline preview: it runs
+  // `width="full"`, which widens the aside enough for a document. The overlay
+  // (drawer/modal) keeps the 320px rail, where a page-sized artifact would be
+  // unreadable — switching to the full page is the affordance there.
+  const aside =
+    presentation === 'page' ? (
+      <div className="flex min-w-0 flex-col gap-4">
+        {/* SurfaceSummary is `h-full` with an `mt-auto` footer so it fills the
+            rail when it's the column's only occupant. Here it isn't — an
+            auto-height wrapper collapses that `height:100%` to the content's own
+            height, so the totals stay compact and the document sits directly
+            under them instead of being pushed below the fold. */}
+        <div>{summary}</div>
+        {canPreview ? (
+          <DocumentPreview draft={previewDraft} title="Preview" />
+        ) : (
+          <p className="text-base-content text-base">
+            Add a customer or a line item and your document will appear here.
+          </p>
+        )}
+      </div>
+    ) : (
+      summary
+    );
+
   // ── Frame ──────────────────────────────────────────────────────────────────
   // Single-page: one SurfaceStep stacking bill-to / lines / charges / deposit /
   // start-stage. A workflow + party are required, so the primary stays disabled
   // until both are set. On a partial-success create the body becomes a recap panel
   // and the primary turns into "Open document".
   return (
-    <SurfaceFrame
-      variant={presentation === 'overlay' ? 'inline' : 'embedded'}
-      title="New document"
-      backLabel="Documents"
-      headerActions={
-        presentation === 'page' ? (
-          <ViewSwitcher typeId="billing-document" entityId={CREATE_SENTINEL} current="page" />
-        ) : undefined
-      }
-      actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
-      steps={SINGLE_STEP}
-      current={0}
-      onCancel={cancel}
-      summary={summary}
-    >
-      <SurfaceStep
-        actions={{
-          onNext: createdDocId ? openDocument : () => void handleCreate(),
-          nextLabel: createdDocId ? 'Open document' : 'Create document',
-          nextLoading: submitting,
-          nextDisabled: submitting || (!createdDocId && (!hasParty || !workflowId)),
-        }}
+    <>
+      <SurfaceFrame
+        variant={presentation === 'overlay' ? 'inline' : 'embedded'}
+        // Full-bleed rather than the default centered sheet: this surface now
+        // carries a live document preview alongside the form, so the capped
+        // 1120px sheet would strand the preview in a gutter. Same reasoning as
+        // the builder's full-height `.bx-shell` — an editing surface with a real
+        // second pane wants the page, not a reading measure.
+        width="full"
+        title="New document"
+        backLabel="Documents"
+        headerActions={
+          presentation === 'page' ? (
+            <ViewSwitcher typeId="billing-document" entityId={CREATE_SENTINEL} current="page" />
+          ) : undefined
+        }
+        actionsTarget={presentation === 'overlay' ? overlayActionsTarget : undefined}
+        steps={SINGLE_STEP}
+        current={0}
+        onCancel={cancel}
+        summary={aside}
       >
-        {createdDocId ? (
-          <Card className="border-base-300">
-            <CardBody className="p-4">
-              <div className="flex flex-row items-start gap-3">
-                <CheckCircle2 className="text-module mt-0.5 h-5 w-5 shrink-0" />
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-medium">
-                    Document created — but {partialFailures.length} item
-                    {partialFailures.length === 1 ? '' : 's'} couldn’t be added automatically:
-                  </p>
-                  <p className="text-base-content text-sm">
-                    {partialFailures.join(', ')}. Open the document to add{' '}
-                    {partialFailures.length === 1 ? 'it' : 'them'} by hand.
-                  </p>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        ) : (
-          <div className="flex flex-col gap-5">
-            {/* Bill to */}
-            <Card>
-              <CardBody>
-                <h3 className="text-xl font-semibold">Document</h3>
-                <p className="text-base-content text-sm">
-                  The workflow sets the stages and the customer-facing label. Bill a retail customer
-                  or a B2B account — at least one is required.
-                </p>
-                <div className="flex flex-col gap-4">
-                  <Field>
-                    <FieldLabel>Workflow</FieldLabel>
-                    {workflows.length === 0 ? (
-                      <p className="text-base-content text-sm">
-                        No document workflows exist yet. Create one in Invoicing → Workflows first.
-                      </p>
-                    ) : (
-                      <NativeSelect
-                        value={workflowId}
-                        onChange={(e) => setWorkflowId(e.target.value)}
-                      >
-                        {workflows.map((w) => (
-                          <option key={w.id} value={w.id}>
-                            {w.name}
-                            {w.isDefault ? ' (default)' : ''}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    )}
-                    <FieldDescription>
-                      The workflow’s first stage is where this document starts — you can jump ahead
-                      below.
-                    </FieldDescription>
-                  </Field>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field>
-                      <FieldLabel>Customer</FieldLabel>
-                      <NativeSelect
-                        value={customerId}
-                        onChange={(e) => setCustomerId(e.target.value)}
-                      >
-                        <option value="">(none)</option>
-                        {customers.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </Field>
-                    <Field>
-                      <FieldLabel>B2B account</FieldLabel>
-                      <NativeSelect
-                        value={b2bAccountId}
-                        onChange={(e) => setB2bAccountId(e.target.value)}
-                      >
-                        <option value="">(none)</option>
-                        {b2bAccounts.map((a) => (
-                          <option key={a.id} value={a.id}>
-                            {a.label}
-                          </option>
-                        ))}
-                      </NativeSelect>
-                    </Field>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field className="max-w-[8rem]">
-                      <FieldLabel>Currency</FieldLabel>
-                      <FieldControl
-                        name="iw-currency"
-                        value={currency}
-                        maxLength={3}
-                        className="uppercase"
-                        onChange={(e) => setCurrency(e.target.value)}
-                      />
-                    </Field>
-                    {currentUserId && (
-                      <label className="flex items-end gap-2 pb-2 text-sm">
-                        <Checkbox
-                          color="module"
-                          checked={assignToMe}
-                          onChange={(e) => setAssignToMe(e.target.checked)}
-                        />
-                        Assign this document to me
-                      </label>
-                    )}
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Line items */}
-            <Card>
-              <CardBody>
-                <div className="flex flex-row items-center gap-2">
-                  <h3 className="text-xl font-semibold">Line items</h3>
-                  <Badge color="neutral" variant="soft" size="sm">
-                    {lines.length}
-                  </Badge>
-                </div>
-                <p className="text-base-content text-sm">
-                  Manual lines take a unit price; marked-up parts and pass-through price live from a
-                  cost basis. Lines are optional here — you can also add them on the document.
-                </p>
-                <div className="flex flex-col gap-2">
-                  {lines.length === 0 ? (
-                    <p className="text-base-content text-sm">
-                      No lines yet. Add the first charge below — or continue and add them on the
-                      document.
+        <SurfaceStep
+          actions={{
+            onNext: createdDocId ? openDocument : () => void handleCreate(),
+            nextLabel: createdDocId ? 'Open document' : 'Create document',
+            nextLoading: submitting,
+            nextDisabled: submitting || (!createdDocId && (!hasParty || !workflowId)),
+          }}
+        >
+          {createdDocId ? (
+            <Card className="border-base-300">
+              <CardBody className="p-4">
+                <div className="flex flex-row items-start gap-3">
+                  <CheckCircle2 className="text-module mt-0.5 h-5 w-5 shrink-0" />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium">
+                      Document created — but {partialFailures.length} item
+                      {partialFailures.length === 1 ? '' : 's'} couldn’t be added automatically:
                     </p>
-                  ) : (
-                    lines.map((l) => (
-                      <div
-                        key={l.tempId}
-                        className="border-base-300 flex flex-row items-center justify-between gap-3 rounded-md border px-3 py-2"
-                      >
-                        <div className="flex min-w-0 flex-row flex-wrap items-center gap-2">
-                          <Badge color="info" variant="soft" size="sm">
-                            {l.typeLabel}
-                          </Badge>
-                          <p className="truncate text-sm">{l.description}</p>
-                          {!l.taxable && <p className="text-base-content text-xs">(non-taxable)</p>}
-                        </div>
-                        <div className="flex flex-row items-center gap-3">
-                          <p className="text-base-content text-xs tabular-nums">
-                            {l.quantity} × {formatMoney(l.unitPrice, currency)}
-                          </p>
-                          <p className="text-sm tabular-nums">
-                            {formatMoney(l.quantity * l.unitPrice, currency)}
-                          </p>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            shape="square"
-                            size="sm"
-                            aria-label="Remove line"
-                            onClick={() => removeLocalLine(l.tempId)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-
-            {lineTypes.length === 0 ? (
-              <p className="text-base-content text-sm">
-                No line types are configured. They seed automatically when Invoicing is activated.
-              </p>
-            ) : (
-              <LineComposer
-                lineTypes={lineTypes}
-                markupRules={markupRules}
-                currency={currency}
-                onAdd={addLocalLine}
-              />
-            )}
-
-            {/* Charges */}
-            <Card>
-              <CardBody>
-                <h3 className="text-xl font-semibold">Tax, shipping &amp; surcharge</h3>
-                <p className="text-base-content text-sm">
-                  Document-level charges. Tax applies to the lines you mark taxable. All optional.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <Field {...v.field('taxRatePct')}>
-                    <FieldLabel>Tax rate %</FieldLabel>
-                    <FieldControl
-                      name="iw-tax"
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.0001"
-                      value={taxRatePct}
-                      onChange={(e) => setTaxRatePct(e.target.value)}
-                      {...v.control('taxRatePct')}
-                    />
-                  </Field>
-                  <Field {...v.field('shipping')}>
-                    <FieldLabel>Shipping</FieldLabel>
-                    <FieldControl
-                      name="iw-shipping"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={shipping}
-                      onChange={(e) => setShipping(e.target.value)}
-                      placeholder="0.00"
-                      {...v.control('shipping')}
-                    />
-                  </Field>
-                  <Field {...v.field('surcharge')}>
-                    <FieldLabel>Surcharge</FieldLabel>
-                    <FieldControl
-                      name="iw-surcharge"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={surcharge}
-                      onChange={(e) => setSurcharge(e.target.value)}
-                      placeholder="0.00"
-                      {...v.control('surcharge')}
-                    />
-                  </Field>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Terms */}
-            <Card>
-              <CardBody>
-                <h3 className="text-xl font-semibold">Terms</h3>
-                <p className="text-base-content text-sm">
-                  Due date, validity, and notes — all optional.
-                </p>
-                <div className="flex flex-col gap-3">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field>
-                      <FieldLabel>Due date</FieldLabel>
-                      <FieldControl
-                        name="iw-due"
-                        type="date"
-                        value={dueAt}
-                        onChange={(e) => setDueAt(e.target.value)}
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel>Valid until</FieldLabel>
-                      <FieldControl
-                        name="iw-valid"
-                        type="date"
-                        value={validUntil}
-                        onChange={(e) => setValidUntil(e.target.value)}
-                      />
-                    </Field>
+                    <p className="text-base-content text-sm">
+                      {partialFailures.join(', ')}. Open the document to add{' '}
+                      {partialFailures.length === 1 ? 'it' : 'them'} by hand.
+                    </p>
                   </div>
-                  <Field>
-                    <FieldLabel>Notes</FieldLabel>
-                    <FieldControl
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Shown on the document — terms, scope, anything the customer should see."
-                      render={<Textarea rows={3} />}
-                    />
-                  </Field>
                 </div>
               </CardBody>
             </Card>
-
-            {/* Deposit */}
-            <Card>
-              <CardBody>
-                <h3 className="text-xl font-semibold">Deposit / payment</h3>
-                <p className="text-base-content text-sm">
-                  Record an upfront deposit or payment now — optional; leave the amount blank to
-                  skip.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-4">
-                  <Field>
-                    <FieldLabel>Type</FieldLabel>
-                    <NativeSelect
-                      value={depositKind}
-                      onChange={(e) => setDepositKind(e.target.value as 'deposit' | 'payment')}
-                    >
-                      <option value="deposit">Deposit</option>
-                      <option value="payment">Payment</option>
-                    </NativeSelect>
-                  </Field>
-                  <Field>
-                    <FieldLabel>Method</FieldLabel>
-                    <NativeSelect
-                      value={depositMethod}
-                      onChange={(e) => setDepositMethod(e.target.value)}
-                    >
-                      <option value="card">Card</option>
-                      <option value="cash">Cash</option>
-                      <option value="check">Check</option>
-                      <option value="ach">ACH</option>
-                      <option value="wire">Wire</option>
-                      <option value="account_credit">Account credit</option>
-                      <option value="other">Other</option>
-                    </NativeSelect>
-                  </Field>
-                  <Field {...v.field('depositAmount')}>
-                    <FieldLabel>Amount</FieldLabel>
-                    <FieldControl
-                      name="iw-dep-amount"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={depositAmount}
-                      onChange={(e) => setDepositAmount(e.target.value)}
-                      placeholder="0.00"
-                      {...v.control('depositAmount')}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>Reference</FieldLabel>
-                    <FieldControl
-                      name="iw-dep-ref"
-                      value={depositReference}
-                      onChange={(e) => setDepositReference(e.target.value)}
-                      placeholder="Check #, memo…"
-                    />
-                  </Field>
-                </div>
-                {depositNum > 0 && (
-                  <p className="text-base-content mt-3 text-xs">
-                    {formatMoney(depositNum, currency)} {depositKind} will be recorded on create —
-                    balance after: {formatMoney(balance, currency)}.
-                  </p>
-                )}
-              </CardBody>
-            </Card>
-
-            {/* Start at stage */}
-            {stages.length > 1 && (
+          ) : (
+            <div className="flex flex-col gap-5">
+              {/* Bill to */}
               <Card>
                 <CardBody>
-                  <h3 className="text-xl font-semibold">Start at stage</h3>
+                  <h3 className="text-xl font-semibold">Document</h3>
                   <p className="text-base-content text-sm">
-                    The document is created at the first stage; pick a later stage to advance it
-                    straight away (e.g. issue the invoice now).
+                    The workflow sets the stages and the customer-facing label. Bill a retail
+                    customer or a B2B account — at least one is required.
+                  </p>
+                  <div className="flex flex-col gap-4">
+                    <Field>
+                      <FieldLabel>Workflow</FieldLabel>
+                      {workflows.length === 0 ? (
+                        <p className="text-base-content text-sm">
+                          No document workflows exist yet. Create one in Invoicing → Workflows
+                          first.
+                        </p>
+                      ) : (
+                        <NativeSelect
+                          value={workflowId}
+                          onChange={(e) => setWorkflowId(e.target.value)}
+                        >
+                          {workflows.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.name}
+                              {w.isDefault ? ' (default)' : ''}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      )}
+                      <FieldDescription>
+                        The workflow’s first stage is where this document starts — you can jump
+                        ahead below.
+                      </FieldDescription>
+                    </Field>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field>
+                        <FieldLabel>Customer</FieldLabel>
+                        <NativeSelect
+                          value={customerId}
+                          onChange={(e) => setCustomerId(e.target.value)}
+                        >
+                          <option value="">(none)</option>
+                          {customers.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.label}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </Field>
+                      <Field>
+                        <FieldLabel>B2B account</FieldLabel>
+                        <NativeSelect
+                          value={b2bAccountId}
+                          onChange={(e) => setB2bAccountId(e.target.value)}
+                        >
+                          <option value="">(none)</option>
+                          {b2bAccounts.map((a) => (
+                            <option key={a.id} value={a.id}>
+                              {a.label}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </Field>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field className="max-w-[8rem]">
+                        <FieldLabel>Currency</FieldLabel>
+                        <FieldControl
+                          name="iw-currency"
+                          value={currency}
+                          maxLength={3}
+                          className="uppercase"
+                          onChange={(e) => setCurrency(e.target.value)}
+                        />
+                      </Field>
+                      {currentUserId && (
+                        <label className="flex items-end gap-2 pb-2 text-sm">
+                          <Checkbox
+                            color="module"
+                            checked={assignToMe}
+                            onChange={(e) => setAssignToMe(e.target.checked)}
+                          />
+                          Assign this document to me
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Line items */}
+              <Card>
+                <CardBody>
+                  <div className="flex flex-row items-center gap-2">
+                    <h3 className="text-xl font-semibold">Line items</h3>
+                    <Badge color="neutral" variant="soft" size="sm">
+                      {lines.length}
+                    </Badge>
+                  </div>
+                  <p className="text-base-content text-sm">
+                    Manual lines take a unit price; marked-up parts and pass-through price live from
+                    a cost basis. Lines are optional here — you can also add them on the document.
                   </p>
                   <div className="flex flex-col gap-2">
-                    <NativeSelect
-                      aria-label="Start stage"
-                      value={startStageId}
-                      onChange={(e) => setStartStageId(e.target.value)}
-                    >
-                      {stages.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.customerLabel}
-                          {s.numberOnEnter ? ' · numbers' : ''}
-                          {s.locksEditing ? ' · locks' : ''}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                    {startStageId !== firstStageId && lines.length === 0 && (
-                      <p className="text-warning text-xs">
-                        This stage finalizes the document — consider adding at least one line first.
+                    {lines.length === 0 ? (
+                      <p className="text-base-content text-sm">
+                        No lines yet. Add the first charge below — or continue and add them on the
+                        document.
                       </p>
+                    ) : (
+                      lines.map((l) => (
+                        <div
+                          key={l.tempId}
+                          className="border-base-300 flex flex-row items-center justify-between gap-3 rounded-md border px-3 py-2"
+                        >
+                          <div className="flex min-w-0 flex-row flex-wrap items-center gap-2">
+                            <Badge color="info" variant="soft" size="sm">
+                              {l.typeLabel}
+                            </Badge>
+                            <p className="truncate text-sm">{l.description}</p>
+                            {!l.taxable && (
+                              <p className="text-base-content text-xs">(non-taxable)</p>
+                            )}
+                          </div>
+                          <div className="flex flex-row items-center gap-3">
+                            <p className="text-base-content text-xs tabular-nums">
+                              {l.quantity} × {formatMoney(l.unitPrice, currency)}
+                            </p>
+                            <p className="text-sm tabular-nums">
+                              {formatMoney(l.quantity * l.unitPrice, currency)}
+                            </p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              shape="square"
+                              size="sm"
+                              aria-label="Remove line"
+                              onClick={() => removeLocalLine(l.tempId)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))
                     )}
                   </div>
                 </CardBody>
               </Card>
-            )}
 
-            {error && (
-              <FieldStatus status="error" attached={false} role="alert">
-                {error}
-              </FieldStatus>
-            )}
-          </div>
-        )}
-      </SurfaceStep>
-    </SurfaceFrame>
+              {lineTypes.length === 0 ? (
+                <p className="text-base-content text-sm">
+                  No line types are configured. They seed automatically when Invoicing is activated.
+                </p>
+              ) : (
+                <LineComposer
+                  lineTypes={lineTypes}
+                  markupRules={markupRules}
+                  currency={currency}
+                  onAdd={addLocalLine}
+                />
+              )}
+
+              {/* Charges */}
+              <Card>
+                <CardBody>
+                  <h3 className="text-xl font-semibold">Tax, shipping &amp; surcharge</h3>
+                  <p className="text-base-content text-sm">
+                    Document-level charges. Tax applies to the lines you mark taxable. All optional.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <Field {...v.field('taxRatePct')}>
+                      <FieldLabel>Tax rate %</FieldLabel>
+                      <FieldControl
+                        name="iw-tax"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.0001"
+                        value={taxRatePct}
+                        onChange={(e) => setTaxRatePct(e.target.value)}
+                        {...v.control('taxRatePct')}
+                      />
+                    </Field>
+                    <Field {...v.field('shipping')}>
+                      <FieldLabel>Shipping</FieldLabel>
+                      <FieldControl
+                        name="iw-shipping"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={shipping}
+                        onChange={(e) => setShipping(e.target.value)}
+                        placeholder="0.00"
+                        {...v.control('shipping')}
+                      />
+                    </Field>
+                    <Field {...v.field('surcharge')}>
+                      <FieldLabel>Surcharge</FieldLabel>
+                      <FieldControl
+                        name="iw-surcharge"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={surcharge}
+                        onChange={(e) => setSurcharge(e.target.value)}
+                        placeholder="0.00"
+                        {...v.control('surcharge')}
+                      />
+                    </Field>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Terms */}
+              <Card>
+                <CardBody>
+                  <h3 className="text-xl font-semibold">Terms</h3>
+                  <p className="text-base-content text-sm">
+                    Due date, validity, and notes — all optional.
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field>
+                        <FieldLabel>Due date</FieldLabel>
+                        <FieldControl
+                          name="iw-due"
+                          type="date"
+                          value={dueAt}
+                          onChange={(e) => setDueAt(e.target.value)}
+                        />
+                      </Field>
+                      <Field>
+                        <FieldLabel>Valid until</FieldLabel>
+                        <FieldControl
+                          name="iw-valid"
+                          type="date"
+                          value={validUntil}
+                          onChange={(e) => setValidUntil(e.target.value)}
+                        />
+                      </Field>
+                    </div>
+                    <Field>
+                      <FieldLabel>Notes</FieldLabel>
+                      <FieldControl
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Shown on the document — terms, scope, anything the customer should see."
+                        render={<Textarea rows={3} />}
+                      />
+                    </Field>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Deposit */}
+              <Card>
+                <CardBody>
+                  <h3 className="text-xl font-semibold">Deposit / payment</h3>
+                  <p className="text-base-content text-sm">
+                    Record an upfront deposit or payment now — optional; leave the amount blank to
+                    skip.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-4">
+                    <Field>
+                      <FieldLabel>Type</FieldLabel>
+                      <NativeSelect
+                        value={depositKind}
+                        onChange={(e) => setDepositKind(e.target.value as 'deposit' | 'payment')}
+                      >
+                        <option value="deposit">Deposit</option>
+                        <option value="payment">Payment</option>
+                      </NativeSelect>
+                    </Field>
+                    <Field>
+                      <FieldLabel>Method</FieldLabel>
+                      <NativeSelect
+                        value={depositMethod}
+                        onChange={(e) => setDepositMethod(e.target.value)}
+                      >
+                        <option value="card">Card</option>
+                        <option value="cash">Cash</option>
+                        <option value="check">Check</option>
+                        <option value="ach">ACH</option>
+                        <option value="wire">Wire</option>
+                        <option value="account_credit">Account credit</option>
+                        <option value="other">Other</option>
+                      </NativeSelect>
+                    </Field>
+                    <Field {...v.field('depositAmount')}>
+                      <FieldLabel>Amount</FieldLabel>
+                      <FieldControl
+                        name="iw-dep-amount"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                        placeholder="0.00"
+                        {...v.control('depositAmount')}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Reference</FieldLabel>
+                      <FieldControl
+                        name="iw-dep-ref"
+                        value={depositReference}
+                        onChange={(e) => setDepositReference(e.target.value)}
+                        placeholder="Check #, memo…"
+                      />
+                    </Field>
+                  </div>
+                  {depositNum > 0 && (
+                    <p className="text-base-content mt-3 text-xs">
+                      {formatMoney(depositNum, currency)} {depositKind} will be recorded on create —
+                      balance after: {formatMoney(balance, currency)}.
+                    </p>
+                  )}
+                </CardBody>
+              </Card>
+
+              {/* Start at stage */}
+              {stages.length > 1 && (
+                <Card>
+                  <CardBody>
+                    <h3 className="text-xl font-semibold">Start at stage</h3>
+                    <p className="text-base-content text-sm">
+                      The document is created at the first stage; pick a later stage to advance it
+                      straight away (e.g. issue the invoice now).
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <NativeSelect
+                        aria-label="Start stage"
+                        value={startStageId}
+                        onChange={(e) => setStartStageId(e.target.value)}
+                      >
+                        {stages.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.customerLabel}
+                            {s.numberOnEnter ? ' · numbers' : ''}
+                            {s.locksEditing ? ' · locks' : ''}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                      {startStageId !== firstStageId && lines.length === 0 && (
+                        <p className="text-warning text-xs">
+                          This stage finalizes the document — consider adding at least one line
+                          first.
+                        </p>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              )}
+
+              {error && (
+                <FieldStatus status="error" attached={false} role="alert">
+                  {error}
+                </FieldStatus>
+              )}
+            </div>
+          )}
+        </SurfaceStep>
+      </SurfaceFrame>
+    </>
   );
 }
 

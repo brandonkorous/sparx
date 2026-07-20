@@ -3,12 +3,19 @@
 // dates) and returns a brand-free `BillingRenderData`; the caller resolves the
 // tenant brand and hands both to the pure `renderBillingDocumentHtml`.
 //
-// One assembler serves both render paths so a LIVE document and a FROZEN snapshot
-// print identically (the §10 substance-permanence guarantee):
+// The two builders here READ numbers a write already persisted, so a LIVE
+// document and a FROZEN snapshot print identically (the §10 substance-permanence
+// guarantee):
 //   · buildRenderData         — the live document at its current stage.
 //   · buildRenderDataFromSnapshot — a frozen BillingDocumentSnapshot, exactly as
 //     it stood when captured (frozen lines/totals/party + the stage label of the
 //     moment), so the approved estimate / final invoice reprints unchanged.
+// The third path — buildRenderDataFromDraft, for the unsaved live preview — lives
+// in billing-draft-render.ts because it COMPUTES totals instead of reading them.
+//
+// Identity resolution (party blocks, line-type labels) is shared with that draft
+// path via billing-render-parts.ts: a preview that printed a different bill-to
+// than the saved document would make the preview a lie.
 //
 // Tenant-scoped via withTenant() — a caller that forgets it sees nothing (FORCE
 // RLS). Party display prefers the document's denormalized billTo/shipTo JSON (the
@@ -16,17 +23,16 @@
 // customer / B2B account record.
 
 import { withTenant } from '@sparx/db';
-import type { Prisma } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
 import type {
   BillingRenderData,
   BillingRenderLine,
-  BillingRenderParty,
   BillingRenderPaymentRow,
   BillingRenderTotals,
 } from './billing-document-html';
+import { partyFromJson, resolveBillTo, lineTypeLabels } from './billing-render-parts';
 import type { BillingSnapshotPayload } from './billing-snapshot';
 
 const PAYMENT_KIND_LABEL: Record<string, string> = {
@@ -34,82 +40,6 @@ const PAYMENT_KIND_LABEL: Record<string, string> = {
   payment: 'Payment',
   refund: 'Refund',
 };
-
-// ── Party display ────────────────────────────────────────────────────────────
-
-/** Flatten an author-set billTo/shipTo JSON blob into a display block. Tolerant:
- *  accepts a `name`/`company` plus either a pre-split `lines`/`addressLines`
- *  array or the common discrete address fields. */
-function partyFromJson(json: unknown, heading: string): BillingRenderParty | null {
-  if (json === null || typeof json !== 'object') return null;
-  const o = json as Record<string, unknown>;
-  const s = (k: string): string => {
-    const v = o[k];
-    return typeof v === 'string' ? v : '';
-  };
-
-  const name = s('name') || s('company') || s('companyName');
-  const lines: string[] = [];
-
-  const explicit = o.lines ?? o.addressLines;
-  if (Array.isArray(explicit)) {
-    for (const l of explicit) if (typeof l === 'string') lines.push(l);
-  } else {
-    if (s('company') && s('company') !== name) lines.push(s('company'));
-    if (s('attention')) lines.push(`Attn: ${s('attention')}`);
-    if (s('line1') || s('address1') || s('address')) {
-      lines.push(s('line1') || s('address1') || s('address'));
-    }
-    if (s('line2') || s('address2')) lines.push(s('line2') || s('address2'));
-    const cityLine = [s('city'), s('state') || s('region'), s('postalCode') || s('zip')]
-      .filter(Boolean)
-      .join(', ');
-    if (cityLine) lines.push(cityLine);
-    if (s('country')) lines.push(s('country'));
-    if (s('email')) lines.push(s('email'));
-    if (s('phone')) lines.push(s('phone'));
-  }
-
-  if (!name && lines.length === 0) return null;
-  return { heading, name, lines };
-}
-
-/** Resolve the bill-to block: the document's frozen billTo JSON wins; otherwise
- *  derive a minimal block from the live customer / B2B account record. */
-async function resolveBillTo(
-  tx: Prisma.TransactionClient,
-  billToJson: unknown,
-  customerId: string | null,
-  b2bAccountId: string | null
-): Promise<BillingRenderParty | null> {
-  const fromJson = partyFromJson(billToJson, 'Bill to');
-  if (fromJson) return fromJson;
-
-  if (b2bAccountId) {
-    const account = await tx.b2BAccount.findUnique({
-      where: { id: b2bAccountId },
-      select: { companyName: true, website: true },
-    });
-    if (account) {
-      const lines = [account.website ?? ''].filter(Boolean);
-      return { heading: 'Bill to', name: account.companyName, lines };
-    }
-  }
-  if (customerId) {
-    const c = await tx.customer.findUnique({
-      where: { id: customerId },
-      select: { firstName: true, lastName: true, company: true, email: true, phone: true },
-    });
-    if (c) {
-      const name = [c.firstName, c.lastName].filter(Boolean).join(' ').trim() || (c.company ?? '');
-      const lines = [c.company && c.company !== name ? c.company : '', c.email ?? '', c.phone ?? '']
-        .filter(Boolean)
-        .map(String);
-      return { heading: 'Bill to', name, lines };
-    }
-  }
-  return null;
-}
 
 // ── Mappers ──────────────────────────────────────────────────────────────────
 
@@ -250,20 +180,4 @@ export async function buildRenderDataFromSnapshot(
       notes: payload.document.notes,
     };
   });
-}
-
-// ── Shared ───────────────────────────────────────────────────────────────────
-
-/** id → label for the line types referenced by a set of lines (one query). */
-async function lineTypeLabels(
-  tx: Prisma.TransactionClient,
-  ids: (string | null)[]
-): Promise<Map<string, string>> {
-  const unique = [...new Set(ids.filter((id): id is string => id !== null))];
-  if (unique.length === 0) return new Map();
-  const rows = await tx.billingDocumentLineType.findMany({
-    where: { id: { in: unique } },
-    select: { id: true, label: true },
-  });
-  return new Map(rows.map((r) => [r.id, r.label]));
 }

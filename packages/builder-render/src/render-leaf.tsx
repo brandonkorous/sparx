@@ -369,6 +369,46 @@ export function renderLegacyNavLinks(links: unknown): React.ReactNode[] {
   ));
 }
 
+// ── Unknown node types ────────────────────────────────────────────────────────
+//
+// A `node.type` no branch above resolves — an import that carried a forward-compat
+// type (import-export.ts allows those deliberately), a tree written by a newer
+// builder, or a type removed from the registry while published trees still hold it.
+//
+// This used to `return null` in silence: no warning, no placeholder, no metric. The
+// container wrapper still rendered, so authored content vanished behind an empty
+// `<div>` that nothing pointed at (docs/125 §2.2, docs/127 §10). That is the exact
+// failure mode `resolvePathEx` goes out of its way to prevent for BINDINGS — it
+// distinguishes missing from empty so a stale binding can't silently delete content —
+// and it was being accepted here for TYPES.
+//
+// Live still renders nothing: a storefront must not paint an error box at a shopper.
+// But it now says so once per type, and the editor shows the author something real.
+
+const warnedUnknownTypes = new Set<string>();
+
+function warnUnknownType(type: string): void {
+  // Once per type per process. A repeated node would otherwise flood the log on
+  // every render of a page that contains it.
+  if (warnedUnknownTypes.has(type)) return;
+  warnedUnknownTypes.add(type);
+  console.warn(
+    `[builder-render] No renderer for node type "${type}" — the node rendered as empty. ` +
+      `Either the tree predates a registry change, or it was imported from a newer builder.`
+  );
+}
+
+/** Edit-surface marker for a node whose type has no renderer. Deliberately readable
+ *  rather than faded: the author needs to know which type is missing to act on it. */
+function UnknownType({ type }: { type: string }) {
+  return (
+    <div className="rounded-box border-danger text-danger border border-dashed p-4 text-sm">
+      This block can’t be displayed <span className="font-mono">({type})</span>. It may have been
+      built with a newer version of the editor.
+    </div>
+  );
+}
+
 // ── The unified leaf render ───────────────────────────────────────────────────
 
 export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
@@ -898,7 +938,11 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     // render is the shared site-atoms map; `undefined` means not one of them.
     default: {
       const atom = renderSiteUiAtom(node, { leafClass, value, bound, cardinality, edit, children });
-      return atom === undefined ? null : atom;
+      if (atom !== undefined) return atom;
+      // Not a site-ui atom either, so nothing renders this type. Say so (see above) —
+      // visibly in the editor, once to the log everywhere.
+      warnUnknownType(node.type);
+      return edit ? <UnknownType type={node.type} /> : null;
     }
   }
 }

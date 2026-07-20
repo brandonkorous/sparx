@@ -6,11 +6,12 @@ import { getModuleColor, type MarketingModule, Section, SectionHeader } from './
  * the event titles mirror the real CRM activity vocabulary (order.placed,
  * email.opened, call, deal/quote, order.delivered) from the dashboard's
  * activity-timeline.tsx. CRM cyan + module hues as signals.
+ *
+ * Class-based per SILICA-VOCABULARY.md; the marker's fill is the only inline
+ * style left, because it's a per-event module hue VALUE.
  */
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 interface Event {
   module: MarketingModule;
@@ -87,87 +88,32 @@ export function CrmTimeline() {
         headline="Every interaction, in order, logged for you"
         lede="The activity feed is append-only and auto-populated. Orders, shipments, email opens, quotes, invoices, logins — written the moment they happen, from whatever module did them. Add a call, a note, or a meeting by hand; corrections appear as new entries, never overwrites."
       />
-      <div className="mkt-frame-grid" style={{ marginTop: '52px' }}>
-        <ol style={{ listStyle: 'none', margin: 0, padding: 0, position: 'relative' }}>
+      <div className="mkt-frame-grid mt-[52px]">
+        <ol className="relative list-none">
           {EVENTS.map((e, i) => (
-            <li key={e.title + e.time} style={{ position: 'relative', padding: '0 0 22px 34px' }}>
+            <li key={e.title + e.time} className="relative pb-[22px] pl-[34px]">
               {i < EVENTS.length - 1 ? (
                 <span
                   aria-hidden
-                  style={{
-                    position: 'absolute',
-                    left: '10px',
-                    top: '24px',
-                    bottom: 0,
-                    width: '1.5px',
-                    backgroundColor: 'var(--color-base-300)',
-                  }}
+                  className="bg-base-300 absolute top-6 bottom-0 left-2.5 w-[1.5px]"
                 />
               ) : null}
               <span
                 aria-hidden
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '2px',
-                  width: 22,
-                  height: 22,
-                  borderRadius: '9999px',
-                  backgroundColor: getModuleColor(e.module).color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FFFFFF',
-                }}
+                className="absolute top-0.5 left-0 flex size-[22px] items-center justify-center rounded-full text-white"
+                style={{ backgroundColor: getModuleColor(e.module).color }}
               >
                 <EventIcon kind={e.icon} />
               </span>
-              <div
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '14.5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  flexWrap: 'wrap',
-                }}
-              >
+              <div className="text-small flex flex-wrap items-center gap-2 font-medium">
                 {e.title}
-                <span
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: '10.5px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    padding: '2px 7px',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
-                >
+                {/* Actor tag — feed-row chrome mirroring the dashboard timeline. */}
+                <span className="text-ink-subtle text-micro border-base-300 rounded-full border px-[7px] py-0.5 font-mono">
                   {e.actor}
                 </span>
               </div>
-              <p
-                style={{
-                  margin: '4px 0 0',
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  lineHeight: '20px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {e.desc}
-              </p>
-              <div
-                style={{
-                  marginTop: '4px',
-                  fontFamily: MONO,
-                  fontSize: '11px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {e.time}
-              </div>
+              <p className="text-ink-muted text-caption mt-1">{e.desc}</p>
+              <div className="text-ink-subtle text-micro mt-1 font-mono">{e.time}</div>
             </li>
           ))}
         </ol>
@@ -175,31 +121,10 @@ export function CrmTimeline() {
           {PINS.map((p) => (
             <div
               key={p.title}
-              style={{
-                padding: '16px 18px',
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderLeft: `3px solid ${M.color}`,
-                borderRadius: '12px',
-                marginBottom: '14px',
-              }}
+              className="bg-base-200 border-base-300 border-l-module-crm mb-3.5 rounded-xl border-y border-r border-l-[3px] px-[18px] py-4"
             >
-              <h4
-                style={{ margin: '0 0 4px', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}
-              >
-                {p.title}
-              </h4>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '12.5px',
-                  lineHeight: '19px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {p.body}
-              </p>
+              <h4 className="text-small mb-1 font-medium">{p.title}</h4>
+              <p className="text-ink-muted text-caption">{p.body}</p>
             </div>
           ))}
         </div>
@@ -214,7 +139,7 @@ function EventIcon({ kind }: { kind: Event['icon'] }) {
     height: 13,
     viewBox: '0 0 24 24',
     fill: 'none',
-    stroke: '#FFFFFF',
+    stroke: 'currentColor',
     strokeWidth: 2.2,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,

@@ -160,6 +160,7 @@ import marketRoutes from './routes/v1/market/index.js';
 import channelRoutes from './routes/v1/channels/index.js';
 import schedulingRoutes from './routes/v1/scheduling/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
+import tenantBusinessRoutes from './routes/v1/tenant-business.js';
 import billingRoutes from './routes/v1/billing.js';
 import brandRoutes from './routes/v1/brand.js';
 import propertiesRoutes from './routes/v1/properties.js';
@@ -170,12 +171,16 @@ import legalRoutes from './routes/v1/legal.js';
 import meRoutes from './routes/v1/me.js';
 import feedbackRoutes from './routes/v1/feedback.js';
 import userRoutes from './routes/v1/users.js';
+import teamRoutes from './routes/v1/team.js';
 import emailTestRoutes from './routes/v1/email/test.js';
 import emailRoutes from './routes/v1/email/index.js';
 import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import emailUnsubscribeRoutes from './routes/v1/public/email-unsubscribe.js';
 import channelWebhookRoutes from './routes/v1/public/channel-webhooks.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
+import jobsRoutes from './routes/v1/jobs.js';
+import activityRoutes from './routes/v1/activity.js';
+import notificationRoutes from './routes/v1/notifications.js';
 import searchRoutes from './routes/v1/search.js';
 import seoAuditRoutes from './routes/v1/seo/audit.js';
 import seoReportRoutes from './routes/v1/seo/reports.js';
@@ -747,7 +752,16 @@ export async function createApp(): Promise<FastifyInstance> {
   // cookie-based session, sparx_customer_session, is only ever read via
   // apps/site's own same-origin proxy route, never a direct cross-origin
   // fetch), so credentials stay off.
-  await app.register(cors, { origin: true, credentials: false });
+  //
+  // `methods` must be explicit: @fastify/cors defaults to GET,HEAD,POST, which
+  // silently strands every browser-origin PATCH/PUT/DELETE at preflight. The
+  // dashboard never noticed (it calls api-rest from the server); the workbench
+  // calls from the browser and does full CRUD with a Bearer token.
+  await app.register(cors, {
+    origin: true,
+    credentials: false,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  });
   // Cookie support — used by the storefront customer session (httpOnly
   // sparx_customer_session). Unsigned: the session token is already a
   // high-entropy opaque value stored only as a SHA-256 hash server-side.
@@ -883,6 +897,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(marketRoutes);
   await app.register(schedulingRoutes);
   await app.register(tenantRoutes);
+  await app.register(tenantBusinessRoutes);
   await app.register(billingRoutes);
   await app.register(brandRoutes);
   await app.register(propertiesRoutes);
@@ -893,9 +908,13 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(meRoutes);
   await app.register(feedbackRoutes);
   await app.register(userRoutes);
+  await app.register(teamRoutes);
   await app.register(emailTestRoutes);
   await app.register(emailRoutes);
   await app.register(dashboardRoutes);
+  await app.register(jobsRoutes);
+  await app.register(activityRoutes);
+  await app.register(notificationRoutes);
   await app.register(searchRoutes);
   await app.register(seoAuditRoutes);
   await app.register(seoReportRoutes);

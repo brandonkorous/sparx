@@ -15,6 +15,7 @@ import {
   type SilicaNode,
   type SilicaTheme,
 } from '@sparx/builder-schemas';
+import { checkTreeClasses } from '@sparx/silica-catalog';
 
 import * as siteService from '../services/site-service';
 import { BuilderValidationError } from '../errors';
@@ -70,7 +71,17 @@ export const upsertSilicaPage: McpToolDefinition = {
     };
     const pctx = await toPropertyContext(ctx, propertyId);
     const result = await siteService.upsertPage(pctx, { id, name, slug, sections });
-    return withSite(pctx, result);
+    // Report classes that will emit NO CSS (docs: vocabulary-check). Advisory, not a
+    // rejection: the page is already saved and the rest of it is fine, so refusing the
+    // write would be a worse trade than telling the author what silently broke. This is
+    // the ONLY feedback channel for the failure — an authored tree is never scanned by
+    // Tailwind, so a bad class produces no error, no warning, and no visual clue until
+    // someone loads the page and notices the layout is subtly wrong.
+    const classIssues = sections.flatMap((s) => checkTreeClasses(s));
+    return withSite(pctx, {
+      ...result,
+      ...(classIssues.length ? { warnings: classIssues } : {}),
+    });
   },
 };
 

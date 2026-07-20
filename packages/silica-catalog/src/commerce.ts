@@ -32,18 +32,11 @@ import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/si
 
 import { bindAttr } from './attr-binding';
 import { HOST_KEYS, functionalShell } from './host-nodes';
+import { PLACEHOLDER_IMAGE } from './placeholder';
 
-// A neutral, self-contained placeholder tile (inline SVG data-URI) — the Image's
-// default `src` so the UNBOUND state (a card just inserted, not yet pinned to a
-// product) shows a clean "image goes here" tile instead of the browser's
-// broken-image glyph. silica's `fillValue` overwrites this `src` with the
-// product's real primary-image URL the moment the node resolves against data, so
-// it never ships to a live, bound storefront.
-const PLACEHOLDER_IMAGE =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'>" +
-  "<rect width='400' height='400' fill='%23e5e7eb'/>" +
-  "<circle cx='150' cy='150' r='36' fill='%23cbd5e1'/>" +
-  "<path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>";
+// The unbound-image placeholder now lives in `placeholder.ts` — record templates in
+// other modules (a blog post's featured image) need the same tile, and a second copy
+// would drift.
 
 /** The shared product card body — image, title, price. Used standalone (pin it to
  *  one product) and as the repeated item in `product_grid` / `featured_products`.
@@ -314,6 +307,37 @@ export function categoryDetailPage(): Node {
 /** A centered header band for a collection / category landing page. Binds its
  *  title + description scope-relatively against the collection record the page
  *  provides (no self-scope — the collection page owns the object scope). */
+/** The SHOP page's header — a static heading, deliberately carrying no binds.
+ *
+ *  The starter's Shop page used `collectionHeader()`, which is a COLLECTION DETAIL
+ *  header: its `title`/`description` binds resolve against the collection in scope. On
+ *  `/shop` there is no collection in scope — it is a plain page, not a record template
+ *  — so both binds silently kept their placeholders and every tenant's shop page, a
+ *  primary nav destination, read:
+ *
+ *      Collection
+ *      Collection description.
+ *
+ *  Nothing errored; it just shipped. A page that is not a record template must not
+ *  carry record binds, which is why this one is plain text the tenant edits in the
+ *  studio rather than a bind that can fail to nothing. */
+export function shopHeader(): Node {
+  return el('section', 'bg-base-100 px-6 pt-12 pb-4', {
+    children: [
+      el('div', 'mx-auto w-full max-w-6xl', {
+        children: [
+          el('h1', 'text-4xl font-bold tracking-tight text-base-content sm:text-5xl', {
+            text: 'Shop',
+          }),
+          el('p', 'mt-4 max-w-2xl text-lg leading-relaxed text-base-content', {
+            text: 'Everything we currently have available.',
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
 export function collectionHeader(): Node {
   return el('section', 'bg-base-100 px-6 py-12 text-center', {
     children: [

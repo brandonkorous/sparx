@@ -3,7 +3,7 @@
 // Every method returns `{ data, meta }` from the underlying client so callers
 // have access to ETag / request_id for optimistic concurrency + tracing.
 
-import type { SparxClient } from './client.js';
+import type { SparxClient } from './client';
 import type {
   ContentEntry,
   ContentEntryListItem,
@@ -11,7 +11,7 @@ import type {
   ContentTypeMeta,
   PageMeta,
   EntryStatus,
-} from './types.js';
+} from './types';
 
 export interface ListEntriesQuery {
   type?: string;

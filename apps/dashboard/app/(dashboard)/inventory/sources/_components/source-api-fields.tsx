@@ -164,7 +164,7 @@ export function SourceApiFields({ value, onChange, hasApiKey }: Props) {
 
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium">Response mapping</p>
-        <p className="text-xs text-[var(--color-muted-foreground)]">
+        <p className="text-base-content text-xs">
           Dot-paths into the JSON response. Leave “Items path” blank if the response{' '}
           <span className="font-mono">is</span> the array of rows.
         </p>

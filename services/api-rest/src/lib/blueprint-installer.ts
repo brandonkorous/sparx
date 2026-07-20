@@ -16,7 +16,7 @@
 
 import type { FastifyBaseLogger } from 'fastify';
 
-import { withTenant, type Prisma } from '@sparx/db';
+import { Prisma, withTenant } from '@sparx/db';
 import { listEnabledModules, type ModuleSlug } from '@sparx/auth';
 import {
   categoryService,
@@ -24,7 +24,7 @@ import {
   productService,
   variantService,
 } from '@sparx/commerce';
-import { componentService, emailService, layoutService, pageService } from '@sparx/builder';
+import { emailService, pageService, siteService } from '@sparx/builder';
 import { publishService, savedThemeService } from '@sparx/sitebuilder';
 import {
   parseTypeSchema,
@@ -35,10 +35,9 @@ import {
 } from '@sparx/cms';
 import { publish } from '@sparx/api-core/pubsub';
 import { isAssetRef, type Blueprint } from '@sparx/blueprints';
-import type { BuilderNode } from '@sparx/builder-schemas';
+import { decodeBindingRef, encodeBindingRef, type SilicaNode } from '@sparx/builder-schemas';
 
 import { captureBaselines, resolveBlueprintArtifacts } from './blueprint-baseline.js';
-import { materializeSilicaSite } from './blueprint-silica-bridge.js';
 
 export interface InstallContext {
   tenantId: string;
@@ -56,53 +55,61 @@ export interface InstallResult {
   categories: Record<string, string>; // handle → id
   collections: Record<string, string>; // handle → id
   products: { handle: string; id: string }[];
-  components: { key: string; id: string }[];
   theme: { id: string; name: string } | null;
-  layoutId: string | null;
   pages: { name: string; id: string; recordType: string | null; slug: string | null }[];
   emails: { name: string; id: string }[];
   content: { typeKey: string; slug: string | null; id: string }[];
   counts: Record<string, number>;
 }
 
-/** Resolve handle-addressed commerce bindings to the real row ids (docs/103).
+/** Resolve handle-addressed ENTITY PINS to the real row ids (docs/103).
  *
- *  A blueprint authors collection repeaters and entity pins by stable HANDLE — e.g.
- *  a Menu page's product grid binds `{ source: { from: 'category', id: 'acai-bowls' } }`
- *  — because it cannot know the row ids until install mints them. This walks a page /
- *  layout tree and rewrites every `binding.source.id` (category / collection source)
- *  and entity-pin `binding.id` (product / collection / category) from a handle to the
- *  id this install just created. An id that matches no handle (already real, or `all`)
- *  is left untouched, so it is safe to run on any tree. Returns a fresh tree; the input
- *  blueprint payload is not mutated. */
-export function resolveBindingHandles(tree: BuilderNode, result: InstallResult): BuilderNode {
-  const categories = result.categories ?? {};
-  const collections = result.collections ?? {};
+ *  A blueprint addresses records by stable HANDLE because it cannot know the row ids
+ *  until install mints them. For silica this is a much smaller job than it was for the
+ *  legacy trees, because most silica refs never need rewriting at all: a collection
+ *  bind reads `commerce.category.<handle>` / `cms.<type>`, and the storefront builds
+ *  its data root under those same handle keys — so the ref an author wrote is already
+ *  the ref that resolves.
+ *
+ *  What DOES need mapping is an entity PIN (docs/98 Pillar 7) — `{ entity, id }`,
+ *  which addresses one specific record and is hydrated under the reserved `__pins`
+ *  root by real id. Those are rewritten here from handle (a product handle, or a
+ *  content-entry slug) to the id this install created.
+ *
+ *  A pin whose handle matches nothing is LEFT ALONE: it is either already a real id
+ *  (a captured site being reinstalled into the tenant it came from) or a dangling
+ *  reference, and silently blanking it would turn a pinned record into an empty
+ *  block with no diagnostic. Returns a fresh tree; the manifest is never mutated. */
+export function resolveBindingHandles(tree: SilicaNode, result: InstallResult): SilicaNode {
   const products: Record<string, string> = {};
   for (const p of result.products ?? []) products[p.handle] = p.id;
+  const entries: Record<string, string> = {};
+  for (const c of result.content ?? []) if (c.slug) entries[c.slug] = c.id;
   const byEntity: Record<string, Record<string, string>> = {
-    product: products,
-    collection: collections,
-    category: categories,
+    commerce: products,
+    cms: entries,
   };
-  const walk = (n: BuilderNode): BuilderNode => {
-    const out: BuilderNode = { ...n };
-    if (n.binding) {
-      const b = { ...n.binding };
-      const src = b.source;
-      if (src && (src.from === 'category' || src.from === 'collection') && src.id) {
-        const map = src.from === 'category' ? categories : collections;
-        const id = map[src.id];
-        if (id) b.source = { ...src, id };
+
+  const walk = (n: SilicaNode): SilicaNode => {
+    const rec = { ...(n as unknown as Record<string, unknown>) };
+    const data = rec.data as { ref?: unknown } | undefined;
+    if (data && typeof data.ref === 'string') {
+      const binding = decodeBindingRef(data.ref);
+      if (binding.entity && binding.id) {
+        const mapped = byEntity[binding.entity]?.[binding.id];
+        if (mapped) {
+          rec.data = { ...data, ref: encodeBindingRef({ ...binding, id: mapped }) };
+        }
       }
-      if (b.entity && b.id) {
-        const id = byEntity[b.entity]?.[b.id];
-        if (id) b.id = id;
-      }
-      out.binding = b;
     }
-    if (n.children) out.children = n.children.map(walk);
-    return out;
+    const children: unknown = rec.children;
+    if (Array.isArray(children)) {
+      // Text children are bare strings — pass them through untouched.
+      rec.children = (children as unknown[]).map((c) =>
+        typeof c === 'object' && c !== null ? walk(c as SilicaNode) : c
+      );
+    }
+    return rec as unknown as SilicaNode;
   };
   return walk(tree);
 }
@@ -383,9 +390,7 @@ export async function installBlueprint(
     categories: {},
     collections: {},
     products: [],
-    components: [],
     theme: null,
-    layoutId: null,
     pages: [],
     emails: [],
     content: [],
@@ -813,106 +818,56 @@ export async function installBlueprint(
       }
     }
 
-    // 7. Components (before pages that place them) — Builder module only.
-    for (const c of isOn('builder') ? blueprint.components : []) {
-      const created = await componentService.create(ctx, {
-        key: c.key,
-        name: c.name,
-        group: c.group,
-        icon: c.icon,
-        description: c.description,
-        surfaces: c.surfaces,
-        tree: c.tree,
-        propSpec: c.propSpec,
-      });
-      result.components.push({ key: c.key, id: created.id });
-    }
-
-    // 8. Site layout (draft; go-live publishes + activates) — Builder module only.
-    if (blueprint.layout && isOn('builder')) {
-      const layout = await layoutService.create(propCtx, {
-        name: blueprint.layout.name,
-        tree: resolveBindingHandles(blueprint.layout.tree, result),
-      });
-      result.layoutId = layout.id;
-    }
-
-    // 9. Pages (draft; set defaults for collection templates). A slugless
-    //    singleton is the site HOME (docs/49 — it serves at `/`). A property has
-    //    exactly one `/`, so if one already exists (the seeded starter, or a prior
-    //    home), REPLACE its tree/SEO rather than adding a second home — otherwise
-    //    the storefront can't tell which slugless singleton is the homepage.
-    //    Builder module only — pages are the hosted site (a headless tenant gets none).
-    for (const pg of isOn('builder') ? blueprint.pages : []) {
-      const isHome = pg.kind === 'singleton' && !pg.slug;
-      let pageId: string;
-      const existingHome = isHome
-        ? await withTenant(propCtx, (tx) =>
-            tx.builderPage.findFirst({
-              where: { propertyId, kind: 'singleton', slug: null },
-              orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-              select: { id: true },
-            })
-          )
-        : null;
-      if (existingHome) {
-        const updated = await pageService.update(propCtx, existingHome.id, {
+    // 7. The authored silica site — frame + pages + theme + symbols, in ONE write.
+    //    Builder module only (a headless tenant gets no hosted site).
+    //
+    //    This replaces the old three-step legacy dance (create components, create a
+    //    layout, create pages one by one, then convert the whole lot to silica at
+    //    go-live through a best-effort bridge). The manifest already holds exactly
+    //    what the store wants, so it goes straight in through the same seam a human
+    //    author's save uses. Nothing is converted, so nothing is lost in conversion.
+    if (blueprint.site && isOn('builder')) {
+      const site = blueprint.site;
+      const installed = await siteService.installSite(propCtx, {
+        pages: site.pages.map((pg) => ({
           name: pg.name,
-          tree: resolveBindingHandles(pg.tree, result),
-          seoTitle: pg.seoTitle,
-          seoDescription: pg.seoDescription,
-          canonical: pg.canonical,
-          ogImage: pg.ogImage,
-          noindex: pg.noindex,
-        });
-        pageId = updated.id;
-      } else {
-        const page = await pageService.create(propCtx, {
-          name: pg.name,
+          slug: pg.slug ?? '',
+          root: resolveBindingHandles(pg.root, result),
           kind: pg.kind,
           recordType: pg.recordType ?? null,
-          slug: pg.slug ?? null,
-          tree: resolveBindingHandles(pg.tree, result),
-          seoTitle: pg.seoTitle,
-          seoDescription: pg.seoDescription,
-          canonical: pg.canonical,
-          ogImage: pg.ogImage,
-          noindex: pg.noindex,
-        });
-        if (pg.isDefault) await pageService.setDefault(propCtx, page.id);
-        pageId = page.id;
-      }
-      result.pages.push({
-        name: pg.name,
-        id: pageId,
-        recordType: pg.recordType ?? null,
-        slug: pg.slug ?? null,
+          isDefault: pg.isDefault,
+          seoTitle: pg.seoTitle ?? null,
+          seoDescription: pg.seoDescription ?? null,
+          canonical: pg.canonical ?? null,
+          ogImage: pg.ogImage ?? null,
+          ...(pg.noindex !== undefined ? { noindex: pg.noindex } : {}),
+        })),
+        ...(site.frame ? { frame: { root: resolveBindingHandles(site.frame.root, result) } } : {}),
+        // An omitted theme is deliberate: the tenant's own brand-derived theme then
+        // stands, which is what lets one template re-skin per tenant.
+        ...(site.theme ? { theme: site.theme } : {}),
+        ...(site.symbols ? { symbols: site.symbols } : {}),
       });
-    }
-
-    // A blueprint may ship only collection templates (or omit a home). Guarantee a
-    // landing page so the property has a `/` — and register it for the go-live
-    // publish so the storefront root renders immediately, not the fallback. Builder
-    // module only — no hosted site means no injected home.
-    const injectedHome = isOn('builder') ? await pageService.ensureHome(propCtx) : null;
-    if (injectedHome) {
-      result.pages.push({
-        name: injectedHome.name,
-        id: injectedHome.id,
-        recordType: null,
-        slug: null,
+      site.pages.forEach((pg, i) => {
+        result.pages.push({
+          name: pg.name,
+          id: installed.pageIds[i]!,
+          recordType: pg.recordType ?? null,
+          slug: pg.slug ?? null,
+        });
       });
     }
 
     // 10. Emails (draft unless publish flagged) — Email module only.
     for (const e of isOn('email') ? blueprint.emails : []) {
+      // The document owns subject/preheader; `syncSilica` mirrors them onto the row.
       const email = await emailService.create(ctx, {
         name: e.name,
-        subject: e.subject,
-        preheader: e.preheader,
-        tree: e.tree,
+        subject: e.doc.subject,
+        preheader: e.doc.preheader,
       });
-      if (e.publish) await emailService.publish(ctx, email.id);
+      await emailService.syncSilica(ctx, email.id, { doc: e.doc });
+      if (e.publish) await emailService.publishSilica(ctx, email.id);
       result.emails.push({ name: e.name, id: email.id });
     }
 
@@ -922,7 +877,6 @@ export async function installBlueprint(
       categories: Object.keys(result.categories).length,
       collections: Object.keys(result.collections).length,
       products: result.products.length,
-      components: result.components.length,
       pages: result.pages.length,
       emails: result.emails.length,
     };
@@ -1008,18 +962,14 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
   if (!row) throw new Error(`Install ${installId} not found`);
   const r = row.result as unknown as InstallResult;
 
-  // Pages.
-  for (const p of r.pages ?? []) {
-    await pageService
-      .publish(propCtx, p.id)
-      .catch((err) => logger.warn({ err, id: p.id }, 'page publish failed'));
-  }
-  // Layout — publish then activate (activate requires a published tree).
-  if (r.layoutId) {
-    await layoutService.publish(propCtx, r.layoutId).catch(() => undefined);
-    await layoutService
-      .setActive(propCtx, r.layoutId)
-      .catch((err) => logger.warn({ err, id: r.layoutId }, 'layout activate failed'));
+  // The site — ONE publish for every page, the frame, the theme, and the symbols.
+  // (The old path published each page and the layout separately, then ran a bridge
+  // to mirror the result into the silica columns the storefront actually reads.
+  // Writing silica directly means the publish IS the thing the storefront serves.)
+  if ((r.pages ?? []).length > 0) {
+    await siteService
+      .publish(propCtx)
+      .catch((err) => logger.warn({ err, installId }, 'site publish failed'));
   }
   // Products → active.
   for (const p of r.products ?? []) {
@@ -1053,16 +1003,8 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
   }
   // Emails.
   for (const e of r.emails ?? []) {
-    await emailService.publish(ctx, e.id).catch(() => undefined);
+    await emailService.publishSilica(ctx, e.id).catch(() => undefined);
   }
-
-  // Silica bridge — mirror the legacy pages/layout just published above into the
-  // silica columns the storefront actually reads, so the tenant's own onboarded
-  // content replaces the generic starter fallback (apps/site/lib/silica.ts) from
-  // the moment they go live. Best-effort: never blocks go-live.
-  await materializeSilicaSite(ctxIn, r, logger).catch((err) =>
-    logger.warn({ err, installId }, 'silica bridge materialization failed')
-  );
 
   // Site theme — PUBLISH the draft into a SiteVersion. Install applied the shipped
   // theme to the DRAFT only (savedThemeService.apply → sitebuilder_configs draft);
@@ -1124,23 +1066,21 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
   // Reverse dependency order, so each delete's "is placed" / "has descendants" /
   // FK guard is already satisfied by the time we reach the parent.
   for (const e of r.emails ?? []) await emailService.remove(ctx, e.id).catch(warn('email', e.id));
+  // The installed site's pages. `siteService` owns the silica columns, but the ROW
+  // is still a BuilderPage, so removal goes through the page service exactly as
+  // before — a silica-only row deletes the same way.
   for (const p of r.pages ?? []) await pageService.remove(propCtx, p.id).catch(warn('page', p.id));
-  if (r.layoutId) {
-    // Reset uninstalls the whole template, so its layout must go even if it's the
-    // live one. remove() refuses to delete an active layout (a guard that protects
-    // the merchant-facing delete) — deactivate it first so uninstall completes
-    // instead of orphaning the layout (which then blocks a clean reinstall+go-live).
-    const layoutId = r.layoutId;
-    await withTenant(ctx, (tx) =>
-      tx.builderLayout.updateMany({
-        where: { id: layoutId, propertyId },
-        data: { isActive: false },
-      })
-    ).catch(warn('layout deactivate', layoutId));
-    await layoutService.remove(propCtx, layoutId).catch(warn('layout', layoutId));
-  }
-  for (const c of r.components ?? [])
-    await componentService.remove(ctx, c.key).catch(warn('component', c.key));
+  // The frame lives on the property's active layout rather than on a layout row this
+  // install created, so uninstall CLEARS it rather than deleting a row: the tenant
+  // keeps their layout (and any chrome they authored on top), minus the blueprint's
+  // frame. Deleting the active layout outright would leave the property with no
+  // chrome at all and block a clean reinstall.
+  await withTenant(ctx, (tx) =>
+    tx.builderLayout.updateMany({
+      where: { propertyId, isActive: true },
+      data: { silicaDraftTree: Prisma.DbNull, silicaPublishedTree: Prisma.DbNull },
+    })
+  ).catch(warn('frame clear', propertyId));
   for (const p of r.products ?? [])
     await productService.softDelete(ctx, p.id).catch(warn('product', p.id));
   for (const id of Object.values(r.collections ?? {}))

@@ -3,6 +3,20 @@
 // of server bundles.
 
 export { auth, type Auth } from './server';
+// The auth-layer Prisma client (connects as `sparx_owner`, so it is NOT subject
+// to the ENABLE-but-not-FORCE RLS on the auth tables). Exported ONLY so callers
+// outside this package can read `members` / `invitations` and their joined
+// `users` rows: a member's user row may legitimately belong to a DIFFERENT
+// tenant than the org they are a member of (someone who owns tenant A and
+// consults for tenant B has `users.tenant_id = A`, `members.organization_id = B`),
+// and an RLS-scoped connection hides that user row — which makes Prisma's
+// required `user`/`inviter` relation resolve to nothing and throw.
+//
+// Using this client means RLS is NOT your tenant guard: every query MUST carry
+// an explicit `organizationId` (or a `member: { organizationId }` relation
+// filter) pinned to the caller's tenant. Business data still belongs on the
+// @sparx/db client inside withTenant()/withRequestTenant().
+export { authPrisma } from './prisma';
 export {
   signUpMerchant,
   SignUpError,
@@ -23,6 +37,24 @@ export {
 export { randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';
+export {
+  MODULE_ACCESS_MODES,
+  memberCanReachModule,
+  effectiveModules,
+  roleIgnoresModuleAccess,
+  parseModuleAccessMode,
+  type ModuleAccessMode,
+  type MemberModuleAccessInput,
+} from './module-access';
+export {
+  PROPERTY_ACCESS_MODES,
+  memberCanReachProperty,
+  reachableProperties,
+  roleIgnoresPropertyAccess,
+  parsePropertyAccessMode,
+  type PropertyAccessMode,
+  type MemberPropertyAccessInput,
+} from './property-access';
 export {
   listMyMemberships,
   listPendingInvitations,

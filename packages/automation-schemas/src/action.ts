@@ -53,6 +53,13 @@ export const ActionType = z.enum([
   'b2b.escalate_overdue',
   // Platform / control flow
   'platform.webhook',
+  // In-app notification (docs/124 Phase 3) — write a Notification row for the
+  // staff people who should see it. The in-app sibling of `email.send_internal`:
+  // same "tell the team" intent, different channel. Notifications live here
+  // rather than in a bespoke worker because the engine ALREADY consumes the
+  // whole firehose, and because notification rules are then tenant-editable
+  // (conditions, quiet hours, who gets told) instead of frozen in code.
+  'platform.notify',
   'platform.wait', // durable delay — parks the run via resume_at (§7); config.delaySeconds
   'platform.stop', // end the automation early, log the reason
 ]);

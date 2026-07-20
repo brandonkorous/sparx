@@ -18,6 +18,7 @@ import {
   Handle,
   HazmatClass,
   InventoryPolicy,
+  Locale,
   MoneyCents,
   ProductStatus,
   Sku,
@@ -253,3 +254,37 @@ export const BulkTagProductsInput = z.object({
   removeTags: z.array(z.string().min(1).max(63)).max(50).default([]),
 });
 export type BulkTagProductsInput = z.infer<typeof BulkTagProductsInput>;
+
+// ─── Translations ────────────────────────────────────────────────────
+//
+// One row per (product, locale) holding the merchant-facing copy a
+// storefront swaps in when it renders in that language. The product's own
+// `title` / `description` / `seoTitle` / `seoDescription` columns remain
+// the DEFAULT locale — a translation never overwrites them, it sits
+// alongside, and a storefront falls back to the product when no row
+// exists for the requested tag.
+//
+// Field caps mirror the columns exactly (VARCHAR(255) title + seoTitle,
+// VARCHAR(512) seoDescription, TEXT description) so a too-long string is
+// a clean 422 instead of a Postgres 22001.
+//
+// PUT semantics: this is the WHOLE row for that locale. An omitted
+// optional field is stored as NULL, not left at its previous value —
+// which is what makes "clear the Spanish SEO description" expressible
+// without a separate patch verb.
+export const UpsertProductTranslationInput = z.object({
+  locale: Locale,
+  title: z.string().min(1).max(255),
+  description: z.string().max(50_000).nullish(),
+  seoTitle: z.string().max(255).nullish(),
+  seoDescription: z.string().max(512).nullish(),
+});
+export type UpsertProductTranslationInput = z.infer<typeof UpsertProductTranslationInput>;
+
+// Save-all for a translations editor: every locale in one round trip.
+// Capped at 100 — a tenant translating a product into more than a hundred
+// languages is a bulk-import job, not an interactive save.
+export const BulkUpsertProductTranslationsInput = z.object({
+  translations: z.array(UpsertProductTranslationInput).min(1).max(100),
+});
+export type BulkUpsertProductTranslationsInput = z.infer<typeof BulkUpsertProductTranslationsInput>;

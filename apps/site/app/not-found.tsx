@@ -28,7 +28,7 @@ export default function NotFound() {
       >
         That page isn&apos;t published here.
       </p>
-      <Link href="/" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
+      <Link href="/" className="text-primary underline">
         Back to home
       </Link>
     </main>

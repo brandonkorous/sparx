@@ -42,11 +42,26 @@ function cx(...parts: (string | false | null | undefined)[]): string {
  * exists only to hand a component the right LITERAL class name (Tailwind's
  * scanner cannot see an interpolated `bg-module-${key}`), never to carry a hue.
  *
- *   bg   → `bg-module-crm`                 solid fill (+ auto `-content` ink)
+ *   bg   → `bg-module-crm`                 solid fill — FILL ONLY, see below
  *   bg + `bg-soft` → the tinted card wash  (silica's own 15% color-mix)
  *   ink  → `text-module-crm`               the hue as text/icon ink
  *   color → `var(--color-module-crm)`      the token, for the few places that
  *           need a VALUE (an SVG `stroke`, a canvas fill) rather than a class
+ *
+ * `bg-*` SETS THE FILL AND NOTHING ELSE. It does NOT bring its paired `-content`
+ * ink along — silica emits `bg-module-crm` and `text-module-crm-content` as two
+ * independent utilities (confirmed against the plugin's generated class list).
+ * So a solid module fill MUST also carry its ink:
+ *
+ *   <div className="bg-module-crm text-module-crm-content">   ← correct
+ *   <div className="bg-module-crm">                           ← inherits whatever
+ *       ink the surrounding surface had. Looks fine on the one theme you tested
+ *       and can go unreadable in the other.
+ *
+ * This comment previously claimed the `-content` ink was automatic. It never
+ * was, and that is the likeliest reason `color: '#FFFFFF'` kept appearing next
+ * to module fills across the marketing pages — people hit the contrast problem
+ * and reached for white instead of the token.
  *
  * There are deliberately NO hex values here. A hand-mirrored `tint: '#EEF2FF'`
  * / `text: '#4338CA'` pair used to live in this map: it duplicated the tokens,
@@ -92,6 +107,15 @@ const MODULE_COLORS = {
     ink: 'text-module-scheduling',
   },
   ai: { color: 'var(--color-module-ai)', bg: 'bg-module-ai', ink: 'text-module-ai' },
+  // Free platform capabilities, not billable modules — no manifest and not in
+  // ModuleSlug. SEO is always present; Automations unlocks with any one module.
+  // They carry module hues because they ARE module-shaped to a visitor.
+  seo: { color: 'var(--color-module-seo)', bg: 'bg-module-seo', ink: 'text-module-seo' },
+  automations: {
+    color: 'var(--color-module-automations)',
+    bg: 'bg-module-automations',
+    ink: 'text-module-automations',
+  },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;

@@ -1,7 +1,7 @@
 // Media surface — upload presign, complete, asset CRUD.
 
-import type { SparxClient } from './client.js';
-import type { MediaAsset } from './types.js';
+import type { SparxClient } from './client';
+import type { MediaAsset } from './types';
 
 export interface InitUploadInput {
   filename: string;

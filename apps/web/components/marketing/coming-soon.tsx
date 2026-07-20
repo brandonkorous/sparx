@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Eyebrow, EyebrowBadge, Spark } from './primitives';
+import { Display, Spark } from './primitives';
 
 /**
  * Placeholder page for marketing surfaces that exist as routes but don't have
@@ -9,13 +9,17 @@ import { Container, Display, Eyebrow, EyebrowBadge, Spark } from './primitives';
  * so search engines don't surface these stubs.
  */
 export function ComingSoon({
-  eyebrow,
   title,
   description,
   contact,
 }: {
-  /** Short uppercase label above the headline — e.g. "Company", "Legal". */
-  eyebrow: string;
+  /**
+   * @deprecated Eyebrows are banned brand-wide (no label sits above a heading to
+   * introduce it). Still accepted so the ~dozen stub routes passing it keep
+   * compiling, but the value is IGNORED — same treatment `SectionHeader` gives
+   * its own `eyebrow`. Drop the prop from callers when they're next touched.
+   */
+  eyebrow?: string;
   /** Page name — gets the spark accent. */
   title: string;
   /** One-sentence description of what this page will eventually hold. */
@@ -24,79 +28,34 @@ export function ComingSoon({
   contact?: string;
 }) {
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(96px, 12vw, 160px)',
-        paddingBottom: 'clamp(96px, 12vw, 160px)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-        minHeight: 'calc(100vh - 80px)',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <Container
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '32px',
-          alignItems: 'flex-start',
-        }}
-      >
-        <EyebrowBadge
-          color="var(--color-primary)"
-          background="color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))"
-          text="#4338CA"
-        >
-          Coming soon
-        </EyebrowBadge>
+    <section className="bg-base-200 px-page flex min-h-[calc(100vh-80px)] items-center py-[clamp(96px,12vw,160px)]">
+      <div className="max-w-content mx-auto flex w-full flex-col items-start gap-8">
+        {/* The "Coming soon" EyebrowBadge and the uppercase `eyebrow` label that
+            both sat above this headline are gone — a badge in the eyebrow slot is
+            the same anti-pattern wearing a component. The title carries itself. */}
+        <Display as="h1" size={88} lineHeight={84}>
+          {title}
+          <Spark />
+        </Display>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
-            {eyebrow}
-          </Eyebrow>
-          <Display as="h1" size={88} lineHeight={84}>
-            {title}
-            <Spark />
-          </Display>
-        </div>
+        <p className="text-ink-muted text-lede m-0 max-w-[640px]">{description}</p>
 
-        <p
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
-          {description}
-        </p>
-
-        <div className="mkt-cluster" style={{ gap: '12px', paddingTop: '8px' }}>
+        <div className="flex flex-wrap items-center gap-3 pt-2">
           <a href="/">
-            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            <Button color="neutral" size="lg">
               ← Back to sparx.works
             </Button>
           </a>
           {contact ? (
             <a
               href={`mailto:${contact}`}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                textDecoration: 'none',
-                padding: '12px 0',
-              }}
+              className="text-ink-subtle text-caption py-3 font-mono no-underline"
             >
               Or email {contact}
             </a>
           ) : null}
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

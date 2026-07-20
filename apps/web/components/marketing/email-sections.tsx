@@ -1,4 +1,4 @@
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Text } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -35,8 +35,6 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const E = getModuleColor('email');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function EmailHero() {
@@ -49,40 +47,19 @@ export function EmailHero() {
     'no per-email fees',
   ];
   return (
-    <section
-      className={`${E.bg} bg-soft`}
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
+    <section className={`${E.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
+          <div className="min-w-0 flex-1">
             <Display as="h1" size={84} lineHeight={80}>
               Email on your own domain
               <Spark color={E.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '560px',
-                margin: '28px 0 0',
-              }}
-            >
+            <Text className="text-ink-muted mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
-            </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            </Text>
+            <div className="mt-[34px] flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Activate Email →
               </Button>
               <a href="#pipeline">
@@ -91,41 +68,21 @@ export function EmailHero() {
                 </Button>
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mt-6 flex list-none flex-wrap items-center gap-2.5 p-0">
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
                 >
                   <Dot color={E.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
+                  <Text as="span" className="text-mini text-ink-muted font-mono">
                     {c}
-                  </span>
+                  </Text>
                 </li>
               ))}
             </ul>
           </div>
-          <div
-            id="preview"
-            style={{ flex: 1, minWidth: 0, width: '100%', scrollMarginTop: '80px' }}
-          >
+          <div id="preview" className="w-full min-w-0 flex-1 scroll-mt-20">
             <Cycle
               items={EXAMPLE_BUSINESSES.map((b) => (
                 <EmailPreviewCard key={b.domain} business={b} />
@@ -153,150 +110,51 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
     .join('')
     .toUpperCase();
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '7px',
-          padding: '12px 18px',
-          backgroundColor: 'var(--color-base-200)',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-lg">
+      {/* Window chrome — device mimicry, kept verbatim. */}
+      <div className="bg-base-200 border-base-300 flex items-center gap-[7px] border-b px-[18px] py-3">
         {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            style={{ width: 10, height: 10, borderRadius: 9999, backgroundColor: '#E4E4E7' }}
-          />
+          <span key={i} className="bg-base-300 h-2.5 w-2.5 rounded-full" />
         ))}
-        <span
-          style={{
-            marginLeft: '8px',
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text as="span" className="text-mini text-ink-subtle ml-2 font-mono">
           inbox · {name}
-        </span>
+        </Text>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '11px',
-          padding: '18px 22px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+      <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-[18px]">
         <span
-          className={`${E.bg} bg-soft ${E.ink}`}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: '9999px',
-            border: `1.5px solid ${E.color}`,
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '14px',
-          }}
+          className={`${E.bg} bg-soft ${E.ink} border-module-email text-small flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
         >
           {initials}
         </span>
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '14.5px' }}>
+        <span className="min-w-0">
+          <Text as="span" className="text-small text-base-content block font-medium">
             {email.transactional.subject}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="span" className="text-mini text-ink-subtle font-mono">
             {email.sender} · to you · just now
-          </span>
+          </Text>
         </span>
       </div>
-      <div style={{ padding: '22px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '9px',
-            paddingBottom: '16px',
-            borderBottom: '1px solid var(--color-base-200)',
-          }}
-        >
+      <div className="p-[22px]">
+        <div className="border-base-200 flex items-center gap-2.5 border-b pb-4">
           <span
-            className={`${E.bg} bg-soft`}
-            style={{
-              width: 26,
-              height: 26,
-              borderRadius: '7px',
-              border: `1px solid ${E.color}`,
-            }}
+            className={`${E.bg} bg-soft border-module-email h-[26px] w-[26px] rounded-[7px] border`}
           />
-          <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>{name}</span>
+          <Text as="span" className="text-small text-base-content font-medium">
+            {name}
+          </Text>
         </div>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '14px',
-            lineHeight: '23px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            margin: '16px 0 0',
-          }}
-        >
-          {email.previewLine}
-        </p>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '14px',
-            lineHeight: '23px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            margin: '10px 0 0',
-          }}
-        >
+        <Text className="text-small text-ink-muted mt-4">{email.previewLine}</Text>
+        <Text className="text-small text-ink-muted mt-2.5">
           Tap below for the details — questions? Just reply to this email.
-        </p>
+        </Text>
         <span
-          style={{
-            display: 'inline-block',
-            padding: '10px 18px',
-            borderRadius: '8px',
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '13px',
-            color: '#FFFFFF',
-            backgroundColor: E.color,
-            marginTop: '16px',
-          }}
+          className={`${E.bg} text-caption mt-4 inline-block rounded-lg px-[18px] py-2.5 font-medium`}
         >
           View the details
         </span>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          borderTop: '1px solid var(--color-base-300)',
-        }}
-      >
+      <div className="border-base-300 grid grid-cols-3 border-t">
         {[
           [email.openRate, 'open rate'],
           [email.clickRate, 'click rate'],
@@ -304,32 +162,14 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
         ].map(([v, l], i) => (
           <div
             key={l}
-            style={{
-              padding: '13px 18px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-            }}
+            className={`px-[18px] py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
           >
             <div
-              className={i === 2 ? E.ink : 'text-base-content'}
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-              }}
+              className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? E.ink : 'text-base-content'}`}
             >
               {v}
             </div>
-            <div
-              style={{
-                fontFamily: MONO,
-                fontSize: '10.5px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: '2px',
-              }}
-            >
-              {l}
-            </div>
+            <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>
           </div>
         ))}
       </div>
@@ -341,22 +181,18 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
 export function EmailPipeline() {
   const stages = [
     {
-      n: '01 · trigger',
       title: 'A platform event fires',
       body: 'An order is paid, a cart is abandoned, a quote is sent — or you hit send on a broadcast.',
     },
     {
-      n: '02 · queue',
       title: 'email.send is published',
       body: 'The event lands on a durable queue with retries — nothing is sent inline, nothing is lost.',
     },
     {
-      n: '03 · render',
       title: 'Your template renders',
       body: 'A worker composes the message from atomic React Email components — HTML and plain text together.',
     },
     {
-      n: '04 · deliver',
       title: 'Sent from your domain',
       body: 'Signed with your DKIM key and delivered to the inbox, with open, click, and bounce tracked back.',
     },
@@ -368,40 +204,11 @@ export function EmailPipeline() {
         headline="Every email is an event, not a blast"
         lede="Outbound mail is event-driven. A platform event publishes email.send; a worker renders your template and delivers it from your verified domain — the same path for an order receipt or a six-thousand-person broadcast."
       />
-      <div
-        className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
-      >
+      <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s) => (
-          <div key={s.n} className="mkt-stage" style={{ padding: '28px 24px' }}>
-            <span
-              className={E.ink}
-              style={{ fontFamily: MONO, fontSize: '11px', letterSpacing: '0.04em' }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: '14px 0 8px',
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {s.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13px',
-                lineHeight: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
+          <div key={s.title} className="mkt-pipe-cell px-6 py-7">
+            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{s.title}</h3>
+            <Text className="text-caption text-ink-muted mt-2">{s.body}</Text>
           </div>
         ))}
       </div>

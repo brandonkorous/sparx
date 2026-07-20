@@ -50,6 +50,18 @@ export interface ListInventoryFilter {
   warehouseId?: string;
   /** Case-insensitive match on variant SKU OR product title. */
   q?: string;
+  /**
+   * Every level for ONE product, across its variants and every warehouse.
+   *
+   * Exists so a product-scoped stock view is a SINGLE request. Without it the
+   * only way to answer "what stock does this product have" was a request per
+   * variant — an N+1 that a 40-variant product turns into 40 round trips, and
+   * which the workbench's product-scoped panes would have multiplied again by
+   * being dockable side by side. Filtering on `q` is not a substitute: it
+   * matches product title as a SUBSTRING, so two products called "Camp Mug" and
+   * "Camp Mug XL" cannot be told apart.
+   */
+  productId?: string;
   take?: number;
   skip?: number;
 }
@@ -63,6 +75,7 @@ export async function listInventory(
 
   const variantWhere: Prisma.ProductVariantWhereInput = {
     deletedAt: null,
+    ...(filter.productId ? { productId: filter.productId } : {}),
     ...(filter.q
       ? {
           OR: [

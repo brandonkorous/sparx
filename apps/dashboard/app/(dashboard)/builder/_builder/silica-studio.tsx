@@ -17,7 +17,7 @@ import { Builder } from '@wizeworks/silicaui-builder/react';
 import type { DataSource as SilicaDataSource, Document, Site } from '@wizeworks/silicaui-html';
 import { useConfirm } from '@sparx/ui';
 import type {
-  BuilderPageDto,
+  BuilderPageSummaryDto,
   DataSource,
   DataSources,
   SitePublishState,
@@ -38,14 +38,53 @@ import { useUnpublishedGuard } from './use-unpublished-guard';
  *  The engine hands back the WHOLE site on every edit, so every part is persisted
  *  (docs/118) — a theme, symbol, or saved-theme edit must never be dropped on the
  *  floor here (silicaui 0.16 rounds `savedThemes` through `onChange`). */
-function toSyncInput(site: Site): SiteSyncInput {
+function toSyncInput(site: Site, since?: SyncBaseline): SiteSyncInput {
+  const roster = site.pages.map((p) => p.id);
+  // Send only the pages whose identity or BODY actually changed (docs/126 Phase 0).
+  // `pageIds` carries the full roster so the server still resolves deletion + ordering
+  // against the whole site. Without a baseline (first save after mount) everything is
+  // "changed", which is the original whole-site payload.
+  const changed = since
+    ? site.pages.filter((p) => since.pages.get(p.id) !== pageFingerprint(p))
+    : site.pages;
   return {
-    pages: site.pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
+    // The schema requires at least one page. A pure reorder or a theme-only edit
+    // changes no body, so fall back to sending the first page — cheaper than the whole
+    // site, and the roster still drives the reconcile.
+    pages: (changed.length > 0 ? changed : site.pages.slice(0, 1)).map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      root: p.root,
+    })),
+    pageIds: roster,
+    ...(since ? { pageUpdatedAt: since.updatedAt } : {}),
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
     ...(site.symbols ? { symbols: site.symbols } : {}),
     ...(site.theme ? { theme: site.theme } : {}),
     ...(site.savedThemes ? { savedThemes: site.savedThemes } : {}),
   };
+}
+
+/** What we last successfully wrote, so the next save can send only the difference.
+ *  Page bodies are compared by a serialized fingerprint rather than by reference: the
+ *  engine rebuilds the `Site` on every edit, so every page object is a NEW object even
+ *  when its content is untouched — a reference check would find everything changed and
+ *  send the whole site every time, which is the thing being fixed. */
+interface SyncBaseline {
+  pages: Map<string, string>;
+  /** Per-page `updatedAt` as the server last reported it — the optimistic-concurrency
+   *  precondition (docs/126 Phase 1). Sent back on the next save so a page another
+   *  author changed in the meantime is REJECTED rather than silently overwritten. */
+  updatedAt: Record<string, string>;
+}
+
+function pageFingerprint(p: Site['pages'][number]): string {
+  return JSON.stringify([p.name, p.slug, p.root]);
+}
+
+function baselineOf(site: Site, updatedAt: Record<string, string>): SyncBaseline {
+  return { pages: new Map(site.pages.map((p) => [p.id, pageFingerprint(p)])), updatedAt };
 }
 
 /** Debounce window for the whole-site autosave — the engine fires `onChange` per
@@ -74,7 +113,7 @@ export interface SilicaStudioProps {
   tenantAllowlist?: unknown;
   /** The tenant's page catalog with domain metadata (recordType / isDefault / SEO)
    *  — the seed for the header page-settings drawer, keyed by page id. */
-  pages: BuilderPageDto[];
+  pages: BuilderPageSummaryDto[];
   /** The binding catalog's sources — the record types a template can render, listed
    *  in the page-settings "Page type" picker. */
   sources: DataSource[];
@@ -154,6 +193,21 @@ export function SilicaStudio({
   // save badge in the toolbar reflects the round-trip the engine can't see.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pending = useRef<Site | null>(null);
+  // The last state the server confirmed. Advanced ONLY on a successful write, so a
+  // failed save re-sends everything that changed since the last good one rather than
+  // silently narrowing to the newest edit and losing the rest.
+  //
+  // SEEDED FROM THE SERVER at mount rather than starting null. A null baseline means
+  // the first save carries no `pageUpdatedAt`, so it falls back to last-write-wins —
+  // which is exactly the window that matters: an author opens a site someone else is
+  // already editing, changes one thing, and the very first autosave silently
+  // overwrites them. Seeding from the page catalog closes it, and the fingerprints
+  // start empty so that first save still sends every page's body (we can't know from
+  // metadata alone whether the in-memory site matches what is stored).
+  const baseline = useRef<SyncBaseline | null>({
+    pages: new Map(),
+    updatedAt: Object.fromEntries(pages.map((p) => [p.id, p.updatedAt])),
+  });
 
   const flush = useCallback(() => {
     timer.current = null;
@@ -161,13 +215,20 @@ export function SilicaStudio({
     if (!next) return;
     pending.current = null;
     setSaveState('saving');
-    void syncBuilderSite(toSyncInput(next)).then((res) => {
+    void syncBuilderSite(toSyncInput(next, baseline.current ?? undefined)).then((res) => {
       if (!res.ok) {
         // Re-queue the failed payload so the next edit (or unmount flush) retries it.
         pending.current ??= next;
         setSaveState('error');
         return;
       }
+      // `data` is present on an ok result; fall back to the previous map rather than
+      // clearing it, so a malformed response degrades to last-write-wins instead of
+      // making every subsequent save look like a conflict.
+      baseline.current = baselineOf(
+        next,
+        res.data?.pageUpdatedAt ?? baseline.current?.updatedAt ?? {}
+      );
       // Only claim "saved" if nothing newer arrived while the PUT was in flight.
       setSaveState(pending.current ? 'unsaved' : 'saved');
     });
@@ -204,12 +265,18 @@ export function SilicaStudio({
     // Persist the just-edited site first (skip the debounce), then snapshot
     // draft → published so the publish reflects the newest state.
     setSaveState('saving');
-    const synced = await syncBuilderSite(toSyncInput(published));
+    const synced = await syncBuilderSite(toSyncInput(published, baseline.current ?? undefined));
     if (!synced.ok) {
       setSaveState('error');
       return;
     }
     pending.current = null;
+    // The publish path writes through the same reconcile, so the baseline advances
+    // here too — otherwise the next autosave would re-send every page as "changed".
+    baseline.current = baselineOf(
+      published,
+      synced.data?.pageUpdatedAt ?? baseline.current?.updatedAt ?? {}
+    );
     setSaveState('saved');
     const done = await publishBuilderSite();
     // Only claim "live" if the publish actually succeeded — a failed publish that

@@ -9,8 +9,8 @@ import { PRINCIPLES } from './data';
 // dot-bullet blurbs.
 export function PricingV1BillingPrinciples() {
   return (
-    <section className="px-[var(--gutter-page)] py-[var(--section-py-xl)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+    <section className="px-page py-section-xl">
+      <Container className="flex flex-col gap-12">
         <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE}>
           Pricing without the asterisks
           <Spark />

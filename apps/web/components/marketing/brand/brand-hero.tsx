@@ -38,7 +38,7 @@ export function BrandHero() {
   return (
     <section className="px-page pb-section-lg bg-base-200 border-base-300 border-b pt-[clamp(104px,13vw,168px)]">
       <Container className="flex flex-col gap-10">
-        <OfficialWordmark style={{ width: 'clamp(208px, 32vw, 332px)' }} />
+        <OfficialWordmark className="w-[clamp(208px,32vw,332px)]" />
 
         <div className="flex max-w-[880px] flex-col gap-6">
           <Display as="h1" size={84} lineHeight={80}>
@@ -47,7 +47,7 @@ export function BrandHero() {
           </Display>
           <Text size={19} className="max-w-[660px]">
             The wordmark, the color system, the Geist type scale, and the voice that keep sparx
-            coherent across thirteen modules, a dozen domains, and every surface a tenant touches.
+            coherent across twelve modules, a dozen domains, and every surface a tenant touches.
             This page is the source of truth — for us, and for anyone building with the sparx brand.
           </Text>
         </div>
@@ -80,7 +80,7 @@ export function BrandHero() {
 
 function IdentityList() {
   return (
-    <dl className="mkt-grid-4-2-1 border-base-300 mt-2 border-t pt-2">
+    <dl className="border-base-300 mt-2 grid grid-cols-1 gap-5 border-t pt-2 sm:grid-cols-2 lg:grid-cols-4">
       {IDENTITY.map((row) => (
         <div key={row.label} className="flex flex-col gap-1.5 pt-6">
           <Text as="dt" size={12.5} tone="subtle">

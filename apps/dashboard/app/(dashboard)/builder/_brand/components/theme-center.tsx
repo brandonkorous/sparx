@@ -1049,11 +1049,11 @@ export function ThemeCenter({
             Like the page/site editors: the controls are a light surface panel and
             the preview sits on the darker "stage" (base-200). */}
         <div className="grid gap-4 lg:grid-cols-[400px_1fr]">
-          <div className="border-base-300 bg-base-100 min-w-0 rounded-[var(--radius-lg)] border p-4">
+          <div className="border-base-300 bg-base-100 min-w-0 rounded-lg border p-4">
             {controls}
           </div>
 
-          <div className="bg-base-200 min-w-0 rounded-[var(--radius-lg)] p-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="bg-base-200 min-w-0 rounded-lg p-4 lg:sticky lg:top-4 lg:self-start">
             {previewSurface === 'site' && canPreviewSite && sitePreview.origin ? (
               <SitePreviewFrame
                 origin={sitePreview.origin}

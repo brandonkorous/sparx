@@ -9,8 +9,14 @@
 // starter → blueprint → sample data). `industry` is BOTH the starter slug and the
 // sample-pack key (shared vocabulary). `modules` are only the PROVIDER flags the
 // user would flip — inventory/invoicing ride along free with commerce/b2b
-// (BUNDLED_FREE), so they're never listed. blueprintKey resolves from the
-// marketplace catalog when ingested, and skips cleanly otherwise.
+// (BUNDLED_FREE), so they're never listed.
+//
+// blueprintKey is EMPTY on every spec right now, and that is not an oversight: the
+// four legacy bundles these pointed at (forge / farm-fresh / mosaic / tempo) were
+// authored as `BuilderNode` manifests, which the silica-native blueprint schema no
+// longer accepts, so they were removed rather than left to fail ingest. Demo tenants
+// still provision fully through the industry starter + sample pack; they just get no
+// template look until silica-native bundles exist. Point a spec at one by name then.
 
 import type { ModuleSlug } from '@sparx/auth';
 
@@ -52,7 +58,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Maya Chen',
     'apparel',
     ['builder', 'commerce', 'scheduling', 'cms', 'crm', 'email'],
-    'forge'
+    ''
   ),
   // Specialty food shop — catalog + recipes content + a newsletter.
   spec(
@@ -61,7 +67,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Diego Romero',
     'food',
     ['builder', 'commerce', 'cms', 'crm', 'email'],
-    'farm-fresh'
+    ''
   ),
   // Appointment-based salon/spa — scheduling-forward, retail on the side.
   spec(
@@ -70,7 +76,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Priya Anand',
     'salon',
     ['builder', 'scheduling', 'commerce', 'crm', 'cms', 'email'],
-    'mosaic'
+    ''
   ),
   // B2B distributor — wholesale tiers, approvals, quotes; invoicing/inventory ride free.
   spec(
@@ -79,7 +85,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Marcus Webb',
     'wholesale',
     ['builder', 'commerce', 'b2b', 'crm', 'cms', 'email'],
-    'tempo'
+    ''
   ),
   // Professional services consultancy — booking + quote/subscription invoicing.
   spec(
@@ -88,7 +94,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Lena Osei',
     'professional',
     ['builder', 'scheduling', 'commerce', 'crm', 'cms', 'email'],
-    'tempo'
+    ''
   ),
   // Content-only publisher — NO commerce. Proves CMS/CRM/email stand alone; the
   // sample pack's articles + audience load while catalog/orders stay gated off.
@@ -98,7 +104,7 @@ export const DEMO_TENANTS: SeedTenantSpec[] = [
     'Sam Tully',
     'electronics',
     ['builder', 'cms', 'crm', 'email'],
-    'tempo'
+    ''
   ),
 ];
 

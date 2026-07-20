@@ -296,12 +296,15 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'chat',
     name: 'Live Chat',
-    summary: 'AI-first site chat with a real-time staff inbox.',
+    // NOT "AI-first": the $19 buys the chat product and the agent that runs it,
+    // never the intelligence. The concierge is inert until the tenant connects
+    // their own Anthropic or OpenAI key, and escalates to a human until they do.
+    summary: 'Site chat with a real-time staff inbox — answer first with your own AI.',
     accent: '#8B5CF6',
     module: true,
     capabilities: [
       live('Site chat widget'),
-      live('AI first response (grounded on your data)'),
+      live('First response from your own AI — bring an Anthropic or OpenAI key'),
       live('Confidence-gated human handoff'),
       live('Real-time staff inbox'),
       live('Conversation assignment'),
@@ -339,7 +342,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   },
   {
     id: 'ai',
-    name: 'AI · MCP',
+    name: 'AI',
     summary: 'A first-class MCP server for Claude, ChatGPT, and Copilot.',
     accent: '#EC4899',
     module: true,
@@ -484,7 +487,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Flat per-module pricing'),
       live('Stripe Connect'),
       building('Stripe subscription billing'),
-      planned('14-day no-card trial lifecycle'),
+      live('14-day all-modules trial, no card'),
       planned('Embedded billing portal'),
       planned('Annual discount & enterprise plans'),
     ],

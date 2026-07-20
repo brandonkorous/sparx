@@ -21,7 +21,7 @@ import { withTenant } from '@sparx/db';
 
 import { evaluateConditions } from '../conditions/evaluate';
 import type { EngineDeps, TenantCtx, TriggerEnvelope } from '../engine-types';
-import { getScanner } from '../resolvers/registry';
+import { getScanner, propertyOf } from '../resolvers/registry';
 import { installBuiltins } from './install';
 
 export interface ScheduleTickResult {
@@ -33,6 +33,8 @@ export interface ScheduleTickResult {
 interface ScheduledAutomationRow {
   id: string;
   tenant_id: string;
+  /** Which site this rule is scoped to; null = tenant-wide (docs/131 §3.1). */
+  property_id: string | null;
   trigger_type: string;
   trigger_config: unknown;
   conditions: unknown;
@@ -51,12 +53,13 @@ export async function runScheduleTick(
   // FORCE RLS-bound `sparx_app` (no ambient bypass in prod, docs/16 §4). The
   // per-automation predicate scan + enqueue below stays withTenant-scoped.
   const rows = await db.$queryRaw<ScheduledAutomationRow[]>`
-    SELECT id, tenant_id, trigger_type, trigger_config, conditions, actions, version
+    SELECT id, tenant_id, property_id, trigger_type, trigger_config, conditions, actions, version
     FROM find_active_scheduled_automations()
   `;
   const autos = rows.map((r) => ({
     id: r.id,
     tenantId: r.tenant_id,
+    propertyId: r.property_id,
     triggerType: r.trigger_type,
     triggerConfig: r.trigger_config,
     conditions: r.conditions,
@@ -97,6 +100,14 @@ export async function runScheduleTick(
         const rows = await scanner(ctx);
 
         for (const row of rows) {
+          // The site filter, applied PER SCANNED ROW (docs/131 §3.1) — a scan
+          // returns the tenant's whole entity set, so a site-scoped sweep must
+          // discard rows belonging to another business. Same semantics as the
+          // event path: a tenant-wide rule takes everything, and a row whose
+          // site is unknown is only ever taken by a tenant-wide rule.
+          const rowProperty = propertyOf(row.fields);
+          if (a.propertyId !== null && a.propertyId !== rowProperty) continue;
+
           // The predicate is the SELECTOR; the automation's own conditions are an
           // additional AND post-filter.
           if (!evaluateConditions(trigger.predicate.where, row.fields)) continue;
@@ -125,6 +136,9 @@ export async function runScheduleTick(
             data: {
               automationId: a.id,
               tenantId: a.tenantId,
+              // From the scanned ROW, not the rule: a tenant-wide sweep that
+              // matched a donut customer produced a donut-site run.
+              propertyId: rowProperty,
               triggerEvent: envelope as unknown as Prisma.InputJsonValue,
               dedupeKey,
               causeDepth: 0,

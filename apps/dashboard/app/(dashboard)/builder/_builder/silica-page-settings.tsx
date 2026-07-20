@@ -37,7 +37,7 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { toast } from '@sparx/ui';
-import type { BuilderPageDto, DataSource } from '@sparx/builder-schemas';
+import type { BuilderPageSummaryDto, DataSource } from '@sparx/builder-schemas';
 
 import { retargetPage, setPageDefault, updatePageSeo } from '../_lib/actions';
 
@@ -49,7 +49,7 @@ export interface SilicaPageSettingsProps {
   /** The row's current metadata, from the server-fetched page list. Undefined
    *  when the page hasn't been materialized into a row yet (a brand-new page
    *  before its first autosave) — the controls stay disabled until it is. */
-  meta: BuilderPageDto | undefined;
+  meta: BuilderPageSummaryDto | undefined;
   /** The tenant's binding catalog; the collection (`array`) sources are the
    *  record types a template can render. */
   sources: DataSource[];
@@ -63,7 +63,7 @@ interface SeoState {
   noindex: boolean;
 }
 
-function seedSeo(meta: BuilderPageDto | undefined): SeoState {
+function seedSeo(meta: BuilderPageSummaryDto | undefined): SeoState {
   return {
     seoTitle: meta?.seoTitle ?? '',
     seoDescription: meta?.seoDescription ?? '',

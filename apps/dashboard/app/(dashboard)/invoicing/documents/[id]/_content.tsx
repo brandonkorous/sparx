@@ -13,6 +13,8 @@ import { StageBar } from './_components/stage-bar';
 import { LineGrid, type MarkupRuleSummary } from './_components/line-grid';
 import { PaymentsPanel } from './_components/payments-panel';
 import { DocumentActionsBar } from './_components/document-actions-bar';
+import { DocumentPreview } from '../_components/document-preview';
+import { buildDocumentDraft } from './_lib/preview-draft';
 
 interface LineMarkupSnapshot {
   ruleId: string | null;
@@ -239,41 +241,61 @@ export async function DocumentEditorContent({ id }: Props) {
         </Card>
       </div>
 
-      <LineGrid
-        documentId={doc.id}
-        currency={doc.currency}
-        locked={locked}
-        lines={doc.lines.map((l) => ({
-          id: l.id,
-          lineTypeId: l.lineTypeId,
-          description: l.description,
-          quantity: Number(l.quantity),
-          unitPrice: Number(l.unitPrice),
-          costCents: l.costCents,
-          taxable: l.taxable,
-          lineTotal: Number(l.lineTotal),
-          markup: l.appliedMarkup
-            ? {
-                ruleId: l.appliedMarkup.ruleId,
-                ruleName: l.appliedMarkup.ruleName,
-                method: l.appliedMarkup.method,
-                value: l.appliedMarkup.value,
-                marginPct: l.appliedMarkup.marginPct,
-                costBasisValueCents: l.appliedMarkup.costBasisValueCents,
-              }
-            : null,
-        }))}
-        lineTypes={lineTypes
-          .filter((t) => t.isActive)
-          .map((t) => ({
-            id: t.id,
-            key: t.key,
-            label: t.label,
-            pricingMode: t.pricingMode,
-            defaultTaxable: t.defaultTaxable,
+      {/* Line editor + live preview, side by side on a wide screen: the merchant
+          edits a charge on the left and watches the customer-facing document
+          re-render on the right. Below xl the two stack (editor first, preview
+          under it) so a laptop or tablet still gets both, just sequentially —
+          the preview is never the thing squeezing the grid. It complements the
+          Print button in the header rather than replacing it. */}
+      {/* The preview column tracks the page rather than sitting at a fixed cap:
+          `40%` matches the wizard's aside so the document renders at the same
+          size on both surfaces. A hard 460px max looked fine at 1440 but left the
+          artifact cramped on a wide display while the line grid took all the
+          extra room — the width was bought for the document, so it gets a share
+          of it. The 460px floor keeps it readable before the xl breakpoint. */}
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(460px,40%)] xl:items-start">
+        <LineGrid
+          documentId={doc.id}
+          currency={doc.currency}
+          locked={locked}
+          lines={doc.lines.map((l) => ({
+            id: l.id,
+            lineTypeId: l.lineTypeId,
+            description: l.description,
+            quantity: Number(l.quantity),
+            unitPrice: Number(l.unitPrice),
+            costCents: l.costCents,
+            taxable: l.taxable,
+            lineTotal: Number(l.lineTotal),
+            markup: l.appliedMarkup
+              ? {
+                  ruleId: l.appliedMarkup.ruleId,
+                  ruleName: l.appliedMarkup.ruleName,
+                  method: l.appliedMarkup.method,
+                  value: l.appliedMarkup.value,
+                  marginPct: l.appliedMarkup.marginPct,
+                  costBasisValueCents: l.appliedMarkup.costBasisValueCents,
+                }
+              : null,
           }))}
-        markupRules={markupRules}
-      />
+          lineTypes={lineTypes
+            .filter((t) => t.isActive)
+            .map((t) => ({
+              id: t.id,
+              key: t.key,
+              label: t.label,
+              pricingMode: t.pricingMode,
+              defaultTaxable: t.defaultTaxable,
+            }))}
+          markupRules={markupRules}
+        />
+
+        <DocumentPreview
+          draft={buildDocumentDraft(doc)}
+          title="Preview"
+          className="xl:sticky xl:top-4"
+        />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-1">

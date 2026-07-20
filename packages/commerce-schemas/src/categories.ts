@@ -24,11 +24,26 @@ export const CreateCategoryInput = z.object({
   featured: z.boolean().default(false),
   iconMediaId: Uuid.optional(),
   heroMediaId: Uuid.optional(),
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this category is
+  // visible on. EMPTY = visible on ALL sites (the default). Update sends the full
+  // replacement set; UpdateCategoryInput inherits it as optional via .partial().
+  propertyIds: z.array(Uuid).max(50).default([]),
   ...SeoFields.shape,
 });
 export type CreateCategoryInput = z.infer<typeof CreateCategoryInput>;
 
-export const UpdateCategoryInput = CreateCategoryInput.partial();
+// `.partial()` makes every field optional but — in this Zod version — does NOT strip
+// the `.default()`s, so a partial update that OMITS a defaulted field comes back with
+// the create default re-applied (position:0, featured:false, propertyIds:[]). Every
+// update service guards on `input.X !== undefined`, so those re-applied defaults
+// silently CLOBBER on a partial edit: a plain rename would reset priority to 0 and
+// WIPE the site-scope links. Override the defaulted fields as plain-optional so
+// "omitted = untouched" holds — mirroring how UpdateProductInput is built separately.
+export const UpdateCategoryInput = CreateCategoryInput.partial().extend({
+  position: z.number().int().nonnegative().optional(),
+  featured: z.boolean().optional(),
+  propertyIds: z.array(Uuid).max(50).optional(),
+});
 export type UpdateCategoryInput = z.infer<typeof UpdateCategoryInput>;
 
 export const ReparentCategoryInput = z.object({
@@ -108,11 +123,24 @@ export const CreateCollectionInput = z.object({
   ruleSet: CollectionRuleSet.optional(), // required when type=rules
   heroMediaId: Uuid.optional(),
   featured: z.boolean().default(false),
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this collection is
+  // visible on. EMPTY = visible on ALL sites (the default). Update sends the full
+  // replacement set; UpdateCollectionInput inherits it as optional via .partial().
+  propertyIds: z.array(Uuid).max(50).default([]),
   ...SeoFields.shape,
 });
 export type CreateCollectionInput = z.infer<typeof CreateCollectionInput>;
 
-export const UpdateCollectionInput = CreateCollectionInput.partial();
+// See UpdateCategoryInput: `.partial()` keeps the create `.default()`s, so a partial
+// edit that omits these would re-apply them and clobber via the service's
+// `!== undefined` guards. Worse for `type` — a metadata rename of a RULES collection
+// omits `type`, the re-applied `manual` default trips the type-flip guard, and the
+// save THROWS. Strip the defaults so omitted fields stay truly absent.
+export const UpdateCollectionInput = CreateCollectionInput.partial().extend({
+  type: CollectionType.optional(),
+  featured: z.boolean().optional(),
+  propertyIds: z.array(Uuid).max(50).optional(),
+});
 export type UpdateCollectionInput = z.infer<typeof UpdateCollectionInput>;
 
 export const SetCollectionProductsInput = z.object({

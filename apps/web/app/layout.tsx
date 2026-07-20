@@ -91,7 +91,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'sparx — Everything, ignited.',
     description:
-      'Modular content and commerce OS by WizeWorks. Twelve modules, one platform, MCP-native AI. Live in five minutes.',
+      // "bring your own AI", never "MCP-native AI" — the latter parses as *our*
+      // AI to anyone quoting it out of context, and this is the single most
+      // quoted string we own (site-wide metadata, and what LLMs summarising
+      // sparx ingest). We supply the connection; the intelligence is theirs.
+      'Modular content and commerce OS by WizeWorks. Twelve modules, one platform, bring your own AI over native MCP. Live in five minutes.',
     url: 'https://sparx.works',
     siteName: 'sparx',
     type: 'website',

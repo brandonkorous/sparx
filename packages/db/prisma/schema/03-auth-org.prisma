@@ -25,17 +25,108 @@ model Member {
   memberType     String @default("staff") @map("member_type") @db.VarChar(20)
   // active | invited | suspended
   status         String @default("active") @db.VarChar(20)
+  // Whether this member reaches every module their ROLE allows, or only a
+  // chosen subset.
+  //
+  //   all      — no restriction. The role is the only gate. THE DEFAULT, and
+  //              what every pre-existing member backfills to, so switching this
+  //              feature on changes nobody's access.
+  //   selected — reachable modules are exactly the `moduleAccess` rows below.
+  //              Zero rows under `selected` legitimately means "no modules";
+  //              that is why this flag exists rather than inferring restriction
+  //              from an empty set, which cannot tell "not configured" from
+  //              "deliberately none".
+  //
+  // Owners and admins ignore this entirely (see packages/auth module-access.ts):
+  // they administer the team, so a restriction they can lift in one click is
+  // theatre, and locking an owner out of a module is unrecoverable without DB
+  // access.
+  moduleAccessMode String @default("all") @map("module_access_mode") @db.VarChar(20)
+
+  /// Whether this member reaches every SITE the tenant runs, or only a chosen
+  /// subset (docs/131 §3.3). Exactly the `moduleAccessMode` contract, on an
+  /// orthogonal axis — the two narrow independently and compose.
+  ///
+  ///   all      — no restriction. THE DEFAULT, and what every pre-existing
+  ///              member backfills to, so shipping this changes nobody's access.
+  ///   selected — reachable sites are exactly the `propertyAccess` rows.
+  ///              Zero rows under `selected` legitimately means "no sites",
+  ///              which is why the flag exists rather than inferring restriction
+  ///              from an empty set.
+  ///
+  /// This is the axis that lets a tenant running two unrelated businesses (a
+  /// machine shop and a donut shop) staff them separately. Without it, a donut
+  /// employee reads the machine shop's customers, orders and revenue.
+  ///
+  /// Owners and admins ignore it, for the same reason they ignore module access:
+  /// they administer the team, so a restriction they can lift in one click is
+  /// theatre, and locking an owner out is unrecoverable without DB access.
+  propertyAccessMode String @default("all") @map("property_access_mode") @db.VarChar(20)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  organization Tenant @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Tenant                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleAccess   MemberModuleAccess[]
+  propertyAccess MemberPropertyAccess[]
 
   @@unique([organizationId, userId], map: "members_org_user_unique")
   @@index([userId])
   @@index([organizationId])
   @@map("members")
+}
+
+/// Which modules one member may reach, when their `moduleAccessMode` is
+/// `selected`. A row is a GRANT — rows are meaningless while the mode is `all`,
+/// and are deliberately kept (not deleted) when someone flips back to `all`, so
+/// toggling the restriction off and on again doesn't silently discard the set
+/// that was configured.
+///
+/// A join table rather than a JSON column on `members` because "who can reach
+/// Commerce?" is a question the access layer asks per request, and because a
+/// module being deactivated should be able to cascade its grants away.
+model MemberModuleAccess {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberId String @map("member_id") @db.Uuid
+  /// Module slug — matches the ModuleSlug union in @sparx/auth. Not an enum:
+  /// the slug list lives in TypeScript and gains entries far more often than a
+  /// migration window allows.
+  module   String @db.VarChar(32)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, module], map: "member_module_access_member_module_unique")
+  @@index([memberId])
+  @@map("member_module_access")
+}
+
+/// Which SITES one member may reach, when their `propertyAccessMode` is
+/// `selected` (docs/131 §3.3). A row is a GRANT. Rows are meaningless while the
+/// mode is `all`, and are deliberately kept (not deleted) when someone flips
+/// back to `all`, so toggling the restriction off and on again doesn't silently
+/// discard the set that was configured.
+///
+/// Deliberately the same shape as MemberModuleAccess rather than a second
+/// invention: same mode flag, same grant-row semantics, same reasoning. A join
+/// table rather than a JSON column because "who can reach Savory Donuts?" is
+/// asked per request by the access layer, and because deleting a site should
+/// cascade its grants away.
+model MemberPropertyAccess {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberId   String @map("member_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, propertyId], map: "member_property_access_member_property_unique")
+  @@index([memberId])
+  @@map("member_property_access")
 }
 
 model Invitation {

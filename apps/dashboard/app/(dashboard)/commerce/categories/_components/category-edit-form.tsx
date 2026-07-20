@@ -27,10 +27,13 @@ import {
 } from '@sparx/ui';
 import { rule, useFieldValidation } from '@sparx/forms';
 
+import type { Property } from '@/lib/sites';
+
 import { reparentCategoryAction, updateCategoryAction } from '../../category-actions';
 import { useUnsavedGuard } from '../../../_components/unsaved-guard';
 import { useDetailFooterNode } from '../../../_components/detail-header-slot';
 import { ViewSwitcher } from '../../../_components/detail-panel';
+import { SiteScopeField } from '../../../_components/site-scope-field';
 import { CategoryDeleteButton } from './category-delete-button';
 import type { CategoryParentOption } from './category-create-form';
 
@@ -60,6 +63,8 @@ export interface CategoryEditData {
   path: string;
   position: number;
   featured: boolean;
+  // Model B (docs/49 §3): web PROPERTIES this category is scoped to. EMPTY = all sites.
+  propertyIds: string[];
 }
 
 export interface CategoryEditMeta {
@@ -73,11 +78,20 @@ interface CategoryEditFormProps {
   category: CategoryEditData;
   parents: CategoryParentOption[];
   meta?: CategoryEditMeta;
+  // The tenant's sites, for the "Visible on sites" control. SiteScopeField hides
+  // itself for single-site tenants.
+  sites: Property[];
 }
 
 const STEPS: SurfaceStepDef[] = [{ key: 'details', label: 'Details' }];
 
-export function CategoryEditForm({ surface, category, parents, meta }: CategoryEditFormProps) {
+export function CategoryEditForm({
+  surface,
+  category,
+  parents,
+  meta,
+  sites,
+}: CategoryEditFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -96,6 +110,12 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
   const [parentId, setParentId] = React.useState(category.parentId ?? '');
   const [description, setDescription] = React.useState(category.description ?? '');
   const [featured, setFeatured] = React.useState(category.featured);
+  const [propertyIds, setPropertyIds] = React.useState<string[]>(category.propertyIds ?? []);
+  // Order-insensitive compare; after a save + router.refresh the reloaded
+  // `category.propertyIds` matches, clearing dirty like every other field here.
+  const scopeKey = (ids: string[]) => [...ids].sort().join(' ');
+  const scopeDirty =
+    sites.length > 1 && scopeKey(propertyIds) !== scopeKey(category.propertyIds ?? []);
 
   // Field validation. `handle` carries no client rule but is validated-tracked so
   // a server-side handle error maps onto its field; `position` (priority) must be
@@ -129,7 +149,8 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
     position !== String(category.position) ||
     parentId !== (category.parentId ?? '') ||
     description !== (category.description ?? '') ||
-    featured !== category.featured;
+    featured !== category.featured ||
+    scopeDirty;
 
   // Clear the stale "Saved" badge the moment the user edits again.
   React.useEffect(() => {
@@ -190,6 +211,8 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
         featured,
         ...(trimmedHandle && trimmedHandle !== category.handle ? { handle: trimmedHandle } : {}),
         description: trimmedDescription.length > 0 ? trimmedDescription : null,
+        // Model B: full replacement set, multi-site tenants only.
+        ...(sites.length > 1 ? { propertyIds } : {}),
       });
       if (!updateResult.ok) {
         if (updateResult.error.code === 'VALIDATION_ERROR' && updateResult.error.details?.length) {
@@ -313,14 +336,13 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                   </div>
 
                   {/* The handle is the category's URL-safe slug. Categories have no
-                    standalone storefront route today — they're surfaced through the
-                    builder, bound by id — so a reslug breaks nothing live; just note
-                    the change. */}
+                    standalone site route today — they're surfaced through the builder,
+                    bound by id — so a reslug breaks nothing live; just note the change. */}
                   {handleChanged && (
                     <p className="text-base-content text-xs">
                       Changing the handle reslugs this category from <code>{category.handle}</code>{' '}
-                      to <code>{handle.trim()}</code>. Categories don’t have a standalone storefront
-                      page yet, so this won’t break any links today.
+                      to <code>{handle.trim()}</code>. Categories don’t have a standalone page on
+                      your site yet, so this won’t break any links today.
                     </p>
                   )}
 
@@ -368,9 +390,16 @@ export function CategoryEditForm({ surface, category, parents, meta }: CategoryE
                       <Label htmlFor="cat-featured">Featured</Label>
                     </div>
                     <p className="text-base-content text-xs">
-                      Highlights this category in storefront navigation and featured collections.
+                      Highlights this category in your site’s navigation and featured collections.
                     </p>
                   </div>
+
+                  <SiteScopeField
+                    sites={sites}
+                    value={propertyIds}
+                    onChange={setPropertyIds}
+                    description="Which of your sites show this category. Leave “All sites” to show it everywhere."
+                  />
                 </div>
               </CardBody>
             </Card>

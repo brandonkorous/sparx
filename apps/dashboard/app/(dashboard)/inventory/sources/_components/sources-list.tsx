@@ -49,7 +49,7 @@ function syncInterval(sec: number): string {
 
 export function SourcesList({ sources, view }: SourcesListProps) {
   const typeText = (s: InventorySource) => (
-    <p className="text-sm text-[var(--color-muted-foreground)]">{TYPE_LABELS[s.type] ?? s.type}</p>
+    <p className="text-base-content text-sm">{TYPE_LABELS[s.type] ?? s.type}</p>
   );
 
   const statusBadge = (s: InventorySource) => (
@@ -59,13 +59,11 @@ export function SourcesList({ sources, view }: SourcesListProps) {
   );
 
   const intervalText = (s: InventorySource) => (
-    <p className="text-sm text-[var(--color-muted-foreground)]">
-      {syncInterval(s.syncIntervalSec)}
-    </p>
+    <p className="text-base-content text-sm">{syncInterval(s.syncIntervalSec)}</p>
   );
 
   const lastSyncText = (s: InventorySource) => (
-    <p className="text-sm text-[var(--color-muted-foreground)]">
+    <p className="text-base-content text-sm">
       {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
     </p>
   );

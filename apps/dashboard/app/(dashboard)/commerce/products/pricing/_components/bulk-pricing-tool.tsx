@@ -481,7 +481,7 @@ function ProductPicker({
       <Field className="max-w-md">
         <FieldLabel>Find products</FieldLabel>
         <div className="flex flex-row items-center gap-2">
-          <Search className="h-4 w-4 text-[var(--color-fg-muted)]" />
+          <Search className="text-base-content h-4 w-4" />
           <FieldControl
             value={query}
             onChange={(e) => setQuery(e.target.value)}

@@ -1,4 +1,11 @@
-import { Dot, getModuleColor, type MarketingModule, Section, SectionHeader } from './primitives';
+import {
+  Dot,
+  getModuleColor,
+  type MarketingModule,
+  Section,
+  SectionHeader,
+  Text,
+} from './primitives';
 
 /**
  * Two more structural devices for the /b2b page, split out of b2b-devices.tsx:
@@ -16,8 +23,6 @@ import { Dot, getModuleColor, type MarketingModule, Section, SectionHeader } fro
  */
 
 const M = getModuleColor('b2b');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── FLEET & SERVICE SCHEDULING (industry-neutral capability) ─────────────────
 export function B2bFleet() {
@@ -42,56 +47,21 @@ export function B2bFleet() {
         headline="Fleet management, and service when the account needs it"
         lede="For accounts that run equipment or vehicles, sparx stores a fleet profile — and, paired with the Scheduling module, books service against it. Fleet is one capability of B2B; a salon-products or office-coffee distributor never touches it, while a parts-and-service supplier leans on it daily."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {points.map((p) => (
           <div
             key={p.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '186px',
-            }}
+            className="bg-base-200 border-base-300 flex min-h-[186px] flex-col gap-3 rounded-xl border p-6"
           >
-            <span
-              className={`${M.bg} bg-soft`}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className={`${M.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
+            <h3 className="text-body-lg text-base-content m-0 font-sans font-medium tracking-[-0.01em]">
               {p.title}
             </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            <Text size={13} className="m-0">
               {p.body}
-            </p>
+            </Text>
           </div>
         ))}
       </div>
@@ -100,7 +70,6 @@ export function B2bFleet() {
 }
 
 interface EngineCol {
-  tag: string;
   title: string;
   body: string;
   points: string[];
@@ -111,7 +80,6 @@ interface EngineCol {
 export function B2bSameEngine() {
   const cols: EngineCol[] = [
     {
-      tag: 'retail · D2C',
       title: 'Your storefront',
       body: 'List price, public catalog, card and wallet checkout — the orders you take from anyone who lands on the site.',
       points: [
@@ -122,7 +90,6 @@ export function B2bSameEngine() {
       accent: 'commerce',
     },
     {
-      tag: 'wholesale · B2B',
       title: 'Your account book',
       body: 'The same catalog, but a logged-in buyer sees their tier price, pays on net terms with a PO, and can request a quote.',
       points: [
@@ -140,28 +107,19 @@ export function B2bSameEngine() {
         headline="Retail and wholesale, one engine underneath"
         lede="B2B isn’t a separate store you keep in sync. It’s a sales channel layered on Commerce — the same products, inventory, checkout, and customer record, with account pricing and terms switched on for the buyers who get them."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
         {cols.map((c) => (
           <EngineColumn key={c.title} col={c} />
         ))}
       </div>
-      <p
-        style={{
-          marginTop: '20px',
-          fontFamily: SANS,
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          maxWidth: '700px',
-        }}
-      >
+      <Text size={14} tone="subtle" className="mt-5 max-w-[700px]">
         B2B requires Commerce — it’s wholesale on top of the commerce engine, so they run as one and
         bill as one. See{' '}
-        <a href="/commerce" className={M.ink} style={{ fontWeight: 500 }}>
+        <a href="/commerce" className={`${M.ink} font-medium`}>
           Commerce
         </a>{' '}
         for the retail side.
-      </p>
+      </Text>
     </Section>
   );
 }
@@ -170,65 +128,23 @@ function EngineColumn({ col }: { col: EngineCol }) {
   const accent = getModuleColor(col.accent);
   return (
     <div
-      className={`${accent.bg} bg-soft`}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        padding: '32px',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-      }}
+      className={`${accent.bg} border-base-300 bg-soft flex flex-col gap-4 rounded-xl border p-8`}
     >
-      <span
-        className={accent.ink}
-        style={{
-          fontFamily: MONO,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-        }}
-      >
-        {col.tag}
-      </span>
-      <h3
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontSize: '24px',
-          fontWeight: 500,
-          letterSpacing: '-0.02em',
-        }}
-      >
+      <h3 className="text-h2 text-base-content m-0 font-sans font-medium tracking-[-0.02em]">
         {col.title}
       </h3>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontSize: '15px',
-          lineHeight: '24px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
+      <Text size={15} className="m-0">
         {col.body}
-      </p>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+      </Text>
+      <ul className="m-0 grid list-none gap-3 p-0">
         {col.points.map((p) => (
-          <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-            <span style={{ paddingTop: '7px', flexShrink: 0 }}>
+          <li key={p} className="flex items-start gap-2.5">
+            <span className="shrink-0 pt-[7px]">
               <Dot color={accent.color} size={7} />
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            <Text as="span" size={14}>
               {p}
-            </span>
+            </Text>
           </li>
         ))}
       </ul>

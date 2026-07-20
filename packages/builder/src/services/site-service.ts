@@ -47,6 +47,7 @@ import { starterFrame, type SiteChromeOptions } from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
+import { invalidatePublishedStylesheet } from './surface-css-service';
 import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
@@ -116,7 +117,8 @@ export function load(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
 // published columns. Runs parallel to the sparx reads until the storefront flips.
 
 /** A page row is published-in-silica once its silica PUBLISHED tree is set. */
-const isSilicaPublished = (r: BuilderPage): boolean => r.silicaPublishedTree != null;
+const isSilicaPublished = (r: Pick<BuilderPage, 'silicaPublishedTree'>): boolean =>
+  r.silicaPublishedTree != null;
 
 /** Strip a leading slash so a stored silica slug (`/`, `/shop`) and the storefront's
  *  path segment (`shop`, or `''` for home) compare on equal footing. */
@@ -136,8 +138,41 @@ function publishedTheme(site: BuilderSite | null): SilicaTheme | null {
   return (site?.silicaPublishedTheme as SilicaTheme | null | undefined) ?? null;
 }
 
+/**
+ * The columns a PUBLISHED page read actually uses (docs/127 §2).
+ *
+ * `builder_pages` carries FOUR Json tree columns — `draft_tree`, `published_tree`,
+ * `silica_draft_tree`, `silica_published_tree` — and these reads were unselected, so
+ * serving one page transferred every tree of every page in the property (drafts
+ * included), deserialized all of it in Prisma, then discarded everything but one
+ * column of one row. On a 40-page site with 150 KB trees that is ~24 MB per request.
+ *
+ * Naming the columns is the whole fix. `silicaPublishedTree` is the only tree here;
+ * the other three never leave the database on a storefront read.
+ */
+const PUBLISHED_PAGE_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+  kind: true,
+  recordType: true,
+  isDefault: true,
+  silicaPublishedTree: true,
+  seoTitle: true,
+  seoDescription: true,
+  canonical: true,
+  ogImage: true,
+  noindex: true,
+  publishedAt: true,
+} as const;
+
+/** A page row narrowed to {@link PUBLISHED_PAGE_SELECT}. The published-page helpers
+ *  take this rather than the full `BuilderPage` so a future column addition cannot
+ *  silently re-widen the read back to every tree. */
+type PublishedPageRow = Pick<BuilderPage, keyof typeof PUBLISHED_PAGE_SELECT>;
+
 /** SEO + lifecycle projection shared by the published page reads. */
-function publishedPageMeta(r: BuilderPage) {
+function publishedPageMeta(r: PublishedPageRow) {
   return {
     seoTitle: r.seoTitle,
     seoDescription: r.seoDescription,
@@ -149,7 +184,7 @@ function publishedPageMeta(r: BuilderPage) {
 }
 
 function toPublishedPage(
-  r: BuilderPage,
+  r: PublishedPageRow,
   symbols: Record<string, SilicaSymbolDef>
 ): PublishedSilicaPageDto {
   return {
@@ -190,18 +225,26 @@ export function getPublishedPageBySlug(
   ctx: PropertyContext,
   slug: string
 ): Promise<PublishedSilicaPageDto | null> {
+  const target = normalizeSlug(slug);
+  // Home has its own reader; an empty target here can never resolve.
+  if (target === '') return Promise.resolve(null);
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
       tx.builderPage.findMany({
-        where: { propertyId: ctx.propertyId },
+        // Match in the WHERE clause, not in JS over every page in the property. Slugs
+        // are stored either `/`-prefixed or bare depending on their vintage, so both
+        // forms are queried rather than normalized on write — normalizing would need a
+        // backfill migration, and an `IN` on the `(tenant, property, slug)` unique index
+        // is exact and index-backed regardless.
+        where: { propertyId: ctx.propertyId, slug: { in: [target, `/${target}`] } },
+        select: PUBLISHED_PAGE_SELECT,
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    const target = normalizeSlug(slug);
-    const row = pages
-      .filter(isSilicaPublished)
-      .find((r) => normalizeSlug(r.slug) === target && target !== '');
+    // The published-tree check stays in JS: a Json column's NULL test needs Prisma's
+    // runtime sentinel and this module imports Prisma as a type only.
+    const row = pages.find(isSilicaPublished);
     if (!row) return null;
     return toPublishedPage(row, publishedSymbols(site));
   });
@@ -213,12 +256,14 @@ export function getPublishedHome(ctx: PropertyContext): Promise<PublishedSilicaP
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
       tx.builderPage.findMany({
-        where: { propertyId: ctx.propertyId },
+        // Home is the slugless page: stored as NULL (a sparx-seeded home), '' or '/'.
+        where: { propertyId: ctx.propertyId, OR: [{ slug: null }, { slug: { in: ['', '/'] } }] },
+        select: PUBLISHED_PAGE_SELECT,
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    const row = pages.filter(isSilicaPublished).find((r) => normalizeSlug(r.slug) === '');
+    const row = pages.find(isSilicaPublished);
     if (!row) return null;
     return toPublishedPage(row, publishedSymbols(site));
   });
@@ -246,6 +291,7 @@ export function getPublishedByRecordType(
     const [rows, site] = await Promise.all([
       tx.builderPage.findMany({
         where: { recordType, kind: 'collection', propertyId: ctx.propertyId },
+        select: PUBLISHED_PAGE_SELECT,
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
@@ -322,16 +368,29 @@ export interface SyncOptions {
   allowReplace?: boolean;
 }
 
+/** What a successful {@link sync} hands back: the post-write `updatedAt` for every
+ *  page in the property, so the caller can advance its optimistic-concurrency map. */
+export interface SiteSyncResult {
+  pageUpdatedAt: Record<string, string>;
+}
+
 export async function sync(
   ctx: PropertyContext,
   rawInput: unknown,
   opts: SyncOptions = {}
-): Promise<void> {
+): Promise<SiteSyncResult> {
   const input = SiteSyncInput.parse(rawInput);
-  await withTenant(ctx, async (tx) => {
+  return withTenant(ctx, async (tx) => {
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const silicaRows = allPages.filter(isSilica);
-    const inputIds = new Set(input.pages.map((p) => p.id));
+
+    // The COMPLETE page roster in site order (docs/126 Phase 0). When the caller sends
+    // `pageIds`, `input.pages` carries only the bodies that actually changed and the
+    // roster drives deletion + ordering. Without it, `input.pages` IS the roster —
+    // the original whole-site semantics every other caller still uses.
+    const roster = input.pageIds ?? input.pages.map((p) => p.id);
+    const inputIds = new Set(roster);
+    const positionOf = new Map(roster.map((id, i) => [id, i] as const));
 
     // ── Clobber guard ────────────────────────────────────────────────────────
     // This reconcile DELETES every stored page missing from the payload, published
@@ -354,11 +413,11 @@ export async function sync(
       !opts.allowReplace &&
       wouldClobberSite(
         silicaRows.map((r) => r.id),
-        input.pages.map((p) => p.id)
+        roster
       )
     ) {
       throw new BuilderConflictError(
-        `Refusing to sync: none of the ${input.pages.length} incoming page(s) match any of ` +
+        `Refusing to sync: none of the ${roster.length} incoming page(s) match any of ` +
           `the ${silicaRows.length} stored page(s) for this site, so this write would delete ` +
           `every existing page. This usually means the editor loaded a starter or a different ` +
           `site instead of yours. Reload the editor; if you meant to replace the whole site, ` +
@@ -371,14 +430,42 @@ export async function sync(
     // would `create()` a second row with the same id and collide on the PK.
     const existingById = new Map(allPages.map((r) => [r.id, r] as const));
 
+    // ── Optimistic-concurrency precondition (docs/126 Phase 1) ───────────────
+    // Reject rather than overwrite when a page moved under the author. Checked for
+    // EVERY page being written, before ANY of them is written, so a conflict leaves
+    // the site untouched instead of half-applied.
+    //
+    // Callers that legitimately own the whole site (the MCP writers, the blueprint
+    // installer) send no map and keep last-write-wins.
+    if (input.pageUpdatedAt) {
+      const stale = input.pages.filter((p) => {
+        const seen = input.pageUpdatedAt?.[p.id];
+        const row = existingById.get(p.id);
+        // A page the client has never seen (no entry) or that does not exist yet is
+        // not a conflict — it is a create, or a caller that simply didn't track it.
+        if (!seen || !row) return false;
+        return row.updatedAt.getTime() > new Date(seen).getTime();
+      });
+      if (stale.length > 0) {
+        const names = stale.map((p) => p.name).join(', ');
+        throw new BuilderConflictError(
+          `Someone else saved changes to ${stale.length === 1 ? 'this page' : 'these pages'} ` +
+            `while you were editing: ${names}. Reload the editor to pick up their version — ` +
+            `saving now would overwrite it.`,
+          'pages'
+        );
+      }
+    }
+
     // Deletes first (a removed page frees its slug before any create reuses it).
     for (const r of silicaRows) {
       if (!inputIds.has(r.id)) await tx.builderPage.delete({ where: { id: r.id } });
     }
 
-    // Upsert each page; `position` follows the site's page order.
-    for (let i = 0; i < input.pages.length; i += 1) {
-      const p = input.pages[i]!;
+    // Upsert each page whose body was sent. `position` comes from the ROSTER, not the
+    // loop index — with a partial payload the index is meaningless.
+    for (const p of input.pages) {
+      const i = positionOf.get(p.id) ?? 0;
       if (existingById.has(p.id)) {
         const existing = existingById.get(p.id)!;
         // Only stamp `slug` when it actually changed under normalization — a
@@ -419,6 +506,19 @@ export async function sync(
       }
     }
 
+    // Reordering changes no page BODY, so with a partial payload the pages that moved
+    // may not be in `input.pages` at all. Their position still has to follow the
+    // roster, or a drag in the page list would appear to do nothing after a reload.
+    if (input.pageIds) {
+      const sent = new Set(input.pages.map((p) => p.id));
+      for (const row of silicaRows) {
+        if (sent.has(row.id)) continue;
+        const next = positionOf.get(row.id);
+        if (next === undefined || next === row.position) continue;
+        await tx.builderPage.update({ where: { id: row.id }, data: { position: next } });
+      }
+    }
+
     // Frame → the active layout (the chrome row).
     const layout = await activeLayoutTx(tx, ctx);
     if (input.frame) {
@@ -449,6 +549,18 @@ export async function sync(
         ...symbolsData,
       },
     });
+
+    // Hand back each page's post-write `updatedAt` so the client can advance its
+    // precondition map (docs/126 Phase 1). Without this the client's timestamps would
+    // go stale the instant it saved, and its own next write would look like a conflict
+    // against itself.
+    const after = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { id: true, updatedAt: true },
+    });
+    return {
+      pageUpdatedAt: Object.fromEntries(after.map((r) => [r.id, r.updatedAt.toISOString()])),
+    };
   });
 }
 
@@ -624,10 +736,12 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
  *  and the site-global theme + symbols. The storefront reads only the published
  *  columns and re-renders on read. */
 export async function publish(ctx: PropertyContext): Promise<void> {
+  let publishedPageCount = 0;
   await withTenant(ctx, async (tx) => {
     const now = new Date();
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const pages = allPages.filter(isSilica);
+    publishedPageCount = pages.length;
     for (const r of pages) {
       await tx.builderPage.update({
         where: { id: r.id },
@@ -670,10 +784,18 @@ export async function publish(ctx: PropertyContext): Promise<void> {
       diff: { after: { pages: pages.length } },
     });
   });
+  // The compiled Surface stylesheet is memoized per property (docs/127 §4). Publishing
+  // is the only thing that changes a PUBLISHED tree, so this is the invalidation point —
+  // without it a newly published class renders unstyled until the TTL backstop lapses.
+  invalidatePublishedStylesheet(ctx);
   await publishBuilderEvent({
     tenantId: ctx.tenantId,
     topic: 'builder.page.published',
-    payload: { pageId: ctx.propertyId, name: 'site' },
+    // A whole-site publish, not one page — so it carries the propertyId and the page
+    // count, NOT a `pageId`. It previously put `ctx.propertyId` in a field named
+    // `pageId` (docs/127 §6), which was harmless only for as long as nothing consumed
+    // it; cache-revalidation-worker now does.
+    payload: { propertyId: ctx.propertyId, scope: 'site', pages: publishedPageCount },
   });
 }
 
@@ -729,6 +851,24 @@ export async function upsertPage(
   return { id };
 }
 
+/** Replace ONE page's body with a COMPLETE root, leaving the rest of the site
+ *  untouched. The blueprint update path needs this: it three-way-merges a whole
+ *  stored root and must write that root back verbatim. `upsertPage` cannot serve —
+ *  it takes loose `sections` and re-wraps them through `pageBody` + `stampTree`,
+ *  which would both double-wrap an already-complete body and re-mint every node id
+ *  (severing the correspondence the merge keys on). */
+export async function setPageRoot(
+  ctx: PropertyContext,
+  pageId: string,
+  root: SilicaNode
+): Promise<void> {
+  const current = await load(ctx);
+  if (!current) return;
+  const pages = current.pages.map((p) => (p.id === pageId ? { ...p, root } : p));
+  if (pages.every((p, i) => p === current.pages[i])) return; // no such page — nothing to write
+  await sync(ctx, { ...current, pages });
+}
+
 /** Remove ONE page, leaving the rest of the site untouched. A silica `Site`
  *  cannot have zero pages, so removing the last one is refused with a clear
  *  message rather than left to fail inside `sync`'s schema validation. */
@@ -768,6 +908,99 @@ export async function setTheme(
     theme: input.theme,
     ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
   });
+}
+
+// ── Blueprint install (docs/54 + docs/118 Phase 3) ────────────────────────────
+
+/** One page a blueprint install lays down. No `id` — a manifest cannot know
+ *  runtime UUIDs (the handle-not-id rule), so `installSite` mints one per page.
+ *  `root` is the page's FULL silica body tree, taken verbatim. */
+export interface InstallPageInput {
+  name: string;
+  slug: string;
+  root: SilicaNode;
+  kind?: string;
+  recordType?: string | null;
+  isDefault?: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  canonical?: string | null;
+  ogImage?: string | null;
+  noindex?: boolean;
+}
+
+export interface InstallSiteInput {
+  pages: InstallPageInput[];
+  frame?: { root: SilicaNode } | null;
+  theme?: SilicaTheme | null;
+  symbols?: Record<string, unknown> | null;
+}
+
+/**
+ * Lay a whole authored site down over this property — the blueprint install seam.
+ *
+ * Deliberately NOT `stampTree`d. `stampTree` mints a fresh id on every node, which
+ * would sever the correspondence the blueprint UPDATE path merges on (docs/55 §7.2
+ * keys by node id across versions), so a re-stamped install would make every later
+ * template update look like "the author replaced every node". The manifest's ids
+ * are authored, stable, and written through unchanged. Page ROW ids are different —
+ * those must be unique per property, so they are minted here.
+ *
+ * `allowReplace` is set on purpose: an install intentionally swaps the whole site,
+ * which is exactly the wholesale replacement `sync`'s clobber guard exists to stop
+ * on the editor path. This is the sanctioned caller.
+ *
+ * The per-page domain columns (`kind`/`recordType`/`isDefault`/SEO) are applied
+ * AFTER the reconcile: `sync` speaks silica's flat `Page` shape, which does not
+ * model them, so a page created by `sync` alone would be a plain singleton with no
+ * SEO — a collection template would silently never bind to its recordType.
+ */
+export async function installSite(
+  ctx: PropertyContext,
+  input: InstallSiteInput
+): Promise<{ pageIds: string[] }> {
+  const pages = input.pages.map((p) => ({ ...p, id: defaultMakeId() }));
+
+  await sync(
+    ctx,
+    {
+      pages: pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
+      ...(input.frame ? { frame: input.frame } : {}),
+      ...(input.theme ? { theme: input.theme } : {}),
+      ...(input.symbols ? { symbols: input.symbols } : {}),
+    },
+    { allowReplace: true }
+  );
+
+  await withTenant(ctx, async (tx) => {
+    for (const p of pages) {
+      const isCollection = p.kind === 'collection';
+      await tx.builderPage.update({
+        where: { id: p.id },
+        data: {
+          ...(p.kind ? { kind: p.kind } : {}),
+          recordType: p.recordType ?? null,
+          ...(p.seoTitle !== undefined ? { seoTitle: p.seoTitle } : {}),
+          ...(p.seoDescription !== undefined ? { seoDescription: p.seoDescription } : {}),
+          ...(p.canonical !== undefined ? { canonical: p.canonical } : {}),
+          ...(p.ogImage !== undefined ? { ogImage: p.ogImage } : {}),
+          ...(p.noindex !== undefined ? { noindex: p.noindex } : {}),
+        },
+      });
+      // A recordType default is exclusive per (property, recordType) — clear any
+      // incumbent before promoting this one, or two templates both claim the type
+      // and which one renders becomes row-order luck.
+      if (isCollection && p.isDefault && p.recordType) {
+        await tx.builderPage.updateMany({
+          where: { propertyId: ctx.propertyId, recordType: p.recordType, id: { not: p.id } },
+          data: { isDefault: false },
+        });
+        await tx.builderPage.update({ where: { id: p.id }, data: { isDefault: true } });
+      }
+    }
+  });
+
+  return { pageIds: pages.map((p) => p.id) };
 }
 
 /** The property's PUBLISHED site — pages + frame + theme + symbols, in one read

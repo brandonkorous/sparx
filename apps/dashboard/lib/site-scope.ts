@@ -57,7 +57,12 @@ export function resolvePropertyFilter(
   scope: SiteScope,
   siteParam: string | undefined
 ): string | undefined {
+  // 'all' is sent through VERBATIM rather than collapsed to undefined. api-rest
+  // now reads an ABSENT `property` as "the caller's active site" (the
+  // x-sparx-property-id header), because leaving it absent meant every client
+  // that forgot the parameter silently got the whole tenant. So "All sites" has
+  // to say so out loud, or this view would quietly narrow to one site.
   if (!scope.multiSite) return undefined;
-  if (siteParam === 'all') return undefined;
+  if (siteParam === 'all') return 'all';
   return siteParam ?? scope.activePropertyId;
 }

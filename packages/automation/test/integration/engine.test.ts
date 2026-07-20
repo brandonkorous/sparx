@@ -16,6 +16,7 @@ import { handleTrigger, installBuiltins, runAutomationTick, runScheduleTick } fr
 import {
   createAutomation,
   setAutomationStatus,
+  updateAutomation,
   type ServiceCtx,
 } from '../../src/service/automation-service';
 import {
@@ -26,6 +27,7 @@ import {
   makeDeps,
   runsFor,
   seedCustomer,
+  seedProperty,
 } from '../helpers';
 
 const deps = makeDeps();
@@ -363,6 +365,173 @@ describe('engine — ingest + execution', () => {
     expect(run?.status).toBe('completed');
     expect(run?.steps[0]?.status).toBe('gated');
     expect(run?.steps[0]?.error).toBe('webhook_private_host');
+  });
+});
+
+// The docs/131 §3.1 defect, as a test. One tenant ("Korous Family Inc.") runs two
+// unrelated businesses — a machine shop and a donut shop. Before `property_id`,
+// every rule fired on every business's records, so a welcome email written for
+// the donut shop reached people who bought brake pads.
+//
+// These assert the SKIP as hard as the fire. A scoping fix that only proves the
+// happy path proves nothing: the whole defect was extra runs, not missing ones.
+describe('engine — site scoping', () => {
+  it('does not fire a site-scoped rule on another site’s record', async () => {
+    const t = await tenant();
+    const parts = await seedProperty(t, 'Bobs Parts');
+    const donuts = await seedProperty(t, 'Savory Donuts');
+
+    const autoId = await activeAutomation(t, {
+      name: 'donut welcome',
+      propertyId: donuts,
+      trigger: eventTrigger,
+      actions: [{ type: 'crm.add_tag', config: { tag: 'welcome' } }],
+    });
+
+    // A parts customer. Same tenant, different business.
+    const partsCustomer = await seedCustomer(t, { propertyId: parts });
+    await handleTrigger(evt(t, partsCustomer), deps);
+    expect(await runsFor(autoId)).toHaveLength(0);
+
+    // The donut shop's own customer still fires it.
+    const donutCustomer = await seedCustomer(t, { propertyId: donuts });
+    await handleTrigger(evt(t, donutCustomer), deps);
+    const runs = await runsFor(autoId);
+    expect(runs).toHaveLength(1);
+    // The run records WHERE it acted, which is what makes "what ran on this
+    // site" answerable.
+    expect(runs[0]?.propertyId).toBe(donuts);
+  });
+
+  it('fires a tenant-wide rule on every site, stamping the site it acted on', async () => {
+    const t = await tenant();
+    const parts = await seedProperty(t, 'Bobs Parts');
+    const donuts = await seedProperty(t, 'Savory Donuts');
+
+    // No propertyId — deliberately tenant-wide.
+    const autoId = await activeAutomation(t, {
+      name: 'tenant-wide tag',
+      trigger: eventTrigger,
+      actions: [{ type: 'crm.add_tag', config: { tag: 'all' } }],
+    });
+
+    await handleTrigger(evt(t, await seedCustomer(t, { propertyId: parts })), deps);
+    await handleTrigger(evt(t, await seedCustomer(t, { propertyId: donuts })), deps);
+
+    const runs = await runsFor(autoId);
+    expect(runs).toHaveLength(2);
+    // Stamped from the EVENT, not the rule — a tenant-wide rule still produces
+    // per-site runs.
+    expect(new Set(runs.map((r) => r.propertyId))).toEqual(new Set([parts, donuts]));
+  });
+
+  it('withholds a site-scoped rule when the record has no site', async () => {
+    const t = await tenant();
+    const donuts = await seedProperty(t, 'Savory Donuts');
+
+    const scoped = await activeAutomation(t, {
+      name: 'donut only',
+      propertyId: donuts,
+      trigger: eventTrigger,
+      actions: [{ type: 'crm.add_tag', config: {} }],
+    });
+    const wide = await activeAutomation(t, {
+      name: 'tenant wide',
+      trigger: eventTrigger,
+      actions: [{ type: 'crm.add_tag', config: {} }],
+    });
+
+    // A tenant-level contact — imported, or created over MCP. Its site is
+    // genuinely unknown, and an unknown site must not be treated as a match:
+    // a rule that quietly doesn't run is recoverable, one that emails another
+    // business's customers is not.
+    const orphan = await seedCustomer(t);
+    await handleTrigger(evt(t, orphan), deps);
+
+    expect(await runsFor(scoped)).toHaveLength(0);
+    expect(await runsFor(wide)).toHaveLength(1);
+  });
+
+  it('re-scoping takes effect immediately, without a publish', async () => {
+    const t = await tenant();
+    const parts = await seedProperty(t, 'Bobs Parts');
+    const donuts = await seedProperty(t, 'Savory Donuts');
+    const ctx: ServiceCtx = { tenantId: t };
+
+    const autoId = await activeAutomation(t, {
+      name: 'mis-scoped',
+      propertyId: parts,
+      trigger: eventTrigger,
+      actions: [{ type: 'crm.add_tag', config: {} }],
+    });
+
+    // Caught firing on the wrong business — corrected in place. Scope is a
+    // safety boundary, so unlike an edit to the rule document it must NOT wait
+    // in a draft for someone to press Publish.
+    await updateAutomation(ctx, autoId, { propertyId: donuts });
+
+    await handleTrigger(evt(t, await seedCustomer(t, { propertyId: parts })), deps);
+    expect(await runsFor(autoId)).toHaveLength(0);
+
+    await handleTrigger(evt(t, await seedCustomer(t, { propertyId: donuts })), deps);
+    expect(await runsFor(autoId)).toHaveLength(1);
+  });
+
+  it('rejects a site belonging to another tenant', async () => {
+    const mine = await tenant();
+    const theirs = await tenant();
+    const theirSite = await seedProperty(theirs, 'Someone Elses Shop');
+
+    // The FK proves the row exists, not that it is yours. RLS on the tenant tx
+    // is what makes it invisible — and the error must not distinguish "real but
+    // not yours" from "no such site", or it becomes an id oracle.
+    await expect(
+      createAutomation(
+        { tenantId: mine },
+        {
+          name: 'cross-tenant scope',
+          propertyId: theirSite,
+          trigger: eventTrigger,
+          actions: [{ type: 'crm.add_tag', config: {} }],
+        }
+      )
+    ).rejects.toMatchObject({ code: 'PROPERTY_NOT_FOUND' });
+  });
+
+  it('scopes a scheduled sweep to its own site', async () => {
+    const t = await tenant();
+    const parts = await seedProperty(t, 'Bobs Parts');
+    const donuts = await seedProperty(t, 'Savory Donuts');
+
+    // A scan returns the tenant's whole customer set, so this is the path where
+    // a missing filter is most obviously wrong — and it reads through the
+    // SECURITY DEFINER helper rather than Prisma, which is why the column had to
+    // be threaded through the function too.
+    const autoId = await activeAutomation(t, {
+      name: 'donut win-back',
+      propertyId: donuts,
+      trigger: {
+        kind: 'schedule',
+        schedule: { cadence: 'interval', everyMinutes: 1 },
+        predicate: {
+          entity: 'customer',
+          where: {
+            logic: 'AND',
+            conditions: [{ field: 'customer.type', operator: 'eq', value: 'fleet' }],
+          },
+        },
+      },
+      actions: [{ type: 'crm.add_tag', config: {} }],
+    });
+
+    await seedCustomer(t, { type: 'fleet', propertyId: parts });
+    await seedCustomer(t, { type: 'fleet', propertyId: donuts });
+
+    await runScheduleTick(deps, appDb, new Date(Date.UTC(2026, 0, 1, 0, 0)));
+
+    const runs = await runsFor(autoId);
+    expect(runs).toHaveLength(1);
+    expect(runs[0]?.propertyId).toBe(donuts);
   });
 });
 

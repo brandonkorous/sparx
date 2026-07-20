@@ -48,149 +48,54 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
   return (
     <a
       href={`/market/${item.category}/${item.slug}`}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '8px',
-        overflow: 'hidden',
-        textDecoration: 'none',
-        color: 'inherit',
-      }}
+      className="border-base-300 bg-base-100 flex w-full flex-col overflow-hidden rounded-lg border text-inherit no-underline"
     >
       {/* Preview */}
-      <div
-        style={{
-          aspectRatio: '16 / 10',
-          width: '100%',
-          backgroundColor: 'var(--color-base-200)',
-          borderBottom: '1px solid var(--color-base-300)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div className="bg-base-200 border-base-300 flex aspect-[16/10] w-full items-center justify-center border-b">
         {preview ? (
           /* Hot-linked external/tenant preview (docs/54); next/image gains little here. */
-          <img
-            src={preview}
-            alt={`${item.name} preview`}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          <img src={preview} alt={`${item.name} preview`} className="h-full w-full object-cover" />
         ) : (
+          // Decorative placeholder puck — the listing's category hue is catalog
+          // data (a JS value), so the fill stays inline.
           <span
             aria-hidden
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '9999px',
-              backgroundColor: accent,
-              opacity: 0.18,
-            }}
+            className="h-10 w-10 rounded-full opacity-[0.18]"
+            style={{ backgroundColor: accent }}
           />
         )}
       </div>
 
       {/* Body */}
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '20px' }}>
+      <div className="flex flex-1 flex-col p-5">
         {tag ? (
           <span
+            className="text-micro mb-3 inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-[3px] font-medium tracking-[0.02em]"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              alignSelf: 'flex-start',
-              padding: '3px 9px',
-              borderRadius: '9999px',
               backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '11px',
-              letterSpacing: '0.02em',
               color: accent,
-              marginBottom: '12px',
             }}
           >
             {tag}
           </span>
         ) : null}
 
-        <h3
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 500,
-            fontSize: '18px',
-            letterSpacing: '-0.015em',
-            lineHeight: '24px',
-            color: 'var(--color-base-content)',
-            margin: 0,
-          }}
-        >
+        <h3 className="text-base-content text-lede m-0 font-medium tracking-[-0.015em]">
           {item.name}
         </h3>
 
         {item.tagline ? (
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              lineHeight: '21px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              paddingTop: '6px',
-              margin: 0,
-            }}
-          >
-            {item.tagline}
-          </p>
+          <p className="text-ink-muted text-small m-0 pt-1.5">{item.tagline}</p>
         ) : null}
 
-        {hint ? (
-          <p
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              paddingTop: '12px',
-              margin: 0,
-            }}
-          >
-            {hint}
-          </p>
-        ) : null}
+        {hint ? <p className="text-ink-subtle text-mini m-0 pt-3 font-mono">{hint}</p> : null}
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            marginTop: 'auto',
-            paddingTop: '20px',
-          }}
-        >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+          <span className="text-ink-subtle text-caption inline-flex items-center gap-1.5">
             {item.publisher.displayName}
             {item.publisher.verified ? <span style={{ color: accent }}>✓</span> : null}
           </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '13px',
-              color: 'var(--color-base-content)',
-            }}
-          >
+          <span className="text-base-content text-caption font-medium">
             {priceLabel(item.price)}
           </span>
         </div>

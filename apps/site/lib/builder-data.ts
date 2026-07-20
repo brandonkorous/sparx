@@ -20,7 +20,7 @@ import {
   type DataSources,
 } from '@sparx/builder-schemas';
 
-import { getEntryById, publicGet, type ApiEntry, type BlogPostBody } from './content';
+import { getEntriesByIds, publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
@@ -148,20 +148,20 @@ function resolveEntryBodyAssets(
 /** Hydrate the CMS entries a tree PINS by id (docs/98 Pillar 7 record-display) into
  *  `__pins['cms:<id>']` — the entry body with asset fields resolved, so a section
  *  pinned to a blog post reads `item.title` / `item.body` / `item.featuredImage`.
- *  One fetch per pin; a missing/unpublished entry simply doesn't render. */
+ *  One batched fetch for all pins; a missing/unpublished entry doesn't render. */
 async function loadCmsPins(tenantSlug: string, tree: BuilderNode): Promise<DataSources> {
   const ids = collectBindingRefs(tree)
     .entities.filter((e) => e.entity === 'cms')
     .map((e) => e.id);
   if (ids.length === 0) return {};
+  // ONE request for every pin (docs/127 §7), matching how the commerce loader batches
+  // its product pins. This was a fetch per pin.
+  const entries = await getEntriesByIds(tenantSlug, ids);
   const pins: Record<string, unknown> = {};
-  await Promise.all(
-    ids.map((id) =>
-      getEntryById(tenantSlug, id).then((entry) => {
-        if (entry) pins[entityPinKey('cms', id)] = resolveEntryBodyAssets(entry.body, tenantSlug);
-      })
-    )
-  );
+  for (const id of ids) {
+    const entry = entries.get(id);
+    if (entry) pins[entityPinKey('cms', id)] = resolveEntryBodyAssets(entry.body, tenantSlug);
+  }
   return Object.keys(pins).length > 0 ? { [PINS_ROOT]: pins } : {};
 }
 

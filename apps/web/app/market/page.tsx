@@ -35,27 +35,13 @@ export default async function MarketplaceHomePage() {
   return (
     <>
       <Section surface="page" padding="xl">
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '32px',
-            alignItems: 'flex-start',
-          }}
-        >
+        <div className="flex flex-col items-start gap-8">
           <SectionHeader
             accent="var(--color-primary)"
             headlineSize={88}
             headline={
               <>
-                Everything to launch{' '}
-                <span
-                  style={{
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  in one place
-                </span>
+                Everything to launch <span className="text-ink-muted">in one place</span>
               </>
             }
             lede={
@@ -65,9 +51,9 @@ export default async function MarketplaceHomePage() {
               </>
             }
           />
-          <div className="mkt-cluster" style={{ gap: '12px' }}>
+          <div className="flex flex-wrap items-center gap-3">
             <a href={signUpHref()}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+              <Button color="neutral" size="lg">
                 Start free
               </Button>
             </a>
@@ -81,7 +67,7 @@ export default async function MarketplaceHomePage() {
       </Section>
 
       <Section id="categories" surface="surface" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        <div className="flex flex-col gap-10">
           <SectionHeader
             accent="var(--color-primary)"
             headlineSize={48}
@@ -94,34 +80,20 @@ export default async function MarketplaceHomePage() {
 
       {featured.items.length > 0 ? (
         <Section surface="page" padding="lg">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-                gap: '16px',
-                flexWrap: 'wrap',
-              }}
-            >
+          <div className="flex flex-col gap-10">
+            <div className="flex flex-wrap items-end justify-between gap-4">
               <Display as="h2" size={40}>
                 Featured blueprints
                 <Spark />
               </Display>
               <a
                 href="/market/blueprints"
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  color: 'var(--color-primary)',
-                  textDecoration: 'none',
-                }}
+                className="text-primary text-small font-medium no-underline"
               >
                 See all {featured.total} →
               </a>
             </div>
-            <div className="mkt-grid-3-2-1">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {featured.items.map((item) => (
                 <ListingCard key={item.id} item={item} />
               ))}
@@ -131,14 +103,7 @@ export default async function MarketplaceHomePage() {
       ) : null}
 
       <Section surface="dark" padding="lg">
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: '24px',
-          }}
-        >
+        <div className="flex flex-col items-start gap-6">
           <SectionHeader
             invert
             accent="var(--color-primary)"
@@ -152,7 +117,7 @@ export default async function MarketplaceHomePage() {
             lede="Sign up, install, and your themed site, products, content, and emails are waiting as drafts. Review, customize, publish."
           />
           <a href={signUpHref()}>
-            <Button size="lg" style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A' }}>
+            <Button color="neutral" size="lg">
               Start free
             </Button>
           </a>

@@ -191,6 +191,28 @@ function CardGridSkeleton() {
   );
 }
 
+/** An article-body skeleton — the shape of written prose: a couple of paragraph
+ *  blocks, a subheading, and a short list. Deliberately ragged (the last line of each
+ *  block runs short) so it reads as text rather than as a loading state. */
+function ArticleBodySkeleton() {
+  return (
+    <div className="space-y-6">
+      {[0, 1].map((block) => (
+        <div key={block} className="space-y-2.5">
+          <Bar />
+          <Bar />
+          <Bar w="w-4/5" />
+        </div>
+      ))}
+      <div className="space-y-2.5 pt-2">
+        <div className="bg-base-content/20 h-4 w-1/3 rounded" />
+        <Bar />
+        <Bar w="w-3/4" />
+      </div>
+    </div>
+  );
+}
+
 /** The tenant's real brand mark on the canvas — logo and/or name, exactly as the
  *  storefront's `site.brand` core renders it.
  *
@@ -284,6 +306,12 @@ function renderHostNodeInner(node: HostNode, root: unknown): React.ReactNode {
       return (
         <CoreFrame label={label}>
           <AuthFormSkeleton />
+        </CoreFrame>
+      );
+    case HOST_KEYS.cmsArticleBody:
+      return (
+        <CoreFrame label={label}>
+          <ArticleBodySkeleton />
         </CoreFrame>
       );
     default:

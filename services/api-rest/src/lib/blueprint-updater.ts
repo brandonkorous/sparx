@@ -18,14 +18,14 @@ import type { FastifyBaseLogger } from 'fastify';
 
 import { withTenant, type Prisma } from '@sparx/db';
 import { savedThemeService, publishService } from '@sparx/sitebuilder';
-import { componentService, emailService, layoutService, pageService } from '@sparx/builder';
+import { emailService, pageService, siteService } from '@sparx/builder';
 import {
   categoryService,
   collectionService,
   productService,
   variantService,
 } from '@sparx/commerce';
-import type { BuilderNode } from '@sparx/builder-schemas';
+import type { SilicaNode } from '@sparx/builder-schemas';
 import {
   parseTypeSchema,
   resolveType,
@@ -147,12 +147,10 @@ function mergeTreeArtifact(
   incoming: Json,
   resolve: Resolver
 ): MergeResult {
-  const split = (
-    c: Json | undefined
-  ): { rest: Json | undefined; tree: BuilderNode | undefined } => {
+  const split = (c: Json | undefined): { rest: Json | undefined; tree: SilicaNode | undefined } => {
     if (!c) return { rest: undefined, tree: undefined };
     const { tree, ...rest } = c;
-    return { rest, tree: tree as BuilderNode | undefined };
+    return { rest, tree: tree as SilicaNode | undefined };
   };
   const b = split(base);
   const cu = split(current);
@@ -385,22 +383,20 @@ const brandHandler: KindHandler = {
 
 // ── tree handlers: layout · page · email · component (docs/55 §7.2) ─────────────
 
-const layoutHandler: KindHandler = {
-  kind: 'layout',
+/** The site chrome. There is no layout ROW to address any more — the frame is part
+ *  of the property's silica site — so this reads and writes it through siteService
+ *  rather than by refId (which is null for a frame artifact). */
+const frameHandler: KindHandler = {
+  kind: 'frame',
   merge: mergeTreeArtifact,
-  async extractCurrent(env, artifact) {
-    if (!artifact.refId) return null;
-    const dto = await layoutService.get(env.propCtx, artifact.refId).catch(() => null);
-    if (!dto) return null;
-    return compact({ name: dto.name, tree: dto.tree });
+  async extractCurrent(env) {
+    const site = await siteService.load(env.propCtx).catch(() => null);
+    if (!site?.frame) return null;
+    return compact({ tree: site.frame.root });
   },
-  async writeMerged(env, artifact, merged) {
-    if (!artifact.refId) return;
-    await layoutService.update(
-      env.propCtx,
-      artifact.refId,
-      definedOnly({ name: merged.name, tree: merged.tree })
-    );
+  async writeMerged(env, _artifact, merged) {
+    if (!merged.tree) return;
+    await siteService.setFrame(env.propCtx, { root: merged.tree as SilicaNode });
   },
 };
 
@@ -411,12 +407,16 @@ const pageHandler: KindHandler = {
     if (!artifact.refId) return null;
     const dto = await pageService.get(env.propCtx, artifact.refId).catch(() => null);
     if (!dto) return null;
+    // The BODY comes from the silica site, not the row's legacy `tree` column —
+    // that is what the tenant edits and what the storefront serves.
+    const site = await siteService.load(env.propCtx).catch(() => null);
+    const root = site?.pages.find((pg) => pg.id === artifact.refId)?.root;
     return compact({
       name: dto.name,
       kind: dto.kind,
       recordType: dto.recordType,
       slug: dto.slug,
-      tree: dto.tree,
+      tree: root,
       seoTitle: dto.seoTitle ?? undefined,
       seoDescription: dto.seoDescription ?? undefined,
       canonical: dto.canonical ?? undefined,
@@ -427,12 +427,12 @@ const pageHandler: KindHandler = {
   async writeMerged(env, artifact, merged) {
     if (!artifact.refId) return;
     // kind/recordType/slug are page identity — never merge-written; only content + SEO.
+    // The body goes to the silica column; the row keeps the name/SEO metadata.
     await pageService.update(
       env.propCtx,
       artifact.refId,
       definedOnly({
         name: merged.name,
-        tree: merged.tree,
         seoTitle: merged.seoTitle,
         seoDescription: merged.seoDescription,
         canonical: merged.canonical,
@@ -440,6 +440,9 @@ const pageHandler: KindHandler = {
         noindex: merged.noindex,
       })
     );
+    if (merged.tree) {
+      await siteService.setPageRoot(env.propCtx, artifact.refId, merged.tree as SilicaNode);
+    }
   },
 };
 
@@ -450,61 +453,16 @@ const emailHandler: KindHandler = {
     if (!artifact.refId) return null;
     const dto = await emailService.get(env.ctx, artifact.refId).catch(() => null);
     if (!dto) return null;
-    return compact({
-      name: dto.name,
-      subject: dto.subject ?? undefined,
-      preheader: dto.preheader ?? undefined,
-      tree: dto.tree,
-    });
+    return compact({ name: dto.name, doc: dto.silicaDoc });
   },
   async writeMerged(env, artifact, merged) {
     if (!artifact.refId) return;
+    if (merged.doc) await emailService.syncSilica(env.ctx, artifact.refId, { doc: merged.doc });
     await emailService.update(
       env.ctx,
       artifact.refId,
       definedOnly({
         name: merged.name,
-        subject: merged.subject,
-        preheader: merged.preheader,
-        tree: merged.tree,
-      })
-    );
-  },
-};
-
-const componentHandler: KindHandler = {
-  kind: 'component',
-  merge: mergeTreeArtifact,
-  async extractCurrent(env, artifact) {
-    // Components correlate by KEY (the naturalKey); the service reads the LATEST version.
-    const dto = await componentService.get(env.ctx, artifact.naturalKey).catch(() => null);
-    if (!dto) return null;
-    return compact({
-      key: artifact.naturalKey,
-      name: dto.name,
-      group: dto.group,
-      icon: dto.icon,
-      description: dto.description ?? undefined,
-      surfaces: dto.surfaces,
-      tree: dto.tree,
-      propSpec: dto.propSpec,
-    });
-  },
-  async writeMerged(env, artifact, merged) {
-    // A tree/propSpec change creates a NEW component version (docs/53); placements
-    // stay pinned until the tenant re-pins via the component UI — we never auto-re-pin
-    // (docs/55 U2).
-    await componentService.update(
-      env.ctx,
-      artifact.naturalKey,
-      definedOnly({
-        name: merged.name,
-        group: merged.group,
-        icon: merged.icon,
-        description: merged.description,
-        surfaces: merged.surfaces,
-        tree: merged.tree,
-        propSpec: merged.propSpec,
       })
     );
   },
@@ -737,10 +695,9 @@ const contentHandler: KindHandler = {
 const HANDLERS: KindHandler[] = [
   themeHandler,
   brandHandler,
-  layoutHandler,
+  frameHandler,
   pageHandler,
   emailHandler,
-  componentHandler,
   categoryHandler,
   collectionHandler,
   productHandler,

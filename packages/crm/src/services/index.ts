@@ -42,6 +42,10 @@ export * as billingDocumentStageService from './billing-document-stage-service';
 export * as billingDocumentConversionService from './billing-document-conversion-service';
 export * as billingPaymentService from './billing-payment-service';
 export * as billingRenderService from './billing-render-service';
+// The unsaved-draft render path (live preview while editing) — computes totals
+// with the same function the save path uses, so preview and saved numbers agree.
+export { buildRenderDataFromDraft } from './billing-draft-render';
+export type { BillingDraftInput, BillingDraftLine } from './billing-draft-render';
 export * as billingTemplateService from './billing-template-service';
 export type { BillingTemplateDto } from './billing-template-service';
 // The default renderer + the shared print section builders the builder-authored

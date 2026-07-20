@@ -38,6 +38,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 
 **System**
 - [[architecture]] — RLS multi-tenancy, Better Auth, modules-are-flags, event-driven, API-first, MCP-first.
+- [[activity]] — the awareness layer (product name: **Pulse**): Jobs ("is it running?"), Audit/Activity ("what happened?"), Notifications ("what needs me?"). The four-term taxonomy, built on the event firehose.
 - [[data]] — Prisma schema, RLS mechanics, the customer/contact spine, the migration pipeline.
 - [[api-events]] — our REST surface, the MCP server, the Pub/Sub event catalog, the email pipeline.
 - [[infrastructure]] — GKE, phased infra, deploy/build/db-migrate/auto-tag workflows, Terraform, Caddy, cost.
@@ -61,6 +62,7 @@ Don't build from memory. Enter these nodes first.
 | Touch **site / site-builder** UI | [[design]] (site branch) → [[components]] (builder catalog) |
 | Change **schema / migrations** | [[data]] → [[infrastructure]] (pipeline) |
 | Add an **API endpoint or MCP tool** | [[api-events]] → [[architecture]] |
+| Build a **jobs / activity / audit / notification** surface | [[activity]] — use the four-term taxonomy; read-spine over ledgers, don't add a table |
 | Wire up an **external service** | [[integrations]] → [[infrastructure]] |
 | Deploy / infra / cost change | [[infrastructure]] → [[conventions]] (cost discipline) |
 | Add a **program/feature** that isn't a module (like partner) | [[features]] (classify it) → [[design]] → [[components]] |

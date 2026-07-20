@@ -98,11 +98,10 @@ function summarizeContents(bp: Blueprint) {
     categories: c?.categories.length ?? 0,
     collections: c?.collections.length ?? 0,
     content: bp.content.length,
-    pages: bp.pages.length,
+    pages: bp.site?.pages.length ?? 0,
     emails: bp.emails.length,
-    components: bp.components.length,
     theme: bp.theme.name,
-    hasLayout: Boolean(bp.layout),
+    hasFrame: Boolean(bp.site?.frame),
   };
 }
 
@@ -142,11 +141,9 @@ function serializeInstallDetail(row: InstallRow) {
       products: result.products ?? [],
       content: result.content ?? [],
       emails: result.emails ?? [],
-      components: result.components ?? [],
       categories: result.categories ?? {},
       collections: result.collections ?? {},
       theme: result.theme ?? null,
-      layoutId: result.layoutId ?? null,
     },
   };
 }

@@ -44,9 +44,13 @@ import { bulkPriceService, productService, variantService } from '@sparx/commerc
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import {
+  defaultActiveSiteScope,
+  requireCommerceModule,
+  toCommerceContext,
+} from '../../../lib/commerce-context.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
+import { resolveListScope } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
@@ -66,19 +70,29 @@ const ListProductsQuery = z.object({
   include_deleted: z.coerce.boolean().optional(),
   // Model B (docs/49 §3): scope the back-office list to one site — products
   // VISIBLE on it (global + scoped-here), matching that site's storefront.
-  // Omitted → the whole catalog (the shared back office's default view).
-  property: z.string().uuid().optional(),
+  // Omitted → the site the caller is working in (`x-sparx-property-id`, else
+  // primary); `all` → the whole catalog across every site. Not a uuid schema
+  // any more, because `all` is a legal value — resolveListScope validates.
+  property: z.string().min(1).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: z.enum(['updatedAt', 'createdAt', 'title', 'priceMinCents']).optional(),
+  // Sort direction. Defaults to `desc` (newest / most expensive first), which is
+  // wrong for `sort_by=title` — a catalog sorted by name is read A→Z.
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const productRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/products', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = ListProductsQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth.tenantId,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const { items, total } = await productService.list(toCommerceContext(request), {
       status: q.status as never,
       categoryId: q.category_id,
@@ -90,10 +104,11 @@ const productRoutes: FastifyPluginAsync = async (app) => {
       hasFitment: q.has_fitment,
       includeArchived: q.include_archived,
       includeDeleted: q.include_deleted,
-      propertyId: q.property,
+      propertyId,
       take: q.take,
       skip: q.skip,
       sortBy: q.sort_by,
+      order: q.order,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
   });
@@ -135,22 +150,9 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const body = (request.body ?? {}) as Record<string, unknown>;
     // Model B (docs/49 §3): a NEW product defaults to the ACTIVE site, so
-    // "different products per site" is the default once a tenant runs more than
-    // one. An explicit `propertyIds` (including `[]` = all sites) is honored
-    // verbatim; single-site tenants are unchanged (no scope rows). This is the
-    // load-bearing default — it covers every create path (dashboard, drawer, API,
-    // MCP), not just one form.
-    if (body.propertyIds === undefined) {
-      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
-      if (siteCount > 1) {
-        const header = request.headers['x-sparx-property-id'];
-        const activePropertyId = await resolvePropertyId(
-          auth.tenantId,
-          typeof header === 'string' ? header : null
-        );
-        body.propertyIds = [activePropertyId];
-      }
-    }
+    // "different products per site" is the default once a tenant runs more than one
+    // (shared with collections/categories — see defaultActiveSiteScope).
+    await defaultActiveSiteScope(request, auth.tenantId, body);
     const created = await productService.create(toCommerceContext(request), body);
     reply.code(201);
     return ok(created);

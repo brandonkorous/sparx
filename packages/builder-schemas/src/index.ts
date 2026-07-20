@@ -33,8 +33,6 @@ export * from './email-silica';
 export * from './silica-email-kit';
 export * from './default-emails-silica';
 export * from './email-legacy-to-silica';
-export * from './silica-page-kit';
-export * from './page-legacy-to-silica';
 export * from './silica-data-needs';
 export * from './import-export';
 export * from './catalog';

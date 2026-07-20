@@ -2,7 +2,7 @@
 // builds on `request()` — keep the auth/envelope/retry policy here so
 // downstream callers can't forget it.
 
-import { ApiError, type Envelope, type EnvelopeError } from './envelope.js';
+import { ApiError, type Envelope, type EnvelopeError } from './envelope';
 
 export interface SparxClientOptions {
   /** Base URL of api-rest, e.g. https://api.sparx.works. No trailing slash. */
@@ -52,9 +52,34 @@ export interface ResponseMeta {
   requestId?: string;
 }
 
+/**
+ * The envelope's own `meta` — pagination, not transport.
+ *
+ * Distinct from `ResponseMeta` above, which describes the HTTP exchange
+ * (status, headers, etag). This is what the ENDPOINT said about the collection
+ * it just returned, and it was previously parsed and thrown away: `request()`
+ * returned `payload.data` and dropped `payload.meta` on the floor. Every list
+ * screen on the platform therefore had no way to know how many records existed,
+ * which is why they could only ever say "50 shown" and never "50 of 214".
+ *
+ * Loosely typed on purpose — endpoints attach their own extras through the
+ * envelope's open index signature, and this type must not become a place that
+ * has to be edited every time one of them does.
+ */
+export interface EnvelopeMeta {
+  total?: number;
+  page?: number;
+  per_page?: number;
+  total_pages?: number;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
 export interface ApiResponse<T> {
   data: T;
   meta: ResponseMeta;
+  /** Present when the endpoint returned an envelope `meta` (i.e. used `paged()`). */
+  page?: EnvelopeMeta;
 }
 
 function buildQuery(params: RequestOptions['query']): string {
@@ -80,7 +105,12 @@ export class SparxClient {
     this.baseUrl = opts.baseUrl.replace(/\/+$/, '');
     this.tokenSrc = opts.token;
     this.previewSrc = opts.previewToken;
-    this._fetch = opts.fetch ?? fetch;
+    // MUST stay bound to the global. Storing bare `fetch` on an instance
+    // property and calling it as `this._fetch(...)` re-binds `this` to the
+    // SparxClient, and browsers enforce a brand check on Window.fetch —
+    // "TypeError: Failed to execute 'fetch' on 'Window': Illegal invocation".
+    // Node is lenient about this, so a server-only client hides the bug.
+    this._fetch = opts.fetch ?? globalThis.fetch.bind(globalThis);
     this.timeoutMs = opts.timeoutMs ?? 30_000;
     this.userAgent = opts.userAgent ?? 'sparx-api-client/0.0.0';
   }
@@ -176,6 +206,7 @@ export class SparxClient {
     return {
       data: payload.data,
       meta: this.metaFromResponse(res),
+      ...(payload.meta ? { page: payload.meta } : {}),
     };
   }
 

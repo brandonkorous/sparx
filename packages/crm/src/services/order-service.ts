@@ -106,12 +106,26 @@ export async function list(
             },
           }
         : {}),
-      ...(filter.q ? { orderNumber: { startsWith: filter.q, mode: 'insensitive' } } : {}),
+      // Search spans the order number AND the buyer. It was an order-number
+      // PREFIX match, which answers only the question someone already knows the
+      // answer to — a customer on the phone gives you their name, not
+      // "ORD-1042", and a partial number ("1042") matched nothing at all.
+      ...(filter.q
+        ? {
+            OR: [
+              { orderNumber: { contains: filter.q, mode: 'insensitive' as const } },
+              { customer: { firstName: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { lastName: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { company: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { email: { contains: filter.q, mode: 'insensitive' as const } } },
+            ],
+          }
+        : {}),
     };
     const [items, total] = await Promise.all([
       tx.order.findMany({
         where,
-        orderBy: { [filter.sortBy]: 'desc' },
+        orderBy: { [filter.sortBy]: filter.order },
         take: filter.take,
         skip: filter.skip,
         // Joined so the Customer / Account columns render from the list query

@@ -439,7 +439,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-base-300 bg-base-100 flex flex-col gap-4 rounded-[var(--radius-lg)] border p-5">
+    <section className="border-base-300 bg-base-100 flex flex-col gap-4 rounded-lg border p-5">
       <div className="flex flex-col gap-0.5">
         <h2 className="text-base-content text-sm font-semibold">{title}</h2>
         {hint ? <p className="text-base-content text-xs">{hint}</p> : null}

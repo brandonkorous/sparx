@@ -5,14 +5,13 @@
 // the API contract stays `from`/`to` while the UI stays "This month / Next 3
 // months". Accent = commerce orange, the bootcamp page's energetic hue.
 
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { FacetCount } from '@/lib/partners';
 import { FORMAT_LABEL, type BootcampFormat } from '@/lib/bootcamp';
 
 export type BootcampParams = Record<string, string>;
 
 const BASE = '/bootcamp';
-const SANS = 'var(--font-sans)';
-const PRIMARY = 'var(--color-primary)';
 
 export interface DatePreset {
   key: string;
@@ -41,39 +40,21 @@ function Chip({
   on: boolean;
   target: string;
 }) {
+  // A facet value is a toggle CONTROL rendered as a link, so it wears silica's
+  // button recipe: `soft` primary when engaged, neutral `outline` when not.
   return (
     <a
       href={target}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '5px 12px',
-        borderRadius: '9999px',
-        border: '1px solid',
-        borderColor: on ? PRIMARY : 'var(--color-base-300)',
-        backgroundColor: on
-          ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)'
-          : 'var(--color-base-100)',
-        fontFamily: SANS,
-        fontSize: '13px',
-        fontWeight: on ? 500 : 400,
-        color: on
-          ? 'var(--color-primary)'
-          : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        textDecoration: 'none',
-      }}
+      className={buttonClasses({
+        size: 'sm',
+        color: on ? 'primary' : undefined,
+        variant: on ? 'soft' : 'outline',
+        className: 'gap-1.5 rounded-full',
+      })}
     >
       {label}
       {typeof count === 'number' ? (
-        <span
-          style={{
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            fontWeight: 400,
-          }}
-        >
-          {count}
-        </span>
+        <span className="text-ink-subtle font-normal">{count}</span>
       ) : null}
       {on ? <span aria-hidden>×</span> : null}
     </a>
@@ -82,18 +63,8 @@ function Chip({
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-      <span
-        style={{
-          fontFamily: SANS,
-          fontWeight: 500,
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          width: '84px',
-        }}
-      >
-        {label}
-      </span>
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-mini text-ink-subtle w-21 font-medium">{label}</span>
       {children}
     </div>
   );
@@ -125,7 +96,7 @@ export function BootcampFacetBar({
     .slice(0, 8);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <div className="flex flex-col gap-3.5">
       <Row label="Format">
         <Chip label="All" on={!activeFormat} target={href(current, (n) => delete n.format)} />
         {formatValues.map((f) => (
@@ -189,16 +160,7 @@ export function BootcampFacetBar({
       ) : null}
 
       {anySelected ? (
-        <a
-          href={`${BASE}#directory`}
-          style={{
-            alignSelf: 'flex-start',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            textDecoration: 'underline',
-          }}
-        >
+        <a href={`${BASE}#directory`} className="text-caption text-ink-subtle self-start underline">
           Clear all filters
         </a>
       ) : null}

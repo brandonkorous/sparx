@@ -16,55 +16,35 @@ import { EARLY_HREF, SALES_HREF, signupHref } from './cta';
 // not ready to open an account yet.
 export function FinalCta() {
   return (
+    // A real `data-theme="dark"` island. Inside it the whole `--color-base-*`
+    // ramp flips, so the paneled system's own content-tier rule
+    // (`background-color: var(--color-base-100) !important`) paints this band
+    // dark, and every ink resolves from `base-content` with no inverse-tier
+    // class. `bg-base-100` is the standalone fallback for the same section
+    // rendered outside `.mkt-paneled`.
     <section
-      className="mkt-accent"
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
+      data-theme="dark"
+      className="mkt-inverse bg-base-100 text-base-content px-page py-section-xl"
     >
       <Container>
-        <Reveal
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '48px' }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', maxWidth: '920px' }}>
-            <Display size={96} lineHeight={92} color="#FFFFFF">
+        <Reveal className="flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-end">
+          <div className="flex max-w-[920px] flex-col gap-8">
+            <Display size={96} lineHeight={92}>
               Light the spark
-              <Spark color="#818CF8" />
+              <Spark />
             </Display>
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '20px',
-                lineHeight: '32px',
-                color: '#A1A1AA',
-                maxWidth: '620px',
-                margin: 0,
-              }}
-            >
+            <p className="text-base-content m-0 max-w-[620px] text-[20px] leading-8">
               Sign up free. Switch on the modules you need. Be live before the kettle boils — then
               keep the site, the data, and the control for years. No card, no contract, no upgrade
               lock-in.
             </p>
           </div>
 
-          <div
-            className="mkt-align-end-on-desktop"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              alignItems: 'flex-start',
-            }}
-          >
+          <div className="flex flex-col items-start gap-3.5 lg:items-end">
             <a
               href={signupHref('final')}
               aria-label="Start your site"
-              className={buttonClasses({ size: 'xl', variant: 'solid' })}
+              className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
             >
               Start your site →
             </a>
@@ -72,20 +52,12 @@ export function FinalCta() {
               href={SALES_HREF}
               aria-label="Book a 20-min call"
               className={buttonClasses({ size: 'xl', variant: 'outline' })}
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
             >
               Book a 20-min call
             </a>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                color: '#71717A',
-                paddingTop: '8px',
-              }}
-            >
+            <span className="text-base-content text-mini pt-2 font-mono">
               $0 to start · cancel any time ·{' '}
-              <a href={EARLY_HREF} style={{ color: '#818CF8', textDecoration: 'none' }}>
+              <a href={EARLY_HREF} className="text-primary no-underline">
                 not ready? join early access →
               </a>
             </span>

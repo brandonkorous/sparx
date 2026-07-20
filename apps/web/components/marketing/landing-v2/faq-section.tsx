@@ -76,11 +76,7 @@ export function LandingV2Faq() {
   };
 
   return (
-    <section
-      id="faq"
-      className="px-[var(--gutter-page)] py-[var(--section-py-xl)]"
-      style={{ scrollMarginTop: '80px' }}
-    >
+    <section id="faq" className="px-page py-section-xl scroll-mt-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

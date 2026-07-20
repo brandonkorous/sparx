@@ -105,7 +105,7 @@ export const LEDGER: { key: string; name: string; price: string; alt: string; am
   },
   {
     key: 'ai',
-    name: 'AI · MCP',
+    name: 'AI',
     price: '$49',
     alt: 'Zapier Team + custom integration work',
     amt: '$103',
@@ -248,7 +248,7 @@ export const FEATURES: {
   },
   {
     key: 'ai',
-    name: 'AI · MCP',
+    name: 'AI',
     price: '+ $49/mo',
     repl: 'Replaces Zapier + custom glue code',
     feats: [

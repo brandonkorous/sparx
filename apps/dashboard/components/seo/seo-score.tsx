@@ -96,11 +96,11 @@ function Ring({ score, color, size }: { score: number | null; color: string; siz
       }}
     >
       <span
+        className="bg-base-100"
         style={{
           position: 'absolute',
           inset: Math.round(size * 0.12),
           borderRadius: '50%',
-          background: 'var(--color-base-100)',
         }}
       />
       <span
@@ -282,15 +282,15 @@ export function SeoReport({
   );
 
   return (
-    <div style={{ fontSize: 13, color: 'var(--color-base-content)' }}>
+    <div className="text-base-content" style={{ fontSize: 13 }}>
       {/* Header */}
       <div
+        className="border-base-300 border-b"
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: 14,
           padding: 16,
-          borderBottom: '1px solid var(--color-border, #e5e5e5)',
         }}
       >
         <Ring score={card.score} color={g.color} size={52} />
@@ -325,18 +325,13 @@ export function SeoReport({
 
       {/* Jump to the entity's editor to actually make the fixes. */}
       {editHref ? (
-        <div
-          style={{
-            padding: '10px 16px',
-            borderBottom: '1px solid var(--color-border, #e5e5e5)',
-          }}
-        >
+        <div className="border-base-300 border-b" style={{ padding: '10px 16px' }}>
           <Link
             href={editHref}
+            className="text-module"
             style={{
               fontSize: 12,
               fontWeight: 500,
-              color: 'var(--color-module)',
               textDecoration: 'none',
             }}
           >
@@ -347,12 +342,12 @@ export function SeoReport({
 
       {/* Category bars */}
       <div
+        className="border-base-300 border-b"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 12,
           padding: 16,
-          borderBottom: '1px solid var(--color-border, #e5e5e5)',
         }}
       >
         {cats.map((c) => (
@@ -363,12 +358,12 @@ export function SeoReport({
       {/* Fix first */}
       {card.fixFirst ? (
         <div
+          className="border-base-300 border-b"
           style={{
             display: 'flex',
             gap: 10,
             padding: '12px 16px',
             background: 'color-mix(in srgb, #f59e0b 10%, transparent)',
-            borderBottom: '1px solid var(--color-border, #e5e5e5)',
             lineHeight: 1.5,
           }}
         >
@@ -415,7 +410,7 @@ function CategoryBar({ cat }: { cat: CategoryScore }) {
           {Math.round(cat.earned)}/{cat.max}
         </span>
       </div>
-      <div style={{ height: 5, borderRadius: 999, background: 'var(--color-base-200)' }}>
+      <div className="bg-base-200" style={{ height: 5, borderRadius: 999 }}>
         <span
           style={{
             display: 'block',
@@ -456,11 +451,11 @@ function CheckRow({ check }: { check: CheckResult }) {
   const s = STATUS[check.status];
   return (
     <div
+      className="border-base-300 border-t"
       style={{
         display: 'flex',
         gap: 10,
         padding: '9px 16px',
-        borderTop: '1px solid var(--color-border, #e5e5e5)',
         alignItems: 'flex-start',
       }}
     >

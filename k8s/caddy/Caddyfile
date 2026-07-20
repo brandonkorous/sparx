@@ -99,6 +99,14 @@ app.sparx.works {
   reverse_proxy dashboard.sparx-prod.svc.cluster.local:3000
 }
 
+workbench.sparx.works {
+  tls {
+    on_demand
+  }
+  import security_headers
+  reverse_proxy workbench.sparx-prod.svc.cluster.local:3000
+}
+
 sparx.works, www.sparx.works {
   tls {
     on_demand

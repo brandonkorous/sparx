@@ -40,33 +40,26 @@ function baseManifest(): Record<string, unknown> {
         },
       ],
     },
-    pages: [
-      {
-        name: 'Product',
-        kind: 'collection',
-        recordType: 'commerce.product',
-        isDefault: true,
-        tree: section(),
-      },
-    ],
+    site: {
+      frame: { root: section('frame') },
+      pages: [
+        // Every site needs exactly one home (slug omitted).
+        { name: 'Home', kind: 'singleton', root: section('home') },
+        {
+          name: 'Product',
+          kind: 'collection',
+          recordType: 'commerce.product',
+          isDefault: true,
+          root: section('product'),
+        },
+      ],
+    },
   };
 }
 
-function section(): Record<string, unknown> {
-  return {
-    id: 'root',
-    type: 'Section',
-    box: {
-      height: 'auto',
-      backgroundWidth: 'full',
-      contentWidth: 'contained',
-      surface: 'none',
-      padding: 'lg',
-      align: 'start',
-      hiddenOn: [],
-    },
-    props: {},
-  };
+/** A minimal silica element node. */
+function section(id: string): Record<string, unknown> {
+  return { id, kind: 'element', tag: 'section', class: 'w-full', children: [] };
 }
 
 describe('parseBlueprint', () => {
@@ -166,11 +159,25 @@ describe('integrity checks', () => {
 
   it('flags a collection page with no recordType', () => {
     const m = baseManifest();
-    (m.pages as Record<string, unknown>[])[0] = {
-      name: 'Bad',
-      kind: 'collection',
-      tree: section(),
-    };
+    const site = m.site as { pages: Record<string, unknown>[] };
+    site.pages[1] = { name: 'Bad', kind: 'collection', root: section('bad') };
+    const r = safeParseBlueprint(m);
+    expect(r.success).toBe(false);
+  });
+
+  it('flags a site with no home page', () => {
+    const m = baseManifest();
+    const site = m.site as { pages: Record<string, unknown>[] };
+    site.pages[0] = { name: 'Not home', kind: 'singleton', slug: 'about', root: section('a') };
+    const r = safeParseBlueprint(m);
+    expect(r.success).toBe(false);
+    if (!r.success) expect(r.issues.some((i) => i.message.includes('home page'))).toBe(true);
+  });
+
+  it('flags two home pages', () => {
+    const m = baseManifest();
+    const site = m.site as { pages: Record<string, unknown>[] };
+    site.pages.push({ name: 'Second home', kind: 'singleton', root: section('h2') });
     const r = safeParseBlueprint(m);
     expect(r.success).toBe(false);
   });

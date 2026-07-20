@@ -43,6 +43,17 @@ export interface McpAuthContext {
   /** 'jwt' for first-party staff tokens, 'api_key' for external sk_live_ keys,
    *  'oauth' for tokens minted by the MCP OAuth flow (Claude/ChatGPT connectors). */
   source: 'jwt' | 'api_key' | 'oauth';
+  /**
+   * The ONE site this credential may act on; null = the whole tenant
+   * (docs/131 §3.2).
+   *
+   * Only `api_key` can currently carry one. A staff JWT is null because a
+   * member's site access is a separate axis (`member_property_access`, §3.3)
+   * resolved at the session layer, and an OAuth connector token is null because
+   * the consent flow has no site step yet — both are recorded as null rather
+   * than assumed unrestricted-forever.
+   */
+  propertyId: string | null;
 }
 
 interface InternalJwtPayload {
@@ -124,6 +135,7 @@ async function authenticateApiKey(token: string): Promise<McpAuthContext> {
     role: 'api',
     scopes: new Set(verified.scopes as McpScope[]),
     source: 'api_key',
+    propertyId: verified.propertyId,
   };
 }
 
@@ -141,6 +153,10 @@ async function authenticateOAuth(token: string): Promise<McpAuthContext> {
     role: 'api',
     scopes: new Set(verified.scopes),
     source: 'oauth',
+    // The OAuth consent flow has no site step yet, so a connector token reaches
+    // the whole tenant. Explicit null rather than omitted — this is a gap to
+    // close (docs/131 §3.2), not a decision that connectors are tenant-wide.
+    propertyId: null,
   };
 }
 
@@ -161,6 +177,9 @@ async function authenticateJwt(request: FastifyRequest): Promise<McpAuthContext>
     role: payload.role,
     scopes: new Set(granted),
     source: 'jwt',
+    // A staff member's site access is its own axis (`member_property_access`,
+    // docs/131 §3.3) resolved at the session layer, not carried on the token.
+    propertyId: null,
   };
 }
 

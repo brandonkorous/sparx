@@ -73,9 +73,7 @@ function CustomTile({ comp, onAdd }: { comp: ComponentDto; onAdd: (type: string)
       className="bx-tile bx-tile--custom"
       onClick={() => onAdd(customType(comp.key))}
     >
-      <span className="bx-tile__mod" style={{ background: 'var(--color-module)' }}>
-        YOURS
-      </span>
+      <span className="bx-tile__mod bg-module">YOURS</span>
       <DynamicIcon name={comp.icon as IconName} className="bx-tile__icon" aria-hidden />
       <span className="bx-tile__name">{comp.name}</span>
     </button>
@@ -99,9 +97,7 @@ function ArchetypeTile({
       onClick={() => onStamp(archetype.tree)}
       title={archetype.description ?? undefined}
     >
-      <span className="bx-tile__mod" style={{ background: 'var(--color-module)' }}>
-        SECTION
-      </span>
+      <span className="bx-tile__mod bg-module">SECTION</span>
       <DynamicIcon name={archetype.icon as IconName} className="bx-tile__icon" aria-hidden />
       <span className="bx-tile__name">{archetype.name}</span>
     </button>

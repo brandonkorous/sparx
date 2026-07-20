@@ -78,7 +78,7 @@ export function SchedulingShapes() {
           nothing is a separate tool to learn or pay for.
         </Text>
       </div>
-      <div className="mkt-grid-4-2-1 mt-13">
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {shapes.map((s) => (
           <Card key={s.type} className="bg-base-100">
             <CardBody className="flex min-h-[236px] flex-col gap-3.5">
@@ -140,7 +140,7 @@ export function SchedulingDeposits() {
           booking timeline are all on record — the evidence you need, captured automatically.
         </Text>
       </div>
-      <div className="mkt-grid-4-2-1 mt-13">
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {ladder.map((p) => (
           <Card
             key={p.name}
@@ -203,7 +203,7 @@ export function SchedulingCalendar() {
           database — degraded sync never degrades the core promise.
         </Text>
       </div>
-      <div className="mkt-grid-2-1 mt-13">
+      <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p) => (
           <Card key={p.title} className="bg-base-100">
             <CardBody className="flex flex-col gap-4">
@@ -284,7 +284,7 @@ export function SchedulingLoop() {
           customer, the money, the messaging, and the site.
         </Text>
       </div>
-      <div className="mkt-grid-3-2-1 mt-13">
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {stages.map((s) => (
           <Card key={s.n} className="bg-base-100">
             <CardBody className="flex min-h-[196px] flex-col gap-3">
@@ -354,7 +354,7 @@ export function SchedulingVerticals() {
           never in which product they had to buy.
         </Text>
       </div>
-      <div className="mkt-grid-3-2-1 mt-13">
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {verticals.map((v) => (
           <Card key={v.name} className="bg-base-100">
             <CardBody className="flex flex-col gap-3">

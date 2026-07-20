@@ -72,6 +72,10 @@ model Tenant {
 
   // Platform core — brand identity (tenant-level source of truth, docs/30 §6)
   brand TenantBrand?
+  // The legal entity's own details — registered address, tax id, company
+  // number, business name (07-tenant-business.prisma). The documented home for
+  // the `taxId` this model's header anticipates.
+  business TenantBusiness?
 
   // Multi-property (multi-site) — a tenant's web properties (docs/49). Phase 1
   // seeds exactly one is_primary property per tenant; the Builder presentation
@@ -372,6 +376,9 @@ model Tenant {
 
   // Import jobs (docs/68 §8) — background CSV import processing
   importJobs ImportJob[]
+
+  // In-app notifications (docs/124 Phase 3) — the awareness layer's inbox
+  notifications Notification[]
 
   // Live Chat module (docs/56, docs/69 Track A)
   chatConversations ChatConversation[]

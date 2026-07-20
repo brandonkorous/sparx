@@ -30,8 +30,14 @@ import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
 import { pricingService } from '@sparx/commerce';
 import { searchProducts } from '@sparx/search';
-import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
+import {
+  resolvePublicPropertyId,
+  productSiteVisibilityWhere,
+  collectionSiteVisibilityWhere,
+  categorySiteVisibilityWhere,
+} from '../../../lib/property.js';
 import { tryVerifyProductPreview } from '../../../lib/preview.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { optionalCustomer } from '../../../lib/customer-session.js';
 
 // `property` (a stable site slug) scopes catalog reads to one web PROPERTY
@@ -138,14 +144,8 @@ const RECORD_SELECT = {
   heroMediaId: true,
 } as const;
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({
-    where: { slug },
-    select: { id: true },
-  });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5).
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 /**
  * Product reads are otherwise fully anonymous/cacheable — but a signed-in
@@ -282,9 +282,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/collections', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // Model B: the collection index is scoped to the active site, so a collection
+    // pinned to specific sites never shows on the others (empty pins = all sites).
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.productCollection.findMany({
-        where: { deletedAt: null },
+        where: { deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
         select: {
           id: true,
@@ -323,9 +326,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // A collection hidden on the active site 404s here too, so a stale/shared link
+    // can't reach a site-scoped collection's detail page.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const row = await withTenant({ tenantId }, (tx) =>
       tx.productCollection.findFirst({
-        where: { handle, deletedAt: null },
+        where: { handle, deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         select: {
           id: true,
           name: true,
@@ -350,7 +356,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const collection = await tx.productCollection.findFirst({
-        where: { handle, deletedAt: null },
+        // A collection hidden on the active site yields no product list (404),
+        // matching its detail endpoint.
+        where: { handle, deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         select: { id: true },
       });
       if (!collection) return null;
@@ -696,9 +704,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/categories', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // Model B: the category index is scoped to the active site.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.productCategory.findMany({
-        where: { deletedAt: null },
+        where: { deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         orderBy: [{ path: 'asc' }, { position: 'asc' }],
         select: {
           id: true,
@@ -740,9 +750,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // A category hidden on the active site 404s here too.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const row = await withTenant({ tenantId }, (tx) =>
       tx.productCategory.findFirst({
-        where: { handle, deletedAt: null },
+        where: { handle, deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         select: {
           id: true,
           name: true,
@@ -776,7 +788,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const category = await tx.productCategory.findFirst({
-        where: { handle, deletedAt: null },
+        // A category hidden on the active site yields no rollup (its node 404s),
+        // matching its detail endpoint — not just an empty product list.
+        where: { handle, deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         select: { id: true, path: true },
       });
       if (!category) return null;

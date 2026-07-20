@@ -22,10 +22,10 @@
 //   - ETag is exposed on `meta.etag` so callers can plumb optimistic
 //     concurrency without inspecting headers.
 
-import { SparxClient, type SparxClientOptions } from './client.js';
-import { CmsApi } from './cms.js';
-import { MediaApi } from './media.js';
-import { GraphQLClient } from './graphql.js';
+import { SparxClient, type SparxClientOptions } from './client';
+import { CmsApi } from './cms';
+import { MediaApi } from './media';
+import { GraphQLClient } from './graphql';
 
 export interface SparxOptions extends SparxClientOptions {
   /**
@@ -55,8 +55,18 @@ export class Sparx {
   }
 }
 
-export { SparxClient, type SparxClientOptions } from './client.js';
-export { ApiError, type Envelope } from './envelope.js';
+// RequestOptions/ApiResponse are the parameter and return types of the exported
+// SparxClient.request() — without them a consumer calling the low-level
+// transport directly (rather than the CmsApi/MediaApi helpers) can't type it.
+export {
+  SparxClient,
+  type SparxClientOptions,
+  type RequestOptions,
+  type ApiResponse,
+  type ResponseMeta,
+  type EnvelopeMeta,
+} from './client';
+export { ApiError, type Envelope } from './envelope';
 export type {
   ContentEntry,
   ContentEntryListItem,
@@ -70,21 +80,21 @@ export type {
   NavigationMenu,
   PageMeta,
   Redirect,
-} from './types.js';
-export { CmsApi } from './cms.js';
-export { MediaApi } from './media.js';
+} from './types';
+export { CmsApi } from './cms';
+export { MediaApi } from './media';
 export {
   GraphQLClient,
   type GraphQLClientOptions,
   type GraphQLOperation,
   type GraphQLError,
   type GraphQLResponse,
-} from './graphql.js';
+} from './graphql';
 export type {
   CreateEntryInput,
   ListEntriesQuery,
   PreviewTokenResponse,
   PublishEntryInput,
   UpdateEntryInput,
-} from './cms.js';
-export type { InitUploadInput, PresignedUpload, UpdateMediaAssetInput } from './media.js';
+} from './cms';
+export type { InitUploadInput, PresignedUpload, UpdateMediaAssetInput } from './media';

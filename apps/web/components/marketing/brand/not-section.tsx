@@ -20,7 +20,7 @@ export function NotSection() {
           lede="The brand is defined as much by what it refuses. sparx is the tool a senior developer wishes existed — technical enough to be trusted, simple enough for anyone to use."
         />
 
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {NOTS.map((n) => (
             <div key={n.not} className="border-base-300 flex items-start gap-4 border-t py-[22px]">
               {/* Same Badge, same variant as the Misuse markers — one treatment

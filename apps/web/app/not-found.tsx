@@ -1,3 +1,8 @@
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's `cloneElement(render, …)` then throws at prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { SparkMascot } from '@/components/marketing/spark-mascot';
 
 // 404 for the marketing site. The spark mascot carries the "nothing here" beat
@@ -5,38 +10,18 @@ import { SparkMascot } from '@/components/marketing/spark-mascot';
 // hero, reused as a state (see components/marketing/spark-mascot.tsx).
 export default function NotFound() {
   return (
-    <main
-      style={{
-        minHeight: '70vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 24px',
-      }}
-    >
-      <div style={{ maxWidth: '460px', textAlign: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+    <main className="flex min-h-[70vh] items-center justify-center px-6 py-12">
+      <div className="max-w-[460px] text-center">
+        <div className="mb-6 flex justify-center">
           <SparkMascot expression="surprised" tone="light" size={120} bob={false} />
         </div>
-        <h1 style={{ fontSize: '28px', fontWeight: 600, margin: '0 0 10px', color: 'inherit' }}>
+        <h1 className="text-h1 text-base-content m-0 mb-2.5 font-semibold">
           This page wandered off
         </h1>
-        <p style={{ fontSize: '15px', lineHeight: 1.6, opacity: 0.7, margin: '0 0 24px' }}>
+        <p className="text-body-sm text-ink-muted m-0 mb-6">
           We couldn&apos;t find what you were looking for. It may have moved, or never existed.
         </p>
-        <a
-          href="/"
-          style={{
-            display: 'inline-block',
-            background: '#e04631',
-            color: '#fff',
-            borderRadius: '8px',
-            padding: '10px 18px',
-            fontSize: '14px',
-            fontWeight: 500,
-            textDecoration: 'none',
-          }}
-        >
+        <a href="/" className={buttonClasses({ color: 'primary' })}>
           Back to sparx
         </a>
       </div>

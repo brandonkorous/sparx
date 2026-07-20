@@ -194,15 +194,12 @@ export default function CreateOrderPage() {
           </ApiParam>
 
           <ApiSection title="Returns" />
-          <p className="docs-param-desc" style={{ padding: '14px 0' }}>
-            Returns the created <code style={{ fontFamily: 'var(--font-mono)' }}>Order</code> with
-            its line items. New orders open at status{' '}
-            <code style={{ fontFamily: 'var(--font-mono)' }}>placed</code> and payment status{' '}
-            <code style={{ fontFamily: 'var(--font-mono)' }}>unpaid</code>;{' '}
-            <code style={{ fontFamily: 'var(--font-mono)' }}>subtotal</code> and{' '}
-            <code style={{ fontFamily: 'var(--font-mono)' }}>total</code> are computed from the
-            items. Status then advances through dedicated endpoints (fulfill, deliver, cancel,
-            refund).
+          <p className="docs-param-desc py-3.5">
+            Returns the created <code className="font-mono">Order</code> with its line items. New
+            orders open at status <code className="font-mono">placed</code> and payment status{' '}
+            <code className="font-mono">unpaid</code>; <code className="font-mono">subtotal</code>{' '}
+            and <code className="font-mono">total</code> are computed from the items. Status then
+            advances through dedicated endpoints (fulfill, deliver, cancel, refund).
           </p>
 
           <ApiSection title="Errors" />

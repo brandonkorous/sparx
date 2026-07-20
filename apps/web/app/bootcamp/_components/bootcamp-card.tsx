@@ -15,9 +15,6 @@ import {
   type BootcampCard as Card,
 } from '@/lib/bootcamp';
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
-
 export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
   const seats = seatsLabel(bootcamp);
   const tier = TIER_META[bootcamp.host.tier];
@@ -26,105 +23,31 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
   return (
     <a
       href={`/bootcamp/${bootcamp.slug}`}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        width: '100%',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        padding: '24px',
-        textDecoration: 'none',
-        color: 'inherit',
-      }}
+      className="border-base-300 bg-base-100 flex w-full flex-col gap-3.5 rounded-xl border p-6 text-inherit no-underline"
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-        }}
-      >
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            padding: '4px 10px',
-            borderRadius: '9999px',
-            backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-            color: 'var(--color-primary)',
-          }}
-        >
+      <div className="flex items-center justify-between gap-2.5">
+        <Badge color="primary" variant="soft" size="sm" className="font-mono">
           {FORMAT_LABEL[bootcamp.format]}
-        </span>
+        </Badge>
         {seats ? (
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '12px',
-              color: seats.full
-                ? 'var(--color-warning)'
-                : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <span className={seats.full ? 'text-mini text-warning' : 'text-mini text-ink-subtle'}>
             {seats.text}
           </span>
         ) : (
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
-            {price}
-          </span>
+          <span className="text-mini text-ink-subtle">{price}</span>
         )}
       </div>
 
-      <h3
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontWeight: 500,
-          fontSize: '19px',
-          letterSpacing: '-0.015em',
-          lineHeight: '25px',
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <h3 className="text-base-content text-lede-lg m-0 font-medium tracking-[-0.015em]">
         {bootcamp.title}
       </h3>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '5px',
-          fontFamily: SANS,
-          fontSize: '13.5px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
+      <div className="text-caption text-ink-muted flex flex-col gap-[5px]">
         <span>{bootcampDates(bootcamp)}</span>
         <span>{bootcampLocation(bootcamp)}</span>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginTop: 'auto',
-          paddingTop: '14px',
-          borderTop: '1px solid var(--color-base-300)',
-          fontFamily: SANS,
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
+      <div className="border-base-300 text-caption text-ink-muted mt-auto flex items-center gap-2 border-t pt-3.5">
         <Badge color={tier.color} variant="soft" size="sm">
           {tier.label}
         </Badge>

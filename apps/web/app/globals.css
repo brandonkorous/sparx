@@ -34,10 +34,6 @@
    Phase 3 with @sparx/ui itself. silicaui-react emits only plugin classes. */
 @source '../../../packages/ui/src/**/*.{ts,tsx}';
 
-/* @sparx/web-chrome (the shared SiteHeader) ships raw Tailwind utility
-   classes with no CSS of its own — same reasoning as @sparx/ui above. */
-@source '../../../packages/web-chrome/src/**/*.{ts,tsx}';
-
 /* @sparx/chat-widget (the marketplace "Chat with {publisher}" CTA panel) —
    same reasoning: raw Tailwind utilities, no CSS of its own. */
 @source '../../../packages/chat-widget/src/**/*.{ts,tsx}';
@@ -98,6 +94,18 @@
   --text-lede--line-height: 30px;
   --text-lede-lg: 19px;
   --text-lede-lg--line-height: 31px;
+
+  /* Lede size for text sitting on a SATURATED BRAND FILL (the /tools hero
+     bands). Not a stylistic choice — an accessibility floor. sparx Ember
+     (`--color-primary`, #e04631) against white measures 4.13:1, under WCAG AA's
+     4.5:1 for normal-size text, and swapping to the dark ink is no better
+     (4.37:1). The band color itself is the constraint, so the type has to clear
+     the LARGE-text bar instead (24px regular, or 18.66px bold) where AA drops to
+     3:1. 24px regular keeps the lede readable at a normal weight rather than
+     forcing every colored-band lede to bold. Body copy on a NEUTRAL surface
+     should still use `text-lede`. */
+  --text-hero-lede: 24px;
+  --text-hero-lede--line-height: 34px;
 
   /* Section-heading steps. Without these the scale stopped at 19px and every
      20–27px heading SILENTLY rendered at 19 — `<Text size={24}>` looked correct

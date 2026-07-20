@@ -7,7 +7,7 @@
 // want to address it directly; by default it falls back to the same base
 // URL as REST (which Caddy routes via host match).
 
-import { ApiError } from './envelope.js';
+import { ApiError } from './envelope';
 
 export interface GraphQLClientOptions {
   baseUrl: string;

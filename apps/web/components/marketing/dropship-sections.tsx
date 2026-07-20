@@ -1,3 +1,4 @@
+import { Text } from '@wizeworks/silicaui-react';
 import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -20,8 +21,6 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const M = getModuleColor('dropship');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // The real selectable vendors from @sparx/dropship VENDOR_CATALOG (docs/14 §3).
 const VENDORS: { name: string; tag: string; mode: string }[] = [
@@ -41,7 +40,7 @@ export function DropshipConnect() {
         headline="Connect a supplier, import the catalog"
         lede="Pick a supplier from the catalog, paste a token, and sparx validates the connection before it saves. Its products, costs, images, and stock sync in — then you import the ones you want, priced automatically. Only suppliers with a real, self-serve API are offered; the rest are honestly left off."
       />
-      <div className="mkt-ds-split" style={{ marginTop: '52px' }}>
+      <div className="mkt-ds-split mt-13">
         <VendorPicker />
         <Cycle
           items={EXAMPLE_BUSINESSES.map((b) => (
@@ -56,92 +55,44 @@ export function DropshipConnect() {
 /** Left rail: the real vendor picker — one card per selectable supplier. */
 function VendorPicker() {
   return (
-    <div
-      className={`${M.bg} bg-soft`}
-      style={{
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-      }}
-    >
+    <div className={`${M.bg} bg-soft border-base-300 overflow-hidden rounded-[14px] border`}>
+      {/* Panel chrome inside a device mockup — a picker's column header, not an
+          eyebrow introducing a marketing heading. */}
       <div
-        className={M.ink}
-        style={{
-          padding: '16px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-          fontFamily: MONO,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-        }}
+        className={`${M.ink} border-base-300 text-micro border-b px-5 py-4 font-mono tracking-[0.05em] uppercase`}
       >
         choose a supplier
       </div>
       {VENDORS.map((v, i) => (
         <div
           key={v.name}
-          className={i === 0 ? `${M.bg} bg-soft` : 'bg-transparent'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '14px 20px',
-            borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-          }}
+          className={`flex items-center gap-3 px-5 py-3.5 ${
+            i === 0 ? `${M.bg} bg-soft` : 'border-base-200 border-t bg-transparent'
+          }`}
         >
           <span
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: '8px',
-              backgroundColor: i === 0 ? 'var(--color-base-100)' : 'var(--color-base-200)',
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
-            }}
+            className={`border-base-300 flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border ${
+              i === 0 ? 'bg-base-100' : 'bg-base-200'
+            }`}
           >
-            <Dot
-              color={
-                i === 0
-                  ? M.color
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
-              }
-              size={8}
-            />
+            <Dot color={i === 0 ? M.color : 'var(--color-ink-subtle)'} size={8} />
           </span>
-          <span style={{ minWidth: 0 }}>
-            <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
+          <span className="min-w-0">
+            <Text as="span" className="text-small text-base-content block font-medium">
               {v.name}
-            </span>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            </Text>
+            <Text as="span" className="text-micro text-ink-subtle font-mono">
               {v.tag}
-            </span>
+            </Text>
           </span>
-          <span
-            className={v.mode === 'API' ? M.ink : undefined}
-            style={{
-              marginLeft: 'auto',
-              fontFamily: MONO,
-              fontSize: '10.5px',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color:
-                v.mode === 'API'
-                  ? undefined
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              flexShrink: 0,
-            }}
+          <Text
+            as="span"
+            className={`text-micro ml-auto shrink-0 font-mono tracking-[0.04em] uppercase ${
+              v.mode === 'API' ? M.ink : 'text-ink-subtle'
+            }`}
           >
             {v.mode}
-          </span>
+          </Text>
         </div>
       ))}
     </div>
@@ -159,97 +110,38 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
     ['Stock synced', d.stock],
   ];
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '13px',
-          padding: '18px 22px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: '9px',
-            backgroundColor: 'var(--color-base-200)',
-            flexShrink: 0,
-            boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
-          }}
-        />
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-[14px] border">
+      <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-[18px]">
+        <span className="bg-base-200 border-base-300 h-10 w-10 shrink-0 rounded-[9px] border" />
+        <span className="min-w-0">
+          <Text as="span" className="text-body text-base-content block font-medium">
             {d.pricing.item}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="span" className="text-mini text-ink-subtle font-mono">
             {d.pricing.sku} · imported draft
-          </span>
+          </Text>
         </span>
         <span
-          className={`${M.bg} bg-soft ${M.ink}`}
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '5px 11px',
-            borderRadius: '9999px',
-            fontFamily: SANS,
-            fontSize: '11.5px',
-            fontWeight: 500,
-            flexShrink: 0,
-          }}
+          className={`${M.bg} bg-soft ${M.ink} text-mini ml-auto inline-flex shrink-0 items-center rounded-full px-3 py-[5px] font-medium`}
         >
           synced
         </span>
       </div>
-      <div style={{ padding: '8px 22px 16px' }}>
+      <div className="px-[22px] pt-2 pb-4">
         {rows.map(([l, v]) => (
           <div
             key={l}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              fontFamily: SANS,
-              fontSize: '13.5px',
-              padding: '11px 0',
-              borderBottom: '1px solid var(--color-base-200)',
-            }}
+            className="border-base-200 text-caption flex items-center justify-between border-b py-3"
           >
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }}
-            >
-              {l}
-            </span>
-            <span style={{ fontWeight: 500 }}>{v}</span>
+            <span className="text-ink-muted">{l}</span>
+            <span className="text-base-content font-medium">{v}</span>
           </div>
         ))}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', paddingTop: '14px' }}>
+        <div className="flex items-center gap-2.5 pt-3.5">
           <Dot color={M.color} size={6} />
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <Text as="span" className="text-mini text-ink-subtle font-mono">
             review &amp; publish — price tracks the supplier&rsquo;s cost
-          </span>
+          </Text>
         </div>
       </div>
     </div>
@@ -265,32 +157,13 @@ export function DropshipMargin() {
         headline="Cost in, margin out — automatically"
         lede="Set a pricing rule per supplier — a percentage markup, a multiplier, a flat markup, or a target margin — and every imported product prices itself off the supplier cost. When the supplier raises a cost on sync, your sell price and margin recompute. The dashboard reports profit and margin per product, per supplier, and per order."
       />
-      <div
-        style={{
-          marginTop: '52px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          overflow: 'hidden',
-          backgroundColor: 'var(--color-base-100)',
-        }}
-      >
-        <div
-          className="mkt-margin-head"
-          style={{
-            borderBottom: '1px solid var(--color-base-300)',
-            backgroundColor: 'var(--color-base-200)',
-          }}
-        >
+      <div className="bg-base-100 border-base-300 mt-13 overflow-hidden rounded-[14px] border">
+        {/* Ledger column headers — table chrome, not an eyebrow. */}
+        <div className="mkt-margin-head border-base-300 bg-base-200 border-b">
           {['Imported product', 'Pricing rule', 'Your price', 'Margin'].map((h) => (
             <span
               key={h}
-              style={{
-                fontFamily: MONO,
-                fontSize: '10.5px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
+              className="text-micro text-ink-subtle font-mono tracking-[0.05em] uppercase"
             >
               {h}
             </span>
@@ -310,70 +183,24 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
   const { dropship: d } = business;
   return (
     <div className="mkt-margin-row">
-      <span
-        className="mkt-margin-item"
-        style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-      >
-        <span
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: '8px',
-            backgroundColor: 'var(--color-base-200)',
-            flexShrink: 0,
-            boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
-          }}
-        />
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: 'block', fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
+      <span className="mkt-margin-item flex items-center gap-3">
+        <span className="bg-base-200 border-base-300 h-[34px] w-[34px] shrink-0 rounded-lg border" />
+        <span className="min-w-0">
+          <Text as="span" className="text-small text-base-content block font-medium">
             {d.pricing.item}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="span" className="text-micro text-ink-subtle font-mono">
             {d.supplier} · cost {d.pricing.cost}
-          </span>
+          </Text>
         </span>
       </span>
-      <span
-        className="mkt-margin-cell"
-        style={{
-          fontFamily: SANS,
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
-        {d.rule}
-      </span>
-      <span
-        className="mkt-margin-cell"
-        style={{
-          fontFamily: SANS,
-          fontSize: '15px',
-          fontWeight: 500,
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <span className="mkt-margin-cell text-caption text-ink-muted">{d.rule}</span>
+      <span className="mkt-margin-cell text-body-sm text-base-content font-medium">
         {d.pricing.sell}
       </span>
       <span className="mkt-margin-cell">
-        <span className={M.ink} style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>
-          {d.pricing.margin}
-        </span>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            marginLeft: '8px',
-          }}
-        >
-          {d.pricing.marginPct}
-        </span>
+        <span className={`text-small font-medium ${M.ink}`}>{d.pricing.margin}</span>
+        <span className="text-micro text-ink-subtle ml-2 font-mono">{d.pricing.marginPct}</span>
       </span>
     </div>
   );

@@ -5,6 +5,7 @@
 // Phase 1 — catalog
 export * as productService from './product-service';
 export * as variantService from './variant-service';
+export * as productTranslationService from './product-translation-service';
 export * as categoryService from './category-service';
 export * as collectionService from './collection-service';
 export * as fitmentService from './fitment-service';

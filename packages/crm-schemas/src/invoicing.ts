@@ -42,7 +42,17 @@ export const CreateDocumentWorkflowInput = z.object({
 });
 export type CreateDocumentWorkflowInput = z.infer<typeof CreateDocumentWorkflowInput>;
 
-export const UpdateDocumentWorkflowInput = CreateDocumentWorkflowInput.partial();
+// The two re-declarations are load-bearing for the same reason as
+// UpdateDocumentLineTypeInput below: `.partial()` makes a field optional but
+// leaves its `.default(...)` intact, so Zod fabricates a value for every
+// defaulted field the caller omitted, and the service updates each field that
+// is `!== undefined`. Without stripping them, a PATCH of `{name}` alone
+// silently cleared `isDefault` and reset `sortOrder` to 0 — renaming a workflow
+// demoted it from being the default one.
+export const UpdateDocumentWorkflowInput = CreateDocumentWorkflowInput.extend({
+  isDefault: z.boolean(),
+  sortOrder: z.number().int().min(0),
+}).partial();
 export type UpdateDocumentWorkflowInput = z.infer<typeof UpdateDocumentWorkflowInput>;
 
 // ── Stages ───────────────────────────────────────────────────────────────
@@ -59,7 +69,19 @@ export const CreateDocumentStageInput = z.object({
 });
 export type CreateDocumentStageInput = z.infer<typeof CreateDocumentStageInput>;
 
-export const UpdateDocumentStageInput = CreateDocumentStageInput.partial();
+// Same defaults-survive-`.partial()` trap, and the sharpest instance of it: a
+// stage's four behaviour flags are precisely what a stage IS, and every one of
+// them is defaulted on create. A PATCH of `{name}` alone reset stageType to
+// 'draft' and cleared snapshotOnEnter / numberOnEnter / locksEditing — renaming
+// "Paid" stopped it freezing a record and locking the document. `sortOrder` is
+// required (never defaulted) on create, so it needs no re-declaration; reorder
+// goes through ReorderDocumentStagesInput anyway.
+export const UpdateDocumentStageInput = CreateDocumentStageInput.extend({
+  stageType: DocumentStageType,
+  snapshotOnEnter: z.boolean(),
+  numberOnEnter: z.boolean(),
+  locksEditing: z.boolean(),
+}).partial();
 export type UpdateDocumentStageInput = z.infer<typeof UpdateDocumentStageInput>;
 
 // Reorder takes the desired final ordering — the service rewrites sort_order on
@@ -87,9 +109,25 @@ export type CreateDocumentLineTypeInput = z.infer<typeof CreateDocumentLineTypeI
 
 // `key` is immutable once set (it is the stable line FK), so the update shape
 // drops it.
+//
+// The four re-declarations are load-bearing, not noise. `.partial()` makes a
+// field optional but leaves any `.default(...)` INTACT, so Zod fabricates a
+// value for every defaulted field the caller omitted. The service updates each
+// field that is `!== undefined` — which a fabricated default satisfies — so a
+// PATCH of `{name, label}` alone silently reset pricingMode to 'flat',
+// defaultTaxable to true, isActive to true and sortOrder to 0. Renaming a line
+// type's label wiped how it prices. Stripping the defaults here is what makes
+// the service's partial-update guards mean what they say.
 export const UpdateDocumentLineTypeInput = CreateDocumentLineTypeInput.omit({
   key: true,
-}).partial();
+})
+  .extend({
+    pricingMode: LinePricingMode,
+    defaultTaxable: z.boolean(),
+    isActive: z.boolean(),
+    sortOrder: z.number().int().min(0),
+  })
+  .partial();
 export type UpdateDocumentLineTypeInput = z.infer<typeof UpdateDocumentLineTypeInput>;
 
 // ── Documents (Phase 2) ─────────────────────────────────────────────────────
@@ -201,8 +239,25 @@ export const ListBillingDocumentsInput = z.object({
   // straight in — coerce instead of 422-ing on `expected number, received string`.
   // Coercion is a no-op on the real numbers the invoicing MCP tool passes, so this
   // single funnel stays correct for both callers (docs/87 §2).
-  limit: z.coerce.number().int().min(1).max(200).default(50),
+  limit: z.coerce.number().int().min(1).max(250).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+  // Sorting is a WHITELIST, never a raw column name — `orderBy` is interpolated
+  // into the query, so an open string would be an injection surface.
+  //
+  // `number` sorts on `numberSeq`, not the rendered string: "INV-000009" vs
+  // "INV-000010" only compares correctly while the zero-padding width never
+  // changes, and it silently stops at the 10th document past a width bump.
+  // 'customer' orders by the LIVE customer/B2B-account relation — the frozen
+  // bill-to name is JSON and cannot be ordered by.
+  sortBy: z
+    .enum(['number', 'customer', 'status', 'dueAt', 'total', 'balance', 'updatedAt', 'createdAt'])
+    .default('dueAt'),
+  // Direction, which the rest of the platform hardcodes to 'desc'.
+  //
+  // It cannot be hardcoded here: a receivables list is read "what is due
+  // soonest" — ASCENDING — and that is the single most useful order this
+  // screen has. Precedent for a real direction param is scheduling/bookings.
+  order: z.enum(['asc', 'desc']).default('asc'),
 });
 export type ListBillingDocumentsInput = z.infer<typeof ListBillingDocumentsInput>;
 

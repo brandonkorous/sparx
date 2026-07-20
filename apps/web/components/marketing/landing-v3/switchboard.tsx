@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Heading } from '@wizeworks/silicaui-react';
 import type { MarketingModule } from '../primitives';
-import { MODULES, MODULE_ICON, MODULE_HEX } from '../modules-catalog';
+import { MODULES, PAID_MODULES, MODULE_ICON, MODULE_HEX } from '../modules-catalog';
 import { ModuleToggleCard } from '../module-toggle-card';
 import { StackSummaryCard, type StackLineItem } from '../stack-summary-card';
 
@@ -34,7 +34,13 @@ const ELSEWHERE_MONTHLY: Record<string, number> = {
 export function LandingV3Switchboard() {
   const [active, setActive] = useState<Set<MarketingModule>>(new Set(DEFAULT_ACTIVE));
 
+  // SEO and Automations are free platform capabilities — always on, never
+  // togglable, and absent from ELSEWHERE_MONTHLY so they add $0 to both sides.
+  const isFree = (id: MarketingModule): boolean => MODULES.some((m) => m.id === id && m.free);
+  const isActive = (id: MarketingModule): boolean => isFree(id) || active.has(id);
+
   const toggle = (id: MarketingModule) => {
+    if (isFree(id)) return;
     setActive((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -43,7 +49,7 @@ export function LandingV3Switchboard() {
     });
   };
 
-  const activeModules = MODULES.filter((m) => active.has(m.id));
+  const activeModules = MODULES.filter((m) => isActive(m.id));
   const activeLabels = new Set(activeModules.map((m) => m.label));
   const lineItems: StackLineItem[] = activeModules.map((m) => {
     const included = m.includedWith?.some((label) => activeLabels.has(label)) ?? false;
@@ -96,15 +102,22 @@ export function LandingV3Switchboard() {
                 color={m.id}
                 label={m.label}
                 title={m.title}
-                active={active.has(m.id)}
+                active={isActive(m.id)}
+                disabled={m.free}
                 onToggle={() => toggle(m.id)}
-                badgeText={m.includedWith ? `Free with ${m.includedWith[0]}` : `$${m.price}/mo`}
+                badgeText={
+                  m.free
+                    ? 'Free'
+                    : m.includedWith
+                      ? `Free with ${m.includedWith.join(' or ')}`
+                      : `$${m.price}/mo`
+                }
               />
             ))}
             <StackSummaryCard
               className="lg:col-start-4 lg:row-span-4 lg:row-start-1"
-              activeCount={activeModules.length}
-              totalModules={MODULES.length}
+              activeCount={activeModules.filter((m) => !m.free).length}
+              totalModules={PAID_MODULES.length}
               lineItems={lineItems}
               total={total}
               elsewhereTotal={elsewhereTotal}

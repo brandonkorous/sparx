@@ -149,11 +149,10 @@ export function AssetEditForm({
               draggable={false}
             />
             <div
-              className="pointer-events-none absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-lg"
+              className="bg-module pointer-events-none absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-lg"
               style={{
                 left: `${focal.x * 100}%`,
                 top: `${focal.y * 100}%`,
-                backgroundColor: 'var(--color-module)',
               }}
               aria-hidden
             />

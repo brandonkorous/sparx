@@ -10,7 +10,7 @@ import { MARKETPLACE_CATEGORIES } from '@/lib/marketplace-registry';
 
 export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
   return (
-    <div className="mkt-grid-4-2-1">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {MARKETPLACE_CATEGORIES.map((cat) => {
         const Icon = cat.icon;
         const live = cat.status === 'live';
@@ -18,16 +18,13 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
 
         const inner = (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="flex items-center justify-between">
               <span
                 aria-hidden
+                className="inline-flex h-10 w-10 items-center justify-center rounded-[10px]"
+                // The category hue is registry data (a JS value), not a token —
+                // the icon chip's tint + ink stay inline.
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '10px',
                   backgroundColor: `color-mix(in srgb, ${cat.accent} 12%, transparent)`,
                   color: cat.accent,
                 }}
@@ -35,98 +32,50 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                 <Icon size={20} strokeWidth={2} />
               </span>
               {live ? (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                <span className="text-ink-subtle text-mini font-mono">
                   {count} {count === 1 ? cat.singular : cat.label.toLowerCase()}
                 </span>
               ) : (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '11px',
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  Coming soon
-                </span>
+                <span className="text-ink-subtle text-mini font-medium">Coming soon</span>
               )}
             </div>
 
-            <h3
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.015em',
-                color: 'var(--color-base-content)',
-                paddingTop: '28px',
-                margin: 0,
-              }}
-            >
+            <h3 className="text-base-content text-h4 m-0 pt-7 font-medium tracking-[-0.015em]">
               {cat.label}
             </h3>
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                paddingTop: '8px',
-                margin: 0,
-              }}
-            >
-              {cat.tagline}
-            </p>
+            <p className="text-ink-muted text-small m-0 pt-2">{cat.tagline}</p>
 
             {live ? (
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '13px',
-                  color: cat.accent,
-                  marginTop: 'auto',
-                  paddingTop: '24px',
-                }}
-              >
+              <span className="text-caption mt-auto pt-6 font-medium" style={{ color: cat.accent }}>
                 Browse {cat.label.toLowerCase()} →
               </span>
             ) : null}
           </>
         );
 
+        const cardClass = [
+          'border-base-300 flex min-h-[200px] w-full flex-col rounded-lg border p-6',
+          live ? '' : 'opacity-[0.72]',
+        ]
+          .filter(Boolean)
+          .join(' ');
+        // Category menu: each tile wears a soft 8% wash of its category hue (a
+        // color legend). The hue is registry data, so the wash stays inline.
         const cardStyle: CSSProperties = {
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          minHeight: '200px',
-          // Category menu: each tile wears a soft 8% wash of its category hue
-          // (a color legend) instead of the retired 3px top stripe.
           backgroundColor: `color-mix(in oklab, ${cat.accent} 8%, var(--color-base-100))`,
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '8px',
-          padding: '24px',
-          opacity: live ? 1 : 0.72,
         };
 
         return live ? (
           <a
             key={cat.id}
             href={`/market/${cat.id}`}
-            style={{ ...cardStyle, textDecoration: 'none', color: 'inherit' }}
+            className={`${cardClass} text-inherit no-underline`}
+            style={cardStyle}
           >
             {inner}
           </a>
         ) : (
-          <div key={cat.id} style={cardStyle}>
+          <div key={cat.id} className={cardClass} style={cardStyle}>
             {inner}
           </div>
         );

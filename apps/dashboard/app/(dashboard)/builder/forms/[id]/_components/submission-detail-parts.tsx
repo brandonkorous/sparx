@@ -129,7 +129,7 @@ export function SubmissionAttachments({ submission }: { submission: FormSubmissi
           {submission.attachments.map((att, i) => (
             <div
               key={`${att.filename}-${i}`}
-              className="border-base-300 flex items-center justify-between gap-3 rounded-[var(--radius-md)] border px-3 py-2"
+              className="border-base-300 flex items-center justify-between gap-3 rounded-md border px-3 py-2"
             >
               <Stack gap={0} className="min-w-0">
                 <Text size="sm" className="truncate font-medium">

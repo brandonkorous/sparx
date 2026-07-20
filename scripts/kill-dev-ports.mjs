@@ -14,7 +14,8 @@
 
 import { execSync } from 'node:child_process';
 
-const PORTS = [3000, 3001, 3003, 3004, 3100, 3200, 8080, 8081, 8082, 8083];
+// 3010 market, 3011 workbench — both were missing until 2026-07-18.
+const PORTS = [3000, 3001, 3003, 3004, 3010, 3011, 3100, 3200, 8080, 8081, 8082, 8083];
 const isWindows = process.platform === 'win32';
 
 function run(cmd) {

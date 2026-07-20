@@ -131,8 +131,21 @@ describe('renderSiteUiAtom (via renderLeaf) — real components + the author rec
     expect(html).toContain('Confirm');
   });
 
-  it('an unknown type falls through to null (delegation returns undefined)', () => {
-    expect(leaf({ type: 'NotARealAtom', props: {} })).toBe('');
+  // An unrecognized `node.type` used to render `null` in BOTH modes, silently: no
+  // warning, no placeholder, no telemetry. The container wrapper still rendered, so
+  // authored content vanished behind an empty <div> nothing pointed at (docs/125 §2.2).
+  // It is now mode-split — the storefront still paints nothing at a shopper, but the
+  // author is told (docs/127 §10).
+  it('an unknown type renders NOTHING on the live storefront', () => {
+    expect(leaf({ type: 'NotARealAtom', props: {} }, { mode: 'live' })).toBe('');
+  });
+
+  it('an unknown type is VISIBLE and named in the editor', () => {
+    const html = leaf({ type: 'NotARealAtom', props: {} }, { mode: 'edit' });
+    expect(html).not.toBe('');
+    // The author needs to know WHICH type is missing to act on it, so the type name
+    // is in the output rather than a generic "something went wrong".
+    expect(html).toContain('NotARealAtom');
   });
 });
 

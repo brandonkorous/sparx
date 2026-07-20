@@ -4,7 +4,7 @@
 // action (React 19 form action), which forwards to the platform's public careers
 // API and uploads the résumé PDF. On success the whole form swaps for an inline
 // confirmation. Mirrors the /early waitlist form's structure (useActionState +
-// client-gated validation + honeypot + inline-CSS-var field styling).
+// client-gated validation + honeypot + silica Field composition).
 
 import { useActionState, useState } from 'react';
 import {
@@ -22,23 +22,8 @@ import { submitApplication, type ApplicationState } from '../actions';
 
 const INITIAL: ApplicationState = { status: 'idle' };
 
-const labelStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '13px',
-  fontWeight: 500,
-  color: 'var(--color-base-content)',
-};
-
-const optionalStyle: React.CSSProperties = {
-  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-  fontWeight: 400,
-};
-
-const hintStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '12px',
-  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-};
+const LABEL_CLASS = 'text-caption text-base-content font-medium';
+const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
 
 export interface ApplyFormRole {
   slug: string;
@@ -56,9 +41,9 @@ type TextFieldProps = {
 function TextField({ label, optional, fieldStatus, ...control }: TextFieldProps) {
   return (
     <Field {...fieldStatus}>
-      <FieldLabel required={!optional} style={labelStyle}>
+      <FieldLabel required={!optional} className={LABEL_CLASS}>
         {label}
-        {optional ? <span style={optionalStyle}> (optional)</span> : null}
+        {optional ? <span className={OPTIONAL_CLASS}> (optional)</span> : null}
       </FieldLabel>
       <FieldControl {...control} />
     </Field>
@@ -89,16 +74,12 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
   }
 
   return (
-    <form
-      action={clientAction}
-      style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}
-      noValidate
-    >
+    <form action={clientAction} className="flex flex-col gap-[18px]" noValidate>
       {/* Carries the role identity to the server action. */}
       <input type="hidden" name="roleSlug" value={role.slug} />
       <input type="hidden" name="roleTitle" value={role.title} />
 
-      <div className="mkt-grid-2-1">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TextField
           name="fullName"
           label="Full name"
@@ -125,7 +106,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
         />
       </div>
 
-      <div className="mkt-grid-2-1">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TextField
           name="phone"
           label="Phone"
@@ -145,7 +126,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
         />
       </div>
 
-      <div className="mkt-grid-2-1">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TextField
           name="linkedinUrl"
           label="LinkedIn"
@@ -168,7 +149,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 
       {role.interestPrompt ? (
         <Field>
-          <FieldLabel style={labelStyle}>What would you own?</FieldLabel>
+          <FieldLabel className={LABEL_CLASS}>What would you own?</FieldLabel>
           <FieldControl
             render={
               <Textarea
@@ -183,8 +164,8 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
       ) : null}
 
       <Field>
-        <FieldLabel style={labelStyle}>
-          Anything else? <span style={optionalStyle}>(optional)</span>
+        <FieldLabel className={LABEL_CLASS}>
+          Anything else? <span className={OPTIONAL_CLASS}>(optional)</span>
         </FieldLabel>
         <FieldControl
           render={
@@ -201,7 +182,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
       <ResumeField required={role.resumeRequired} />
 
       {/* Honeypot — hidden from people, catnip for bots. */}
-      <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
+      <div aria-hidden className="absolute left-[-9999px] h-px w-px">
         <label htmlFor="ap-website">Website</label>
         <input id="ap-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
@@ -214,7 +195,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 
       <SubmitButton pending={pending} />
 
-      <p style={{ ...hintStyle, margin: 0, lineHeight: '18px' }}>
+      <p className="text-mini text-ink-subtle m-0">
         A real person — usually the founder — reads every application. No black hole, no bot screen.
       </p>
     </form>
@@ -226,8 +207,8 @@ function ResumeField({ required }: { required: boolean }) {
   // its label + hint adopt the Field composition for consistency.
   return (
     <Field>
-      <FieldLabel required={required} style={labelStyle}>
-        Résumé <span style={optionalStyle}>{required ? '(PDF)' : '(PDF, optional)'}</span>
+      <FieldLabel required={required} className={LABEL_CLASS}>
+        Résumé <span className={OPTIONAL_CLASS}>{required ? '(PDF)' : '(PDF, optional)'}</span>
       </FieldLabel>
       <FieldControl
         render={
@@ -247,7 +228,7 @@ function ResumeField({ required }: { required: boolean }) {
 
 function SubmitButton({ pending }: { pending: boolean }) {
   return (
-    <Button type="submit" size="lg" disabled={pending} style={{ width: '100%' }}>
+    <Button type="submit" size="lg" disabled={pending} className="w-full">
       {pending ? 'Sending…' : 'Submit application →'}
     </Button>
   );
@@ -255,55 +236,18 @@ function SubmitButton({ pending }: { pending: boolean }) {
 
 function Confirmation() {
   return (
-    <div
-      role="status"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        alignItems: 'flex-start',
-        paddingTop: '8px',
-        paddingBottom: '8px',
-      }}
-    >
+    <div role="status" className="flex flex-col items-start gap-3.5 py-2">
       <span
         aria-hidden
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 44,
-          height: 44,
-          borderRadius: 9999,
-          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-          color: 'var(--color-primary, #e04631)',
-          fontSize: 22,
-        }}
+        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
       >
         ✓
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '24px',
-          letterSpacing: '-0.02em',
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <span className="text-h2 text-base-content font-medium tracking-[-0.02em]">
         Application received
         <Spark />
       </span>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: 'var(--font-sans)',
-          fontSize: '15px',
-          lineHeight: '24px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          maxWidth: '380px',
-        }}
-      >
+      <p className="text-body-sm text-ink-muted m-0 max-w-[380px]">
         Thank you — we&rsquo;ll be in touch. A real person reads every application, so give us a
         little time to do it justice.
       </p>

@@ -5,7 +5,8 @@
 // CTA and the facet links land here.
 
 import { Button, Input } from '@wizeworks/silicaui-react';
-import { SectionHeader } from '@/components/marketing/primitives';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Container, SectionHeader } from '@/components/marketing/primitives';
 import type { BootcampListResponse } from '@/lib/bootcamp';
 import { BootcampDirectoryCard } from './bootcamp-card';
 import { BootcampFacetBar, type BootcampParams, type DatePreset } from './facet-bar';
@@ -26,21 +27,13 @@ export function BootcampDirectory({
   return (
     <section
       id="directory"
-      style={{
-        paddingTop: 'var(--section-py-lg)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-        borderTop: '1px solid var(--color-base-300)',
-        scrollMarginTop: '80px',
-      }}
+      className="bg-base-200 border-base-300 px-page py-section-lg scroll-mt-20 border-t"
     >
-      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <Container>
+        <div className="flex flex-col gap-9">
+          <div className="flex flex-col gap-5">
             <SectionHeader accent="var(--color-primary)" headline={<>Upcoming bootcamps</>} />
-            <form method="get" action="/bootcamp" className="mkt-cluster" style={{ gap: '8px' }}>
+            <form method="get" action="/bootcamp" className="flex flex-wrap items-center gap-2">
               {current.format ? <input type="hidden" name="format" value={current.format} /> : null}
               {current.location ? (
                 <input type="hidden" name="location" value={current.location} />
@@ -52,7 +45,7 @@ export function BootcampDirectory({
                 name="q"
                 defaultValue={current.q ?? ''}
                 placeholder="Search bootcamps…"
-                style={{ maxWidth: '300px' }}
+                className="max-w-[300px]"
               />
               <Button type="submit" variant="outline">
                 Search
@@ -62,23 +55,15 @@ export function BootcampDirectory({
 
           <BootcampFacetBar facets={page.facets} current={current} datePresets={datePresets} />
 
-          <div
-            style={{
-              borderTop: '1px solid var(--color-base-300)',
-              paddingTop: '20px',
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <div className="border-base-300 text-small text-ink-muted border-t pt-5">
             {showing > 0
               ? `${showing}${page.next_cursor ? '+' : ''} bootcamp${showing === 1 ? '' : 's'}`
               : 'No bootcamps yet'}
           </div>
 
           {showing > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div className="mkt-grid-3-2-1">
+            <div className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {page.items.map((b) => (
                   <BootcampDirectoryCard key={b.id} bootcamp={b} />
                 ))}
@@ -91,49 +76,30 @@ export function BootcampDirectory({
             <EmptyState filtered={filtered} />
           )}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
 
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '18px',
-        padding: '56px 0',
-        textAlign: 'center',
-      }}
-    >
-      <p
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '17px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          margin: 0,
-          maxWidth: '440px',
-          lineHeight: '26px',
-        }}
-      >
+    <div className="flex flex-col items-center gap-[18px] py-14 text-center">
+      <p className="text-body-lg text-ink-muted m-0 max-w-[440px]">
         {filtered
           ? 'No bootcamps match these filters yet. Try clearing them — new sessions are added all the time.'
           : 'No bootcamps in your area yet. Check back soon — or ask your sparx partner about hosting one.'}
       </p>
-      <div className="mkt-cluster" style={{ gap: '12px', justifyContent: 'center' }}>
+      <div className="flex flex-wrap items-center justify-center gap-3">
         {filtered ? (
-          <a href="/bootcamp#directory">
-            <Button size="lg" variant="outline">
-              Clear filters
-            </Button>
+          <a
+            href="/bootcamp#directory"
+            className={buttonClasses({ size: 'lg', variant: 'outline' })}
+          >
+            Clear filters
           </a>
         ) : (
-          <a href="/partners">
-            <Button size="lg" color="primary">
-              Host a bootcamp →
-            </Button>
+          <a href="/partners" className={buttonClasses({ size: 'lg', color: 'primary' })}>
+            Host a bootcamp →
           </a>
         )}
       </div>

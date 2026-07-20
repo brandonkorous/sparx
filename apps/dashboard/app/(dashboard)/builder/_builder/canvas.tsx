@@ -728,8 +728,8 @@ function CanvasNode({
               </span>
             ) : null}
             {bindSlot !== null ? (
-              <span className="bx-tag__bind" style={{ color: 'var(--color-module)' }}>
-                <span className="bx-tag__dot" style={{ background: 'var(--color-module)' }} />
+              <span className="bx-tag__bind text-module">
+                <span className="bx-tag__dot bg-module" />
                 field · {bindSlot}
               </span>
             ) : null}

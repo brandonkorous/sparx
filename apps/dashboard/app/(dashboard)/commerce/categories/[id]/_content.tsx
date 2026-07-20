@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 
 import { CategoryEditForm, type CategoryEditData } from '../_components/category-edit-form';
 import { loadCategoryParents } from '../_components/category-parent-options';
@@ -37,12 +38,16 @@ export async function CategoryDetailContent({
   }
 
   const parents = await loadCategoryParents();
+  // Multi-site (docs/49 §3): the tenant's sites, for the "Visible on sites" control.
+  // SiteScopeField hides itself for single-site tenants, so this is a no-op there.
+  const sites = await listProperties().catch(() => [] as Property[]);
 
   return (
     <CategoryEditForm
       surface={surface}
       category={category}
       parents={parents}
+      sites={sites}
       meta={{
         productCount: category.productCount,
         createdAt: category.createdAt,

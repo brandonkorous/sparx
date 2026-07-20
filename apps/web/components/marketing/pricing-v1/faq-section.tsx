@@ -30,11 +30,7 @@ export function PricingV1Faq() {
   const firstOpen = PRICING_FAQ[0]?.id;
 
   return (
-    <section
-      id="faq"
-      className="px-[var(--gutter-page)] py-[var(--section-py-xl)]"
-      style={{ scrollMarginTop: '80px' }}
-    >
+    <section id="faq" className="px-page py-section-xl scroll-mt-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
@@ -48,10 +44,7 @@ export function PricingV1Faq() {
             </Heading>
             <Text variant="lead" className="max-w-sm">
               Still curious? Read the platform docs, browse the API spec, or{' '}
-              <a
-                href={SALES_HREF}
-                style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
-              >
+              <a href={SALES_HREF} className="text-primary no-underline">
                 book a 20-min call
               </a>
               . We don&rsquo;t do high-pressure demos.

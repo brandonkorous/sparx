@@ -51,6 +51,17 @@ export class AutomationNotFoundError extends Error {
   }
 }
 
+/** A `propertyId` was supplied that is not one of this tenant's sites (docs/131
+ *  §3.1). Deliberately indistinguishable from "no such site" — a caller must not
+ *  be able to tell another tenant's real site id from a fabricated one. */
+export class PropertyNotFoundError extends Error {
+  readonly code = 'PROPERTY_NOT_FOUND' as const;
+  constructor(public readonly propertyId: string) {
+    super(`site ${propertyId} not found`);
+    Object.setPrototypeOf(this, PropertyNotFoundError.prototype);
+  }
+}
+
 /** Publish was requested but the automation has no staged draft. */
 export class NoDraftError extends Error {
   readonly code = 'AUTOMATION_NO_DRAFT' as const;
@@ -119,6 +130,30 @@ function snapshotVersion(
   });
 }
 
+/**
+ * Reject a `propertyId` that is not this tenant's site.
+ *
+ * The FK to `properties` proves the row EXISTS, not that it is yours — a foreign
+ * key check is performed by Postgres internally and is not an authorization
+ * boundary. Without this, a caller could scope a rule to another tenant's site
+ * id and use the accept/reject response to probe which ids are real.
+ *
+ * The lookup runs on the caller's tenant-scoped `tx`, so RLS does the actual
+ * work: someone else's property simply is not visible and resolves to null.
+ * Passing `null` (explicitly tenant-wide) is always allowed.
+ */
+async function assertOwnProperty(
+  tx: Prisma.TransactionClient,
+  propertyId: string | null | undefined
+): Promise<void> {
+  if (!propertyId) return;
+  const found = await tx.property.findUnique({
+    where: { id: propertyId },
+    select: { id: true },
+  });
+  if (!found) throw new PropertyNotFoundError(propertyId);
+}
+
 export async function createAutomation(
   ctx: ServiceCtx,
   input: CreateAutomationInput
@@ -131,9 +166,11 @@ export async function createAutomation(
   // an explicit publish. The deployment `status` stays 'draft' (not firing) —
   // the tenant flips it active separately.
   return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
+    await assertOwnProperty(tx, data.propertyId);
     const created = await tx.automation.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: data.propertyId ?? null,
         name: data.name,
         description: data.description ?? null,
         status: 'draft',
@@ -209,6 +246,21 @@ export async function updateAutomation(
     }
 
     if (data.status !== undefined) patch.status = data.status;
+
+    // Re-scoping applies IMMEDIATELY, like `status` — it is deliberately not
+    // part of the staged draft document (docs/131 §3.1).
+    //
+    // Two reasons. It is a SAFETY BOUNDARY, not authored content: on discovering
+    // a rule is firing on the wrong business, the fix has to take effect now,
+    // not sit in a draft waiting for someone to press Publish. And the version
+    // snapshots in `automation_versions` are the rule DOCUMENT — trigger,
+    // conditions, actions — so threading scope through them would make every
+    // historical version claim a site it was never evaluated under.
+    if (data.propertyId !== undefined) {
+      await assertOwnProperty(tx, data.propertyId);
+      patch.property =
+        data.propertyId === null ? { disconnect: true } : { connect: { id: data.propertyId } };
+    }
 
     return tx.automation.update({ where: { id }, data: patch });
   });

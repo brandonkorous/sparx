@@ -42,10 +42,15 @@ export interface DocumentWithLines extends BillingDocument {
 // Reads
 // ─────────────────────────────────────────────────────────────────────────
 
+/** A list row: the document plus the billed party resolved for display. */
+export interface BillingDocumentListItem extends BillingDocument {
+  billedToName: string | null;
+}
+
 export async function list(
   ctx: ServiceContext,
   rawFilter: unknown = {}
-): Promise<{ items: BillingDocument[]; total: number }> {
+): Promise<{ items: BillingDocumentListItem[]; total: number }> {
   const filter = ListBillingDocumentsInput.parse(rawFilter);
   return withTenant(ctx, async (tx) => {
     const where: Prisma.BillingDocumentWhereInput = {
@@ -70,17 +75,131 @@ export async function list(
           }
         : {}),
     };
-    const [items, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       tx.billingDocument.findMany({
         where,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: orderByFor(filter.sortBy, filter.order),
         take: filter.limit,
         skip: filter.offset,
+        // The billed party, resolved for the LIST.
+        //
+        // Without this a list row carries `customerId` and the frozen `billTo`
+        // JSON, and nothing else — and `billTo` is only written when a document
+        // is snapshotted, so every draft and every open document showed a blank
+        // customer column. "INV-000002, unpaid, $100.00" with no name is not a
+        // row anyone can act on; identifying who owes you is the entire job of
+        // a receivables list.
+        include: {
+          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+          b2bAccount: { select: { companyName: true } },
+        },
       }),
       tx.billingDocument.count({ where }),
     ]);
+
+    const items = rows.map(({ customer, b2bAccount, ...document }) => ({
+      ...document,
+      billedToName: billedToName(document.billTo, customer, b2bAccount),
+    }));
     return { items, total };
   });
+}
+
+/** Shape of the two relations the list resolves a name from. */
+type BilledCustomer = {
+  firstName: string | null;
+  lastName: string | null;
+  company: string | null;
+  email: string | null;
+} | null;
+type BilledAccount = { companyName: string } | null;
+
+/**
+ * Who this document bills, as one display string.
+ *
+ * Resolution order matters and is not arbitrary. The FROZEN `billTo` wins when
+ * present: once a document is issued it must keep naming whoever it named at
+ * the time, even if that customer later changes their name or is deleted — that
+ * is the whole reason bill-to is snapshotted rather than joined. The live
+ * relations are the fallback for everything not yet frozen, which in practice
+ * is every draft and open document.
+ */
+function billedToName(
+  billTo: Prisma.JsonValue,
+  customer: BilledCustomer,
+  account: BilledAccount
+): string | null {
+  if (billTo && typeof billTo === 'object' && !Array.isArray(billTo)) {
+    const frozen = (billTo as Record<string, unknown>).name;
+    if (typeof frozen === 'string' && frozen.trim()) return frozen;
+  }
+  if (account?.companyName) return account.companyName;
+  if (customer) {
+    const person = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+    return customer.company ?? (person || customer.email) ?? null;
+  }
+  return null;
+}
+
+/**
+ * Sort order for a paged list.
+ *
+ * Two things here are load-bearing for PAGINATION specifically, not just for
+ * sorting, and both are invisible until a list is long enough to page:
+ *
+ * 1. The `id` tiebreaker. `skip`/`take` re-runs the query per page, and rows
+ *    that tie on the sort column have no guaranteed order between runs — so a
+ *    document can appear on both page 1 and page 2 while another is never
+ *    shown at all. Postgres is free to do this; it is not a bug you can rely
+ *    on not hitting. A unique final key makes the total order deterministic.
+ *
+ * 2. NULLS LAST in both directions. `dueAt` is null for a document with no due
+ *    date and `numberSeq` is null for an unnumbered draft. Postgres defaults to
+ *    NULLS LAST ascending but NULLS FIRST descending, so "newest due date
+ *    first" would otherwise open with a block of documents that have no due
+ *    date at all — the least useful rows, in the most prominent position.
+ */
+function orderByFor(
+  sortBy: ListBillingDocumentsInput['sortBy'],
+  order: ListBillingDocumentsInput['order']
+): Prisma.BillingDocumentOrderByWithRelationInput[] {
+  const nullable = { sort: order, nulls: 'last' } as const;
+
+  switch (sortBy) {
+    // Sorts on the LIVE relation, while the column displays the frozen
+    // bill-to name where one exists — so an issued document that was renamed
+    // at the customer's end sorts by its current name and displays its
+    // historical one. That is the lesser of the two evils: the alternative is
+    // no customer sort at all, because the frozen name lives in JSON and
+    // cannot be ordered by. Documents billing a B2B account order by company
+    // name; the two groups therefore cluster rather than interleave.
+    case 'customer':
+      return [
+        { b2bAccount: { companyName: order } },
+        { customer: { company: order } },
+        { customer: { lastName: order } },
+        { id: order },
+      ];
+    // URGENCY, not the alphabet. `statusRank` is a generated column
+    // (overdue 10 → unpaid 20 → partial 30 → paid 40 → void 50), so ascending
+    // is "what needs chasing first" — which is what an operator means when
+    // they sort a receivables list by status. Ordering on `status` itself
+    // would sort the text and put PAID second.
+    case 'status':
+      return [{ statusRank: order }, { dueAt: nullable }, { id: order }];
+    case 'number':
+      return [{ numberSeq: nullable }, { id: order }];
+    case 'dueAt':
+      return [{ dueAt: nullable }, { id: order }];
+    case 'total':
+      return [{ total: order }, { id: order }];
+    case 'balance':
+      return [{ balance: order }, { id: order }];
+    case 'createdAt':
+      return [{ createdAt: order }, { id: order }];
+    case 'updatedAt':
+      return [{ updatedAt: order }, { id: order }];
+  }
 }
 
 export interface AgingBucketOut {

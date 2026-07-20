@@ -17,6 +17,7 @@ import {
   type BuilderNode,
   type BuilderPageDto,
   type BuilderPageKind,
+  type BuilderPageSummaryDto,
   type PublishedPageDto,
 } from '@sparx/builder-schemas';
 import type { BuilderPage, Prisma } from '@sparx/db';
@@ -24,11 +25,59 @@ import { withTenant, type TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
+import { invalidatePublishedStylesheet } from './surface-css-service';
 import type { PropertyContext, ServiceContext } from '../errors';
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
 import { syncFormDefinitions } from './form-definition-service';
+
+/** The columns a SUMMARY read needs — everything but the four tree columns
+ *  (docs/127 §3). `publishedTree` is excluded too: `published` is derived from it,
+ *  so the boolean is computed from a cheap `publishedAt` check instead of hauling
+ *  the tree back to test it for null. */
+const PAGE_SUMMARY_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+  kind: true,
+  recordType: true,
+  publishedAt: true,
+  position: true,
+  isDefault: true,
+  seoTitle: true,
+  seoDescription: true,
+  canonical: true,
+  ogImage: true,
+  noindex: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
+type PageSummaryRow = Pick<BuilderPage, keyof typeof PAGE_SUMMARY_SELECT>;
+
+function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    kind: row.kind as BuilderPageKind,
+    recordType: row.recordType,
+    // A page is published iff it has been published — `publishedAt` answers that
+    // without reading the tree it would otherwise be tested against.
+    published: row.publishedAt != null,
+    publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    position: row.position,
+    isDefault: row.isDefault,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    canonical: row.canonical,
+    ogImage: row.ogImage,
+    noindex: row.noindex,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
+}
 
 function toDto(row: BuilderPage): BuilderPageDto {
   return {
@@ -150,10 +199,11 @@ export function ensureHome(ctx: PropertyContext): Promise<BuilderPageDto | null>
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Also heals a
  *  home-less property (pages but no slugless singleton) by injecting the default
  *  home, so every site that's ever opened has a `/`. Idempotent. */
-export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageDto[]> {
+export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageSummaryDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
+      select: PAGE_SUMMARY_SELECT,
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     if (rows.length > 0) {
@@ -163,11 +213,12 @@ export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageDto[]> {
       if (!hasHome && (await ensureHomeTx(tx, ctx))) {
         const healed = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
+          select: PAGE_SUMMARY_SELECT,
           orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
         });
-        return healed.map(toDto);
+        return healed.map(toSummaryDto);
       }
-      return rows.map(toDto);
+      return rows.map(toSummaryDto);
     }
 
     await tx.builderPage.createMany({
@@ -372,6 +423,9 @@ export async function publish(ctx: PropertyContext, id: string): Promise<Builder
     });
     return toDto(updated);
   });
+  // Drop the memoized Surface stylesheet — this page's published tree just changed,
+  // so its authored class set may have too (docs/127 §4).
+  invalidatePublishedStylesheet(ctx);
   await publishBuilderEvent({
     tenantId: ctx.tenantId,
     topic: 'builder.page.published',

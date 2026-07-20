@@ -353,7 +353,7 @@ export function ImportDialog({
               <Stack gap={1} className="bg-danger bg-soft rounded-md p-3">
                 {headerErrors.map((e) => (
                   <Stack key={e} direction="row" align="start" gap={2}>
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
+                    <AlertTriangle className="text-danger mt-0.5 h-4 w-4 shrink-0" />
                     <Text size="sm" variant="danger">
                       {e}
                     </Text>
@@ -468,7 +468,7 @@ export function ImportDialog({
                 gap={2}
                 className="bg-danger bg-soft rounded-md p-3"
               >
-                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
+                <XCircle className="text-danger mt-0.5 h-4 w-4 shrink-0" />
                 <Text size="sm" variant="danger">
                   {errorMsg}
                 </Text>
@@ -498,14 +498,14 @@ export function ImportDialog({
           <Stack gap={5} className="mt-4">
             {result.status === 'completed' ? (
               <Stack direction="row" align="center" gap={2}>
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-[var(--color-success)]" />
+                <CheckCircle2 className="text-success h-5 w-5 shrink-0" />
                 <Text size="sm" className="font-medium">
                   Import complete
                 </Text>
               </Stack>
             ) : (
               <Stack direction="row" align="center" gap={2}>
-                <XCircle className="h-5 w-5 shrink-0 text-[var(--color-danger)]" />
+                <XCircle className="text-danger h-5 w-5 shrink-0" />
                 <Text size="sm" className="font-medium">
                   Import failed
                 </Text>
@@ -527,7 +527,7 @@ export function ImportDialog({
               </Stack>
               {result.errorCount > 0 && (
                 <Stack gap={1} className="text-center">
-                  <Text className="text-2xl font-bold text-[var(--color-danger)] tabular-nums">
+                  <Text className="text-danger text-2xl font-bold tabular-nums">
                     {result.errorCount}
                   </Text>
                   <Text size="xs" variant="muted">
@@ -560,9 +560,7 @@ export function ImportDialog({
                             <td className="max-w-[100px] truncate px-3 py-1.5">
                               {r.naturalKey ?? '—'}
                             </td>
-                            <td className="px-3 py-1.5 text-[var(--color-danger)]">
-                              {r.errorMsg ?? '—'}
-                            </td>
+                            <td className="text-danger px-3 py-1.5">{r.errorMsg ?? '—'}</td>
                           </tr>
                         ))}
                     </tbody>

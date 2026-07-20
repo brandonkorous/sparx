@@ -1,18 +1,20 @@
 import { Button } from '@wizeworks/silicaui-react';
+import { badgeClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Display, Section, SectionHeader, Spark } from './primitives';
 
 /**
  * The /partners section components (hero, social proof, the opportunity ledger,
- * the numbered how-it-works rail, the directory-CTA split, the dark final CTA).
+ * the how-it-works rail, the directory-CTA split, the dark final CTA).
  * The tiers matrix and the apply form live in their own files; the orchestrator
  * in partners-page.tsx assembles all of them. Platform Ember is the through-line.
+ *
+ * Class-based per SILICA-VOCABULARY.md: the Ember tint is silica's own
+ * `bg-primary bg-soft` treatment, ink comes from `text-ink-muted`/`text-primary`,
+ * and the dark final CTA is a `<Section surface="dark">` island rather than a
+ * hand-painted near-black with hand-picked white/grey partners.
  */
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 const EMBER = 'var(--color-primary)';
-const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const EMBER_TEXT = 'var(--color-primary)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function PartnersHero() {
@@ -22,17 +24,9 @@ export function PartnersHero() {
     'earn on every client that publishes',
   ];
   return (
-    <section
-      style={{
-        backgroundColor: EMBER_TINT,
-        paddingTop: 'clamp(56px, 8vw, 104px)',
-        paddingBottom: 'clamp(72px, 10vw, 120px)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div style={{ maxWidth: '820px' }}>
+    <section className="bg-primary bg-soft px-page pt-[clamp(56px,8vw,104px)] pb-[clamp(72px,10vw,120px)]">
+      <Container className="flex flex-col gap-7">
+        <div className="max-w-[820px]">
           <Display as="h1" size={96} lineHeight={94}>
             Build your practice
             <br />
@@ -40,20 +34,11 @@ export function PartnersHero() {
             <Spark />
           </Display>
         </div>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: 'clamp(17px, 1.7vw, 20px)',
-            lineHeight: 1.55,
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '620px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted max-w-[620px] text-[clamp(17px,1.7vw,20px)] leading-[1.55]">
           Help businesses replace their site, CRM, and email stack with one platform &mdash; and get
           paid every time one goes live. No reseller contract. No minimums.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="#apply">
             <Button size="lg">Apply to become a partner →</Button>
           </a>
@@ -63,20 +48,10 @@ export function PartnersHero() {
             </Button>
           </a>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '10px 26px',
-            marginTop: '12px',
-            fontFamily: MONO,
-            fontSize: '12.5px',
-            color: EMBER_TEXT,
-          }}
-        >
+        <div className="text-primary text-mini mt-3 flex flex-wrap gap-x-[26px] gap-y-2.5 font-mono">
           {earn.map((e) => (
-            <span key={e} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: EMBER }} />
+            <span key={e} className="inline-flex items-center gap-2">
+              <span className="bg-primary size-[7px] shrink-0 rounded-full" />
               {e}
             </span>
           ))}
@@ -101,20 +76,12 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
     },
   ];
   return (
-    <Section surface="surface" padding="md" style={{ paddingTop: 0, paddingBottom: 0 }} bleed>
-      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
+    <Section surface="surface" padding="md" className="py-0!" bleed>
+      <Container>
         <div className="mkt-proof-3">
           {cells.map((c) => (
-            <div key={c.lab} style={{ padding: 'clamp(28px, 4vw, 44px) 28px' }}>
-              <div
-                style={{
-                  fontFamily: SANS,
-                  fontSize: 'clamp(30px, 4vw, 44px)',
-                  fontWeight: 500,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div key={c.lab} className="px-7 py-[clamp(28px,4vw,44px)]">
+              <div className="text-base-content text-[clamp(30px,4vw,44px)] font-medium tracking-[-0.03em]">
                 {c.num === 'Be first.' ? (
                   <>
                     Be first
@@ -124,22 +91,11 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
                   c.num
                 )}
               </div>
-              <div
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '14px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  marginTop: '8px',
-                  maxWidth: '300px',
-                }}
-              >
-                {c.lab}
-              </div>
+              <div className="text-ink-muted text-small mt-2 max-w-[300px]">{c.lab}</div>
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </Section>
   );
 }
@@ -170,41 +126,13 @@ export function PartnersOpportunity() {
         headline={<>An easier sale, and a better one</>}
         lede="sparx pays you to do what you already do — set businesses up right. Three reasons the math works in your favor."
       />
-      <div style={{ marginTop: '48px' }}>
+      <div className="mt-12">
         {rows.map((r) => (
           <div key={r.token} className="mkt-opp-row">
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: 'clamp(19px, 2.2vw, 25px)',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-                lineHeight: 1.35,
-                maxWidth: '720px',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              {r.claim}{' '}
-              <span
-                style={{
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  fontWeight: 400,
-                }}
-              >
-                {r.thin}
-              </span>
+            <p className="text-base-content m-0 max-w-[720px] text-[clamp(19px,2.2vw,25px)] leading-[1.35] font-medium tracking-[-0.02em]">
+              {r.claim} <span className="text-ink-muted font-normal">{r.thin}</span>
             </p>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: 'clamp(19px, 2.3vw, 28px)',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-                color: EMBER_TEXT,
-                whiteSpace: 'nowrap',
-              }}
-            >
+            <span className="text-primary text-[clamp(19px,2.3vw,28px)] font-medium tracking-[-0.02em] whitespace-nowrap">
               {r.token}
             </span>
           </div>
@@ -214,26 +142,22 @@ export function PartnersOpportunity() {
   );
 }
 
-// ── HOW IT WORKS · numbered rail ────────────────────────────────────────────
+// ── HOW IT WORKS · rail ─────────────────────────────────────────────────────
 export function PartnersSteps() {
   const steps = [
     {
-      n: '01',
       t: 'Apply',
       d: 'Submit your application. Informal partners are approved instantly; registered and certified go to a quick review.',
     },
     {
-      n: '02',
       t: 'Build',
       d: 'Get your partner dashboard. Manage client accounts, track referrals, and grab the pitch deck and proposal templates.',
     },
     {
-      n: '03',
       t: 'Refer',
       d: 'Bring clients onto sparx with your referral link. When they publish and pay, you earn — automatically attributed.',
     },
     {
-      n: '04',
       t: 'Grow',
       d: 'Hit activity thresholds to advance tiers. Higher tiers unlock higher commission and exclusive resources.',
     },
@@ -245,54 +169,18 @@ export function PartnersSteps() {
         headline={<>How it works</>}
         lede="From application to your first payout, four steps — no gatekeeping, no long onboarding."
       />
-      <div className="mkt-steprail" style={{ marginTop: '56px' }}>
+      <div className="mkt-steprail mt-14">
         {steps.map((s) => (
-          <div key={s.n} className="mkt-step">
-            <span
-              className="mkt-step-arrow"
-              aria-hidden
-              style={{
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                fontSize: '20px',
-              }}
-            >
+          <div key={s.t} className="mkt-step">
+            <span className="mkt-step-arrow text-ink-subtle text-h4" aria-hidden>
               →
             </span>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '13px',
-                color: EMBER,
-                borderTop: `2px solid ${EMBER}`,
-                paddingTop: '14px',
-                display: 'inline-block',
-                width: '40px',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: '14px 0 0',
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {s.t}
-            </h3>
-            <p
-              style={{
-                margin: '10px 0 0',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.d}
-            </p>
+            {/* The rail's column marker: the 2px Ember rule delineates each step's
+                track. The old `01`/`02` numerals above the heading were step
+                markers — an eyebrow by another name — and are gone. */}
+            <span className="border-primary block w-10 border-t-2" aria-hidden />
+            <h3 className="text-h4 mt-3.5 font-medium tracking-[-0.02em]">{s.t}</h3>
+            <p className="text-ink-muted text-small mt-2.5">{s.d}</p>
           </div>
         ))}
       </div>
@@ -304,77 +192,34 @@ export function PartnersSteps() {
 export function PartnersDirectoryCta() {
   const preview = [
     { name: <Chip label="Certified" tone="cert" />, loc: 'Austin, TX' },
-    { name: <span style={{ fontWeight: 500 }}>Northlight Studio</span>, loc: 'Remote' },
+    { name: <span className="font-medium">Northlight Studio</span>, loc: 'Remote' },
     { name: <Chip label="Registered" tone="reg" />, loc: 'Portland, OR' },
   ];
   return (
     <Section surface="surface" padding="lg">
-      <div
-        className="mkt-dircta"
-        style={{
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '18px',
-          padding: 'clamp(28px, 4vw, 48px)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
+      <div className="mkt-dircta border-base-300 bg-base-200 rounded-[18px] border p-[clamp(28px,4vw,48px)]">
         <div>
-          <h3
-            style={{
-              margin: 0,
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: 'clamp(24px, 3vw, 34px)',
-              letterSpacing: '-0.025em',
-              lineHeight: 1.1,
-            }}
-          >
+          <h3 className="text-[clamp(24px,3vw,34px)] leading-[1.1] font-medium tracking-[-0.025em]">
             Looking for a partner, not a program?
           </h3>
-          <p
-            style={{
-              margin: '16px 0 0',
-              fontFamily: SANS,
-              fontSize: '16px',
-              lineHeight: 1.6,
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '460px',
-            }}
-          >
+          <p className="text-ink-muted text-body mt-4 max-w-[460px]">
             If you&rsquo;re a business that wants help getting set up on sparx, browse certified
             partners by location and specialty and reach out directly.
           </p>
-          <a href="/partners/directory" style={{ display: 'inline-block', marginTop: '24px' }}>
-            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <a href="/partners/directory" className="mt-6 inline-block">
+            <Button color="neutral" size="lg">
               Find a partner →
             </Button>
           </a>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className="flex flex-col gap-2.5">
           {preview.map((p, i) => (
             <div
               key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '14px',
-                padding: '14px 18px',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                backgroundColor: 'var(--color-base-100)',
-              }}
+              className="border-base-300 bg-base-100 flex items-center justify-between gap-3.5 rounded-xl border px-[18px] py-3.5"
             >
-              <span style={{ fontFamily: SANS, fontSize: '15px' }}>{p.name}</span>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {p.loc}
-              </span>
+              <span className="text-body-sm">{p.name}</span>
+              <span className="text-ink-subtle text-caption">{p.loc}</span>
             </div>
           ))}
         </div>
@@ -383,21 +228,15 @@ export function PartnersDirectoryCta() {
   );
 }
 
+/** Directory tier chip — a real silica badge, not a hand-rolled fill + ink pair. */
 function Chip({ label, tone }: { label: string; tone: 'cert' | 'reg' }) {
-  const cert = tone === 'cert';
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '3px 10px',
-        borderRadius: '9999px',
-        fontFamily: SANS,
-        fontSize: '11px',
-        fontWeight: 500,
-        backgroundColor: cert ? EMBER_TINT : '#ECFEFF',
-        color: cert ? EMBER_TEXT : '#0E7490',
-      }}
+      className={badgeClasses({
+        color: tone === 'cert' ? 'primary' : 'info',
+        variant: 'soft',
+        size: 'sm',
+      })}
     >
       {label}
     </span>
@@ -407,49 +246,26 @@ function Chip({ label, tone }: { label: string; tone: 'cert' | 'reg' }) {
 // ── FINAL CTA (dark) ────────────────────────────────────────────────────────
 export function PartnersFinalCta() {
   return (
-    <section
-      style={{
-        backgroundColor: '#0A0A0A',
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '26px', alignItems: 'flex-start' }}
-      >
-        <Display size={78} lineHeight={76} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-[26px]">
+        <Display size={78} lineHeight={76}>
           Start earning on sparx
           <Spark color={EMBER} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: 1.6,
-            color: '#A1A1AA',
-            maxWidth: '560px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede max-w-[560px]">
           Apply in two minutes. Refer your first client this week. Get paid when they go live.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px', marginTop: '10px' }}>
+        <div className="mt-2.5 flex flex-wrap items-center gap-3">
           <a href="#apply">
             <Button size="xl">Apply to become a partner →</Button>
           </a>
           <a href="/partners/directory">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               Browse the directory
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

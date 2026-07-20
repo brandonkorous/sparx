@@ -42,19 +42,19 @@ export const BRAND = {
  * resolve — satori/`ImageResponse` OG routes, raster favicons, canvas.
  */
 export const MODULE_HEX = {
-  builder: '#6366f1',
+  builder: '#4f46e5',
   commerce: '#f97316',
   cms: '#14b8a6',
   crm: '#06b6d4',
-  invoicing: '#65a30d',
+  invoicing: '#4d7c0f',
   email: '#0ea5e9',
   b2b: '#475569',
   dropship: '#10b981',
   inventory: '#f59e0b',
-  chat: '#8b5cf6',
-  scheduling: '#f43f5e',
-  ai: '#ec4899',
-  automations: '#d946ef',
+  chat: '#7c3aed',
+  scheduling: '#e11d48',
+  ai: '#db2777',
+  automations: '#c026d3',
   seo: '#eab308',
 } as const;
 

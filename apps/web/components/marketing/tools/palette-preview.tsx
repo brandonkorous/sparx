@@ -11,6 +11,15 @@ import { buildPalette, readableTextOn, type PaletteColor } from './lib/color';
  * colours actually feel on an interface? Colours are shown on a neutral canvas so
  * they read true regardless of the visitor's light/dark site theme, and every
  * coloured surface uses `readableTextOn` so its label always stays legible.
+ *
+ * NOTE ON COLOR: every `backgroundColor`/`color` left inline here is a RUNTIME
+ * value — a hex the visitor picked or one `buildPalette`/`readableTextOn`
+ * computed from it. That is data, not styling, so it cannot become a utility.
+ * The surrounding chrome (canvas, chart track, neutral ink) is deliberately
+ * FIXED — the whole point is that the swatches read true no matter which theme
+ * the visitor is browsing in — so it uses static Tailwind palette utilities
+ * (`bg-white`, `text-zinc-*`) rather than theme tokens that would flip. Layout,
+ * spacing, radius and type are all utilities now.
  */
 interface PreviewTheme {
   primary: string;
@@ -24,14 +33,8 @@ function stepHex(hex: string, step: number): string {
   return buildPalette(hex).find((s) => s.step === step)?.hex ?? hex;
 }
 
-const LABEL: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '11px',
-  fontWeight: 600,
-  letterSpacing: '0.04em',
-  textTransform: 'uppercase',
-  color: '#71717A',
-};
+/** Group label for a row of swatches — a functional legend, not an eyebrow. */
+const LABEL = 'text-[11px] font-semibold tracking-[0.04em] uppercase text-zinc-500';
 
 export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
   const primary = colors[0] ?? { role: 'Primary', hex: '#6366F1' };
@@ -44,18 +47,7 @@ export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        padding: '20px',
-        borderRadius: 'var(--radius-lg)',
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E4E4E7',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-      }}
-    >
+    <div className="flex flex-col gap-[18px] rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
       <PreviewHeader theme={theme} />
       <PreviewStat theme={theme} colors={colors} />
       <PreviewBadges colors={colors} />
@@ -68,28 +60,9 @@ export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
 
 function PreviewHeader({ theme }: { theme: PreviewTheme }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        gap: '12px',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-        <span style={LABEL}>Dashboard</span>
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '15px',
-            fontWeight: 600,
-            color: '#18181B',
-          }}
-        >
-          Your palette in context
-        </span>
-      </div>
-      <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+    <div className="flex items-start justify-between gap-3">
+      <span className="text-[15px] font-semibold text-zinc-900">Your palette in context</span>
+      <div className="flex shrink-0 gap-2">
         <Btn bg={theme.softBg} fg={theme.softText}>
           Charts
         </Btn>
@@ -105,58 +78,29 @@ const CHART_HEIGHTS = [40, 58, 32, 72, 50, 86, 64, 94, 56, 78];
 
 function PreviewStat({ theme, colors }: { theme: PreviewTheme; colors: PaletteColor[] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={LABEL}>Page score</span>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '26px',
-              fontWeight: 700,
-              color: '#18181B',
-              lineHeight: 1,
-            }}
-          >
-            91<span style={{ fontSize: '14px', fontWeight: 500, color: '#A1A1AA' }}>/100</span>
+    <div className="flex flex-col gap-3.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <span className={LABEL}>Page score</span>
+          <span className="text-[26px] leading-none font-bold text-zinc-900">
+            91<span className="text-sm font-medium text-zinc-400">/100</span>
           </span>
         </div>
         <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '5px',
-            padding: '4px 10px',
-            borderRadius: '9999px',
-            backgroundColor: theme.softBg,
-            color: theme.softText,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '12px',
-            fontWeight: 600,
-          }}
+          className="inline-flex items-center gap-[5px] rounded-full px-2.5 py-1 text-xs font-semibold"
+          style={{ backgroundColor: theme.softBg, color: theme.softText }}
         >
           <BadgeCheck size={14} /> All good
         </span>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '5px', height: '72px' }}>
+      <div className="flex h-[72px] items-end gap-[5px]">
         {CHART_HEIGHTS.map((h, i) => {
           const c = colors[i % colors.length] ?? colors[0]!;
           return (
             <div
               key={`${h}-${i}`}
-              style={{
-                flex: 1,
-                height: `${h}%`,
-                backgroundColor: c.hex,
-                borderRadius: '3px 3px 0 0',
-              }}
+              className="flex-1 rounded-t-[3px]"
+              style={{ height: `${h}%`, backgroundColor: c.hex }}
             />
           );
         })}
@@ -167,21 +111,14 @@ function PreviewStat({ theme, colors }: { theme: PreviewTheme; colors: PaletteCo
 
 function PreviewBadges({ colors }: { colors: PaletteColor[] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span style={LABEL}>Badges</span>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+    <div className="flex flex-col gap-2">
+      <span className={LABEL}>Badges</span>
+      <div className="flex flex-wrap gap-2">
         {colors.map((c) => (
           <span
             key={c.role}
-            style={{
-              padding: '4px 11px',
-              borderRadius: '9999px',
-              backgroundColor: c.hex,
-              color: readableTextOn(c.hex),
-              fontFamily: 'var(--font-sans)',
-              fontSize: '12px',
-              fontWeight: 600,
-            }}
+            className="rounded-full px-[11px] py-1 text-xs font-semibold"
+            style={{ backgroundColor: c.hex, color: readableTextOn(c.hex) }}
           >
             {c.role}
           </span>
@@ -194,31 +131,15 @@ function PreviewBadges({ colors }: { colors: PaletteColor[] }) {
 function PreviewAlert({ theme }: { theme: PreviewTheme }) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '12px 14px',
-        borderRadius: 'var(--radius-md)',
-        backgroundColor: theme.tintBg,
-        borderLeft: `3px solid ${theme.primary}`,
-      }}
+      className="flex items-center gap-3 rounded-md border-l-[3px] px-3.5 py-3"
+      style={{ backgroundColor: theme.tintBg, borderLeftColor: theme.primary }}
     >
-      <TrendingUp size={18} style={{ color: theme.primary, flexShrink: 0 }} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-            color: theme.softText,
-          }}
-        >
+      <TrendingUp size={18} className="shrink-0" style={{ color: theme.primary }} />
+      <div className="flex flex-col gap-px">
+        <span className="text-sm font-semibold" style={{ color: theme.softText }}>
           Verification complete
         </span>
-        <span style={{ fontFamily: 'var(--font-sans)', fontSize: '12.5px', color: '#71717A' }}>
-          Your brand colors are ready to ship.
-        </span>
+        <span className="text-xs text-zinc-500">Your brand colors are ready to ship.</span>
       </div>
     </div>
   );
@@ -231,39 +152,17 @@ const PROGRESS = [
 
 function PreviewProgress({ colors, primary }: { colors: PaletteColor[]; primary: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      <span style={LABEL}>Progress</span>
+    <div className="flex flex-col gap-2.5">
+      <span className={LABEL}>Progress</span>
       {PROGRESS.map((row, i) => {
         const c = colors[i % colors.length]?.hex ?? primary;
         return (
-          <div key={row.label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '12px',
-                color: '#52525B',
-                width: '48px',
-                flexShrink: 0,
-              }}
-            >
-              {row.label}
-            </span>
-            <div
-              style={{
-                flex: 1,
-                height: '8px',
-                borderRadius: '9999px',
-                backgroundColor: '#F1F1F3',
-                overflow: 'hidden',
-              }}
-            >
+          <div key={row.label} className="flex items-center gap-2.5">
+            <span className="w-12 shrink-0 text-xs text-zinc-600">{row.label}</span>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
               <div
-                style={{
-                  width: row.width,
-                  height: '100%',
-                  backgroundColor: c,
-                  borderRadius: '9999px',
-                }}
+                className="h-full rounded-full"
+                style={{ width: row.width, backgroundColor: c }}
               />
             </div>
           </div>
@@ -275,9 +174,9 @@ function PreviewProgress({ colors, primary }: { colors: PaletteColor[]; primary:
 
 function PreviewButtons({ theme, colors }: { theme: PreviewTheme; colors: PaletteColor[] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span style={LABEL}>Buttons</span>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+    <div className="flex flex-col gap-2">
+      <span className={LABEL}>Buttons</span>
+      <div className="flex flex-wrap items-center gap-2">
         {colors.map((c) => (
           <Btn key={c.role} bg={c.hex} fg={readableTextOn(c.hex)}>
             {c.role}
@@ -287,40 +186,17 @@ function PreviewButtons({ theme, colors }: { theme: PreviewTheme; colors: Palett
           Soft
         </Btn>
         <span
-          style={{
-            padding: '7px 13px',
-            borderRadius: 'var(--radius-md)',
-            border: `1px solid ${theme.primary}`,
-            color: theme.softText,
-            backgroundColor: 'transparent',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            fontWeight: 500,
-          }}
+          className="rounded-md border bg-transparent px-[13px] py-[7px] text-[13px] font-medium"
+          style={{ borderColor: theme.primary, color: theme.softText }}
         >
           Outline
         </span>
         <span
           aria-hidden
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            width: '38px',
-            height: '22px',
-            padding: '2px',
-            borderRadius: '9999px',
-            backgroundColor: theme.primary,
-            justifyContent: 'flex-end',
-          }}
+          className="inline-flex h-[22px] w-[38px] items-center justify-end rounded-full p-0.5"
+          style={{ backgroundColor: theme.primary }}
         >
-          <span
-            style={{
-              width: '18px',
-              height: '18px',
-              borderRadius: '9999px',
-              backgroundColor: '#FFFFFF',
-            }}
-          />
+          <span className="h-[18px] w-[18px] rounded-full bg-white" />
         </span>
       </div>
     </div>
@@ -330,18 +206,8 @@ function PreviewButtons({ theme, colors }: { theme: PreviewTheme; colors: Palett
 function Btn({ bg, fg, children }: { bg: string; fg: string; children: React.ReactNode }) {
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '7px 13px',
-        borderRadius: 'var(--radius-md)',
-        backgroundColor: bg,
-        color: fg,
-        fontFamily: 'var(--font-sans)',
-        fontSize: '13px',
-        fontWeight: 500,
-        whiteSpace: 'nowrap',
-      }}
+      className="inline-flex items-center rounded-md px-[13px] py-[7px] text-[13px] font-medium whitespace-nowrap"
+      style={{ backgroundColor: bg, color: fg }}
     >
       {children}
     </span>

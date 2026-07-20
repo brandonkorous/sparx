@@ -20,8 +20,8 @@ import { FEATURES } from './data';
 export function PricingV1FeatureTable() {
   const firstOpen = FEATURES[0]?.key;
   return (
-    <section className="mkt-stage px-[var(--gutter-page)] py-[var(--section-py-xl)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+    <section className="mkt-stage px-page py-section-xl">
+      <Container className="flex flex-col gap-10">
         <div className="max-w-3xl">
           <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE}>
             Every feature, by module

@@ -31,7 +31,7 @@ export function PricingV2Faq() {
   const firstOpen = PRICING_FAQ[0]?.id;
 
   return (
-    <section id="faq" className="px-6 py-24 sm:px-8 lg:py-32" style={{ scrollMarginTop: '80px' }}>
+    <section id="faq" className="scroll-mt-20 px-6 py-24 sm:px-8 lg:py-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

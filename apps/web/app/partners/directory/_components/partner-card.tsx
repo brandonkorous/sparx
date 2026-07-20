@@ -4,10 +4,8 @@
 // location or Remote, a short bio, specialty tags, and a "Visit website" CTA when
 // the partner lists a URL. Certified partners carry the platform-Ember badge.
 
-import { Badge } from '@wizeworks/silicaui-react';
-import { partnerLocation, TIER_META, type PartnerCard as Card } from '@/lib/partners';
-
-const SANS = 'var(--font-sans)';
+import { Badge, Card, CardBody, Heading, Text } from '@wizeworks/silicaui-react';
+import { partnerLocation, TIER_META, type PartnerCard as PartnerCardData } from '@/lib/partners';
 
 const SPECIALTY_LABEL: Record<string, string> = {
   ecommerce: 'E-commerce',
@@ -26,118 +24,54 @@ function specialtyLabel(value: string): string {
   return SPECIALTY_LABEL[value] ?? value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export function PartnerDirectoryCard({ partner }: { partner: Card }) {
+export function PartnerDirectoryCard({ partner }: { partner: PartnerCardData }) {
   const tier = TIER_META[partner.tier];
   const location = partnerLocation(partner);
   const tags = partner.specialties.slice(0, 4);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        width: '100%',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        padding: '24px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}
-      >
-        <Badge color={tier.color} variant="soft" size="md">
-          {tier.label}
-        </Badge>
-        {location ? (
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
-            {location}
-          </span>
-        ) : null}
-      </div>
-
-      <h3
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontWeight: 500,
-          fontSize: '19px',
-          letterSpacing: '-0.015em',
-          lineHeight: '25px',
-          color: 'var(--color-base-content)',
-        }}
-      >
-        {partner.displayName}
-      </h3>
-
-      {partner.bio ? (
-        <p
-          style={{
-            margin: 0,
-            fontFamily: SANS,
-            fontSize: '14px',
-            lineHeight: '22px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {partner.bio}
-        </p>
-      ) : null}
-
-      {tags.length > 0 ? (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {tags.map((t) => (
-            <span
-              key={t}
-              style={{
-                fontFamily: SANS,
-                fontSize: '12px',
-                padding: '3px 9px',
-                borderRadius: '9999px',
-                backgroundColor: 'var(--color-base-200)',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {specialtyLabel(t)}
-            </span>
-          ))}
+    <Card className="border-base-300 bg-base-100 h-full w-full border">
+      <CardBody className="flex flex-col gap-3.5">
+        <div className="flex items-center justify-between gap-3">
+          <Badge color={tier.color} variant="soft" size="md">
+            {tier.label}
+          </Badge>
+          {location ? (
+            <Text as="span" className="text-caption text-ink-subtle">
+              {location}
+            </Text>
+          ) : null}
         </div>
-      ) : null}
 
-      {partner.websiteUrl ? (
-        <a
-          href={partner.websiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            marginTop: 'auto',
-            paddingTop: '8px',
-            fontFamily: SANS,
-            fontSize: '14px',
-            fontWeight: 500,
-            color: 'var(--color-primary)',
-            textDecoration: 'none',
-          }}
-        >
-          Contact / learn more ↗
-        </a>
-      ) : null}
-    </div>
+        <Heading level={3} size={4} className="text-base-content">
+          {partner.displayName}
+        </Heading>
+
+        {partner.bio ? (
+          <Text className="text-small text-ink-muted line-clamp-2">{partner.bio}</Text>
+        ) : null}
+
+        {tags.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5">
+            {tags.map((t) => (
+              <Badge key={t} color="neutral" variant="soft" size="sm">
+                {specialtyLabel(t)}
+              </Badge>
+            ))}
+          </div>
+        ) : null}
+
+        {partner.websiteUrl ? (
+          <a
+            href={partner.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-small text-primary mt-auto pt-2 font-medium no-underline"
+          >
+            Contact / learn more ↗
+          </a>
+        ) : null}
+      </CardBody>
+    </Card>
   );
 }

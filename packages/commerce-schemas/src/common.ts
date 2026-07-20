@@ -130,3 +130,37 @@ export const CountryCode = z
   .length(2)
   .regex(/^[A-Z]{2}$/, 'Country must be ISO 3166-1 alpha-2');
 export type CountryCode = z.infer<typeof CountryCode>;
+
+// BCP-47 language tag — `en`, `en-US`, `fr-CA`, `zh-Hans`, `zh-Hans-CN`.
+// Capped at 10 chars to match the VARCHAR(10) locale columns.
+//
+// Casing is CANONICALIZED rather than merely validated, because the rows
+// keyed by this value carry an exact-string unique index (e.g.
+// `product_translations_locale_unique` on (product_id, locale)). Without
+// normalization `en-US` and `EN-us` are two different rows for the same
+// language, and the storefront — which resolves a single tag — would show
+// one of them at random. Canonical form follows the BCP-47 convention:
+// language lowercase, script Titlecase, region UPPERCASE, variants
+// lowercase.
+const LOCALE_PATTERN = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+
+export function canonicalizeLocale(raw: string): string {
+  const [language = '', ...rest] = raw.split('-');
+  const subtags = rest.map((subtag) => {
+    // 4 alpha = script (Hans); 2 alpha or 3 digit = region (US, 419).
+    if (/^[A-Za-z]{4}$/.test(subtag)) {
+      return subtag.slice(0, 1).toUpperCase() + subtag.slice(1).toLowerCase();
+    }
+    if (/^[A-Za-z]{2}$/.test(subtag) || /^[0-9]{3}$/.test(subtag)) return subtag.toUpperCase();
+    return subtag.toLowerCase();
+  });
+  return [language.toLowerCase(), ...subtags].join('-');
+}
+
+export const Locale = z
+  .string()
+  .min(2)
+  .max(10)
+  .regex(LOCALE_PATTERN, 'Locale must be a BCP-47 language tag (e.g. en, en-US, zh-Hans)')
+  .transform(canonicalizeLocale);
+export type Locale = z.infer<typeof Locale>;

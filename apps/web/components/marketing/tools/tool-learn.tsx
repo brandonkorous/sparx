@@ -33,7 +33,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
           headlineSize={32}
         />
 
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {content.points.map((point) => (
             <Card key={point.title}>
               <CardBody className="gap-2">

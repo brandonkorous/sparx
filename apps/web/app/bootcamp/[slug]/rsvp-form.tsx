@@ -19,10 +19,8 @@ import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { registerForBootcamp, type RsvpState } from './actions';
 
 const INITIAL: RsvpState = { status: 'idle' };
-const SANS = 'var(--font-sans)';
-const PRIMARY = 'var(--color-primary)';
 
-const labelStyle: React.CSSProperties = { fontFamily: SANS, fontSize: '13px', fontWeight: 500 };
+const LABEL_CLASS = 'text-caption font-medium';
 
 export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
   const [state, action, pending] = useActionState(registerForBootcamp, INITIAL);
@@ -48,14 +46,10 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
   }
 
   return (
-    <form
-      action={clientAction}
-      style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
-      noValidate
-    >
+    <form action={clientAction} className="flex flex-col gap-3.5" noValidate>
       <input type="hidden" name="slug" value={slug} />
       <Field {...v.field('name')}>
-        <FieldLabel required style={labelStyle}>
+        <FieldLabel required className={LABEL_CLASS}>
           Name
         </FieldLabel>
         <FieldControl
@@ -69,7 +63,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
         />
       </Field>
       <Field {...v.field('email')}>
-        <FieldLabel required style={labelStyle}>
+        <FieldLabel required className={LABEL_CLASS}>
           Email
         </FieldLabel>
         <FieldControl
@@ -85,7 +79,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
         />
       </Field>
       <Field>
-        <FieldLabel style={labelStyle}>Seats</FieldLabel>
+        <FieldLabel className={LABEL_CLASS}>Seats</FieldLabel>
         <FieldControl
           render={
             <NativeSelect name="seats" defaultValue="1">
@@ -100,7 +94,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
       </Field>
 
       {/* Honeypot */}
-      <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
+      <div aria-hidden className="absolute -left-[9999px] h-px w-px">
         <label htmlFor="rsvp-company-url">Company URL</label>
         <input
           id="rsvp-company-url"
@@ -118,15 +112,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
       ) : null}
 
       <SubmitButton full={full} pending={pending} />
-      <p
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontSize: '12px',
-          lineHeight: '18px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+      <p className="text-mini text-ink-subtle m-0">
         Your details go to the hosting partner, who follows up with the specifics.
       </p>
     </form>
@@ -135,7 +121,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
 
 function SubmitButton({ full, pending }: { full: boolean; pending: boolean }) {
   return (
-    <Button type="submit" color="primary" size="lg" disabled={pending} style={{ width: '100%' }}>
+    <Button type="submit" color="primary" size="lg" block disabled={pending}>
       {pending ? 'Reserving…' : full ? 'Join the waitlist →' : 'Reserve your seat →'}
     </Button>
   );
@@ -143,42 +129,18 @@ function SubmitButton({ full, pending }: { full: boolean; pending: boolean }) {
 
 function Confirmation({ waitlisted }: { waitlisted: boolean }) {
   return (
-    <div
-      role="status"
-      style={{ display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'flex-start' }}
-    >
+    <div role="status" className="flex flex-col items-start gap-3.5">
       <span
         aria-hidden
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 44,
-          height: 44,
-          borderRadius: 9999,
-          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-          color: PRIMARY,
-          fontSize: 22,
-        }}
+        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
       >
         ✓
       </span>
-      <span
-        style={{ fontFamily: SANS, fontWeight: 500, fontSize: '22px', letterSpacing: '-0.02em' }}
-      >
+      <span className="text-base-content text-h3 font-medium tracking-[-0.02em]">
         {waitlisted ? 'You’re on the waitlist' : 'Your seat is reserved'}
-        <span style={{ color: PRIMARY }}>.</span>
+        <span className="text-primary">.</span>
       </span>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontSize: '15px',
-          lineHeight: '24px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          maxWidth: '320px',
-        }}
-      >
+      <p className="text-body-sm text-ink-muted m-0 max-w-[320px]">
         {waitlisted
           ? 'This bootcamp is full — we’ll let you know the moment a seat opens up.'
           : 'The hosting partner has your details and will be in touch with everything you need.'}

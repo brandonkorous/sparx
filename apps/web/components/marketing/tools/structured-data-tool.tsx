@@ -97,7 +97,7 @@ export function StructuredDataTool() {
     <Workbench>
       <ControlsPane>
         <Panel title="Schema type">
-          <div className="mkt-cluster gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {SCHEMA_TYPES.map((t) => (
               <Button
                 key={t.value}

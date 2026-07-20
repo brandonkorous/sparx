@@ -19,17 +19,19 @@
 
 import { withTenant, type Prisma } from '@sparx/db';
 import { isAssetRef, type Blueprint } from '@sparx/blueprints';
-import { normalizeEmailTree, type BuilderNode } from '@sparx/builder-schemas';
+import type { SilicaNode } from '@sparx/builder-schemas';
 
 import { resolveBindingHandles, type InstallResult } from './blueprint-installer.js';
 
 export type ArtifactKind =
   | 'theme'
   | 'brand'
-  | 'layout'
+  // The site chrome. Was `layout` (a BuilderLayout row the install created); it is
+  // now the silica FRAME written onto the property's existing active layout, so the
+  // baseline tracks the tree rather than a row it owns.
+  | 'frame'
   | 'page'
   | 'email'
-  | 'component'
   | 'product'
   | 'content'
   | 'category'
@@ -87,7 +89,7 @@ export function resolveBlueprintArtifacts(
   assetMap: Map<string, string>
 ): ResolvedArtifact[] {
   const asset = (id?: string): string | null => (id ? (assetMap.get(id) ?? null) : null);
-  const tree = (t: BuilderNode): BuilderNode => resolveBindingHandles(t, result);
+  const tree = (t: SilicaNode): SilicaNode => resolveBindingHandles(t, result);
   const out: ResolvedArtifact[] = [];
 
   // Theme — the shipped SiteTheme (basePresetKey + presentation overlay + look).
@@ -124,19 +126,20 @@ export function resolveBlueprintArtifacts(
     }),
   });
 
-  // Layout.
-  if (result.layoutId && blueprint.layout) {
+  // The site frame (chrome). Keyed `frame` rather than `layout`: it is no longer a
+  // layout ROW the install owns, it is the silica frame written onto the property's
+  // active layout, so the baseline tracks the tree itself.
+  if (blueprint.site?.frame) {
     out.push({
-      kind: 'layout',
-      naturalKey: 'layout',
-      refId: result.layoutId,
-      content: compact({ name: blueprint.layout.name, tree: tree(blueprint.layout.tree) }),
+      kind: 'frame',
+      naturalKey: 'frame',
+      refId: null,
+      content: compact({ tree: tree(blueprint.site.frame.root) }),
     });
   }
 
-  // Pages (blueprint-declared only — the injected ensureHome fallback is platform
-  // chrome, not blueprint content, so it carries no baseline).
-  for (const pg of blueprint.pages) {
+  // Pages.
+  for (const pg of blueprint.site?.pages ?? []) {
     const key = pageNaturalKey(pg.slug ?? null, pg.recordType ?? null);
     const refId =
       result.pages.find((p) => pageNaturalKey(p.slug, p.recordType) === key)?.id ?? null;
@@ -149,7 +152,7 @@ export function resolveBlueprintArtifacts(
         kind: pg.kind,
         recordType: pg.recordType ?? null,
         slug: pg.slug ?? null,
-        tree: tree(pg.tree),
+        tree: tree(pg.root),
         seoTitle: pg.seoTitle,
         seoDescription: pg.seoDescription,
         canonical: pg.canonical,
@@ -159,41 +162,15 @@ export function resolveBlueprintArtifacts(
     });
   }
 
-  // Emails (trees are not data-bound, but emailService.get normalizes on read, so
-  // the baseline must store the SAME normalized shape or an untouched email would
-  // falsely diff — docs/55 §7.2 parity).
+  // Emails. The silica document is stored verbatim — it is what the row holds and
+  // what a later version diffs against, so no normalization pass can drift them apart.
   for (const e of blueprint.emails) {
     const refId = result.emails.find((x) => x.name === e.name)?.id ?? null;
     out.push({
       kind: 'email',
       naturalKey: e.name,
       refId,
-      content: compact({
-        name: e.name,
-        subject: e.subject,
-        preheader: e.preheader,
-        tree: normalizeEmailTree(e.tree),
-      }),
-    });
-  }
-
-  // Components.
-  for (const c of blueprint.components) {
-    const refId = result.components.find((x) => x.key === c.key)?.id ?? null;
-    out.push({
-      kind: 'component',
-      naturalKey: c.key,
-      refId,
-      content: compact({
-        key: c.key,
-        name: c.name,
-        group: c.group,
-        icon: c.icon,
-        description: c.description,
-        surfaces: c.surfaces,
-        tree: c.tree,
-        propSpec: c.propSpec,
-      }),
+      content: compact({ name: e.name, doc: e.doc }),
     });
   }
 

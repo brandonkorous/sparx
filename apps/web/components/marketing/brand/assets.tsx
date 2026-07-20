@@ -32,17 +32,24 @@ const MARK_SRC: Record<ArtworkVariant, string> = {
 
 export function OfficialWordmark({
   variant = 'color',
+  className,
   style,
 }: {
   variant?: ArtworkVariant;
-  /** Inline style — pass a `width` or `height`; the other dimension scales. */
+  /** Sizing utilities — a `w-*` or `h-*`; the other dimension scales. */
+  className?: string;
+  /** Escape hatch for a genuinely computed dimension (e.g. a size-ladder step). */
   style?: React.CSSProperties;
 }) {
   return (
     <img
       src={WORDMARK_SRC[variant]}
       alt="sparx"
-      style={{ display: 'block', width: '280px', height: 'auto', ...style }}
+      // The default `w-[280px]` is emitted ONLY when the caller supplies no
+      // sizing class — two same-specificity width utilities on one element
+      // resolve by stylesheet order, not className order.
+      className={`block h-auto ${className ?? 'w-[280px]'}`}
+      style={style}
     />
   );
 }
@@ -50,11 +57,11 @@ export function OfficialWordmark({
 export function OfficialMark({
   variant = 'color',
   size = 64,
-  style,
+  className,
 }: {
   variant?: ArtworkVariant;
   size?: number;
-  style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
     <img
@@ -62,7 +69,7 @@ export function OfficialMark({
       alt="sparx mark"
       width={size}
       height={size}
-      style={{ display: 'block', ...style }}
+      className={`block ${className ?? ''}`}
     />
   );
 }

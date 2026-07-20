@@ -8,6 +8,7 @@ resources:
   - api-mcp.yaml
   - mcp-site.yaml
   - dashboard.yaml
+  - workbench.yaml
   - site.yaml
   - market.yaml
 # Add per-app manifests here as they ship to Artifact Registry.

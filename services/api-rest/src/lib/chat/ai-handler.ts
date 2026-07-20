@@ -22,6 +22,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import { withTenant, prisma } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 import { decryptProviderSecret } from '@sparx/integration-framework';
+import { isModuleEnabled } from '@sparx/auth';
 import type { Message, ToolCall, ToolDefinition, ToolParameter } from 'llm-harness';
 import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@sparx/site-mcp';
 
@@ -110,9 +111,20 @@ export async function handleInboundForAI(
   logger: FastifyBaseLogger
 ): Promise<void> {
   try {
+    // The AI first-responder is a capability of the `ai` module, NOT of Live
+    // Chat. Live Chat ($19) buys the widget, routing, and the human inbox; the
+    // intelligence layer — this concierge AND the MCP server — is the one `ai`
+    // module. Without it, chat still works, every conversation just goes to a
+    // person. (This gate was missing: the concierge shipped unlocked by chat
+    // alone, giving away an `ai` module capability at the chat price.)
+    if (!(await isModuleEnabled(ctx.tenantId, 'ai'))) {
+      await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');
+      return;
+    }
+
     const config = await getChatConfig(ctx.tenantId);
 
-    // AI disabled, or the tenant hasn't connected their own provider + key
+    // AI enabled, but the tenant hasn't connected their own provider + key
     // yet → a human must handle it. sparx has no fallback credential.
     if (!config.aiEnabled || !config.aiProvider || !config.aiApiKeyEncrypted) {
       await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');

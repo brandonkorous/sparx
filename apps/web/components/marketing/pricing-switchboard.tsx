@@ -19,8 +19,9 @@
  * stack costs.
  */
 import { useState } from 'react';
+import { Text } from '@wizeworks/silicaui-react';
 import { Display } from './primitives';
-import { MODULES, MODULE_HEX, MODULE_ICON } from './modules-catalog';
+import { MODULES, PAID_MODULES, MODULE_HEX, MODULE_ICON } from './modules-catalog';
 import { ModuleToggleCard } from './module-toggle-card';
 import { StackSummaryCard, type StackLineItem } from './stack-summary-card';
 
@@ -31,7 +32,7 @@ const ELSEWHERE_MONTHLY: Record<string, number> = {
   commerce: 399,
   cms: 99,
   crm: 300,
-  invoicing: 30,
+  invoicing: 33,
   email: 165,
   b2b: 2400,
   dropship: 60,
@@ -74,7 +75,17 @@ const joinNames = (ids: string[]): string => {
     ? (names[0] ?? '')
     : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
 };
-const lockOfState = (on: Record<string, boolean>, id: string): 'included' | 'required' | null => {
+// SEO and Automations are free platform capabilities, not billable modules:
+// always on, never togglable, and deliberately absent from ELSEWHERE_MONTHLY so
+// they add $0 to BOTH sides of the comparison. Pricing a "what this replaces"
+// figure for them would need real sourced 2026 competitor prices and would move
+// the advertised savings total, so it stays a deliberate omission.
+const FREE_IDS = new Set<string>(MODULES.filter((m) => m.free).map((m) => m.id));
+
+type Lock = 'included' | 'required' | 'free' | null;
+
+const lockOfState = (on: Record<string, boolean>, id: string): Lock => {
+  if (FREE_IDS.has(id)) return 'free';
   if (activeBundlers(on, id).length > 0) return 'included';
   if (activeRequirers(on, id).length > 0) return 'required';
   return null;
@@ -90,17 +101,28 @@ export function PricingSwitchboard() {
   // on. Invoicing/Inventory are BUNDLED_FREE with Commerce/B2B — $0
   // ("Included") while either is on, else their normal price.
   const effectiveOn = (id: string): boolean =>
-    !!on[id] || activeBundlers(on, id).length > 0 || activeRequirers(on, id).length > 0;
-  const lockOf = (id: string): 'included' | 'required' | null => lockOfState(on, id);
+    !!on[id] ||
+    FREE_IDS.has(id) ||
+    activeBundlers(on, id).length > 0 ||
+    activeRequirers(on, id).length > 0;
+  const lockOf = (id: string): Lock => lockOfState(on, id);
   const reasonOf = (id: string): string | null => {
     const lock = lockOf(id);
+    if (lock === 'free') return 'Free with sparx';
     if (lock === 'included') return `Included with ${joinNames(activeBundlers(on, id))}`;
     if (lock === 'required') return `Required by ${joinNames(activeRequirers(on, id))}`;
     return null;
   };
-  const billed = (id: string, price: number): number => (lockOf(id) === 'included' ? 0 : price);
-  const elsewhereOf = (id: string): number =>
-    lockOf(id) === 'included' ? 0 : (ELSEWHERE_MONTHLY[id] ?? 0);
+  const billed = (id: string, price: number): number => {
+    const lock = lockOf(id);
+    return lock === 'included' || lock === 'free' ? 0 : price;
+  };
+  // Mirrors `billed`: only the $0 sides (bundled-free, platform-free) drop off
+  // the comparison. A `required` module is still paid for, so it still counts.
+  const elsewhereOf = (id: string): number => {
+    const lock = lockOf(id);
+    return lock === 'included' || lock === 'free' ? 0 : (ELSEWHERE_MONTHLY[id] ?? 0);
+  };
 
   const toggle = (id: string): void =>
     setOn((s) => {
@@ -128,19 +150,10 @@ export function PricingSwitchboard() {
         <Display as="h1" size={60} lineHeight={60}>
           Switch on what you use
         </Display>
-        <p
-          style={{
-            margin: '18px 0 0',
-            maxWidth: '480px',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '17px',
-            lineHeight: '27px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
+        <Text variant="lead" className="mt-4 max-w-[480px]">
           Every module is one switch. Flip it and the stack summary recomputes the instant you do —
           one platform, one invoice, nothing you&apos;re not using.
-        </p>
+        </Text>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -157,15 +170,17 @@ export function PricingSwitchboard() {
               active={isOn}
               disabled={lock !== null}
               onToggle={() => toggle(m.id)}
-              badgeText={lock === 'included' ? 'Included' : `$${m.price}/mo`}
+              badgeText={
+                lock === 'free' ? 'Free' : lock === 'included' ? 'Included' : `$${m.price}/mo`
+              }
               reason={reasonOf(m.id) ?? undefined}
             />
           );
         })}
         <StackSummaryCard
           className="lg:col-start-4 lg:row-span-4 lg:row-start-1"
-          activeCount={activeModules.length}
-          totalModules={MODULES.length}
+          activeCount={activeModules.filter((m) => !m.free).length}
+          totalModules={PAID_MODULES.length}
           lineItems={lineItems}
           total={total}
           elsewhereTotal={elsewhereTotal}

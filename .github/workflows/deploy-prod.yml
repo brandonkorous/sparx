@@ -70,7 +70,7 @@ jobs:
           IMAGE_BASE="$REGION-docker.pkg.dev/${{ env.PROJECT_ID }}/$AR_REPO"
           # Update only the Deployments that currently exist. Skipping unknown
           # services keeps the workflow green during phased rollouts.
-          for svc in web api-rest api-graphql api-mcp mcp-site dashboard site market \
+          for svc in web api-rest api-graphql api-mcp mcp-site dashboard workbench site market \
                      media-worker \
                      email-worker domain-worker dropship-worker billing-worker webhook-worker; do
             if kubectl get deployment "$svc" -n $NAMESPACE >/dev/null 2>&1; then

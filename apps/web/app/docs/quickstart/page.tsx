@@ -162,12 +162,8 @@ export default function QuickstartPage() {
               <path d="M0 8H36M36 8L29 2M36 8L29 14" stroke="currentColor" strokeWidth={1.5} />
             </svg>
           </span>
-          <span
-            className="pillbox"
-            style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
-          >
-            api.sparx.works/v1
-          </span>
+          {/* The middle node in the flow is the sparx API itself — accented. */}
+          <span className="pillbox border-primary text-primary">api.sparx.works/v1</span>
           <span className="arrow">
             <svg width={40} height={16} viewBox="0 0 40 16" fill="none" aria-hidden>
               <path d="M0 8H36M36 8L29 2M36 8L29 14" stroke="currentColor" strokeWidth={1.5} />
@@ -214,8 +210,8 @@ export default function QuickstartPage() {
             <DocTable>
               <thead>
                 <tr>
-                  <th style={{ width: '26%' }}>Field</th>
-                  <th style={{ width: '22%' }}>Type</th>
+                  <th className="w-[26%]">Field</th>
+                  <th className="w-[22%]">Type</th>
                   <th>Description</th>
                 </tr>
               </thead>
@@ -344,8 +340,8 @@ export default function QuickstartPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '16%' }}>Status</th>
-              <th style={{ width: '30%' }}>Code</th>
+              <th className="w-[16%]">Status</th>
+              <th className="w-[30%]">Code</th>
               <th>When</th>
             </tr>
           </thead>

@@ -36,7 +36,10 @@ export function ToolsIndex() {
             <Display as="h1" size={60} color="currentColor">
               Free tools for people who build things.
             </Display>
-            <p className="text-lede-lg m-0 font-sans">
+            {/* `text-hero-lede` (24px), not `text-lede-lg` (19px): white on the
+                Ember band is 4.13:1, under WCAG AA for normal-size text. 24px
+                clears the large-text bar. See the token's note in globals.css. */}
+            <p className="text-hero-lede m-0 max-w-[760px] font-sans">
               Favicons, QR codes, campaign links, social cards, email signatures, invoices, and a
               dozen more — the small jobs that eat an afternoon. Built for founders, makers, and
               small teams who&rsquo;d rather get it done and move on. Open one and start; your work
@@ -48,9 +51,9 @@ export function ToolsIndex() {
       </section>
 
       <Section surface="surface" padding="lg">
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool) => (
-            <ToolCard key={tool.slug} tool={tool} />
+            <ToolCard key={tool.slug} tool={tool} headingLevel="h2" />
           ))}
         </div>
       </Section>
@@ -61,7 +64,7 @@ export function ToolsIndex() {
         {/* silica's card via the plugin-emitted classes — this is a Server
             Component and the silicaui-react barrel is `'use client'`. */}
         <div className="card">
-          <div className="card-body mkt-stack-on-tablet items-center justify-between gap-7 p-10">
+          <div className="card-body flex flex-col items-center justify-between gap-7 p-10 lg:flex-row">
             <div className="flex max-w-[640px] flex-col gap-3">
               <Display as="h2" size={30}>
                 Same platform. From a free favicon to your whole business

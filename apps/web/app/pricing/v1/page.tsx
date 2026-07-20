@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 export default function PricingV1() {
   return (
     <main className="mkt-paneled">
-      <section className="px-[var(--gutter-page)] py-[var(--section-py-lg)]">
+      <section className="px-page py-section-lg">
         <Container>
           <PricingSwitchboard />
         </Container>

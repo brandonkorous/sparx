@@ -121,7 +121,7 @@ export function SitePreviewFrame({
         </div>
       </div>
 
-      <div className="border-base-300 relative overflow-hidden rounded-[var(--radius-lg)] border shadow-sm">
+      <div className="border-base-300 relative overflow-hidden rounded-lg border shadow-sm">
         {status === 'loading' ? (
           <div className="bg-base-100 absolute inset-0 z-10 flex items-center justify-center">
             <span className="text-base-content text-sm">Loading your site…</span>

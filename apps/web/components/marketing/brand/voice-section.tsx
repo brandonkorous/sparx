@@ -72,17 +72,13 @@ function VoiceTable() {
       {TABLE.map((row, i) => (
         <div
           key={row.says}
-          className={`mkt-grid-2-1 border-base-300 border-b py-5 ${i === 0 ? 'border-t' : ''}`}
+          className={`border-base-300 grid grid-cols-1 gap-6 border-b py-5 md:grid-cols-2 ${i === 0 ? 'border-t' : ''}`}
         >
           <Text
             as="span"
             size={15}
             tone="subtle"
-            className="line-through"
-            style={{
-              textDecorationColor:
-                'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
-            }}
+            className="decoration-base-content/30 line-through"
           >
             {row.instead}
           </Text>

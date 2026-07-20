@@ -20,5 +20,12 @@ model AuditLog {
 
   @@index([tenantId, createdAt(sort: Desc)])
   @@index([tenantId, entityType, entityId])
+  // "What has this person been doing?" — the per-member activity view in
+  // Settings → Team, and the only honest source for "last active" (there is no
+  // stored last-active field anywhere; users.last_login_at is LOGIN, and
+  // sessions has no touch column). Without this, filtering by actor falls back
+  // to the tenantId index and scans every row this tenant has ever written —
+  // on the one table every module appends to.
+  @@index([tenantId, actorId, createdAt(sort: Desc)])
   @@map("audit_logs")
 }

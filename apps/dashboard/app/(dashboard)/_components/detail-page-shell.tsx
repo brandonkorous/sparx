@@ -61,6 +61,7 @@ export function DetailPageShell({
   listHref: listHrefProp,
   listLabel: listLabelProp,
   showViewSwitcher = true,
+  width = 'contained',
 }: {
   typeId: string;
   entityId: string;
@@ -77,6 +78,15 @@ export function DetailPageShell({
   // into `detailComponents` must suppress it explicitly rather than offer a
   // switch that opens an empty drawer/modal.
   showViewSwitcher?: boolean;
+  // Width of the document-flow body. Defaults to the centered `xl` reading
+  // column every detail has used. `full` uncaps it (gutters retained) for the
+  // details that run a genuine two-pane working surface — an editor beside a
+  // live preview — where a capped column squeezes both panes for no benefit.
+  // NOT the same as full-bleed: the body still sits in normal document flow and
+  // scrolls with the page, it just isn't held to a reading measure. A child's
+  // own `w-full` can't achieve this — inside a capped Container it resolves to
+  // 100% of the cap.
+  width?: 'contained' | 'full';
 }) {
   const found = findEntityType(typeId);
   const moduleId = found?.manifest.id;
@@ -120,7 +130,7 @@ export function DetailPageShell({
       {fullBleed ? (
         <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
       ) : (
-        <Container size="xl">
+        <Container size={width === 'full' ? 'full' : 'xl'}>
           <Stack gap={6} className="py-8">
             {children}
           </Stack>

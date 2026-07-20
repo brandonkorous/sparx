@@ -283,7 +283,7 @@ model BuilderEmail {
   silicaDraftDocument     Json? @map("silica_draft_document")
   silicaPublishedDocument Json? @map("silica_published_document")
   // Catalog ordering (cf. BuilderPage.position).
-  position      Int       @default(0)
+  position                Int   @default(0)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

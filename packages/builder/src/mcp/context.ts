@@ -46,6 +46,32 @@ export async function toPropertyContext(
   ctx: ServiceContext,
   requested?: string | null
 ): Promise<SitePropertyContext> {
+  // A site-restricted credential (docs/131 §3.2) sets a CEILING. Two rules, and
+  // the second is the one that matters:
+  //
+  //   • asking for a different site is refused, not quietly redirected;
+  //   • asking for NOTHING resolves to the restricted site — never to the
+  //     tenant's primary.
+  //
+  // That second rule is why this cannot reuse the fallback below. A key issued
+  // for the donut shop, calling a tool with no propertyId argument, would
+  // otherwise fall through to `resolvePrimarySite` and edit the machine shop's
+  // site — the exact cross-business access the restriction exists to prevent,
+  // reached by omitting an optional argument.
+  const ceiling = ctx.restrictToPropertyId;
+  if (ceiling) {
+    if (requested && requested !== ceiling) {
+      throw new BuilderNotFoundError('Property', requested);
+    }
+    const row = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.property.findUnique({ where: { id: ceiling }, select: SITE_SELECT })
+    );
+    // Unreachable in normal operation; a credential outliving its site (the FK
+    // cascades) must fail closed rather than fall back to the primary.
+    if (!row) throw new BuilderNotFoundError('Property', ceiling);
+    return { ...ctx, propertyId: row.id, site: row };
+  }
+
   if (requested) {
     const row = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
       tx.property.findUnique({ where: { id: requested }, select: SITE_SELECT })

@@ -5,6 +5,7 @@ import { TabsContent, TabsList, TabsTrigger } from '@sparx/ui';
 import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 
 import { DetailHeaderSlot } from '../../../_components/detail-header-slot';
 import { GuardedTabs } from '../../../_components/guarded-tabs';
@@ -27,6 +28,7 @@ interface CollectionDetail {
   seoDescription: string | null;
   ogImageId: string | null;
   productIds: string[];
+  propertyIds: string[];
   createdAt: string;
 }
 
@@ -63,6 +65,11 @@ export async function CollectionDetailContent({ id }: Props) {
   const { data: allProducts } = await api.getPaged<ProductListItem[]>(
     '/v1/commerce/products?take=250'
   );
+
+  // Multi-site (docs/49 §3): the tenant's sites, for the "Visible on sites" control
+  // on the Metadata tab. Defensive — a sites-read failure must not break the editor,
+  // and SiteScopeField hides itself for single-site tenants anyway.
+  const sites = await listProperties().catch(() => [] as Property[]);
 
   return (
     <>
@@ -138,6 +145,8 @@ export async function CollectionDetailContent({ id }: Props) {
             featured={collection.featured}
             seoTitle={collection.seoTitle}
             seoDescription={collection.seoDescription}
+            sites={sites}
+            initialPropertyIds={collection.propertyIds ?? []}
           />
         </TabsContent>
 

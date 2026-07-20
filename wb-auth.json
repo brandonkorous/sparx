@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "better-auth.session_token",
+      "value": "AWS9jmdlP37SMLe8MbOUHgQtYtQeBDnu.NYq%2Fyx6iXFquDIi5BLnBUhOeIg1FRgx2BX%2BScSZ2dhc%3D",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1787115732.881986,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "better-auth.session_data",
+      "value": "eyJzZXNzaW9uIjp7InNlc3Npb24iOnsiZXhwaXJlc0F0IjoiMjAyNi0wOC0xOVQwNTowMjoxMi44NzNaIiwidG9rZW4iOiJBV1M5am1kbFAzN1NNTGU4TWJPVUhnUXRZdFFlQkRudSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMjBUMDU6MDI6MTIuODc0WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDctMjBUMDU6MDI6MTIuODc0WiIsImlwQWRkcmVzcyI6Ijo6IiwidXNlckFnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgSGVhZGxlc3NDaHJvbWUvMTUwLjAuMC4wIFNhZmFyaS81MzcuMzYiLCJ1c2VySWQiOiI2MzIxYTQwMC0wMjE5LTQ5MzAtODNkOS0wNGI0MGYyNWRiYjIiLCJhY3RpdmVPcmdhbml6YXRpb25JZCI6bnVsbCwiaWQiOiJjZTNjNjYxNy1hMmIyLTRkZTYtODkzZC1jZmRiZTA4YzE2Y2QifSwidXNlciI6eyJuYW1lIjoiRTJFIFN0YWZmIiwiZW1haWwiOiJlMmUtc3RhZmZAc3BhcngudGVzdCIsImVtYWlsVmVyaWZpZWQiOnRydWUsImltYWdlIjpudWxsLCJjcmVhdGVkQXQiOiIyMDI2LTA1LTMxVDE0OjQxOjE5LjA0NloiLCJ1cGRhdGVkQXQiOiIyMDI2LTA2LTE3VDEwOjE1OjU1LjY1NloiLCJ0ZW5hbnRJZCI6ImI0NDQxNGEwLTIxYjYtNGQ3NS04ZDRlLTU5ZWExNjFkMzgyNiIsInJvbGUiOiJvd25lciIsImlkIjoiNjMyMWE0MDAtMDIxOS00OTMwLTgzZDktMDRiNDBmMjVkYmIyIn0sInVwZGF0ZWRBdCI6MTc4NDUyMzczMjg3OSwidmVyc2lvbiI6IjEifSwiZXhwaXJlc0F0IjoxNzg0NTI0MDMyODc5LCJzaWduYXR1cmUiOiJicngzVGUtb0FXS2RGclVoajY4Yk9LUWNDNG1TdE5YSTdaay1LNWVtYjRzIn0",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1784524032.882072,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3011",
+      "localStorage": [
+        {
+          "name": "sparx-workbench-nav",
+          "value": "{\"module\":null,\"pinned\":false,\"railExpanded\":false}"
+        }
+      ]
+    }
+  ]
+}

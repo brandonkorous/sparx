@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Badge } from '@wizeworks/silicaui-react';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
 import { Section, Display, Spark, Dot } from '@/components/marketing/primitives';
 import { ROLES, OPEN_APPLICATION, getRole, type Role } from '../roles';
 import { ApplyForm } from './apply-form';
 
 const EMBER = 'var(--color-primary)';
-const MEASURE = '720px';
 
 export function generateStaticParams() {
   return [...ROLES, OPEN_APPLICATION].map((r) => ({ slug: r.slug }));
@@ -28,41 +27,15 @@ export async function generateMetadata({
   };
 }
 
-const paragraphStyle: React.CSSProperties = {
-  margin: 0,
-  fontFamily: 'var(--font-sans)',
-  fontSize: '17px',
-  lineHeight: '28px',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-};
-
-const headingStyle: React.CSSProperties = {
-  margin: 0,
-  fontFamily: 'var(--font-sans)',
-  fontWeight: 500,
-  fontSize: '15px',
-  letterSpacing: '0.01em',
-  color: 'var(--color-base-content)',
-};
-
 function BulletList({ items }: { items: string[] }) {
   return (
-    <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: '14px' }}>
+    <ul className="m-0 grid list-none gap-3.5 p-0">
       {items.map((item) => (
-        <li key={item} style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
-          <span style={{ position: 'relative', top: '7px', flexShrink: 0 }}>
+        <li key={item} className="flex items-baseline gap-3">
+          <span className="relative top-[7px] shrink-0">
             <Dot color={EMBER} />
           </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '16px',
-              lineHeight: '26px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            {item}
-          </span>
+          <span className="text-body text-ink-muted">{item}</span>
         </li>
       ))}
     </ul>
@@ -71,19 +44,8 @@ function BulletList({ items }: { items: string[] }) {
 
 function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <h2
-        style={{
-          margin: 0,
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '22px',
-          letterSpacing: '-0.01em',
-          color: 'var(--color-base-content)',
-        }}
-      >
-        {heading}
-      </h2>
+    <div className="flex flex-col gap-5">
+      <h2 className="text-h3 text-base-content m-0 font-medium tracking-[-0.01em]">{heading}</h2>
       <BulletList items={items} />
     </div>
   );
@@ -91,23 +53,15 @@ function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
 
 function RoleHeader({ role }: { role: Role }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', maxWidth: '820px' }}>
-      <Link
-        href="/careers"
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '14px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          textDecoration: 'none',
-        }}
-      >
+    <div className="flex max-w-[820px] flex-col gap-[22px]">
+      <Link href="/careers" className="text-small text-ink-muted no-underline">
         ← All roles
       </Link>
       <Display as="h1" size={60} lineHeight={60}>
         {role.title}
         <Spark />
       </Display>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      <div className="flex flex-wrap gap-2">
         <Badge color="primary" variant="soft" size="lg">
           {role.team}
         </Badge>
@@ -118,34 +72,15 @@ function RoleHeader({ role }: { role: Role }) {
           {role.commitment}
         </Badge>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '18px 20px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--color-base-200)',
-          maxWidth: MEASURE,
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', ...headingStyle }}>
-          <Dot color={EMBER} />
-          The honest deal
-        </span>
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '15px',
-            lineHeight: '24px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
-          {role.compensation}
-        </p>
-      </div>
+      <Card className="bg-base-200 max-w-[720px] rounded-lg">
+        <CardBody className="gap-2 px-5 py-[18px]">
+          <span className="text-body-sm text-base-content inline-flex items-center gap-2 font-medium tracking-[0.01em]">
+            <Dot color={EMBER} />
+            The honest deal
+          </span>
+          <p className="text-body-sm text-ink-muted m-0">{role.compensation}</p>
+        </CardBody>
+      </Card>
     </div>
   );
 }
@@ -162,9 +97,9 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
       </Section>
 
       <Section surface="surface" padding="lg">
-        <div style={{ maxWidth: MEASURE, display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div className="flex max-w-[720px] flex-col gap-[18px]">
           {role.aboutRole.map((p) => (
-            <p key={p} style={paragraphStyle}>
+            <p key={p} className="text-body-lg text-ink-muted m-0">
               {p}
             </p>
           ))}
@@ -172,15 +107,13 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
       </Section>
 
       <Section surface="page" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
-          <div className="mkt-grid-2-1">
+        <div className="flex flex-col gap-12">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <RoleColumn heading="What you'll own" items={role.whatYoullOwn} />
             <RoleColumn heading="What we're looking for" items={role.whatWereLookingFor} />
           </div>
           {role.niceToHave ? (
-            <div
-              style={{ maxWidth: MEASURE, display: 'flex', flexDirection: 'column', gap: '20px' }}
-            >
+            <div className="flex max-w-[720px] flex-col gap-5">
               <RoleColumn heading="Nice to have" items={role.niceToHave} />
             </div>
           ) : null}
@@ -188,7 +121,7 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
       </Section>
 
       <Section surface="surface" padding="lg">
-        <div style={{ maxWidth: '620px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+        <div className="flex max-w-[620px] flex-col gap-7">
           <Display as="h2" size={34} lineHeight={38}>
             Apply for this role
             <Spark />

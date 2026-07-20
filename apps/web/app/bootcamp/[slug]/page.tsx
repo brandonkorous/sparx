@@ -8,8 +8,9 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Badge, Button } from '@wizeworks/silicaui-react';
-import { Display, Spark } from '@/components/marketing/primitives';
+import { Badge, Card, CardBody } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Container, Display, Spark } from '@/components/marketing/primitives';
 import { TIER_META } from '@/lib/partners';
 import {
   bootcampDates,
@@ -25,9 +26,6 @@ import { RsvpForm } from './rsvp-form';
 
 export const revalidate = 300;
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
-const PRIMARY = 'var(--color-primary)';
 const BASE_URL = 'https://sparx.works';
 
 export async function generateMetadata({
@@ -117,88 +115,38 @@ export default async function BootcampDetailPage({
       />
 
       {/* Header band — orange-tinted, mirroring the bootcamp hero identity. */}
-      <section
-        style={{
-          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-          paddingTop: 'clamp(40px, 6vw, 72px)',
-          paddingBottom: 'clamp(40px, 6vw, 72px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 'var(--container-max)',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-          }}
-        >
-          <a
-            href="/bootcamp"
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              textDecoration: 'none',
-            }}
-          >
+      <section className="bg-primary bg-soft px-page py-[clamp(40px,6vw,72px)]">
+        <Container className="flex flex-col gap-5">
+          <a href="/bootcamp" className="text-caption text-ink-muted no-underline">
             ← All bootcamps
           </a>
-          <span
-            style={{
-              alignSelf: 'flex-start',
-              fontFamily: MONO,
-              fontSize: '12px',
-              padding: '5px 12px',
-              borderRadius: '9999px',
-              backgroundColor: 'var(--color-base-100)',
-              color: 'var(--color-primary)',
-            }}
-          >
-            {FORMAT_LABEL[b.format]}
-          </span>
-          <div style={{ maxWidth: '760px' }}>
+          <div className="max-w-[760px]">
             <Display as="h1" size={64} lineHeight={64}>
               {b.title}
-              <Spark color={PRIMARY} />
+              <Spark />
             </Display>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: '10px 20px',
-              fontFamily: SANS,
-              fontSize: '15px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          {/* Format moved out of the pre-heading eyebrow slot and into the meta row
+              (RULE #2: nothing sits above a heading purely to introduce it). */}
+          <div className="text-body-sm text-ink-muted flex flex-wrap items-center gap-x-5 gap-y-2.5">
+            <span className="inline-flex items-center gap-2">
               <Badge color={tier.color} variant="soft" size="sm">
                 {tier.label}
               </Badge>
               {b.host.displayName}
             </span>
+            <Badge color="primary" size="sm" className="font-mono">
+              {FORMAT_LABEL[b.format]}
+            </Badge>
             <span>{bootcampDates(b)}</span>
             <span>{bootcampLocation(b)}</span>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Body — description + sticky registration card. */}
-      <section
-        style={{
-          paddingTop: 'var(--section-py-lg)',
-          paddingBottom: 'var(--section-py-lg)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', width: '100%' }}>
+      <section className="bg-base-200 px-page py-section-lg">
+        <Container>
           <div className="mkt-detail-grid">
             <div
               className="mkt-prose"
@@ -208,7 +156,7 @@ export default async function BootcampDetailPage({
               <RegistrationCard b={b} />
             </aside>
           </div>
-        </div>
+        </Container>
       </section>
     </>
   );
@@ -228,69 +176,42 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
   const externalUrl = b.registrationMode === 'external' ? b.registrationUrl : null;
 
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '18px',
-        padding: 'clamp(24px, 3vw, 32px)',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-        {rows.map((r, i) => (
-          <div
-            key={r.k}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              padding: '12px 0',
-              borderTop: i === 0 ? undefined : '1px solid var(--color-base-300)',
-              fontFamily: SANS,
-              fontSize: '14px',
-            }}
-          >
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
+    <Card className="rounded-2xl shadow-lg">
+      <CardBody className="gap-5 p-[clamp(24px,3vw,32px)]">
+        <div className="flex flex-col gap-0.5">
+          {rows.map((r, i) => (
+            <div
+              key={r.k}
+              className={
+                i === 0
+                  ? 'text-small flex items-center justify-between gap-4 py-3'
+                  : 'border-base-300 text-small flex items-center justify-between gap-4 border-t py-3'
+              }
             >
-              {r.k}
-            </span>
-            <span
-              style={{ color: 'var(--color-base-content)', fontWeight: 500, textAlign: 'right' }}
-            >
-              {r.v}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {externalUrl ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-            <Button color="primary" size="lg" style={{ width: '100%' }}>
-              Register ↗
-            </Button>
-          </a>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: SANS,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              lineHeight: '18px',
-            }}
-          >
-            Registration is handled on the host&rsquo;s own page.
-          </p>
+              <span className="text-ink-subtle">{r.k}</span>
+              <span className="text-base-content text-right font-medium">{r.v}</span>
+            </div>
+          ))}
         </div>
-      ) : (
-        <RsvpForm slug={b.slug} full={Boolean(seats?.full)} />
-      )}
-    </div>
+
+        {externalUrl ? (
+          <div className="flex flex-col gap-2.5">
+            <a
+              href={externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses({ color: 'primary', size: 'lg', block: true })}
+            >
+              Register ↗
+            </a>
+            <p className="text-mini text-ink-subtle m-0">
+              Registration is handled on the host&rsquo;s own page.
+            </p>
+          </div>
+        ) : (
+          <RsvpForm slug={b.slug} full={Boolean(seats?.full)} />
+        )}
+      </CardBody>
+    </Card>
   );
 }

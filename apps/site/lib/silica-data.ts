@@ -30,7 +30,7 @@ import {
   type PublicProduct,
   type PublicProductListItem,
 } from './commerce';
-import { getEntryById, publicGet, type ApiEntry } from './content';
+import { getEntriesByIds, publicGet, type ApiEntry } from './content';
 import { mediaUrl } from './media';
 
 /** How many products the `commerce.featured` rail shows at most — a curated
@@ -124,19 +124,50 @@ export function collectionToSilicaRecord(
   };
 }
 
+// The route a CMS collection card links to. Only `blog_post` has a per-record
+// detail route (`apps/site/app/blog/[slug]`); other content types render inline and
+// carry no destination, so their card `url` resolves to `''` and `bindAttr` leaves
+// the anchor un-clickable rather than pointing it at a 404.
+function entryUrl(type: string, slug: string | null | undefined): string {
+  if (!slug) return '';
+  return type === 'blog_post' ? `/blog/${slug}` : '';
+}
+
 // A CMS entry's `body` IS its field map; resolve the conventional `featuredImage`
 // media-id to a `{ url, alt }` so an image ref renders (mirrors builder-data's
-// resolveEntryBodyAssets, but as the silica scope-relative record).
+// resolveEntryBodyAssets, but as the silica scope-relative record). The entry-level
+// `slug` and a computed `url` are merged IN so a repeat card can bind its `<a href>`
+// to `cms.<type>.url` — without this the collection is `body`-only and every card in a
+// journal index points at the same static href (the bug that made every post link to
+// the index). Mirrors the commerce card's `url: /products/${handle}` projection.
 function toSilicaEntry(
-  body: Record<string, unknown> | null | undefined,
-  tenantSlug: string
+  entry: Pick<ApiEntry, 'body' | 'slug' | 'published_at'>,
+  tenantSlug: string,
+  type: string
 ): Record<string, unknown> {
-  const b = { ...(body ?? {}) };
+  const b = { ...(entry.body ?? {}) };
   if (typeof b.featuredImage === 'string') {
     const url = mediaUrl(b.featuredImage, tenantSlug);
     b.featuredImage = url ? { url, alt: typeof b.title === 'string' ? b.title : '' } : null;
   }
+  b.slug = entry.slug ?? '';
+  b.url = entryUrl(type, entry.slug);
+  // The publish date lives on the ROW, not in the body, so a card that wants to date
+  // itself has nothing to bind without this. Pre-formatted for display: a binding
+  // resolves to a string and there is no formatter in the tree to turn an ISO stamp
+  // into something a reader wants to see.
+  b.publishedAt = entry.published_at ?? '';
+  b.publishedOn = entry.published_at ? formatEntryDate(entry.published_at) : '';
   return b;
+}
+
+/** `2026-07-18T…` → `18 July 2026`. Locale-fixed on purpose: the storefront renders
+ *  on the server, so a locale-derived format would vary by deploy region rather than
+ *  by reader. */
+function formatEntryDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
@@ -315,20 +346,25 @@ export async function buildSilicaHost(
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => toSilicaEntry(e.body, tenantSlug))
+            entries.map((e) => toSilicaEntry(e, tenantSlug, type))
           )
         )
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
   }
 
-  for (const id of needs.cmsPins) {
+  // ONE request for every CMS pin (docs/127 §7) — this was a fetch per pin, while the
+  // product pins directly above derive from the already-fetched catalog list.
+  if (needs.cmsPins.length > 0) {
     tasks.push(
-      getEntryById(tenantSlug, id)
-        .then((entry) => {
-          if (!entry) return;
+      getEntriesByIds(tenantSlug, needs.cmsPins)
+        .then((entries) => {
           const pins = (root[PINS_ROOT] as Record<string, unknown> | undefined) ?? {};
-          pins[entityPinKey('cms', id)] = toSilicaEntry(entry.body, tenantSlug);
+          for (const id of needs.cmsPins) {
+            const entry = entries.get(id);
+            if (entry)
+              pins[entityPinKey('cms', id)] = toSilicaEntry(entry, tenantSlug, entry.type_key);
+          }
           root[PINS_ROOT] = pins;
         })
         .catch(() => undefined)

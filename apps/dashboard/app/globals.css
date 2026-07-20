@@ -54,6 +54,12 @@
      • silicaui-html dist    — the shipped blocks + component expansions
      • silicaui-builder dist — the Inspector's authorable-utility set + chrome
    Explicit @source overrides Tailwind's default node_modules ignore. */
+/* The DECLARED builder layout vocabulary. The @source scans below only pick up
+   classes the shipped blocks already use, so anything an author composes fresh
+   (col-span-*, order-*, …) emitted no CSS and collapsed the layout silently.
+   Shared by the storefront and the canvas so the two can never disagree. */
+@import '../../../packages/silica-catalog/src/builder-vocabulary.css';
+
 @source '../../../packages/silica-catalog/src/**/*.{ts,tsx}';
 @source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
 @source '../node_modules/@wizeworks/silicaui-builder/dist/**/*.js';

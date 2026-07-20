@@ -1,14 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button } from '@wizeworks/silicaui-react';
-import {
-  Container,
-  Display,
-  Dot,
-  getModuleColor,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+import { Button, Text } from '@wizeworks/silicaui-react';
+import { Display, Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
 import { DropshipHero } from './dropship-hero';
 import { DropshipConnect, DropshipMargin } from './dropship-sections';
 import { DropshipRouting, DropshipInventory, DropshipTracking } from './dropship-devices';
@@ -70,8 +62,6 @@ export function DropshipPage() {
 
 const M = getModuleColor('dropship');
 const C = getModuleColor('commerce');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // Page-specific FAQ. Real evaluation questions for sparx Dropship, answered
 // straight and grounded in docs/14 (PRD) + docs/17 (billing) + @sparx/dropship —
@@ -125,16 +115,13 @@ const DROPSHIP_FAQ: FaqItem[] = [
 // ── WORKS ALONGSIDE COMMERCE ────────────────────────────────────────────────
 function DropshipWithCommerce() {
   const panels: {
-    tag: string;
     title: string;
     body: string;
     points: string[];
     dot: string;
     bg: string;
-    ink: string;
   }[] = [
     {
-      tag: 'commerce',
       title: 'Commerce runs the store',
       body: 'The catalog, the converting checkout, Stripe payments, tax and carrier rates, and the order record all live in Commerce. Your customers buy from one store, one cart, one checkout.',
       points: [
@@ -144,10 +131,8 @@ function DropshipWithCommerce() {
       ],
       dot: C.color,
       bg: C.bg,
-      ink: C.ink,
     },
     {
-      tag: 'dropship',
       title: 'Dropship runs the supply',
       body: 'Connect suppliers, import and price their catalogs, and hand off fulfillment. Dropship adds the supply side to Commerce — it doesn’t replace the store, it feeds it.',
       points: [
@@ -157,7 +142,6 @@ function DropshipWithCommerce() {
       ],
       dot: M.color,
       bg: M.bg,
-      ink: M.ink,
     },
   ];
   return (
@@ -167,69 +151,23 @@ function DropshipWithCommerce() {
         headline="Hands-off fulfillment, on the same store"
         lede="Dropship is the supply side of Commerce, not a separate system. Commerce takes the order; Dropship sources and ships it. Same catalog, same checkout, same customer record — you just stop holding the inventory and packing the boxes."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p) => (
           <div
             key={p.title}
-            className={`${p.bg} bg-soft`}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              padding: '32px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-            }}
+            className={`${p.bg} bg-soft border-base-300 flex flex-col gap-4 rounded-[14px] border p-8`}
           >
-            <span
-              className={p.ink}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {p.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '24px',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {p.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+            <h3 className="text-h2 m-0 font-sans font-medium tracking-[-0.02em]">{p.title}</h3>
+            <Text className="text-body-sm text-ink-muted m-0">{p.body}</Text>
+            <ul className="m-0 grid list-none gap-3 p-0">
               {p.points.map((pt) => (
-                <li key={pt} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
+                <li key={pt} className="flex items-start gap-3">
+                  <span className="shrink-0 pt-[7px]">
                     <Dot color={p.dot} size={7} />
                   </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
+                  <Text as="span" className="text-small text-ink-muted">
                     {pt}
-                  </span>
+                  </Text>
                 </li>
               ))}
             </ul>
@@ -253,58 +191,24 @@ function DropshipProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           A supply chain you don&rsquo;t have to run
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
           No warehouse, no packing, no buying stock on a bet. Connect the suppliers, set your
           margins, and let orders route themselves — while the platform keeps the catalog, the
           customer, and the profit math all in one place.
-        </p>
+        </Text>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(34px, 5vw, 52px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? undefined : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content font-sans text-[clamp(34px,5vw,52px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
+            <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
           </div>
         ))}
       </div>
@@ -317,62 +221,31 @@ function DropshipPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${M.bg} bg-soft border-base-300 items-center justify-between gap-8 rounded-[14px] border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content font-sans text-[56px] font-medium tracking-[-0.025em]">
               $29
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <Text as="span" className="text-body text-ink-subtle">
               /mo
-            </span>
+            </Text>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '660px',
-            }}
-          >
+          <Text className="text-small text-ink-muted m-0 max-w-[660px]">
             A flat $29/mo — supplier connectors, catalog and inventory sync, markup rules, automated
             order routing, and tracking sync. No per-order dropship fee and no reseller cut; you
             connect to your own supplier accounts directly. Works alongside Commerce, which runs
             your catalog and checkout. Start free for 14 days; no card to begin.
-          </p>
+          </Text>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate Dropship
           </Button>
         </div>
@@ -384,51 +257,28 @@ function DropshipPricing() {
 // ── FINAL CTA (dark) ────────────────────────────────────────────────────────
 function DropshipCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Start selling without the warehouse
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted m-0 max-w-[640px]">
           Connect a supplier, import a few products, set a markup rule, and take your first order —
           routed and tracked for you. No stock to buy, no boxes to pack, no migration weekend. Turn
           Dropship off the day you stop, and your products and orders stay yours.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: M.color }}>
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-dropship" size="xl">
             Activate Dropship →
           </Button>
           <a href="#routing">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See how an order routes
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

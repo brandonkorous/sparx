@@ -4,13 +4,13 @@
 // brand-free; the composition root resolves the tenant's brand and hands it in.
 // We reuse the SAME tenant brand the email platform resolves (brandService) for the
 // VISUAL identity (colours/logo/type) — TenantBrand is the platform-wide source of
-// truth (docs/30 §6). But the NAME printed on an invoice is the TENANT's business
-// name — the legal entity that issues the document — NOT a site name: a businessName
-// belongs to the tenant, not its sites (docs/49). So that one field is resolved
-// separately from TenantBrand.businessName (→ tenant legal name), never from the
-// email's site name.
+// truth (docs/30 §6).
+//
+// But WHO ISSUED the document — its name and address — is not brand. An invoice
+// is issued by the BUSINESS: WizeWorks issues it, even when the customer bought
+// through the site called "sparx". So that half resolves from TenantBusiness
+// (business-identity.ts), never from a site, and never from brand.
 
-import { withTenant } from '@sparx/db';
 import { brandService } from '@sparx/email-platform';
 import {
   billingTemplateService,
@@ -22,29 +22,23 @@ import {
 import type { BuilderNode } from '@sparx/builder-schemas';
 
 import { renderInvoiceTree } from './invoice-tree-render.js';
+import { resolveBusinessIdentity } from './business-identity.js';
 
 /** Resolve the tenant brand into the invoice renderer's brand shape: the visual
- *  identity from the shared brand resolver, but the printed NAME from the tenant's
- *  business name (TenantBrand.businessName → tenant legal name), never a site name.
- *  Returns just the name (or `{}`) when the tenant has no visual brand identity. */
+ *  identity from the shared brand resolver, but the printed NAME and seller
+ *  ADDRESS from the BUSINESS (TenantBusiness → tenant legal name), never a site
+ *  name. Returns just the identity when the tenant has no visual brand.
+ *
+ *  The address block is shared with purchase orders via business-identity.ts —
+ *  `addressLines` had been declared on this brand shape since the renderer was
+ *  written and populated by nothing, so the seller block printed empty on every
+ *  invoice ever rendered. */
 export async function resolveInvoiceBrand(ctx: ServiceContext): Promise<BillingRenderBrand> {
-  const [brand, tenant, tenantBrand] = await Promise.all([
+  const [brand, identity] = await Promise.all([
     brandService.resolveEmailBrand(ctx),
-    withTenant({ tenantId: ctx.tenantId }, (tx) =>
-      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { name: true } })
-    ),
-    withTenant({ tenantId: ctx.tenantId }, (tx) =>
-      tx.tenantBrand.findUnique({
-        where: { tenantId: ctx.tenantId },
-        select: { businessName: true },
-      })
-    ),
+    resolveBusinessIdentity(ctx),
   ]);
-  // The business/legal name of the issuing tenant — never the site name.
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must fall through to the next source, which `??` would not do.
-  const businessName = tenantBrand?.businessName?.trim() || tenant?.name?.trim() || undefined;
-  const nameField = businessName ? { businessName } : {};
-  if (!brand) return nameField;
+  if (!brand) return identity;
   return {
     primary: brand.primary,
     primaryForeground: brand.primaryForeground,
@@ -56,7 +50,7 @@ export async function resolveInvoiceBrand(ctx: ServiceContext): Promise<BillingR
     fontHeading: brand.fontHeading,
     fontBody: brand.fontBody,
     ...(brand.logoUrl ? { logoUrl: brand.logoUrl } : {}),
-    ...nameField,
+    ...identity,
   };
 }
 

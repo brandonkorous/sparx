@@ -153,6 +153,19 @@ model BillingDocument {
   // AR status — payment-derived, independent of the workflow stage (§8):
   // unpaid | partial | paid | overdue | void.
   status      String    @default("unpaid") @db.VarChar(20)
+  /// URGENCY rank of `status`, for sorting: overdue(10) → unpaid(20) →
+  /// partial(30) → paid(40) → void(50). READ-ONLY — a Postgres GENERATED
+  /// ALWAYS ... STORED column. Exists because ORDER BY status sorts the text
+  /// alphabetically, which places PAID second and is not what anyone means by
+  /// sorting on status. See migration 20261206000000_billing_document_status_rank.
+  ///
+  /// `@default(dbgenerated())` is load-bearing, not decoration: it is what stops
+  /// Prisma emitting the column on INSERT. With a plain `@default(0)` every
+  /// `billingDocument.create()` fails with Postgres 428C9 ("cannot insert a
+  /// non-DEFAULT value into column status_rank"). Do NOT use `@ignore` here
+  /// either — that would drop the field from the client and break the
+  /// `orderBy: { statusRank }` sort in billing-document-service.orderByFor.
+  statusRank  Int       @default(dbgenerated()) @map("status_rank") @db.SmallInt
   // Net-terms due date — set on finalize from the B2B account's payment terms,
   // or by hand. Drives overdue escalation (§8). Null for pay-now/retail docs.
   dueAt       DateTime? @map("due_at") @db.Timestamptz

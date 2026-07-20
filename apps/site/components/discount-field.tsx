@@ -41,7 +41,9 @@ export function DiscountField() {
         </Button>
       </div>
       {error ? (
-        <span style={{ color: 'var(--color-danger)', fontSize: '0.8rem' }}>{error}</span>
+        <span className="text-danger" style={{ fontSize: '0.8rem' }}>
+          {error}
+        </span>
       ) : null}
     </form>
   );

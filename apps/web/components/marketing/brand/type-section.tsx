@@ -14,16 +14,7 @@ const ROLES: Role[] = [
   {
     role: 'Display',
     specimen: (
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: 'clamp(34px, 5vw, 52px)',
-          letterSpacing: '-0.025em',
-          lineHeight: 1.05,
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <span className="text-base-content font-sans text-[clamp(34px,5vw,52px)] leading-[1.05] font-medium tracking-[-0.025em]">
         Everything, ignited.
       </span>
     ),
@@ -33,16 +24,7 @@ const ROLES: Role[] = [
   {
     role: 'Heading',
     specimen: (
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '24px',
-          letterSpacing: '0',
-          lineHeight: 1.25,
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <span className="text-base-content font-sans text-[24px] leading-[1.25] font-medium tracking-normal">
         Activate only what you need
       </span>
     ),
@@ -52,15 +34,7 @@ const ROLES: Role[] = [
   {
     role: 'Body',
     specimen: (
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 400,
-          fontSize: '17px',
-          lineHeight: 1.6,
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100))',
-        }}
-      >
+      <span className="text-ink-muted font-sans text-[17px] leading-[1.6] font-normal">
         sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
         space is intentional, and every element has a reason to exist.
       </span>
@@ -71,16 +45,7 @@ const ROLES: Role[] = [
   {
     role: 'Label',
     specimen: (
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '11px',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100))',
-        }}
-      >
+      <span className="text-ink-muted font-sans text-[11px] font-medium tracking-[0.08em] uppercase">
         Badge · metadata
       </span>
     ),
@@ -127,7 +92,7 @@ export function TypeSection() {
           ))}
         </div>
 
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Note title="Two weights only">
             400 (regular) and 500 (medium) — never 600 or 700, which feel heavy against the clean
             sparx UI. The wordmark is the one deliberate exception: it sets in a bold display face

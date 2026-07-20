@@ -8,15 +8,16 @@ import { Dot } from './primitives';
  *  - CrmOneRecord ... the "no sync" argument as a before/after: a stack of
  *    tools trading webhooks vs. ONE sparx record, joined by a connector arrow
  *    that rotates to point down when the panels stack.
- *  - CrmTimeline .... the append-only activity feed (module-colored markers,
- *    real CRM event types) beside three callout pins.
  *
  * Grounded in docs/11 + the dashboard activity-timeline.tsx event vocabulary.
+ *
+ * Class-based per SILICA-VOCABULARY.md. The "usual stack" drift markers used a
+ * literal amber (#B45309); they are semantic warnings, so they now wear
+ * `text-warning` / `--color-warning`. Panel header labels are device chrome.
  */
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
+const WARNING = 'var(--color-warning)';
 
 function hue(module: MarketingModule): string {
   return getModuleColor(module).color;
@@ -43,37 +44,19 @@ export function CrmOneRecord() {
         headline="The records never disagree, because there’s only one"
         lede="Most CRMs keep a second copy of your customer, stitched to your store with webhooks that drift, dedupe rules that fight, and a 3am sync that broke. sparx CRM isn’t a copy — it reads the same rows the order does."
       />
-      <div
-        className="mkt-stack-on-tablet"
-        style={{ marginTop: '52px', gap: 0, alignItems: 'stretch' }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <Panel header="the usual stack" headerDot="#B45309">
+      <div className="mt-[52px] flex flex-col items-stretch gap-0 lg:flex-row">
+        <div className="min-w-0 flex-1">
+          <Panel header="the usual stack" headerDot={WARNING}>
             {before.map((row, i) => (
               <div
                 key={row.label}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '11px',
-                  padding: '13px 20px',
-                  borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
+                className={`text-ink-muted text-small flex items-center gap-[11px] px-5 py-[13px] ${
+                  i === 0 ? '' : 'border-base-200 border-t'
+                }`}
               >
-                <Dot color={row.module === 'warn' ? '#B45309' : hue(row.module)} size={8} />
-                <span style={{ minWidth: 0 }}>{row.label}</span>
-                <span
-                  style={{
-                    marginLeft: 'auto',
-                    fontFamily: MONO,
-                    fontSize: '10.5px',
-                    color: '#B45309',
-                    flexShrink: 0,
-                  }}
-                >
+                <Dot color={row.module === 'warn' ? WARNING : hue(row.module)} size={8} />
+                <span className="min-w-0">{row.label}</span>
+                <span className="text-warning text-micro ml-auto shrink-0 font-mono">
                   {row.tag}
                 </span>
               </div>
@@ -95,63 +78,26 @@ export function CrmOneRecord() {
             <polyline points="12 5 19 12 12 19" />
           </svg>
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="min-w-0 flex-1">
           <Panel header="sparx · one database" headerDot={M.color} accent>
-            <div style={{ padding: '16px 20px 18px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '11px',
-                  paddingBottom: '4px',
-                }}
-              >
+            <div className="px-5 pt-4 pb-[18px]">
+              <div className="flex items-center gap-[11px] pb-1">
                 <span
-                  className={`${M.bg} bg-soft ${M.ink}`}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '9999px',
-                    border: `1.5px solid ${M.color}`,
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: SANS,
-                    fontWeight: 500,
-                    fontSize: '11px',
-                  }}
+                  className={`${M.bg} bg-soft ${M.ink} border-module-crm text-micro flex size-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
                 >
                   DR
                 </span>
-                <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
-                  one customer, one row
-                </span>
+                <span className="text-small font-medium">one customer, one row</span>
               </div>
               {after.map((row) => (
                 <div
                   key={row.label}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '11px',
-                    padding: '10px 0',
-                    borderTop: '1px solid var(--color-base-200)',
-                    fontFamily: SANS,
-                    fontSize: '13.5px',
-                  }}
+                  className="border-base-200 text-small flex items-center gap-[11px] border-t py-2.5"
                 >
                   <Dot color={hue(row.module)} size={8} />
                   <span>{row.label}</span>
                   <span
-                    className={`${M.bg} bg-soft ${M.ink}`}
-                    style={{
-                      marginLeft: 'auto',
-                      fontFamily: MONO,
-                      fontSize: '10.5px',
-                      padding: '3px 8px',
-                      borderRadius: '9999px',
-                    }}
+                    className={`${M.bg} bg-soft ${M.ink} text-micro ml-auto rounded-full px-2 py-[3px] font-mono`}
                   >
                     live
                   </span>
@@ -178,29 +124,12 @@ function Panel({
 }) {
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderTop: accent ? `3px solid ${M.color}` : '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        height: '100%',
-      }}
+      className={`bg-base-100 border-base-300 h-full overflow-hidden rounded-2xl border-x border-b ${
+        accent ? 'border-t-module-crm border-t-[3px]' : 'border-t'
+      }`}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-          padding: '15px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-          fontFamily: MONO,
-          fontSize: '11px',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+      {/* Panel caption — device chrome naming the two stacks being compared. */}
+      <div className="border-base-300 text-ink-subtle text-micro flex items-center gap-[9px] border-b px-5 py-[15px] font-mono tracking-[0.05em] uppercase">
         <Dot color={headerDot} size={8} />
         {header}
       </div>

@@ -7,6 +7,7 @@ import {
   Section,
   SectionHeader,
   Spark,
+  Text,
 } from './primitives';
 
 /**
@@ -15,12 +16,16 @@ import {
  * two-promise arc: **live in 5 minutes** (the on-ramp) AND **built to last**
  * (permanence — "AI builds it. sparx keeps it."; you own the data and the site,
  * maintain it yourself for years, no rebuild). Bespoke + full-length, modeled on
- * ai-page.tsx; Builder's accent is the indigo platform color.
+ * agentic-page.tsx; Builder's accent is the indigo platform color.
  *
  * Selling is kept optional throughout (content AND/OR commerce). No invented
  * metrics or customers. The "code optional" escape ladder is grounded in
  * docs/47-class-first-authoring-model.md. All copy is rendered from string
  * consts so there are no JSX-entity escapes to manage.
+ *
+ * Authoring: silica components + Tailwind utilities only (SILICA-VOCABULARY.md).
+ * The only inline `style` left is the Builder module hue handed to <Dot>/<Spark>
+ * as a VALUE — everything static is a class.
  */
 export function BuilderPage() {
   return (
@@ -39,8 +44,6 @@ export function BuilderPage() {
 }
 
 const B = getModuleColor('builder');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── HERO ──────────────────────────────────────────────────────────────────────
 function BuilderHero() {
@@ -53,17 +56,9 @@ function BuilderHero() {
     'content or commerce',
   ];
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
+    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+      <Container className="flex flex-col gap-10">
+        <div className="flex max-w-[1100px] flex-col gap-2">
           <Display as="h1" size={96} lineHeight={90}>
             Your site,
           </Display>
@@ -73,26 +68,13 @@ function BuilderHero() {
           </Display>
         </div>
 
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: SANS,
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '640px',
-              margin: 0,
-            }}
-          >
+        <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
+          <Text size={18} className="max-w-[640px]">
             {lede}
-          </p>
+          </Text>
 
-          <div className="mkt-cluster" style={{ gap: '12px' }}>
-            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button color="neutral" size="lg">
               Start your site →
             </Button>
             <a href="#how">
@@ -103,33 +85,16 @@ function BuilderHero() {
           </div>
         </div>
 
-        <ul
-          className="mkt-cluster"
-          style={{ gap: '10px 12px', listStyle: 'none', margin: 0, padding: 0 }}
-        >
+        <ul className="flex list-none flex-wrap items-center gap-x-3 gap-y-2.5">
           {chips.map((c) => (
             <li
               key={c}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '7px 13px',
-                backgroundColor: 'var(--color-base-100)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '9999px',
-              }}
+              className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
             >
               <Dot color={B.color} size={6} />
-              <span
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '12px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              <Text as="span" size={12} mono>
                 {c}
-              </span>
+              </Text>
             </li>
           ))}
         </ul>
@@ -140,9 +105,9 @@ function BuilderHero() {
 
 // ── THE ARC · live in 5 minutes AND built to last ─────────────────────────────
 function TheArc() {
-  const cards: { kicker: string; title: string; body: string; points: string[] }[] = [
+  // No kicker above the titles: the heading carries itself (RULE #2).
+  const cards: { title: string; body: string; points: string[] }[] = [
     {
-      kicker: 'the on-ramp',
       title: 'Live in 5 minutes',
       body: 'Pick a theme, change the parts that matter, point your domain, publish. No app store, no Zapier, no waiting on a developer to get a real site online.',
       points: [
@@ -152,7 +117,6 @@ function TheArc() {
       ],
     },
     {
-      kicker: 'the payoff',
       title: 'Built to last',
       body: 'Generate it with AI if you want — but sparx is where the site lives afterward. You maintain and enhance it yourself, for years, in a no-code editor. AI builds it. sparx keeps it.',
       points: [
@@ -164,79 +128,32 @@ function TheArc() {
   ];
   return (
     <Section surface="surface" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
+      <div className="max-w-[760px]">
         <SectionHeader
           accent={B.color}
           headline="Fast to start. Permanent to keep"
           lede="Most site tools make you choose: quick and disposable, or powerful and painful. Builder is both ends at once. You're live the first afternoon — and the site you stand up today is the one you still run in five years, no rebuild, no developer on retainer."
         />
       </div>
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {cards.map((c, i) => (
           <div
             key={c.title}
-            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '18px',
-              padding: '32px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-            }}
+            className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'} border-base-300 flex flex-col gap-4.5 rounded-xl border p-8`}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <span
-                className={B.ink}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '11px',
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {c.kicker}
-              </span>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '24px',
-                  letterSpacing: '-0.02em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
-                {c.title}
-              </h3>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {c.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+            <Text as="h3" size={24} tone="default" weight={500} className="tracking-[-0.02em]">
+              {c.title}
+            </Text>
+            <Text size={15}>{c.body}</Text>
+            <ul className="grid list-none gap-3">
               {c.points.map((p) => (
-                <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
+                <li key={p} className="flex items-start gap-3">
+                  <span className="shrink-0 pt-[7px]">
                     <Dot color={B.color} size={7} />
                   </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
+                  <Text as="span" size={14}>
                     {p}
-                  </span>
+                  </Text>
                 </li>
               ))}
             </ul>
@@ -249,24 +166,21 @@ function TheArc() {
 
 // ── HOW IT WORKS · the 5-minute path ──────────────────────────────────────────
 function HowItWorks() {
+  // Order is carried by the grid, not by an "01/02/03" step marker (RULE #2).
   const steps = [
     {
-      n: '01',
       title: 'Pick a theme',
       body: "Start from a theme that already looks finished. It's responsive and accessible out of the box, so you're tuning a real site, not assembling one from scratch.",
     },
     {
-      n: '02',
       title: 'Edit in the browser',
       body: "Drag, drop, and type directly on the page. Swap copy, images, and sections — every change previews exactly as it'll publish, no separate preview mode to second-guess.",
     },
     {
-      n: '03',
       title: 'Point your domain',
       body: 'Add your custom domain and update one DNS record. Your SSL certificate provisions itself — no separate certificate service, no renewals, no upcharge.',
     },
     {
-      n: '04',
       title: "Publish — you're live",
       body: 'Hit publish and your site serves from the global CDN, fast everywhere. Edits go live the moment you publish — nothing to clear, nothing to wait on.',
     },
@@ -278,53 +192,16 @@ function HowItWorks() {
         headline="Four steps to live"
         lede="No integration project, no migration weekend. This is the honest path from nothing to a site on your own domain — and it's the same path whether you're publishing a blog or opening a store."
       />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((s, i) => (
           <div
-            key={s.n}
-            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              padding: '30px 26px 34px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '210px',
-            }}
+            key={s.title}
+            className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'} border-base-300 flex min-h-[210px] flex-col gap-3.5 rounded-xl border px-6 pt-7 pb-8`}
           >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Text as="h3" size={20} tone="default" weight={500} className="tracking-[-0.02em]">
               {s.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
+            </Text>
+            <Text size={14}>{s.body}</Text>
           </div>
         ))}
       </div>
@@ -367,57 +244,21 @@ function Capabilities() {
         headline="Everything a real site needs"
         lede="Builder isn't a page widget bolted onto a dashboard. It's the full website layer — the part that renders, hosts, and serves — with the plumbing most tools charge extra for already included."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => (
           <div
             key={c.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              padding: '28px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '180px',
-            }}
+            className="bg-base-200 border-base-300 flex min-h-[180px] flex-col gap-3.5 rounded-xl border p-7"
           >
             <span
-              className={`${B.bg} bg-soft`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 32,
-                height: 32,
-                borderRadius: '8px',
-              }}
+              className={`${B.bg} bg-soft inline-flex size-8 items-center justify-center rounded-lg`}
             >
               <Dot color={B.color} size={9} />
             </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '18px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Text as="h3" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
               {c.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {c.body}
-            </p>
+            </Text>
+            <Text size={14}>{c.body}</Text>
           </div>
         ))}
       </div>
@@ -427,24 +268,26 @@ function Capabilities() {
 
 // ── CODE OPTIONAL · the escape ladder (docs/47) ───────────────────────────────
 function CodeOptional() {
+  // `level` is a functional annotation about how much code each rung costs —
+  // it sits BELOW the card body, never as a kicker above the heading (RULE #2).
   const rungs = [
     {
-      tag: '01 · no code',
+      level: 'no code',
       title: 'Pick a component',
       body: "Choose a ready-made section — a hero, a feature card, a stat row — and it's styled, responsive, and consistent with the rest of your site automatically.",
     },
     {
-      tag: '02 · no code',
+      level: 'no code',
       title: 'Adjust the controls',
       body: 'Open the inspector and tune spacing, color, size, and layout with real controls — bounded so the choices always stay coherent.',
     },
     {
-      tag: '03 · light code',
+      level: 'light code',
       title: 'Add your own utilities',
       body: "Reach for a class field and apply your own spacing, color, and layout utilities, drawn from your brand's design system — the muscle memory, none of the chaos.",
     },
     {
-      tag: '04 · full code',
+      level: 'full code',
       title: 'Write the CSS, or go headless',
       body: 'When you want total control, write scoped custom CSS — or take the data headless and build the front end yourself. The escape hatch is always there.',
     },
@@ -456,55 +299,21 @@ function CodeOptional() {
         headline="Start with no code. Drop to as much as you want"
         lede="Builder is no-code by default, but it never traps you there. When you need more control, you take the next step down — and the step after that — without leaving sparx or rebuilding anything. You can go as deep as full code, and you're never locked out of going deeper."
       />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {rungs.map((r, i) => (
           <div
-            key={r.tag}
-            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '28px 24px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '200px',
-            }}
+            key={r.title}
+            className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'} border-base-300 flex min-h-[200px] flex-col gap-3 rounded-xl border px-6 py-7`}
           >
-            <span
-              className={B.ink}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {r.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '18px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Text as="h3" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
               {r.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            </Text>
+            <Text size={14} className="flex-1">
               {r.body}
-            </p>
+            </Text>
+            <Text as="span" size={12} mono tone="none" className={B.ink}>
+              {r.level}
+            </Text>
           </div>
         ))}
       </div>
@@ -542,67 +351,34 @@ function BuiltToLast() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={56} lineHeight={60} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={56} lineHeight={60}>
           AI builds it. sparx keeps it
           <Spark color={B.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '24px 0 0',
-          }}
-        >
+        <Text size={18} className="mt-6 max-w-[640px]">
           Anything can spit out a website in a minute. The hard part is the years after — keeping it
           current, owning it, never being held hostage by the tool that made it. That&rsquo;s the
           part sparx is built for. Fast to start, permanent to keep.
-        </p>
+        </Text>
       </div>
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((it) => (
           <div
             key={it.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              padding: '24px',
-              backgroundColor: '#141414',
-              border: '1px solid #262626',
-              borderRadius: '12px',
-            }}
+            className="bg-base-200 border-base-300 flex flex-col gap-2.5 rounded-xl border p-6"
           >
-            <h3
-              style={{
-                margin: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '16px',
-                letterSpacing: '-0.01em',
-                color: '#FFFFFF',
-              }}
+            <Text
+              as="h3"
+              size={16}
+              tone="default"
+              weight={500}
+              className="flex items-center gap-2.5 tracking-[-0.01em]"
             >
               <Dot color={B.color} size={8} />
               {it.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: '#A1A1AA',
-              }}
-            >
-              {it.body}
-            </p>
+            </Text>
+            <Text size={13}>{it.body}</Text>
           </div>
         ))}
       </div>
@@ -651,54 +427,21 @@ function WhatYouCanBuild() {
         headline="Content, commerce, or both"
         lede="Builder renders the site; the modules you turn on decide what it does. A pure content site with no checkout is just as first-class as a full store — selling is one capability, never the assumption."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {uses.map((u, i) => (
           <div
             key={u.title}
-            className={i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '28px 26px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '200px',
-            }}
+            className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'} border-base-300 flex min-h-[200px] flex-col gap-3 rounded-xl border p-7`}
           >
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Text as="h3" size={17} tone="default" weight={500} className="tracking-[-0.01em]">
               {u.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                flex: 1,
-                fontFamily: SANS,
-                fontSize: '14px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            </Text>
+            <Text size={14} className="flex-1">
               {u.body}
-            </p>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            </Text>
+            <Text as="span" size={12} mono>
               {u.runs}
-            </span>
+            </Text>
           </div>
         ))}
       </div>
@@ -711,62 +454,31 @@ function BuilderPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${B.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${B.bg} bg-soft border-base-300 items-center justify-between gap-8 rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <Display as="h3" size={56} lineHeight={56}>
               $10
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            </Display>
+            <Text as="span" size={16}>
               /mo
-            </span>
+            </Text>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <Text size={14} className="max-w-[640px]">
             A flat $10/mo. Builder hosts and serves your site — pages, custom domains, SSL, and the
             global CDN, all in. It&rsquo;s a module, not a required base: switch it on when you want
             a hosted sparx site, leave it off and run headless through the API and MCP. One bill
             with everything else, off the moment you stop.
-          </p>
+          </Text>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate Builder
           </Button>
         </div>
@@ -778,50 +490,27 @@ function BuilderPricing() {
 // ── FINAL CTA (dark) ──────────────────────────────────────────────────────────
 function BuilderCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-10">
+        <Display size={88} lineHeight={84}>
           Your site, live this afternoon
           <Spark color={B.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <Text size={18} className="max-w-[640px]">
           Pick a theme, point your domain, publish — no developer, no rebuild looming, no contract.
           The site you start today is yours to keep and grow for years.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
           <Button size="xl" variant="solid">
             Start your site →
           </Button>
           <a href="#how">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See how it works
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

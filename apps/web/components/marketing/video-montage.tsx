@@ -101,8 +101,7 @@ export function VideoMontage() {
           {CLIPS.map((c, i) => (
             <span
               key={c.label}
-              className="mkt-video-tag"
-              style={{ color: i === current ? '#ffffff' : 'rgba(255, 255, 255, 0.4)' }}
+              className={`mkt-video-tag ${i === current ? 'text-base-content' : 'text-ink-subtle'}`}
             >
               {c.label}
             </span>

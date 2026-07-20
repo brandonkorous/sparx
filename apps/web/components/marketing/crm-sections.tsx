@@ -11,18 +11,16 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  *    RECORD card (stats + module-colored signals) that crossfades through
  *    EXAMPLE_BUSINESSES so CRM reads as the spine for ANY business. The marquee
  *    device — one person, a signal from every module, colored by source.
- *  - CrmOneRecord ...... the "no sync" argument: a before stack (tools trading
- *    webhooks) vs. one sparx record, joined by a connector arrow.
- *  - CrmTimeline ....... the append-only activity feed beside the auto-logged /
- *    manual / auditable callout pins.
+ *  - RecordCard ........ the record itself.
  *
  * Grounded in docs/11 (CRM PRD) + the real dashboard CRM surfaces (record
  * stats, activity event vocabulary). CRM cyan is a signal, not fill.
+ *
+ * Class-based per SILICA-VOCABULARY.md; the only inline styles left are the
+ * per-module hue VALUES the record's signal dots and the avatar ring need.
  */
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 /** Module hue for a signal source — the record colors each signal by module. */
 function sourceColor(module: MarketingModule): string {
@@ -40,40 +38,19 @@ export function CrmHero() {
     'no sync, ever',
   ];
   return (
-    <section
-      className={`${M.bg} bg-soft`}
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
+    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
+          <div className="min-w-0 flex-1">
             <Display as="h1" size={84} lineHeight={80}>
               One customer, every signal
               <Spark color={M.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '560px',
-                margin: '28px 0 0',
-              }}
-            >
+            <p className="text-ink-muted mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55]">
               {lede}
             </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="mt-[34px] flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Activate CRM →
               </Button>
               <a href="#record">
@@ -82,38 +59,19 @@ export function CrmHero() {
                 </Button>
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mt-[26px] flex list-none flex-wrap items-center gap-2.5">
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-[13px] py-[7px]"
                 >
                   <Dot color={M.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {c}
-                  </span>
+                  <span className="text-ink-muted text-mini font-mono">{c}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div id="record" style={{ flex: 1, minWidth: 0, width: '100%', scrollMarginTop: '80px' }}>
+          <div id="record" className="w-full min-w-0 flex-1 scroll-mt-20">
             <Cycle
               items={EXAMPLE_BUSINESSES.map((b) => (
                 <RecordCard key={b.domain} business={b} />
@@ -132,140 +90,49 @@ export function CrmHero() {
 function RecordCard({ business }: { business: ExampleBusiness }) {
   const { crm, customer } = business;
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '13px',
-          padding: '18px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-lg">
+      <div className="border-base-300 flex items-center gap-[13px] border-b px-5 py-[18px]">
         <span
-          className={`${M.bg} bg-soft ${M.ink}`}
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: '9999px',
-            border: `1.5px solid ${M.color}`,
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '15px',
-          }}
+          className={`${M.bg} bg-soft ${M.ink} border-module-crm text-body-sm flex size-[42px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
         >
           {crm.initials}
         </span>
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: 'block', fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
-            {customer.name}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+        <span className="min-w-0">
+          <span className="text-body block font-medium">{customer.name}</span>
+          {/* Record chrome inside the mimicked CRM surface. */}
+          <span className="text-ink-subtle text-mini font-mono">
             {crm.type} · one record · 5 live signals
           </span>
         </span>
         <Dot color={M.color} size={9} />
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+      <div className="border-base-300 grid grid-cols-3 border-b">
         {[
           [crm.totalSpent, 'total spent'],
           [String(crm.orders), 'orders'],
           [crm.avgOrder, 'avg order'],
         ].map(([v, l], i) => (
-          <div
-            key={l}
-            style={{
-              padding: '14px 18px',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '18px',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {v}
-            </div>
-            <div
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: '2px',
-              }}
-            >
-              {l}
-            </div>
+          <div key={l} className={`px-[18px] py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`}>
+            <div className="text-lede font-medium tracking-[-0.01em]">{v}</div>
+            <div className="text-ink-subtle text-micro mt-0.5 font-mono">{l}</div>
           </div>
         ))}
       </div>
-      <div style={{ padding: '6px 20px 14px' }}>
-        <div
-          style={{
-            fontFamily: MONO,
-            fontSize: '10.5px',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            padding: '12px 0 4px',
-          }}
-        >
+      <div className="px-5 pt-1.5 pb-3.5">
+        {/* Panel label inside the record UI — device chrome, not an eyebrow. */}
+        <div className="text-ink-subtle text-micro pt-3 pb-1 font-mono tracking-[0.06em] uppercase">
           activity · from every module
         </div>
         {crm.signals.map((s, i) => (
           <div
             key={s.label}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '11px',
-              padding: '10px 0',
-              borderTop: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-              fontFamily: SANS,
-              fontSize: '13.5px',
-            }}
+            className={`text-small flex items-center gap-[11px] py-2.5 ${
+              i === 0 ? '' : 'border-base-200 border-t'
+            }`}
           >
             <Dot color={sourceColor(s.module)} size={8} />
-            <span style={{ minWidth: 0 }}>{s.label}</span>
-            <span
-              style={{
-                marginLeft: 'auto',
-                fontFamily: MONO,
-                fontSize: '10.5px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                padding: '3px 8px',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '9999px',
-                flexShrink: 0,
-              }}
-            >
+            <span className="min-w-0">{s.label}</span>
+            <span className="text-ink-subtle text-micro border-base-300 ml-auto shrink-0 rounded-full border px-2 py-[3px] font-mono">
               {s.module === 'ai' ? 'mcp' : s.module}
             </span>
           </div>

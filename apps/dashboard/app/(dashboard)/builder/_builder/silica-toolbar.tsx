@@ -14,7 +14,7 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { useEditor } from '@wizeworks/silicaui-builder/react';
-import type { BuilderPageDto, DataSource } from '@sparx/builder-schemas';
+import type { BuilderPageSummaryDto, DataSource } from '@sparx/builder-schemas';
 
 import { SilicaPageSettings } from './silica-page-settings';
 import { badgeView, type PublishView, type SaveState } from './publish-badge';
@@ -29,7 +29,7 @@ export interface SilicaToolbarProps {
   publish: PublishView;
   /** Server-fetched page metadata (recordType / isDefault / SEO), keyed by id — the
    *  seed for the page-settings drawer. */
-  pages: BuilderPageDto[];
+  pages: BuilderPageSummaryDto[];
   /** The binding catalog's sources — the record types a template can render. */
   sources: DataSource[];
   /** `?page=<id>` — the page to open on mount. Applied HERE rather than in the

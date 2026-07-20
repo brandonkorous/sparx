@@ -49,7 +49,7 @@ function Movement({ from, to }: { from: number; to: number }) {
   return (
     <div className="flex flex-row flex-wrap items-center gap-1">
       <p className="text-base-content text-sm tabular-nums line-through">{fmt(from)}</p>
-      <ArrowRight className="h-3 w-3 text-[var(--color-fg-muted)]" />
+      <ArrowRight className="text-base-content h-3 w-3" />
       <p className="text-sm font-medium tabular-nums">{fmt(to)}</p>
       <Badge color={up ? 'success' : 'danger'} variant="soft">
         {up ? '+' : ''}
@@ -236,7 +236,7 @@ export function PriceReviewsManager({ initialReviews }: { initialReviews: PriceR
                   <td>
                     <div className="flex flex-col gap-1">
                       <p className="text-sm font-medium">{r.variantTitle ?? r.variantSku}</p>
-                      <code className="text-xs text-[var(--color-fg-muted)]">{r.variantSku}</code>
+                      <code className="text-base-content text-xs">{r.variantSku}</code>
                     </div>
                   </td>
                   <td>

@@ -17,7 +17,7 @@ import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import type { McpAuthContext } from './auth.js';
 import { recordToolInvocation } from './audit.js';
 import { loadDisabledTools } from './tool-policy.js';
-import { ALL_MCP_TOOLS, type AnyMcpTool } from './tool-registry.js';
+import { ALL_MCP_TOOLS, isSiteScopableTool, type AnyMcpTool } from './tool-registry.js';
 
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 
@@ -128,7 +128,37 @@ async function dispatch(
     };
   }
 
-  const ctx = { tenantId: auth.tenantId, userId: auth.userId };
+  // Site gate — a credential issued for ONE of the tenant's businesses must not
+  // read or write another's (docs/131 §3.2). Sits beside the module gate because
+  // it is the same kind of check: a precondition on the caller's reach, decided
+  // before the tool runs.
+  //
+  // A tool that cannot honour the restriction is REFUSED, not silently run
+  // tenant-wide. That is the whole point — the defect being fixed is a key that
+  // looked scoped and wasn't, so the failure has to be loud. The message names
+  // the tool so the limitation is actionable rather than mysterious.
+  if (auth.propertyId && !isSiteScopableTool(tool.name)) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text:
+            `forbidden: this credential is limited to a single site, and ${tool.name} ` +
+            `cannot yet be limited to one — it would read across every site this ` +
+            `account owns. Use a tenant-wide key if that is genuinely intended.`,
+        },
+      ],
+    };
+  }
+
+  const ctx = {
+    tenantId: auth.tenantId,
+    userId: auth.userId,
+    // The ceiling, not a target: site-aware tools resolve their target through
+    // toPropertyContext, which refuses to exceed this.
+    restrictToPropertyId: auth.propertyId,
+  };
   try {
     const parsed = tool.input.parse(input);
     const result = await tool.run(ctx, parsed);

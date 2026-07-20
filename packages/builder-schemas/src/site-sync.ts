@@ -92,6 +92,36 @@ export const SilicaThemeInput = z.looseObject({
  *  unedited brand-derived theme). Every part is persisted; nothing is discarded. */
 export const SiteSyncInput = z.object({
   pages: z.array(SiteSyncPageInput).min(1),
+  /**
+   * The COMPLETE page roster, in order, when `pages` carries only the pages whose
+   * bodies actually changed (docs/126 Phase 0).
+   *
+   * The engine hands the host the entire `Site` on every edit, and the host wrote all
+   * of it back on every 700ms autosave burst — so a one-character heading edit on a
+   * 12-page site rewrote 12 JSONB columns, and two authors editing different pages
+   * silently reverted each other because each payload was the whole site.
+   *
+   * With a roster, `pages` narrows to just the changed bodies while deletion and
+   * ordering still resolve against the full set. Omit it and `pages` IS the roster —
+   * the original whole-site semantics, which is what the MCP writers and the blueprint
+   * installer still send.
+   */
+  pageIds: z.array(z.string().min(1)).nullish(),
+  /**
+   * Optimistic-concurrency precondition (docs/126 Phase 1): the `updatedAt` the client
+   * last saw, per page id, as ISO strings.
+   *
+   * There is otherwise NO concurrency control on a builder tree — no version column,
+   * no ETag, no lock. Two authors on one site each hold a full in-memory `Site`, so
+   * whoever autosaves last silently reverts the other, including on pages they never
+   * opened. Phase 0 shrinks that blast radius to the pages actually sent; this makes
+   * the collision detectable instead of silent.
+   *
+   * A page whose stored `updatedAt` is newer than the sent one is REJECTED rather than
+   * overwritten. Omit the map entirely for last-write-wins (MCP writers, the blueprint
+   * installer, and any caller that legitimately owns the whole site).
+   */
+  pageUpdatedAt: z.record(z.string(), z.string()).nullish(),
   frame: z.object({ root: SilicaTreeInput }).nullish(),
   symbols: z.record(z.string(), z.unknown()).nullish(),
   theme: SilicaThemeInput.nullish(),
@@ -149,13 +179,18 @@ export interface SitePublishState {
  *  `schedulingEnabled` is the same public module-state signal for the Scheduling
  *  module, driving the starter fallback's Book link + `/book` page. Unlike Commerce
  *  it defaults to `false` when undefined (scheduling is opt-in, no legacy behavior to
- *  preserve). */
+ *  preserve).
+ *  `cmsEnabled` is the same signal for the CMS module, driving the starter fallback's
+ *  Journal link + `/blog` index. Defaults to `false` like Scheduling. It was missing
+ *  while the other two were here, which made a publisher-only tenant unreachable in
+ *  their own chrome: posts rendered at `/blog/<slug>` with no index and no link. */
 export interface PublishedSilicaFrameDto {
   frame: SilicaFrame | null;
   symbols: Record<string, SilicaSymbolDef>;
   theme: SilicaTheme | null;
   commerceEnabled?: boolean;
   schedulingEnabled?: boolean;
+  cmsEnabled?: boolean;
 }
 
 /** A published silica PAGE body + the meta the storefront titles/routes it by.

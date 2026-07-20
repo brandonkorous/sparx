@@ -41,6 +41,32 @@ function previewHeaders(previewToken?: string): HeadersInit | undefined {
   return previewToken ? { Authorization: `Preview ${previewToken}` } : undefined;
 }
 
+/**
+ * Fetch policy for a builder read (docs/127 §6).
+ *
+ * These reads were ALL `cache: 'no-store'`, with an INTERIM comment explaining why:
+ * builder content changes on publish, no tag-purge was wired, so a TTL would only
+ * have served stale pages. That purge now exists — `installBuilderPubSubBridge`
+ * publishes `builder.*` to Pub/Sub, `cache-revalidation-worker` maps it to the
+ * `builder` scope, and app/api/revalidate purges `builder:<slug>`. So published
+ * reads are cached again, with the TTL as a backstop rather than the mechanism.
+ *
+ * A PREVIEW read stays uncached, always. It serves the DRAFT tree, which changes on
+ * every autosave and is scoped to one author's in-flight work — caching it would both
+ * serve stale drafts and risk leaking one preview's response to another request.
+ */
+function builderFetchInit(tenantSlug: string, previewToken?: string): RequestInit {
+  if (previewToken) {
+    return { cache: 'no-store', headers: previewHeaders(previewToken) };
+  }
+  return {
+    next: {
+      revalidate: 300,
+      tags: ['sparx-storefront', `tenant:${tenantSlug}`, `builder:${tenantSlug}`],
+    },
+  };
+}
+
 export async function getPublishedBuilderPage(
   tenantSlug: string,
   slug: string,
@@ -49,15 +75,7 @@ export async function getPublishedBuilderPage(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}${await propertyParam()}`,
-      {
-        // INTERIM: uncached so a publish reflects immediately. Builder content
-        // changes on publish, and no tag-purge is wired yet (that's the deferred
-        // Pub/Sub→cache-revalidation-worker slice) — a TTL here would just serve
-        // stale pages. Restore `next: { revalidate, tags: ['builder:<slug>'] }`
-        // once publish purges the tag.
-        cache: 'no-store',
-        headers: previewHeaders(opts.previewToken),
-      }
+      builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -79,8 +97,7 @@ export async function getPublishedBuilderHome(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/home?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
-      { cache: 'no-store', headers: previewHeaders(opts.previewToken) }
+      builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -95,18 +112,23 @@ export async function getPublishedBuilderHome(
  *  (`commerce.product`, `cms.page`, `cms.blog_post`, …). Null when the tenant has
  *  published none, so the caller keeps its legacy render path. The caller binds
  *  the in-scope record into the tree before rendering. Pass the record's id so a
- *  per-record template override wins over the type default (docs/51 §6). */
+ *  per-record template override wins over the type default (docs/51 §6).
+ *
+ *  Takes a preview token like the singleton readers (docs/127 §11). Without it this
+ *  path could never be previewed as a draft, so an author editing a PRODUCT or blog
+ *  template saw published output in the Preview tab while a plain page showed drafts —
+ *  the same feature behaving differently depending on which template you opened. */
 export async function getPublishedBuilderCollection(
   tenantSlug: string,
   recordType: string,
-  recordId?: string
+  recordId?: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedPageDto | null> {
   try {
     const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${await propertyParam()}`,
-      // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
-      { cache: 'no-store' }
+      builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -125,12 +147,7 @@ export async function getPublishedBuilderLayout(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      {
-        // INTERIM: uncached so a layout publish reflects immediately (see the
-        // page reader above) — no tag-purge is wired yet. Restore revalidate+tags
-        // once publish purges `builder-layout:<tenant>`.
-        cache: 'no-store',
-      }
+      builderFetchInit(tenantSlug)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedLayoutDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -151,9 +168,8 @@ export async function getPublishedBuilderStyles(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      // INTERIM: uncached so a publish reflects immediately (see the reads above).
       // With a preview token the DRAFT sheet (a superset) comes back instead.
-      { cache: 'no-store', headers: previewHeaders(opts.previewToken) }
+      builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedStylesheet> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return '';

@@ -284,11 +284,22 @@ function blueprintContents(bp: Blueprint): Record<string, number | string | bool
     categories: c?.categories.length ?? 0,
     collections: c?.collections.length ?? 0,
     content: bp.content.length,
-    pages: bp.pages.length,
+    // The site moved under `site` when the manifest went silica-native — the
+    // legacy top-level `layout` + `pages[]` + `components[]` are gone. `site` is
+    // optional (a commerce- or content-only blueprint has no hosted site), so
+    // this reads through it rather than assuming one exists.
+    //
+    // Kept BYTE-IDENTICAL to the same projection in api-rest's
+    // lib/marketplace/ingest.ts and routes/v1/blueprints/index.ts: `components`
+    // is dropped (a silica page inlines symbol instances, so there is no
+    // per-tenant component count to report) and the chrome is `hasFrame`, not
+    // `hasLayout`. Three copies of this shape already exist; three copies that
+    // DISAGREE would put a different contents blob in the catalog depending on
+    // which path wrote the row.
+    pages: bp.site?.pages.length ?? 0,
     emails: bp.emails.length,
-    components: bp.components.length,
     theme: bp.theme.name,
-    hasLayout: Boolean(bp.layout),
+    hasFrame: Boolean(bp.site?.frame),
   };
 }
 

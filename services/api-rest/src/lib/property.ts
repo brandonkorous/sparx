@@ -45,6 +45,43 @@ export function contentSiteVisibilityWhere(propertyId: string): Prisma.ContentEn
   };
 }
 
+/** Collection visibility `where` fragment for the active site (docs/49 Model B) —
+ *  the same "empty = all, pinned = only those" rule products use, so a collection
+ *  scoped to specific sites never surfaces on the others. */
+export function collectionSiteVisibilityWhere(
+  propertyId: string
+): Prisma.ProductCollectionWhereInput {
+  return {
+    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
+  };
+}
+
+/** Category visibility `where` fragment for the active site (docs/49 Model B). */
+export function categorySiteVisibilityWhere(propertyId: string): Prisma.ProductCategoryWhereInput {
+  return {
+    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
+  };
+}
+
+/** Model B (docs/49 §3): default a NEW catalog item (product / collection / category)
+ *  to the ACTIVE site, so "different catalogs per site" is the default the moment a
+ *  tenant runs more than one. Mutates `body.propertyIds` in place ONLY when the caller
+ *  left it undefined AND the tenant has >1 site; an explicit value (including `[]` =
+ *  all sites) is honored verbatim, and single-site tenants stay unscoped. Shared by
+ *  every create route so the default can't drift between products and collections/
+ *  categories. `countSites` + `resolveActiveSite` are injected so this stays free of
+ *  the Fastify request type AND unit-testable without a database. */
+export async function defaultPropertyIdsToActiveSite(
+  body: Record<string, unknown>,
+  countSites: () => Promise<number>,
+  resolveActiveSite: () => Promise<string>
+): Promise<void> {
+  if (body.propertyIds !== undefined) return;
+  const siteCount = await countSites();
+  if (siteCount <= 1) return;
+  body.propertyIds = [await resolveActiveSite()];
+}
+
 /** The tenant's PRIMARY property id. Every tenant has exactly one (guaranteed by
  *  migration 20260626000000_properties + the partial-unique index). */
 export async function resolvePrimaryPropertyId(tenantId: string): Promise<string> {
@@ -75,6 +112,42 @@ export async function resolvePropertyId(
     });
   }
   return resolvePrimaryPropertyId(tenantId);
+}
+
+/** The explicit "every site" opt-out on a list's `?property=`. A word rather than
+ *  an absent parameter because ABSENCE now means "the site I am working in" —
+ *  see `resolveListScope`. */
+export const ALL_SITES = 'all';
+
+/**
+ * Which site an ADMIN list is scoped to. Returns `undefined` for "every site".
+ *
+ * The rule, in one place because it must not drift between products, content and
+ * customers:
+ *
+ *   ?property=<id>  → that site (falling back to primary if the id is not ours)
+ *   ?property=all   → every site, unscoped
+ *   (absent)        → `x-sparx-property-id`, else the tenant's primary
+ *
+ * ABSENCE MEANING "MY ACTIVE SITE" IS THE POINT. It used to mean "every site",
+ * which put the burden on each caller to remember a parameter: the dashboard did,
+ * the workbench and MCP did not, so switching sites changed the chrome while every
+ * list kept showing the whole tenant. A default that depends on every present and
+ * future caller remembering something is not a default. Cross-site reads are still
+ * available — they are now just asked for out loud.
+ *
+ * `header` is passed in rather than read from a request so this stays free of the
+ * Fastify types and unit-testable without a server.
+ */
+export async function resolveListScope(
+  tenantId: string,
+  requested: string | undefined,
+  header: string | string[] | undefined
+): Promise<string | undefined> {
+  if (requested === ALL_SITES) return undefined;
+  if (requested) return resolvePropertyId(tenantId, requested);
+  const active = Array.isArray(header) ? header[0] : header;
+  return resolvePropertyId(tenantId, active ?? null);
 }
 
 /** Validate that `propertyId` names one of the tenant's OWN properties, returning

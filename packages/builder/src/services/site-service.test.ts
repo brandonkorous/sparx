@@ -13,7 +13,51 @@
 
 import { describe, expect, it } from 'vitest';
 
+import { SiteSyncInput } from '@sparx/builder-schemas';
+
 import { wouldClobberSite } from './site-service';
+
+// ── Partial-payload sync (docs/126 Phase 0) ──────────────────────────────────
+//
+// `pageIds` lets the studio send only the page bodies that changed while the server
+// still resolves deletion + ordering against the full roster. The dangerous failure
+// mode is a partial payload being mistaken for a whole-site one — which would delete
+// every page the author didn't happen to edit. These lock the contract.
+
+describe('SiteSyncInput.pageIds', () => {
+  const page = (id: string) => ({ id, name: id, slug: `/${id}`, root: { kind: 'element' } });
+
+  it('accepts a partial payload carrying the full roster', () => {
+    const parsed = SiteSyncInput.parse({
+      pages: [page('about')],
+      pageIds: ['home', 'about', 'contact'],
+    });
+    expect(parsed.pageIds).toEqual(['home', 'about', 'contact']);
+    expect(parsed.pages).toHaveLength(1);
+  });
+
+  it('stays backward compatible — no roster means `pages` IS the whole site', () => {
+    const parsed = SiteSyncInput.parse({ pages: [page('home'), page('about')] });
+    expect(parsed.pageIds).toBeUndefined();
+  });
+});
+
+describe('clobber guard under partial payloads', () => {
+  it('compares the ROSTER, not the changed subset', () => {
+    // The real hazard: one page edited on a five-page site. Judged by the changed
+    // subset alone this looks like 1-of-5 overlap; judged by the roster it is a
+    // normal edit. If the guard ever reads `input.pages` instead of the roster, a
+    // single-page edit on a site whose one changed page is new would wipe the site.
+    const stored = ['home', 'about', 'services', 'journal', 'contact'];
+    const roster = ['home', 'about', 'services', 'journal', 'contact'];
+    expect(wouldClobberSite(stored, roster)).toBe(false);
+  });
+
+  it('still refuses a fresh starter even when it arrives as a partial payload', () => {
+    const stored = ['home-1', 'about-2'];
+    expect(wouldClobberSite(stored, ['new-a', 'new-b', 'new-c'])).toBe(true);
+  });
+});
 
 describe('wouldClobberSite', () => {
   it('REFUSES the real-world failure: a fresh starter synced over an existing site', () => {

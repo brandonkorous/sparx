@@ -43,8 +43,10 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.put('/v1/builder/site', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    await siteService.sync(await toBuilderContext(request), request.body);
-    return ok({ saved: true });
+    const result = await siteService.sync(await toBuilderContext(request), request.body);
+    // The fresh per-page `updatedAt` rides back so the studio can advance its
+    // optimistic-concurrency map (docs/126 Phase 1).
+    return ok({ saved: true, ...result });
   });
 
   // What differs between the author's draft and what visitors are actually served.
@@ -76,14 +78,21 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const ctx = await toBuilderContext(request);
-    const [commerceEnabled, schedulingEnabled] = await Promise.all([
+    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
       // Fails OPEN, matching the studio's starter seed: a flag-lookup blip must never
       // silently strip Commerce chrome from a tenant who pays for it.
       isModuleEnabled(ctx.tenantId, 'commerce').catch(() => true),
       // Fails CLOSED — Scheduling is opt-in, so a blip must not invent a Book link.
       isModuleEnabled(ctx.tenantId, 'scheduling').catch(() => false),
+      // Fails CLOSED for the same reason — a blip must not invent a Journal link to
+      // an index with nothing behind it.
+      isModuleEnabled(ctx.tenantId, 'cms').catch(() => false),
     ]);
-    const frame = await siteService.resetFrame(ctx, { commerceEnabled, schedulingEnabled });
+    const frame = await siteService.resetFrame(ctx, {
+      commerceEnabled,
+      schedulingEnabled,
+      cmsEnabled,
+    });
     return ok({ frame });
   });
 

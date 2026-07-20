@@ -217,7 +217,12 @@ async function withSession<T>(fn: (session: SparxSession) => Promise<T>): Promis
   return fn(session);
 }
 
-async function callRaw(session: SparxSession, method: string, path: string): Promise<Response> {
+async function callRaw(
+  session: SparxSession,
+  method: string,
+  path: string,
+  body?: unknown
+): Promise<Response> {
   const token = await signToken(session);
   const target = `${BASE_URL}${path}`;
   try {
@@ -227,8 +232,10 @@ async function callRaw(session: SparxSession, method: string, path: string): Pro
         method,
         headers: {
           authorization: `Bearer ${token}`,
+          ...(body === undefined ? {} : { 'content-type': 'application/json' }),
           ...(await activePropertyHeader()),
         },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         cache: 'no-store',
       },
       method === 'GET' ? 2 : 1
@@ -247,6 +254,11 @@ async function callRaw(session: SparxSession, method: string, path: string): Pro
 export const api = {
   getRaw: async (path: string): Promise<Response> =>
     withSession(async (s) => callRaw(s, 'GET', path)),
+  /** POST returning the RAW upstream response — for endpoints that reply with a
+   *  document (HTML) rather than the JSON envelope, e.g. the invoice live
+   *  preview. Use `post()` for anything that returns `{ data }`. */
+  postRaw: async (path: string, body?: unknown): Promise<Response> =>
+    withSession(async (s) => callRaw(s, 'POST', path, body)),
   get: async <T>(path: string): Promise<T> =>
     withSession(async (s) => (await call<T>(s, 'GET', path)).data),
   getPaged: async <T>(path: string): Promise<PagedEnvelope<T>> =>

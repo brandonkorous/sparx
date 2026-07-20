@@ -16,12 +16,13 @@ interface PageProps {
 export default async function DocumentEditorPage({ params }: PageProps) {
   const { id } = await params;
   return (
-    <DetailPageShell typeId="billing-document" entityId={id} showViewSwitcher={false}>
-      <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-6 py-8">
-          <DocumentEditorContent id={id} />
-        </div>
-      </div>
+    // width="full" — not the usual centered `max-w-screen-xl` reading column:
+    // the editor runs the line grid and a live document preview side by side,
+    // and a capped column squeezes both. The width buys a working pane, not a
+    // longer line length. It must be set HERE, on the shell that owns the
+    // Container; a `w-full` wrapper around the children can't uncap it.
+    <DetailPageShell typeId="billing-document" entityId={id} showViewSwitcher={false} width="full">
+      <DocumentEditorContent id={id} />
     </DetailPageShell>
   );
 }

@@ -91,6 +91,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     publishState,
     commerceEnabled,
     schedulingEnabled,
+    cmsEnabled,
   ] = await Promise.all([
     searchParams,
     getBindingCatalog().catch(() => ({ sources: [] })),
@@ -121,6 +122,8 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     isModuleEnabled(session.user.tenantId, 'commerce').catch(() => true),
     // Same, for the Scheduling module's Book link/page — fails CLOSED (opt-in).
     isModuleEnabled(session.user.tenantId, 'scheduling').catch(() => false),
+    // Same, for the CMS module's Journal link + `/blog` index — fails CLOSED.
+    isModuleEnabled(session.user.tenantId, 'cms').catch(() => false),
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
@@ -192,7 +195,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
             }
           : {}),
       }
-    : starterSite(theme, { commerceEnabled, schedulingEnabled });
+    : starterSite(theme, { commerceEnabled, schedulingEnabled, cmsEnabled });
 
   return (
     <SilicaStudio

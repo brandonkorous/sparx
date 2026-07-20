@@ -89,6 +89,19 @@ export const HOST_KEYS = {
    *  has no conditional — the open "silicaui ask" in docs/122's logo-on-wordmark
    *  note). Staleness-immunity comes from `kind:"host"`; `locked` is orthogonal. */
   siteBrand: 'site.brand',
+  /** The ARTICLE BODY of the in-scope CMS entry — the post's rich text, serialized.
+   *
+   *  A host core rather than a bound node because the body is not a string: it is a
+   *  rich-text DOCUMENT (`{type:'doc',content:[…]}`) that only means anything once
+   *  `renderDocToHtml` walks it into sanitized markup with its headings, lists,
+   *  quotes, callouts, code and embeds intact. A value bind would stringify the
+   *  object; there is no binding kind that renders a document. So the one thing a
+   *  blog-post template exists to show had no way to appear on the canvas at all,
+   *  and every tenant fell through to the bare no-template fallback.
+   *
+   *  Per-record: the route hands the entry's doc to the storefront renderer, so the
+   *  core needs no props — the author places it, and the routed post fills it. */
+  cmsArticleBody: 'cms.article-body',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -244,6 +257,17 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // NOT pinned — the tenant owns where their own brand sits. See HOST_KEYS.siteBrand
     // for why it is a host core anyway.
     pinned: false,
+  },
+  {
+    key: HOST_KEYS.cmsArticleBody,
+    label: 'Article body',
+    category: 'cms',
+    icon: 'article',
+    hint: 'The written body of the post being shown — headings, lists, quotes, and images exactly as they were typed. Pinned: style and surround it, but it can’t be removed.',
+    // Prose measure, not the 6xl page measure the commerce cores use: a line of body
+    // text past ~75 characters is measurably harder to read, and this core is nothing
+    // but body text.
+    defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
   },
 ];
 

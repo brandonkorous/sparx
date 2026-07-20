@@ -47,6 +47,27 @@ export async function toPropertyContext(
   ctx: ServiceContext,
   requested?: string | null
 ): Promise<SitePropertyContext> {
+  // A site-restricted credential (docs/131 §3.2) sets a CEILING — identical
+  // rules to the Builder MCP's resolver, deliberately, since two transports
+  // disagreeing about who may touch which site is worse than either rule alone.
+  //
+  // Asking for another site is refused rather than redirected, and asking for
+  // NOTHING resolves to the restricted site — never to the primary. The second
+  // rule is the load-bearing one: without it a donut-shop key calling a tool
+  // with no propertyId argument falls through to the primary and edits the
+  // machine shop's site, reached purely by omitting an optional argument.
+  const ceiling = ctx.restrictToPropertyId;
+  if (ceiling) {
+    if (requested && requested !== ceiling) {
+      throw new SitebuilderNotFoundError('Property', requested);
+    }
+    const row = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+      tx.property.findUnique({ where: { id: ceiling }, select: SITE_SELECT })
+    );
+    if (!row) throw new SitebuilderNotFoundError('Property', ceiling);
+    return { ...ctx, propertyId: row.id, site: row };
+  }
+
   if (requested) {
     const row = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
       tx.property.findUnique({ where: { id: requested }, select: SITE_SELECT })

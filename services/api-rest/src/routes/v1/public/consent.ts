@@ -11,16 +11,13 @@
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
-import { notFound } from '@sparx/api-core/errors';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5).
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 function clientMeta(request: FastifyRequest): {
   ipAddress: string | null;

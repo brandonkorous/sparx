@@ -165,6 +165,44 @@ describe('mcp-server smoke', () => {
     expect(JSON.parse(after.body).error.code).toBe('UNAUTHORIZED');
   });
 
+  // docs/131 §3.2 — a key issued from one of the tenant's businesses must not
+  // read another's. Before `property_id`, "issued from Bob's Parts" was a label
+  // on a credential that reached the whole account.
+  it('refuses a site-scoped key on a tool that cannot honour the restriction', async () => {
+    const site = await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.tenantId}'`);
+      return tx.property.create({
+        data: {
+          tenantId: tenant.tenantId,
+          slug: `donuts-${crypto.randomBytes(3).toString('hex')}`,
+          name: 'Savory Donuts',
+        },
+        select: { id: true },
+      });
+    });
+
+    const issued = await issueApiKey({
+      tenantId: tenant.tenantId,
+      name: 'donut-shop key',
+      scopes: ['read:crm'],
+      propertyId: site.id,
+      createdByUserId: tenant.userId,
+    });
+
+    // get_customers reads tenant-wide — it has no way to honour the ceiling, so
+    // it must be REFUSED rather than quietly return both businesses' customers.
+    // The identical call with a tenant-wide key succeeds in the test above,
+    // which is what makes this assertion about scoping rather than plumbing.
+    const res = await postMcp(
+      app,
+      issued.plaintext,
+      jsonRpc('tools/call', { name: 'get_customers', arguments: {} }, 31)
+    );
+    expect(res.statusCode).toBeLessThan(400);
+    expect(res.body).toContain('limited to a single site');
+    expect(res.body).toContain('get_customers');
+  });
+
   it('rejects an API key whose scopes do not cover the requested tool', async () => {
     // No scopes at all → even a read tool is denied with FORBIDDEN.
     const issued = await issueApiKey({

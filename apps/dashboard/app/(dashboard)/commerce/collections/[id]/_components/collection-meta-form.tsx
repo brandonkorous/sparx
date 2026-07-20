@@ -19,9 +19,11 @@ import {
 import { rule, useFieldValidation } from '@sparx/forms';
 
 import { SeoMetaFields } from '@/components/seo/seo-meta-fields';
+import type { Property } from '@/lib/sites';
 
 import { updateCollectionAction } from '../../../collection-actions';
 import { useUnsavedGuard } from '../../../../_components/unsaved-guard';
+import { SiteScopeField } from '../../../../_components/site-scope-field';
 
 interface Props {
   collectionId: string;
@@ -31,6 +33,10 @@ interface Props {
   featured: boolean;
   seoTitle: string | null;
   seoDescription: string | null;
+  // Multi-site (docs/49 §3) — the tenant's sites + this collection's current scope.
+  // SiteScopeField hides itself for single-site tenants.
+  sites: Property[];
+  initialPropertyIds: string[];
 }
 
 interface MetaState {
@@ -79,6 +85,13 @@ export function CollectionMetaForm(props: Props) {
   const [form, setForm] = React.useState<MetaState>(initial);
   const [baseline, setBaseline] = React.useState<MetaState>(initial);
 
+  // Site scope is an array, so it's tracked apart from the flat MetaState (mirrors
+  // the product editor). Order-insensitive compare via sorted join.
+  const [propertyIds, setPropertyIds] = React.useState<string[]>(props.initialPropertyIds);
+  const [scopeBaseline, setScopeBaseline] = React.useState<string[]>(props.initialPropertyIds);
+  const scopeKey = (ids: string[]) => [...ids].sort().join(' ');
+  const scopeDirty = props.sites.length > 1 && scopeKey(propertyIds) !== scopeKey(scopeBaseline);
+
   // Field validation. `handle` carries no client rule but is validated-tracked so
   // a server-side handle error maps onto its field.
   const values = { name: form.name, handle: form.handle };
@@ -86,10 +99,11 @@ export function CollectionMetaForm(props: Props) {
     name: rule.required('Name is required.'),
   });
 
-  const dirty = React.useMemo(
+  const fieldsDirty = React.useMemo(
     () => (Object.keys(form) as (keyof MetaState)[]).some((k) => form[k] !== baseline[k]),
     [form, baseline]
   );
+  const dirty = fieldsDirty || scopeDirty;
 
   // Register the dirty state so switching tabs / the back-link / the presentation
   // switch all confirm before discarding unsaved metadata (docs/105 — the guard
@@ -113,6 +127,9 @@ export function CollectionMetaForm(props: Props) {
         featured: form.featured,
         seoTitle: form.seoTitle.trim() || null,
         seoDescription: form.seoDescription.trim() || null,
+        // Model B: send the full replacement set only on a multi-site tenant, so a
+        // single-site collection never gets scope rows written.
+        ...(props.sites.length > 1 ? { propertyIds } : {}),
       });
       if (!result.ok) {
         if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
@@ -125,6 +142,7 @@ export function CollectionMetaForm(props: Props) {
         return;
       }
       setBaseline(form);
+      setScopeBaseline(propertyIds);
       setSavedAt(Date.now());
       router.refresh();
     });
@@ -182,9 +200,16 @@ export function CollectionMetaForm(props: Props) {
                 <Label htmlFor="featured">Featured</Label>
               </div>
               <p className="text-base-content text-xs">
-                Featured collections surface in curated storefront slots (hero rails, nav promos).
+                Featured collections surface in curated slots on your site (hero rails, nav promos).
               </p>
             </div>
+
+            <SiteScopeField
+              sites={props.sites}
+              value={propertyIds}
+              onChange={setPropertyIds}
+              description="Which of your sites show this collection. Leave “All sites” to show it everywhere."
+            />
 
             <SeoMetaFields
               type="collection"

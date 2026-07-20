@@ -10,6 +10,22 @@ export interface TenantContext {
   tenantId: string;
   userId?: string;
   /**
+   * A CEILING on which site this caller may touch (docs/131 §3.2) — set when the
+   * credential itself is site-scoped, currently an `sk_live_` API key issued for
+   * one business.
+   *
+   * Deliberately NOT named `propertyId`: that means "the site this call TARGETS"
+   * (see `PropertyContext` in the builder services), and the two are different
+   * ideas. A target is what you asked for; a ceiling is the most you are allowed
+   * to ask for. Conflating them is how a restriction silently becomes a default.
+   *
+   * `withTenant` ignores this — it is not a second security boundary. `tenant_id`
+   * plus RLS remains THE boundary; this narrows an already-authenticated tenant
+   * caller to one of its own sites, and is enforced in the application tier at
+   * the MCP dispatch point and in `toPropertyContext`.
+   */
+  restrictToPropertyId?: string | null;
+  /**
    * An ALREADY-OPEN, tenant-scoped transaction to compose into. When set,
    * `withTenant` runs `fn` directly on it instead of opening a fresh
    * transaction — so several service calls (and, in the automation engine, the

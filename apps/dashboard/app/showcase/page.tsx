@@ -116,13 +116,35 @@ function Hero() {
 }
 
 // ── Palette ─────────────────────────────────────────────────────
+// Tailwind's scanner cannot see an interpolated `bg-${color}`, so the semantic
+// slots are spelled out literally. The per-module hues are NOT registered as
+// dashboard silica colors (there is no `bg-commerce`) — they resolve through
+// `--color-module`, so a module swatch is `bg-module` inside a ModuleProvider.
+const SEMANTIC_SWATCH: Record<(typeof COLOR_KEYS)[number], string> = {
+  primary: 'bg-primary',
+  secondary: 'bg-secondary',
+  accent: 'bg-accent',
+  neutral: 'bg-neutral',
+  info: 'bg-info',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  danger: 'bg-danger',
+  module: 'bg-module',
+};
+
 function Swatch({ color }: { color: ColorKey }) {
+  const semantic = SEMANTIC_SWATCH[color as (typeof COLOR_KEYS)[number]];
+  const chip = semantic ? (
+    <span className={`${semantic} border-base-300 h-12 w-full rounded-md border`} />
+  ) : (
+    <ModuleProvider module={color as SparxModule}>
+      <span className="bg-module border-base-300 h-12 w-full rounded-md border" />
+    </ModuleProvider>
+  );
   return (
     <Stack gap={1} align="center">
-      <span className={`sx-c-${color} h-12 w-full rounded-md bg-[var(--c-bg)]`} />
-      <Text size="xs" variant="muted">
-        {color}
-      </Text>
+      {chip}
+      <Text size="xs">{color}</Text>
     </Stack>
   );
 }
@@ -131,7 +153,7 @@ function PaletteSection() {
   return (
     <Section
       title="Palette"
-      description="Semantic slots + per-module brand colors. Each is a role-var class backing the color axis; custom theme colors override the same vars."
+      description="Semantic slots + per-module brand colors. Each backs the color axis via a silicaui token; custom theme colors override the same tokens."
     >
       <Stack gap={4}>
         <Card>

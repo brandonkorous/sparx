@@ -40,7 +40,12 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   // The silica engine's published page owns this slug (docs/118 Stage 6) — title it
   // from its name / SEO, and skip the paths below. Per-page silica SEO lands with
   // the inspector (docs/118 Stage 10); until then it falls back to the page name.
-  const silicaPage = await getPublishedSilicaPage(site.slug, slug);
+  // Honours the site-preview token so preview metadata matches preview content.
+  const silicaPage = await getPublishedSilicaPage(
+    site.slug,
+    slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (silicaPage) {
     const clean = (v: string | null): string | undefined => {
       const t = v?.trim();
@@ -152,7 +157,17 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   // bindings resolved against the sparx host built over its data needs. Null when
   // no silica page owns the slug — the storefront falls through to the sparx builder
   // page / CMS / sections paths unchanged.
-  const silicaPage = await getPublishedSilicaPage(site.slug, slug);
+  // A valid `?sparxSitePreview=` serves the DRAFT tree here too (docs/127 §11). The
+  // silica tier previously took no token at all, so an author previewing a page the
+  // silica engine owns — which is every page today — saw PUBLISHED output, while the
+  // sparx-tier fallback below honoured drafts. Same feature, different behaviour
+  // depending on which tier happened to own the page.
+  const sitePreview = sp.sparxSitePreview;
+  const silicaPage = await getPublishedSilicaPage(
+    site.slug,
+    slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (silicaPage) {
     const host = await buildSilicaHost(site.slug, silicaPage.root, {
       currency: site.commerce.defaultCurrency,
@@ -165,7 +180,6 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   // it and skip the legacy Site-Builder-sections + CMS-page paths entirely. Its
   // bindings resolve against real records fetched per source (docs/44 §3 A.2). A
   // valid `?sparxSitePreview=<token>` swaps in the DRAFT page (docs/45 §2.6).
-  const sitePreview = sp.sparxSitePreview;
   const builderPage = await getPublishedBuilderPage(
     site.slug,
     slug,

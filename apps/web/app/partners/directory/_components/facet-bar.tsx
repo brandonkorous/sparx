@@ -4,13 +4,13 @@
 // tier); specialty is multi-select (OR within the key); Remote is a boolean
 // toggle. Location is a free field handled by the search form on the page.
 
+import { Heading } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { FacetCount, PartnerTier } from '@/lib/partners';
 
 export type DirectoryParams = Record<string, string>;
 
 const BASE = '/partners/directory';
-const SANS = 'var(--font-sans)';
-const EMBER = 'var(--color-primary)';
 
 const TIER_LABEL: Record<string, string> = {
   certified: 'Certified',
@@ -59,36 +59,17 @@ function Chip({
   return (
     <a
       href={target}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '5px 12px',
-        borderRadius: '9999px',
-        border: '1px solid',
-        borderColor: on ? EMBER : 'var(--color-base-300)',
-        backgroundColor: on
-          ? 'color-mix(in srgb, var(--color-primary) 12%, transparent)'
-          : 'var(--color-base-100)',
-        fontFamily: SANS,
-        fontSize: '13px',
-        fontWeight: on ? 500 : 400,
-        color: on
-          ? 'var(--color-primary)'
-          : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        textDecoration: 'none',
-      }}
+      className={buttonClasses({
+        size: 'sm',
+        color: on ? 'primary' : 'neutral',
+        variant: on ? 'soft' : 'outline',
+        active: on,
+        className: 'rounded-full no-underline',
+      })}
     >
       {label}
       {typeof count === 'number' ? (
-        <span
-          style={{
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            fontWeight: 400,
-          }}
-        >
-          {count}
-        </span>
+        <span className="text-ink-subtle font-normal">{count}</span>
       ) : null}
       {on ? <span aria-hidden>×</span> : null}
     </a>
@@ -97,20 +78,11 @@ function Chip({
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span
-        style={{
-          fontFamily: SANS,
-          fontWeight: 500,
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+    <div className="flex flex-col gap-2">
+      <Heading level={3} size={6}>
         {label}
-      </span>
-      <div className="mkt-cluster" style={{ gap: '8px' }}>
-        {children}
-      </div>
+      </Heading>
+      <div className="flex flex-wrap items-center gap-2">{children}</div>
     </div>
   );
 }
@@ -141,7 +113,7 @@ export function PartnerFacetBar({
     .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+    <div className="flex flex-col gap-[18px]">
       <Row label="Tier">
         <Chip label="All tiers" on={!activeTier} target={href(current, (n) => delete n.tier)} />
         {tierValues.map((t) => (
@@ -193,16 +165,7 @@ export function PartnerFacetBar({
       </Row>
 
       {anySelected ? (
-        <a
-          href={BASE}
-          style={{
-            alignSelf: 'flex-start',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            textDecoration: 'underline',
-          }}
-        >
+        <a href={BASE} className="text-caption text-ink-subtle self-start underline">
           Clear all filters
         </a>
       ) : null}

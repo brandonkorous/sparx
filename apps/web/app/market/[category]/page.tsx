@@ -101,18 +101,10 @@ export default async function CategoryBrowsePage({
 
   return (
     <Section surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <div className="flex flex-col gap-10">
         {/* Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <a
-            href="/market"
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              textDecoration: 'none',
-            }}
-          >
+        <div className="flex flex-col gap-5">
+          <a href="/market" className="text-ink-muted text-caption no-underline">
             ← Marketplace
           </a>
           <SectionHeader
@@ -125,8 +117,7 @@ export default async function CategoryBrowsePage({
           <form
             method="get"
             action={`/market/${cat.id}`}
-            className="mkt-cluster"
-            style={{ gap: '8px' }}
+            className="flex flex-wrap items-center gap-2"
           >
             {current.sort ? <input type="hidden" name="sort" value={current.sort} /> : null}
             <Input
@@ -134,7 +125,7 @@ export default async function CategoryBrowsePage({
               name="q"
               defaultValue={current.q ?? ''}
               placeholder={`Search ${cat.label.toLowerCase()}…`}
-              style={{ maxWidth: '320px' }}
+              className="max-w-[320px]"
             />
             <Button type="submit" variant="outline">
               Search
@@ -146,42 +137,20 @@ export default async function CategoryBrowsePage({
         <FacetBar category={cat} facetCounts={page.facets} current={current} />
 
         {/* Result count + sort */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            flexWrap: 'wrap',
-            borderTop: '1px solid var(--color-base-300)',
-            paddingTop: '20px',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-4 border-t pt-5">
+          <span className="text-ink-muted text-small">
             {page.total} {page.total === 1 ? cat.singular : cat.label.toLowerCase()}
           </span>
-          <div className="mkt-cluster" style={{ gap: '14px' }}>
+          <div className="flex flex-wrap items-center gap-3.5">
             {cat.sorts.map((s) => {
               const isOn = activeSort === s.key;
               return (
                 <a
                   key={s.key}
                   href={sortHref(cat, current, s.key)}
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    fontWeight: isOn ? 500 : 400,
-                    color: isOn
-                      ? 'var(--color-base-content)'
-                      : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    textDecoration: 'none',
-                  }}
+                  className={`text-caption no-underline ${
+                    isOn ? 'text-base-content font-medium' : 'text-ink-muted'
+                  }`}
                 >
                   {s.label}
                 </a>
@@ -192,8 +161,8 @@ export default async function CategoryBrowsePage({
 
         {/* Grid + load more, or empty state */}
         {showing > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div className="mkt-grid-3-2-1">
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {page.items.map((item) => (
                 <ListingCard key={item.id} item={item} />
               ))}
@@ -212,24 +181,8 @@ export default async function CategoryBrowsePage({
 
 function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boolean }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '16px',
-        padding: '64px 0',
-        textAlign: 'center',
-      }}
-    >
-      <p
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '16px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          margin: 0,
-        }}
-      >
+    <div className="flex flex-col items-center gap-4 py-16 text-center">
+      <p className="text-ink-muted text-body m-0">
         {filtered
           ? `No ${cat.label.toLowerCase()} match these filters yet.`
           : `No ${cat.label.toLowerCase()} published yet — check back soon.`}
@@ -246,57 +199,23 @@ function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boo
 function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
   return (
     <Section surface="page" padding="xl">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '28px',
-          alignItems: 'flex-start',
-        }}
-      >
-        <a
-          href="/market"
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            textDecoration: 'none',
-          }}
-        >
+      <div className="flex flex-col items-start gap-7">
+        <a href="/market" className="text-ink-muted text-caption no-underline">
           ← Marketplace
         </a>
-        <span
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 500,
-            fontSize: '11px',
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            color: cat.accent,
-          }}
-        >
-          Coming soon
-        </span>
+        {/* RULE #2: the uppercase "Coming soon" kicker that sat above this
+            headline is gone — the lede below already says the category is next. */}
         <Display as="h1" size={72}>
           {cat.label}
           <Spark color={cat.accent} />
         </Display>
-        <p
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '560px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede m-0 max-w-[560px]">
           {cat.tagline} This category is landing next — start with a blueprint today and add{' '}
           {cat.label.toLowerCase()} when they go live.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/market/blueprints">
-            <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            <Button color="neutral" size="lg">
               Browse blueprints
             </Button>
           </a>

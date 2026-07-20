@@ -13,8 +13,8 @@ import { SECTION_DISPLAY_STYLE } from './heading-style';
 
 export function LandingV2DashboardSection() {
   return (
-    <section className="mkt-brand bg-primary px-[var(--gutter-page)] py-[var(--section-py-lg)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+    <section className="mkt-brand bg-primary px-page py-section-lg">
+      <Container className="flex flex-col gap-16">
         <div className="max-w-3xl">
           <Heading
             level={2}
@@ -24,11 +24,9 @@ export function LandingV2DashboardSection() {
           >
             One pane of glass.
           </Heading>
-          <Text
-            variant="lead"
-            className="mt-5 max-w-xl"
-            style={{ color: 'rgba(255, 255, 255, 0.82)' }}
-          >
+          {/* Full ink on the brand band — `--color-primary-content` is the
+              paired token, replacing a faded rgba(255,255,255,.82). */}
+          <Text variant="lead" className="text-primary-content mt-5 max-w-xl">
             sparx is one URL, one login, one sidebar. Each active module gets a colored nav item and
             a module-tinted card — you always know where you are.
           </Text>

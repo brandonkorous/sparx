@@ -23,6 +23,7 @@ import { withTenant } from '@sparx/db';
 import type { Prisma, Product } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { productSiteVisibility } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -48,20 +49,10 @@ export interface ListProductsFilter {
   take?: number;
   skip?: number;
   sortBy?: 'updatedAt' | 'createdAt' | 'title' | 'priceMinCents';
-}
-
-/** The Model B visibility predicate (docs/49 §3): a product is on a site if it
- *  has NO scope rows (global) OR a scope row for that site. Wrapped in `AND` so
- *  it composes with any existing top-level `OR` (e.g. text search) without
- *  key-colliding. */
-function productSiteVisibility(propertyId: string): Prisma.ProductWhereInput {
-  return {
-    AND: [
-      {
-        OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }],
-      },
-    ],
-  };
+  /** Sort direction. Defaults to `desc`, which is right for the date + price
+   *  sorts ("newest", "most expensive") but wrong for `title` — a catalog sorted
+   *  by name is read A→Z, and without this the only available answer was Z→A. */
+  order?: 'asc' | 'desc';
 }
 
 export interface ProductListItem {
@@ -112,10 +103,11 @@ export async function list(
     };
 
     const sortField = filter.sortBy ?? 'updatedAt';
+    const sortDirection = filter.order ?? 'desc';
     const [rows, total] = await Promise.all([
       tx.product.findMany({
         where,
-        orderBy: { [sortField]: 'desc' },
+        orderBy: { [sortField]: sortDirection },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
         select: {

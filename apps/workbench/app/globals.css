@@ -1,0 +1,125 @@
+/* ── workbench styles ────────────────────────────────────────────────────────
+   Built ground-up on silicaui. Unlike apps/dashboard there is NO coexistence
+   layer here: @sparx/brand/theme.css is the sole token authority and there is
+   no @sparx/ui/tokens.css, no .sx-c-* role vars, no legacy --color-bg-* set.
+   That is the point of this app — it starts at the destination the dashboard is
+   migrating toward.
+
+   Cascade-layer order is declared in @sparx/brand/layers.css, imported from
+   app/layout.tsx BEFORE this file. It cannot live here: this is the Tailwind v4
+   entry, and Tailwind rewrites a top-level `@layer` statement to its own
+   canonical order, silently dropping ours. */
+@import 'tailwindcss';
+@import '@sparx/brand/theme.css';
+
+/* `module` is the active-module bridge: it generates .btn-module / .badge-module
+   / .bg-module / .text-module reading --color-module + --color-module-content,
+   which <ModuleScope> repoints per subtree. The 18 solid per-module hues live in
+   @sparx/brand/theme.css as --color-module-<name>.
+   `danger` is sparx's statusTone() vocabulary, paired with --color-danger. */
+@plugin '@wizeworks/silicaui' {
+  colors:
+    primary, secondary, accent, neutral, info, success, warning, error, danger, module,
+    module-builder, module-commerce, module-cms, module-crm, module-invoicing, module-email,
+    module-b2b, module-dropship, module-inventory, module-chat, module-scheduling, module-ai,
+    module-automations, module-seo;
+}
+
+/* Bridge the non-color brand tokens into the Tailwind v4 theme. Colors are owned
+   entirely by silicaui via the @plugin above — there is no parallel color bridge.
+ *
+ * Radius is deliberately ABSENT here. @sparx/brand/theme.css defines radius
+ * semantically — --radius-box (surfaces), --radius-field (inputs/buttons),
+ * --radius-selector (pills) — and silicaui already emits rounded-box /
+ * rounded-field / rounded-selector from them. Re-declaring a t-shirt scale
+ * (--radius-sm/md/lg/xl) here would be self-referential: those names don't exist
+ * in the theme, so the bridge resolves to nothing and `rounded-lg` silently
+ * falls back to Tailwind's own default — a radius the brand never chose.
+ *
+ * So: use rounded-field / rounded-box / rounded-selector by ROLE. Changing the
+ * brand's radius then re-shapes the whole app from one place, which is the point. */
+@theme {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  font-family: var(--font-sans);
+}
+
+/* The workbench is a fixed-viewport application shell, not a scrolling document.
+   Panes own their own scrolling; the page itself never scrolls. */
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  /* Europa's contextual alternates ('calt') — explicit so it's a deliberate
+     part of the heading style, not an accident of the browser default. */
+  font-variant-ligatures: contextual;
+}
+
+/* Field help text, corrected app-wide.
+ *
+ * silicaui ships .field-description at 12px / 65% opacity. That is a reasonable
+ * library default for a dense developer tool and the wrong one for sparx: our
+ * users are non-technical business owners, and these lines are exactly the
+ * jargon-free guidance they most need to READ — what a tax rate decimal means,
+ * where the invoice gets sent. Two house rules apply and both were being
+ * broken: body text has a floor (12px is caption territory, not explanation),
+ * and hierarchy is never carried by fading readable text.
+ *
+ * So it moves to the caption step of the type scale at full ink strength.
+ * Corrected here rather than with a utility on every FieldDescription, because
+ * the fix belongs to the app's type scale, not to individual fields. */
+.field-description {
+  font-size: 0.875rem; /* 14px — the caption step, not the 12px sub-floor. */
+  line-height: 1.4;
+  opacity: 1;
+  color: var(--color-base-content);
+}
+
+/* A dropdown opened INSIDE a dialog has to render above it.
+ *
+ * silicaui 0.28 added a layering scale (--z-drawer 40 / --z-dialog 50 /
+ * --z-lightbox 60 / --z-popover 70 / --z-tooltip 80 / --z-toast 90) that puts
+ * popovers above dialogs. The VALUES are right; the mechanism still isn't.
+ * Measured on 0.28: `.select-popup` computes `z-index: 70` — on an element
+ * whose `position` is `static`, and **z-index has no effect on a static
+ * element**. Its real stacking level comes from the Base UI positioner that
+ * wraps it, which is still `z-index: auto`. So the dropdown competes at `auto`
+ * against the dialog popup's 51 and loses, exactly as it did on 0.27 at 50.
+ *
+ * Nothing at the call site can reach it: the popup portals as a SIBLING of the
+ * dialog (both into the pane — see lib/dock/window-boundary.tsx), so no
+ * descendant selector matches, no prop exposes the positioner, and styling the
+ * surface via `popupClassName` cannot work because a child can't out-stack its
+ * own parent's level.
+ *
+ * So the POSITIONER is raised here, matched by the popup it hosts, and set from
+ * silica's own token so this tracks the library's intent instead of inventing a
+ * competing number. Delete this block once a silicaui release either positions
+ * the popup surface or applies the z-index to the positioner — verify by
+ * measuring, not by reading the changelog: 0.28 documented the fix without it
+ * taking effect. */
+[role='presentation']:has(> .select-popup),
+[role='presentation']:has(> .calendar-popup),
+[role='presentation']:has(> .popover),
+[role='presentation']:has(> .menu) {
+  z-index: var(--z-popover, 70);
+}
+[role='presentation']:has(> .tooltip) {
+  z-index: var(--z-tooltip, 80);
+}

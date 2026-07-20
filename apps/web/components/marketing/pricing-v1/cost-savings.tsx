@@ -13,8 +13,8 @@ import { LEDGER, LEDGER_FOOTNOTE, SCENARIOS, STATS } from './data';
 // proven on the switchboard's StackSummaryCard.
 export function PricingV1CostSavings() {
   return (
-    <section className="px-[var(--gutter-page)] py-[var(--section-py-xl)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+    <section className="px-page py-section-xl">
+      <Container className="flex flex-col gap-10">
         <div className="max-w-3xl">
           <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE}>
             What the same stack costs in pieces
@@ -95,16 +95,11 @@ function Ledger() {
 function ScenarioCard({ scenario: sc }: { scenario: (typeof SCENARIOS)[number] }) {
   return (
     <Reveal>
+      {/* The featured scenario lifts on the brand hue. The old inline shadow was
+          a hardcoded indigo rgba — the BUILDER module hue, not the primary it
+          was paired with; `shadow-primary/15` makes the two agree. */}
       <Card
-        className="h-full"
-        style={
-          sc.featured
-            ? {
-                borderColor: 'var(--color-primary)',
-                boxShadow: '0 18px 44px rgba(99,102,241,0.14)',
-              }
-            : undefined
-        }
+        className={`h-full ${sc.featured ? 'border-primary shadow-primary/15 shadow-[0_18px_44px]' : ''}`}
       >
         <CardBody className="gap-4">
           <div>

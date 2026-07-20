@@ -19,6 +19,7 @@ import { withTenant } from '@sparx/db';
 import type { Prisma, ProductCollection } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { collectionSiteVisibility } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -43,6 +44,8 @@ export interface CollectionDetail extends CollectionSummary {
   seoDescription: string | null;
   ogImageId: string | null;
   productIds: string[];
+  /** Model B: web PROPERTIES this collection is scoped to. EMPTY = all sites. */
+  propertyIds: string[];
   createdAt: string;
 }
 
@@ -50,6 +53,9 @@ export interface ListCollectionsFilter {
   type?: 'manual' | 'rules';
   featured?: boolean;
   q?: string;
+  /** Model B: show only collections VISIBLE on this site (global + scoped-here).
+   *  Omit for every collection across every site. */
+  propertyId?: string;
   take?: number;
   skip?: number;
 }
@@ -73,6 +79,8 @@ export async function list(
             ],
           }
         : {}),
+      // Its own `AND` fragment so it never collides with the search `OR` above.
+      ...(filter.propertyId ? collectionSiteVisibility(filter.propertyId) : {}),
     };
 
     const [rows, total] = await Promise.all([
@@ -107,6 +115,7 @@ export async function get(ctx: ServiceContext, collectionId: string): Promise<Co
       where: { id: collectionId, deletedAt: null },
       include: {
         products: { select: { productId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { products: true } },
       },
     })
@@ -121,6 +130,7 @@ export async function getByHandle(ctx: ServiceContext, handle: string): Promise<
       where: { handle, deletedAt: null },
       include: {
         products: { select: { productId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { products: true } },
       },
     })
@@ -163,6 +173,15 @@ export async function create(
         ogImageId: input.ogImageId ?? null,
       },
     });
+
+    // Model B per-site scoping (docs/49 §3): no rows = visible on all sites, so
+    // only write links when the caller scoped the collection to specific sites.
+    if (input.propertyIds.length > 0) {
+      await tx.collectionProperty.createMany({
+        data: input.propertyIds.map((propertyId) => ({ propertyId, collectionId: created.id })),
+        skipDuplicates: true,
+      });
+    }
 
     await writeAuditLog({
       tx,
@@ -233,6 +252,17 @@ export async function update(
         ...(input.ogImageId !== undefined ? { ogImageId: input.ogImageId } : {}),
       },
     });
+
+    // Model B: the update sends the FULL replacement set — replace all links when
+    // present, leave them untouched when the field is omitted (a partial edit).
+    if (input.propertyIds !== undefined) {
+      await tx.collectionProperty.deleteMany({ where: { collectionId } });
+      if (input.propertyIds.length > 0) {
+        await tx.collectionProperty.createMany({
+          data: input.propertyIds.map((propertyId) => ({ propertyId, collectionId })),
+        });
+      }
+    }
 
     await writeAuditLog({
       tx,
@@ -447,6 +477,7 @@ export async function reindex(ctx: ServiceContext, collectionId: string): Promis
 
 type CollectionWithIncludes = ProductCollection & {
   products: { productId: string }[];
+  propertyLinks: { propertyId: string }[];
   _count: { products: number };
 };
 
@@ -466,6 +497,7 @@ function toDetail(c: CollectionWithIncludes): CollectionDetail {
     seoDescription: c.seoDescription,
     ogImageId: c.ogImageId,
     productIds: c.products.map((p) => p.productId),
+    propertyIds: c.propertyLinks.map((l) => l.propertyId),
     createdAt: c.createdAt.toISOString(),
   };
 }

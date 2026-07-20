@@ -5,6 +5,7 @@ import { configurePubsub } from '@sparx/api-core/pubsub';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
+import { installBuilderPubSubBridge } from '@sparx/builder/pubsub';
 import { registerCommerceConsumers } from '@sparx/commerce/consumers';
 import { createApp } from './app.js';
 import {
@@ -35,6 +36,14 @@ async function main(): Promise<void> {
   // installCrmWebhookFanout() so the fanout wraps the Pub/Sub-backed
   // publisher (not the stub). No-op when GCP_PROJECT_ID is unset (dev).
   installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
+
+  // Same bridge for builder.* publishes (docs/127 §6). Until this existed every
+  // builder event went to console.log and stopped, which is why the storefront's
+  // builder + silica reads are `cache: 'no-store'` — there was no purge to trigger,
+  // so a TTL would only have served stale pages. With the bridge installed,
+  // cache-revalidation-worker maps builder.* → the `builder` scope and the storefront
+  // can cache again. No-op when GCP_PROJECT_ID is unset (dev).
+  installBuilderPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
 
   // Wire the in-process CRM consumers (order→customer stats + activity, quote,
   // email, segment, module-activation). publishPlatformEvent() is a no-op

@@ -82,7 +82,7 @@ function Segmented<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'inline-flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-3 text-[13px] font-medium transition-colors',
+            'inline-flex h-8 items-center gap-1.5 rounded-sm px-3 text-[13px] font-medium transition-colors',
             value === o.value
               ? 'bg-base-100 text-base-content shadow-sm'
               : 'text-base-content hover:text-base-content'

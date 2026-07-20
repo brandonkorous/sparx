@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { MODULE_HEX, type ModuleKey } from '@sparx/brand';
+import { MODULE_HEX } from '@sparx/brand';
 import { type ModuleMeta } from './modules';
 import { OgWordmark } from './og-wordmark';
 
@@ -10,8 +10,24 @@ import { OgWordmark } from './og-wordmark';
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
-export function renderModuleOgImage(meta: ModuleMeta) {
-  const color = { color: MODULE_HEX[meta.module as ModuleKey] ?? MODULE_HEX.builder };
+/** Exactly the fields this card draws — deliberately narrower than ModuleMeta.
+ *  A full ModuleMeta satisfies it structurally (so every module route is
+ *  unchanged), while a page that ISN'T a module — /agentic, the second document
+ *  for the `ai` module — can supply a real literal instead of inventing dead
+ *  `features` / `lede` data just to satisfy the type. */
+export type ModuleOgMeta = Pick<
+  ModuleMeta,
+  'slug' | 'module' | 'label' | 'headlinePrimary' | 'headlineSecondary' | 'description'
+> & {
+  // Narrower than ModulePricing: the card draws only these three. A full
+  // ModulePricing (which also carries `bundleNote`) still satisfies it.
+  pricing: { price: string; period: string; modifier?: '+' | '' };
+};
+
+export function renderModuleOgImage(meta: ModuleOgMeta) {
+  // No cast needed: MarketingModule now covers the same 14 keys as MODULE_HEX
+  // (SEO + Automations were added to the union alongside the twelve paid ones).
+  const color = { color: MODULE_HEX[meta.module] ?? MODULE_HEX.builder };
   return new ImageResponse(
     <div
       style={{

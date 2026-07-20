@@ -125,7 +125,7 @@ export function ThemeShowcase({
       {/* The compiled theme, scoped to this subtree only. */}
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
-      <div className="border-base-300 overflow-hidden rounded-[var(--radius-lg)] border shadow-sm">
+      <div className="border-base-300 overflow-hidden rounded-lg border shadow-sm">
         <div id="st-theme-preview" data-theme={mode}>
           {/* Storefront header chrome */}
           <header className="sfx-header">

@@ -11,7 +11,7 @@ import type { PropertyContext, ServiceContext } from '@sparx/builder';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
-import { resolvePropertyId } from './property.js';
+import { resolvePropertyId, requireTenantProperty } from './property.js';
 
 // Tenant-wide builder ctx (NO property scope) — for the builder services that are
 // NOT per-property: emails, the tenant component library, and the binding catalog
@@ -32,6 +32,30 @@ export async function toBuilderContext(request: FastifyRequest): Promise<Propert
     auth.tenantId,
     typeof requested === 'string' ? requested : null
   );
+  return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
+}
+
+/**
+ * Builder ctx for a read that may name a SPECIFIC site instead of the active one.
+ *
+ * Reads scoped to `x-sparx-property-id` assume you are looking at the site you
+ * are working IN. That breaks for a site's own detail panel, which shows one
+ * named site's figures while you may well be working in a different one — the
+ * header would quietly serve the wrong site's numbers under that name.
+ *
+ * An explicit id therefore goes through `requireTenantProperty`, which 404s on
+ * an unknown or foreign id rather than falling back to the primary. A silent
+ * fallback is right for a HEADER (a stale switcher value should not break a
+ * page); it is wrong for a value a caller named on purpose, because the failure
+ * mode is showing real numbers attributed to the wrong site.
+ */
+export async function toBuilderContextFor(
+  request: FastifyRequest,
+  propertyParam: string | undefined
+): Promise<PropertyContext> {
+  if (!propertyParam) return toBuilderContext(request);
+  const auth = requireAuth(request);
+  const propertyId = await requireTenantProperty(auth.tenantId, propertyParam);
   return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
 }
 

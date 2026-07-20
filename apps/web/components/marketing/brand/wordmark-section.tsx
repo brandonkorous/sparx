@@ -37,7 +37,7 @@ export function WordmarkSection() {
           lede="Lowercase sparx, with one detail doing the work: the “x” carries sparx Ember — the instant of ignition the brand is named for. The vector lockup is the canonical artwork, and the live UI renders the very same paths."
         />
         <Showcase />
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <ConstructionPanel />
           <ClearSpacePanel />
         </div>
@@ -53,7 +53,7 @@ function Showcase() {
   return (
     <Card className="bg-primary bg-soft">
       <CardBody className="flex items-center justify-center px-6 py-[clamp(44px,8vw,96px)]">
-        <OfficialWordmark style={{ width: 'min(440px, 72vw)' }} />
+        <OfficialWordmark className="w-[min(440px,72vw)]" />
       </CardBody>
     </Card>
   );
@@ -90,13 +90,8 @@ function ConstructionPanel() {
 function ClearSpacePanel() {
   return (
     <Panel title="Clear space & minimum size">
-      <div
-        className="bg-base-200 flex items-center justify-center rounded-lg p-[clamp(28px,5vw,48px)]"
-        style={{
-          border: '1px dashed color-mix(in oklab, var(--color-base-content) 30%, transparent)',
-        }}
-      >
-        <OfficialWordmark style={{ width: 'min(240px, 60vw)' }} />
+      <div className="bg-base-200 border-base-content/30 flex items-center justify-center rounded-lg border border-dashed p-[clamp(28px,5vw,48px)]">
+        <OfficialWordmark className="w-[min(240px,60vw)]" />
       </div>
       <Text size={13.5}>
         The dashed frame marks the minimum clear space — the height of the “x” on all sides. Below{' '}
@@ -114,7 +109,7 @@ function OneColorVariants() {
         For print, photography, or any surface where the Ember can’t sit, use the one-color lockup.
         The “x” stays legible by dropping to 50% opacity instead of changing hue.
       </Text>
-      <div className="mkt-grid-2-1">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <VariantTile theme="light" variant="black" />
         <VariantTile theme="dark" variant="white" />
       </div>
@@ -128,7 +123,7 @@ function VariantTile({ theme, variant }: { theme: 'light' | 'dark'; variant: 'bl
   return (
     <Card data-theme={theme} className="bg-base-100">
       <CardBody className="flex items-center justify-center p-[clamp(28px,5vw,44px)]">
-        <OfficialWordmark variant={variant} style={{ width: 'min(220px, 56vw)' }} />
+        <OfficialWordmark variant={variant} className="w-[min(220px,56vw)]" />
       </CardBody>
     </Card>
   );

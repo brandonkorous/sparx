@@ -20,14 +20,9 @@ import {
   NavigationMenuTrigger,
 } from '@wizeworks/silicaui-react';
 import { Wordmark } from '@sparx/ui';
-import { ModulesMegaContent, MODULE_NAV } from './modules-menu';
+import { ModuleGlyph, ModulesMegaContent, MODULE_NAV } from './modules-menu';
 
 export interface SiteHeaderProps {
-  /** Origin prefix for marketing nav links (Platform, Pricing, module pages…).
-   *  '' (default) keeps them relative — correct on the marketing site itself.
-   *  The dashboard passes the marketing origin (e.g. 'https://sparx.works') so
-   *  the same header links back out to the marketing site. */
-  marketingOrigin?: string;
   /** Destination for the "Sign in" CTA + drawer link. */
   signInHref?: string;
   /** Destination for the "Start free" CTA. */
@@ -50,53 +45,53 @@ const NAV_LINK_CLASS = 'text-base-content hover:text-base-content text-sm font-m
 const DRAWER_LINK_CLASS = 'border-base-300 text-base-content border-b py-3.5 text-lg font-medium';
 
 /**
- * The shared site header — rebuilt solely on silicaui: `Navbar` for the bar
+ * The marketing site header — built solely on silicaui: `Navbar` for the bar
  * shell, `NavigationMenu` for desktop links + the Modules megamenu, and
  * `Drawer`/`Collapsible` for the mobile menu (replacing the old hand-rolled
- * `mkt-mobile-drawer` + manual open-state booleans). Lives in @sparx/web-chrome
- * so the marketing site and the dashboard auth pages render one identical
- * header. Marketing routes are prefixed with `marketingOrigin`; the auth CTAs
- * point wherever the consumer says (relative on the dashboard, absolute on
- * the marketing site).
+ * `mkt-mobile-drawer` + manual open-state booleans).
+ *
+ * Nav links are plain relative routes — this component IS the marketing site.
+ * (It briefly lived in a @sparx/web-chrome package with a `marketingOrigin`
+ * prefix prop, on the theory that the dashboard auth pages would render the
+ * same header; they never did — they use the split-panel AuthScreen — so the
+ * indirection is gone.) Only the auth CTAs cross origins, via props.
  */
-export function SiteHeader({
-  marketingOrigin = '',
-  signInHref = '/sign-in',
-  signUpHref = '/sign-up',
-}: SiteHeaderProps) {
-  const link = (href: string) => `${marketingOrigin}${href}`;
+export function SiteHeader({ signInHref = '/sign-in', signUpHref = '/sign-up' }: SiteHeaderProps) {
   const otherLinks = LINKS.filter((l) => l.label !== 'Platform');
 
   return (
     <Navbar className="border-base-300 bg-base-100 sticky top-0 z-50 border-b px-6 sm:px-8">
       <NavbarStart>
-        <a href={link('/')} aria-label="sparx home" className="inline-flex">
+        <a href="/" aria-label="sparx home" className="inline-flex">
           <Wordmark size={36} />
         </a>
       </NavbarStart>
 
       {/* Centers the desktop nav between brand and CTAs — the daisyUI
-          `navbar-center` zone (verified against the real bug this session:
-          links were vanishing because Tailwind wasn't scanning this
-          package's source at all, not because of the zone's own CSS). */}
+          `navbar-center` zone. (Links once vanished here; the cause was
+          Tailwind not scanning this file's old home in packages/web-chrome,
+          not the zone's own CSS. Moot now that it lives inside the app.) */}
       <NavbarCenter className="hidden lg:flex">
         <NavigationMenu>
           <NavigationMenuItem>
-            <NavigationMenuLink href={link('/platform')} className={NAV_LINK_CLASS}>
+            <NavigationMenuLink href="/platform" className={NAV_LINK_CLASS}>
               Platform
             </NavigationMenuLink>
           </NavigationMenuItem>
 
           <NavigationMenuItem>
             <NavigationMenuTrigger className={NAV_LINK_CLASS}>Modules</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ModulesMegaContent linkBase={marketingOrigin} />
+            {/* Silica's `.navigation-menu-content` caps at 38rem and adds its
+                own 1rem padding — both wrong for a full-width mega panel that
+                owns its own padding and edge-to-edge footer bar. */}
+            <NavigationMenuContent className="max-w-none p-0">
+              <ModulesMegaContent />
             </NavigationMenuContent>
           </NavigationMenuItem>
 
           {otherLinks.map((l) => (
             <NavigationMenuItem key={l.label}>
-              <NavigationMenuLink href={link(l.href)} className={NAV_LINK_CLASS}>
+              <NavigationMenuLink href={l.href} className={NAV_LINK_CLASS}>
                 {l.label}
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -138,7 +133,7 @@ export function SiteHeader({
             </div>
 
             <DrawerClose>
-              <a href={link('/platform')} className={DRAWER_LINK_CLASS}>
+              <a href="/platform" className={DRAWER_LINK_CLASS}>
                 Platform
               </a>
             </DrawerClose>
@@ -152,11 +147,16 @@ export function SiteHeader({
                   {MODULE_NAV.map((m) => (
                     <DrawerClose key={m.module}>
                       <a
-                        href={link(m.href)}
-                        className="rounded-field hover:bg-base-200 flex flex-col gap-0.5 px-3 py-2"
+                        href={m.href}
+                        className="rounded-field hover:bg-base-200 flex items-start gap-3 px-3 py-2"
                       >
-                        <span className="text-base-content text-sm font-medium">{m.label}</span>
-                        <span className="text-base-content text-xs">{m.desc}</span>
+                        <span className="mt-0.5">
+                          <ModuleGlyph module={m.module} />
+                        </span>
+                        <span className="flex flex-col gap-0.5">
+                          <span className="text-base-content text-sm font-medium">{m.label}</span>
+                          <span className="text-base-content text-xs">{m.desc}</span>
+                        </span>
                       </a>
                     </DrawerClose>
                   ))}
@@ -166,7 +166,7 @@ export function SiteHeader({
 
             {otherLinks.map((l) => (
               <DrawerClose key={l.label}>
-                <a href={link(l.href)} className={DRAWER_LINK_CLASS}>
+                <a href={l.href} className={DRAWER_LINK_CLASS}>
                   {l.label}
                 </a>
               </DrawerClose>

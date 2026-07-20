@@ -1,4 +1,4 @@
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Heading } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -11,22 +11,34 @@ import {
 } from './primitives';
 
 /**
- * The /ai marketing page — the AI · MCP module, told as a positioning story
- * rather than the generic module template. The thesis is the inversion: sparx
- * does NOT ship another chatbot you have to learn; it opens a direct line (the
- * Model Context Protocol) so the assistant you already use can read and write
- * your live business data. "Bring your own AI."
+ * The /agentic marketing page — the AGENTIC / MCP half of the one $49 AI module,
+ * told as a positioning story rather than the generic module template. The thesis
+ * is the inversion: sparx does NOT ship another chatbot you have to learn; it
+ * opens a direct line (the Model Context Protocol) so the assistant you already
+ * use can read and write your live business data. "Bring your own AI."
+ *
+ * This is the INWARD-facing tool (your team, your own AI). Its companion, /ai
+ * (AiPage), is the OUTWARD-facing tool: the AI concierge you hand your CUSTOMERS
+ * in live chat. Same $49 module, two tools — the two pages cross-link (see
+ * <ConciergeCrossLink> below and /ai's <AgenticCrossLink>).
  *
  * Built on the marketing primitives + the per-module colors (this module's
  * accent is AI pink). Section backgrounds alternate page → surface for rhythm,
- * with two near-black bands (the safety surface and the close). The single
- * connection endpoint shown is real: services/api-mcp serves Streamable HTTP at
- * mcp.sparx.works/v1, authed by a scoped `sk_live_…` key issued in the
- * dashboard. The literal per-client config deliberately lives in the dashboard
- * connect screen + /docs, never hard-coded here (the key is per-tenant and
- * secret; client configs change).
+ * with two dark THEME ISLANDS (`<Section surface="dark">` — the safety surface
+ * and the close), never a painted near-black. The single connection endpoint
+ * shown is real: services/api-mcp serves Streamable HTTP at mcp.sparx.works/v1,
+ * authed by a scoped `sk_live_…` key issued in the dashboard. The literal
+ * per-client config deliberately lives in the dashboard connect screen + /docs,
+ * never hard-coded here (the key is per-tenant and secret; client configs change).
+ *
+ * Styling contract: silicaui components + Tailwind utilities only (see
+ * SILICA-VOCABULARY.md). Type comes from the editorial `text-*` scale registered
+ * in app/globals.css; ink from `text-base-content` / `text-ink-muted` /
+ * `text-ink-subtle` (all REAL inks that mix into base-100, never transparent).
+ * The only inline styles left are genuinely dynamic values — a module hue read
+ * from `getModuleColor()`.
  */
-export function AiPage() {
+export function AgenticPage() {
   return (
     <>
       <AiHero />
@@ -36,6 +48,7 @@ export function AiPage() {
       <ToolSurface />
       <ScopedAudited />
       <WorksWithEveryAssistant />
+      <ConciergeCrossLink />
       <AiPricing />
       <AiCta />
     </>
@@ -44,92 +57,53 @@ export function AiPage() {
 
 const AI = getModuleColor('ai');
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
-
 /** The real MCP transport endpoint — services/api-mcp, behind Caddy. */
 const ENDPOINT = 'mcp.sparx.works/v1';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 function AiHero() {
   // This module's own color, full-bleed — the page sells the standout AI/MCP
-  // capability, so it gets the one saturated hero on the marketing site. Near-
-  // black ink on the bright magenta keeps it ~7:1 legible and tonally connected
-  // to the rest of the site (which is built on the same #0A0A0A ink); the spark
-  // flips to white so the brand accent still reads against its own color.
-  const ink = '#0A0A0A';
+  // capability, so it gets the one saturated hero on the marketing site.
+  // `bg-*` sets only the fill, so the ink is explicit: `text-neutral` is the
+  // near-black token (it stays near-black in BOTH themes, unlike base-content),
+  // which measures ~7:1 on the bright magenta and keeps the band tonally tied to
+  // the rest of the site. The spark flips to `--color-neutral-content` so the
+  // brand accent still reads against its own color. No hexes on either axis.
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: AI.color,
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
-          <Display as="h1" size={104} lineHeight={96} color={ink}>
+    <section className={`${AI.bg} px-page pb-section-lg text-neutral pt-[clamp(56px,9vw,96px)]`}>
+      <Container className="flex flex-col gap-10">
+        <div className="flex max-w-[1100px] flex-col gap-2">
+          <Display as="h1" size={104} lineHeight={96} color="currentColor">
             Bring your
           </Display>
-          <Display as="h1" size={104} lineHeight={96} color={ink}>
+          <Display as="h1" size={104} lineHeight={96} color="currentColor">
             own AI
-            <Spark color="#FFFFFF" />
+            <Spark color="var(--color-neutral-content)" />
           </Display>
         </div>
 
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: SANS,
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'rgba(10,10,10,0.82)',
-              maxWidth: '640px',
-              margin: 0,
-            }}
-          >
+        <div className="max-w-content flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
+          <p className="text-lede m-0 max-w-[640px] font-sans">
             We didn&rsquo;t build you another AI assistant to learn. We opened a direct line so the
             AI you <em>already use</em> &mdash; Claude, ChatGPT, Copilot &mdash; can read and write
             your live business data in plain English, from the same chat you&rsquo;re already in. No
             new tool. No new tab. No exports.
           </p>
 
-          <div
-            className="mkt-align-end-on-desktop"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: ink }}>
+          <div className="flex flex-col items-start gap-3.5">
+            <div className="flex flex-wrap items-center gap-4">
+              <Button color="neutral" size="lg">
                 Connect your AI →
               </Button>
               <a href="#how">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  style={{
-                    backgroundColor: 'transparent',
-                    borderColor: 'rgba(10,10,10,0.28)',
-                    color: ink,
-                  }}
-                >
+                {/* On the band, `variant="outline"` draws from the ambient ink —
+                    the same near-black the band already carries. */}
+                <Button size="lg" variant="outline">
                   See how it works
                 </Button>
               </a>
             </div>
-            <span style={{ fontFamily: MONO, fontSize: '12px', color: 'rgba(10,10,10,0.62)' }}>
-              Claude · ChatGPT · Copilot · any MCP client
-            </span>
+            <span className="text-mini font-mono">Claude · ChatGPT · Copilot · any MCP client</span>
           </div>
         </div>
       </Container>
@@ -154,17 +128,13 @@ function TheInversion() {
 
   return (
     <Section surface="surface" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
+      <div className="max-w-[760px]">
         <SectionHeader
           accent={AI.color}
           headline={
             <>
               sparx inside your AI &mdash;{' '}
-              <span
-                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-              >
-                not another AI inside sparx
-              </span>
+              <span className="text-ink-muted">not another AI inside sparx</span>
             </>
           }
           lede={
@@ -178,19 +148,9 @@ function TheInversion() {
         />
       </div>
 
-      <div className="mkt-grid-2-1" style={{ marginTop: '56px', gap: '24px' }}>
-        <ContrastCard
-          tone="muted"
-          kicker="The usual way"
-          title="A new bot to babysit"
-          points={usual}
-        />
-        <ContrastCard
-          tone="accent"
-          kicker="The sparx way"
-          title="A line to the AI you have"
-          points={sparx}
-        />
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ContrastCard tone="muted" title="A new bot to babysit" points={usual} />
+        <ContrastCard tone="accent" title="A line to the AI you have" points={sparx} />
       </div>
     </Section>
   );
@@ -198,79 +158,30 @@ function TheInversion() {
 
 function ContrastCard({
   tone,
-  kicker,
   title,
   points,
 }: {
   tone: 'muted' | 'accent';
-  kicker: string;
   title: string;
   points: string[];
 }) {
   const accent = tone === 'accent';
   return (
     <div
-      className={accent ? `${AI.bg} bg-soft` : 'bg-base-200'}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        padding: '32px',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '12px',
-      }}
+      className={`border-base-300 flex flex-col gap-4 rounded-xl border p-8 ${
+        accent ? `${AI.bg} bg-soft` : 'bg-base-200'
+      }`}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <span
-          className={accent ? AI.ink : undefined}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: accent
-              ? undefined
-              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          {kicker}
-        </span>
-        <h3
-          style={{
-            margin: 0,
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '22px',
-            letterSpacing: '-0.02em',
-            color: 'var(--color-base-content)',
-          }}
-        >
-          {title}
-        </h3>
-      </div>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+      {/* The two titles ARE the contrast — the "The usual way" / "The sparx way"
+          uppercase-mono kickers that used to sit above them were eyebrows. */}
+      <Heading level={3}>{title}</Heading>
+      <ul className="m-0 grid list-none gap-3 p-0">
         {points.map((p) => (
-          <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-            <span style={{ paddingTop: '7px', flexShrink: 0 }}>
-              <Dot
-                color={
-                  accent
-                    ? AI.color
-                    : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
-                }
-                size={7}
-              />
+          <li key={p} className="flex items-start gap-3">
+            <span className="shrink-0 pt-2">
+              <Dot color={accent ? AI.color : 'var(--color-ink-subtle)'} size={7} />
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p}
-            </span>
+            <span className="text-body-sm text-ink-muted font-sans">{p}</span>
           </li>
         ))}
       </ul>
@@ -280,19 +191,18 @@ function ContrastCard({
 
 // ── HOW IT WORKS · three steps + the real endpoint ──────────────────────────
 function HowItWorks() {
+  // No `01 / 02 / 03` markers: a step number above the heading is the banned
+  // eyebrow slot. The order is carried by the grid and the verbs themselves.
   const steps = [
     {
-      n: '01',
       title: 'Activate',
       body: 'Turn on the AI module in your dashboard — one click. It gates the MCP server and tracks which modules your AI can reach.',
     },
     {
-      n: '02',
       title: 'Connect',
       body: 'In Settings → AI Integrations, generate a scoped key. Paste it, with the endpoint below, into your assistant once.',
     },
     {
-      n: '03',
       title: 'Ask',
       body: 'In the chat you already use: “What were my top customers this quarter?” Your AI does the rest, live.',
     },
@@ -311,53 +221,16 @@ function HowItWorks() {
         }
       />
 
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {steps.map((s, i) => (
           <div
-            key={s.n}
-            className={i === 0 ? `${AI.bg} bg-soft` : 'bg-base-100'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              padding: '30px 26px 34px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '210px',
-            }}
+            key={s.title}
+            className={`border-base-300 flex min-h-[210px] flex-col gap-3.5 rounded-xl border px-6 pt-7 pb-8 ${
+              i === 0 ? `${AI.bg} bg-soft` : 'bg-base-100'
+            }`}
           >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '22px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              {s.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
+            <Heading level={3}>{s.title}</Heading>
+            <p className="text-small text-ink-muted m-0 font-sans">{s.body}</p>
           </div>
         ))}
       </div>
@@ -369,74 +242,34 @@ function HowItWorks() {
         // navy and the SAME soft treatment lands on a dark surface — no
         // hand-mixed hue, and no hardcoded near-black to drift from the theme.
         data-theme="dark"
-        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
-        style={{
-          marginTop: '24px',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '24px',
-          padding: '26px 30px',
-          borderRadius: '14px',
-        }}
+        className={`flex flex-col gap-8 lg:flex-row ${AI.bg} bg-soft mt-6 items-center justify-between rounded-xl px-7 py-6`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: '#71717A',
-            }}
-          >
-            One endpoint
-          </span>
-          <code
-            style={{
-              fontFamily: MONO,
-              fontSize: 'clamp(16px, 2.4vw, 22px)',
-              fontWeight: 500,
-              color: '#FFFFFF',
-              wordBreak: 'break-all',
-            }}
-          >
+        <div className="flex min-w-0 flex-col gap-2.5">
+          {/* A readable label for the value below it, not an uppercase-mono
+              eyebrow: sentence case, full ink, at the body-label step. */}
+          <span className="text-mini text-ink-muted font-sans">One endpoint</span>
+          <code className="text-h3 text-base-content font-mono font-medium break-all">
             {ENDPOINT}
           </code>
-          <span style={{ fontFamily: MONO, fontSize: '12.5px', color: '#A1A1AA' }}>
+          <span className="text-mini text-ink-muted font-mono">
             Authorization: Bearer sk_live_…
           </span>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        <div className="flex flex-wrap gap-2">
           {['Streamable HTTP', 'scoped key', 'any MCP client'].map((t) => (
             <span
               key={t}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                padding: '5px 11px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.78)',
-              }}
+              className="bg-base-300 text-base-content text-micro rounded-full px-3 py-1 font-mono"
             >
               {t}
             </span>
           ))}
         </div>
       </div>
-      <p
-        style={{
-          marginTop: '16px',
-          fontFamily: SANS,
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          maxWidth: '640px',
-        }}
-      >
+      <p className="text-small text-ink-muted mt-4 max-w-[640px] font-sans">
         The exact config for each client — Claude, ChatGPT, Copilot — is generated with your real
         key in the dashboard and spelled out step by step in the{' '}
-        <a href="/docs" className={AI.ink} style={{ fontWeight: 500 }}>
+        <a href="/docs" className={`${AI.ink} font-medium`}>
           connection guide
         </a>
         .
@@ -506,7 +339,7 @@ function AskInPlainEnglish() {
         }
       />
 
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
         {chats.map((c) => (
           <ChatWindow key={c.ask} {...c} />
         ))}
@@ -529,119 +362,40 @@ function ChatWindow({
   confirm?: boolean;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'var(--color-base-200)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        boxShadow: '0 14px 40px rgba(15, 23, 42, 0.06)',
-      }}
-    >
+    <div className="bg-base-200 border-base-300 flex flex-col overflow-hidden rounded-2xl border shadow-xl">
       {/* window chrome — which assistant this is running in */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '13px 18px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
+      <div className="border-base-300 flex items-center justify-between border-b px-4 py-3">
+        <span className="inline-flex items-center gap-2.5">
           <Dot color={AI.color} size={8} />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '13px',
-              color: 'var(--color-base-content)',
-            }}
-          >
-            {client}
-          </span>
+          <span className="text-caption text-base-content font-sans font-medium">{client}</span>
         </span>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '16px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        {/* Decorative "new chat" affordance, not copy — subtle ink is correct. */}
+        <span aria-hidden className="text-body text-ink-subtle font-mono">
           +
         </span>
       </div>
 
       {/* transcript */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-          padding: '20px 18px',
-        }}
-      >
+      <div className="flex flex-1 flex-col gap-4 px-4 py-5">
         {/* user turn — right-aligned bubble + the owner's profile avatar */}
-        <div
-          style={{
-            alignSelf: 'flex-end',
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'flex-start',
-            maxWidth: '92%',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'var(--color-base-100)',
-              borderRadius: '14px 14px 4px 14px',
-              padding: '10px 14px',
-              fontFamily: SANS,
-              fontSize: '14.5px',
-              lineHeight: '22px',
-              fontWeight: 500,
-              color: 'var(--color-base-content)',
-            }}
-          >
+        <div className="flex max-w-[92%] items-start gap-2.5 self-end">
+          <div className="bg-base-100 text-small text-base-content rounded-[14px_14px_4px_14px] px-3.5 py-2.5 font-sans font-medium">
             {ask}
           </div>
           <UserAvatar />
         </div>
 
         {/* assistant turn — avatar + bubble + the friendly "Used sparx" receipt */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+        <div className="flex items-start gap-2.5">
           <ChatAvatar label="AI" accent />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
-            <div
-              style={{
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '14px 14px 14px 4px',
-                padding: '10px 14px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="bg-base-200 border-base-300 text-small text-ink-muted rounded-[14px_14px_14px_4px] border px-3.5 py-2.5 font-sans">
               {answer}
             </div>
             <span
-              className={confirm ? AI.ink : undefined}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '7px',
-                paddingLeft: '2px',
-                fontFamily: SANS,
-                fontSize: '12px',
-                color: confirm
-                  ? undefined
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
+              className={`text-mini inline-flex items-center gap-2 pl-0.5 font-sans ${
+                confirm ? AI.ink : 'text-ink-muted'
+              }`}
             >
               <Dot color={AI.color} size={6} />
               Used sparx · {via}
@@ -651,47 +405,14 @@ function ChatWindow({
       </div>
 
       {/* input bar — the detail that makes it read as a real chat window */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '12px 14px',
-          borderTop: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span
-          style={{
-            flex: 1,
-            padding: '9px 14px',
-            borderRadius: '9999px',
-            border: '1px solid var(--color-base-300)',
-            backgroundColor: 'var(--color-base-100)',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
+      <div className="border-base-300 flex items-center gap-2.5 border-t px-3.5 py-3">
+        {/* Placeholder copy — genuinely not meant to be read. */}
+        <span className="border-base-300 bg-base-100 text-caption text-ink-subtle flex-1 truncate rounded-full border px-3.5 py-2 font-sans">
           Message {client}…
         </span>
         <span
           aria-hidden
-          style={{
-            flexShrink: 0,
-            width: 30,
-            height: 30,
-            borderRadius: '9999px',
-            backgroundColor: AI.color,
-            color: '#FFFFFF',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: SANS,
-            fontSize: '15px',
-          }}
+          className={`${AI.bg} text-module-ai-content text-body-sm inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-sans`}
         >
           ↑
         </span>
@@ -707,18 +428,7 @@ function UserAvatar() {
   return (
     <span
       aria-hidden
-      style={{
-        flexShrink: 0,
-        width: 30,
-        height: 30,
-        borderRadius: '9999px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
+      className="bg-base-100 border-base-300 text-ink-muted inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
     >
       <svg viewBox="0 0 24 24" width={17} height={17} fill="currentColor">
         <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2.2c-4.5 0-8.2 2.3-8.2 5.1V21h16.4v-1.7c0-2.8-3.7-5.1-8.2-5.1Z" />
@@ -730,23 +440,11 @@ function UserAvatar() {
 function ChatAvatar({ label, accent }: { label: string; accent?: boolean }) {
   return (
     <span
-      style={{
-        flexShrink: 0,
-        width: 30,
-        height: 30,
-        borderRadius: '8px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: accent ? AI.color : 'var(--color-base-100)',
-        border: accent ? 'none' : '1px solid var(--color-base-300)',
-        fontFamily: MONO,
-        fontSize: '11px',
-        fontWeight: 500,
-        color: accent
-          ? '#FFFFFF'
-          : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
+      className={`text-micro inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono font-medium ${
+        accent
+          ? `${AI.bg} text-module-ai-content`
+          : 'bg-base-100 border-base-300 text-ink-muted border'
+      }`}
     >
       {label}
     </span>
@@ -820,59 +518,23 @@ function ToolSurface() {
         }
       />
 
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {groups.map((g) => {
           const c = getModuleColor(g.module);
           return (
             <div
               key={g.label}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                padding: '24px',
-                backgroundColor: 'var(--color-base-100)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                minHeight: '156px',
-              }}
+              className="bg-base-100 border-base-300 flex min-h-[156px] flex-col gap-3 rounded-xl border p-6"
             >
               <span
-                className={`${c.bg} bg-soft`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 30,
-                  height: 30,
-                  borderRadius: '8px',
-                }}
+                className={`${c.bg} bg-soft inline-flex h-8 w-8 items-center justify-center rounded-lg`}
               >
                 <Dot color={c.color} size={9} />
               </span>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+              <Heading level={3} size={5}>
                 {g.label}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {g.actions}
-              </p>
+              </Heading>
+              <p className="text-caption text-ink-muted m-0 font-sans">{g.actions}</p>
             </div>
           );
         })}
@@ -881,7 +543,7 @@ function ToolSurface() {
   );
 }
 
-// ── SCOPED & AUDITED · trust (dark) ─────────────────────────────────────────
+// ── SCOPED & AUDITED · trust (dark theme island) ────────────────────────────
 function ScopedAudited() {
   const items = [
     {
@@ -911,82 +573,33 @@ function ScopedAudited() {
   ];
 
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-lg)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container>
-        <div style={{ maxWidth: '720px' }}>
-          <Display size={56} lineHeight={60} color="#FFFFFF">
-            Let AI touch your business — safely
-            <Spark color={AI.color} />
-          </Display>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: '#A1A1AA',
-              maxWidth: '640px',
-              margin: '24px 0 0',
-            }}
-          >
-            Opening a line to your data is only worth it if you stay in control of it. Access is
-            scoped, every action is logged, and you can cut it off in a click.
-          </p>
-        </div>
+    <Section surface="dark" padding="lg">
+      <div className="max-w-[720px]">
+        <Display size={56} lineHeight={60}>
+          Let AI touch your business — safely
+          <Spark color={AI.color} />
+        </Display>
+        <p className="text-lede text-ink-muted mt-6 mb-0 max-w-[640px] font-sans">
+          Opening a line to your data is only worth it if you stay in control of it. Access is
+          scoped, every action is logged, and you can cut it off in a click.
+        </p>
+      </div>
 
-        <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
-          {items.map((it) => (
-            <div
-              key={it.title}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-                padding: '24px',
-                backgroundColor: '#141414',
-                border: '1px solid #262626',
-                borderRadius: '12px',
-              }}
-            >
-              <h3
-                style={{
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: '#FFFFFF',
-                }}
-              >
-                <Dot color={AI.color} size={8} />
-                {it.title}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: '#A1A1AA',
-                }}
-              >
-                {it.body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Container>
-    </section>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((it) => (
+          <div
+            key={it.title}
+            className="bg-base-200 border-base-300 flex flex-col gap-2.5 rounded-xl border p-6"
+          >
+            <Heading level={3} size={5} className="flex items-center gap-2.5">
+              <Dot color={AI.color} size={8} />
+              {it.title}
+            </Heading>
+            <p className="text-caption text-ink-muted m-0 font-sans">{it.body}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
   );
 }
 
@@ -1013,43 +626,59 @@ function WorksWithEveryAssistant() {
         }
       />
 
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '48px' }}>
+      <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {clients.map((c) => (
           <div
             key={c.name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-              padding: '22px 24px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-            }}
+            className="bg-base-200 border-base-300 flex flex-col gap-1.5 rounded-xl border px-6 py-5"
           >
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Heading level={3} size={5}>
               {c.name}
-            </span>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {c.note}
-            </span>
+            </Heading>
+            <span className="text-mini text-ink-muted font-mono">{c.note}</span>
           </div>
         ))}
       </div>
+    </Section>
+  );
+}
+
+// ── CROSS-LINK · the other half of the AI module (the concierge) ────────────
+function ConciergeCrossLink() {
+  return (
+    <Section padding="lg">
+      {/* The two headings carry the inward/outward contrast themselves — the
+          "This page · inward" / "Its twin · outward" mono kickers that used to
+          sit above them were eyebrows, so they're gone. */}
+      <div
+        className={`flex flex-col gap-8 lg:flex-row ${AI.bg} bg-soft border-base-300 items-center justify-between rounded-2xl border p-10`}
+      >
+        <div className="flex-1">
+          <Heading level={3}>The agentic line faces your team</Heading>
+          <p className="text-small text-ink-muted mt-1.5 mb-0 font-sans">
+            The AI you already use, pointed at your own live data over MCP.
+          </p>
+        </div>
+
+        <span aria-hidden className={`${AI.ink} text-h1 leading-none`}>
+          →
+        </span>
+
+        <div className="flex-1">
+          <Heading level={3}>The concierge faces your customers</Heading>
+          <p className="text-small text-ink-muted mt-1.5 mb-3.5 font-sans">
+            An AI first-responder in your live chat, grounded on your catalog and policies.
+          </p>
+          <a href="/ai">
+            <Button color="module-ai" size="md">
+              Meet the concierge →
+            </Button>
+          </a>
+        </div>
+      </div>
+      <p className="text-mini text-ink-muted mt-4 text-center font-mono">
+        Both tools · one $49 AI module
+      </p>
     </Section>
   );
 }
@@ -1059,71 +688,28 @@ function AiPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-          gap: '32px',
-        }}
+        className={`flex flex-col gap-8 lg:flex-row ${AI.bg} bg-soft border-base-300 items-center justify-between rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '40px',
-                letterSpacing: '-0.02em',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              +
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-ink-muted text-h1 font-sans font-medium">+</span>
+            <Display as="h3" size={56} lineHeight={56}>
               $49
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+            </Display>
+            <span className="text-body text-ink-muted font-sans">/mo</span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <p className="text-small text-ink-muted m-0 max-w-[640px] font-sans">
             A flat $49/mo. Connect any MCP client and read or write live data across every module
             you run — scoped, audited, revocable, all on one bill.
           </p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-4">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate AI
           </Button>
         </div>
@@ -1132,53 +718,30 @@ function AiPricing() {
   );
 }
 
-// ── FINAL CTA (dark) ────────────────────────────────────────────────────────
+// ── FINAL CTA (dark theme island) ───────────────────────────────────────────
 function AiCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-10">
+        <Display size={88} lineHeight={84}>
           Your business, in the chat you already use
           <Spark color={AI.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <p className="text-lede text-ink-muted m-0 max-w-[640px] font-sans">
           No new assistant to learn, no migration, no contract. Generate a key, paste it once, and
           ask your own AI anything about your business. Turn it off any time — your data stays.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-4">
           <Button size="xl" variant="solid">
             Connect your AI →
           </Button>
           <a href="/docs">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               Read the connection guide
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

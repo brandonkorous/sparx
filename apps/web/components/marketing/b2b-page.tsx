@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, Section, Spark } from './primitives';
+import { Display, getModuleColor, Section, Spark, Text } from './primitives';
 import { B2bHero } from './b2b-hero';
 import { B2bPriceList, B2bRfq } from './b2b-sections';
 import { B2bTerms, B2bBulkPo } from './b2b-devices';
@@ -25,8 +25,8 @@ import { Faq, type FaqItem } from './faq';
  * dashboard B2B surfaces (accounts, pricing tiers "% off list", credit
  * limit/used, payment terms "Net 30", the RFQ quote lifecycle, A/R aging,
  * approval rules, fleet/engine profiles). B2B is a flat $99/mo and REQUIRES
- * Commerce — enabling it auto-activates and bills Commerce ($49); Invoicing
- * rides along free. No tiers, 14-day trial, no card to begin.
+ * Commerce — enabling it auto-activates and bills Commerce ($49); Invoicing and
+ * Inventory ride along free. No tiers, 14-day trial, no card to begin.
  */
 export function B2bPage() {
   return (
@@ -58,7 +58,6 @@ export function B2bPage() {
 }
 
 const M = getModuleColor('b2b');
-const SANS = 'var(--font-sans)';
 
 // Page-specific FAQ. Real evaluation questions for sparx B2B, answered straight
 // and grounded in docs/10 (PRD) + docs/17 (billing) — no tier/plan language.
@@ -68,7 +67,7 @@ const B2B_FAQ: FaqItem[] = [
     id: 'b2b-pricing',
     question: 'How much does sparx B2B cost?',
     answer:
-      'A flat $99/mo. B2B layers on Commerce, so turning it on also activates Commerce at $49/mo — the two run as one engine, on one bill. Invoicing is included free with either. No tiers, no per-account or per-seat charge. Start on a 14-day free trial; no card required to begin.',
+      'A flat $99/mo. B2B layers on Commerce, so turning it on also activates Commerce at $49/mo — the two run as one engine, on one bill. Invoicing and Inventory are included free with either. No tiers, no per-account or per-seat charge. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'b2b-needs-commerce',
@@ -116,63 +115,34 @@ function B2bProof() {
       l: 'catalog and checkout under retail and wholesale — nothing to mirror',
     },
     { n: 'D2C + B2B', l: 'on one engine — wholesale toggles on per account, not per store' },
-    { n: '$0', l: 'extra for Invoicing — estimates, invoices, and A/R aging ride along' },
+    {
+      n: '$0',
+      l: 'extra for Invoicing and Inventory — estimates, A/R aging, and stock ride along',
+    },
     { n: 'Net 60', l: 'terms, credit limits, and approval holds — native, not a spreadsheet' },
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           One catalog, retail and wholesale at once
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <Text size={18} className="mt-6 max-w-[640px]">
           B2B isn’t a second store bolted onto the first. It’s the same products, inventory, and
           orders your retail side runs — with account pricing, net terms, and quotes layered on top,
           so nothing is duplicated and nothing drifts out of sync.
-        </p>
+        </Text>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(34px, 5vw, 52px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? undefined : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content font-sans text-[clamp(34px,5vw,52px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
+            <Text as="div" size={14} className="mt-3">
               {s.l}
-            </div>
+            </Text>
           </div>
         ))}
       </div>
@@ -185,63 +155,32 @@ function B2bPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${M.bg} border-base-300 bg-soft items-center justify-between gap-8 rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content font-sans text-[56px] leading-none font-medium tracking-[-0.025em]">
               $99
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <Text as="span" size={16} tone="subtle">
               /mo + Commerce
-            </span>
+            </Text>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '660px',
-            }}
-          >
+          <Text size={14} className="max-w-[660px]">
             A flat $99/mo — account pricing, RFQ and quotes, net terms and credit, bulk PO ordering,
             and fleet accounts. B2B layers on Commerce, so turning it on activates Commerce too
-            ($49/mo) and the two bill as one engine. Invoicing is included free; add the Scheduling
-            module ($29/mo) to book service against a fleet. No tiers, no per-account or per-seat
-            charge. Start free for 14 days; no card to begin.
-          </p>
+            ($49/mo) and the two bill as one engine. Invoicing and Inventory are included free; add
+            the Scheduling module ($29/mo) to book service against a fleet. No tiers, no per-account
+            or per-seat charge. Start free for 14 days; no card to begin.
+          </Text>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate B2B
           </Button>
         </div>
@@ -253,51 +192,28 @@ function B2bPricing() {
 // ── FINAL CTA (dark) ──────────────────────────────────────────────────────────
 function B2bCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Open your wholesale book
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <Text size={18} className="max-w-[640px]">
           Set up a pricing tier, invite your accounts, and take a PO on net terms — on the same
           catalog you already sell from. No second platform, no migration weekend; switch B2B off
           the day you stop selling wholesale, and your accounts and history stay yours.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: M.color }}>
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-b2b" size="xl">
             Activate B2B →
           </Button>
           <a href="#price-list">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See account pricing
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

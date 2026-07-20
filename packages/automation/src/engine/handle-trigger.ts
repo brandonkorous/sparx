@@ -22,7 +22,7 @@ import { withTenant } from '@sparx/db';
 
 import { evaluateConditions } from '../conditions/evaluate';
 import type { EngineDeps, TenantCtx, TriggerEnvelope } from '../engine-types';
-import { resolveFields } from '../resolvers/registry';
+import { propertyOf, resolveFields } from '../resolvers/registry';
 import { dedupeOf } from './idempotency';
 import { installBuiltins } from './install';
 
@@ -50,7 +50,33 @@ export async function handleTrigger(
       const ctx: TenantCtx = { tenantId, tx, deps, causeDepth: depth };
       const fields = await resolveFields(ctx, type, payload);
 
+      // WHICH BUSINESS this event happened on (docs/131 §3.1). Read from the
+      // RESOLVED ENTITY rather than the envelope: `SparxEvent` has no propertyId
+      // and adding one would mean touching every publisher on the platform,
+      // while the entity already knows — and knows authoritatively, since the
+      // row is the record of what happened.
+      const eventProperty = propertyOf(fields);
+
       for (const a of automations) {
+        // The site filter. A tenant-wide rule (propertyId null) runs on
+        // everything; a site-scoped rule runs only on its own site's events.
+        //
+        // An UNKNOWN site (null eventProperty — no resolver for this event type,
+        // or an entity with no site) runs only tenant-wide rules. That is the
+        // deliberate direction to fail: a site-scoped rule that silently does
+        // not fire is a rule someone can notice and fix, whereas one that fires
+        // on another business's records sends that business's customers the
+        // wrong email, which cannot be taken back. Logged, not swallowed.
+        if (a.propertyId !== null && a.propertyId !== eventProperty) {
+          deps.logger.debug(
+            { automationId: a.id, automationProperty: a.propertyId, eventProperty },
+            eventProperty === null
+              ? 'automation: skipped (event site unknown, rule is site-scoped)'
+              : 'automation: skipped (different site)'
+          );
+          continue;
+        }
+
         if (depth >= a.maxDepth) {
           deps.logger.debug(
             { automationId: a.id, depth, maxDepth: a.maxDepth },
@@ -78,6 +104,11 @@ export async function handleTrigger(
           create: {
             automationId: a.id,
             tenantId,
+            // Stamped from the EVENT, not the automation: a tenant-wide rule
+            // that fires on a donut order produced a donut-site run, and "what
+            // ran on this site" has to answer with where it acted, not how it
+            // was scoped.
+            propertyId: eventProperty,
             triggerEvent: envelope as unknown as Prisma.InputJsonValue,
             dedupeKey,
             causeDepth: depth,

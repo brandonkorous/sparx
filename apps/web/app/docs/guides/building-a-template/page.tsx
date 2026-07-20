@@ -449,7 +449,7 @@ export default function BuildingATemplatePage() {
           <DocTable>
             <thead>
               <tr>
-                <th style={{ width: '26%' }}>Field</th>
+                <th className="w-[26%]">Field</th>
                 <th>What it is</th>
               </tr>
             </thead>
@@ -615,8 +615,8 @@ export default function BuildingATemplatePage() {
           <DocTable>
             <thead>
               <tr>
-                <th style={{ width: '22%' }}>Axis</th>
-                <th style={{ width: '38%' }}>Values</th>
+                <th className="w-[22%]">Axis</th>
+                <th className="w-[38%]">Values</th>
                 <th>Notes</th>
               </tr>
             </thead>
@@ -726,7 +726,7 @@ export default function BuildingATemplatePage() {
           <DocTable>
             <thead>
               <tr>
-                <th style={{ width: '26%' }}>Axis</th>
+                <th className="w-[26%]">Axis</th>
                 <th>Values</th>
               </tr>
             </thead>

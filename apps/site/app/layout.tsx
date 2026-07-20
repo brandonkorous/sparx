@@ -241,7 +241,14 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const site = await resolveSite();
+  // Three independent resolutions, awaited together (docs/127 §9). `resolveSite` and
+  // `resolveActivePropertySlug` share a request-cached `resolveSiteRoute()` underneath,
+  // so overlapping them costs one round-trip, not two.
+  const [site, activePropertySlug, hdrs] = await Promise.all([
+    resolveSite(),
+    resolveActivePropertySlug(),
+    headers(),
+  ]);
   // Live Chat (docs/56, docs/69 A-4) — the floating widget mounts only when the
   // tenant has the `chat` module active. The widget is a client component, so it
   // talks to the browser-reachable public API origin (NEXT_PUBLIC_API_URL), not
@@ -251,36 +258,37 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ?.enabled
   );
   const chatApiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-  // Active site slug (docs/58 D1) — handed to CartProvider so storefront carts
-  // (and the orders they become) are tagged with their origin site. Cheap: the
-  // underlying resolveSiteRoute() is request-cached alongside resolveSite.
-  const activePropertySlug = await resolveActivePropertySlug();
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
   // — header/footer/announcement — in the editor preview, not just published.
-  const hdrs = await headers();
   const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
-  const snapshot = site
-    ? await getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined)
-    : null;
 
-  // A published Builder layout (docs/45) is the chrome shell, and it WINS over
-  // the legacy header/footer when present — the additive "Builder owns it, else
-  // fall through" pattern (cf. the page render path, docs/44 §2.5). Its chrome
-  // binds to the `site` sources resolved here. The snapshot is still read above
-  // for THEME (the Builder layout carries chrome, not tokens).
-  const builderLayout = site ? await getPublishedBuilderLayout(site.slug) : null;
+  // Four INDEPENDENT reads, awaited together (docs/127 §9). They were sequential, so
+  // chrome sat four api-rest round-trips deep before it could render — on a path that
+  // is `no-store`, meaning every request paid all four. None of them feeds another:
+  //
+  //   · snapshot      — the legacy Site Builder publish snapshot, read here for THEME
+  //   · builderLayout — the sparx Builder chrome shell (docs/45), WINS over legacy
+  //                     header/footer when present ("Builder owns it, else fall
+  //                     through", cf. docs/44 §2.5)
+  //   · silicaFrame   — the silica engine's published FRAME (docs/118 Stage 6), which
+  //                     wins over BOTH of the above by the same additive rule. Null
+  //                     until a silica layout is published, so a non-silica tenant is
+  //                     byte-for-byte unchanged
+  //   · surfaceCss    — the compiled Surface stylesheet (docs/47 §5): the utilities
+  //                     authored as node `class` strings across the published trees.
+  //                     '' until class-first authoring is in use
+  const [snapshot, builderLayout, silicaFrame, surfaceCss] = await Promise.all([
+    site ? getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined) : null,
+    site ? getPublishedBuilderLayout(site.slug) : null,
+    site
+      ? getPublishedSilicaFrame(site.slug)
+      : Promise.resolve<PublishedSilicaFrameDto>({ frame: null, symbols: {}, theme: null }),
+    site ? getPublishedBuilderStyles(site.slug) : '',
+  ]);
 
-  // The silica engine's published FRAME (docs/118 Stage 6) is the chrome shell and
-  // WINS over both the sparx Builder layout and the legacy header/footer when
-  // present — the same additive "engine owns it, else fall through" rule. Its
-  // bindings resolve against the sparx host built over the frame's data needs
-  // (mostly static chrome today). `frame` is null until a silica layout is
-  // published, so a non-silica tenant is byte-for-byte unchanged.
-  const silicaFrame: PublishedSilicaFrameDto = site
-    ? await getPublishedSilicaFrame(site.slug)
-    : { frame: null, symbols: {}, theme: null };
   const silicaActive = Boolean(silicaFrame.frame);
+  // Depends on silicaFrame, so it stays sequential behind it.
   const silicaHost =
     site && silicaFrame.frame
       ? await buildSilicaHost(site.slug, silicaFrame.frame.root, {
@@ -300,12 +308,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           },
         })
       : null;
-
-  // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
-  // node `class` strings across the tenant's published trees. Injected after the
-  // --st-* theme block so the utilities resolve against the tenant tokens. '' (so
-  // nothing is injected) until class-first authoring is in use.
-  const surfaceCss = site ? await getPublishedBuilderStyles(site.slug) : '';
 
   // Active base theme preset (additive registry) for the no-snapshot path.
   const themePreset = (site?.settings as { theme?: { preset?: string } } | undefined)?.theme
