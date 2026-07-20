@@ -13,6 +13,18 @@ model ChatConversation {
   customerId   String? @map("customer_id") @db.Uuid
   assignedToId String? @map("assigned_to") @db.Uuid
 
+  // WHICH site this conversation is happening on (docs/131 §3.7). `source` below
+  // knew that *a* site was involved but not *which*, so the staff inbox merged
+  // every business into one queue behind one unread badge, canned replies about
+  // donuts surfaced in a machine-shop thread, and the AI first-responder had no
+  // site to answer as.
+  //
+  // Nullable only because a `dashboard`-sourced conversation genuinely has no
+  // site — it is staff talking to staff. Every `site`-sourced row must carry one,
+  // which the CHECK constraint in migration 20261218000000 enforces rather than
+  // leaving to caller discipline.
+  propertyId String? @map("property_id") @db.Uuid
+
   status  String  @default("open") @db.VarChar(20) // open | pending | resolved | spam
   source  String  @default("site") @db.VarChar(20) // site | sparx_market | dashboard
   subject String? @db.VarChar(255)
@@ -38,11 +50,17 @@ model ChatConversation {
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull, unlike the Cascade used for automations and AI policies. A
+  // conversation is a RECORD OF SOMETHING THAT HAPPENED — a real customer said
+  // real words — so closing a site must not delete its support history. The same
+  // reasoning already applies to orders and carts (docs/58 D1).
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   assignedTo User?     @relation("ChatAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
 
   messages ChatMessage[]
 
+  @@index([tenantId, propertyId, status, lastMessageAt(sort: Desc)])
   @@index([tenantId, status, lastMessageAt(sort: Desc)])
   @@index([tenantId, assignedToId])
   @@index([customerId])
@@ -75,17 +93,26 @@ model ChatMessage {
 }
 
 model ChatQuickReply {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String  @map("tenant_id") @db.Uuid
-  title    String  @db.VarChar(100)
-  body     String  @db.Text
-  shortcut String? @db.VarChar(50)
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // null = offered on every site (docs/131 §3.7). A canned reply is business
+  // COPY — "our donuts are baked fresh at 5am" has no place in a machine-shop
+  // thread — but plenty of replies are genuinely generic ("thanks, one moment"),
+  // so this narrows rather than forces a copy per site.
+  propertyId String? @map("property_id") @db.Uuid
+  title      String  @db.VarChar(100)
+  body       String  @db.Text
+  shortcut   String? @db.VarChar(50)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a reply written FOR one business goes with it. Unlike a
+  // conversation this is authored content, not a record of what happened.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("chat_quick_replies")
 }

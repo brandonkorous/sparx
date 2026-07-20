@@ -15,6 +15,7 @@
 // the missing keys are created — so a re-activation or duplicate event is a safe
 // no-op.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import { emailService } from '@sparx/builder';
 import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
 import { prisma } from '@sparx/db';
@@ -45,7 +46,7 @@ export function registerEmailProvisioningConsumer(): () => void {
 // missing keys). The provisioning half is here, not in the lean automation-worker,
 // because it needs @sparx/builder's emailService (absent from that image).
 
-const EMAIL_PROVISIONING_RECONCILE_LOCK_KEY = 4242_4246;
+const EMAIL_PROVISIONING_RECONCILE_LOCK_KEY = ADVISORY_LOCKS.EMAIL_PROVISIONING_RECONCILE;
 // Every 6h — a generous self-heal cadence: activation already provisions
 // synchronously, so this only catches the rare dropped-event tenant.
 const RECONCILE_INTERVAL_MS = 6 * 60 * 60_000;

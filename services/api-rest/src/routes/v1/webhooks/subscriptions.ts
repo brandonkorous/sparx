@@ -1,7 +1,7 @@
 // Webhook subscriptions.
 //
 //   GET    /v1/webhooks/subscriptions
-//   POST   /v1/webhooks/subscriptions          { name, url, events[] } → returns signing_secret ONCE
+//   POST   /v1/webhooks/subscriptions          { name, url, events[] } → returns signingSecret ONCE
 //   PATCH  /v1/webhooks/subscriptions/:id      { name?, url?, events?, active? }
 //   DELETE /v1/webhooks/subscriptions/:id
 //

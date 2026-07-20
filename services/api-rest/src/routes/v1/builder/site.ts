@@ -8,12 +8,30 @@
 //   GET    /v1/builder/site/publish-state
 //                                     → what differs between the draft and what
 //                                       visitors are served (the "not live yet" signal)
-//   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published
+//   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published,
+//                                       and seal an immutable release (docs/126 §5.3)
+//   GET    /v1/builder/site/releases  → the publish history, newest first
+//   POST   /v1/builder/site/releases/:releaseId/restore
+//                                     → republish a prior release. Append-only: the
+//                                       restore is itself a new release, so undoing
+//                                       an undo is just another restore
 //   POST   /v1/builder/site/frame/reset
 //                                     → restore the header + footer to the current
 //                                       starter chrome (DRAFT only). Narrow on
 //                                       purpose — pages/theme/symbols and everything
 //                                       visitors are served stay put
+//   GET    /v1/builder/site/symbols/:symbolId/usages
+//                                     → where a saved component is PLACED (docs/126
+//                                       §5.4). Deleting a master detaches every
+//                                       instance across every page, so this is what
+//                                       makes that an informed decision
+//   GET    /v1/builder/site/records/:entity/:recordId/usages
+//                                     → which trees PIN a specific record — the blast
+//                                       radius of deleting a product / entry
+//   GET    /v1/builder/site/type-census
+//                                     → every node type present, most-used first;
+//                                       diff against the renderer's known set to find
+//                                       content that renders as nothing (docs/125 §2.2)
 //   DELETE /v1/builder/site          → discard the silica site; the editor re-opens
 //                                       on the current starter seed (the re-seed
 //                                       lifecycle — catalog composites are STAMPED,
@@ -26,7 +44,7 @@
 // Zod schema (`SiteSyncInput`), keeping api-rest free of @sparx/builder-schemas.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { siteService } from '@sparx/builder';
+import { artifactService, nodeIndexService, siteService } from '@sparx/builder';
 import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -49,6 +67,41 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     return ok({ saved: true, ...result });
   });
 
+  // ── Where-used (docs/126 §5.4) ─────────────────────────────────────────────
+  // Answered from the derived node index rather than by walking every tree in the
+  // property. Read-only, so `viewer` — knowing what a delete would break should never
+  // require the permission to perform it.
+
+  app.get('/v1/builder/site/symbols/:symbolId/usages', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { symbolId } = request.params as { symbolId: string };
+    const usages = await nodeIndexService.findSymbolUsage(
+      await toBuilderContext(request),
+      symbolId
+    );
+    return ok(usages);
+  });
+
+  app.get('/v1/builder/site/records/:entity/:recordId/usages', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { entity, recordId } = request.params as { entity: string; recordId: string };
+    const usages = await nodeIndexService.findRecordUsage(
+      await toBuilderContext(request),
+      entity,
+      recordId
+    );
+    return ok(usages);
+  });
+
+  app.get('/v1/builder/site/type-census', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const census = await nodeIndexService.typeCensus(await toBuilderContext(request));
+    return ok(census);
+  });
+
   // What differs between the author's draft and what visitors are actually served.
   // Read-only and cheap; the studio reads it once at load, then tracks its own edits.
   app.get('/v1/builder/site/publish-state', async (request) => {
@@ -61,8 +114,35 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/builder/site/publish', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    await siteService.publish(await toBuilderContext(request));
-    return ok({ published: true });
+    const release = await siteService.publish(await toBuilderContext(request));
+    // The release id + hash ride back so the caller can name what it just published —
+    // and so a UI can offer "undo" without a second round trip (docs/126 §5.3).
+    return ok({ published: true, releaseId: release.id, hash: release.hash });
+  });
+
+  // ── Publish history (docs/126 §5.3) ────────────────────────────────────────
+  // Every publish is an immutable release. `viewer` reads the history; restoring is
+  // a publish, so it takes the same `editor` role as publishing.
+
+  app.get('/v1/builder/site/releases', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { limit } = request.query as { limit?: string };
+    const releases = await artifactService.listReleases(
+      await toBuilderContext(request),
+      limit ? Number(limit) : undefined
+    );
+    return ok(releases);
+  });
+
+  app.post('/v1/builder/site/releases/:releaseId/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { releaseId } = request.params as { releaseId: string };
+    // Republishes the old manifest FORWARD as a new release — history is append-only,
+    // so a restore is itself restorable. The counts describe what actually moved.
+    const result = await artifactService.restoreRelease(await toBuilderContext(request), releaseId);
+    return ok(result);
   });
 
   // Restore the header + footer to the current starter chrome. `editor`, not

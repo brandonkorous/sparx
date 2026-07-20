@@ -12,7 +12,7 @@ import { requireAuth } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { moduleDisabled } from '@sparx/api-core/errors';
 
-import { defaultPropertyIdsToActiveSite, resolvePropertyId } from './property.js';
+import { defaultPropertyIdsToActiveSite, resolvePropertyId, type SiteActor } from './property.js';
 
 export function toCommerceContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
@@ -34,7 +34,7 @@ export async function requireCommerceModule(request: FastifyRequest): Promise<vo
  *  helper, shared by the product / collection / category create routes. */
 export async function defaultActiveSiteScope(
   request: FastifyRequest,
-  tenantId: string,
+  actor: SiteActor,
   body: Record<string, unknown>
 ): Promise<void> {
   const header = request.headers['x-sparx-property-id'];
@@ -42,6 +42,6 @@ export async function defaultActiveSiteScope(
   await defaultPropertyIdsToActiveSite(
     body,
     () => withRequestTenant(request, (tx) => tx.property.count()),
-    () => resolvePropertyId(tenantId, headerPropertyId)
+    () => resolvePropertyId(actor, headerPropertyId)
   );
 }

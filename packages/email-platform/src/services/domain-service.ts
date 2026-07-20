@@ -60,7 +60,9 @@ export async function list(
     const [items, total] = await Promise.all([
       tx.sendingDomain.findMany({
         where,
-        orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+        // `is_default` was dropped (docs/131 §3.4) — the default is now per-site,
+        // on EmailSettings, so it can no longer be a column on the shared domain.
+        orderBy: [{ createdAt: 'desc' }],
         take,
         skip,
       }),
@@ -165,21 +167,27 @@ export async function verify(ctx: ServiceContext, id: string): Promise<SendingDo
   return row;
 }
 
-export async function setDefault(ctx: ServiceContext, id: string): Promise<SendingDomain> {
+/**
+ * Make `id` the default sending domain FOR ONE SITE (docs/131 §3.4).
+ *
+ * The domain row itself is unchanged — it is a tenant-owned Mailgun resource and
+ * more than one site may legitimately send from it. What changes is a single
+ * site's pointer at it. The old implementation also flipped an `is_default`
+ * boolean ON THE DOMAIN, which is why a donut domain could become the parts
+ * default: the two businesses were writing to the same field. That column is
+ * gone, so this now writes the fact exactly once, where it belongs.
+ */
+export async function setDefault(
+  ctx: ServiceContext,
+  propertyId: string,
+  id: string
+): Promise<SendingDomain> {
   const existing = await get(ctx, id);
 
   return withTenant(ctx, async (tx) => {
-    await tx.sendingDomain.updateMany({
-      where: { isDefault: true },
-      data: { isDefault: false },
-    });
-    const updated = await tx.sendingDomain.update({
-      where: { id },
-      data: { isDefault: true },
-    });
     await tx.emailSettings.upsert({
-      where: { tenantId: ctx.tenantId },
-      create: { tenantId: ctx.tenantId, defaultSendingDomainId: id },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
+      create: { tenantId: ctx.tenantId, propertyId, defaultSendingDomainId: id },
       update: { defaultSendingDomainId: id },
     });
     await writeAuditLog({
@@ -190,9 +198,9 @@ export async function setDefault(ctx: ServiceContext, id: string): Promise<Sendi
       action: 'email.domain.set_default',
       entityType: 'SendingDomain',
       entityId: id,
-      diff: { after: { domain: existing.domain } },
+      diff: { after: { domain: existing.domain, propertyId } },
     });
-    return updated;
+    return existing;
   });
 }
 

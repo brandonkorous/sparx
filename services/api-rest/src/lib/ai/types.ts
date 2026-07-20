@@ -43,6 +43,10 @@ export const PromptTemplateCreateSchema = z.object({
   variables: z.array(PromptVariableSchema).max(40).default([]),
   model: z.string().max(64).nullish(),
   enabled: z.boolean().default(true),
+  // Which site this prompt belongs to (docs/131 §3.5). Explicit null = shared
+  // across every site. Matters most for `category: 'persona'`, the live-chat
+  // AI's voice: a tenant-wide persona means both businesses answer as one.
+  propertyId: z.string().uuid().nullable().optional(),
 });
 export type PromptTemplateCreate = z.infer<typeof PromptTemplateCreateSchema>;
 

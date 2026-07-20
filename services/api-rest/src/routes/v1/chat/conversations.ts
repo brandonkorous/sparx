@@ -25,10 +25,13 @@ import {
   UpdateConversationInput,
 } from '../../../lib/chat/index.js';
 import { getChatBroadcaster } from '../../../lib/chat/broadcaster.js';
+import { resolveListScope, resolveListScopeIds } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
+  // A site id, or the literal `all` for the cross-site inbox (docs/131 §3.7).
+  property: z.string().min(1).max(64).optional(),
   status: z.enum(['open', 'pending', 'resolved', 'spam']).optional(),
   // z.coerce.boolean() treats the string "false" as true — accept an explicit
   // enum and narrow to a real boolean below.
@@ -46,10 +49,25 @@ const MessageQuery = z.object({
 
 const conversationRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/chat/conversations', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireChatModule(request);
     const q = ListQuery.parse(request.query);
+    // One site's inbox by default (docs/131 §3.7). `?property=all` widens to
+    // every site THIS MEMBER may reach — resolveListScopeIds returns undefined
+    // for an unrestricted caller (genuinely all) and the granted subset for a
+    // restricted one, so the donut employee's "all" is still only donuts.
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
+    const propertyIds =
+      q.property === 'all'
+        ? await resolveListScopeIds(auth, q.property, request.headers['x-sparx-property-id'])
+        : undefined;
     const { items, total } = await conversationService.list(toChatContext(request), {
+      propertyId,
+      propertyIds,
       status: q.status,
       mine: q.mine === 'true',
       assignedToId: q.assigned_to,

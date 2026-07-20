@@ -12,6 +12,18 @@
 model Author {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String   @map("tenant_id") @db.Uuid
+  // The publication this byline belongs to (docs/131 §4); null = every site.
+  //
+  // An author is a PUBLIC PERSONA, not a login — `userId` below is the optional
+  // link to the staff account, and the two are deliberately separate. The same
+  // person can write as "Bob, master machinist" on one site and under a plain
+  // name on another, and neither byline (nor its bio and avatar) belongs in the
+  // other publication's author picker.
+  //
+  // Nullable because one masthead across a family of publications is a real
+  // editorial arrangement, and forcing a copy per site would mean maintaining
+  // one person's bio in N places.
+  propertyId    String?  @map("property_id") @db.Uuid
   userId        String?  @map("user_id") @db.Uuid
   slug          String   @db.VarChar(255)
   displayName   String   @map("display_name") @db.VarChar(255)
@@ -21,11 +33,20 @@ model Author {
   updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull, not Cascade — and this one is easy to get wrong. Deleting a site
+  // must not delete a PERSON's byline: their published articles reference this
+  // row, and cascading would strip the author off work that still exists.
+  property    Property?      @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   avatarAsset MediaAsset?    @relation(fields: [avatarAssetId], references: [id], onDelete: SetNull)
   entries     ContentEntry[]
 
+  // Slug uniqueness stays PER TENANT, not per site. A byline slug appears in
+  // article URLs, and letting two sites both own `/authors/jane` invites exactly
+  // the ambiguity a slug exists to remove — including for a shared (null-site)
+  // author, which would otherwise collide with a site-scoped one.
   @@unique([tenantId, slug])
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("authors")
 }
 
@@ -34,6 +55,17 @@ model Author {
 model Redirect {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String    @map("tenant_id") @db.Uuid
+  // The site whose domain this rule fires on (docs/131 §3.8). A redirect is
+  // addressed to a PATH, and two sites have entirely unrelated path spaces —
+  // `/specials` means one thing on a donut site and another on a parts site — so
+  // a tenant-wide 301 fired on domains it was never written for.
+  //
+  // Nullable, because a genuinely shared rule exists: retiring `/old-contact`
+  // across every site a tenant runs is one intent, not N. Resolution is
+  // most-specific-wins — the site's own rule beats a tenant-wide one for the
+  // same path, so a shared default can be overridden per site rather than
+  // fought with.
+  propertyId String?   @map("property_id") @db.Uuid
   fromPath   String    @map("from_path") @db.VarChar(2048)
   toPath     String    @map("to_path") @db.VarChar(2048)
   statusCode Int       @default(301) @map("status_code")
@@ -42,10 +74,18 @@ model Redirect {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a rule about one site's URLs is meaningless once that site is gone,
+  // and SetNull would promote it to every remaining domain — firing a redirect
+  // written for a closed business on live ones.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, fromPath])
+  // NULLS NOT DISTINCT in SQL (migration 20261219000000) — without it two
+  // tenant-wide rules could claim the same fromPath, and "which redirect wins"
+  // would be decided by row order.
+  @@unique([tenantId, propertyId, fromPath])
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("redirects")
 }
 

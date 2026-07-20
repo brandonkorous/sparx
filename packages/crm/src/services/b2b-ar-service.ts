@@ -105,6 +105,12 @@ export async function ensureNetTermsArWorkflow(
 
 export interface CreateOrderArInput {
   b2bAccountId: string;
+  /** The site ISSUING this invoice (docs/131 §3.6) — decides whose books the
+   *  number comes out of and whose letterhead is frozen onto it. Required rather
+   *  than optional: an order-derived AR document inherits the order's site, and a
+   *  manual one is issued from the site the operator is working in, so there is
+   *  always an answer and no correct default to fall back on. */
+  propertyId: string;
   /** Originating Commerce order, when order-derived. Null for a manual AR doc. */
   orderId?: string | null;
   /** The receivable amount in dollars (the order total — tax already included). */
@@ -115,7 +121,7 @@ export interface CreateOrderArInput {
   /** The single line's description (e.g. "Order O-000123"). */
   description?: string;
   /** Honour a caller-supplied human number (the manual route passes one); else a
-   *  fresh INV- number is allocated from the per-tenant document sequence. */
+   *  fresh INV- number is allocated from the issuing SITE's document sequence. */
   numberOverride?: string;
   notes?: string | null;
   /** Frozen bill-to party JSON; defaults to the account's company name. */
@@ -141,7 +147,9 @@ export async function createOrderArDocument(
     if (!account) throw new CrmNotFoundError('B2BAccount', input.b2bAccountId);
 
     const { workflowId, invoiceStage } = await ensureNetTermsArWorkflow(tx, ctx.tenantId);
-    const seq = await nextBillingDocumentSeq(tx, ctx.tenantId);
+    // The issuing site's own sequence (docs/131 §3.6) — this AR invoice lands in
+    // that business's books, not in a tenant-wide run shared with a sibling.
+    const seq = await nextBillingDocumentSeq(tx, ctx.tenantId, input.propertyId);
     const number = input.numberOverride ?? formatBillingNumber('INV-', seq);
     const amount = round2(input.amount);
     const now = new Date();
@@ -149,6 +157,7 @@ export async function createOrderArDocument(
     const doc = await tx.billingDocument.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: input.propertyId,
         workflowId,
         stageId: invoiceStage.id,
         b2bAccountId: input.b2bAccountId,

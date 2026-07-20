@@ -13,15 +13,24 @@
 // authoritative (variant, warehouse) on-hand, written only through the movement
 // ledger) joined to `commerce_product_variants` for cost/retail, and
 // `inventory_movements` for the activity feed. Cost basis falls back
-// avg_cost_cents → unit_cost_cents → variant.cost_cents. "Low" uses the level's
-// reorder point when set, else a fixed available-units threshold. Purchase orders
-// have no backing model yet (P3) and stay sample on the overview.
+// avg_cost_cents → unit_cost_cents → variant.cost_cents.
+//
+// The out / low / healthy buckets measure SELLABLE stock (the ONE definition in
+// @sparx/inventory — on-hand minus allocations minus the withheld buffer), the
+// same arithmetic the operational surfaces badge with. This KPI keeps ONE
+// deliberate difference from the operational low-stock filter: where that filter
+// only flags levels that HAVE a reorder policy, this health card applies a fixed
+// fallback threshold so a level with no policy set still counts as thin — the
+// dashboard question is "how many SKUs look low", not "which crossed the trigger
+// their owner set". Purchase orders have no backing model yet (P3) and stay
+// sample on the overview.
 // Inventory-module-gated + viewer-read, tenant-scoped via withTenant (RLS).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
 import type { TxClient } from '@sparx/db';
+import { SELLABLE_SQL } from '@sparx/inventory';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
@@ -32,7 +41,7 @@ import {
 } from '../../../lib/inventory-valuation.js';
 
 const DEFAULT_CURRENCY = 'USD';
-// Available-units fallback threshold (used when a level has no reorder point).
+// Sellable-units fallback threshold (used when a level has no reorder point).
 const LOW_STOCK_THRESHOLD = 5;
 
 const ActivityQuery = z.object({
@@ -71,6 +80,7 @@ interface LowOrOutRow {
   location: string;
   onHand: number;
   available: number;
+  sellable: number;
 }
 interface ActivityRow {
   id: string;
@@ -96,13 +106,13 @@ function summaryAgg(tx: TxClient): Promise<SummaryAggRow[]> {
       COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents, 0)), 0)::bigint AS "totalCostCents",
       COALESCE(SUM(l.on_hand * v.price_cents), 0)::bigint                          AS "totalRetailCents",
       COUNT(*)::int                                                                AS "skuCount",
-      COUNT(*) FILTER (WHERE l.on_hand - l.allocated <= 0)::int                    AS "outCount",
+      COUNT(*) FILTER (WHERE ${SELLABLE_SQL} <= 0)::int                            AS "outCount",
       COUNT(*) FILTER (
-        WHERE l.on_hand - l.allocated > 0
-          AND l.on_hand - l.allocated <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+        WHERE ${SELLABLE_SQL} > 0
+          AND ${SELLABLE_SQL} <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
       )::int                                                                       AS "lowCount",
       COUNT(*) FILTER (
-        WHERE l.on_hand - l.allocated > COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+        WHERE ${SELLABLE_SQL} > COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
       )::int                                                                       AS "healthyCount"
     FROM inventory_levels l
     JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
@@ -136,12 +146,13 @@ function lowOrOut(tx: TxClient): Promise<LowOrOutRow[]> {
       COALESCE(v.title, v.sku)    AS "title",
       w.name                      AS "location",
       l.on_hand                   AS "onHand",
-      l.on_hand - l.allocated     AS "available"
+      l.on_hand - l.allocated     AS "available",
+      ${SELLABLE_SQL}             AS "sellable"
     FROM inventory_levels l
     JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
     JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
-    WHERE l.on_hand - l.allocated <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
-    ORDER BY (l.on_hand - l.allocated) ASC
+    WHERE ${SELLABLE_SQL} <= COALESCE(l.reorder_point, ${LOW_STOCK_THRESHOLD})
+    ORDER BY ${SELLABLE_SQL} ASC
     LIMIT 8
   `;
 }
@@ -197,7 +208,9 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         location: l.location,
         onHand: l.onHand,
         available: l.available,
-        status: l.available <= 0 ? 'out' : 'low',
+        // "Out" means none a shopper can buy (sellable), not zero on-hand — a
+        // fully-buffered level is out to sell while physically stocked.
+        status: l.sellable <= 0 ? 'out' : 'low',
       }));
 
       return ok({

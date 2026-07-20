@@ -13,18 +13,18 @@
 // 20261002000000_organizations_and_teams.
 
 model Member {
-  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   // The organization == the tenant this membership grants access to.
-  organizationId String @map("organization_id") @db.Uuid
-  userId         String @map("user_id") @db.Uuid
+  organizationId   String @map("organization_id") @db.Uuid
+  userId           String @map("user_id") @db.Uuid
   // Per-membership role (docs/78 §3) — supersedes the single users.role during
   // expand. owner | admin | editor | builder | marketing | support | viewer.
-  role           String @default("editor") @db.VarChar(20)
+  role             String @default("editor") @db.VarChar(20)
   // Distinguishes internal staff from an external consultant/partner in the
   // tenant's team view (docs/78 §5). owner | staff | consultant.
-  memberType     String @default("staff") @map("member_type") @db.VarChar(20)
+  memberType       String @default("staff") @map("member_type") @db.VarChar(20)
   // active | invited | suspended
-  status         String @default("active") @db.VarChar(20)
+  status           String @default("active") @db.VarChar(20)
   // Whether this member reaches every module their ROLE allows, or only a
   // chosen subset.
   //

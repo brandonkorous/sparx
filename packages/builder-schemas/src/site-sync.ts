@@ -153,6 +153,70 @@ export interface SitePublishState {
   neverPublished: boolean;
 }
 
+// ── Publish history (docs/126 §5.3) ──────────────────────────────────────────
+// Every publish seals an immutable RELEASE — the manifest of content-addressed
+// trees that made up the whole site at that moment. The history is what makes a
+// publish reversible, so these are the shapes the studio's history drawer reads.
+
+/** One publish, as the history list shows it. */
+export interface ReleaseSummaryDto {
+  id: string;
+  /** The content address of the manifest — the site's identity at this publish.
+   *  Two publishes that changed nothing share a hash, which is how a no-op is
+   *  recognized rather than shown as a distinct version. */
+  hash: string;
+  /** How many page bodies the release published. */
+  pageCount: number;
+  /** `publish` — an author pressed Publish. `restore` — this release reinstated an
+   *  earlier one (rollback is itself a publish, so it appears in the history too). */
+  source: string;
+  /** For a `restore`, the release it reinstated. */
+  restoredFromId: string | null;
+  /** Null for a system publish (MCP, automation) with no human actor. */
+  actorId: string | null;
+  createdAt: string;
+  /** True for the release visitors are being served right now — the newest one. */
+  current: boolean;
+}
+
+/** What a restore actually did. Reported rather than assumed, because two of these
+ *  numbers describe changes the author did not explicitly ask for (docs/126 §5.3). */
+export interface RestoreResultDto {
+  /** The NEW release the restore created — history is append-only, so restoring
+   *  publishes the old manifest forward rather than rewinding. */
+  releaseId: string;
+  hash: string;
+  /** Pages whose live version was rewritten from the restored release. */
+  pagesRestored: number;
+  /** Pages that were live but did not exist in the restored release — created
+   *  afterwards, so the restore UNPUBLISHED them. Their drafts are untouched. */
+  pagesUnpublished: number;
+  /** Entries in the restored release whose page has since been deleted. Skipped:
+   *  restoring must not resurrect something the author removed on purpose. */
+  entriesSkipped: number;
+}
+
+// ── Where-used (docs/126 §5.4) ───────────────────────────────────────────────
+// Answered from the derived node index rather than by walking every tree.
+
+/** Where one tree references a thing. `ownerId` is a page/layout row id or a symbol
+ *  key, per `ownerKind`; `count` is how many nodes in that tree reference it. */
+export interface UsagePlacementDto {
+  ownerKind: 'page' | 'layout' | 'symbol';
+  ownerId: string;
+  /** The author-facing name — the page/layout title, or the symbol key. Resolved
+   *  server-side, because every consumer puts this in a sentence for a person. */
+  label: string;
+  count: number;
+}
+
+/** One node type present in the property's trees, with how often it occurs. Diff
+ *  against the renderer's known set to find content that renders as nothing. */
+export interface TypeCensusRowDto {
+  type: string;
+  count: number;
+}
+
 // ── Public storefront reads (docs/118 Stage 6, the render cutover) ────────────
 // The published silica trees the storefront renders through `renderSilicaBody`.
 // The frame (chrome) is read ONCE by the site layout; each route reads its page

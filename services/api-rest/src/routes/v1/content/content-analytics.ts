@@ -64,7 +64,7 @@ const contentAnalyticsRoutes: FastifyPluginAsync = (app) => {
 
     const header = request.headers['x-sparx-property-id'];
     const propertyId = await resolvePropertyId(
-      auth.tenantId,
+      auth,
       typeof header === 'string' ? header : null
     );
 

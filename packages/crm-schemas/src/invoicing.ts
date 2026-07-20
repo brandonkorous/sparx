@@ -137,6 +137,12 @@ const Address = z.record(z.string(), z.unknown());
 export const CreateBillingDocumentInput = z
   .object({
     workflowId: z.string().uuid(),
+    // The SITE issuing this document (docs/131 §3.6) — decides whose numbering
+    // sequence it draws from and whose letterhead freezes onto it at finalize.
+    // Defaults to the tenant's primary site when omitted, which is correct for a
+    // single-business tenant and is the only safe default for a multi-site one
+    // (an issuer must exist before a number can be allocated).
+    propertyId: z.string().uuid().optional(),
     // Defaults to the workflow's first stage when omitted.
     stageId: z.string().uuid().optional(),
     customerId: z.string().uuid().optional().nullable(),

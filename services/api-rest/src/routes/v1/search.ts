@@ -97,7 +97,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const auth = requireAuth(request);
     const q = SearchProductsQuery.parse(request.query);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       q.property,
       request.headers['x-sparx-property-id']
     );
@@ -128,7 +128,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const auth = requireAuth(request);
     const q = SearchQuery.parse(request.query);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       q.property,
       request.headers['x-sparx-property-id']
     );

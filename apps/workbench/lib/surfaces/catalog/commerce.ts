@@ -51,7 +51,15 @@ import { OrderDetailSurface } from '../../../surfaces/commerce/order-detail';
 import { OrdersListSurface } from '../../../surfaces/commerce/orders-list';
 import { ProductDetailSurface } from '../../../surfaces/commerce/product-detail';
 import { ProductsListSurface } from '../../../surfaces/commerce/products-list';
-import { makeFacetPlaceholder } from '../../../surfaces/commerce/product-placeholders';
+import { ProductChannelsSurface } from '../../../surfaces/commerce/product-channels';
+import { ProductConfiguratorSurface } from '../../../surfaces/commerce/product-configurator';
+import { ProductDropshipSurface } from '../../../surfaces/commerce/product-dropship';
+import { ProductFitmentSurface } from '../../../surfaces/commerce/product-fitment';
+import { ProductReviewsSurface } from '../../../surfaces/commerce/product-reviews';
+import { ProductStockSurface } from '../../../surfaces/commerce/product-stock';
+import { ProductSubscriptionsSurface } from '../../../surfaces/commerce/product-subscriptions';
+import { ProductTradePricingSurface } from '../../../surfaces/commerce/product-trade-pricing';
+import { ProductTranslationsSurface } from '../../../surfaces/commerce/product-translations';
 import { stub } from './stub';
 import { type NamedRow } from './rows';
 
@@ -122,7 +130,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
        • sit in the "Product panels" section so they read as a set rather than
          scattered among the catalog lists.
 
-     EVERY `component` BELOW IS A PLACEHOLDER. Replace yours in place. ──────── */
+     Every entry below is live. ──────────────────────────────────────────── */
   {
     key: 'commerce.product.stock',
     title: 'Product stock',
@@ -132,13 +140,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 15,
     keywords: ['inventory', 'levels', 'on hand', 'warehouse', 'reorder'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Stock facet pane. Reads useProductStock (one batched
-    // request for every variant × warehouse; never a request per variant).
-    component: makeFacetPlaceholder({
-      label: 'Stock',
-      icon: Warehouse,
-      plan: 'How many of each version you have, in each of your storage locations, and how many are already spoken for by orders. You will be able to correct a count here and set the level at which you want warning that it is running low.',
-    }),
+    component: ProductStockSurface,
   },
   {
     key: 'commerce.product.fitment',
@@ -149,12 +151,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 16,
     keywords: ['compatibility', 'fits', 'vehicles', 'models', 'machines'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Fitment facet pane.
-    component: makeFacetPlaceholder({
-      label: 'Fitment',
-      icon: Puzzle,
-      plan: 'Which machines or models this product fits, so shoppers only ever see parts that work with what they own. You will be able to add them one at a time or in bulk.',
-    }),
+    component: ProductFitmentSurface,
   },
   {
     key: 'commerce.product.configurator',
@@ -165,12 +162,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 17,
     keywords: ['options', 'build', 'made to order', 'custom'],
     besideWidth: 0.45,
-    // PLACEHOLDER — the Configurator facet pane.
-    component: makeFacetPlaceholder({
-      label: 'Configurator',
-      icon: Settings2,
-      plan: 'The step-by-step choices someone makes when this product is built to order, and what each choice adds to the price.',
-    }),
+    component: ProductConfiguratorSurface,
   },
   {
     key: 'commerce.product.trade-pricing',
@@ -181,12 +173,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 18,
     keywords: ['b2b', 'wholesale', 'contract', 'tiers', 'accounts'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the B2B pricing facet pane.
-    component: makeFacetPlaceholder({
-      label: 'Trade pricing',
-      icon: Building2,
-      plan: 'What your trade and wholesale customers pay for this product, including prices agreed with one particular business and discounts that apply when they buy in quantity.',
-    }),
+    component: ProductTradePricingSurface,
   },
   {
     key: 'commerce.product.reviews',
@@ -197,12 +184,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 19,
     keywords: ['ratings', 'stars', 'feedback', 'qa', 'answers'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Reviews + Q&A facet pane.
-    component: makeFacetPlaceholder({
-      label: 'Reviews & questions',
-      icon: MessageSquare,
-      plan: 'What customers said about this product after buying it, and the questions they asked on its page. You will be able to publish, hide and reply here.',
-    }),
+    component: ProductReviewsSurface,
   },
   {
     key: 'commerce.product.channels',
@@ -213,13 +195,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 20,
     keywords: ['channels', 'marketplace', 'sparx.market', 'listings', 'sites'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Channels facet pane. Reads `marketListed` /
-    // `marketCategory` off the product record.
-    component: makeFacetPlaceholder({
-      label: 'Where it sells',
-      icon: Globe2,
-      plan: 'Every place this product is offered — your own sites, the shared sparx marketplace, and any other shop you sell through — and whether each listing is live.',
-    }),
+    component: ProductChannelsSurface,
   },
   {
     key: 'commerce.product.dropship',
@@ -230,12 +206,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 21,
     keywords: ['supplier', 'source', 'fulfilment', 'vendor'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Dropship facet pane. Per-variant `dropshipSourceId`.
-    component: makeFacetPlaceholder({
-      label: 'Dropshipping',
-      icon: Truck,
-      plan: 'Which supplier ships this product straight to your customer for you, what they charge you, and how long they take.',
-    }),
+    component: ProductDropshipSurface,
   },
   {
     key: 'commerce.product.subscriptions',
@@ -246,12 +217,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 22,
     keywords: ['recurring', 'repeat', 'plans', 'memberships'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Subscriptions facet pane.
-    component: makeFacetPlaceholder({
-      label: 'Subscriptions',
-      icon: Repeat2,
-      plan: 'Whether this product can be bought on a repeating schedule, how often, and what a subscriber pays compared with buying it once.',
-    }),
+    component: ProductSubscriptionsSurface,
   },
   {
     key: 'commerce.product.translations',
@@ -262,14 +228,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     order: 23,
     keywords: ['languages', 'localisation', 'localization', 'translate'],
     besideWidth: 0.4,
-    // PLACEHOLDER — the Translations facet pane. Its API is being built in
-    // parallel; the cache namespace is reserved as ProductFacetKey
-    // 'translations' in products-data.ts.
-    component: makeFacetPlaceholder({
-      label: 'Translations',
-      icon: Sparkles,
-      plan: 'This product’s name and description in every language your sites are offered in, so shoppers read it in their own.',
-    }),
+    component: ProductTranslationsSurface,
   },
 
   {

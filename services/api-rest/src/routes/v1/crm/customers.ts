@@ -62,7 +62,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const ctx = toCrmContext(request);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       q.property,
       request.headers['x-sparx-property-id']
     );
@@ -127,7 +127,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
       if (siteCount > 1) {
         const header = request.headers['x-sparx-property-id'];
         body.propertyId = await resolvePropertyId(
-          auth.tenantId,
+          auth,
           typeof header === 'string' ? header : null
         );
       }

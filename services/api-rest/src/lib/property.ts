@@ -10,8 +10,44 @@
 
 import { withTenant } from '@sparx/db';
 import type { Prisma } from '@prisma/client';
-import { notFound } from '@sparx/api-core/errors';
+import type { AuthContext } from '@sparx/api-core/auth';
+import { forbidden, notFound } from '@sparx/api-core/errors';
+import { memberCanReachProperty } from '@sparx/auth';
 import { createTtlCache } from './ttl-cache.js';
+
+/**
+ * The actor a site resolution is for.
+ *
+ * These helpers took a bare `tenantId` until per-member and per-key site access
+ * arrived (docs/131 §3.2–3.3). They take the AUTH CONTEXT now because a tenant
+ * no longer decides on its own which sites a caller may see — a donut-shop
+ * employee and the owner are the same tenant and must get different answers.
+ *
+ * Widened to a structural subset rather than `AuthContext` itself so the
+ * storefront/public paths, which have no authenticated actor, can pass a bare
+ * `{ tenantId }` and read exactly as before.
+ */
+export type SiteActor = Pick<AuthContext, 'tenantId'> &
+  Partial<Pick<AuthContext, 'role' | 'propertyAccess'>>;
+
+/** The sites this actor may reach, or null when unrestricted. Null is NOT the
+ *  same as "every current site is granted" — an unrestricted actor also reaches
+ *  a site created tomorrow, a restricted one does not. */
+function grantedIds(actor: SiteActor): string[] | null {
+  const access = actor.propertyAccess;
+  if (!access) return null;
+  return access.granted;
+}
+
+/** Whether `propertyId` is within this actor's reach. */
+function canReach(actor: SiteActor, propertyId: string): boolean {
+  const access = actor.propertyAccess;
+  if (!access) return true;
+  return memberCanReachProperty(
+    { role: actor.role ?? 'viewer', mode: access.mode, granted: access.granted },
+    propertyId
+  );
+}
 
 // Property-id resolution runs on EVERY public storefront read (host→propertyId) and
 // each miss opens a withTenant interactive transaction — a scarce PgBouncer server
@@ -100,16 +136,35 @@ export async function resolvePrimaryPropertyId(tenantId: string): Promise<string
  *  RLS already scopes the lookup to the tenant, and an unknown id fails closed to
  *  the primary — a header can never reach another tenant's property. */
 export async function resolvePropertyId(
-  tenantId: string,
+  actor: SiteActor,
   requested?: string | null
 ): Promise<string> {
+  const { tenantId } = actor;
+  const granted = grantedIds(actor);
+
   if (requested) {
-    return propertyIdCache.get(`id:${tenantId}:${requested}`, async () => {
+    const resolved = await propertyIdCache.get(`id:${tenantId}:${requested}`, async () => {
       const row = await withTenant({ tenantId }, (tx) =>
         tx.property.findUnique({ where: { id: requested }, select: { id: true } })
       );
-      return row ? row.id : resolvePrimaryPropertyId(tenantId);
+      return row ? row.id : '';
     });
+    // A site the actor may reach — the ordinary path.
+    if (resolved && canReach(actor, resolved)) return resolved;
+    // Either the id is not this tenant's, or it is a site this actor may not
+    // reach. Both fall through to the default below rather than erroring: this
+    // resolver serves a HEADER (the site switcher), and a stale header after a
+    // grant is revoked should quietly land somewhere valid, not 403 the whole
+    // dashboard. `requireTenantProperty` is the strict form for explicit targets.
+  }
+
+  // The default. For a restricted actor this is their FIRST GRANTED SITE, never
+  // the tenant's primary — falling back to the primary is precisely how a donut
+  // shop employee ends up looking at the machine shop, reached by sending no
+  // header at all.
+  if (granted) {
+    if (granted.length === 0) throw forbidden('You do not have access to any site.');
+    return granted[0]!;
   }
   return resolvePrimaryPropertyId(tenantId);
 }
@@ -140,14 +195,61 @@ export const ALL_SITES = 'all';
  * Fastify types and unit-testable without a server.
  */
 export async function resolveListScope(
-  tenantId: string,
+  actor: SiteActor,
   requested: string | undefined,
   header: string | string[] | undefined
 ): Promise<string | undefined> {
-  if (requested === ALL_SITES) return undefined;
-  if (requested) return resolvePropertyId(tenantId, requested);
+  if (requested === ALL_SITES) {
+    // "Every site" means every site THIS ACTOR MAY SEE, not every site the
+    // tenant owns (docs/131 §3.3). Unrestricted callers still get undefined —
+    // genuinely unscoped, exactly as before.
+    //
+    // This is the single most important line in the file. `?property=all` was
+    // the documented way to read across sites, so without this a restricted
+    // member reaches the other business's entire customer list by appending one
+    // query parameter — no header to forge, no id to guess.
+    const granted = grantedIds(actor);
+    if (!granted) return undefined;
+    if (granted.length === 0) throw forbidden('You do not have access to any site.');
+    // A restricted actor with exactly one site collapses to that site, which is
+    // both correct and the overwhelmingly common case.
+    if (granted.length === 1) return granted[0];
+    // More than one granted site cannot be expressed as a single id. Callers
+    // that must support this take the multi-site path below rather than being
+    // silently narrowed to one — see resolveListScopeIds.
+    throw forbidden(
+      'Reading across sites is not available on this endpoint for an account limited to specific sites.'
+    );
+  }
+  if (requested) return resolvePropertyId(actor, requested);
   const active = Array.isArray(header) ? header[0] : header;
-  return resolvePropertyId(tenantId, active ?? null);
+  return resolvePropertyId(actor, active ?? null);
+}
+
+/**
+ * The multi-site form of `resolveListScope`, for endpoints that can filter on a
+ * SET of sites rather than one.
+ *
+ * Returns `undefined` for genuinely unscoped, a one-element array for a single
+ * site, or the actor's granted set when they asked for "all" and may see
+ * several. Endpoints adopt this as their service layer learns `propertyId IN
+ * (…)`; until then `resolveListScope` refuses that case rather than guessing,
+ * because silently picking one of a member's three sites is a wrong answer
+ * presented as a complete one.
+ */
+export async function resolveListScopeIds(
+  actor: SiteActor,
+  requested: string | undefined,
+  header: string | string[] | undefined
+): Promise<string[] | undefined> {
+  if (requested === ALL_SITES) {
+    const granted = grantedIds(actor);
+    if (!granted) return undefined;
+    if (granted.length === 0) throw forbidden('You do not have access to any site.');
+    return granted;
+  }
+  const one = await resolveListScope(actor, requested, header);
+  return one === undefined ? undefined : [one];
 }
 
 /** Validate that `propertyId` names one of the tenant's OWN properties, returning
@@ -156,11 +258,16 @@ export async function resolveListScope(
  *  — a silent fall-back to the primary (as `resolvePropertyId` does for a header)
  *  would quietly install into the wrong site and hide the mistake. RLS scopes the
  *  lookup, so a foreign-tenant id is indistinguishable from a non-existent one. */
-export async function requireTenantProperty(tenantId: string, propertyId: string): Promise<string> {
-  const row = await withTenant({ tenantId }, (tx) =>
+export async function requireTenantProperty(actor: SiteActor, propertyId: string): Promise<string> {
+  const row = await withTenant({ tenantId: actor.tenantId }, (tx) =>
     tx.property.findUnique({ where: { id: propertyId }, select: { id: true } })
   );
   if (!row) throw notFound('Property', propertyId);
+  // A site the tenant owns but THIS ACTOR may not reach is reported as
+  // not-found, not forbidden — deliberately indistinguishable from a
+  // non-existent id, so the error cannot be used to enumerate which sites the
+  // business runs. Same reasoning as the cross-tenant case above.
+  if (!canReach(actor, row.id)) throw notFound('Property', propertyId);
   return row.id;
 }
 

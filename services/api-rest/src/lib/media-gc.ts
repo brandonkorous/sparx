@@ -14,11 +14,12 @@
 // Interval default is daily; in dev we can run it more aggressively via
 // MEDIA_GC_INTERVAL_MS to exercise the path.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { getStorage } from './storage.js';
 
-const MEDIA_GC_LOCK_KEY = 4242_4244;
+const MEDIA_GC_LOCK_KEY = ADVISORY_LOCKS.MEDIA_GC;
 const DEFAULT_INTERVAL_MS = 24 * 60 * 60 * 1000; // daily
 const DEFAULT_GRACE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const BATCH_LIMIT = 200;

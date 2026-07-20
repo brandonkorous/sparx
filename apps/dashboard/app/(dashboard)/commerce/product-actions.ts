@@ -116,6 +116,37 @@ export async function deleteProductAction(
   });
 }
 
+/** Which pages of the site PIN these products (docs/126 §5.4).
+ *
+ *  Deleting a product used to be a blind write: the confirm warned about variants and
+ *  media — the product's own data — and said nothing about the pages built to show it,
+ *  which are the part the owner can actually see going wrong. A page pinning a deleted
+ *  product renders a hole, and nothing told them before they clicked.
+ *
+ *  Only ENTITY PINS count. A product that appears through a collection source (a "new
+ *  arrivals" grid) has no placement here, correctly — deleting it shortens a list
+ *  rather than blanking an authored node, and warning about that would be noise.
+ *
+ *  Degrades to "no placements" on failure: this ENRICHES a delete confirm that already
+ *  works, so a failed lookup must never block the delete or invent a scare. */
+export async function getProductPlacementsAction(
+  productIds: string[]
+): Promise<{ productId: string; pages: string[] }[]> {
+  const lookups = await Promise.all(
+    productIds.map(async (productId) => {
+      try {
+        const rows = await api.get<{ ownerKind: string; label: string }[]>(
+          `/v1/builder/site/records/commerce/${encodeURIComponent(productId)}/usages`
+        );
+        return { productId, pages: rows.filter((r) => r.ownerKind === 'page').map((r) => r.label) };
+      } catch {
+        return { productId, pages: [] };
+      }
+    })
+  );
+  return lookups.filter((l) => l.pages.length > 0);
+}
+
 export async function bulkUpdateProductStatusAction(
   input: unknown
 ): Promise<ActionResult<{ updated: number }>> {

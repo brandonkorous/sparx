@@ -1,6 +1,6 @@
 // Notifications — "what needs me?" (docs/124 Phase 3).
 //
-//   GET  /v1/notifications?state=unread|all&limit=  → { items, unreadCount }
+//   GET  /v1/notifications?state=&before=&module=&limit=  → { items, unreadCount }
 //   POST /v1/notifications/:id/read                 → mark one read
 //   POST /v1/notifications/read-all                 → mark every unread read
 //
@@ -23,6 +23,16 @@ import { notFound } from '@sparx/api-core/errors';
 
 const ListQuery = z.object({
   state: z.enum(['unread', 'all']).default('all'),
+  /**
+   * Keyset cursor — rows strictly OLDER than this instant. Same shape and same
+   * reasoning as /v1/activity: this list is append-only and live, so `skip`
+   * would push a row someone already read down onto the next window every time
+   * a new one lands above it. A busy account writes several an hour, which is
+   * exactly the rate at which offset paging starts repeating rows.
+   */
+  before: z.string().datetime().optional(),
+  /** Narrow to one module's notices. Unknown slugs simply match nothing. */
+  module: z.string().min(1).max(40).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
 });
 
@@ -35,7 +45,7 @@ const notificationRoutes: FastifyPluginAsync = async (app) => {
   // ──────────────────────────────────────────────────────────────────────
   app.get('/v1/notifications', async (request) => {
     const auth = requireAuth(request);
-    const { state, limit } = ListQuery.parse(request.query);
+    const { state, before, module, limit } = ListQuery.parse(request.query);
 
     // An API key or MCP caller is not a person, so it has no inbox. Empty is
     // the honest answer — not an error, and not somebody else's notifications.
@@ -45,7 +55,12 @@ const notificationRoutes: FastifyPluginAsync = async (app) => {
     const { rows, unreadCount } = await withRequestTenant(request, async (tx) => {
       const [found, unread] = await Promise.all([
         tx.notification.findMany({
-          where: { userId, ...(state === 'unread' ? { readAt: null } : {}) },
+          where: {
+            userId,
+            ...(state === 'unread' ? { readAt: null } : {}),
+            ...(module ? { module } : {}),
+            ...(before ? { createdAt: { lt: new Date(before) } } : {}),
+          },
           orderBy: { createdAt: 'desc' },
           take: limit,
         }),

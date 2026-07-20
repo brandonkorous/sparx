@@ -21,6 +21,7 @@ import {
   deleteService,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -43,10 +44,20 @@ const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/scheduling/services', async (request, reply) => {
     await requireSchedulingModule(request);
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const { tenantId } = toSchedulingContext(request);
     const input = CreateServiceInput.parse(request.body);
-    const row = await createService(tenantId, input);
+    // Default the service to the site being worked in (docs/131 §4); an explicit
+    // null in the body still authors a tenant-wide service. Defaulting the other
+    // way would drop every new service onto every business's booking widget.
+    const propertyId =
+      input.propertyId === undefined
+        ? await resolvePropertyId(
+            auth,
+            request.headers['x-sparx-property-id'] as string | undefined
+          )
+        : input.propertyId;
+    const row = await createService(tenantId, { ...input, propertyId });
     return reply.code(201).send(ok(serviceView(row)));
   });
 

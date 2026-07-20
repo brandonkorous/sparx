@@ -35,6 +35,30 @@ export function pathFor(type: EntityType, slug: string | null): string | null {
   return `/${slug}`; // builder_page, cms_page
 }
 
+/**
+ * The site an audited entity belongs to, or null when it belongs to several
+ * (docs/131 §4).
+ *
+ * Deliberately NOT a field on `AuditableEntity`: that type lives in
+ * `@sparx/seo-audit`, which is a pure scoring library — it takes signals and
+ * returns a grade, and knows nothing about sites or storage. Threading a
+ * persistence concern through it to save one query here would couple the scorer
+ * to the multi-site model for no gain.
+ *
+ * Only `builder_page` has a single answer. Products, collections, and CMS
+ * entries reach sites through junctions and can appear on several with ONE
+ * score, so null is the honest value rather than an arbitrary pick.
+ */
+async function siteOfAuditedEntity(
+  tx: TxClient,
+  type: EntityType,
+  id: string
+): Promise<string | null> {
+  if (type !== 'builder_page') return null;
+  const page = await tx.builderPage.findFirst({ where: { id }, select: { propertyId: true } });
+  return page?.propertyId ?? null;
+}
+
 export async function buildAuditableEntity(
   tx: TxClient,
   type: EntityType,
@@ -198,6 +222,11 @@ export async function auditAndStore(
     where: { tenantId_entityType_entityId: { tenantId, entityType: type, entityId: id } },
     create: {
       tenantId,
+      // Only builder pages belong to exactly one site (docs/131 §4). Products,
+      // collections, and CMS entries reach sites through junctions and may show
+      // on several with one score, so they stay null rather than being pinned to
+      // a site the data does not actually claim.
+      propertyId: await siteOfAuditedEntity(tx, type, id),
       entityType: type,
       entityId: id,
       score: card.score,

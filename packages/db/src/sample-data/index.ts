@@ -90,6 +90,8 @@ function buildCtx(
   ctx: TenantContext,
   ownerUserId: string | null,
   propertyId: string | null,
+  /** Where billing documents are issued from — never null (docs/131 §3.6). */
+  issuingPropertyId: string,
   enabledModules: string[]
 ): ApplyCtx {
   const set = new Set(enabledModules);
@@ -100,6 +102,7 @@ function buildCtx(
     ownerUserId,
     isOn: (m) => set.has(m),
     propertyId,
+    issuingPropertyId,
     now: Date.now(),
     productIdByKey: new Map(),
     variantsByKey: new Map(),
@@ -150,7 +153,18 @@ export async function loadSampleData(
       tx.user.findFirst({ where: { role: 'owner' }, select: { id: true } }),
       tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }),
     ]);
-    const applyCtx = buildCtx(tx, ctx, owner?.id ?? null, property?.id ?? null, enabledModules);
+    // Sample invoices need a real issuer (docs/131 §3.6) — `property_id` is NOT
+    // NULL on billing_documents, because a document nobody issued is the state
+    // that migration removes. Every tenant has a primary site, seeded at
+    // provisioning, so this is an invariant violation rather than a routine miss.
+    if (!property) {
+      throw new Error(
+        `Cannot load sample data: tenant ${ctx.tenantId} has no primary site. ` +
+          'Every tenant gets one at provisioning — this tenant was built by a ' +
+          'fixture that skips it.'
+      );
+    }
+    const applyCtx = buildCtx(tx, ctx, owner?.id ?? null, property.id, property.id, enabledModules);
     await clearSampleDataOnTx(tx, ctx.tenantId);
     await applyPack(applyCtx, pack);
     return applyCtx.counts;

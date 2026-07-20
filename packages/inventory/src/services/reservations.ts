@@ -158,6 +158,99 @@ export async function releaseOnTx(
   await syncProductInStock(tx, reservation.variantId);
 }
 
+// ─── Reading holds ────────────────────────────────────────────────────
+//
+// `allocated` on a level is a NUMBER; these rows are the itemization of it. The
+// question an operator actually asks on a stock screen is not "how many are
+// allocated" but "allocated to WHAT, and when does that free up" — a cart hold
+// that expires in ten minutes and an order hold that never will are the same
+// integer and completely different situations.
+
+export interface ReservationRow {
+  id: string;
+  variantId: string;
+  variantSku: string | null;
+  productId: string | null;
+  warehouseId: string;
+  warehouseName: string | null;
+  warehouseCode: string | null;
+  quantity: number;
+  /** What is holding it: `cart` | `order` | `subscription`. */
+  holderType: string;
+  holderId: string;
+  /** `active` | `released` | `committed` | `expired`. */
+  status: string;
+  /** When a soft (cart) hold lapses on its own. Null on a hard hold. */
+  expiresAt: string | null;
+  createdAt: string;
+  releasedAt: string | null;
+}
+
+export interface ListReservationsFilter {
+  variantId?: string;
+  /** Every hold against ONE product in a single request — the product-scoped
+   *  stock view's read, batched for the same reason `listInventory`'s is. */
+  productId?: string;
+  warehouseId?: string;
+  holderType?: string;
+  /** Defaults to `active` only: released/committed/expired holds are history,
+   *  and they are what makes an unfiltered list unreadable on a busy variant. */
+  status?: string;
+  take?: number;
+  skip?: number;
+}
+
+export async function listReservations(
+  ctx: ServiceContext,
+  filter: ListReservationsFilter = {}
+): Promise<{ items: ReservationRow[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    // Explicit tenant scope as well as RLS: the local `sparx_owner` is a
+    // SUPERUSER and bypasses RLS, so a broad scan would cross tenants in tests.
+    const where = {
+      tenantId: ctx.tenantId,
+      status: filter.status ?? 'active',
+      ...(filter.variantId ? { variantId: filter.variantId } : {}),
+      ...(filter.productId ? { variant: { productId: filter.productId } } : {}),
+      ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
+      ...(filter.holderType ? { holderType: filter.holderType } : {}),
+    };
+    const include = {
+      variant: { select: { sku: true, productId: true } },
+      warehouse: { select: { name: true, code: true } },
+    };
+    const [rows, total] = await Promise.all([
+      tx.inventoryReservation.findMany({
+        where,
+        include,
+        orderBy: { createdAt: 'desc' },
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.inventoryReservation.count({ where }),
+    ]);
+    return {
+      items: rows.map((r) => ({
+        id: r.id,
+        variantId: r.variantId,
+        variantSku: r.variant?.sku ?? null,
+        productId: r.variant?.productId ?? null,
+        warehouseId: r.warehouseId,
+        warehouseName: r.warehouse?.name ?? null,
+        warehouseCode: r.warehouse?.code ?? null,
+        quantity: r.quantity,
+        holderType: r.holderType,
+        holderId: r.holderId,
+        status: r.status,
+        expiresAt: r.expiresAt?.toISOString() ?? null,
+        createdAt: r.createdAt.toISOString(),
+        releasedAt: r.releasedAt?.toISOString() ?? null,
+      })),
+      total,
+    };
+  });
+}
+
 /** Public release — opens its own tenant transaction. Throws on an unknown id
  *  (the explicit API contract); the cart seam uses `releaseOnTx`, which no-ops. */
 export async function release(ctx: ServiceContext, reservationId: string): Promise<void> {

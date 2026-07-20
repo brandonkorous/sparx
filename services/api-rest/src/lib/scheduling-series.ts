@@ -7,11 +7,12 @@
 // (migration 20260918000000); the per-series materialize then runs back under
 // withTenant({tenantId}) inside the engine, so every write still passes RLS.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import { materializeSeries } from '@sparx/scheduling';
 
-const SERIES_LOCK_KEY = 4242_4247;
+const SERIES_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_SERIES;
 const DEFAULT_INTERVAL_MS = 600_000; // every 10 min — series roll slowly
 const LEAD_SECONDS = 2_592_000; // top up a series when within 30 days of its horizon
 const SCAN_LIMIT = 50;

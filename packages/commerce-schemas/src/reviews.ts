@@ -9,6 +9,9 @@ export type ReviewRating = z.infer<typeof ReviewRating>;
 
 export const SubmitReviewInput = z.object({
   productId: Uuid,
+  // The storefront this was written on (docs/131 §4). Optional so a staff-side
+  // or import path can omit it; the public route always passes its own site.
+  propertyId: Uuid.optional(),
   variantId: Uuid.optional(),
   customerId: Uuid.optional(), // anonymous reviews allowed when null
   orderId: Uuid.optional(), // populated → verified-purchase badge
@@ -50,6 +53,8 @@ export type HelpfulVoteInput = z.infer<typeof HelpfulVoteInput>;
 
 export const SubmitQuestionInput = z.object({
   productId: Uuid,
+  // The storefront this was asked on (docs/131 §4).
+  propertyId: Uuid.optional(),
   customerId: Uuid.optional(),
   displayName: z.string().max(63).optional(),
   body: z.string().min(1).max(2000),
@@ -69,6 +74,8 @@ export type SubmitAnswerInput = z.infer<typeof SubmitAnswerInput>;
 
 export const CreateWishlistInput = z.object({
   customerId: Uuid,
+  // The storefront this list was saved on (docs/131 §4).
+  propertyId: Uuid.optional(),
   name: z.string().min(1).max(127).default('My Wishlist'),
   isPublic: z.boolean().default(false),
 });

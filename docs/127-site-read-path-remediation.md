@@ -1,8 +1,13 @@
 # 127 — Site read-path remediation
 
-Version: 1.0.0
+Version: 1.1.0
 Author: Brandon Korous
-Last Updated: 2026-07-19
+Last Updated: 2026-07-20
+
+> **1.1.0 — §1–§7 and §9–§11 are SHIPPED.** §8 is partly shipped: the silent half is
+> fixed (truncation is now detectable, bindable, and logged), the pagination half is
+> still open and is the largest remaining item in this document. §2's fix deviates from
+> what was proposed here — see the note in that section.
 
 > **What this is.** The independently-shippable fixes to the storefront read path,
 > extracted from [125-site-data-architecture-critical-issues.md](125-site-data-architecture-critical-issues.md).
@@ -54,7 +59,14 @@ Same shape at `getPublishedHome` (`:212`) and `getPublishedByRecordType` (`:240`
 
 The JS filter is unavoidable for the JSON-NULL check — Prisma is a type-only import there, documented at [page-service.ts:433](../packages/builder/src/services/page-service.ts#L433). The **slug match is not**. The sparx tier already does it correctly (`page-service.ts:435`), so the silica tier is a regression against its own precedent.
 
-**The blocker is `normalizeSlug`.** Stored `/shop` vs requested `shop` is presumably why the match moved into JS. Fix by normalizing on write — a one-time backfill plus a normalize in the sync path — rather than by querying both forms.
+**The blocker is `normalizeSlug`.** Stored `/shop` vs requested `shop` is why the match moved into JS.
+
+> **SHIPPED, differently.** This proposed normalizing on write plus a one-time backfill.
+> What shipped queries BOTH forms — `slug: { in: [target, '/' + target] }` — because an
+> `IN` on the `(tenant, property, slug)` unique index is exact and index-backed either
+> way, and it needs no backfill migration against a FORCE-RLS table. The backfill is
+> still worth doing eventually to make the stored form uniform, but it is no longer on
+> the critical path for this fix.
 
 Also add `select` to the sparx-tier single-row reads (`page-service.ts:435`, `:508`), which currently pull all four trees to use one.
 
@@ -193,30 +205,38 @@ This is an internal inconsistency worth naming: `resolvePathEx` ([runtime.ts:102
 
 ---
 
-## 12. Sequencing
+## 12. Status
 
-| #   | Item                                     | Effort | Risk                                     | Depends on |
-| --- | ---------------------------------------- | ------ | ---------------------------------------- | ---------- |
-| 1   | §5 TTL-cache tenant lookup               | hours  | none                                     | —          |
-| 2   | §4 cache-ordering stopgap                | hours  | none                                     | —          |
-| 3   | §2 `select` + slug in `where`            | ~1d    | slug normalization backfill              | —          |
-| 4   | §3 summary DTO for list views            | ~1d    | none                                     | —          |
-| 5   | §10 unknown-type visibility              | hours  | none                                     | —          |
-| 6   | §6 wire the publish → revalidation chain | 2–3d   | correctness of tag scope                 | —          |
-| 7   | §7 batch CMS pins                        | ~1d    | new endpoint param                       | —          |
-| 8   | §9 parallelise root layout               | hours  | none                                     | —          |
-| 9   | §11 preview on collection + silica       | ~1d    | none                                     | —          |
-| 10  | §8 pagination + truncation signal        | ~1w    | Typesense integration for large catalogs | —          |
+| #   | Item                                                      | Status                                           |
+| --- | --------------------------------------------------------- | ------------------------------------------------ |
+| §2  | `select` + slug in `where` on the silica published reads  | **shipped** (via dual-form `IN`, not a backfill) |
+| §3  | `BuilderPageSummaryDto` for list views                    | **shipped**                                      |
+| §4  | Cache checked before the tree read + publish invalidation | **shipped**                                      |
+| §5  | Shared TTL-cached tenant-slug resolver                    | **shipped** (misses deliberately uncached)       |
+| §6  | Publish → Pub/Sub → worker → tag purge → cached reads     | **shipped**                                      |
+| §7  | Batched CMS pin fetch (`/entries/by-ids`)                 | **shipped**                                      |
+| §8  | Truncation made visible (bindable + logged)               | **shipped**                                      |
+| §8  | Real pagination on bound collections                      | **OPEN — the largest item left**                 |
+| §9  | Parallelised root-layout reads                            | **shipped**                                      |
+| §10 | Unknown node types surfaced                               | **shipped**                                      |
+| §11 | Preview on collection + silica readers                    | **shipped**                                      |
 
-Items 1–5 are a single day together and remove the worst constant factors. Item 6 is the structural one — it is what makes the storefront cacheable at all, and everything in 125 §8 traces back to it.
+### What §8 still needs
 
-None of this blocks or is blocked by [126](126-builder-op-protocol.md).
+The silent half is fixed: a truncated list now publishes `commerce.productTotal` /
+`commerce.productHasMore` (exact, since the products endpoint reports a total) and
+`cms.<type>HasMore` (a boolean, via an n+1 fetch — the entries endpoint returns a bare
+array with no total), and logs a warning server-side either way. So a template CAN say
+"Showing 24 of 137" and an operator CAN find the truncation in logs.
 
----
+What it cannot yet do is show record 25. That needs three things this pass deliberately
+did not invent:
 
-## Related
+1. **A pagination control in the tree** — a silica component with page state, which is
+   an authoring + engine decision, not a data-layer one.
+2. **URL state** — `?page=` on a `force-dynamic` route, and how that interacts with the
+   `builder:<slug>` cache tag now that these reads are cached again (§6).
+3. **A query path for large catalogs** — at the target scale the answer is Typesense
+   ([22](22-typesense-search-spec.md)), not a deeper `findMany`.
 
-- [125-site-data-architecture-critical-issues.md](125-site-data-architecture-critical-issues.md) — the findings
-- [126-builder-op-protocol.md](126-builder-op-protocol.md) — the parallel write-path track
-- [22-typesense-search-spec.md](22-typesense-search-spec.md) — where large-catalog queries belong
-- [95-client-data-fetching.md](95-client-data-fetching.md) — fetching conventions
+Until then the cap is honest rather than hidden, which was the actual bug.

@@ -37,6 +37,7 @@ import { useAllJobs } from '../../lib/api/jobs';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { ActivityFeed } from './activity-feed';
 import { JobCard } from './job-card';
+import { NeedsYou } from './needs-you';
 
 /** How many finished runs the tail shows. A tail, not a log: the full history
  *  lives in the run's own module, and five answers "did that finish?". */
@@ -51,7 +52,18 @@ export function PulseSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className="bg-base-200 h-full min-h-0 overflow-y-auto">
       <div className="p-4">
         <EditorLayout
-          main={<ActivityFeed hasJobs={jobs.length > 0} />}
+          main={
+            <>
+              {/* Above the feed, and that ordering is the point: this is the
+                  only one of Pulse's three regions ADDRESSED to the reader.
+                  Activity is ambient — things that happened, which nobody has to
+                  acknowledge. Notifications wait on a person. Burying the one
+                  that waits under the one that doesn't is how a badge ends up
+                  counting things nobody ever reaches. */}
+              <NeedsYou ctx={ctx} />
+              <ActivityFeed hasJobs={jobs.length > 0} />
+            </>
+          }
           rail={
             <>
               <FormSection

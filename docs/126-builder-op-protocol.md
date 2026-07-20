@@ -1,9 +1,32 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.1.0
+Version: 1.4.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
+> **1.4.0 — Phase 5 UI shipped; retention decided.** The publish-history drawer and
+> restore are live in the studio, and product deletion now warns which pages pin the
+> record (§5.4 put to work). The node index is backfilled on publish, not only on
+> sync, so a never-since-edited page is no longer invisible to where-used, and
+> where-used answers now carry author-facing names. **Artifact retention is DECIDED:
+> a 30-day rolling window with the live release always kept (§5.3.1, §9.4); the
+> pruner is specified but deferred until storage warrants it.** Only Phases 2–4
+> remain, all with silicaui.
+>
+> **1.3.0 — Phase 5 is SHIPPED.** Every publish now writes immutable,
+> content-addressed artifacts and seals a release (§5.3), so publishing is
+> reversible for the first time: `GET /v1/builder/site/releases` is the history and
+> `POST /v1/builder/site/releases/:id/restore` republishes a prior manifest forward
+> as a new release. Migration `20261220000000_builder_publish_artifacts`
+> (`builder_page_artifacts` + `builder_releases`). The publish event now carries
+> `{ releaseId, hash }`, and the Pub/Sub publisher was already wired in api-rest —
+> `cache-revalidation-worker` consumes `builder.*` today.
+>
+> **1.2.0 — Phase 0, 1 and 6 are SHIPPED.** Per-page diffing (`pageIds` roster),
+> the `pageUpdatedAt` precondition, and the derived node index (§5.4) with its
+> where-used queries are live; `builder_node_index` is migration
+> `20261214000000_builder_node_index`.
+>
 > **1.1.0 — revised against the silicaui engine review.** The op vocabulary was
 > incomplete (seven gaps, §2.2/§2.3), the `ord` sidecar decision was **reversed**
 > (§3.1), symbol deletion needs explicit cascade discipline or it silently corrupts
@@ -329,8 +352,9 @@ No sequence numbers, no conflict dialogs, no merge UI.
 ```
 builder_page_ops        append-only  (page_id, seq, actor_id, batch_id, op, inverse, created_at)
 builder_page_snapshot   materialized (page_id, seq, tree, ord)
-builder_page_artifact   immutable    (property_id, page_id, hash, tree, created_at)
-builder_node_index      derived      (page_id, node_id, type, symbol_ref, binding_entity, binding_id)
+builder_page_artifacts  immutable    (property_id, owner_kind, owner_id, hash, tree, created_at)   SHIPPED
+builder_releases        append-only  (property_id, hash, manifest, page_count, source, actor_id)   SHIPPED
+builder_node_index      derived      (owner_kind, owner_id, node_id, type, symbol_id, binding_*)   SHIPPED
 ```
 
 Frame and symbol trees use the same three-table shape keyed on layout id / symbol key.
@@ -343,17 +367,39 @@ Frame and symbol trees use the same three-table shape keyed on layout id / symbo
 
 Materialize a new snapshot when either: 200 ops have accumulated since the last one, or a publish occurs. Ops are **retained**, not pruned — they are the history, they are small, and retention policy is a product decision (§9) rather than a storage necessity.
 
-### 5.3 Publish → immutable artifact
+### 5.3 Publish → immutable artifact — **SHIPPED**
 
-Publish materializes the draft, strips `ord`, compiles, content-addresses, and inserts. **Artifacts are never updated, only inserted.** The property points at a hash.
+Publish content-addresses each part of the silica `Site` and inserts it. **Artifacts are never updated, only inserted.** The property points at a hash.
 
 This is what resolves 125 §7 and unblocks 125 §8:
 
 - **the hash is the cache key** — CDN-cacheable, and the surface-CSS class-set hash ([surface-css-service.ts:118](../packages/builder/src/services/surface-css-service.ts#L118)) is computed once at publish instead of on every storefront request
-- **rollback is repointing at a prior hash** — no data movement
+- **rollback is republishing a prior manifest** — no data movement
 - **artifact creation is a real event** with a real payload, giving SEO audit, search indexing, and cache purge a correct place to hang instead of the current dead-path wiring
 
-The `builder.page.published` event must carry `{ propertyId, pageId, hash }` and the publisher must actually be wired — today `LoggingPublisher` is never replaced ([events.ts:34-50](../packages/builder/src/events.ts#L34)), and `cache-revalidation-worker` consumes no builder topic.
+`builder.page.published` now carries `{ propertyId, scope, pages, releaseId, hash }`, the Pub/Sub publisher is installed in api-rest ([index.ts](../services/api-rest/src/index.ts)), and `cache-revalidation-worker` maps `builder.*` to its own `builder:` scope.
+
+**The release, not the page, is the restorable unit.** Two implementation decisions that departed from the sketch above, both for the same reason — the parts of a site are coupled:
+
+1. **`builder_releases` sits above the artifacts.** `publish()` is atomic across pages, chrome, theme and symbols. Rolling one page back to yesterday while the symbols stay at today reproduces exactly the corruption the artifact table exists to prevent, so a restore reinstates a whole manifest. A per-page pointer column would have invited the broken operation.
+2. **A restore publishes FORWARD as a new release**, tagged `source='restore'` with `restoredFromId`. History is append-only, so undoing is itself auditable and itself undoable. Nothing in the service deletes a release.
+
+Two consequences of (1) worth naming, both surfaced in the restore result rather than left to be discovered: a page created _after_ the restored release gets **unpublished** (its draft untouched — leaving it live would produce a site that never existed), and a manifest entry whose page was **deleted since** is skipped rather than resurrected.
+
+**Content addressing is canonical-JSON, not `JSON.stringify`.** Postgres JSONB does not preserve object key order — `{kind, tag}` comes back as `{tag, kind}`, verified against the database. Hashing the raw stringification would therefore give a round-tripped tree a different address than the one just authored, and every publish would store a fresh copy of every unchanged page while the history showed edits that never happened. `canonicalJson` sorts keys at every depth (array order is document order and is preserved). This is what makes republishing cheap: storage grows with what **changed**, not with how often Publish was pressed.
+
+The artifact tables run **parallel** to `silica_published_tree` — the storefront still reads the columns, both are written in one transaction so they cannot disagree, and Phase 6 flips reads onto the artifacts and drops the columns (§5.5).
+
+### 5.3.1 Retention — a 30-day window, deferred pruner
+
+Publish history is not kept forever. The policy (§9 decision 4) is a **30-day rolling window** with one hard floor: **the currently-live release is never pruned**, regardless of age.
+
+The pruner is **not yet built** — the tables are append-only and nothing enforces the window today. Content-addressing keeps storage growth tied to what _changed_, not to publish frequency, so there is no forcing function yet. When one appears, the pruner is a scheduled tick with two ordered steps:
+
+1. **Delete stale releases.** `builder_releases` older than 30 days, EXCEPT the newest release per property (the live one — identified as the max `created_at`, which is what the storefront serves). Restore-created releases are ordinary releases here; a rollback older than 30 days is as prunable as any other.
+2. **GC orphaned artifacts.** A `builder_page_artifacts` row is deletable once **no surviving release's manifest names its `(owner_kind, owner_id, hash)`**. This is the step that must run second and must be exact: artifacts are shared across releases by content address, so a hash an old release used may still be the live one. Deleting an artifact a surviving manifest points at would make that release unrestorable — the one thing this whole subsystem exists to prevent.
+
+Both steps are per-tenant under RLS (the pruner sets `app.tenant_id` per tenant, like any FORCE-RLS batch job). Neither touches `silica_published_tree`, so pruning history can never affect what renders.
 
 ### 5.4 The derived node index
 
@@ -447,7 +493,7 @@ Stated plainly so it is not assumed:
 1. **Op retention.** Keep forever (history is a feature and ops are small) or window it (90d)? Affects whether "restore this page to last Tuesday" is a product promise.
 2. **Undo semantics in a shared session** — §6.6. Recommend host-delegated.
 3. **Does presence ship with the protocol or after?** It is separable, but shipping granular writes into a real multi-editor situation _without_ presence means silent LWW with no social signal — arguably worse than today, because edits get finer-grained and therefore less noticeable.
-4. **Artifact retention** — how many published versions per page before pruning. Rollback depth is the product question.
+4. **Artifact retention** — ~~how many published versions per page before pruning~~. **DECIDED (2026-07-20): a 30-day rolling window, plus a hard floor that the currently-live release is never pruned regardless of age.** The window covers the realistic "I want the old one back" span (including the slower seasonal/handoff case that 14 days would already have deleted) while content-addressing keeps the cost trivial. The floor exists because the live release _is_ the site: a tenant who published once and never again must keep that one release even at six months old, or a prune would orphan their live history. **Not yet built** — the tables are append-only and nothing enforces the window; storage is nowhere near a forcing function, so the pruner (a scheduled tick that deletes releases older than 30 days whose hash isn't the live one, then GCs the artifacts no surviving release references) is deferred until there is a reason to run it. See §5.3.1.
 5. **Does the frame get its own op stream or ride the site stream?** Separate streams are cleaner; one stream is simpler to broadcast.
 6. **Host-side mutations and the history gap** (§2.3.1). SEO and record-type-default edits live outside the op log. Do they get their own audit stream that a "page history" surface reconstructs from, or do we accept that restore-to-a-point-in-time covers content only?
 7. **Text LWW** (§2.5). Recommending we accept paragraph-granularity last-write-wins and mitigate with presence. Confirm — this is the one place the protocol has a user-visible sharp edge.
@@ -461,15 +507,15 @@ Ordered so that nothing is blocked on the silica engine change, and each phase s
 
 Host and engine phases interlock. The engine's `onChange(site, ops, meta)` is **additive** — hosts ignoring the new arguments keep working — so nothing here is a breaking release until we choose to make it one.
 
-| Phase | Host work                                                                                                     | Engine work                                                                                                                                                                                                                                                                      | Unblocks                                                                                                                                                                            |
-| ----- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **0** | Per-page diff at the `syncBuilderSite` boundary — write only changed pages                                    | **Emission hygiene** (prerequisite): eight methods bypass the commit chokepoint with a manual history push, and four emit **twice per user action** — `createSymbol` fires `onChange` twice today. Route everything through one chokepoint; batch a logical action into one emit | Kills write amplification; drops payload under the 1MB ceiling; shrinks LWW blast radius to one page. **Without engine Phase 0, causal ordering within a batch is unimplementable** |
-| **1** | `updatedAt` precondition per page + reject-and-resync                                                         | —                                                                                                                                                                                                                                                                                | Makes 125 §5 non-catastrophic while the protocol is built                                                                                                                           |
-| **2** | Op vocabulary, apply endpoint, `builder_page_ops` + snapshot. Server accepts **either** ops or whole-site     | **Ops out**: op union, emission from commit, `onChange(site, ops, meta)`, symbol-cascade discipline (§2.6)                                                                                                                                                                       | History (125 §6); granular writes. Host can stop trusting the full-site PUT here                                                                                                    |
-| **3** | Fractional-key generation and validation                                                                      | **`ord`**: field on `Node`, key generation in insert/move/duplicate, drag-and-drop converted off raw indices in canvas + navigator, publish-time strip                                                                                                                           | Conflict-free concurrent insert/reorder                                                                                                                                             |
-| **4** | socket.io `/builder` namespace, presence, soft claim, seq in the draft snapshot                               | **Ops in**: imperative handle, `applyRemoteOps` / `replaceState`, `commitRemote`, echo suppression, burst batching                                                                                                                                                               | **Multi-editor actually turns on.** The only phase with design left in it                                                                                                           |
-| **5** | Immutable content-addressed artifact; wire the publisher; `cache-revalidation-worker` consumes builder topics | —                                                                                                                                                                                                                                                                                | 125 §7; unblocks caching for 127                                                                                                                                                    |
-| **6** | Derived node index; retire `site.replace` as the common path; drop legacy columns                             | Inverse-op undo (single-author) + host-delegated undo (collaborative)                                                                                                                                                                                                            | Where-used, impact analysis, component upgrade as a query                                                                                                                           |
+| Phase    | Host work                                                                                                     | Engine work                                                                                                                                                                                                                                                                      | Unblocks                                                                                                                                                                            |
+| -------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **0**    | Per-page diff at the `syncBuilderSite` boundary — write only changed pages                                    | **Emission hygiene** (prerequisite): eight methods bypass the commit chokepoint with a manual history push, and four emit **twice per user action** — `createSymbol` fires `onChange` twice today. Route everything through one chokepoint; batch a logical action into one emit | Kills write amplification; drops payload under the 1MB ceiling; shrinks LWW blast radius to one page. **Without engine Phase 0, causal ordering within a batch is unimplementable** |
+| **1**    | `updatedAt` precondition per page + reject-and-resync                                                         | —                                                                                                                                                                                                                                                                                | Makes 125 §5 non-catastrophic while the protocol is built                                                                                                                           |
+| **2**    | Op vocabulary, apply endpoint, `builder_page_ops` + snapshot. Server accepts **either** ops or whole-site     | **Ops out**: op union, emission from commit, `onChange(site, ops, meta)`, symbol-cascade discipline (§2.6)                                                                                                                                                                       | History (125 §6); granular writes. Host can stop trusting the full-site PUT here                                                                                                    |
+| **3**    | Fractional-key generation and validation                                                                      | **`ord`**: field on `Node`, key generation in insert/move/duplicate, drag-and-drop converted off raw indices in canvas + navigator, publish-time strip                                                                                                                           | Conflict-free concurrent insert/reorder                                                                                                                                             |
+| **4**    | socket.io `/builder` namespace, presence, soft claim, seq in the draft snapshot                               | **Ops in**: imperative handle, `applyRemoteOps` / `replaceState`, `commitRemote`, echo suppression, burst batching                                                                                                                                                               | **Multi-editor actually turns on.** The only phase with design left in it                                                                                                           |
+| **5** ✅ | Immutable content-addressed artifact; wire the publisher; `cache-revalidation-worker` consumes builder topics | —                                                                                                                                                                                                                                                                                | 125 §7; unblocks caching for 127. **SHIPPED** — plus publish history + restore, which the sketch did not anticipate as a product surface                                            |
+| **6**    | Derived node index; retire `site.replace` as the common path; drop legacy columns                             | Inverse-op undo (single-author) + host-delegated undo (collaborative)                                                                                                                                                                                                            | Where-used, impact analysis, component upgrade as a query                                                                                                                           |
 
 Engine phases 0–3 are the long pole and are largely mechanical. Phase 4 carries the remaining design risk on both sides.
 

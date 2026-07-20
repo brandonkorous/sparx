@@ -36,9 +36,27 @@ function toDto(r: {
   };
 }
 
-export async function list(ctx: TenantContext): Promise<QuickReplyDto[]> {
+/**
+ * Quick replies offered on one site: that site's own, plus the tenant-wide ones
+ * (docs/131 §3.7).
+ *
+ * BOTH tiers, not most-specific-wins — unlike the persona resolver. These are a
+ * PALETTE an agent picks from rather than a single answer to one question, so a
+ * site-specific reply adds to the generic ones instead of replacing them. What
+ * this removes is the reverse leak: a reply about fresh-baked donuts appearing
+ * in a machine-shop thread.
+ */
+export async function list(
+  ctx: TenantContext,
+  propertyId: string | null
+): Promise<QuickReplyDto[]> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.chatQuickReply.findMany({ orderBy: { title: 'asc' } });
+    const rows = await tx.chatQuickReply.findMany({
+      // `OR` rather than `in: [id, null]` — Prisma's `in` rejects null even on a
+      // nullable column.
+      where: propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : { propertyId: null },
+      orderBy: { title: 'asc' },
+    });
     return rows.map(toDto);
   });
 }
@@ -59,6 +77,9 @@ export async function create(
     const created = await tx.chatQuickReply.create({
       data: {
         tenantId: ctx.tenantId,
+        // null = offered on every site. The route decides which, so an author on
+        // one business's inbox writes a reply for that business by default.
+        propertyId: input.propertyId ?? null,
         title: input.title,
         body: input.body,
         shortcut: input.shortcut ?? null,

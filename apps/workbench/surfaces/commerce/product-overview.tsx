@@ -9,19 +9,24 @@
 // own, it does not appear here as well — a field owned by two tabs is a field
 // that gets saved twice with different values.
 //
-// ── The tab-owns-its-own-save rule ───────────────────────────────────────
+// ── Where Save lives, and why not here ───────────────────────────────────
 //
-// EVERY TAB SAVES ITSELF. The pane toolbar carries lifecycle only (on sale /
-// off sale / view), never Save, because a single Save at pane level would have
-// to know six tabs' drafts and would mean something different depending on
-// which tab was showing. So each tab holds its own draft, computes its own
-// dirty state, registers its own `useDirtySource`, and renders its own Save at
-// the top of its column.
+// A tab OWNS its draft but does NOT render its own Save. It hands `dirty`,
+// `saving` and a `save` up to the pane toolbar via `useTabSave`, and the toolbar
+// renders the one button for the whole surface.
 //
-// The consequence downstream agents must respect: a tab's unsaved work survives
-// switching tabs (the panel unmounts, so hold the draft where it persists or
-// warn), and the pane is dirty if ANY tab is — which `useDirtySource` already
-// gives you for free, from any depth.
+// This tab used to render its own, on the reasoning that a pane-level Save would
+// mean something different depending on which tab was showing. That reasoning
+// was sound and still lost: it put the surface's primary action mid-panel, in
+// open space between the status callout and the first form card, anchored to
+// nothing — and it could not be found. The ambiguity it avoided was
+// hypothetical; the one it created was immediate.
+//
+// Scope is now carried by the DIRTY DOT on the tab strip rather than by
+// placement, which communicates it better than placement ever could: a dot on
+// Pricing says Pricing has unsaved work while you are standing on Media. The
+// pane-level leave guard also moved to the shell, since it covers all six tabs
+// at once. Full contract and rules in product-tab-save.tsx.
 
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -40,10 +45,11 @@ import {
   useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Package, Save, Trash2 } from 'lucide-react';
+import { Package, Trash2 } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
-import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { useTabSave } from './product-tab-save';
+import { ProductFilingSections } from './product-filing';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useSites } from '../sites/data';
@@ -69,6 +75,17 @@ interface Draft {
   tags: string[];
   /** Empty means every site — the platform's own default. */
   propertyIds: string[];
+  categoryIds: string[];
+  /**
+   * ONLY the collections a person picked.
+   *
+   * The product record also reports the ones a collection's RULE matched, and
+   * they are deliberately not in the draft: the save writes this array as the
+   * complete hand-picked set, so including a rule membership would re-save it
+   * as a manual pin and freeze the product into a smart collection for good.
+   * See product-filing.tsx.
+   */
+  manualCollectionIds: string[];
 }
 
 function toDraft(product: Product): Draft {
@@ -80,11 +97,26 @@ function toDraft(product: Product): Draft {
     productType: product.productType ?? '',
     tags: product.tags,
     propertyIds: product.propertyIds,
+    categoryIds: product.categoryIds,
+    manualCollectionIds: product.collectionMemberships
+      .filter((membership) => membership.addedBy === 'manual')
+      .map((membership) => membership.collectionId),
   };
 }
 
 function sameList(a: string[], b: string[]): boolean {
   return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+/** Order-insensitive, for the two fields where order carries no meaning a
+ *  person can see. Ticking a category, unticking it and ticking it again ends
+ *  up in a different array order than it started in — comparing positionally
+ *  would leave the pane claiming unsaved work over a choice that did not
+ *  change, and the dirty dot is only worth anything while it is honest. */
+function sameSet(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const seen = new Set(b);
+  return a.every((value) => seen.has(value));
 }
 
 /** Only what moved. Sending the whole form back would rewrite fields nobody
@@ -105,6 +137,14 @@ function buildPatch(draft: Draft, saved: Draft): ProductPatch {
   }
   if (!sameList(draft.tags, saved.tags)) patch.tags = draft.tags;
   if (!sameList(draft.propertyIds, saved.propertyIds)) patch.propertyIds = draft.propertyIds;
+  if (!sameSet(draft.categoryIds, saved.categoryIds)) patch.categoryIds = draft.categoryIds;
+  // `collectionIds` on the wire means "the complete HAND-PICKED set" — the
+  // server replaces only the manual rows and leaves rule-driven membership to
+  // the indexer. Sending the draft's manual list is therefore exactly right,
+  // and sending anything wider would convert a rule match into a permanent pin.
+  if (!sameSet(draft.manualCollectionIds, saved.manualCollectionIds)) {
+    patch.collectionIds = draft.manualCollectionIds;
+  }
   return patch;
 }
 
@@ -130,7 +170,6 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
 
   const patch = buildPatch(draft, saved);
   const dirty = Object.keys(patch).length > 0;
-  useDirtySource(dirty, 'This product has unsaved changes on the Overview tab. Close anyway?');
 
   const retired = product.status === 'archived';
 
@@ -139,22 +178,19 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
     setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  const save = () => {
-    update.mutate(patch, {
-      onSuccess: (next) => {
-        setTouched(false);
-        setDraft(toDraft(next));
-        toast.add({ title: 'Changes saved', type: 'success' });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not save your changes',
-          description: productErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
+  // Handed to the toolbar, which owns the button and reports the outcome. This
+  // REJECTS on failure rather than catching: the toolbar is what claimed the
+  // save, so it has to be the thing that finds out it did not happen. Swallowing
+  // the error here would leave the toolbar announcing a write that failed.
+  useTabSave({
+    dirty,
+    saving: update.isPending,
+    save: async () => {
+      const next = await update.mutateAsync(patch);
+      setTouched(false);
+      setDraft(toDraft(next));
+    },
+  });
 
   const toggleRetired = async () => {
     if (!retired) {
@@ -214,22 +250,6 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
 
   return (
     <div className="flex flex-col gap-4">
-      {/* This tab's own Save — see the tab-owns-its-own-save rule at the top.
-          It sits above the fields rather than below them so it is reachable
-          without scrolling a long form to the bottom. */}
-      <div className="flex items-center justify-end">
-        <Button
-          color="module"
-          size="sm"
-          disabled={!dirty}
-          loading={update.isPending}
-          onClick={save}
-        >
-          <Save className="size-4" aria-hidden />
-          Save
-        </Button>
-      </div>
-
       <FormSection title="What you are selling">
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -359,6 +379,23 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
           </FieldDescription>
         </Field>
       </FormSection>
+
+      {/* Directly after "How you file it" because it is the same act continued:
+          that section is the words YOU use to find things later, this one is the
+          groups SHOPPERS browse. Both are filing; only one of them is public,
+          which is why they are two sections and not one. */}
+      <ProductFilingSections
+        ctx={ctx}
+        categoryIds={draft.categoryIds}
+        manualCollectionIds={draft.manualCollectionIds}
+        memberships={product.collectionMemberships}
+        onCategoriesChange={(next) => {
+          set('categoryIds', next);
+        }}
+        onCollectionsChange={(next) => {
+          set('manualCollectionIds', next);
+        }}
+      />
 
       {/* Only worth a section when there is genuinely a choice to make. On a
           single-site account this would be a control with one option. */}

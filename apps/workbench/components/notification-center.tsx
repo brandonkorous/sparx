@@ -10,9 +10,13 @@
 //
 // The bell is silent when there is nothing unread: no badge, no dot, no colour.
 // A permanently-decorated bell teaches people that the decoration means nothing.
+//
+// It shows UNREAD ONLY, and holds ten. That is what keeps it honest: the badge
+// counts unread rows, so listing anything else lets the two disagree — which is
+// exactly what happened before, on any account busy enough to matter. The full
+// history, paged and filterable, is the Pulse pane; this is the queue.
 
 import {
-  Badge,
   Button,
   EmptyState,
   Popover,
@@ -25,34 +29,23 @@ import { Bell } from 'lucide-react';
 import { describeAgo } from '../lib/api/activity';
 import { useNotifications, type AppNotification } from '../lib/api/notifications';
 import { useWorkbench } from '../lib/workbench/context';
-
-/** Severity is the semantic colour axis — independent of any module hue. */
-function severityTone(
-  severity: AppNotification['severity']
-): 'success' | 'warning' | 'danger' | 'info' {
-  if (severity === 'success' || severity === 'warning' || severity === 'danger') return severity;
-  return 'info';
-}
-
-/**
- * Where a notification LEADS. The row carries `entityType`/`entityId` precisely
- * so the consumer can resolve a destination without a stored route — which is
- * what lets the same row mean "open the thread pane" here and "open the modal"
- * in the dashboard. A notification that only marks itself read is a dead end:
- * it announces something and then makes you go find it.
- */
-function destinationFor(
-  notification: AppNotification
-): { surface: string; params?: Record<string, string> } | null {
-  if (notification.entityType === 'feedback' && notification.entityId) {
-    return { surface: 'platform.feedback.thread', params: { id: notification.entityId } };
-  }
-  return null;
-}
+import {
+  collapseNotices,
+  destinationFor,
+  NotificationIcon,
+  SEVERITY_DOT,
+  severityTone,
+  type NoticeRun,
+} from './notifications/format';
 
 export function NotificationCenter() {
   const { controller } = useWorkbench();
-  const { items, unreadCount, markRead, markAllRead } = useNotifications();
+  const { items, unreadCount, overflow, markRead, markAllRead } = useNotifications();
+  const runs = collapseNotices(items);
+
+  const openInbox = () => {
+    controller.open('platform.pulse');
+  };
 
   return (
     <Popover>
@@ -84,7 +77,11 @@ export function NotificationCenter() {
       </Tooltip>
 
       <PopoverContent align="end" className="w-88 max-w-[92vw]">
-        <div className="flex items-center justify-between gap-2">
+        {/* Header keeps silica's own PopoverTitle size — it outranks the list
+            because the ROWS are smaller, not because this was inflated. The rule
+            spans the popover's full width (hence the negative margin); a divider
+            that stops short of the edges reads as a stray underline. */}
+        <div className="border-base-300 -mx-4 -mt-1 flex items-center justify-between gap-2 border-b px-4 pb-3">
           <PopoverTitle>Notifications</PopoverTitle>
           {unreadCount > 0 ? (
             <Button color="neutral" variant="ghost" size="xs" onClick={markAllRead}>
@@ -93,38 +90,48 @@ export function NotificationCenter() {
           ) : null}
         </div>
 
-        {items.length === 0 ? (
+        {runs.length === 0 ? (
           // A quiet bell and a short line, not a paragraph. Empty is the state
           // this panel is in almost every time it is opened, so it has to read
-          // in one glance — and the answer ("nothing") deserves less room than
-          // the answer ("six things need you"). Hierarchy from the icon and the
-          // title's scale; the supporting line keeps a real ink token rather
-          // than being faded into decoration.
+          // in one glance — and now it is literally true rather than merely
+          // likely: an unread-only list is empty exactly when nothing needs you.
           <EmptyState
             size="sm"
-            className="py-6"
+            // Silica ships `.empty-state-description` at 65% alpha. The icon can
+            // be faded — it is decoration — but this sentence is the only thing
+            // the panel actually says, so it takes a real ink token. Faded text
+            // is for text not meant to be read; this is the opposite.
+            className="[&_.empty-state-description]:text-base-content [&_.empty-state-description]:text-sm py-6"
             icon={<Bell className="size-5" aria-hidden />}
-            title="Nothing needs you"
-            description="When something does — a payment fails, stock runs out — it shows up here."
+            // Empty is a WIN, and the words have to say so. The first draft read
+            // "Nothing needs you" — which lands as *nobody needs you*, from a
+            // product, to someone running their own business, on the screen they
+            // see most often.
+            title="You're all caught up"
+            description="Anything waiting on you — a payment that failed, stock running low — turns up here."
           />
         ) : (
-          <ul className="divide-base-300 mt-2 flex max-h-96 flex-col divide-y overflow-y-auto">
-            {items.map((item) => (
-              <li key={item.id}>
+          // `-mx-2` against the rows' `px-2` nets to zero, so a row's text starts
+          // exactly on the popover's content edge — flush with the header above
+          // it — while the hover highlight still extends past the words on both
+          // sides instead of hugging them.
+          <ul className="divide-base-300 -mx-2 mt-1 flex max-h-96 flex-col divide-y overflow-y-auto">
+            {runs.map((run) => (
+              <li key={run.notice.id}>
                 <NotificationRow
-                  notification={item}
+                  run={run}
                   onRead={() => {
-                    markRead(item.id);
+                    for (const id of run.ids) markRead(id);
                   }}
                   onOpen={(event) => {
-                    const destination = destinationFor(item);
+                    const destination = destinationFor(run.notice);
                     if (!destination) return false;
                     controller.open(destination.surface, destination.params, {
                       target: event.shiftKey ? 'beside' : 'tab',
                     });
                     // Going there IS reading it — leaving the row bold after you
                     // have opened the thing it points at is just wrong.
-                    if (item.readAt === null) markRead(item.id);
+                    for (const id of run.ids) markRead(id);
                     return true;
                   }}
                 />
@@ -132,51 +139,92 @@ export function NotificationCenter() {
             ))}
           </ul>
         )}
+
+        {/* Always present, empty or not. The bell holds ten unread; everything
+            else — read history, older unread, per-module filtering — lives in
+            Pulse, and a panel that silently truncates without saying where the
+            rest went is how the badge stopped being trustworthy in the first
+            place. When there IS more, it says how much rather than hinting. */}
+        <div className="border-base-300 -mx-4 -mb-1 mt-1 border-t px-2 pt-2">
+          <Button
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={openInbox}
+          >
+            {overflow > 0 ? `See all — ${String(overflow)} more unread` : 'See all in Pulse'}
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );
 }
 
 /**
- * One notification. Unread rows carry the severity badge and a click target that
- * marks them read; read rows stay legible — they are de-emphasised by losing the
- * badge, never by fading the words, because text nobody can read is not a
- * softer version of text, it is missing text.
+ * One row — or one RUN of identical ones, folded into a single line with a
+ * count. Unread rows carry the severity dot and a click target; read rows never
+ * reach the bell at all, but the component still handles them because Pulse
+ * renders the same shape.
  */
 function NotificationRow({
-  notification,
+  run,
   onRead,
   onOpen,
 }: {
-  notification: AppNotification;
+  run: NoticeRun;
   onRead: () => void;
   /** Returns false when this notification points nowhere, so the row can fall
    *  back to being a plain mark-as-read control instead of pretending to lead
    *  somewhere it can't. */
   onOpen: (event: { shiftKey: boolean }) => boolean;
 }) {
-  const unread = notification.readAt === null;
-  const navigable = destinationFor(notification) !== null;
+  const { notice, count } = run;
+  const unread = notice.readAt === null;
+  // A folded run points at as many records as it counts, so "open" would mean
+  // picking one of twelve arbitrarily. Marking the whole line read is the only
+  // honest action; the records are reachable from their own module.
+  const navigable = count === 1 && destinationFor(notice) !== null;
 
   const body = (
-    <div className="flex flex-col gap-1 py-2">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="min-w-0 truncate font-medium">{notification.title}</span>
-        <span className="shrink-0 text-sm">{describeAgo(notification.createdAt)}</span>
-      </div>
-      {notification.body ? <p className="text-sm">{notification.body}</p> : null}
-      {unread ? (
-        <span>
-          <Badge color={severityTone(notification.severity)} variant="soft" size="sm">
-            New
-          </Badge>
+    // One line and a timestamp — no message preview, and deliberately BELOW the
+    // 16px body floor.
+    //
+    // The floor exists for text people sit and read. This is the opposite: a bell
+    // answers "what needs me?" and hands you off, so a row is a pointer, not
+    // prose. Sizing it at body scale made it out-rank the panel's own header and
+    // turned the dropdown into something to read instead of act on. Smaller than
+    // the header is what makes it read as a list of leads. The CONTENT lives at
+    // the destination the row opens — which also means a title has to stand alone:
+    // `body` is detail for the surface that renders it, never the part that makes
+    // the row make sense.
+    <div className="flex items-start gap-2 py-2 text-sm">
+      <NotificationIcon notification={notice} />
+
+      <div className="flex min-w-0 flex-1 items-baseline gap-2 py-0.5">
+        {/* Unread + how urgent, in one mark, beside the words it qualifies —
+            matching the dot the feedback list already uses. */}
+        {unread ? (
+          <span
+            className={`${SEVERITY_DOT[severityTone(notice.severity)]} size-2 shrink-0 self-center rounded-full`}
+            role="img"
+            aria-label="Unread"
+          />
+        ) : null}
+        <span className="min-w-0 flex-1 font-medium">
+          {notice.title}
+          {count > 1 ? ` ×${String(count)}` : ''}
         </span>
-      ) : null}
+        {/* A step below the title again — a timestamp is a caption ABOUT the row,
+            not content of it, so it should never share rank with the thing it
+            stamps. */}
+        <span className="shrink-0 text-xs">{describeAgo(notice.createdAt)}</span>
+      </div>
     </div>
   );
 
   // Nothing to open and already read — there is no action left to offer.
-  if (!unread && !navigable) return <div className="px-1">{body}</div>;
+  if (!unread && !navigable) return <div className="px-2">{body}</div>;
 
   return (
     <button
@@ -187,12 +235,18 @@ function NotificationRow({
         if (onOpen(event)) return;
         onRead();
       }}
-      className="hover:bg-base-200 w-full rounded px-1 text-left"
-      aria-label={
-        navigable ? `Open "${notification.title}"` : `Mark "${notification.title}" as read`
-      }
+      className="hover:bg-base-200 w-full rounded px-2 text-left"
+      aria-label={ariaFor(notice, count, navigable)}
     >
       {body}
     </button>
   );
+}
+
+/** Spelled out because a folded run's label has to say what clicking does to
+ *  ALL of them — "Mark as read" on a line standing for twelve rows is a lie. */
+function ariaFor(notice: AppNotification, count: number, navigable: boolean): string {
+  if (navigable) return `Open "${notice.title}"`;
+  if (count > 1) return `Mark ${String(count)} "${notice.title}" notifications as read`;
+  return `Mark "${notice.title}" as read`;
 }

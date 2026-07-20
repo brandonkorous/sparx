@@ -20,7 +20,22 @@ import {
   documentWorkflowService,
   renderBillingDocumentHtml,
 } from '../../src/services/index.js';
+import { DEFAULT_DOCUMENT_LINE_TYPES } from '@sparx/crm-schemas/builtins';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
+
+/** The customer-facing label a builtin line type renders with.
+ *
+ *  Read from the catalog rather than hardcoded. These labels are PRODUCT COPY —
+ *  'labor' was renamed from "Labor" to "Service" and 'fee' from "Misc / Flat
+ *  Fee" to "Fee", both to keep the platform's language industry-agnostic — and a
+ *  test that pins the strings turns every such rename into a red suite while
+ *  proving nothing extra. What is actually under test here is that the line-type
+ *  JOIN resolves at all, which this still asserts. */
+function labelOf(key: string): string {
+  const t = DEFAULT_DOCUMENT_LINE_TYPES.find((lt) => lt.key === key);
+  if (!t) throw new Error(`No builtin line type '${key}' — the catalog key changed.`);
+  return t.label;
+}
 
 describe('billing document render', () => {
   let test: TestContext;
@@ -82,8 +97,8 @@ describe('billing document render', () => {
     expect(data.title).toBe('Invoice'); // the invoice stage's customerLabel
     expect(data.number).toMatch(/^INV-\d{6}$/);
     expect(data.lines).toHaveLength(2);
-    expect(data.lines[0]!.typeLabel).toBe('Labor');
-    expect(data.lines[1]!.typeLabel).toBe('Misc / Flat Fee');
+    expect(data.lines[0]!.typeLabel).toBe(labelOf('labor'));
+    expect(data.lines[1]!.typeLabel).toBe(labelOf('fee'));
     expect(data.billTo).not.toBeNull();
     expect(data.billTo!.name).toBe('Print Me');
     expect(data.billTo!.lines).toContain('printme@billing.test');
@@ -148,7 +163,7 @@ describe('billing document render', () => {
     expect(data.number).toMatch(/^EST-\d{6}$/);
     expect(data.lines).toHaveLength(1);
     expect(data.lines[0]!.description).toBe('Inspection');
-    expect(data.lines[0]!.typeLabel).toBe('Misc / Flat Fee');
+    expect(data.lines[0]!.typeLabel).toBe(labelOf('fee'));
     expect(data.totals.total).toBe(80);
 
     const html = renderBillingDocumentHtml(data);

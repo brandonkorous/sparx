@@ -30,7 +30,7 @@ export async function toSitebuilderPropertyContext(
   const auth = requireAuth(request);
   const requested = request.headers['x-sparx-property-id'];
   const propertyId = await resolvePropertyId(
-    auth.tenantId,
+    auth,
     typeof requested === 'string' ? requested : null
   );
   return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };

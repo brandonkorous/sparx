@@ -55,10 +55,13 @@ const publicChatRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/public/chat/conversations', async (request, reply) => {
-    const { ctx } = await publicChatContext(request);
+    const { ctx, propertyId } = await publicChatContext(request);
     const input = StartInput.parse(request.body);
     const visitorToken = conversationService.generateVisitorToken();
     const { conversation } = await conversationService.create(ctx, {
+      // The site the widget is embedded on (docs/131 §3.7) — routes the thread to
+      // that business's inbox and gives the AI responder a voice to answer in.
+      propertyId,
       subject: input.subject,
       source: input.source === 'storefront' ? 'site' : (input.source ?? 'site'),
       visitorName: input.visitorName,

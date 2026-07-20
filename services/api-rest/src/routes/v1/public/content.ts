@@ -482,7 +482,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // Cookie-consent config travels with the tenant payload so the
           // storefront layout decides off/quiet-notice/banner server-side in
           // the same fetch — no second round-trip, no client flash (docs/42 §4).
-          readPublicConsentConfig(tx, tenant.id),
+          readPublicConsentConfig(tx, tenant.id, propertyId),
           // The active site's optional brand override (docs/49 §3, Phase 4). Read
           // by slug within the tenant; null when no `?property=` or no override.
           query.property

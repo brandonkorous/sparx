@@ -16,6 +16,7 @@ import { segmentService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -52,9 +53,20 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/crm/segments', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCrmModule(request);
-    const segment = await segmentService.create(toCrmContext(request), request.body);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Default the audience to the site being worked in (docs/131 §5); an explicit
+    // null in the body still authors a tenant-wide segment. Defaulting the other
+    // way would let a segment silently draw from every business's customers.
+    const propertyId =
+      body.propertyId === undefined
+        ? await resolvePropertyId(
+            auth,
+            request.headers['x-sparx-property-id'] as string | undefined
+          )
+        : (body.propertyId as string | null);
+    const segment = await segmentService.create(toCrmContext(request), { ...body, propertyId });
     reply.code(201);
     return ok(segment);
   });

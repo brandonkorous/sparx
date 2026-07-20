@@ -8,6 +8,15 @@
 model Page {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId        String    @map("tenant_id") @db.Uuid
+  // The site this page lives on (docs/131 §4). A page's slug is a URL, and two
+  // sites have unrelated path spaces — the same reasoning as Redirect (§3.8).
+  // Without this, a page authored for one storefront was searchable on the
+  // other and fed the wrong site's AI grounding.
+  //
+  // Nullable: legacy pages predate multi-site and NULL reads as "shows on every
+  // site", which is how they behave today. The public read filters to the
+  // requesting site plus null-site fallbacks.
+  propertyId      String?   @map("property_id") @db.Uuid
   slug            String    @db.VarChar(255)
   title           String    @db.VarChar(255)
   status          String    @default("draft") @db.VarChar(20) // draft | published
@@ -18,10 +27,15 @@ model Page {
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a page is content that lives on one site's URL.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, slug])
+  // Uniqueness moves to (tenant, property, slug): two sites may each own `/about`.
+  // NULLS NOT DISTINCT in SQL so the tenant-wide tier still can't duplicate a slug.
+  @@unique([tenantId, propertyId, slug])
   @@index([tenantId, status])
+  @@index([tenantId, propertyId, status])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@map("pages")
 }

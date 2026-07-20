@@ -132,7 +132,7 @@ model AutomationRun {
   // automation later being re-scoped — a run is a record of what DID happen.
   // SetNull (not Cascade, unlike the automation): deleting a site should not
   // erase the evidence that something ran, and a completed run cannot widen.
-  propertyId   String? @map("property_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
 
   triggerEvent Json   @map("trigger_event")
   // At-least-once guard: (automation_id, dedupe_key) is UNIQUE so a Pub/Sub

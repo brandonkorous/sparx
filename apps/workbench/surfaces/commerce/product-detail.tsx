@@ -73,10 +73,13 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains } from '../domains/data';
 import { useAnnounceProduct } from './product-scope';
 import { ProductOverviewTab } from './product-overview';
-import { TabPlaceholder } from './product-placeholders';
+import { TabValueProvider, useTabSaveRegistry, useVisitedTabs } from './product-tab-save';
+import { ProductOptionsTab } from './product-options';
+import { ProductVariantsTab } from './product-variants';
+import { ProductMediaTab } from './product-media';
+import { ProductPricingTab } from './product-pricing';
+import { ProductSeoTab } from './product-seo';
 import {
-  formatDate,
-  priceLabel,
   productErrorMessage,
   productState,
   slugifyHandle,
@@ -382,6 +385,17 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const publish = usePublishProduct(id);
   const [tab, setTab] = useState('overview');
 
+  // Save lives here, in the toolbar, and commits the tab you are standing on.
+  // Each tab hands its save up via useTabSave; see product-tab-save.tsx for why
+  // the button is not inside the tab body.
+  const { provider: tabSaveProvider, state: tabSave } = useTabSaveRegistry(tab);
+  const visitedTabs = useVisitedTabs(tab);
+
+  // Pane-level guard covers EVERY tab, not just the visible one — the whole
+  // point of the dots is that Pricing can be dirty while you are on Media, and
+  // closing the pane would take both with it.
+  useDirtySource(tabSave.anyDirty, 'This product has unsaved changes. Close anyway?');
+
   // Tells every product-scoped pane (Stock, Fitment, …) what to follow. The
   // shell does this, not the tabs — the PANE is what is "about" the product.
   useAnnounceProduct(product?.id ?? null, product?.title ?? null);
@@ -470,9 +484,24 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     });
   };
 
-  return (
+  // The toolbar reports the failure because the toolbar made the claim. A tab's
+  // `save` rejects rather than swallowing — see the contract in product-tab-save.
+  const saveActiveTab = async () => {
+    if (!tabSave.active?.dirty) return;
+    try {
+      await tabSave.active.save();
+      toast.add({ title: 'Saved', type: 'success' });
+    } catch (error) {
+      toast.add({
+        title: 'Could not save',
+        description: productErrorMessage(error, 'Your changes are still here — nothing was lost.'),
+        type: 'error',
+      });
+    }
+  };
+
+  return tabSaveProvider(
     <div className={PANE_SHELL}>
-      {/* Lifecycle only. No Save — each tab saves itself. */}
       <PaneToolbar label="Product actions" wrap>
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}
@@ -509,6 +538,26 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             {onSale ? 'Take off sale' : 'Put on sale'}
           </Button>
         )}
+
+        {/* Save is the surface's primary action, so it sits where a primary
+            action belongs — last in the toolbar, filled, next to the lifecycle
+            controls. It commits the ACTIVE tab only; the dots on the tab strip
+            are what say which other tabs still have work pending. A tab with
+            nothing to save never registers, and Save is simply absent there
+            rather than present-but-dead, which would be a worse lie. */}
+        {tabSave.active ? (
+          <Button
+            size="sm"
+            color="module"
+            loading={tabSave.active.saving}
+            disabled={!tabSave.active.dirty}
+            onClick={() => {
+              void saveActiveTab();
+            }}
+          >
+            Save
+          </Button>
+        ) : null}
       </PaneToolbar>
 
       {/* ── Why PILLS, and why `module` rather than `module-commerce` ────────
@@ -579,8 +628,36 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               // answer. The selected tab is already distinguished by a filled
               // pill, so the fade buys no hierarchy it was not already getting for
               // free. Full ink on every label; the pill carries the state.
-              <TabsTab key={entry.value} value={entry.value} className="text-base-content">
+              <TabsTab
+                key={entry.value}
+                value={entry.value}
+                className="text-base-content flex items-center gap-1.5"
+              >
                 {entry.label}
+                {/* The dot is what makes a toolbar Save honest. Save commits the
+                    tab you are standing on, so something has to say "Pricing
+                    still has unsaved work" while you are on Media — placement
+                    was never going to carry that. Same device the dock uses on a
+                    pane tab, one level down. Announced as well as drawn: a
+                    colour-only signal is not a signal for everyone. */}
+                {tabSave.dirtyTabs.has(entry.value) ? (
+                  <>
+                    <span
+                      // The selected pill is already a solid module fill, so a
+                      // `bg-module` dot would vanish into it — invisible on the
+                      // one tab you are actually standing on. On the selected
+                      // pill the dot wears the pill's own ink; everywhere else
+                      // it wears the module hue against the plain strip.
+                      className={
+                        entry.value === tab
+                          ? 'bg-module-content size-1.5 shrink-0 rounded-full'
+                          : 'bg-module size-1.5 shrink-0 rounded-full'
+                      }
+                      aria-hidden
+                    />
+                    <span className="sr-only">(unsaved changes)</span>
+                  </>
+                ) : null}
               </TabsTab>
             ))}
           </TabsList>
@@ -588,35 +665,35 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className={COLUMN}>
-            {/* The pane opens by saying WHAT this is and where it lives, on
-                every tab — a tab strip alone does not tell you which product
-                you are three clicks deep into. */}
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                {product.title}
-              </Heading>
-              {productUrl ? (
-                <a
-                  href={productUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link inline-flex w-fit items-center gap-1 font-mono text-sm break-all"
-                >
-                  {host}/products/{product.handle}
-                  <ExternalLink className="size-3" aria-hidden />
-                </a>
-              ) : (
-                <Text className="font-mono text-sm break-all">/products/{product.handle}</Text>
-              )}
-              <Text className="text-sm">
-                {priceLabel(product)} ·{' '}
-                {product.variantCount === 1
-                  ? '1 version'
-                  : `${String(product.variantCount)} versions`}{' '}
-                · last changed {formatDate(product.updatedAt)}
-              </Text>
-            </div>
+            {/* NO identity header here, deliberately — it used to carry a
+                read-only <h1> of the title, the page address in monospace, and a
+                dot-separated metadata line, on every tab.
 
+                It went because every part of it was already somewhere better.
+                The title and the web address are EDITABLE FIELDS on this very
+                tab, and the platform rule is that an entity shows its identity
+                ONCE, as the field you change it in — a read-only heading above
+                the field it duplicates is the thing that rule exists to stop.
+                The dock tab overhead already names the product, so nothing is
+                lost by not repeating it. The toolbar already carries status and
+                a View link to the live page.
+
+                The monospace address was also the single thing making this read
+                like a developer tool rather than a product: monospace says "this
+                is a machine identifier you must copy exactly", and a shop owner
+                does not think of their product page that way.
+
+                The metadata belongs where it is actionable, not stacked here:
+                price on Pricing, version count on Variants. "1 version" was our
+                word for it, not theirs. */}
+
+            {/* LAZY-THEN-KEEP. A panel mounts the first time you open its tab
+                and then stays mounted for the life of the pane. It has to: a tab
+                you edited and navigated away from still owns a draft and a dirty
+                dot, and unmounting it would discard the edit and the dot in the
+                same instant — losing work while removing the only sign that work
+                existed. Never-visited tabs cost nothing, since a tab you have
+                not opened cannot be dirty. */}
             <TabsPanel value="overview" className="flex flex-col gap-4">
               {/* ONE status message, on the tab whose business it is. The
                   toolbar badge carries the same state everywhere else, so
@@ -627,16 +704,50 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   <AlertDescription>{state.detail}</AlertDescription>
                 </AlertContent>
               </Alert>
-              <ProductOverviewTab ctx={ctx} product={product} />
+              <TabValueProvider value="overview">
+                <ProductOverviewTab ctx={ctx} product={product} />
+              </TabValueProvider>
             </TabsPanel>
 
-            {/* PLACEHOLDERS — each is replaced by the agent building that tab.
-                See product-placeholders.tsx. */}
-            {TABS.filter((entry) => entry.value !== 'overview').map((entry) => (
-              <TabsPanel key={entry.value} value={entry.value}>
-                <TabPlaceholder what={entry.what} plan={entry.plan} />
-              </TabsPanel>
-            ))}
+            <TabsPanel value="options">
+              {visitedTabs.has('options') ? (
+                <TabValueProvider value="options">
+                  <ProductOptionsTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
+
+            <TabsPanel value="variants">
+              {visitedTabs.has('variants') ? (
+                <TabValueProvider value="variants">
+                  <ProductVariantsTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
+
+            <TabsPanel value="media">
+              {visitedTabs.has('media') ? (
+                <TabValueProvider value="media">
+                  <ProductMediaTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
+
+            <TabsPanel value="pricing">
+              {visitedTabs.has('pricing') ? (
+                <TabValueProvider value="pricing">
+                  <ProductPricingTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
+
+            <TabsPanel value="seo">
+              {visitedTabs.has('seo') ? (
+                <TabValueProvider value="seo">
+                  <ProductSeoTab ctx={ctx} product={product} />
+                </TabValueProvider>
+              ) : null}
+            </TabsPanel>
           </div>
         </div>
       </Tabs>

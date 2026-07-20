@@ -6,8 +6,13 @@
 // `requireInventoryModule` + viewer (standalone-usable).
 //
 //   GET /v1/inventory/movements
-//     ?variant_id&warehouse_id&reason&actor_type&actor_id
+//     ?variant_id&product_id&warehouse_id&reason&actor_type&actor_id
 //     &reference_type&reference_id&from&to&take&skip
+//
+// `product_id` answers "what happened to THIS product's stock" in one request
+// across every variant it has — the read a product-scoped stock pane makes.
+// Without it that view is one request per variant, and the merged result is
+// still wrong (each page is the newest 50 of its own variant, not of the whole).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -19,6 +24,7 @@ import { requireInventoryModule, toInventoryContext } from '../../../lib/invento
 
 const ListQuery = z.object({
   variant_id: z.string().uuid().optional(),
+  product_id: z.string().uuid().optional(),
   warehouse_id: z.string().uuid().optional(),
   reason: InventoryAdjustReason.optional(),
   actor_type: InventoryActorType.optional(),
@@ -39,6 +45,7 @@ const inventoryMovementRoutes: FastifyPluginAsync = async (app) => {
     const q = ListQuery.parse(request.query);
     const { items, total } = await inventoryService.listMovements(toInventoryContext(request), {
       ...(q.variant_id !== undefined ? { variantId: q.variant_id } : {}),
+      ...(q.product_id !== undefined ? { productId: q.product_id } : {}),
       ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
       ...(q.reason !== undefined ? { reason: q.reason } : {}),
       ...(q.actor_type !== undefined ? { actorType: q.actor_type } : {}),

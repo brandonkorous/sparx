@@ -11,6 +11,7 @@ import {
   statusLabel,
   statusTone,
   toast,
+  useConfirm,
 } from '@sparx/ui';
 
 import {
@@ -18,6 +19,7 @@ import {
   bulkSetProductMarketStateAction,
   bulkUpdateProductStatusAction,
   deleteProductAction,
+  getProductPlacementsAction,
 } from '../../product-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
 import { BulkMarketListModal } from './bulk-market-list-modal';
@@ -46,6 +48,7 @@ interface ProductsSelectionTableProps {
 }
 
 export function ProductsSelectionTable({ products, view }: ProductsSelectionTableProps) {
+  const confirm = useConfirm();
   const [priceModalOpen, setPriceModalOpen] = React.useState(false);
   const [priceTargetIds, setPriceTargetIds] = React.useState<string[]>([]);
   const [marketModalOpen, setMarketModalOpen] = React.useState(false);
@@ -144,10 +147,26 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       label: 'Delete',
       icon: Trash2,
       variant: 'destructive',
-      requiresConfirm: true,
-      confirmLabel:
-        'Delete {count} product{count === 1 ? "" : "s"}? Variants, options, and media will be permanently removed. This cannot be undone.',
+      // No declarative `requiresConfirm` here, unlike the other destructive actions:
+      // the warning depends on what we find. Pages built to show one of these products
+      // will render a hole once it's gone, and the owner needs to know WHICH pages
+      // before deciding — a static string can't say that. One dialog either way, so
+      // this is a richer confirm, not a second one.
       onAction: async (ids) => {
+        const placements = await getProductPlacementsAction(ids);
+        const shown = placements.flatMap((p) => p.pages);
+        const pageList = [...new Set(shown)];
+        const base = `Variants, options, and media will be permanently removed. This can’t be undone.`;
+        const ok = await confirm({
+          title: `Delete ${ids.length} product${ids.length === 1 ? '' : 's'}?`,
+          description:
+            pageList.length > 0
+              ? `${placements.length === 1 ? 'One of these products is' : `${placements.length} of these products are`} shown on ${pageList.length === 1 ? 'a page' : 'pages'} you’ve built: ${pageList.join(', ')}. ${pageList.length === 1 ? 'That page' : 'Those pages'} will have a gap where ${placements.length === 1 ? 'it' : 'they'} used to be. ${base}`
+              : base,
+          confirmLabel: `Delete product${ids.length === 1 ? '' : 's'}`,
+          tone: 'danger',
+        });
+        if (!ok) return;
         const results = await Promise.all(ids.map((id) => deleteProductAction(id)));
         const failed = results.filter((r) => !r.ok).length;
         if (failed > 0) {

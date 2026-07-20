@@ -11,7 +11,7 @@
 // Editing + publishing a legal page reuses the existing /v1/content/entries
 // routes verbatim — a legal page is just a `page` entry with legal_kind set.
 
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
@@ -28,16 +28,16 @@ import {
   legalEntryBody,
   type LegalKind,
 } from '@sparx/legal-templates';
-import { resolvePropertyId } from '../../lib/property.js';
+import { resolvePropertyId, type SiteActor } from '../../lib/property.js';
 
 type Json = Prisma.InputJsonValue;
 
 /** The active site (docs/49 Phase 6c) — the `x-sparx-property-id` the dashboard
  *  switcher sets, else the tenant's primary. Drives which site's placements the
  *  manager reflects. */
-function activeProperty(request: { headers: Record<string, unknown> }, tenantId: string) {
+function activeProperty(request: FastifyRequest, actor: SiteActor) {
   const requested = request.headers['x-sparx-property-id'];
-  return resolvePropertyId(tenantId, typeof requested === 'string' ? requested : null);
+  return resolvePropertyId(actor, typeof requested === 'string' ? requested : null);
 }
 
 const LEGAL_KINDS = LEGAL_TEMPLATES.map((t) => t.legalKind) as [LegalKind, ...LegalKind[]];
@@ -265,7 +265,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'viewer');
     // Show the active site's footer: tenant-wide (null) placements + this site's
     // own (docs/49 Phase 6c). `propertyId` rides along so the UI can show scope.
-    const propertyId = await activeProperty(request, auth.tenantId);
+    const propertyId = await activeProperty(request, auth);
     const rows = await withRequestTenant(request, (tx) =>
       tx.siteDocPlacement.findMany({
         where: { placement: 'footer', OR: [{ propertyId: null }, { propertyId }] },
@@ -315,7 +315,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       .parse(request.body);
 
     // A site-scoped placement targets the active site; tenant-wide stays null.
-    const propertyId = input.siteScoped ? await activeProperty(request, auth.tenantId) : null;
+    const propertyId = input.siteScoped ? await activeProperty(request, auth) : null;
 
     const created = await withRequestTenant(request, async (tx) => {
       const entry = await tx.contentEntry.findFirst({

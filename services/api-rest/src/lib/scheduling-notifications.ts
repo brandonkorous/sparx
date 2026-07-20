@@ -17,6 +17,7 @@
 // rides the SECURITY DEFINER function, while per-row work runs under
 // withTenant({tenantId}) so every read + the status UPDATE pass tenant_isolation.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -30,7 +31,7 @@ import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
 import { sendTenantEmailByKey } from './tenant-email.js';
 
-const SCHEDULING_NOTIFICATION_LOCK_KEY = 4242_4245;
+const SCHEDULING_NOTIFICATION_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_NOTIFICATIONS;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 // A booking in one of these states should not fire a stale reminder/change notice

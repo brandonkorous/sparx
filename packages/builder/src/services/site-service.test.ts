@@ -15,7 +15,32 @@ import { describe, expect, it } from 'vitest';
 
 import { SiteSyncInput } from '@sparx/builder-schemas';
 
-import { wouldClobberSite } from './site-service';
+import { symbolsUpdateFor, wouldClobberSite } from './site-service';
+
+// ── The symbol-library wipe (docs/125 §9.3) ──────────────────────────────────
+//
+// `silicaDraftSymbols` was written unconditionally as `input.symbols ?? {}`, so ANY
+// sync payload that didn't carry symbols destroyed the tenant's entire saved-component
+// library. The studio only includes them when `site.symbols` is truthy, so an engine
+// handing back an absent map silently wiped every saved component — while `theme` and
+// `savedThemes`, written one line above, were already guarded against exactly this.
+
+describe('symbolsUpdateFor — absent vs empty', () => {
+  it('writes NOTHING when the payload carries no symbols (preserve the library)', () => {
+    expect(symbolsUpdateFor(undefined)).toEqual({});
+    expect(symbolsUpdateFor(null)).toEqual({});
+  });
+
+  it('writes an EMPTY map when the author explicitly cleared their last symbol', () => {
+    // A library you can never empty is its own bug — `{}` must round-trip.
+    expect(symbolsUpdateFor({})).toEqual({ silicaDraftSymbols: {} });
+  });
+
+  it('writes the map when symbols are present', () => {
+    const symbols = { hero: { root: { kind: 'element' } } };
+    expect(symbolsUpdateFor(symbols)).toEqual({ silicaDraftSymbols: symbols });
+  });
+});
 
 // ── Partial-payload sync (docs/126 Phase 0) ──────────────────────────────────
 //

@@ -749,12 +749,20 @@ export async function complete(
     // blocks invoice creation and order.placed until approved (docs/64 B2B Ph6).
     let pendingApproval = false;
     if (activeB2bAccountId) {
+      // Two independent axes, so two ORs under an AND (docs/131 §4). A rule
+      // covers this order when its ACCOUNT axis matches (this buyer, or any) and
+      // its SITE axis matches (this business, or any). Collapsing them into one
+      // OR would fire a donut-shop rule on a machine-shop order — a spending
+      // control applied to a business nobody had in mind when setting it.
       const rule = await (tx as AnyTx).purchaseApprovalRule.findFirst({
         where: {
           tenantId: ctx.tenantId,
           isActive: true,
           minAmountCents: { lte: session.totalCents },
-          OR: [{ accountId: activeB2bAccountId }, { accountId: null }],
+          AND: [
+            { OR: [{ accountId: activeB2bAccountId }, { accountId: null }] },
+            { OR: [{ propertyId: order.propertyId }, { propertyId: null }] },
+          ],
         },
         select: { id: true },
       });
@@ -784,10 +792,29 @@ export async function complete(
       const dueDays = parseDueDays(account?.paymentTerms ?? session.paymentTermsRequested);
       const dueAt = new Date();
       dueAt.setDate(dueAt.getDate() + dueDays);
+      // The invoice is issued by the SITE the order was placed on (docs/131
+      // §3.6) — that decides whose books the number comes from and whose
+      // letterhead is frozen onto it. `Order.propertyId` is nullable (SetNull:
+      // orders outlive their site), while a document's issuer is required, so an
+      // order with no site falls back to the tenant's primary.
+      const issuingPropertyId =
+        order.propertyId ??
+        (
+          await tx.property.findFirst({
+            where: { tenantId: ctx.tenantId, isPrimary: true },
+            select: { id: true },
+          })
+        )?.id;
+      if (!issuingPropertyId) {
+        throw new Error(
+          `Cannot issue an AR document for order ${order.id}: tenant has no primary site.`
+        );
+      }
       const arDoc = await b2bArService.createOrderArDocument(
         { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
         {
           b2bAccountId: activeB2bAccountId,
+          propertyId: issuingPropertyId,
           orderId: order.id,
           amount: session.totalCents / 100,
           currency: session.currency,

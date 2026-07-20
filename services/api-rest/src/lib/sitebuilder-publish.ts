@@ -15,11 +15,12 @@
 // scheduleService.processDueSchedule, which runs inside withTenant({tenantId})
 // so writes still go through tenant_isolation.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import { scheduleService } from '@sparx/sitebuilder';
 
-const SITEBUILDER_PUBLISH_LOCK_KEY = 4242_4243;
+const SITEBUILDER_PUBLISH_LOCK_KEY = ADVISORY_LOCKS.SITEBUILDER_PUBLISH;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 interface DueSchedule {

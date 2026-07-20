@@ -19,12 +19,13 @@
 //      and schedules next_attempt_at with exponential backoff up to 8
 //      attempts (matches plan §4.1 "24h retry window").
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import { createHmac } from 'node:crypto';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Prisma, TxClient } from '@sparx/db';
 import { prisma, withTenant } from '@sparx/db';
 
-const WEBHOOK_DELIVERY_LOCK_KEY = 4242_4243;
+const WEBHOOK_DELIVERY_LOCK_KEY = ADVISORY_LOCKS.WEBHOOK_DELIVERY;
 const DEFAULT_INTERVAL_MS = 30_000;
 const MAX_ATTEMPTS = 8;
 // Exponential backoff (seconds): 30, 60, 300, 900, 1800, 3600, 7200, 14400

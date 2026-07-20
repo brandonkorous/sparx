@@ -37,6 +37,40 @@ import { mediaUrl } from './media';
  *  handful, never the whole catalog (the whole-catalog grid binds `commerce.product`). */
 const FEATURED_LIMIT = 8;
 
+/**
+ * How many records a bound COLLECTION grid renders (docs/127 §8).
+ *
+ * This was a bare `24` inlined at each fetch. At the catalog sizes this platform
+ * targets that is not a page size, it is silent data loss: a tenant with 137 products
+ * saw 24 of them, the storefront showed no pagination, and nothing anywhere said the
+ * other 113 existed — not to the shopper, not to the author, not to a log.
+ *
+ * Named here so there is ONE number, and paired with the `*Total` / `*HasMore` roots
+ * below so the truncation is at least VISIBLE while real pagination is designed.
+ */
+const COLLECTION_PAGE_SIZE = 24;
+
+/** Publish "how many there really are" alongside a truncated list, so a template can
+ *  bind `commerce.productTotal` / `commerce.productHasMore` ("Showing 24 of 137",
+ *  "View all") instead of the list silently ending. Also logs the truncation: an
+ *  author who never binds those still leaves a trail worth finding. */
+function setListMeta(
+  root: DataSources,
+  key: string,
+  shown: number,
+  total: number,
+  label: string
+): void {
+  setAtPath(root, `${key}Total`, total);
+  setAtPath(root, `${key}HasMore`, total > shown);
+  if (total > shown) {
+    console.warn(
+      `[silica-data] ${label}: showing ${shown} of ${total} — the rest are not rendered ` +
+        `and the storefront offers no pagination yet (docs/127 §8).`
+    );
+  }
+}
+
 /** A product in the shape the silica commerce composites bind (scope-relative
  *  refs). `image` is a `{ url, alt }` object; the host `format` unwraps it to the
  *  `<img src>` string. `price`/`compareAtPrice` are raw dollars — the host formats
@@ -170,10 +204,14 @@ function formatEntryDate(iso: string): string {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+// Fetches ONE MORE than it renders (docs/127 §8). The entries endpoint returns a bare
+// array through `publicGet`, so there is no total to read — but asking for n+1 and
+// seeing n+1 come back is a definitive "there are more", which is the fact the
+// storefront actually needs. The extra row is sliced off before rendering.
 async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
   return publicGet<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: 24 },
+    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE + 1 },
     { tag: `entries:${tenantSlug}:${type}` }
   );
 }
@@ -275,10 +313,13 @@ export async function buildSilicaHost(
   // and product pins all read from ONE list.
   if (p.catalog || p.featured || needs.productPins.length > 0) {
     tasks.push(
-      listProducts(tenantSlug, { perPage: 24 })
-        .then(({ items }) => {
+      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
+        .then(({ items, total }) => {
           const products = items.map((i) => toSilicaProduct(i, tenantSlug));
-          if (p.catalog) setAtPath(root, 'commerce.product', products);
+          if (p.catalog) {
+            setAtPath(root, 'commerce.product', products);
+            setListMeta(root, 'commerce.product', products.length, total, 'product catalog');
+          }
           if (p.featured) {
             // "Featured" = products the merchant tagged `featured` (a no-schema curation
             // signal on the existing `tags` field); newest-few fallback so the rail is
@@ -342,13 +383,24 @@ export async function buildSilicaHost(
   for (const type of needs.cmsTypes) {
     tasks.push(
       listEntries(tenantSlug, type)
-        .then((entries) =>
+        .then((entries) => {
+          const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => toSilicaEntry(e, tenantSlug, type))
-          )
-        )
+            shown.map((e) => toSilicaEntry(e, tenantSlug, type))
+          );
+          // n+1 came back → there is at least one more. No exact total available here,
+          // so `*Total` is deliberately not set rather than guessed.
+          const hasMore = entries.length > COLLECTION_PAGE_SIZE;
+          setAtPath(root, `cms.${type}HasMore`, hasMore);
+          if (hasMore) {
+            console.warn(
+              `[silica-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
+                `the storefront offers no pagination yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
   }

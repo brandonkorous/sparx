@@ -9,6 +9,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
 import { requireAiModule, toAiContext } from '../../../lib/ai-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import {
   createPromptTemplate,
   deletePromptTemplate,
@@ -29,12 +30,18 @@ const IdParam = z.object({ id: z.string().uuid() });
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync demands async; route registration is sync.
 const aiPromptTemplateRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/ai/prompt-templates', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireAiModule(request);
     const { category } = ListQuery.parse(request.query);
+    // This site's prompts plus the tenant-wide ones (docs/131 §3.5).
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     return ok(
       await listPromptTemplates(toAiContext(request), {
         category: category,
+        propertyId,
       })
     );
   });
@@ -47,10 +54,20 @@ const aiPromptTemplateRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/ai/prompt-templates', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireAiModule(request);
     const input = PromptTemplateCreateSchema.parse(request.body);
-    const created = await createPromptTemplate(toAiContext(request), input);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
+    const created = await createPromptTemplate(toAiContext(request), {
+      ...input,
+      // Omitted → the site being worked in; only an EXPLICIT null shares it
+      // across every site. A persona authored while looking at one business
+      // should belong to that business without the author having to say so.
+      propertyId: input.propertyId === undefined ? propertyId : input.propertyId,
+    });
     reply.code(201);
     return ok(created);
   });

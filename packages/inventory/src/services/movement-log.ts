@@ -34,6 +34,18 @@ export interface MovementRow {
 
 export interface ListMovementsFilter {
   variantId?: string;
+  /**
+   * Every movement for ONE product, across all of its variants, in a single
+   * request.
+   *
+   * Exists for the same reason `listInventory`'s `productId` does: a
+   * product-scoped stock view showing "what happened to this product's stock"
+   * otherwise has to issue one request per variant and merge the pages in the
+   * browser — which on a 40-variant product is 40 round trips that still cannot
+   * be ordered correctly, because each page is only the newest 50 of ITS OWN
+   * variant.
+   */
+  productId?: string;
   warehouseId?: string;
   reason?: string;
   actorType?: string;
@@ -90,6 +102,9 @@ function buildWhere(filter: ListMovementsFilter): Prisma.InventoryMovementWhereI
       : undefined;
   return {
     ...(filter.variantId ? { variantId: filter.variantId } : {}),
+    // Through the relation rather than a denormalized column — the ledger row
+    // carries a variant, and the variant carries the product.
+    ...(filter.productId ? { variant: { productId: filter.productId } } : {}),
     ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
     ...(filter.reason ? { reason: filter.reason } : {}),
     ...(filter.actorType ? { actorType: filter.actorType } : {}),

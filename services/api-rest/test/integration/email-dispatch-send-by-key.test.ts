@@ -7,14 +7,21 @@
 //   • a transactional send keyed to a published default → delivered (status 'sent').
 //   • a send declared MARKETING whose resolved tree has no unsubscribe node →
 //     REFUSED ('failed', compliance reason). Contrast with a marketing send keyed
-//     to a tree that DOES carry one → delivered: proves the gate inspects the
-//     resolved tree, i.e. the key actually resolved.
+//     to a tree that DOES carry one → delivered: proves the resolved tree is the
+//     one that got sent, i.e. the key actually resolved.
 //   • an unknown key → 'failed' (not published).
 //
-// Activation provisions the 13 keyed defaults through the real route (the in-process
+// NOTE: the marketing COMPLIANCE GATE this suite was originally built around is
+// gone (docs/120 slice 7). Silica composes the legal footer into every marketing
+// send, so an unsubscribe link cannot be authored away and there is nothing left
+// to refuse at dispatch. What remains under test is key RESOLUTION — that a send
+// finds its published tree, and that an unknown key fails rather than sending
+// something empty.
+//
+// Activation provisions the keyed defaults through the real route (the in-process
 // provisioning consumer this process registers); we then enqueue ScheduledSend rows
 // directly and run the tick. Pub/Sub is the dev (log-only) publisher, so a delivered
-// send simply stays 'sent'; the gate's refusals flip it to 'failed'.
+// send simply stays 'sent'; an unresolvable key flips it to 'failed'.
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
@@ -154,10 +161,19 @@ describe('email-dispatch — send by key + compliance gate', () => {
       expect((await statusOf(tenantId, transactional)).status).toBe('sent');
       expect((await statusOf(tenantId, marketingOk)).status).toBe('sent');
 
-      // Marketing-without-unsubscribe → refused on compliance grounds.
+      // Marketing WITHOUT an authored unsubscribe node → still delivered.
+      //
+      // This asserted 'failed' until docs/120 slice 7 REMOVED the gate, and the
+      // removal is the point rather than a regression: the gate existed because
+      // the old sparx builder made the opt-out an OPTIONAL node an author had to
+      // remember to place. Silica COMPOSES the legal footer (unsubscribe +
+      // postal address) into every marketing send, so compliance is satisfied
+      // structurally and cannot be authored away — which is strictly safer than
+      // catching the omission at dispatch and failing the send.
+      //
+      // See the note in lib/tenant-email.ts at the sendTenantEmailByKey gate.
       const bad = await statusOf(tenantId, marketingBad);
-      expect(bad.status).toBe('failed');
-      expect(bad.lastError).toContain('compliance');
+      expect(bad.status).toBe('sent');
 
       // Unknown key → failed (not published).
       const missing = await statusOf(tenantId, unknownKey);

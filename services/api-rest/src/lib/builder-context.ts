@@ -29,7 +29,7 @@ export async function toBuilderContext(request: FastifyRequest): Promise<Propert
   const auth = requireAuth(request);
   const requested = request.headers['x-sparx-property-id'];
   const propertyId = await resolvePropertyId(
-    auth.tenantId,
+    auth,
     typeof requested === 'string' ? requested : null
   );
   return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
@@ -55,7 +55,7 @@ export async function toBuilderContextFor(
 ): Promise<PropertyContext> {
   if (!propertyParam) return toBuilderContext(request);
   const auth = requireAuth(request);
-  const propertyId = await requireTenantProperty(auth.tenantId, propertyParam);
+  const propertyId = await requireTenantProperty(auth, propertyParam);
   return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
 }
 

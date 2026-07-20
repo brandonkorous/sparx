@@ -14,3 +14,5 @@ export * as surfaceCssService from './surface-css-service';
 export * as governanceService from './governance-service';
 export * as archetypeService from './archetype-service';
 export * as platformCatalogService from './platform-catalog-service';
+export * as nodeIndexService from './node-index-service';
+export * as artifactService from './artifact-service';

@@ -18,12 +18,13 @@
 // bypass. Per-entry UPDATE rides `withTenant({tenantId})` so the write
 // still goes through the standard tenant_isolation policy.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { recordRevision } from '@sparx/cms';
 import { publish } from '@sparx/api-core/pubsub';
 
-const SCHEDULED_PUBLISH_LOCK_KEY = 4242_4242;
+const SCHEDULED_PUBLISH_LOCK_KEY = ADVISORY_LOCKS.SCHEDULED_PUBLISH;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 interface DueEntry {

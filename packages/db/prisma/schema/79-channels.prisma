@@ -29,8 +29,19 @@
 // webhook. Part of the Commerce module (no separate fee) — gated with commerce.
 
 model ChannelConnection {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The site whose products this channel sells (docs/131 §4). An Etsy or TikTok
+  // shop belongs to ONE business — Bob's Parts and Savory Donuts each have their
+  // own Etsy, under their own name and brand — and both can connect the SAME
+  // channel type. That is why the uniqueness below moves from (tenant, channel)
+  // to (tenant, property, channel): without it, connecting Etsy for the second
+  // business is a constraint violation against the first.
+  //
+  // Nullable so a single-site tenant's existing connection stays valid as-is
+  // (null = the tenant, i.e. its one site), and so a genuinely tenant-wide feed
+  // is expressible; the manage UI defaults new connections to the working site.
+  propertyId String? @map("property_id") @db.Uuid
 
   // The channel slug — tiktok_shop | etsy | amazon | walmart | ebay | faire |
   // meta | google_shopping | pinterest | sparx_market (docs/106 §3).
@@ -64,15 +75,27 @@ model ChannelConnection {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a channel connection is one business's link to its own external
+  // shop, holding that shop's OAuth tokens. It goes with the site.
+  property Property?               @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   mappings ChannelProductMapping[]
 
-  // One connection per channel per tenant (one shop per channel for now —
-  // multi-shop relaxes this to (tenant, channel, external_id) later, docs/106 §9).
-  @@unique([tenantId, channel], map: "channel_connections_tenant_channel_unique")
+  // One connection per channel per SITE (one shop per channel for now — multi-shop
+  // relaxes this to (tenant, property, channel, external_id) later, docs/106 §9).
+  // NULLS NOT DISTINCT in SQL so at most one tenant-wide connection per channel
+  // too — the plain compound unique would let unlimited (tenant, NULL, 'etsy')
+  // rows coexist, which is the ambiguity this constraint exists to stop.
+  @@unique([tenantId, propertyId, channel], map: "channel_connections_tenant_channel_unique")
   @@index([tenantId, status])
+  @@index([tenantId, propertyId])
   @@map("channel_connections")
 }
 
+// NOTE: ChannelProductMapping carries NO property_id (docs/131 §4, §2 pattern 3).
+// A mapping exists only under a connection, and the connection is site-scoped, so
+// the mapping's site is its connection's — a column here would be a second source
+// of truth able to disagree with the first, which has no defined meaning. The
+// `(connection_id, variant_id)` unique already binds it to one connection.
 model ChannelProductMapping {
   id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String @map("tenant_id") @db.Uuid

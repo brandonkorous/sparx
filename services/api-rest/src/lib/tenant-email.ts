@@ -32,14 +32,63 @@ import {
   type EmailRecipientRef,
 } from './email-data.js';
 import { unsubscribeUrl } from './email-unsubscribe.js';
+import { resolvePrimaryPropertyId } from './property.js';
 
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
-/** `From` header from the tenant's EmailSettings, falling back to the platform
+/** `From` header from the site's EmailSettings, falling back to the platform
  *  default. Shared with the dispatch tick. */
 export function buildFrom(fromName: string | null, fromAddress: string | null): string {
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
+}
+
+/** The four fields that decide WHO a message is from: the visible sender, the
+ *  address a reply goes to, and the postal address the legal footer discloses. */
+export interface SenderIdentity {
+  fromName: string | null;
+  fromAddress: string | null;
+  replyTo: string | null;
+  physicalAddress: string | null;
+}
+
+const NO_IDENTITY: SenderIdentity = {
+  fromName: null,
+  fromAddress: null,
+  replyTo: null,
+  physicalAddress: null,
+};
+
+/**
+ * The sender identity for ONE SITE (docs/131 §3.4).
+ *
+ * Every send path resolves through here so there is a single place where "which
+ * business is this from?" is answered. `propertyId` may be null on legacy call
+ * paths that never carried a site; those resolve to the tenant's primary, which
+ * is the same site the old per-tenant row described.
+ *
+ * A site with no row yields all-nulls rather than borrowing a sibling's: the
+ * caller then sends as the platform, which is visibly generic. Inheriting a
+ * sibling's identity would instead produce a message that looks completely
+ * legitimate and names the wrong company.
+ */
+export async function loadSenderIdentity(
+  tenantId: string,
+  propertyId: string | null
+): Promise<SenderIdentity> {
+  const siteId = propertyId ?? (await resolvePrimaryPropertyId(tenantId));
+  const row = await withTenant({ tenantId }, (tx) =>
+    tx.emailSettings.findUnique({
+      where: { tenantId_propertyId: { tenantId, propertyId: siteId } },
+      select: {
+        fromName: true,
+        fromAddress: true,
+        replyTo: true,
+        physicalAddress: true,
+      },
+    })
+  );
+  return row ?? NO_IDENTITY;
 }
 
 /** A pre-rendered, branded email body the worker delivers as-is. */
@@ -193,9 +242,9 @@ export async function sendTenantEmailByKey(
   // COMPOSES the legal footer (unsubscribe + postal address) into every marketing
   // send, so it is satisfied structurally and can't be authored away.
 
-  const settings = await withTenant(ctx, (tx) =>
-    tx.emailSettings.findUnique({ where: { tenantId } })
-  );
+  // The site this send is on behalf of decides the sender identity, exactly as it
+  // already decides the template and the brand two lines above.
+  const settings = await loadSenderIdentity(tenantId, args.propertyId ?? null);
   const ref: EmailRecipientRef = { email: args.to, ...args.ref };
   const raw = await renderBuilderEmailDoc(ctx, {
     doc,
@@ -203,13 +252,13 @@ export async function sendTenantEmailByKey(
     propertyId: args.propertyId ?? null,
     ref,
     marketing,
-    physicalAddress: settings?.physicalAddress ?? null,
+    physicalAddress: settings.physicalAddress,
   });
 
   await publish(logger, 'email.send', tenantId, null, {
     ...raw,
-    from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
-    ...(settings?.replyTo ? { replyTo: settings.replyTo } : {}),
+    from: buildFrom(settings.fromName, settings.fromAddress),
+    ...(settings.replyTo ? { replyTo: settings.replyTo } : {}),
     ...(args.variables ? { variables: args.variables } : {}),
   });
   return { sent: true };

@@ -135,6 +135,108 @@ export async function get(
   };
 }
 
+export interface ProductSubscriptionSummary {
+  /** How many live subscriptions include this product, by status. Zero for a
+   *  status is reported rather than omitted, so a caller never has to decide
+   *  whether a missing key means none or means unknown. */
+  counts: { active: number; paused: number; cancelled: number; pastDue: number };
+  /** Combined monthly recurring revenue of the ACTIVE subscriptions only —
+   *  paused and cancelled ones bill nothing, and counting them would overstate
+   *  the number on the one screen a person would quote it from. */
+  monthlyRecurringRevenueCents: number;
+  currency: string | null;
+  /** Units of this product shipped per month across active subscriptions. */
+  unitsPerMonth: number;
+  subscriptions: (SubscriptionSummary & {
+    /** This product's own lines within that subscription — a subscription can
+     *  carry several variants of the same product. */
+    lines: { variantId: string; variantSku: string | null; quantity: number }[];
+  })[];
+}
+
+/**
+ * Every subscription that includes any variant of one product.
+ *
+ * A subscription is customer-grain and a product panel is product-grain, so
+ * this is the join that lets a product answer "is anyone on a repeat order for
+ * this, and what would stopping selling it break". Without it the product side
+ * of subscriptions could not be shown at all: `list()` filters by customer and
+ * status only, and asking it per variant would be a request per SKU.
+ *
+ * Cancelled subscriptions are INCLUDED in the counts and the list. They are the
+ * evidence that this product used to sell on repeat, which is exactly what
+ * someone reads this panel to find out.
+ */
+export async function listForProduct(
+  ctx: ServiceContext,
+  productId: string,
+  filter: { take?: number } = {}
+): Promise<ProductSubscriptionSummary> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.subscription.findMany({
+      where: { items: { some: { variant: { productId } } } },
+      include: {
+        items: { include: { variant: { select: { id: true, sku: true, productId: true } } } },
+        customer: { select: CUSTOMER_NAME_SELECT },
+      },
+      orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
+      take: filter.take ?? 100,
+    });
+
+    const counts = { active: 0, paused: 0, cancelled: 0, pastDue: 0 };
+    let mrr = 0;
+    let units = 0;
+    let currency: string | null = null;
+
+    const subscriptions = rows.map((row) => {
+      const lines = row.items
+        .filter((it) => it.variant.productId === productId)
+        .map((it) => ({
+          variantId: it.variantId,
+          variantSku: it.variant.sku,
+          quantity: it.quantity,
+        }));
+
+      // `toSummary` reports the MRR of the WHOLE subscription. This product's
+      // share of it is what belongs on a product panel — a $200/mo box that
+      // happens to contain one $5 item must not be reported as $200 of this
+      // product's recurring revenue.
+      const summary = toSummary(row);
+      const productCycleCents = row.items
+        .filter((it) => it.variant.productId === productId)
+        .reduce((sum, it) => sum + it.unitPriceCents * it.quantity, 0);
+      const productMrr = Math.round(
+        productCycleCents *
+          row.deliveriesPerCycle *
+          monthlyFactorFor(row.intervalUnit, row.intervalCount)
+      );
+
+      if (row.status === 'active' || row.status === 'trialing') {
+        counts.active += 1;
+        mrr += productMrr;
+        units += Math.round(
+          lines.reduce((sum, line) => sum + line.quantity, 0) *
+            row.deliveriesPerCycle *
+            monthlyFactorFor(row.intervalUnit, row.intervalCount)
+        );
+        currency ??= row.currency;
+      } else if (row.status === 'paused') counts.paused += 1;
+      else if (row.status === 'past_due') counts.pastDue += 1;
+      else counts.cancelled += 1;
+
+      return { ...summary, monthlyRecurringRevenueCents: productMrr, lines };
+    });
+
+    return {
+      counts,
+      monthlyRecurringRevenueCents: mrr,
+      currency,
+      unitsPerMonth: units,
+      subscriptions,
+    };
+  });
+}
+
 export async function listForCustomer(
   ctx: ServiceContext,
   customerId: string

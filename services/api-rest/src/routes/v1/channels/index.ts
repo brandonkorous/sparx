@@ -32,12 +32,14 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import { requireChannelsModule, toChannelContext } from '../../../lib/channel-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import {
   disconnectChannel,
   listChannelConnections,
   upsertChannelConnection,
 } from '../../../lib/channels.js';
 import { signChannelOAuthState, verifyChannelOAuthState } from '../../../lib/channels-oauth.js';
+import channelProductMappingRoutes from './product-mappings.js';
 
 const CHANNEL_SLUGS = CHANNEL_CATALOG.map((c) => c.slug) as [ChannelSlug, ...ChannelSlug[]];
 const PathSlug = z.object({ slug: z.enum(CHANNEL_SLUGS) });
@@ -54,10 +56,13 @@ function runtimeCatalog(): ChannelDescriptor[] {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const channelRoutes: FastifyPluginAsync = async (app) => {
   // Register the built-in adapters once when this route module loads (idempotent).
   registerBuiltinChannels();
+
+  // Per-listing routes live in their own file — a connection and a product
+  // mapping are different resources with different role gates.
+  await app.register(channelProductMappingRoutes);
 
   app.get('/v1/channels', async (request, reply) => {
     await requireChannelsModule(request);
@@ -68,7 +73,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/channels/:slug/connect-url', async (request, reply) => {
     await requireChannelsModule(request);
-    requireRole(request, 'admin');
+    const auth = requireRole(request, 'admin');
     const { slug } = PathSlug.parse(request.params);
     const { redirect_uri: redirectUri } = ConnectQuery.parse(request.query);
     const ctx = toChannelContext(request);
@@ -90,10 +95,17 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
       throw conflict(`${descriptor.name} is not available to connect yet.`, { slug });
     }
 
+    // Bind the handshake to the site being worked in (docs/131 §4); the callback
+    // reads it back from the signed state and attaches the connection there.
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const state = await signChannelOAuthState({
       slug,
       tenantId: ctx.tenantId,
       userId: ctx.userId,
+      propertyId,
       redirectUri,
     });
     const url = adapter.connectUrl({ tenantId: ctx.tenantId, state, redirectUri, scopes: [] });
@@ -128,6 +140,9 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
 
     await upsertChannelConnection(ctx, {
       channel: decoded.slug,
+      // The site captured at connect time and carried through the signed state
+      // (docs/131 §4) — not re-derived here, where there is no reliable signal.
+      propertyId: decoded.propertyId,
       externalId: tokens.externalId ?? null,
       shopName: tokens.shopName ?? null,
       accessTokenEnc: encryptChannelToken(tokens.accessToken),

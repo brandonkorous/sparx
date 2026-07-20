@@ -10,13 +10,15 @@
 //   GET  /v1/inventory/levels/warehouse/:warehouseId
 //   GET  /v1/inventory/levels/warehouse/:warehouseId/enriched
 //   GET  /v1/inventory/low-stock
+//   GET  /v1/inventory/reservations
 //   POST /v1/inventory/adjust
 //   POST /v1/inventory/transfer
 //   POST /v1/inventory/reorder-policy
+//   POST /v1/inventory/safety-buffer
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { inventoryService } from '@sparx/inventory';
+import { inventoryService, isLowStock } from '@sparx/inventory';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -41,6 +43,18 @@ const EnrichedLevelsQuery = z.object({
 const LowStockQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
+});
+
+const ReservationsQuery = z.object({
+  variant_id: z.string().uuid().optional(),
+  // Every hold against one product, batched — the product-scoped stock pane's
+  // read. Same rationale as `product_id` on /v1/inventory and /movements.
+  product_id: z.string().uuid().optional(),
+  warehouse_id: z.string().uuid().optional(),
+  holder_type: z.enum(['cart', 'order', 'subscription']).optional(),
+  status: z.enum(['active', 'released', 'committed', 'expired']).optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
@@ -101,6 +115,7 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
             warehouseId: true,
             onHand: true,
             allocated: true,
+            safetyBuffer: true,
             reorderPoint: true,
             reorderQuantity: true,
             updatedAt: true,
@@ -124,6 +139,7 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
       onHand: r.onHand,
       allocated: r.allocated,
       available: r.onHand - r.allocated,
+      safetyBuffer: r.safetyBuffer,
       reorderPoint: r.reorderPoint,
       reorderQuantity: r.reorderQuantity,
       updatedAt: r.updatedAt.toISOString(),
@@ -133,12 +149,12 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
       productTitle: r.variant.product.title,
       productHandle: r.variant.product.handle,
     }));
-    // Filter in-process for low-stock since Prisma can't compare two columns. The
-    // toggle narrows the current page in place; `total` reflects the un-narrowed
-    // level count for the warehouse (the main paginated list).
-    const filtered = lowStockOnly
-      ? enriched.filter((r) => r.reorderPoint !== null && r.onHand <= (r.reorderPoint ?? 0))
-      : enriched;
+    // Filter in-process for low-stock since Prisma can't compare two columns.
+    // `isLowStock` is the ONE definition (@sparx/inventory) — sellable stock at
+    // or below the reorder point — so this toggle agrees with the list and the
+    // badges. The toggle narrows the current page in place; `total` reflects the
+    // un-narrowed level count for the warehouse (the main paginated list).
+    const filtered = lowStockOnly ? enriched.filter(isLowStock) : enriched;
     return paged(filtered, { total, per_page: take });
   });
 
@@ -152,6 +168,25 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
         ...(q.take !== undefined ? { take: q.take } : {}),
       })
     );
+  });
+
+  // Reservations — the itemization of a level's `allocated` count. "12 allocated"
+  // is a number; these rows are what is holding them and when (if ever) it frees
+  // up, which is the actual question behind "why can't I sell these".
+  app.get('/v1/inventory/reservations', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = ReservationsQuery.parse(request.query);
+    const { items, total } = await inventoryService.listReservations(toInventoryContext(request), {
+      ...(q.variant_id !== undefined ? { variantId: q.variant_id } : {}),
+      ...(q.product_id !== undefined ? { productId: q.product_id } : {}),
+      ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
+      ...(q.holder_type !== undefined ? { holderType: q.holder_type } : {}),
+      ...(q.status !== undefined ? { status: q.status } : {}),
+      ...(q.take !== undefined ? { take: q.take } : {}),
+      ...(q.skip !== undefined ? { skip: q.skip } : {}),
+    });
+    return reply.send(paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 }));
   });
 
   // Movements
@@ -172,6 +207,17 @@ const inventoryStockRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'editor');
     await inventoryService.setReorderPolicy(toInventoryContext(request), request.body);
+    return ok({ updated: true });
+  });
+
+  // Units withheld from what a shopper may buy — the oversell cushion. The
+  // service has existed since the availability work but had no route, so the
+  // number was readable (it comes back on every level) and not settable from
+  // anywhere but a direct DB write.
+  app.post('/v1/inventory/safety-buffer', async (request) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    await inventoryService.setSafetyBuffer(toInventoryContext(request), request.body);
     return ok({ updated: true });
   });
 };

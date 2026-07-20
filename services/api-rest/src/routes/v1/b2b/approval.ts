@@ -25,6 +25,7 @@ import { b2bArService } from '@sparx/crm';
 import { isModuleEnabled } from '@sparx/auth';
 import { inventoryService, type CommittedSale } from '@sparx/inventory';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import { env } from '../../../env.js';
 
 // purchaseApprovalRule is a new model added by migration 20260716000000.
@@ -45,6 +46,9 @@ const PathOrderId = z.object({ orderId: z.string().uuid() });
 
 const RuleBody = z.object({
   accountId: z.string().uuid().nullable().optional(),
+  // The site this spending control applies to (docs/131 §4). Explicit null = it
+  // applies everywhere the tenant sells; omitted = the site being worked in.
+  propertyId: z.string().uuid().nullable().optional(),
   minAmountCents: z.number().int().min(0),
   requiredApproverUserId: z.string().uuid().nullable().optional(),
   isActive: z.boolean().optional(),
@@ -74,6 +78,7 @@ const QueueQuery = z.object({
 function toRuleView(rule: {
   id: string;
   accountId: string | null;
+  propertyId: string | null;
   minAmountCents: number;
   requiredApproverUserId: string | null;
   isActive: boolean;
@@ -85,6 +90,9 @@ function toRuleView(rule: {
     id: rule.id,
     accountId: rule.accountId,
     accountName: rule.account?.companyName ?? null,
+    // null renders as "All sites" — an operator must be able to see at a glance
+    // that a threshold reaches businesses other than the one they are looking at.
+    propertyId: rule.propertyId,
     minAmountCents: rule.minAmountCents,
     minAmountFormatted: `$${(rule.minAmountCents / 100).toFixed(2)}`,
     requiredApproverUserId: rule.requiredApproverUserId,
@@ -119,7 +127,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Create rule ───────────────────────────────────────────────────────────
   app.post('/v1/b2b/approval-rules', async (request, reply) => {
     await requireB2bModule(request);
-    requireRole(request, 'admin');
+    const auth = requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const body = RuleBody.parse(request.body);
 
@@ -132,10 +140,19 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         if (!account) throw notFound('B2B account not found');
       }
 
+      // Omitted → the site being worked in; only an EXPLICIT null makes the rule
+      // apply everywhere. Defaulting the other way would silently gate checkout
+      // on businesses the author was not thinking about.
+      const scopeId = await resolvePropertyId(
+        auth,
+        request.headers['x-sparx-property-id'] as string | undefined
+      );
+
       return tx.purchaseApprovalRule.create({
         data: {
           tenantId: ctx.tenantId,
           accountId: body.accountId ?? null,
+          propertyId: body.propertyId === undefined ? scopeId : body.propertyId,
           minAmountCents: body.minAmountCents,
           requiredApproverUserId: body.requiredApproverUserId ?? null,
           isActive: body.isActive ?? true,
@@ -308,6 +325,9 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
           id: true,
           orderNumber: true,
           customerId: true,
+          // The site the order was placed on — the business that issues its
+          // invoice on approval (docs/131 §3.6).
+          propertyId: true,
           total: true,
           currency: true,
           metadata: true,
@@ -378,10 +398,27 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         const dueDays = dueDaysMatch?.[1] ? parseInt(dueDaysMatch[1], 10) : 30;
         const dueAt = new Date();
         dueAt.setDate(dueAt.getDate() + dueDays);
+        // The order's own site issues the invoice (docs/131 §3.6) — the same
+        // business the buyer placed the order with. `Order.propertyId` is
+        // nullable (orders outlive their site), so fall back to the primary.
+        const issuingPropertyId =
+          existing.propertyId ??
+          (
+            await tx.property.findFirst({
+              where: { tenantId: ctx.tenantId, isPrimary: true },
+              select: { id: true },
+            })
+          )?.id;
+        if (!issuingPropertyId) {
+          throw new Error(
+            `Cannot issue an AR document: tenant ${ctx.tenantId} has no primary site.`
+          );
+        }
         const arDoc = await b2bArService.createOrderArDocument(
           { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
           {
             b2bAccountId: accountId,
+            propertyId: issuingPropertyId,
             orderId,
             amount: Number(existing.total),
             currency: existing.currency,

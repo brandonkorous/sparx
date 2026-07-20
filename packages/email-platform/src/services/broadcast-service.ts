@@ -247,7 +247,10 @@ async function enqueueAndMark(
 
   const [recipients, settings] = await Promise.all([
     expandRecipients(ctx, broadcast),
-    getSettings(ctx),
+    // This broadcast's SITE decides the sender identity (docs/131 §3.4), the same
+    // way it already decides the brand and `{{tenant.name}}` further down. A
+    // broadcast with no property falls back to the primary inside getSettings.
+    getSettings(ctx, broadcast.propertyId),
   ]);
 
   const doc = await loadPublishedBuilderEmail(ctx, broadcast.builderEmailId);

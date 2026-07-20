@@ -9,8 +9,18 @@
 // RLS: ENABLE + FORCE + tenant_isolation on both tables — every read/write
 // runs inside withTenant() (the storefront always knows the tenant up front).
 
+// Re-keyed from `@id tenantId` to `(tenantId, propertyId)` in docs/131 §3.9.
+// Both businesses previously shared one banner, one GDPR/CCPA mode, and one
+// policy version — so a tenant operating an EU donut site and a US-only parts
+// site could not run the regime each actually needs, and the banner named one
+// business to visitors of the other.
 model ConsentSettings {
-  tenantId         String   @id @map("tenant_id") @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  // Required, and @unique so Property→settings is a true one-to-one. Unlike
+  // redirects or prompts there is NO tenant-wide tier here: consent is a legal
+  // relationship between one visitor and one business, so "which site" always
+  // has an answer and inheriting a sibling's regime is the defect itself.
+  propertyId       String   @unique @map("property_id") @db.Uuid
   mode             String   @default("off") @db.VarChar(10) // off | gdpr | ccpa
   activeCategories Json     @default("[]") @map("active_categories") // e.g. ["analytics","marketing"]
   bannerTitle      String?  @map("banner_title") @db.VarChar(255)
@@ -20,8 +30,10 @@ model ConsentSettings {
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
+  @@id([tenantId, propertyId])
   @@map("consent_settings")
 }
 
@@ -33,6 +45,16 @@ model ConsentSettings {
 model ConsentRecord {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String   @map("tenant_id") @db.Uuid
+  // WHICH business this consent was given to (docs/131 §3.9). Required: consent
+  // granted on one storefront was silently honoured on the other, which means
+  // tracking a visitor on a site they never agreed to be tracked on. That is not
+  // a scoping preference, it is the thing consent law exists to prevent — so the
+  // column is NOT NULL rather than nullable-with-a-fallback.
+  //
+  // The `(visitorId, propertyId)` pair is now what identifies a consent state:
+  // the same person deciding separately for two businesses is TWO decisions, and
+  // that is correct rather than duplication.
+  propertyId    String   @map("property_id") @db.Uuid
   visitorId     String   @map("visitor_id") @db.Uuid
   customerId    String?  @map("customer_id") @db.Uuid
   mode          String   @db.VarChar(10) // gdpr | ccpa (snapshot at decision time)
@@ -44,9 +66,18 @@ model ConsentRecord {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade, unlike chat conversations — and the difference is worth stating.
+  // A conversation is a record worth keeping after its site closes; a consent
+  // record is only meaningful AS PERMISSION FOR a specific business. Once that
+  // business is gone the permission has no subject, and retaining personal data
+  // (ip, user agent) whose only purpose has ended is the wrong default under the
+  // same regimes that require the record in the first place.
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
-  @@index([tenantId, visitorId, createdAt(sort: Desc)])
+  // The lookup is now per (site, visitor) — "what did this person agree to ON
+  // THIS SITE" — so property_id leads the index rather than trailing it.
+  @@index([tenantId, propertyId, visitorId, createdAt(sort: Desc)])
   @@index([tenantId, customerId])
   @@map("consent_records")
 }

@@ -11,7 +11,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma } from '@sparx/db';
 import { invalidateModuleCache } from '@sparx/auth';
 import { createApp } from '../../src/app.js';
-import { authHeader, signToken } from '../helpers.js';
+import { authHeader, seedPrimaryProperty, signToken } from '../helpers.js';
 
 interface ChatTenant {
   tenantId: string;
@@ -39,6 +39,9 @@ async function createChatTenant(chatEnabled: boolean): Promise<ChatTenant> {
     });
     return tx.user.findFirstOrThrow({ where: { tenantId: tenant.id, email } });
   });
+  // Real provisioning gives every tenant a PRIMARY site, so a fixture without
+  // one builds a tenant that cannot exist — and every site-resolving read 404s.
+  await seedPrimaryProperty(tenant.id, `Test ${tenant.slug}`);
   return { tenantId: tenant.id, userId: user.id, slug };
 }
 
@@ -60,7 +63,7 @@ describe('Live Chat routes', () => {
   it('returns MODULE_DISABLED (404) when chat is off', async () => {
     const t = await createChatTenant(false);
     try {
-      const token = signToken(app, { ...t, email: '' });
+      const token = signToken(app, t);
       const res = await app.inject({
         method: 'GET',
         url: '/v1/chat/conversations',
@@ -79,7 +82,7 @@ describe('Live Chat routes', () => {
   it('runs the staff conversation lifecycle when chat is on', async () => {
     const t = await createChatTenant(true);
     try {
-      const token = signToken(app, { ...t, email: '' });
+      const token = signToken(app, t);
 
       const empty = await app.inject({
         method: 'GET',
@@ -144,7 +147,7 @@ describe('Live Chat routes', () => {
   it('manages quick replies', async () => {
     const t = await createChatTenant(true);
     try {
-      const token = signToken(app, { ...t, email: '' });
+      const token = signToken(app, t);
       const created = await app.inject({
         method: 'POST',
         url: '/v1/chat/quick-replies',
@@ -204,7 +207,7 @@ describe('Live Chat routes', () => {
       expect(forbidden.statusCode).toBe(403);
 
       // The staff inbox should now show the conversation with 2 inbound unread.
-      const token = signToken(app, { ...t, email: '' });
+      const token = signToken(app, t);
       const list = await app.inject({
         method: 'GET',
         url: '/v1/chat/conversations',

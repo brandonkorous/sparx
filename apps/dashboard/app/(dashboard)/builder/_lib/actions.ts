@@ -18,8 +18,11 @@ import type {
   BuilderNode,
   BuilderPageDto,
   BuilderPageKind,
+  ReleaseSummaryDto,
+  RestoreResultDto,
   SilicaEmailDocument,
   SiteSyncInput,
+  UsagePlacementDto,
 } from '@sparx/builder-schemas';
 
 export interface ActionResult<T = void> {
@@ -80,9 +83,64 @@ export async function syncBuilderSite(
 }
 
 /** Publish the silica site — snapshot every draft tree → published. Revalidates
- *  the studio route so a fresh load reflects the published state. */
-export async function publishBuilderSite(): Promise<ActionResult<{ published: boolean }>> {
-  return run(() => api.post<{ published: boolean }>('/v1/builder/site/publish'), true);
+ *  the studio route so a fresh load reflects the published state.
+ *
+ *  Returns the sealed release (docs/126 §5.3): every publish is now an immutable,
+ *  restorable point in the site's history, and the id/hash come back so the caller
+ *  can name what it just published without a second round trip. */
+export async function publishBuilderSite(): Promise<
+  ActionResult<{ published: boolean; releaseId: string; hash: string }>
+> {
+  return run(
+    () =>
+      api.post<{ published: boolean; releaseId: string; hash: string }>('/v1/builder/site/publish'),
+    true
+  );
+}
+
+/** The property's publish history, newest first (docs/126 §5.3).
+ *
+ *  A server ACTION rather than a server-only reader in api.ts: the history drawer
+ *  fetches it on open, from the client, so it reflects publishes made since the page
+ *  loaded rather than a snapshot baked in at render.
+ *
+ *  Degrades to an empty list on failure. This drives a drawer the author opened on
+ *  purpose, and "nothing to restore yet" is the honest message when we can't tell —
+ *  it must never take down the editor around it. */
+export async function getReleases(): Promise<ReleaseSummaryDto[]> {
+  try {
+    return await api.get<ReleaseSummaryDto[]>('/v1/builder/site/releases');
+  } catch {
+    return [];
+  }
+}
+
+/** Where a saved component is PLACED across the property's trees (docs/126 §5.4).
+ *  Read before offering to delete one, so "what breaks if I remove this?" has a real
+ *  answer instead of the delete being a blind write. */
+export async function getSymbolUsages(
+  symbolId: string
+): Promise<ActionResult<UsagePlacementDto[]>> {
+  return run(
+    () =>
+      api.get<UsagePlacementDto[]>(
+        `/v1/builder/site/symbols/${encodeURIComponent(symbolId)}/usages`
+      ),
+    false
+  );
+}
+
+/** Roll the live site back to an earlier publish (docs/126 §5.3).
+ *
+ *  This is a PUBLISH, not a rewind: the old manifest is republished forward as a new
+ *  release, so the history keeps growing and the restore is itself restorable. The
+ *  result reports what actually moved — including pages created after the target
+ *  release, which get unpublished (their drafts survive untouched). */
+export async function restoreRelease(releaseId: string): Promise<ActionResult<RestoreResultDto>> {
+  return run(
+    () => api.post<RestoreResultDto>(`/v1/builder/site/releases/${releaseId}/restore`),
+    true
+  );
 }
 
 /** Restore the header + footer to the current starter chrome — the recovery path

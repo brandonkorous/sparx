@@ -28,8 +28,21 @@ model AiPromptTemplate {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
-  // Stable slug, unique per tenant — the idempotency key for preset/sample installs
-  // (install is ensure-by-key) and the sample marker (`sample-*` keys clear cleanly).
+  // The site this prompt belongs to; null = tenant-wide, available to every site
+  // (docs/131 §3.5). This matters most for `category = 'persona'`, the live-chat
+  // AI's system prompt: with one persona per tenant, a tenant running two
+  // businesses had ONE voice, so the donut shop's chat answered as the machine
+  // shop. Visible and embarrassing on day one of the second site.
+  //
+  // Nullable rather than required because a genuinely shared prompt is real — an
+  // SEO or email-drafting template is about the CRAFT, not the business, and
+  // forcing a copy per site would be duplication with no meaning. A persona is
+  // the opposite, which is why the resolver prefers the site's own.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // Stable slug, unique per SITE (and separately per tenant for shared rows) — the
+  // idempotency key for preset/sample installs (install is ensure-by-key) and the
+  // sample marker (`sample-*` keys clear cleanly).
   key String @db.VarChar(120)
 
   name        String  @db.VarChar(160)
@@ -64,19 +77,37 @@ model AiPromptTemplate {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: deleting a site deletes ITS prompts. SetNull would silently PROMOTE
+  // a site's persona to tenant-wide — the deleted business's voice would start
+  // answering for every remaining one.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, key], map: "ai_prompt_templates_tenant_key_unique")
+  // NOTE: the real index is created in migration 20261217000000 as
+  // `UNIQUE NULLS NOT DISTINCT`, which Prisma cannot express. Postgres treats
+  // NULLs as distinct by default, so the plain form below would let TWO
+  // tenant-wide rows share a key — breaking the ensure-by-key install that this
+  // constraint exists to make idempotent. Declared here anyway so the client
+  // exposes the compound key for upsert; the SQL is the stronger truth.
+  @@unique([tenantId, propertyId, key], map: "ai_prompt_templates_tenant_key_unique")
   @@index([tenantId, category])
+  @@index([tenantId, propertyId, category])
   @@map("ai_prompt_templates")
 }
 
-/// Per-tenant exposure override for one MCP tool. Absence = exposed (default-on);
+/// Per-SITE exposure override for one MCP tool. Absence = exposed (default-on);
 /// a row with enabled=false hides + refuses the tool. The tool catalog itself is
 /// code-defined (ALL_MCP_TOOLS); this only records the tenant's deviations.
 model AiToolPolicy {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
+
+  // null = the override applies to every site (docs/131 §3.5). Previously the
+  // ONLY option, which meant disabling a tool for one business silently disabled
+  // it for the other — a safety decision taken about one site, applied to a site
+  // nobody was thinking about. Resolution is most-specific-wins: a site row beats
+  // a tenant-wide row.
+  propertyId String? @map("property_id") @db.Uuid
 
   // The MCP tool name as registered in the tool registry, e.g. `update_order_status`.
   toolName String @map("tool_name") @db.VarChar(80)
@@ -89,9 +120,14 @@ model AiToolPolicy {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: deleting a site drops its overrides, so the remaining sites fall
+  // back to their own rows or the default-on catalog. SetNull would turn one
+  // site's "this tool is too dangerous here" into a tenant-wide ban.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, toolName], map: "ai_tool_policies_tenant_tool_unique")
+  // Also NULLS NOT DISTINCT in SQL — see the note on AiPromptTemplate above.
+  @@unique([tenantId, propertyId, toolName], map: "ai_tool_policies_tenant_tool_unique")
   @@index([tenantId])
   @@map("ai_tool_policies")
 }

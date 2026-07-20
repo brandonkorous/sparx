@@ -64,12 +64,28 @@ const REVIEW_INCLUDE = {
 export async function listReviewsForProduct(
   ctx: ServiceContext,
   productId: string,
-  filter: { status?: ReviewModerationStatus; take?: number; skip?: number } = {}
+  filter: {
+    status?: ReviewModerationStatus;
+    /** The storefront asking (docs/131 §4). Undefined = every site, which is
+     *  what the STAFF moderation views want; a public storefront always passes
+     *  its own so it shows only reviews written there. */
+    propertyId?: string;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: ReviewRow[]; total: number; averageRating: number }> {
   return withTenant(ctx, async (tx) => {
+    // A review written on ANOTHER of the tenant's storefronts must not surface
+    // here — it carries that business's context with it. Legacy rows (null
+    // property) predate multi-site and are shown everywhere, since suppressing
+    // them would silently empty existing product pages.
+    const siteScope: Prisma.ProductReviewWhereInput = filter.propertyId
+      ? { OR: [{ propertyId: filter.propertyId }, { propertyId: null }] }
+      : {};
     const where: Prisma.ProductReviewWhereInput = {
       productId,
       deletedAt: null,
+      ...siteScope,
       ...(filter.status ? { status: filter.status } : {}),
     };
     const [rows, total, agg] = await Promise.all([
@@ -82,7 +98,10 @@ export async function listReviewsForProduct(
       }),
       tx.productReview.count({ where }),
       tx.productReview.aggregate({
-        where: { productId, status: 'approved', deletedAt: null },
+        // The average MUST use the same site scope as the list, or the star
+        // rating summarizes a different set of reviews than the ones shown
+        // underneath it — a discrepancy a shopper can see and count.
+        where: { productId, status: 'approved', deletedAt: null, ...siteScope },
         _avg: { rating: true },
       }),
     ]);
@@ -124,6 +143,19 @@ export async function getReview(ctx: ServiceContext, reviewId: string): Promise<
 // or deleting an approved review. Without this the columns stay at their
 // defaults (null / 0) and the PDP shows "no reviews yet" no matter how many
 // reviews are approved.
+//
+// KNOWN GAP (docs/131 §4): this aggregate is TENANT-WIDE while the review LIST
+// is now per-site. On a product listed on two storefronts, the PDP can show a
+// star rating computed from 12 reviews above a list containing only the 3
+// written on that site — a discrepancy a shopper can count.
+//
+// Not fixed here because the honest fix is structural: `average_rating` /
+// `review_count` are columns on `products`, so a per-site figure needs a
+// per-(product, site) row — most naturally on the ProductProperty junction that
+// already models the relationship. That is a schema change plus a recompute
+// path, not a filter, and it deserves its own slice rather than being smuggled
+// into this one. Scoping the list without this is still a strict improvement:
+// the reviews a shopper READS are the right ones.
 async function recomputeProductRating(
   tx: Prisma.TransactionClient,
   productId: string
@@ -162,6 +194,9 @@ export async function submit(
     const created = await tx.productReview.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this was written (docs/131 §4) — not derivable later, since a
+        // product can be listed on several sites at once.
+        propertyId: input.propertyId ?? null,
         productId: input.productId,
         variantId: input.variantId ?? null,
         customerId: input.customerId ?? null,
@@ -520,12 +555,18 @@ export interface AnswerRow {
 export async function listQuestionsForProduct(
   ctx: ServiceContext,
   productId: string,
-  filter: { status?: string; take?: number } = {}
+  filter: { status?: string; propertyId?: string; take?: number } = {}
 ): Promise<QuestionRow[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productQuestion.findMany({
       where: {
         productId,
+        // Questions asked on THIS storefront, plus pre-multi-site rows
+        // (docs/131 §4). A question is usually addressed to the seller, so its
+        // answer is true of one business only.
+        ...(filter.propertyId
+          ? { OR: [{ propertyId: filter.propertyId }, { propertyId: null }] }
+          : {}),
         ...(filter.status ? { status: filter.status } : {}),
       },
       include: QUESTION_INCLUDE,
@@ -563,6 +604,8 @@ export async function submitQuestion(
     const created = await tx.productQuestion.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this was asked (docs/131 §4).
+        propertyId: input.propertyId ?? null,
         productId: input.productId,
         customerId: input.customerId ?? null,
         displayName: input.displayName ?? null,
@@ -744,6 +787,8 @@ export async function createWishlist(
     const created = await tx.wishlist.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this list was saved (docs/131 §4).
+        propertyId: input.propertyId ?? null,
         customerId: input.customerId,
         name: input.name,
         isPublic: input.isPublic,

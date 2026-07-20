@@ -16,19 +16,25 @@ import { prisma, withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 
+import { resolvePublicPropertyId } from '../../../lib/property.js';
+
 const Query = z.object({
   tenant: z.string().min(1).max(63),
+  // WHICH site's domain the 404 happened on (docs/131 §3.8). Absent resolves to
+  // the primary, like every other public read.
+  property: z.string().min(1).max(63).optional(),
   path: z.string().min(1).max(2048),
 });
 
 const publicRedirectRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/redirects/resolve', async (request, reply) => {
-    const { tenant: slug, path } = Query.parse(request.query);
+    const { tenant: slug, property, path } = Query.parse(request.query);
 
     // Tenants table has no RLS; redirects do, so the chain walk runs inside
     // withTenant (mirrors the sitemap route's pattern).
     const tenant = await prisma.tenant.findUnique({ where: { slug } });
     if (!tenant) throw notFound('Tenant', slug);
+    const propertyId = await resolvePublicPropertyId(tenant.id, property);
 
     const result = await withTenant({ tenantId: tenant.id }, async (tx) => {
       let current = path;
@@ -37,7 +43,14 @@ const publicRedirectRoutes: FastifyPluginAsync = (app) => {
       const seen = new Set<string>([current]);
 
       for (let hop = 0; hop < 8; hop++) {
-        const row = await tx.redirect.findFirst({ where: { fromPath: current } });
+        // This site's rule wins over a tenant-wide one for the same path
+        // (docs/131 §3.8) — orderBy puts the site-scoped row first, so a shared
+        // default can be overridden per site rather than fought with.
+        const row = await tx.redirect.findFirst({
+          // `OR` rather than `in: [id, null]` — Prisma's `in` rejects null.
+          where: { fromPath: current, OR: [{ propertyId }, { propertyId: null }] },
+          orderBy: { propertyId: { sort: 'desc', nulls: 'last' } },
+        });
         if (!row) break;
         if (firstId === null) {
           firstStatus = row.statusCode;

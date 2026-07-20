@@ -29,6 +29,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import { env } from '../../../env.js';
 
 const pubLogger: PublisherLogger = {
@@ -166,12 +167,21 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Create (manual) ────────────────────────────────────────────────────────
   app.post('/v1/b2b/invoices', async (request, reply) => {
     await requireB2bModule(request);
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const body = CreateBody.parse(request.body);
 
+    // A manual invoice is issued by the site the operator is working in
+    // (docs/131 §3.6) — that decides whose numbering sequence it draws from and
+    // whose letterhead freezes onto it at finalize.
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
+
     const doc = await b2bArService.createOrderArDocument(ctx, {
       b2bAccountId: body.accountId,
+      propertyId,
       orderId: body.orderId ?? null,
       amount: body.amountCents / 100,
       dueAt: new Date(body.dueAt),

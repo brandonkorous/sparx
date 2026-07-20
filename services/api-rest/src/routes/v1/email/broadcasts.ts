@@ -14,7 +14,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { broadcastService } from '@sparx/email-platform';
 import { ok, paged } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 import { silicaEmailDataResolver } from '../../../lib/email-data.js';
@@ -52,7 +52,7 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     // tenant-wide count here would promise Site B's customers to a Site A campaign.
     const requested = request.headers['x-sparx-property-id'];
     const propertyId = await resolvePropertyId(
-      ctx.tenantId,
+      requireAuth(request),
       typeof requested === 'string' ? requested : null
     );
     return ok(await broadcastService.estimateRecipients(ctx, q.segment_id ?? null, propertyId));
@@ -66,7 +66,7 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     // `x-sparx-property-id` the dashboard switcher sets, else the primary.
     const requested = request.headers['x-sparx-property-id'];
     const propertyId = await resolvePropertyId(
-      ctx.tenantId,
+      requireAuth(request),
       typeof requested === 'string' ? requested : null
     );
     const row = await broadcastService.create(ctx, request.body, propertyId);

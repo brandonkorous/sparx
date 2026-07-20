@@ -168,6 +168,10 @@ export const CreateQuickReplyInput = z.object({
   title: z.string().min(1).max(100),
   body: z.string().min(1).max(8000),
   shortcut: z.string().max(50).optional(),
+  // Explicit null = a deliberately tenant-wide reply, offered on every site
+  // (docs/131 §3.7). Omitted = the route stamps the site the author is working
+  // in, so business-specific copy stays with its business by default.
+  propertyId: z.string().uuid().nullable().optional(),
 });
 
 export type CreateConversationInputT = z.infer<typeof CreateConversationInput>;

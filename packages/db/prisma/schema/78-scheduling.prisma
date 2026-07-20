@@ -42,8 +42,11 @@ model SchedulingResource {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant                 Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  location               BusinessLocation?       @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  tenant                 Tenant                       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  location               BusinessLocation?            @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  // Which sites this resource works for (docs/131 §4) — a junction, because a
+  // resource is often a PERSON who works both businesses.
+  siteLinks              SchedulingResourceProperty[]
   availabilityWindows    AvailabilityWindow[]
   availabilityExceptions AvailabilityException[]
   bookingResources       BookingResource[]
@@ -59,6 +62,10 @@ model SchedulingResource {
 model SchedulingService {
   id                   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId             String  @map("tenant_id") @db.Uuid
+  // The business offering this service (docs/131 §4); null = every site. An "oil
+  // change" and a "cake tasting" are unambiguously one business's, and the
+  // booking widget renders the service list of the site it is embedded on.
+  propertyId           String? @map("property_id") @db.Uuid
   bookingType          String  @default("appointment") @map("booking_type") @db.VarChar(20)
   name                 String  @db.VarChar(255)
   description          String? @db.Text
@@ -91,6 +98,8 @@ model SchedulingService {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a service offered by a closed business goes with it.
+  property      Property?         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   policy        BookingPolicy?    @relation(fields: [policyId], references: [id], onDelete: SetNull)
   intakeForm    IntakeForm?       @relation(fields: [intakeFormId], references: [id], onDelete: SetNull)
   location      BusinessLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
@@ -108,6 +117,12 @@ model SchedulingService {
 model Booking {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String  @map("tenant_id") @db.Uuid
+  // Denormalized from the service AT BOOKING TIME (docs/131 §4), not joined.
+  // Two reasons: "what did this business take today" is answerable without a
+  // join on a hot reporting path, and — more importantly — a booking is a
+  // historical fact. Re-scoping a service later must not silently rewrite which
+  // business past bookings belonged to.
+  propertyId  String? @map("property_id") @db.Uuid
   serviceId   String  @map("service_id") @db.Uuid
   bookingType String  @map("booking_type") @db.VarChar(20) // denormalized
   seriesId    String? @map("series_id") @db.Uuid
@@ -154,6 +169,10 @@ model Booking {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull, unlike the service above — a booking is a RECORD of an appointment
+  // a real customer made, and it outlives the site, exactly like orders and chat
+  // conversations (docs/58 D1, docs/131 §3.7).
+  property      Property?             @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   service       SchedulingService     @relation(fields: [serviceId], references: [id])
   series        BookingSeries?        @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   policy        BookingPolicy?        @relation(fields: [policyId], references: [id], onDelete: SetNull)
@@ -314,6 +333,11 @@ model WaitlistEntry {
 model BookingPolicy {
   id                      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId                String  @map("tenant_id") @db.Uuid
+  // null = the tenant-wide default (docs/131 §4). Deposit, cancellation window
+  // and no-show fees are a PROMISE THIS BUSINESS MAKES to its customers, shown
+  // and accepted at booking (`policyText` below) — a machine shop's 24-hour
+  // cancellation terms have no business binding a donut-tasting customer.
+  propertyId              String? @map("property_id") @db.Uuid
   name                    String  @db.VarChar(255)
   depositType             String  @default("none") @map("deposit_type") @db.VarChar(20) // none|card_hold|deposit|prepay
   depositAmountCents      Int?    @map("deposit_amount_cents")
@@ -330,29 +354,38 @@ model BookingPolicy {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a policy is authored terms belonging to the business.
+  property Property?           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   services SchedulingService[]
   bookings Booking[]
 
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("scheduling_booking_policies")
 }
 
 // ── Intake / consultation forms (declarative, no code) ──────────────────────
 model IntakeForm {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String  @map("tenant_id") @db.Uuid
-  name     String  @db.VarChar(255)
-  schema   Json    @default("{}") // declarative fields
-  isActive Boolean @default(true) @map("is_active")
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Intake questions are business-specific — "which vehicle?" versus "any
+  // allergies?" (docs/131 §4). Null = shared across sites.
+  propertyId String? @map("property_id") @db.Uuid
+  name       String  @db.VarChar(255)
+  schema     Json    @default("{}") // declarative fields
+  isActive   Boolean @default(true) @map("is_active")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: intake questions are authored content for one business.
+  property    Property?           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   services    SchedulingService[]
   submissions IntakeSubmission[]
 
   @@index([tenantId, isActive])
+  @@index([tenantId, propertyId])
   @@map("scheduling_intake_forms")
 }
 
@@ -459,8 +492,19 @@ model BookingNotification {
   @@map("scheduling_booking_notifications")
 }
 
-// ── Physical service locations (shop / clinic / restaurant). Open question in
-//    docs/79 §21: reconcile with a shared platform locations table later. ─────
+// ── Physical service locations (shop / clinic / restaurant).
+//
+// docs/79 §21 left open whether to reconcile these with a shared platform
+// locations table. docs/131 §4 forces the question, and the answer is the
+// JUNCTION below rather than a column: a location is a PLACE, and one place can
+// legitimately host more than one business — a single premises, a shared
+// storefront, one owner's building. This is the same shape as WAREHOUSES, where
+// "warehouse 1 and 3 serve Bob's Parts, 1 and 2 serve Savory Donuts" was the
+// correcting example; a nullable property_id cannot express it.
+//
+// So the location row stays tenant-owned (a place is a place) and
+// BusinessLocationProperty says which sites offer service there. Empty = all,
+// matching ProductProperty. ────────────────────────────────────────────────
 model BusinessLocation {
   id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String  @map("tenant_id") @db.Uuid
@@ -474,7 +518,8 @@ model BusinessLocation {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant     Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant     Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  siteLinks  BusinessLocationProperty[]
   resources  SchedulingResource[]
   services   SchedulingService[]
   bookings   Booking[]
@@ -482,4 +527,36 @@ model BusinessLocation {
 
   @@index([tenantId, isActive])
   @@map("scheduling_locations")
+}
+
+/// Which sites offer service at a location (docs/131 §4). EMPTY = every site,
+/// the ProductProperty convention — so existing locations need no backfill.
+model BusinessLocationProperty {
+  propertyId String @map("property_id") @db.Uuid
+  locationId String @map("location_id") @db.Uuid
+
+  property Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  location BusinessLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, locationId])
+  @@index([locationId])
+  @@map("scheduling_location_properties")
+}
+
+/// Which sites a resource works for (docs/131 §4). A junction rather than a
+/// column because a RESOURCE IS OFTEN A PERSON, and one person genuinely works
+/// both businesses — the owner who bakes in the morning and machines in the
+/// afternoon is the ordinary case, not an edge one. Forcing a column would make
+/// them two records with two calendars, and double-booking a human being is the
+/// worst failure this module can produce. EMPTY = available to every site.
+model SchedulingResourceProperty {
+  propertyId String @map("property_id") @db.Uuid
+  resourceId String @map("resource_id") @db.Uuid
+
+  property Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  resource SchedulingResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, resourceId])
+  @@index([resourceId])
+  @@map("scheduling_resource_properties")
 }

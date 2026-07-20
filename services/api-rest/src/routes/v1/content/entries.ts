@@ -98,7 +98,7 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       q.property,
       request.headers['x-sparx-property-id']
     );
@@ -186,7 +186,7 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       if (siteCount > 1) {
         const header = request.headers['x-sparx-property-id'];
         const activePropertyId = await resolvePropertyId(
-          auth.tenantId,
+          auth,
           typeof header === 'string' ? header : null
         );
         scopePropertyIds = [activePropertyId];

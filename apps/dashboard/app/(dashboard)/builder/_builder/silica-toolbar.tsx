@@ -14,9 +14,11 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { useEditor } from '@wizeworks/silicaui-builder/react';
-import type { BuilderPageSummaryDto, DataSource } from '@sparx/builder-schemas';
+import type { BuilderPageSummaryDto, DataSource, ReleaseSummaryDto } from '@sparx/builder-schemas';
 
 import { SilicaPageSettings } from './silica-page-settings';
+import { PublishHistory, PublishHistoryButton } from './publish-history';
+import { getReleases } from '../_lib/actions';
 import { badgeView, type PublishView, type SaveState } from './publish-badge';
 
 // Re-exported so the studio (the only consumer) imports both the component and the
@@ -66,6 +68,23 @@ export function SilicaToolbar({
 
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  // Publish history (docs/126 §5.3). Fetched when the drawer OPENS rather than at
+  // mount: it costs nothing until asked for, and it must include any publish made
+  // during this editing session — a stale list here would offer to restore versions
+  // that are no longer the newest, which is exactly the wrong thing to be wrong about.
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [releases, setReleases] = useState<ReleaseSummaryDto[]>([]);
+  useEffect(() => {
+    if (!historyOpen) return;
+    let live = true;
+    void getReleases().then((r) => {
+      if (live) setReleases(r);
+    });
+    return () => {
+      live = false;
+    };
+  }, [historyOpen]);
+
   const activeId = editor.activePage;
   const activeName = editor.pagesView.pages.find((p) => p.id === activeId)?.name ?? 'Page';
   const meta = pages.find((p) => p.id === activeId);
@@ -89,6 +108,7 @@ export function SilicaToolbar({
           )}
         </div>
       )}
+      <PublishHistoryButton onClick={() => setHistoryOpen(true)} />
       <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(true)}>
         Page settings
       </Button>
@@ -98,6 +118,16 @@ export function SilicaToolbar({
         page={{ id: activeId, name: activeName }}
         meta={meta}
         sources={sources}
+      />
+      <PublishHistory
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        releases={releases}
+        // A full reload, not a router.refresh(): silica's engine reads its document
+        // ONCE at mount, so a refreshed server tree would leave the editor holding
+        // the pre-restore site — and its next autosave would write that straight back
+        // over the restore. `resetSiteFrame` documents the same hazard.
+        onRestored={() => window.location.reload()}
       />
     </div>
   );

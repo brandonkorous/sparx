@@ -27,6 +27,10 @@ const FitmentParam = z.object({ fitmentId: z.string().uuid() });
 
 const ListBundlesQuery = z.object({
   q: z.string().optional(),
+  // The wrapper product a bundle is sold as — lets a product-scoped surface ask
+  // "is this product a bundle?" in one exact request instead of paging the whole
+  // bundle list and filtering in the browser.
+  product_id: z.string().uuid().optional(),
   pricing_mode: z.string().optional(),
   inventory_mode: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
@@ -179,6 +183,7 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     const q = ListBundlesQuery.parse(request.query);
     const { items, total } = await configuratorService.listBundles(toCommerceContext(request), {
       q: q.q,
+      bundleProductId: q.product_id,
       pricingMode: q.pricing_mode,
       inventoryMode: q.inventory_mode,
       take: q.take,
@@ -252,6 +257,20 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
     return ok(
       await configuratorService.listTemplatesForProduct(toCommerceContext(request), productId)
     );
+  });
+
+  // Run a set of choices through the template exactly as the storefront would,
+  // and hand back what the shopper would get: the resolved variant, the add-on
+  // lines the rules pulled in, the price, and any rule that refused.
+  //
+  // A pure read — it writes no cart and no row. It exists because a rule engine
+  // that can only be inspected as a list of rules cannot actually be checked: the
+  // whole failure mode of a configurator is a combination of choices nobody
+  // tried, and the only honest way to find those is to try them.
+  app.post('/v1/commerce/configurator/preview', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(await configuratorService.resolve(toCommerceContext(request), request.body));
   });
 
   app.post('/v1/commerce/configurator-templates', async (request, reply) => {

@@ -25,6 +25,11 @@ export type { InventoryTopic, InventoryEventInput } from './events';
 export { computeAvailability } from './services/availability';
 export type { AvailabilityLevel, VariantAvailability } from './services/availability';
 
+// The one definition of "sellable" and "running low" — a raw-SQL fragment for
+// database-side filters and a JS twin for rows already in memory. Every read
+// path that decides whether a level is low routes through these.
+export { SELLABLE_SQL, LOW_STOCK_SQL, sellableUnits, isLowStock } from './services/low-stock';
+
 export type {
   WarehouseRow,
   InventoryLevelRow,

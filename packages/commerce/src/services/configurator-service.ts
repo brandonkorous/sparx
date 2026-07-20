@@ -67,6 +67,13 @@ export async function listBundles(
   ctx: ServiceContext,
   filter: {
     q?: string;
+    /**
+     * The wrapper product a bundle is SOLD AS. Exists so a product-scoped view
+     * can answer "is this product a bundle, and of what?" in one request. `q` is
+     * not a substitute — it matches the wrapper's title as a substring, so
+     * "Starter Kit" and "Starter Kit Pro" come back together.
+     */
+    bundleProductId?: string;
     pricingMode?: string;
     inventoryMode?: string;
     take?: number;
@@ -77,6 +84,7 @@ export async function listBundles(
     // Bundle has no name/title of its own — the display name is the linked
     // wrapper product's title, so text search filters on that relation.
     const where: Prisma.BundleWhereInput = {
+      ...(filter.bundleProductId ? { bundleProductId: filter.bundleProductId } : {}),
       ...(filter.pricingMode ? { pricingMode: filter.pricingMode } : {}),
       ...(filter.inventoryMode ? { inventoryMode: filter.inventoryMode } : {}),
       ...(filter.q

@@ -104,6 +104,20 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
   storefront: Store,
 };
 
+/**
+ * A module's chosen icon, for chrome OUTSIDE the rail that has to name a module.
+ *
+ * Exported so a notification row, a search result or a command-palette entry
+ * marks "Selling" with the same glyph the rail does. Re-declaring the mapping at
+ * each call site is how a module ends up with two faces.
+ *
+ * `null` for a module with no chosen icon — callers pick their own fallback,
+ * since there is no sensible generic stand-in for "some module".
+ */
+export function moduleIcon(module: WorkbenchModule): LucideIcon | null {
+  return MODULE_ICONS[module] ?? null;
+}
+
 function bySectionOrder(a: SurfaceDefinition, b: SurfaceDefinition): number {
   const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
   const orderB = b.order ?? Number.MAX_SAFE_INTEGER;

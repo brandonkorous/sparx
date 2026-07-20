@@ -160,7 +160,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // switcher's header, else primary) — a secondary site shows ITS own
     // installed/available badges, not the primary's.
     const propertyId = await resolvePropertyId(
-      auth.tenantId,
+      auth,
       activePropertyHeader(request.headers)
     );
     // The active site's install rows drive the per-card badges AND — for the
@@ -302,8 +302,8 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // Explicit body target wins (validated, 404 on miss — the wizard installs into
     // the site it just created); else the active site (header → primary).
     const propertyId = property_id
-      ? await requireTenantProperty(auth.tenantId, property_id)
-      : await resolvePropertyId(auth.tenantId, activePropertyHeader(request.headers));
+      ? await requireTenantProperty(auth, property_id)
+      : await resolvePropertyId(auth, activePropertyHeader(request.headers));
     const existing = await findInstall(auth.tenantId, propertyId, key);
     if (existing) {
       // One install row per (tenant, property, blueprint). A newer version is an

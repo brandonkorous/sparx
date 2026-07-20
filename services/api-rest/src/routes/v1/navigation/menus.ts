@@ -61,7 +61,7 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/navigation/menus', async (request) => {
     const auth = requireRole(request, 'viewer');
     const propertyId = await resolvePropertyId(
-      auth.tenantId,
+      auth,
       request.headers['x-sparx-property-id'] as string | undefined
     );
     const rows = await withRequestTenant(request, (tx) =>
@@ -78,7 +78,7 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'viewer');
     const { location } = LocationParams.parse(request.params);
     const propertyId = await resolvePropertyId(
-      auth.tenantId,
+      auth,
       request.headers['x-sparx-property-id'] as string | undefined
     );
     const row = await withRequestTenant(request, (tx) =>
@@ -102,7 +102,7 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
       input.scope === 'tenant'
         ? null
         : await resolvePropertyId(
-            auth.tenantId,
+            auth,
             request.headers['x-sparx-property-id'] as string | undefined
           );
 

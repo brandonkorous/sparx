@@ -26,7 +26,7 @@ import { isModuleEnabled } from '@sparx/auth';
 import type { Message, ToolCall, ToolDefinition, ToolParameter } from 'llm-harness';
 import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@sparx/site-mcp';
 
-import { resolveActivePropertyName } from '../property.js';
+import { resolveActivePropertyName, resolvePrimaryPropertyId } from '../property.js';
 import { getActivePersona } from '../ai/prompt-templates.js';
 import { createTenantLlmRouter, DEFAULT_MODEL_BY_PROVIDER } from '../ai/llm-router.js';
 import { env } from '../../env.js';
@@ -156,6 +156,10 @@ export async function handleInboundForAI(
     const apiKey = decryptProviderSecret(config.aiApiKeyEncrypted);
     const decision = await askAssistant(
       ctx.tenantId,
+      // The site this conversation is on decides which business the assistant
+      // believes it works for (docs/131 §3.5 + §3.7). Null only for a
+      // dashboard-sourced thread, where a tenant-wide persona is correct.
+      conversation.propertyId ?? null,
       config.aiProvider,
       apiKey,
       conversation.messages,
@@ -194,7 +198,7 @@ interface GroundingDto {
   pages: string[];
 }
 
-async function buildGrounding(tenantId: string): Promise<GroundingDto> {
+async function buildGrounding(tenantId: string, propertyId: string | null): Promise<GroundingDto> {
   // The assistant introduces itself as the SITE (the tenant's primary site —
   // docs/49), shown to the customer in the chat widget. Never the tenant's
   // legal/org name.
@@ -208,7 +212,15 @@ async function buildGrounding(tenantId: string): Promise<GroundingDto> {
         orderBy: { updatedAt: 'desc' },
       }),
       tx.page.findMany({
-        where: { status: 'published' },
+        // Ground on THIS site's pages plus any tenant-wide ones (docs/131 §4) —
+        // the AI answering on the donut storefront must not cite the machine
+        // shop's pages. (Product grounding above is still tenant-wide; scoping it
+        // needs the ProductProperty visibility join, a broader change tracked
+        // with the product-visibility P1 work.)
+        where: {
+          status: 'published',
+          ...(propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : {}),
+        },
         select: { title: true },
         take: 20,
         orderBy: { updatedAt: 'desc' },
@@ -265,6 +277,7 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
 
 async function askAssistant(
   tenantId: string,
+  propertyId: string | null,
   provider: AiProvider,
   apiKey: string,
   messages: { senderType: string; body: string }[],
@@ -272,8 +285,14 @@ async function askAssistant(
 ): Promise<AiDecision | null> {
   try {
     const [grounding, persona, tenantSlug] = await Promise.all([
-      buildGrounding(tenantId),
-      getActivePersona(tenantId),
+      buildGrounding(tenantId, propertyId),
+      // A conversation with no site (staff-to-staff in the dashboard) still gets
+      // the tenant-wide persona, which getActivePersona resolves when handed the
+      // primary. A customer-facing thread always has one — the CHECK constraint
+      // on chat_conversations makes the alternative unrepresentable.
+      propertyId
+        ? getActivePersona(tenantId, propertyId)
+        : resolvePrimaryPropertyId(tenantId).then((id) => getActivePersona(tenantId, id)),
       resolveTenantSlug(tenantId),
     ]);
     if (!tenantSlug) return null; // can't scope tool calls without the tenant slug

@@ -48,15 +48,40 @@ import { starterFrame, type SiteChromeOptions } from '@sparx/silica-catalog';
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
+import { dropOwnerTx, reindexTreeTx } from './node-index-service';
+import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifact-service';
 import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
 const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
 
+/** A stored tree column read back as a silica node. The DB types it `JsonValue` —
+ *  Prisma cannot know a JSONB column holds a `Node` — and only the extractor consumes
+ *  it, which tolerates any shape (an unrecognized node simply contributes no rows).
+ *  So this asserts what the column has always held rather than widening anything. */
+const asNode = (v: unknown): SilicaNode => v as SilicaNode;
+
 /** A page row is "silica-materialized" once it carries a silica body tree. Filtered
  *  in JS rather than the `where` clause: a Json column's NULL check needs Prisma's
  *  runtime sentinel, and the row set here is already small + fully fetched. */
 const isSilica = (r: BuilderPage): boolean => r.silicaDraftTree != null;
+
+/**
+ * The `silicaDraftSymbols` write for a sync payload — `{}` (write nothing) when the
+ * payload carries NO symbols map (docs/125 §9.3).
+ *
+ * ABSENT and EMPTY mean different things and must not collapse. Absent = "this caller
+ * isn't speaking about symbols", which has to preserve the stored library. Empty =
+ * "the author deleted their last saved component", which has to persist.
+ *
+ * Extracted as a pure function purely so it can be tested: it guards a whole-library
+ * data loss that only reproduces through a transaction.
+ */
+export function symbolsUpdateFor(
+  symbols: unknown
+): Record<string, never> | { silicaDraftSymbols: Prisma.InputJsonValue } {
+  return symbols != null ? { silicaDraftSymbols: asJson(symbols) } : {};
+}
 
 /** A symbols map, defaulting to empty. Stored as a NOT-NULL `{}` Json column. */
 function symbolsOf(value: unknown): Record<string, SilicaSymbolDef> {
@@ -459,7 +484,12 @@ export async function sync(
 
     // Deletes first (a removed page frees its slug before any create reuses it).
     for (const r of silicaRows) {
-      if (!inputIds.has(r.id)) await tx.builderPage.delete({ where: { id: r.id } });
+      if (!inputIds.has(r.id)) {
+        await tx.builderPage.delete({ where: { id: r.id } });
+        // The index is derived, so a deleted page's rows are dead weight that would
+        // otherwise keep answering "this symbol is used here" for a page that is gone.
+        await dropOwnerTx(tx, ctx, 'page', r.id);
+      }
     }
 
     // Upsert each page whose body was sent. `position` comes from the ROSTER, not the
@@ -506,6 +536,13 @@ export async function sync(
       }
     }
 
+    // Reindex the pages whose bodies this payload actually carried (docs/126 §5.4).
+    // Rides the same transaction, so a rolled-back write leaves no index rows behind;
+    // scoped to the sent pages, so a partial payload does not re-walk the whole site.
+    for (const p of input.pages) {
+      await reindexTreeTx(tx, ctx, { ownerKind: 'page', ownerId: p.id, tree: p.root });
+    }
+
     // Reordering changes no page BODY, so with a partial payload the pages that moved
     // may not be in `input.pages` at all. Their position still has to follow the
     // roster, or a drag in the page list would appear to do nothing after a reload.
@@ -526,6 +563,12 @@ export async function sync(
         where: { id: layout.id },
         data: { silicaDraftTree: asJson(input.frame.root) },
       });
+      // The chrome holds symbol instances and bindings like any other tree.
+      await reindexTreeTx(tx, ctx, {
+        ownerKind: 'layout',
+        ownerId: layout.id,
+        tree: input.frame.root,
+      });
     }
 
     // Site-global theme + symbols + saved-theme library → the property's silica
@@ -537,7 +580,32 @@ export async function sync(
     const themeData = input.theme ? { silicaDraftTheme: asJson(input.theme) } : {};
     const savedThemesData =
       input.savedThemes != null ? { silicaDraftSavedThemes: asJson(input.savedThemes) } : {};
-    const symbolsData = { silicaDraftSymbols: asJson(input.symbols ?? {}) };
+    // ABSENT and EMPTY are different (docs/125 §9.3). This was an unconditional
+    // `input.symbols ?? {}`, so any payload that didn't carry symbols WIPED the
+    // tenant's whole saved-component library — and `toSyncInput` only includes them
+    // when `site.symbols` is truthy, so an engine handing back an empty/absent map
+    // silently destroyed every saved component. Theme and savedThemes one line up
+    // already guarded against exactly this; symbols did not.
+    //
+    // `{}` sent explicitly still stores `{}` — that IS "the author deleted their last
+    // symbol", and a library you can never empty is its own bug.
+    const symbolsData = symbolsUpdateFor(input.symbols);
+
+    // Symbol MASTERS are trees too — one can instantiate another, and can bind a
+    // pinned record. Reindexed only when the payload speaks about symbols at all
+    // (see symbolsUpdateFor): an absent map must not be read as "no symbols exist".
+    if (input.symbols != null) {
+      const masters = input.symbols as Record<string, { root?: SilicaNode } | undefined>;
+      // The library is replaced wholesale on write, so drop every symbol row for the
+      // property first — a master removed from the map has no other signal it is gone.
+      await tx.builderNodeIndex.deleteMany({
+        where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
+      });
+      for (const [key, def] of Object.entries(masters)) {
+        if (!def?.root) continue;
+        await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
+      }
+    }
     await tx.builderSite.upsert({
       where: { propertyId: ctx.propertyId },
       update: { ...themeData, ...savedThemesData, ...symbolsData },
@@ -734,11 +802,19 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
 /** Snapshot every silica DRAFT into its published counterpart — the publish
  *  lifecycle. Covers all four parts of the silica `Site`: page bodies, the frame,
  *  and the site-global theme + symbols. The storefront reads only the published
- *  columns and re-renders on read. */
-export async function publish(ctx: PropertyContext): Promise<void> {
+ *  columns and re-renders on read.
+ *
+ *  Each part is ALSO written to the immutable artifact store and sealed into a
+ *  release (docs/126 §5.3), which is what makes the publish reversible. The
+ *  published columns stay authoritative for rendering until Phase 6 flips reads
+ *  onto the artifacts — the two are written in the same transaction, so they
+ *  cannot disagree. */
+export async function publish(ctx: PropertyContext): Promise<{ id: string; hash: string }> {
   let publishedPageCount = 0;
+  let release = { id: '', hash: '' };
   await withTenant(ctx, async (tx) => {
     const now = new Date();
+    const manifest: ManifestEntry[] = [];
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const pages = allPages.filter(isSilica);
     publishedPageCount = pages.length;
@@ -746,6 +822,22 @@ export async function publish(ctx: PropertyContext): Promise<void> {
       await tx.builderPage.update({
         where: { id: r.id },
         data: { silicaPublishedTree: asJson(r.silicaDraftTree), publishedAt: now },
+      });
+      const hash = await recordArtifactTx(tx, ctx, 'page', r.id, r.silicaDraftTree);
+      manifest.push({ ownerKind: 'page', ownerId: r.id, hash });
+      // Also rebuild the node index here, not only in `sync` (docs/126 §5.4).
+      //
+      // `sync` alone leaves a real hole: it only ever indexes trees the editor just
+      // saved, so a page nobody has touched since the index shipped is invisible to
+      // every where-used query — and "which pages show this product?" silently
+      // answering "none" is worse than not offering the answer at all. Publish is the
+      // one operation guaranteed to visit EVERY tree in the property, so putting the
+      // rebuild here means any published site has a complete index. Cheap: the trees
+      // are already loaded and the rebuild rides this transaction.
+      await reindexTreeTx(tx, ctx, {
+        ownerKind: 'page',
+        ownerId: r.id,
+        tree: asNode(r.silicaDraftTree),
       });
     }
     const layout = await tx.builderLayout.findFirst({
@@ -755,6 +847,13 @@ export async function publish(ctx: PropertyContext): Promise<void> {
       await tx.builderLayout.update({
         where: { id: layout.id },
         data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },
+      });
+      const hash = await recordArtifactTx(tx, ctx, 'layout', layout.id, layout.silicaDraftTree);
+      manifest.push({ ownerKind: 'layout', ownerId: layout.id, hash });
+      await reindexTreeTx(tx, ctx, {
+        ownerKind: 'layout',
+        ownerId: layout.id,
+        tree: asNode(layout.silicaDraftTree),
       });
     }
 
@@ -772,7 +871,44 @@ export async function publish(ctx: PropertyContext): Promise<void> {
           publishedAt: now,
         },
       });
+      const symbolsHash = await recordArtifactTx(
+        tx,
+        ctx,
+        'symbols',
+        ctx.propertyId,
+        site.silicaDraftSymbols
+      );
+      manifest.push({ ownerKind: 'symbols', ownerId: ctx.propertyId, hash: symbolsHash });
+      // Symbol masters, same completeness argument as the pages above. Wholesale
+      // replace: a master dropped from the library has no other signal it is gone.
+      await tx.builderNodeIndex.deleteMany({
+        where: { propertyId: ctx.propertyId, ownerKind: 'symbol' },
+      });
+      const masters = (site.silicaDraftSymbols ?? {}) as Record<
+        string,
+        { root?: SilicaNode } | undefined
+      >;
+      for (const [key, def] of Object.entries(masters)) {
+        if (!def?.root) continue;
+        await reindexTreeTx(tx, ctx, { ownerKind: 'symbol', ownerId: key, tree: asNode(def.root) });
+      }
+      // A null theme records NO entry rather than an artifact holding `null`. Absence is
+      // how a restore knows to clear the published theme, and it keeps the artifact table
+      // free of rows that carry nothing.
+      if (site.silicaDraftTheme != null) {
+        const themeHash = await recordArtifactTx(
+          tx,
+          ctx,
+          'theme',
+          ctx.propertyId,
+          site.silicaDraftTheme
+        );
+        manifest.push({ ownerKind: 'theme', ownerId: ctx.propertyId, hash: themeHash });
+      }
     }
+
+    release = await createReleaseTx(tx, ctx, manifest);
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -781,7 +917,7 @@ export async function publish(ctx: PropertyContext): Promise<void> {
       action: 'builder.site.published',
       entityType: 'Property',
       entityId: ctx.propertyId,
-      diff: { after: { pages: pages.length } },
+      diff: { after: { pages: pages.length, release: release.hash } },
     });
   });
   // The compiled Surface stylesheet is memoized per property (docs/127 §4). Publishing
@@ -795,8 +931,17 @@ export async function publish(ctx: PropertyContext): Promise<void> {
     // count, NOT a `pageId`. It previously put `ctx.propertyId` in a field named
     // `pageId` (docs/127 §6), which was harmless only for as long as nothing consumed
     // it; cache-revalidation-worker now does.
-    payload: { propertyId: ctx.propertyId, scope: 'site', pages: publishedPageCount },
+    // `hash` is the release address (docs/126 §5.3) — the value a consumer can use as a
+    // cache key, because it changes if and only if the published bytes did.
+    payload: {
+      propertyId: ctx.propertyId,
+      scope: 'site',
+      pages: publishedPageCount,
+      releaseId: release.id,
+      hash: release.hash,
+    },
   });
+  return release;
 }
 
 // ── Single-item safe writers (the Builder MCP silica tools) ───────────────────

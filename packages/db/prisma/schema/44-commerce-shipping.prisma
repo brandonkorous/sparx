@@ -3,10 +3,19 @@
 // chosen at checkout time.
 
 model ShippingZone {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
-  name     String @db.VarChar(127)
-  priority Int    @default(0)
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Which site delivers here (docs/131 §4); null = every site does. A zone is a
+  // statement about WHERE A BUSINESS SHIPS, and two unrelated businesses rarely
+  // agree: a donut shop delivers within 15 miles, a machine shop ships freight
+  // nationwide. Sharing zones put donut delivery rates on a parts cart.
+  //
+  // Nullable because a shared footprint is real — one owner shipping everything
+  // from one warehouse to the same countries means one zone, not N copies to
+  // keep in sync as borders and carriers change.
+  propertyId String? @map("property_id") @db.Uuid
+  name       String  @db.VarChar(127)
+  priority   Int     @default(0)
 
   // Targeting payload — countries[], regions[], postalCodeRanges[]
   // (ISO codes + ranges). Service-layer Zod validates the shape.
@@ -15,16 +24,29 @@ model ShippingZone {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  rates  ShippingRate[]
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a delivery footprint drawn for one business goes with it. SetNull
+  // would promote it to every remaining site, quoting a closed business's rates
+  // on live carts.
+  property Property?      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  rates    ShippingRate[]
 
   @@index([tenantId, priority])
+  @@index([tenantId, propertyId, priority])
   @@map("commerce_shipping_zones")
 }
 
 model ShippingProfile {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String  @map("tenant_id") @db.Uuid
+  // null = usable by every site (docs/131 §4). Weaker grounds than the ZONE
+  // above, and worth stating: a profile is mostly about how PRODUCTS ship
+  // (hazmat class, signature, freight), which is a property of the goods rather
+  // than of the business — so a genuinely shared profile is the common case and
+  // this stays nullable. What earns the column is the NAME: an operator picking
+  // a profile should not scroll past another business's "Refrigerated local
+  // delivery" to find their own.
+  propertyId  String? @map("property_id") @db.Uuid
   name        String  @db.VarChar(127)
   description String? @db.Text
 
@@ -40,18 +62,26 @@ model ShippingProfile {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant          Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property        Property?                   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   rates           ShippingRate[]
   productLinks    ShippingProfileProduct[]
   variantLinks    ShippingProfileVariant[]
   collectionLinks ShippingProfileCollection[]
 
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("commerce_shipping_profiles")
 }
 
 // Merchant-defined fallback rates. Real-time provider rates always win
 // when a ShippingProvider installation is active.
 
+// NOTE: ShippingRate carries NO property_id, deliberately (docs/131 §4, §2's
+// third pattern — inherited from parent). A rate exists only at the intersection
+// of a zone and a profile, both of which are now site-scoped, so the rate is
+// already reachable only from a site that can reach its zone. A column here
+// would be a second source of truth that can contradict the first — a rate
+// claiming one site while its zone claims another has no defined meaning.
 model ShippingRate {
   id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId  String @map("tenant_id") @db.Uuid

@@ -290,14 +290,35 @@ export async function redeemCode(
   return withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: input.cartId, abandonedAt: null },
-      select: { id: true, customerId: true, channel: true },
+      select: { id: true, customerId: true, channel: true, propertyId: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
 
     const discount = await tx.discount.findFirst({
-      where: { code: upper, deletedAt: null, status: 'active' },
+      where: {
+        code: upper,
+        deletedAt: null,
+        status: 'active',
+        // The promo must be offered ON THIS CART'S SITE (docs/131 §4). No links
+        // at all = every site, the ProductProperty convention — so an untargeted
+        // discount behaves exactly as it always has. Without this, "20% off
+        // donuts" applied at a machine-shop checkout, and the machine shop paid
+        // for a promotion it never ran.
+        ...(cart.propertyId
+          ? {
+              OR: [
+                { siteLinks: { none: {} } },
+                { siteLinks: { some: { propertyId: cart.propertyId } } },
+              ],
+            }
+          : {}),
+      },
     });
     if (!discount) {
+      // Deliberately the same message as a non-existent code. A code that IS
+      // valid on a sibling site must not be distinguishable from one that does
+      // not exist, or the error becomes a way to enumerate the other business's
+      // active promotions.
       throw new CommercePricingError(`No active discount for code "${upper}"`);
     }
 

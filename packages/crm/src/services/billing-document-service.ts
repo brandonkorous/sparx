@@ -28,6 +28,21 @@ import {
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
 
+/** The tenant's primary site — the issuer for a document created without one
+ *  (docs/131 §3.6). Every tenant has exactly one, seeded at provisioning, so the
+ *  throw is a real invariant violation rather than a routine miss. */
+async function resolvePrimarySiteId(
+  tx: Prisma.TransactionClient,
+  tenantId: string
+): Promise<string> {
+  const row = await tx.property.findFirst({
+    where: { tenantId, isPrimary: true },
+    select: { id: true },
+  });
+  if (!row) throw new CrmNotFoundError('Property', `primary for tenant ${tenantId}`);
+  return row.id;
+}
+
 interface PendingDocEvent {
   topic: CrmTopic;
   payload: Record<string, unknown>;
@@ -299,9 +314,16 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
 
     await assertPartyExists(tx, input.customerId ?? null, input.b2bAccountId ?? null);
 
+    // The ISSUING site (docs/131 §3.6) — set once at create and never changed,
+    // because it is what `numberSeq` is allocated against. Re-homing a document
+    // after it has a number would take a number out of one business's books and
+    // drop it into another's, leaving a gap in the first.
+    const propertyId = input.propertyId ?? (await resolvePrimarySiteId(tx, ctx.tenantId));
+
     const created = await tx.billingDocument.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId,
         workflowId: workflow.id,
         stageId: stage.id,
         customerId: input.customerId ?? null,

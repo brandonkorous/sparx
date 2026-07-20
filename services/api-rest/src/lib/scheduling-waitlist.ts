@@ -7,6 +7,7 @@
 // the BookingNotification ledger, which is bookingId-keyed) — a direct transactional
 // send, since there's no booking yet.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -22,7 +23,7 @@ import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
 import { sendTenantEmailByKey } from './tenant-email.js';
 
-const WAITLIST_LOCK_KEY = 4242_4248;
+const WAITLIST_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_WAITLIST;
 const DEFAULT_INTERVAL_MS = 300_000; // every 5 min
 const SCAN_LIMIT = 200;
 const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';

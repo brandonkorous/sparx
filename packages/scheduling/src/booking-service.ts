@@ -99,7 +99,19 @@ async function pickForRole(
   tx: TxClient,
   req: ResourceRequirement,
   span: Interval,
-  opts: { explicitIds: string[]; locationId?: string; partySize?: number; strategy: string }
+  opts: {
+    explicitIds: string[];
+    locationId?: string;
+    partySize?: number;
+    strategy: string;
+    /** The site this booking is for (docs/131 §4). A resource is eligible only
+     *  if it works for this site (a junction row) or is unrestricted (no rows).
+     *  This is what stops one storefront's booking from allocating a person who
+     *  only works the other business — the double-booking-a-human failure the
+     *  resource junction exists to prevent. Undefined = no site constraint (a
+     *  tenant-wide service). */
+    propertyId?: string | null;
+  }
 ): Promise<AllocationPick[]> {
   const count = req.count ?? 1;
   const candidates = await tx.schedulingResource.findMany({
@@ -107,6 +119,16 @@ async function pickForRole(
       kind: req.kind,
       isActive: true,
       deletedAt: null,
+      // Reachable from this site: either the resource has a link to it, or it has
+      // NO links at all (available everywhere — the ProductProperty convention).
+      ...(opts.propertyId
+        ? {
+            OR: [
+              { siteLinks: { some: { propertyId: opts.propertyId } } },
+              { siteLinks: { none: {} } },
+            ],
+          }
+        : {}),
       ...(req.skillTags?.length ? { skillTags: { hasEvery: req.skillTags } } : {}),
       ...(opts.locationId ? { locationId: opts.locationId } : {}),
       ...(opts.explicitIds.length ? { id: { in: opts.explicitIds } } : { bookableOnline: true }),
@@ -199,6 +221,9 @@ export async function createBooking(
         locationId,
         partySize: input.partySize,
         strategy: service.assignmentStrategy,
+        // The service's site bounds which resources may be allocated (docs/131
+        // §4) — a tenant-wide service (null) imposes no constraint.
+        propertyId: service.propertyId,
       });
       picks.push(...rolePicks);
     }
@@ -210,6 +235,10 @@ export async function createBooking(
       booking = await tx.booking.create({
         data: {
           tenantId,
+          // Inherit the SITE from the service being booked (docs/131 §4),
+          // denormalized so the booking still names the right business if the
+          // service is later re-scoped or deleted.
+          propertyId: service.propertyId,
           serviceId: service.id,
           bookingType: service.bookingType,
           seriesId: opts.seriesId ?? null,

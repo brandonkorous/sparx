@@ -16,6 +16,7 @@
 // read/write then re-enters `withTenant` so it is FORCE-RLS scoped. `db` is the
 // app-role client.
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import { Action } from '@sparx/automation-schemas';
 import type { PrismaClient } from '@prisma/client';
 import { withTenant } from '@sparx/db';
@@ -33,7 +34,7 @@ import {
 import { resolveFields } from '../resolvers/registry';
 import { installBuiltins } from './install';
 
-const AUTOMATION_TICK_LOCK = 4242_4250;
+const AUTOMATION_TICK_LOCK = ADVISORY_LOCKS.AUTOMATION_RUN;
 const DEFAULT_BATCH = 100;
 
 export interface TickResult {

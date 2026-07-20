@@ -7,6 +7,7 @@
 // error`, raises `calendar.sync_failed`, and the resource simply falls back to
 // sparx-only data — a stale feed never weakens the DB-level no-overlap guard (§8.4).
 
+import { ADVISORY_LOCKS } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import {
@@ -22,7 +23,7 @@ import { assertPublicHttpsUrl, CalendarFeedError } from './scheduling-url-guard.
 import { APPLE_ICLOUD_CALDAV, fetchCalDavBusyIcs } from './caldav-client.js';
 import { syncOAuthConnection } from './scheduling-calendar-oauth-sync.js';
 
-const CALENDAR_SYNC_LOCK_KEY = 4242_4246;
+const CALENDAR_SYNC_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_CALENDAR_SYNC;
 const DEFAULT_INTERVAL_MS = 300_000; // tick every 5 min
 const STALE_SECONDS = 3600; // refresh a feed at most ~hourly (upstream caches 12–24h anyway)
 const PAST_MS = 2 * 24 * 60 * 60 * 1000; // import a little history…

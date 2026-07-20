@@ -46,6 +46,7 @@ import {
   moduleBlockedMessage,
 } from '../../lib/module-toggle.js';
 import { computeBannerEnabled } from '../../lib/consent.js';
+import { resolvePropertyId } from '../../lib/property.js';
 import { env } from '../../env.js';
 import Stripe from 'stripe';
 import { SignJWT, jwtVerify } from 'jose';
@@ -437,12 +438,19 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     return ok({ ...row, socials: readSocials(row.socials) });
   });
 
-  // Cookie-consent config (docs/42 §4). Read by any staff; edited by admins.
+  // Cookie-consent config (docs/42 §4), PER SITE (docs/131 §3.9). The route
+  // keeps its `/v1/tenant/consent` path for now, but the row it reads and writes
+  // belongs to the site in the switcher — two businesses under one tenant run
+  // their own banner, regime, and policy version.
   app.get('/v1/tenant/consent', async (request) => {
-    requireAuth(request);
+    const auth = requireAuth(request);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const row = await withRequestTenant(request, (tx) =>
       tx.consentSettings.findUnique({
-        where: { tenantId: requireAuth(request).tenantId },
+        where: { tenantId_propertyId: { tenantId: auth.tenantId, propertyId } },
       })
     );
     return ok(serializeConsent(row));
@@ -451,11 +459,16 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/tenant/consent', async (request) => {
     const auth = requireRole(request, 'admin');
     const input = PatchConsent.parse(request.body);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const row = await withRequestTenant(request, (tx) =>
       tx.consentSettings.upsert({
-        where: { tenantId: auth.tenantId },
+        where: { tenantId_propertyId: { tenantId: auth.tenantId, propertyId } },
         create: {
           tenantId: auth.tenantId,
+          propertyId,
           mode: input.mode ?? 'off',
           activeCategories: input.activeCategories ?? [],
           bannerTitle: input.bannerTitle ?? null,

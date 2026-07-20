@@ -10,23 +10,44 @@ import {
   Layers,
   Link2,
   PackageCheck,
+  PackageSearch,
   RefreshCw,
   Truck,
   Warehouse,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
+import { StockItemSurface } from '../../../surfaces/inventory/stock-item';
+import { StockListSurface } from '../../../surfaces/inventory/stock-list';
 import { stub } from './stub';
 
 export const INVENTORY_SURFACES: SurfaceDefinition[] = [
-  stub({
+  {
+    // Unsectioned on purpose: stock is the module's landing surface, so it leads
+    // the panel above the grouped sections (unsectioned surfaces sort first —
+    // see nav.ts).
     key: 'inventory.stock.list',
     title: 'Stock',
     module: 'inventory',
     icon: Boxes,
     order: 1,
-    keywords: ['on hand', 'levels', 'quantity', 'availability'],
-    body: 'How much of each thing you have right now, everywhere you keep it.',
-  }),
+    keywords: ['on hand', 'levels', 'quantity', 'availability', 'low stock', 'reorder'],
+    component: StockListSurface,
+  },
+  {
+    key: 'inventory.stock.item',
+    title: 'Stock item',
+    module: 'inventory',
+    icon: PackageSearch,
+    component: StockItemSurface,
+    // Reachable from the list, not the launcher — opening "an item's stock" with
+    // no item in mind is not a thing anyone wants. There is no create
+    // counterpart either: a stock level comes into existence by being counted,
+    // received or sold, never by being declared.
+    listed: false,
+    // Docks comfortably beside the list it was opened from, which is the whole
+    // point of shift-clicking a row.
+    besideWidth: 0.45,
+  },
 
   /* ── Where it lives ────────────────────────────────────────────────────── */
   stub({

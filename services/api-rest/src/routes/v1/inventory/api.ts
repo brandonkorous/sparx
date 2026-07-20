@@ -4,7 +4,9 @@
 // the four canonical endpoints the spec names, each enforcing the per-key scope
 // (`read:inventory` / `write:inventory`) on top of the module + role gates.
 //
-//   GET   /v1/inventory               List inventory levels (cross-warehouse)
+//   GET   /v1/inventory               List inventory levels (cross-warehouse,
+//                                     filterable by warehouse/product/variant/
+//                                     low-stock, sortable)
 //   PATCH /v1/inventory/:variant_id   Set on-hand or apply a delta at a warehouse
 //   POST  /v1/inventory/adjustments   Bulk adjustment (JSON or text/csv)
 //   GET   /v1/inventory/alerts        Low-stock alerts
@@ -32,6 +34,14 @@ const ListQuery = z.object({
   // stock view reads. `q` is not a substitute: it matches product title as a
   // substring, so "Camp Mug" and "Camp Mug XL" come back together.
   product_id: z.string().uuid().optional(),
+  // Every level for ONE variant — "this SKU, everywhere it is kept". The read a
+  // variant-scoped stock view makes.
+  variant_id: z.string().uuid().optional(),
+  // Only what is at or below its reorder point, measured against SELLABLE stock
+  // so the filter agrees with the "Running low" badge the surfaces render.
+  low_stock_only: z.coerce.boolean().optional(),
+  sort_by: z.enum(['updatedAt', 'available', 'sku', 'product']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(200).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -61,6 +71,10 @@ const inventoryApiRoutes: FastifyPluginAsync = async (app) => {
       ...(q.warehouse_id ? { warehouseId: q.warehouse_id } : {}),
       ...(q.q ? { q: q.q } : {}),
       ...(q.product_id ? { productId: q.product_id } : {}),
+      ...(q.variant_id ? { variantId: q.variant_id } : {}),
+      ...(q.low_stock_only === true ? { lowStockOnly: true } : {}),
+      ...(q.sort_by ? { sortBy: q.sort_by } : {}),
+      ...(q.order ? { order: q.order } : {}),
       take,
       skip,
     });

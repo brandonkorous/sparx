@@ -1,8 +1,286 @@
 # 131 — Site Scoping: the operational layer
 
-Version: 1.0.0
+Version: 1.2.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
+
+## Status
+
+| Item                                       | Column | Enforcement | Notes                                     |
+| ------------------------------------------ | ------ | ----------- | ----------------------------------------- |
+| §3.1 `Automation`                          | done   | done        | migration 20261211/20261212               |
+| §3.2 `ApiKey`                              | done   | done        | + `api_keys` operator-read fix (20261215) |
+| §3.3 `Member`                              | done   | done        | + junction operator-read fix (20261213)   |
+| §3.4 `EmailSettings` / `SendingDomain`     | done   | done        | migration 20261216; `is_default` dropped  |
+| §3.5 `AiPromptTemplate` / `AiToolPolicy`   | done   | done        | migration 20261217                        |
+| §3.7 `ChatConversation` / `ChatQuickReply` | done   | done        | migration 20261218                        |
+| §3.8 `Redirect`                            | done   | done        | migration 20261219                        |
+| §3.9 `ConsentRecord` / `ConsentSettings`   | done   | done        | migration 20261219                        |
+| §3.6 `BillingDocument`                     | done   | done        | migration 20261221 — numbering + issuer   |
+
+**P0 is complete.** §3.6 was the largest of the nine and the least reversible: a
+wrong scoping decision elsewhere shows the wrong data, but a wrong one here
+produces documents that were already wrong when a customer received them, and no
+later migration retracts a sent invoice. It carried two fixes rather than one —
+`numberSeq` became a per-SITE sequence (the per-tenant one interleaved two
+businesses' books, so each appeared to skip numbers and the gaps disclosed that
+two brands are one entity), and `issuedBy` now freezes the seller onto the
+document at finalize, closing the asymmetry where `billTo`/`shipTo` were
+snapshotted and the seller was read live.
+
+Three deliberate calls inside §3.6 worth carrying forward:
+
+- **`ON DELETE RESTRICT`** on `billing_documents.property_id` — the only blocking
+  FK in this remediation. Cascade would let deleting a site destroy its books;
+  SetNull would leave invoices nobody issued. Refusing the delete is the honest
+  answer rather than choosing which damage to do, so a site with billing history
+  must be archived instead.
+- **Existing rows keep `issued_by` NULL** rather than being backfilled from
+  today's business details. A snapshot is a claim about what the document said
+  WHEN ISSUED; inventing one now would fabricate exactly the evidence the column
+  exists to make trustworthy. Renderers fall back to the live entity for those.
+- **The issuer snapshot carries BOTH names** (`siteName` + `legalName` + gated
+  `taxId`). The trading name is what the customer recognises; the legal entity is
+  what the tax authority requires, and on a multi-brand tenant they differ. The
+  tax id is included only when `taxRegistered` — printing a VAT number a business
+  does not have is a misrepresentation.
+
+**Not changed: `Order.orderNumber`.** The same disclosure argument applies (order
+numbers appear in customer email), but `Order.propertyId` is NULLABLE by design —
+orders outlive their site via SetNull — so a per-site count would be unstable in
+exactly the case that matters. Left alone deliberately rather than by omission;
+if per-site order numbering is wanted it needs a stable allocation column of its
+own, not a count.
+
+### P1 — started
+
+`PurchaseApprovalRule` is **done** (migration 20261222). Taken first because §4
+flags it "arguably P0" and that reading is right: it is the only P1 item that
+decides whether an order can be **placed at all**, rather than which data a
+screen shows. Nullable, and matching is now two independent axes — a rule fires
+when its ACCOUNT axis covers the buyer (specific, or null = any) AND its SITE
+axis covers the order's site. Two ORs under an AND, not one OR: collapsing them
+would fire a donut-shop threshold on a machine-shop order.
+
+Worth recording, because it was almost documented as fiction: the file header
+described a most-specific-wins precedence order that **the code does not
+implement** — the gate is a boolean `findFirst`, so a specific rule and a
+catch-all cannot disagree (both mean "requires approval"). The header now says
+that, plus the condition that would break it: the moment rules carry different
+APPROVERS, "which rule fired" starts to matter and a real precedence order has to
+be chosen rather than inherited from `findFirst`'s arbitrary ordering.
+
+`Discount` and shipping (`ShippingZone`, `ShippingProfile`) are **done**
+(migration 20261223). Both are money a customer sees at checkout, and the two
+used DIFFERENT patterns on purpose — this pair is the clearest worked example of
+§2's choice between them:
+
+- **`Discount` → junction** (`DiscountProperty`, copied from `ProductProperty`).
+  A promotion genuinely runs on several sites: an owner's whole-portfolio sale is
+  ONE promotion, and N copies means N things to expire, amend, and get out of
+  sync. Empty = all sites, so no backfill.
+- **`ShippingZone`/`ShippingProfile` → nullable column.** A delivery footprint
+  belongs to one business's logistics; the shared case is a single warehouse
+  serving everything, which null expresses directly.
+- **`ShippingRate` → neither.** It exists only at the intersection of a zone and
+  a profile, both now scoped, so it is already unreachable from a site that
+  cannot reach its zone. A column there would be a second source of truth able to
+  contradict the first.
+
+Two decisions inside that are easy to get backwards:
+
+- **Discount CODE uniqueness stays per-TENANT** even though the promo is now
+  per-site. Two businesses each defining `SAVE10` with different terms is a
+  support incident — a shopper quoting the code to staff, or an operator reading
+  a report, has no way to tell which is meant. One code, one meaning.
+- **A code valid on a sibling site returns the same error as a nonexistent one.**
+  Distinguishing them turns the redeem endpoint into a way to enumerate the other
+  business's active promotions.
+
+`SeoAudit` is **done** (migration 20261224), and it is the one item so far where
+the obvious answer was wrong. A score is an average over a set of pages, so
+merging two sites computes a _different_ number, not a mislabelled one — which
+argues for a REQUIRED column. But the four audited entity types disagree about
+site membership: a `builder_page` carries `property_id` directly, while a
+`product`, `collection`, or `cms_page` reaches sites through a JUNCTION and can
+appear on several while having ONE score (its title and description are the same
+wherever it shows). Pinning a shared product to a single site would invent a fact
+the data does not have, so the column is nullable: SET for single-site entities,
+NULL for shared ones. A site's overview is then "audits scoped to me, UNION
+audits for entities I expose", resolved through junctions that already answer
+that question.
+
+The unique key `(tenantId, entityType, entityId)` deliberately does NOT gain
+`propertyId`. An entity has one score; adding the site would let the same page
+hold two contradictory scores. The key expresses "one score per thing" —
+`propertyId` is an attribute of the thing, not part of its identity.
+
+`ProductReview` / `ProductQuestion` / `Wishlist` are **done** (migration
+20261226). These stamp **where the content was written**, deliberately not "the
+site that owns the product" — a product reaches sites through the
+`ProductProperty` junction and can be listed on several, so ownership cannot
+identify a site and the act of writing is unrecoverable afterwards. Hence a
+denormalized column rather than a join.
+
+All three are **SetNull**, and the contrast is the rule worth carrying: these are
+records of what a real person wrote or saved, so closing a storefront must not
+delete their words or empty their list. Operator-authored content (quick replies,
+letterhead templates, redirects) Cascades, because it belongs to the business.
+`ProductAnswer` gets no column — it exists only under its question and inherits.
+
+**Known gap, deliberately left open.** `Product.averageRating` / `reviewCount`
+are denormalized columns on `products`, so they remain TENANT-WIDE while the
+review list is now per-site. On a product listed on two storefronts the PDP can
+show a star rating computed from 12 reviews above a list containing 3. The honest
+fix is a per-`(product, site)` aggregate — most naturally on the ProductProperty
+junction — which is a schema change plus a recompute path, not a filter. Scoping
+the list without it is still a strict improvement: the reviews a shopper READS
+are the right ones. Recorded at `review-service.ts` `recomputeProductRating`.
+
+`Author`, `Taxonomy`, `TaxonomyTerm` are **done** (migration 20261227). Three
+models that scope three different ways, which is the point rather than an
+accident:
+
+- **`Author` → nullable, SetNull.** A byline is a public PERSONA, not a login
+  (`userId` is the separate optional link to a staff account). SetNull is the
+  one that is easy to get wrong: deleting a site must not delete a person's
+  byline, because their published articles still reference it.
+- **`Taxonomy` → nullable, Cascade.** A vocabulary is a SCHEMA ("posts have
+  categories"), so shared is the common correct case.
+- **`TaxonomyTerm` → nullable, Cascade, and scoped INDEPENDENTLY of its
+  taxonomy.** A term is CONTENT — "Diesel repair" is meaningless on a donut site
+  and would otherwise appear in its category filters. A shared vocabulary
+  holding per-site terms is the arrangement that is actually useful, and that is
+  only expressible if the term does not inherit.
+
+All three keep slug/key uniqueness at the TENANT (or taxonomy) level rather than
+adding `propertyId`. Those columns back URL segments — `/authors/jane`,
+`/blog/category/specials` — so letting two sites own one slug reintroduces
+exactly the ambiguity a slug exists to remove, and would collide a shared
+null-site row with a site-scoped one.
+
+**Scheduling — the whole module — is done** (migration 20261228), and it's the
+one that exercises both scoping patterns at once because its models genuinely
+differ:
+
+- **Direct column:** `SchedulingService`, `BookingPolicy`, `IntakeForm` (Cascade
+  — authored offerings) and `Booking` (SetNull — a record of an appointment a
+  real customer made). `Booking.propertyId` is denormalized from the service AT
+  BOOKING TIME, so re-scoping a service later cannot rewrite which business past
+  bookings belonged to.
+- **Junction:** `SchedulingResourceProperty` and `BusinessLocationProperty`. A
+  resource is often a PERSON who works both businesses, and a column would split
+  them into two calendars — double-booking a human is the worst failure this
+  module can produce. A location is a PLACE that can host more than one business.
+  Both are the SAME shape as warehouses, and the location junction resolves the
+  open question the doc flagged at `78-scheduling.prisma` / docs/79 §21.
+
+Enforcement went beyond stamping the column. The **allocation engine** now filters
+candidate resources by the booking's site — a resource is eligible only if it
+works for that site or is unrestricted — so the junction is a real booking
+constraint, not just a label. The public widget lists per-site services (a donut
+site no longer offers oil changes), and staff service-create defaults to the site
+being worked in.
+
+`ChannelConnection` is **done** (migration 20261229). An Etsy/TikTok/Amazon shop
+belongs to one business — Bob's Parts and Savory Donuts each have their own Etsy,
+under their own name and OAuth grant — and both can connect the SAME channel
+type, which the old `(tenant, channel)` unique made impossible for the second.
+Now `(tenant, property, channel)`, NULLS NOT DISTINCT so the tenant-wide tier
+also can't duplicate. `ChannelProductMapping` inherits from its connection and
+takes no column. The site is captured at connect time and carried through the
+SIGNED OAuth state to the callback — it cannot be re-derived there, because the
+callback has no signal for which site the operator was on, and guessing would
+authenticate one business as another.
+
+### DECISION NEEDED — sparx.market merchant identity (not started)
+
+`MarketMerchantProfile` / `MarketMerchant` / `MarketListing` are the remaining
+marketplace models, and they are **blocked on a product call**, not on effort.
+The problem: the merchant projection's `slug` drives a GLOBALLY-UNIQUE public URL
+(`/merchants/{slug}`), and today that slug IS the tenant slug (globally unique by
+construction). Making each site its own merchant — which §7's principle requires,
+so "Korous Family Inc." is not the seller for both donuts and brake pads — means
+each site needs its own globally-unique merchant slug, and `Property.slug` is
+only unique WITHIN a tenant (every tenant's primary is `'primary'`).
+
+So this needs a decision on the public URL shape before any code:
+
+- **Namespaced:** `/merchants/{tenantSlug}-{siteSlug}` (or the primary keeps the
+  bare tenant slug and additional sites get a suffix). Safe, ugly.
+- **Site-chosen global handle:** each market-participating site claims a unique
+  merchant handle, enforced globally. Cleaner URLs, adds a claim/collision flow.
+
+It also touches the 328-line projection worker (per-site profile → per-site
+projection rows → per-listing merchant attribution), so it is a real slice, not a
+column add. Deliberately left for that decision rather than half-scoped — a
+schema that says per-site while the worker still writes one row per tenant would
+be worse than the honest tenant-wide state it is in now.
+
+`Page` and `ContentType` are **done** (migration 20261230), and `NavigationItem`
+needed no work. Details:
+
+- **`Page` → direct nullable column.** A page's slug is a URL, so this is the
+  Redirect shape — uniqueness moved to `(tenant, property, slug)` (NULLS NOT
+  DISTINCT) so two sites can each own `/about`. The `pages` table is still live
+  (search projection, chat grounding, dashboard counts), so this was a real leak;
+  the AI grounding now cites only the conversation's site's pages.
+- **`ContentType` → nullable, like Taxonomy.** It is a SCHEMA, so shared is the
+  common case; its entries carry the per-site scope via the existing
+  `ContentEntryProperty` junction. `key` uniqueness stays per-tenant (it routes).
+- **`NavigationItem` → already done.** It belongs to a `NavigationMenu`, which is
+  already per-site (`propertyId`, null = tenant-wide fallback), and inherits —
+  the same pattern as ProductAnswer / ShippingRate / ChannelProductMapping. The
+  P1 list should not have named it separately.
+
+### DECISION NEEDED — the sitebuilder layout/theme group (49)
+
+The doc's P1 list lumped six models together —
+`SiteTheme`/`SiteLayoutDefault`/`SiteLayoutAssignment`/`PageLayout`/`SiteSection`/
+`SiteLayoutBlock` — as "tenant-scoped while `SiteConfig`/`SiteVersion` beside them
+are property-scoped." Working through them, that grouping is wrong and hides a
+real conflict:
+
+- **`SiteTheme` (and the section tier) are DELIBERATELY tenant-wide.** The
+  property schema states it outright at `08-property.prisma`: "The saved-theme
+  LIBRARY (SiteTheme) + the legacy section tier stay tenant-wide and do NOT
+  relate here." A theme is a reusable design you save once and apply to any
+  site — the same call as MediaAsset in §7 (shared library, per-site usage).
+  Scoping it would break reuse and directly reverse a written decision, so it
+  needs the same deliberate override §7 required, not a silent column.
+- **`PageLayout` / `SiteSection` / `TenantSectionDefinition` are also libraries**
+  — reusable layout and section definitions, tenant-wide for the same reason.
+- **`SiteLayoutDefault` / `SiteLayoutAssignment` are the genuinely per-site
+  ones** — they decide WHICH layout renders for a site's target or a specific
+  item, and two sites sharing a PageLayout library can legitimately want
+  different defaults. These want `propertyId` (+ tenant fallback on resolution).
+
+I did NOT scope any of them, deliberately. The library-vs-application split needs
+confirming, and the per-site half (`SiteLayoutDefault`/`Assignment`) resolves
+against a read path that interlocks with `SiteConfig` (already per-site) and the
+in-flight builder rebuild (docs/98) — a half-migration of a live builder
+subsystem is worse than a clear flag. This is decision #4, alongside the market
+merchant slug.
+
+**The rest of P1 is untouched** — the sitebuilder group above (pending the
+decision), plus a handful of
+remaining customer-facing commerce (`Bundle`, `PriceList`/`MarkupRule`/
+`SurchargeRule`, fitment, reviews/questions/wishlists), the whole 16-model
+scheduling module, and marketplace & channels. Scheduling is the largest coherent
+chunk and has a live prerequisite: its own TODO at `78-scheduling.prisma:462`
+about reconciling with a shared locations table, which this decision forces.
+`SchedulingResource` is the one model there wanting a junction rather than a
+column — a person can genuinely work both businesses.
+
+### Not done as specified: `ChatMessage.property_id`
+
+§3.7 called for `property_id` denormalized onto `ChatMessage`. It was skipped.
+The tenant_id denorm exists because the RLS policy must filter without a join;
+site filtering has no equivalent need, since messages are only ever read through
+their conversation. Adding it would buy nothing and cost a sync obligation — a
+conversation re-homed to another site would silently disagree with its own
+messages. Revisit only if per-site message analytics needs it, and then denorm
+with a trigger rather than by hand.
 
 ## The principle
 
@@ -228,7 +506,68 @@ part that needs scoping.
 view_. They each need a **parallel per-property rollup**, exactly as
 `RollupSiteDaily` already does. A missing sibling table, not a defect.
 
-## 7. Decisions needed — product calls, not technical ones
+## 7. Decisions — RESOLVED 2026-07-20
+
+Each call is recorded with the reasoning, because the reasoning is what a future
+reader needs in order to know whether a changed circumstance should reopen it.
+The test throughout is the one that settled this document: **would Bob's Parts
+and Savory Donuts share this?** — never "is the underlying resource shared?",
+which gave the wrong answer three times running.
+
+1. **`TenantBrand` → per-site. OVERRIDES the written decision in
+   `50-email.prisma:22`** ("email may never override the brand"). That rule was
+   right about the thing it was aimed at — an email must not invent its own
+   look — but it assumed one brand per tenant, and that assumption is what this
+   document overturns. Two unrelated businesses cannot share a logo and palette,
+   so the rule is preserved in its true form: **email may not override the SITE's
+   brand.** `Property.brandOverride` already exists and is the migration path;
+   the consolidation makes it the primary rather than an override.
+2. **`CustomerUser` → stays tenant-wide login, per-site MEMBERSHIP.** The
+   exception that proves the rule: a login is an identity, not a business
+   relationship, and `Customer` (the CRM record) is already property-scoped, so
+   the two-layer split is correct as built. What must NOT be inherited is
+   entitlement — signing in must not by itself grant order history, saved
+   addresses, or B2B pricing on a site the person never used. Confirmed
+   deliberately, not by default; the sibling-site sign-in is a feature (one
+   account across a family of brands) only because the entitlement stays scoped.
+3. **`EmailSuppression` → split, as proposed.** `propertyId` null for
+   `bounce`/`complaint`, set for `unsubscribe`. A hard bounce is a fact about an
+   ADDRESS and belongs tenant-wide; an unsubscribe is a decision about a
+   RELATIONSHIP. Opting out of donut marketing must never stop a parts order
+   receipt — and continuing to mail an address that hard-bounced is how a sending
+   domain's reputation dies, which is why that half stays global.
+4. **`GiftCard` → per-site.** Money redeemable at a business the buyer has never
+   heard of is a liability transfer nobody agreed to. Cross-site redemption is a
+   real feature for a deliberate brand family, but it is opt-in, not the default.
+5. **`B2BAccount` → per-site account, per-site credit.** `creditLimit` /
+   `creditUsed` on a shared account means an order at one business consumes the
+   other's exposure, and a credit hold at one silently blocks the other. A fleet
+   customer buying from both gets two accounts; a genuine shared line is a later
+   feature with an explicit parent-account model, not an accident of schema.
+6. **`TaxExemption` → tenant-level. Genuinely.** Exemption is granted to a LEGAL
+   SELLER, and both sites bill under one EIN (`TenantBusiness` holds the tax id).
+   Making it per-site would ask a customer to re-file the same certificate for
+   the same legal entity. If sites ever bill under separate entities, this moves
+   with the entity — not with the site.
+7. **`FeedbackSubmission` → tenant-level, unchanged.** It is platform feedback to
+   WizeWorks from a staff user. Customer feedback ABOUT a business is a different
+   model that does not exist yet, and if it lands it is site-scoped from birth.
+8. **`MediaAsset` → tenant-wide library, per-site USAGE.** A shared library is
+   genuinely useful (one logo pack, one photographer's shoot) and forcing a copy
+   per site would be duplication with no meaning. The real risk is not storage,
+   it is a donut photo appearing in a parts catalogue — which is a picker-scoping
+   and search-defaults problem, not a storage-ownership one. Solve it where it
+   actually bites.
+
+### The pattern in these eight
+
+Six of the eight are per-site, and the two that are not — tax exemption and
+platform feedback — are alike in a way worth naming: **they are about the LEGAL
+ENTITY or the PLATFORM, not about a business a customer deals with.** That is the
+sharpest available restatement of this document's principle, and it is the test
+to apply to the next model that comes up rather than re-deriving from scratch.
+
+## 7b. Original framing (kept for context)
 
 1. **`TenantBrand`** (`07-tenant-brand.prisma:16`). `50-email.prisma:22` states
    explicitly that brand identity is tenant-level and _"email may never override

@@ -22,6 +22,13 @@ export interface ChannelOAuthState {
   tenantId: string;
   userId: string;
   redirectUri: string;
+  // The site this connection is being made FOR (docs/131 §4), captured when the
+  // handshake starts and carried through the SIGNED state so the callback binds
+  // the connection to the right business. It must travel in the token, not be
+  // re-derived at callback — the callback has no request context saying which
+  // site the operator was on, and guessing would attach an Etsy shop to the
+  // wrong business. Null = a tenant-wide connection.
+  propertyId: string | null;
 }
 
 function secret(): Uint8Array {
@@ -34,6 +41,7 @@ export async function signChannelOAuthState(state: ChannelOAuthState): Promise<s
     slug: state.slug,
     tid: state.tenantId,
     uid: state.userId,
+    pid: state.propertyId,
     redirect_uri: state.redirectUri,
   })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
@@ -64,6 +72,10 @@ export async function verifyChannelOAuthState(token: string): Promise<ChannelOAu
     slug: payload.slug as ChannelSlug,
     tenantId: payload.tid,
     userId: payload.uid,
+    // `pid` is optional in the token for back-compat with a state signed before
+    // this field existed (a handshake in flight across the deploy); absent → null
+    // (tenant-wide), which is the pre-multi-site behaviour.
+    propertyId: typeof payload.pid === 'string' ? payload.pid : null,
     redirectUri: payload.redirect_uri,
   };
 }

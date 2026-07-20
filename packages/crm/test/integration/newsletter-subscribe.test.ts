@@ -50,8 +50,10 @@ describe('newsletter subscribe → segment membership', () => {
   /** The customer's membership rows in the newsletter segment. */
   async function newsletterMembers(email: string): Promise<string[]> {
     return withTenant(ctx, async (tx) => {
-      const segment = await tx.segment.findUnique({
-        where: { tenantId_slug: { tenantId: ctx.tenantId, slug: NEWSLETTER_SEGMENT_SLUG } },
+      // Built-in segments are tenant-wide (property_id null); the unique is now
+      // (tenant, property, slug), so findFirst on the null-property row.
+      const segment = await tx.segment.findFirst({
+        where: { propertyId: null, slug: NEWSLETTER_SEGMENT_SLUG },
       });
       if (!segment) return [];
       const members = await tx.segmentMember.findMany({

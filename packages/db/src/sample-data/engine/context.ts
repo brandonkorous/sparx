@@ -35,6 +35,18 @@ export interface ApplyCtx {
   propertyId: string | null;
   now: number;
 
+  /**
+   * The site sample BILLING DOCUMENTS are issued by (docs/131 §3.6).
+   *
+   * Separate from `propertyId` above, which is nullable because most sample
+   * slices legitimately seed tenant-wide rows. An invoice cannot: `property_id`
+   * is NOT NULL there, since a document with no issuer is the state that
+   * migration exists to remove. This resolves to `propertyId` when set, else the
+   * tenant's primary — so sample data lands in one business's books rather than
+   * being spread across two.
+   */
+  issuingPropertyId: string;
+
   // ── id-maps (author key → real UUID) ──────────────────────────────────
   productIdByKey: Map<string, string>;
   /** Ordered by authoring position — orders iterate this for a stable spread. */

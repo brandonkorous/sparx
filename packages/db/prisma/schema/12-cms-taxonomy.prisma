@@ -6,6 +6,16 @@
 model Taxonomy {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String   @map("tenant_id") @db.Uuid
+  // null = the vocabulary is available to every site (docs/131 §4).
+  //
+  // A Taxonomy is a SCHEMA — "posts have categories" — and that structure is
+  // genuinely generic, so shared is the common and correct case. What is NOT
+  // shared is its TERMS, which are business-specific content ("Diesel repair"
+  // vs "Glazed"); TaxonomyTerm carries its own property_id for exactly that
+  // reason. A shared vocabulary holding per-site terms is the useful shape, and
+  // it is why these two models scope independently rather than the term
+  // inheriting from its taxonomy.
+  propertyId   String?  @map("property_id") @db.Uuid
   key          String   @db.VarChar(63) // e.g. "blog_category", "blog_tag"
   name         String   @db.VarChar(120)
   pluralName   String   @map("plural_name") @db.VarChar(120)
@@ -13,16 +23,24 @@ model Taxonomy {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  terms  TaxonomyTerm[]
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property?      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  terms    TaxonomyTerm[]
 
+  // Key uniqueness stays per TENANT: `blog_category` must mean one thing across
+  // the tenant, or an entry's taxonomy reference becomes ambiguous.
   @@unique([tenantId, key])
+  @@index([tenantId, propertyId])
   @@map("taxonomies")
 }
 
 model TaxonomyTerm {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String   @map("tenant_id") @db.Uuid
+  // null = the term appears on every site (docs/131 §4). Unlike its Taxonomy,
+  // a TERM is CONTENT — "Diesel repair" is meaningless on a donut site, and it
+  // would otherwise show up in that site's category filters and archive pages.
+  propertyId   String?  @map("property_id") @db.Uuid
   taxonomyId   String   @map("taxonomy_id") @db.Uuid
   parentTermId String?  @map("parent_term_id") @db.Uuid
   slug         String   @db.VarChar(255)
@@ -32,13 +50,22 @@ model TaxonomyTerm {
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a term written for one business is that business's editorial
+  // vocabulary. SetNull would promote it to every site — putting "Diesel repair"
+  // in the donut shop's category list, which is the defect this fixes.
+  property Property?           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   taxonomy Taxonomy            @relation(fields: [taxonomyId], references: [id], onDelete: Cascade)
   parent   TaxonomyTerm?       @relation("TaxonomyTermTree", fields: [parentTermId], references: [id], onDelete: SetNull)
   children TaxonomyTerm[]      @relation("TaxonomyTermTree")
   entries  EntryTaxonomyTerm[]
 
+  // Slug uniqueness stays per TAXONOMY, not per (taxonomy, site). A term slug is
+  // a URL segment (`/blog/category/specials`), and two sites both owning
+  // `specials` inside one vocabulary makes that URL ambiguous — the same
+  // reasoning as the Author slug.
   @@unique([taxonomyId, slug])
   @@index([tenantId, taxonomyId])
+  @@index([tenantId, propertyId, taxonomyId])
   @@map("taxonomy_terms")
 }
 

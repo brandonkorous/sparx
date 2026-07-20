@@ -38,8 +38,12 @@ describe('GET /v1/public/tenants/:slug — customer-facing name is Property.name
     // from every site name so a leak would be unmistakable.
     await prisma.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${fixture.tenantId}'`);
-      await tx.property.create({
-        data: { tenantId: fixture.tenantId, slug: 'primary', name: 'Acme Store', isPrimary: true },
+      // The primary already exists — createTestTenant seeds it, as real
+      // provisioning does. Rename it rather than creating a second, which the
+      // one-primary-per-tenant partial unique index rejects.
+      await tx.property.update({
+        where: { id: fixture.propertyId },
+        data: { name: 'Acme Store' },
       });
       await tx.property.create({
         data: {

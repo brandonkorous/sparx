@@ -7,7 +7,8 @@
 //
 // Phase 1.2 wires the full Prisma surface: list / get / create / update /
 // archive / restore / setDefault for variants; setOptions + listOptions
-// for the lattice; addImage / removeImage / setImageBindings for media.
+// for the lattice; addImage / removeImage / reorderImages /
+// setImageBindings for media.
 //
 // All writes follow the locked pattern:
 //   1. Validate input via @sparx/commerce-schemas
@@ -20,6 +21,7 @@ import {
   CreateVariantImageInput,
   CreateVariantInput,
   RenameVariantSkuInput,
+  ReorderProductImagesInput,
   SetProductOptionsInput,
   SetVariantImageBindingsInput,
   UpdateVariantInput,
@@ -752,7 +754,12 @@ export async function setImageBindings(ctx: ServiceContext, rawInput: unknown): 
     // level). The storefront gallery prefers a variant's own images first.
     await tx.variantImage.update({
       where: { id: input.variantImageId },
-      data: { variantId: input.variantId },
+      // `alt` is patch-style (undefined leaves it, null clears it), so it is
+      // only included when the caller actually sent it.
+      data: {
+        variantId: input.variantId,
+        ...(input.alt !== undefined ? { alt: input.alt } : {}),
+      },
     });
 
     await tx.variantImageOptionValue.deleteMany({
@@ -775,7 +782,13 @@ export async function setImageBindings(ctx: ServiceContext, rawInput: unknown): 
       action: 'commerce.variant.image_bindings_set',
       entityType: 'VariantImage',
       entityId: input.variantImageId,
-      diff: { after: { variantId: input.variantId, optionValueIds: input.optionValueIds } },
+      diff: {
+        after: {
+          variantId: input.variantId,
+          optionValueIds: input.optionValueIds,
+          ...(input.alt !== undefined ? { alt: input.alt } : {}),
+        },
+      },
     });
 
     return { productId: image.productId };
@@ -868,6 +881,83 @@ export async function setPrimaryImage(ctx: ServiceContext, variantImageId: strin
     actorId: ctx.userId ?? null,
     topic: 'product.updated',
     data: { productId: result.productId, change: 'primary_image' },
+  });
+}
+
+/**
+ * Set the gallery order for a product's images.
+ *
+ * `position` was previously write-once at `addImage` time, so a merchant could
+ * pick which photo came first (`setPrimaryImage`) but never say what came
+ * second — the back-office had no way to write the order the storefront reads.
+ *
+ * Takes the FULL ordered id list and rewrites every position to its index, so
+ * the result is always a dense 0..n-1 sequence with no ties to break. Every id
+ * must belong to this product: a partial list would silently leave the omitted
+ * images stacked on whatever positions they held, which is how a gallery ends
+ * up with three photos all claiming slot 0.
+ */
+export async function reorderImages(
+  ctx: ServiceContext,
+  productId: string,
+  rawInput: unknown
+): Promise<void> {
+  const input = ReorderProductImagesInput.parse(rawInput);
+
+  await withTenant(ctx, async (tx) => {
+    const existing = await tx.variantImage.findMany({
+      where: { productId },
+      select: { id: true },
+    });
+    if (existing.length === 0) throw new CommerceNotFoundError('Product images', productId);
+
+    const owned = new Set(existing.map((image) => image.id));
+    const seen = new Set<string>();
+    for (const id of input.imageIds) {
+      if (!owned.has(id)) throw new CommerceNotFoundError('VariantImage', id);
+      if (seen.has(id)) {
+        throw new CommerceValidationError('An image was listed twice in the new order', [
+          { field: 'imageIds', message: `Image ${id} appears more than once` },
+        ]);
+      }
+      seen.add(id);
+    }
+    if (seen.size !== owned.size) {
+      throw new CommerceValidationError(
+        'The new order must list every image on this product exactly once',
+        [
+          {
+            field: 'imageIds',
+            message: `Expected ${String(owned.size)} images, received ${String(seen.size)}`,
+          },
+        ]
+      );
+    }
+
+    await Promise.all(
+      input.imageIds.map((id, index) =>
+        tx.variantImage.update({ where: { id }, data: { position: index } })
+      )
+    );
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.variant.images_reordered',
+      entityType: 'Product',
+      entityId: productId,
+      diff: { after: { imageIds: input.imageIds } },
+    });
+  });
+
+  // Gallery order is part of the PDP payload — bust the storefront read cache.
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'product.updated',
+    data: { productId, change: 'image_order' },
   });
 }
 

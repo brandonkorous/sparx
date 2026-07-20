@@ -47,7 +47,7 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const query = ListCategoriesQuery.parse(request.query);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       query.property,
       request.headers['x-sparx-property-id']
     );
@@ -75,7 +75,7 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const body = (request.body ?? {}) as Record<string, unknown>;
     // Model B: a new category defaults to the active site on a multi-site tenant.
-    await defaultActiveSiteScope(request, auth.tenantId, body);
+    await defaultActiveSiteScope(request, auth, body);
     const created = await categoryService.create(toCommerceContext(request), body);
     reply.code(201);
     return ok(created);
@@ -123,7 +123,7 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = ListCollectionsQuery.parse(request.query);
     const propertyId = await resolveListScope(
-      auth.tenantId,
+      auth,
       q.property,
       request.headers['x-sparx-property-id']
     );
@@ -149,7 +149,7 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const body = (request.body ?? {}) as Record<string, unknown>;
     // Model B: a new collection defaults to the active site on a multi-site tenant.
-    await defaultActiveSiteScope(request, auth.tenantId, body);
+    await defaultActiveSiteScope(request, auth, body);
     const created = await collectionService.create(toCommerceContext(request), body);
     // Collections have no publish lifecycle — they're live on existence — so seed
     // the SEO snapshot at create so the new collection shows in the overview

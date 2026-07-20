@@ -108,7 +108,10 @@ describe('webhook delivery tick', () => {
       },
     });
     expect(sub.statusCode).toBe(201);
-    const signingSecret = sub.json().data.signing_secret as string;
+    // `signingSecret`, camelCase — that is the SHIPPED contract, documented in
+    // apps/web/app/docs/guides/webhooks. This read was `signing_secret`, a field
+    // the route has never returned, so the assertion below could only ever fail.
+    const signingSecret = sub.json().data.signingSecret as string;
     expect(signingSecret).toBeTruthy();
 
     // Drive a publish to enqueue the delivery row.

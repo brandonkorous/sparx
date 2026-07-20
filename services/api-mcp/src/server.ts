@@ -67,7 +67,11 @@ export async function buildServerForRequest(auth: McpAuthContext): Promise<McpSe
   // Per-tenant tool-policy overlay (docs/07 §9): tools the tenant disabled are not
   // registered at all — so they're absent from tools/list AND the SDK rejects any
   // direct tools/call for an unregistered name. Registration-skip IS the enforcement.
-  const disabledTools = await loadDisabledTools(auth.tenantId);
+  // Per-SITE now (docs/131 §3.5). `auth.propertyId` is the key this connection is
+  // RESTRICTED to, so a key scoped to one business sees that business's tool
+  // policy; an unrestricted key sees only the tenant-wide rows, which is the
+  // honest answer — there is no single site whose overrides could apply.
+  const disabledTools = await loadDisabledTools(auth.tenantId, auth.propertyId ?? null);
 
   for (const tool of ALL_MCP_TOOLS) {
     if (disabledTools.has(tool.name)) continue;

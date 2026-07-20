@@ -67,12 +67,22 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
   cursor[segs[segs.length - 1] ?? ''] = value;
 }
 
+/**
+ * How many records a bound COLLECTION renders (docs/127 §8) — one named number rather
+ * than a bare `24` inlined per fetch. At the catalog sizes this platform targets, a
+ * silent cap is data loss: the extra records simply never appear, with no pagination
+ * and no signal to the shopper or the author.
+ */
+const COLLECTION_PAGE_SIZE = 24;
+
 // A CMS entry's `body` IS the field map (keys match the content type's schema
-// fields), so `item.<field>` resolves directly against it.
+// fields), so `item.<field>` resolves directly against it. Fetches ONE MORE than it
+// renders so truncation is detectable — the endpoint returns a bare array, so n+1
+// coming back is the only available "there are more" signal.
 async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
   return publicGet<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: 24 },
+    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE + 1 },
     { tag: `entries:${tenantSlug}:${type}` }
   );
 }
@@ -213,26 +223,44 @@ export async function loadBuilderData(
   for (const type of cmsTypes) {
     tasks.push(
       listEntries(tenantSlug, type)
-        .then((entries) =>
+        .then((entries) => {
+          const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
-          )
-        )
+            shown.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
+          );
+          // n+1 came back → more exist. Bindable, so a template can say so instead of
+          // the list just ending (docs/127 §8).
+          const hasMore = entries.length > COLLECTION_PAGE_SIZE;
+          setAtPath(root, `cms.${type}HasMore`, hasMore);
+          if (hasMore) {
+            console.warn(
+              `[builder-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
+                `no pagination on the storefront yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
   }
   if (commerce) {
     tasks.push(
-      listProducts(tenantSlug, { perPage: 24 })
-        .then(({ items }) =>
-          setAtPath(
-            root,
-            'commerce.product',
-            items.map((p) => mapProduct(p, tenantSlug))
-          )
-        )
+      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
+        .then(({ items, total }) => {
+          const products = items.map((p) => mapProduct(p, tenantSlug));
+          setAtPath(root, 'commerce.product', products);
+          // The list endpoint DOES report a total here, so the exact count is bindable
+          // ("Showing 24 of 137") rather than just a boolean (docs/127 §8).
+          setAtPath(root, 'commerce.productTotal', total);
+          setAtPath(root, 'commerce.productHasMore', total > products.length);
+          if (total > products.length) {
+            console.warn(
+              `[builder-data] product catalog: showing ${products.length} of ${total} — ` +
+                `the rest are not rendered and there is no pagination yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, 'commerce.product', []))
     );
   }

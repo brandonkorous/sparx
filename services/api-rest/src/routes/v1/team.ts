@@ -47,7 +47,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
-import { requireAuth, requireRole } from '@sparx/api-core/auth';
+import { invalidateMemberAccessCache, requireAuth, requireRole } from '@sparx/api-core/auth';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
@@ -55,6 +55,10 @@ import {
   ASSIGNABLE_ORG_ROLES,
   parseModuleAccessMode,
   roleIgnoresModuleAccess,
+  PROPERTY_ACCESS_MODES,
+  parsePropertyAccessMode,
+  roleIgnoresPropertyAccess,
+  type PropertyAccessMode,
   MODULE_ACCESS_MODES,
   authPrisma,
   type AssignableOrgRole,
@@ -111,6 +115,14 @@ const AccessMode = z
     `moduleAccessMode must be one of: ${MODULE_ACCESS_MODES.join(', ')}.`
   );
 
+const PropertyMode = z
+  .string()
+  .refine(
+    (value): value is PropertyAccessMode =>
+      (PROPERTY_ACCESS_MODES as readonly string[]).includes(value),
+    `propertyAccessMode must be one of: ${PROPERTY_ACCESS_MODES.join(', ')}.`
+  );
+
 const InviteBody = z.object({
   email: z.string().email().max(255),
   role: AssignableRole,
@@ -126,11 +138,21 @@ const PatchMemberBody = z
     // A present array REPLACES the member's whole grant set — including an empty
     // one, which under `selected` legitimately means "no modules at all".
     modules: z.array(z.string().max(32)).max(MODULE_SLUGS.length).optional(),
+    propertyAccessMode: PropertyMode.optional(),
+    // A present array REPLACES the member's whole site grant set — including an
+    // empty one, which under `selected` legitimately means "no sites at all"
+    // (docs/131 §3.3). Capped generously: a tenant may run many sites, and this
+    // is a bound against abuse, not a product limit.
+    properties: z.array(z.string().uuid()).max(200).optional(),
   })
   .refine(
     (body) =>
-      body.role !== undefined || body.moduleAccessMode !== undefined || body.modules !== undefined,
-    'Provide at least one of: role, moduleAccessMode, modules.'
+      body.role !== undefined ||
+      body.moduleAccessMode !== undefined ||
+      body.modules !== undefined ||
+      body.propertyAccessMode !== undefined ||
+      body.properties !== undefined,
+    'Provide at least one of: role, moduleAccessMode, modules, propertyAccessMode, properties.'
   );
 
 // ── Serialization ───────────────────────────────────────────────────────────
@@ -142,9 +164,11 @@ interface MemberRow {
   memberType: string;
   status: string;
   moduleAccessMode: string;
+  propertyAccessMode: string;
   createdAt: Date;
   user: { name: string | null; email: string; lastLoginAt: Date | null };
   moduleAccess: { module: string }[];
+  propertyAccess: { propertyId: string }[];
 }
 
 /** The shape every member-returning endpoint hands back. `lastActiveAt` is
@@ -166,6 +190,8 @@ function serializeMember(row: MemberRow, lastActiveAt: Date | null) {
     lastActiveAt: lastActiveAt?.toISOString() ?? null,
     moduleAccessMode: parseModuleAccessMode(row.moduleAccessMode),
     modules: row.moduleAccess.map((grant) => grant.module),
+    propertyAccessMode: parsePropertyAccessMode(row.propertyAccessMode),
+    properties: row.propertyAccess.map((grant) => grant.propertyId),
   };
 }
 
@@ -198,6 +224,7 @@ function serializeInvitation(row: InvitationRow) {
 const MEMBER_INCLUDE = {
   user: { select: { name: true, email: true, lastLoginAt: true } },
   moduleAccess: { select: { module: true }, orderBy: { module: 'asc' } },
+  propertyAccess: { select: { propertyId: true } },
 } as const;
 
 const INVITATION_INCLUDE = {
@@ -551,8 +578,39 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
+    const touchesPropertyAccess =
+      input.propertyAccessMode !== undefined || input.properties !== undefined;
+
+    // Same reasoning as module access: an owner or admin can edit the
+    // restriction, so applying one to them is theatre. Rejected, not ignored.
+    if (touchesPropertyAccess && roleIgnoresPropertyAccess(nextRole)) {
+      throw badRequest(
+        `Site access can't be limited for ${nextRole}s — they manage the team, so they always reach every site. Change their role first.`
+      );
+    }
+
+    // A grant naming a site this tenant does not own is rejected rather than
+    // stored: the junction's FK would accept another tenant's real property id,
+    // and a grant row is not a security boundary on its own. RLS scopes the
+    // lookup, so a foreign id is indistinguishable from a missing one.
+    if (input.properties && input.properties.length > 0) {
+      const owned = await withRequestTenant(request, (tx) =>
+        tx.property.findMany({
+          where: { id: { in: input.properties! } },
+          select: { id: true },
+        })
+      );
+      if (owned.length !== new Set(input.properties).size) {
+        throw badRequest('One or more of those sites do not exist.');
+      }
+    }
+
     const nextMode: ModuleAccessMode =
       input.moduleAccessMode ?? parseModuleAccessMode(current.moduleAccessMode);
+    const nextPropertyMode: PropertyAccessMode =
+      input.propertyAccessMode ?? parsePropertyAccessMode(current.propertyAccessMode);
+    const beforeProperties = current.propertyAccess.map((grant) => grant.propertyId);
+    const nextProperties = input.properties ? [...new Set(input.properties)] : beforeProperties;
     const beforeModules = current.moduleAccess.map((grant) => grant.module);
     const nextModules = input.modules ? [...new Set(input.modules)] : beforeModules;
 
@@ -562,7 +620,11 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
     await authPrisma.$transaction(async (tx) => {
       await tx.member.updateMany({
         where: { id, organizationId: auth.tenantId },
-        data: { role: nextRole, moduleAccessMode: nextMode },
+        data: {
+          role: nextRole,
+          moduleAccessMode: nextMode,
+          propertyAccessMode: nextPropertyMode,
+        },
       });
 
       // A present `modules` array replaces the whole set. `member_module_access`
@@ -578,7 +640,26 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
           });
         }
       }
+
+      // Site grants replace wholesale on the same terms, and inside the same
+      // transaction, so a member is never briefly holding a partial set that a
+      // concurrent request could read and act on.
+      if (input.properties) {
+        await tx.memberPropertyAccess.deleteMany({
+          where: { memberId: id, member: { organizationId: auth.tenantId } },
+        });
+        if (nextProperties.length > 0) {
+          await tx.memberPropertyAccess.createMany({
+            data: nextProperties.map((propertyId) => ({ memberId: id, propertyId })),
+          });
+        }
+      }
     });
+
+    // Site access is cached per (tenant, user) on the auth path, so a revoked
+    // grant would otherwise keep working for up to the TTL. Revocation has to
+    // bite now — that is the entire point of the feature.
+    if (touchesPropertyAccess) invalidateMemberAccessCache(auth.tenantId, current.userId);
 
     // Audit rows + "last active" on the RLS connection; audits follow the
     // mutation, per the header note.

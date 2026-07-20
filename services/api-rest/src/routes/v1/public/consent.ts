@@ -15,6 +15,7 @@ import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
+import { resolvePublicPropertyId } from '../../../lib/property.js';
 
 // Cached in lib/tenant-slug.ts (docs/127 §5).
 const resolveTenantBySlug = requireTenantIdBySlug;
@@ -27,7 +28,13 @@ function clientMeta(request: FastifyRequest): {
   return { ipAddress: request.ip || null, userAgent: typeof ua === 'string' ? ua : null };
 }
 
-const TenantQuery = z.object({ tenant: z.string().min(1).max(63) });
+const TenantQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  // WHICH site the banner is rendering on (docs/131 §3.9) — the same
+  // `?property=<slug>` every other public storefront read carries. Absent
+  // resolves to the primary, matching resolvePublicPropertyId everywhere else.
+  property: z.string().min(1).max(63).optional(),
+});
 
 const RecordBody = z.object({
   visitorId: z.string().uuid(),
@@ -45,7 +52,10 @@ const publicConsentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/consent/config', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const config = await withTenant({ tenantId }, (tx) => readPublicConsentConfig(tx, tenantId));
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const config = await withTenant({ tenantId }, (tx) =>
+      readPublicConsentConfig(tx, tenantId, propertyId)
+    );
     return ok(config);
   });
 
@@ -53,15 +63,20 @@ const publicConsentRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const body = RecordBody.parse(request.body);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // The business this person is actually deciding about. Recording it against
+    // the tenant meant a "reject all" on one storefront silently governed the
+    // other — and, worse, an "accept" did too.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const { ipAddress, userAgent } = clientMeta(request);
 
     const record = await withTenant({ tenantId }, async (tx) => {
       // Snapshot the mode + policy version at decision time so the record is
-      // self-describing even after the tenant later changes its config.
-      const config = await readPublicConsentConfig(tx, tenantId);
+      // self-describing even after the business later changes its config.
+      const config = await readPublicConsentConfig(tx, tenantId, propertyId);
       return tx.consentRecord.create({
         data: {
           tenantId,
+          propertyId,
           visitorId: body.visitorId,
           customerId: body.customerId ?? null,
           mode: config.mode === 'off' ? 'gdpr' : config.mode,
