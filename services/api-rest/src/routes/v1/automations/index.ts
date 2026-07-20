@@ -54,6 +54,7 @@ import {
 } from '@sparx/automation-schemas';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { reachableSiteIds } from '../../../lib/property.js';
 import { notFound } from '@sparx/api-core/errors';
 import type { StaffRole } from '@sparx/api-core/auth';
 
@@ -97,9 +98,12 @@ function ctxFor(request: FastifyRequest, min: StaffRole): ServiceCtx {
 
 const automationRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/automations', async (request) => {
-    const ctx = ctxFor(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
+    const ctx = { tenantId: auth.tenantId, userId: auth.actorId };
     const filter = ListQuery.parse(request.query);
-    return ok(await listAutomations(ctx, filter));
+    // Bound to the member's reachable sites (docs/131 §3.3) — a restricted
+    // member sees their businesses' automations plus tenant-wide ones.
+    return ok(await listAutomations(ctx, { ...filter, propertyIds: reachableSiteIds(auth) }));
   });
 
   app.post('/v1/automations', async (request, reply) => {

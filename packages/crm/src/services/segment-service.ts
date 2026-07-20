@@ -20,11 +20,21 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: {
+    q?: string;
+    includeArchived?: boolean;
+    /** Member's reachable sites (docs/131 §3.3); undefined = unrestricted. */
+    propertyIds?: string[];
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: Segment[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.SegmentWhereInput = {
       ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.propertyIds
+        ? { OR: [{ propertyId: { in: args.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(args.q
         ? {
             OR: [

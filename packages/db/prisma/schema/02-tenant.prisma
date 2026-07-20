@@ -331,6 +331,7 @@ model Tenant {
   builderNodeIndex         BuilderNodeIndex[]
   builderPageArtifacts     BuilderPageArtifact[]
   builderReleases          BuilderRelease[]
+  builderPageOps           BuilderPageOp[]
   // Builder module — the site layout / chrome shell (docs/45)
   builderLayouts           BuilderLayout[]
   // Builder module — the per-property silica site record: theme + symbols (docs/118)

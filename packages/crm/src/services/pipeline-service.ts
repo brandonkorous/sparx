@@ -27,11 +27,21 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: {
+    q?: string;
+    includeArchived?: boolean;
+    /** Member's reachable sites (docs/131 §3.3); undefined = unrestricted. */
+    propertyIds?: string[];
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: (Pipeline & { stages: PipelineStage[] })[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.PipelineWhereInput = {
       ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.propertyIds
+        ? { OR: [{ propertyId: { in: args.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(args.q ? { name: { contains: args.q, mode: 'insensitive' } } : {}),
     };
     const [items, total] = await Promise.all([
@@ -69,6 +79,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Pi
     const created = await tx.pipeline.create({
       data: {
         tenantId: ctx.tenantId,
+        // The site this sales process belongs to (docs/131 §5); the route
+        // defaults it to the site being worked in, explicit null = tenant-wide.
+        propertyId: input.propertyId ?? null,
         name: input.name,
         slug: input.slug,
         isDefault: input.isDefault,
@@ -289,10 +302,12 @@ export async function bootstrapDefaultPipeline(
   ctx: ServiceContext
 ): Promise<Pipeline & { stages: PipelineStage[] }> {
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.pipeline.findUnique({
-      where: {
-        tenantId_slug: { tenantId: ctx.tenantId, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
-      },
+    // The default pipeline is TENANT-WIDE (property_id null) — the starter sales
+    // process every business inherits until it authors its own. findFirst, not
+    // findUnique: the unique is now (tenant, property, slug) NULLS NOT DISTINCT,
+    // and Prisma cannot reach a null-property row through a compound-unique key.
+    const existing = await tx.pipeline.findFirst({
+      where: { propertyId: null, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
     });
     if (existing) return existing;
@@ -300,6 +315,7 @@ export async function bootstrapDefaultPipeline(
     const pipeline = await tx.pipeline.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: null,
         name: DEFAULT_PIPELINE_TEMPLATE.name,
         slug: DEFAULT_PIPELINE_TEMPLATE.slug,
         isDefault: DEFAULT_PIPELINE_TEMPLATE.isDefault,

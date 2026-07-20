@@ -1,6 +1,6 @@
 # 131 — Site Scoping: the operational layer
 
-Version: 1.2.0
+Version: 1.3.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
@@ -282,6 +282,63 @@ conversation re-homed to another site would silently disagree with its own
 messages. Revisit only if per-site message analytics needs it, and then denorm
 with a trigger rather than by hand.
 
+### Member-access READ scoping — the boundary was write-only
+
+§3.3 gave staff members per-site access and I wired it into the customers list —
+but the OTHER dashboard lists had no site bound at all, so a member restricted to
+one business could list every other business's records through them. Now closed
+via a `reachableSiteIds(actor)` helper (granted sites, or `undefined` =
+unrestricted → sees all), passed as a list-filter ceiling on:
+
+**deals, tasks, pipelines, segments, orders, billing documents, automations,
+bookings, broadcasts** (nine lists).
+
+A real distinction surfaced in the `null`-property handling, and it is NOT
+uniform — encoding it wrong would either leak or hide records:
+
+- **Shared-null** (`deal`, `task`, `pipeline`, `segment`, `automation`,
+  `broadcast`): a null site means "tenant-wide, belongs to everyone," so a
+  restricted member SEES those too — `OR [propertyId IN granted, propertyId IS
+NULL]`.
+- **Orphaned-null** (`order`, `booking`): a null site means the origin/service
+  site was DELETED (SetNull), so it belongs to a now-gone business the member has
+  no claim to — excluded — `propertyId IN granted` only.
+- **No-null** (`billing document`): `propertyId` is required, so neither case
+  applies — strict `IN granted`.
+
+The helper is deliberately distinct from `resolveListScopeIds` (the
+`?property=all` switcher flow): a management list is ALWAYS bounded by what the
+member may reach, with no parameter that can widen it.
+
+### Enforcement audit — "the column exists" is not "the leak is closed"
+
+Late in the work a review of the busiest storefront read paths turned up several
+places where the schema and service were per-site but the CALLER never passed the
+site, so the scoping was inert exactly where it mattered most. These were found
+and fixed:
+
+- **Storefront reviews + Q&A** (`public/reviews.ts`) — list, submit, question
+  list, question submit all called the site-scoped service with no site. The
+  rating summary and the review list are now scoped together (closing the
+  "average of 12 over a list of 3" discrepancy on the product page), and submits
+  stamp where the content was written.
+- **Wishlist** (`public/account.ts`) — find/create/read/delete keyed on
+  `customerId` alone, so a shopper's two-site lists collided. Now scoped per site.
+- **Checkout shipping quote** (`public/checkout.ts`) — `rateShipment` passed no
+  site, so the zone scoping (§4) never filtered; a donut site's local-delivery
+  rates could quote on a parts cart. Now passes `cart.propertyId`.
+- **Scheduling emails** (`scheduling-classes`/`-notifications`/`-waitlist`) —
+  booking confirmations, reminders, and waitlist offers sent with no site, so
+  they went out under the tenant's PRIMARY sender identity rather than the
+  business the booking belongs to — the §3.4 defect, reintroduced at the send
+  site. Now pass the booking's (or service's) site.
+
+Order-confirmation email was already correct (it passed the order's site). The
+lesson is recorded here because it is the one most likely to recur: every
+`propertyId` column added in this doc is only load-bearing if its READ and WRITE
+call sites resolve and pass a site, and a green typecheck says nothing about
+whether they do. When adding a scoped column, grep its service's callers.
+
 ## The principle
 
 **The tenant is the billing and ownership container. The SITE is the business a
@@ -462,6 +519,55 @@ identity for both donuts and brake pads. `ChannelConnection`/
 business gates checkout on the other; arguably P0).
 
 ## 5. P2 — internal-only
+
+**`Segment` / `SegmentMember` are done** (migration 20261231). Rated P2 but the
+doc's own note is right that it is a LIVE INCONSISTENCY, not merely internal:
+`customers` is already property-scoped and a segment FEEDS the property-scoped
+`broadcasts`, so an unscoped segment sat between two scoped endpoints — a
+"high-value customers" audience built from one business could feed the other's
+marketing send, a customer-visible leak wearing an internal-model label. Segment
+is nullable (a cross-business audience is real); the evaluator now matches a
+customer only against segments of THEIR site plus tenant-wide ones;
+`SegmentMember` inherits (no column). Built-in system segments (Newsletter
+Subscribers, …) stay tenant-wide (`propertyId` null) — they span every business.
+
+**`Pipeline` / `PipelineStage` / `Deal` are done** (migration 20270101). A
+pipeline is one business's SALES PROCESS — the doc header's own "Fleet Contract
+Renewals" — and the same three-way split as scheduling applies: `Pipeline` is the
+authored process (Cascade, nullable), `PipelineStage` inherits (no column), and
+`Deal` denormalizes its site from the pipeline at creation (SetNull — a deal is a
+record that outlives its site, and re-scoping a pipeline can't rewrite past
+deals). The default starter pipeline stays tenant-wide.
+
+**`Task` is done** (migration 20270102). Its real value is completing the member
+site-access story from §3.3: a member scoped to one business should see only that
+business's task queue. The site is denormalized from the task's deal (or, failing
+that, its customer) at creation; a task about neither is a general to-do and stays
+null. SetNull — a task is a work record.
+
+### The rest of §5 — a judgment call, not just remaining work
+
+`CrmActivity`, `AuditLog`, `SavedView`, `UserFavorite`/`UserRecent`,
+`Notification`, `ImportJob`/`ImportJobRow` remain, and they are genuinely lower
+value than everything above — worth stating plainly rather than mechanically
+scoping:
+
+- **`CrmActivity` / `AuditLog` are append-only timeseries** (`CrmActivity` has a
+  composite `[id, occurredAt]` PK). A denormalized site column carries real
+  backfill cost on a large log, and the customer/deal-anchored views already
+  filter correctly through their (now-scoped) parents — only the global feed
+  mixes sites, which is an internal surface. The doc already marks `AuditLog`
+  "optional."
+- **`SavedView` / `UserFavorite` / `UserRecent` are per-USER state**, and whether
+  a saved list-filter is per-site is a genuine product question, not an obvious
+  yes — a user may want a view that spans their businesses.
+- **`Notification` / `ImportJob` are operational** and low-traffic.
+
+Recommendation: stop the mechanical sweep here. These should be scoped when a
+concrete need appears (a per-site activity feed, a scoped import audit), each with
+its own small decision, rather than adding columns that no read path yet filters
+on — which is exactly the "shipping the column without the enforcement" trap §8
+warns against. The high-value operational-layer defects are closed.
 
 `Pipeline`/`PipelineStage`/`Deal` (22 — the header itself cites per-business
 pipelines like "Fleet Contract Renewals"), `Segment`/`SegmentMember` (32 —
@@ -656,6 +762,38 @@ migratable one.**
 5. **P2** — internal filtering, which is largely quality-of-life.
 6. **Per-property rollups** (§6), unblocking [130](130-analytics-normalization.md)
    and the dashboards in [129](129-analytics-dashboards.md).
+
+### Step 6 (rollups) is a distinct PHASE, not remaining cleanup — and it carries a decision
+
+The five daily rollups in `75-analytics-rollups.prisma`
+(`RollupCommerceDailyRevenue`, `RollupInvoicingDailyCollected`,
+`RollupDropshipDailyOrders`, `RollupAutomationDailyRuns`,
+`RollupInventoryDailyValuation`) are each keyed `(tenant, UTC day)`. Per-site
+dashboards need a site dimension in that key — but this is not a mechanical
+column-add, because it interacts with a fact this remediation deliberately chose:
+
+**The source rows they aggregate have NULLABLE `propertyId`.** Orders and billing
+documents are SetNull — they outlive their site — so on any tenant that has ever
+deleted a site, some revenue and some collected cash belong to no current site. A
+rollup PK cannot be null, so the phase must decide how those rows bucket:
+
+- an explicit "unattributed" bucket per tenant (a sentinel), included in the
+  all-sites total but shown separately per-site; or
+- fold null-property source rows into the tenant's primary at rollup time (simpler
+  reads, but attributes a closed business's numbers to the primary — a reporting
+  distortion the §3.6 invoice work went out of its way to avoid); or
+- keep the existing `(tenant, day)` rows AS the all-sites total and add parallel
+  `(tenant, property, day)` rows beside them (double the storage, no null problem,
+  read path picks the grain).
+
+It also changes each rollup's reconcile query (add `GROUP BY property_id`) and
+every `/reports/*` read (per-site filter + an all-sites sum). That is a real
+slice with a numbers-affecting decision at its centre, so it belongs to the
+analytics phase (docs 129/130) with that decision made up front — not bolted onto
+the tail of the operational-layer remediation, whose job is done.
+
+`RollupSiteDaily` (traffic) already carries `property_id` — site analytics was
+built per-site from the start, which is the shape the others need.
 
 **Now is the moment, and the window is exactly this.** With no production tenants
 every item here is a schema edit and a code change — no backfill, no deprecation,

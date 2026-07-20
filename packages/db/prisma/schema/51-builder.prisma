@@ -538,6 +538,79 @@ enum PlatformComponentVisibility {
   @@map("platform_component_visibility")
 }
 
+// The append-only OP LOG — every semantic edit the silica engine emitted, in the
+// order it happened (docs/126 §2, Phase 2).
+//
+// silicaui 0.30's `<Builder onChange(site, ops, meta)>` now hands the host what the
+// author DID as causal-ordered operations, not just the resulting whole `Site`. This
+// table records them. It is what unblocks two things the whole-site blob could never
+// give: real per-edit history ("what changed, when, by whom") and — once the realtime
+// relay lands (Phase 4) — multi-editor reconnect, where a client that was at `seq=N`
+// is caught up by replaying ops `N+1…`.
+//
+// SEQ IS PER-PROPERTY, not per-page. The doc sketch keyed it `(page_id, seq)`, but the
+// engine's `meta.baseSeq` / `ackSeq` track ONE document-wide sequence per editing
+// session — a client is "at seq N" across its whole site, not per page. A per-page seq
+// could not answer the reconnect question the engine actually asks, so the sequence is
+// monotonic per property and `owner_kind`/`owner_id` merely say which tree inside the
+// property an op addressed (its `target`).
+//
+// ADDITIVE, deliberately. `silica_draft_tree` stays the authoritative snapshot the
+// editor loads and the storefront (via publish) serves; this log is written in the
+// SAME transaction as that snapshot, so the two cannot disagree. Event-sourced reads
+// (snapshot + replay) are a later cutover (docs/126 §5.1), not folded in here — the
+// same parallel-run discipline every stage of this migration has used.
+//
+// Retained, not pruned (§5.2): ops are the history, they are small, and retention is a
+// product decision rather than a storage necessity. Tenant-scoped + FORCE RLS.
+model BuilderPageOp {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Per-property monotonic ordering — the value a client acks and reconnects against.
+  // BigInt: an active site can accrue a lot of ops over its life, and this must never
+  // wrap or collide.
+  seq BigInt @db.BigInt
+
+  // Client-generated id for one flushed batch. Groups the ops of a single onChange
+  // burst so a retried flush is idempotent (the service refuses a batch_id already
+  // recorded for the property) rather than double-appending.
+  batchId String @map("batch_id") @db.VarChar(64)
+
+  // Who made the edit. Null for a system/automation path with no human actor; no FK —
+  // users live in the Better Auth instance and a deleted user must not take the edit
+  // history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  // Which tree inside the property the op addressed (from `op.target`). `frame` and
+  // `site` scopes have no id; `page` and `symbol` do.
+  ownerKind String  @map("owner_kind") @db.VarChar(16) // page | frame | symbol | site
+  ownerId   String? @map("owner_id") @db.VarChar(255)
+
+  // The op's `kind` (`node.insert`, `page.setSlug`, …), lifted out of the JSON so
+  // "every text edit" or "every structural op" is an index scan, not a JSONB filter.
+  opKind String @map("op_kind") @db.VarChar(32)
+  // The full op, verbatim as the engine emitted it. Shape validated by the service's
+  // Zod schema, never the DB.
+  op     Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The ordering key AND the concurrency guard: two clients that race to append the
+  // same seq collide here, and one retries — the backstop that keeps the log a total
+  // order. Named explicitly (the generated name would truncate past 63 chars).
+  @@unique([tenantId, propertyId, seq], map: "builder_page_ops_property_seq_key")
+  // Idempotent retry — a re-sent flush finds its batch already present.
+  @@index([tenantId, propertyId, batchId])
+  // "The history of this page/symbol", in order.
+  @@index([tenantId, propertyId, ownerKind, ownerId, seq])
+  @@map("builder_page_ops")
+}
+
 // An IMMUTABLE, content-addressed copy of one published silica tree (docs/126 §5.3).
 //
 // Every publish writes the exact bytes it published, keyed by the SHA-256 of their

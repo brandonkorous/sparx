@@ -25,6 +25,7 @@ import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
 import { startSeriesMaterializationLoop } from './lib/scheduling-series.js';
 import { startWaitlistLoop } from './lib/scheduling-waitlist.js';
 import { attachChatWebsocket } from './websocket/index.js';
+import { attachBuilderWebsocket } from './websocket/builder-index.js';
 
 async function main(): Promise<void> {
   // Hand api-core its Pub/Sub config before any route handler can call
@@ -137,6 +138,11 @@ async function main(): Promise<void> {
   // set (multi-replica fan-out) and the in-memory adapter otherwise.
   const chatWs = await attachChatWebsocket(app.server, app.log);
 
+  // Builder collaboration WebSocket (docs/126 Phase 4). A second socket.io server at
+  // /ws/builder — relays persisted ops to co-editors and carries presence. Same Redis
+  // fan-out story as chat.
+  const builderWs = await attachBuilderWebsocket(app.server, app.log);
+
   const shutdown = (signal: NodeJS.Signals): void => {
     app.log.info({ signal }, 'shutdown received');
     stopScheduledPublish();
@@ -151,6 +157,9 @@ async function main(): Promise<void> {
     stopModuleProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {
       app.log.error({ err }, 'chat websocket close failed');
+    });
+    void builderWs.close().catch((err: unknown) => {
+      app.log.error({ err }, 'builder websocket close failed');
     });
     void app
       .close()

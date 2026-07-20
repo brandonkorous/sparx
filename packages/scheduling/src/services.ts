@@ -108,6 +108,10 @@ export async function listServicesPaged(
     q?: string;
     bookingType?: string;
     activeOnly?: boolean;
+    /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
+     *  service's null property means tenant-wide (shared), so a restricted member
+     *  sees their businesses' services PLUS tenant-wide ones. */
+    propertyIds?: string[];
     take?: number;
     skip?: number;
   } = {}
@@ -115,13 +119,22 @@ export async function listServicesPaged(
   return withTenant({ tenantId }, async (tx) => {
     const where: Prisma.SchedulingServiceWhereInput = {
       deletedAt: null,
+      ...(opts.propertyIds
+        ? { OR: [{ propertyId: { in: opts.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
       ...(opts.activeOnly ? { isActive: true } : {}),
       ...(opts.q
         ? {
-            OR: [
-              { name: { contains: opts.q, mode: 'insensitive' } },
-              { description: { contains: opts.q, mode: 'insensitive' } },
+            // Nested under AND so the text search composes with the site OR
+            // above instead of clobbering it (two top-level ORs collide).
+            AND: [
+              {
+                OR: [
+                  { name: { contains: opts.q, mode: 'insensitive' } },
+                  { description: { contains: opts.q, mode: 'insensitive' } },
+                ],
+              },
             ],
           }
         : {}),

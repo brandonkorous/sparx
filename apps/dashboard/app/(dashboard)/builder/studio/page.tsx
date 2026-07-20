@@ -6,7 +6,13 @@ import { ensureUniqueIds, upgradeFrameChrome, starterSite } from '@sparx/silica-
 import { isModuleEnabled, requireSession } from '@sparx/auth';
 
 import { getActiveProperty } from '@/lib/sites';
-import { getBindingCatalog, getBuilderSite, getPublishState, listPages } from '../_lib/api';
+import {
+  getBindingCatalog,
+  getBuilderSeq,
+  getBuilderSite,
+  getPublishState,
+  listPages,
+} from '../_lib/api';
 import { getBrand, getConfig, getSitePreviewData } from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import type { BrandDto, SiteConfigDto } from '../_brand/lib/types';
@@ -92,6 +98,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     commerceEnabled,
     schedulingEnabled,
     cmsEnabled,
+    initialSeq,
   ] = await Promise.all([
     searchParams,
     getBindingCatalog().catch(() => ({ sources: [] })),
@@ -124,6 +131,9 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     isModuleEnabled(session.user.tenantId, 'scheduling').catch(() => false),
     // Same, for the CMS module's Journal link + `/blog` index — fails CLOSED.
     isModuleEnabled(session.user.tenantId, 'cms').catch(() => false),
+    // The op log's current sequence, so the studio can align the engine + catch up over
+    // the collaboration socket (docs/126 Phase 4). Degrades to 0 (a redundant catch-up).
+    getBuilderSeq(),
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
@@ -211,6 +221,8 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
       sources={pageSources}
       initialPageId={initialPageId}
       initialPublishState={publishState}
+      propertyId={activeProperty?.id}
+      initialSeq={initialSeq}
     />
   );
 }

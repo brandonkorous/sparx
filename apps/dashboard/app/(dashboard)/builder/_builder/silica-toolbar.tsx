@@ -18,8 +18,10 @@ import type { BuilderPageSummaryDto, DataSource, ReleaseSummaryDto } from '@spar
 
 import { SilicaPageSettings } from './silica-page-settings';
 import { PublishHistory, PublishHistoryButton } from './publish-history';
+import { CollabPresence } from './collab-presence';
 import { getReleases } from '../_lib/actions';
 import { badgeView, type PublishView, type SaveState } from './publish-badge';
+import type { CollabPeer } from './use-builder-collab';
 
 // Re-exported so the studio (the only consumer) imports both the component and the
 // state types from one place; the decision itself lives in `publish-badge.ts`.
@@ -41,6 +43,9 @@ export interface SilicaToolbarProps {
    *  page of this site (a stale bookmark, or a link into another site's template) —
    *  the engine stays on its default page rather than dangling. */
   initialPageId?: string;
+  /** Other people editing this site right now (docs/126 Phase 4). Rendered as a
+   *  presence cluster so an author knows they aren't alone before an edit collides. */
+  peers: CollabPeer[];
 }
 
 export function SilicaToolbar({
@@ -49,6 +54,7 @@ export function SilicaToolbar({
   pages,
   sources,
   initialPageId,
+  peers,
 }: SilicaToolbarProps) {
   const editor = useEditor();
   // Re-render on every committed edit so the active page + its name stay live
@@ -92,6 +98,10 @@ export function SilicaToolbar({
 
   return (
     <div className="flex items-center gap-3">
+      {/* Who else is editing this site right now — placed first so an author registers
+          "I'm not alone" before reading save state. `activeId` lets it mark peers on
+          THIS page distinctly from those elsewhere in the site. */}
+      <CollabPresence peers={peers} activePageId={activeId} />
       {badge && (
         // One live region over both, so a screen reader hears "Saved — not live yet.
         // Visitors still see…" as a single announcement rather than two fragments.

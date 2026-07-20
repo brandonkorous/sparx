@@ -74,10 +74,15 @@ export async function savePageTree(
  *  store. No revalidate (the client holds the live site; see file header). */
 export async function syncBuilderSite(
   input: SiteSyncInput
-): Promise<ActionResult<{ saved: boolean; pageUpdatedAt: Record<string, string> }>> {
+): Promise<
+  ActionResult<{ saved: boolean; pageUpdatedAt: Record<string, string>; seq: number | null }>
+> {
   return run(
     () =>
-      api.put<{ saved: boolean; pageUpdatedAt: Record<string, string> }>('/v1/builder/site', input),
+      api.put<{ saved: boolean; pageUpdatedAt: Record<string, string>; seq: number | null }>(
+        '/v1/builder/site',
+        input
+      ),
     false
   );
 }

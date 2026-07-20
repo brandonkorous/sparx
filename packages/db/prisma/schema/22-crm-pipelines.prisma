@@ -10,6 +10,12 @@
 model Pipeline {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String    @map("tenant_id") @db.Uuid
+  // The business whose sales process this is (docs/131 §5); null = tenant-wide.
+  // The doc's own header cites "Fleet Contract Renewals" — a pipeline is one
+  // business's way of working a deal, and a machine shop's stages ("Quote →
+  // Approved → Fabricating → Invoiced") mean nothing on a donut wholesaler.
+  // Nullable because a shared process is a legitimate default.
+  propertyId String?   @map("property_id") @db.Uuid
   name       String    @db.VarChar(120)
   slug       String    @db.VarChar(63)
   isDefault  Boolean   @default(false) @map("is_default")
@@ -18,12 +24,17 @@ model Pipeline {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  stages PipelineStage[]
-  deals  Deal[]
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a pipeline is an authored process belonging to the business.
+  property Property?       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  stages   PipelineStage[]
+  deals    Deal[]
 
-  @@unique([tenantId, slug])
+  // (tenant, property, slug), NULLS NOT DISTINCT — two sites may each run a
+  // `sales` pipeline; the tenant-wide tier still can't duplicate a slug.
+  @@unique([tenantId, propertyId, slug])
   @@index([tenantId, archivedAt])
+  @@index([tenantId, propertyId, archivedAt])
   @@map("pipelines")
 }
 
@@ -43,6 +54,8 @@ model PipelineStage {
   pipeline Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   deals    Deal[]
 
+  // No property_id (docs/131 §2 pattern 3): a stage exists only under a pipeline,
+  // so it inherits the pipeline's site. A column would be able to disagree.
   @@unique([pipelineId, sortOrder])
   @@index([tenantId, pipelineId])
   @@map("pipeline_stages")
@@ -51,6 +64,11 @@ model PipelineStage {
 model Deal {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String  @map("tenant_id") @db.Uuid
+  // Denormalized from the pipeline AT CREATION (docs/131 §5), like Booking from
+  // its service: "what is this business's open pipeline value" is answerable
+  // without a join, and re-scoping a pipeline later cannot rewrite which business
+  // past deals belonged to. Null = a deal in a tenant-wide pipeline.
+  propertyId    String? @map("property_id") @db.Uuid
   pipelineId    String  @map("pipeline_id") @db.Uuid
   stageId       String  @map("stage_id") @db.Uuid
   customerId    String? @map("customer_id") @db.Uuid
@@ -73,6 +91,9 @@ model Deal {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull: a deal is a RECORD of a sales opportunity and outlives its site,
+  // like orders and bookings.
+  property    Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   pipeline    Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   stage       PipelineStage @relation(fields: [stageId], references: [id])
   customer    Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
@@ -84,6 +105,7 @@ model Deal {
   orderLinks    DealOrder[]
   documentLinks DealBillingDocument[]
 
+  @@index([tenantId, propertyId, stageId])
   @@index([tenantId, pipelineId, stageId])
   @@index([tenantId, assignedRepId, stageId])
   @@index([tenantId, customerId])

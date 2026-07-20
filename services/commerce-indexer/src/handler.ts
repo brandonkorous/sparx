@@ -71,7 +71,7 @@ export async function handleEvent(
         // treat that as a rules-projection trigger.
         const collectionId = stringProp(event.data, 'collectionId');
         if (collectionId) {
-          const diff = await projectCollectionRules(ctx, collectionId);
+          const diff = await projectCollectionRules(ctx, collectionId, logger);
           for (const id of [...diff.added, ...diff.removed]) {
             const { document } = await projectProduct(ctx, id);
             if (document) await upsertProduct(document);
@@ -102,7 +102,7 @@ export async function handleEvent(
       // is fast for the typical tenant (<50 rules-driven collections).
       let reprojection: unknown = undefined;
       if (event.type === 'product.created' || event.type === 'product.updated') {
-        const diffs = await projectAllCollectionRulesForTenant(ctx);
+        const diffs = await projectAllCollectionRulesForTenant(ctx, logger);
         const meaningful = diffs.filter((d) => d.added.length > 0 || d.removed.length > 0);
         if (meaningful.length > 0) {
           reprojection = meaningful;

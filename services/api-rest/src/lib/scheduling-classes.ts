@@ -21,13 +21,19 @@ export async function sendSeatConfirmation(
   attendee: Pick<BookingAttendee, 'customerId'>
 ): Promise<void> {
   if (!attendee.customerId) return;
-  const customer = await withTenant({ tenantId }, (tx) =>
-    tx.customer.findUnique({ where: { id: attendee.customerId! }, select: { email: true } })
+  const [customer, booking] = await withTenant({ tenantId }, (tx) =>
+    Promise.all([
+      tx.customer.findUnique({ where: { id: attendee.customerId! }, select: { email: true } }),
+      // The booking's site (docs/131 §3.4/§4) — so this confirmation goes out
+      // under the business the class belongs to, not the tenant's primary.
+      tx.booking.findUnique({ where: { id: bookingId }, select: { propertyId: true } }),
+    ])
   );
   if (!customer?.email) return;
   await sendTenantEmailByKey(logger, tenantId, {
     key: 'booking-confirmation',
     to: customer.email,
+    propertyId: booking?.propertyId ?? null,
     ref: { customerId: attendee.customerId, bookingId },
     emailType: 'transactional',
     variables: { source: 'scheduling-class' },

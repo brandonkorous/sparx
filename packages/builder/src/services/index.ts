@@ -16,3 +16,4 @@ export * as archetypeService from './archetype-service';
 export * as platformCatalogService from './platform-catalog-service';
 export * as nodeIndexService from './node-index-service';
 export * as artifactService from './artifact-service';
+export * as opLogService from './op-log-service';

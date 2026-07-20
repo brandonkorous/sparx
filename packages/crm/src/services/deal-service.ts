@@ -27,6 +27,11 @@ export interface ListDealsFilter {
   assignedRepId?: string | null;
   customerId?: string;
   b2bAccountId?: string;
+  /** The sites this member may reach (docs/131 §3.3 read-scoping); undefined = an
+   *  unrestricted member who sees every site. A restricted member sees deals on
+   *  their granted sites PLUS tenant-wide (null-property) deals — the same
+   *  "site's own + shared" shape every other scoped read uses. */
+  propertyIds?: string[];
   /** "open" excludes deals on won/lost stages; "closed" includes only those. */
   state?: 'open' | 'closed';
   take?: number;
@@ -40,6 +45,9 @@ export async function list(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DealWhereInput = {
       deletedAt: null,
+      ...(filter.propertyIds
+        ? { OR: [{ propertyId: { in: filter.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(filter.q ? { title: { contains: filter.q, mode: 'insensitive' } } : {}),
       ...(filter.pipelineId ? { pipelineId: filter.pipelineId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
@@ -85,9 +93,18 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
       ]);
     }
 
+    // The deal inherits its site from the pipeline it lives in (docs/131 §5),
+    // read here and denormalized onto the row — not taken from the request, so a
+    // deal always belongs to the same business as its pipeline.
+    const pipeline = await tx.pipeline.findUnique({
+      where: { id: input.pipelineId },
+      select: { propertyId: true },
+    });
+
     const created = await tx.deal.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: pipeline?.propertyId ?? null,
         pipelineId: input.pipelineId,
         stageId: input.stageId,
         customerId: input.customerId ?? null,

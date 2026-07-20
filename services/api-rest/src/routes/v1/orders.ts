@@ -45,6 +45,7 @@ import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@spa
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
+import { reachableSiteIds } from '../../lib/property.js';
 import { requireCommerceModule, toCommerceContext } from '../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -96,7 +97,7 @@ const ListQuery = z.object({
 
 const orderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/orders', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await orderService.list(toOrderContext(request), {
@@ -107,6 +108,9 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       paymentStatus: q.payment_status,
       channel: q.channel,
       propertyId: q.property,
+      // Bound to the member's reachable sites (docs/131 §3.3) — a restricted
+      // member cannot list another business's orders by omitting ?property.
+      propertyIds: reachableSiteIds(auth),
       q: q.q,
       take: q.take,
       skip: q.skip,

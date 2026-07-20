@@ -39,6 +39,23 @@ function grantedIds(actor: SiteActor): string[] | null {
   return access.granted;
 }
 
+/**
+ * The sites a member is restricted to for a DASHBOARD LIST read (docs/131 §3.3
+ * read-scoping), or `undefined` when unrestricted (sees every site).
+ *
+ * Unlike `resolveListScopeIds`, this is not driven by a `?property=all` param —
+ * a management list is ALWAYS bounded by what the member may reach, with no way
+ * to ask for more. Callers pass the result as a list-filter; the service ORs it
+ * with tenant-wide (null-property) rows so a restricted member still sees shared
+ * records, matching every other scoped read in this doc.
+ *
+ * Returns `undefined` (not `[]`) for an unrestricted member: an empty array
+ * would filter to nothing, the opposite of "no restriction".
+ */
+export function reachableSiteIds(actor: SiteActor): string[] | undefined {
+  return grantedIds(actor) ?? undefined;
+}
+
 /** Whether `propertyId` is within this actor's reach. */
 function canReach(actor: SiteActor, propertyId: string): boolean {
   const access = actor.propertyAccess;

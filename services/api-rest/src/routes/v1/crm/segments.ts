@@ -16,7 +16,7 @@ import { segmentService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -32,12 +32,14 @@ const MembersQuery = z.object({
 
 const segmentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/segments', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await segmentService.list(toCrmContext(request), {
       q: q.q,
       includeArchived: q.include_archived,
+      // Restricted members see only their businesses' audiences (docs/131 §3.3).
+      propertyIds: reachableSiteIds(auth),
       take: q.take,
       skip: q.skip,
     });

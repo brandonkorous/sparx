@@ -7,6 +7,13 @@
 model Task {
   id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId          String  @map("tenant_id") @db.Uuid
+  // The business this work belongs to (docs/131 §5), denormalized from the
+  // customer or deal it is about at creation; null = a general task tied to
+  // neither. This completes the member site-access story (§3.3): a staff member
+  // scoped to one business should see only that business's task queue, and
+  // without a site on the task there is nothing to filter by. SetNull — a task
+  // is a work record and outlives its site.
+  propertyId        String? @map("property_id") @db.Uuid
   assignedToUserId  String  @map("assigned_to_user_id") @db.Uuid
   createdByUserId   String  @map("created_by_user_id") @db.Uuid
   completedByUserId String? @map("completed_by_user_id") @db.Uuid
@@ -24,6 +31,7 @@ model Task {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   assignedTo  User      @relation("TaskAssignedTo", fields: [assignedToUserId], references: [id], onDelete: Cascade)
   createdBy   User      @relation("TaskCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
   completedBy User?     @relation("TaskCompletedBy", fields: [completedByUserId], references: [id], onDelete: SetNull)
@@ -31,6 +39,7 @@ model Task {
   deal        Deal?     @relation(fields: [dealId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, assignedToUserId, status, dueAt])
+  @@index([tenantId, propertyId, status, dueAt])
   @@index([tenantId, dueAt])
   @@index([tenantId, customerId])
   @@index([tenantId, dealId])

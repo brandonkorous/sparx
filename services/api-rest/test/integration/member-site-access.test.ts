@@ -40,7 +40,15 @@ let donuts: string;
 async function enableModules(tenantId: string): Promise<void> {
   await prisma.tenant.update({
     where: { id: tenantId },
-    data: { settings: { modules: { crm: { enabled: true }, builder: { enabled: true } } } },
+    data: {
+      settings: {
+        modules: {
+          crm: { enabled: true },
+          builder: { enabled: true },
+          commerce: { enabled: true },
+        },
+      },
+    },
   });
 }
 
@@ -49,10 +57,49 @@ async function enableModules(tenantId: string): Promise<void> {
  *  contain the forbidden site's UUID — which passed with enforcement switched
  *  OFF, because the list was empty and the id never appeared either way. An
  *  assertion that cannot fail is worse than no assertion: it reports success. */
-async function seedCustomer(tenantId: string, propertyId: string, email: string): Promise<void> {
+async function seedCustomer(tenantId: string, propertyId: string, email: string): Promise<string> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const c = await tx.customer.create({
+      data: { tenantId, propertyId, type: 'retail', email },
+      select: { id: true },
+    });
+    return c.id;
+  });
+}
+
+/** An order on one site (docs/131 §3.3 read-scoping). The order NUMBER is the
+ *  assertable record — like the customer email, "which of the two came back" is a
+ *  question with a wrong answer, and the wrong answer is the leak this proves is
+ *  closed. */
+async function seedOrder(
+  tenantId: string,
+  propertyId: string | null,
+  customerId: string,
+  orderNumber: string
+): Promise<void> {
   await prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-    await tx.customer.create({ data: { tenantId, propertyId, type: 'retail', email } });
+    await tx.order.create({
+      data: { tenantId, propertyId, customerId, orderNumber, placedAt: new Date() },
+    });
+  });
+}
+
+/** An automation on one site, or tenant-wide when propertyId is null. Automation
+ *  is the SHARED-null model (docs/131 §3.3): a null site means "applies to every
+ *  business", so a restricted member SEES it — the opposite of an orphaned order.
+ *  The name is the assertable record. */
+async function seedAutomation(
+  tenantId: string,
+  propertyId: string | null,
+  name: string
+): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    await tx.automation.create({
+      data: { tenantId, propertyId, name, triggerType: 'order.placed' },
+    });
   });
 }
 
@@ -130,8 +177,24 @@ beforeAll(async () => {
   await restrictMemberTo(tenant.tenantId, tenant.userId, [donuts]);
   // One customer per business. Every assertion below is "which of these two
   // came back", which is a question that has a wrong answer.
-  await seedCustomer(tenant.tenantId, parts, 'buyer@bobsparts.test');
-  await seedCustomer(tenant.tenantId, donuts, 'buyer@savorydonuts.test');
+  const partsCustomer = await seedCustomer(tenant.tenantId, parts, 'buyer@bobsparts.test');
+  const donutsCustomer = await seedCustomer(tenant.tenantId, donuts, 'buyer@savorydonuts.test');
+  // One order per business — the read-scoping regression guard: the /v1/orders
+  // list had NO member-access bound before docs/131 §3.3's read-scoping pass, so
+  // a donut-restricted member could list the machine shop's orders.
+  await seedOrder(tenant.tenantId, parts, partsCustomer, 'BOBS-0001');
+  await seedOrder(tenant.tenantId, donuts, donutsCustomer, 'DONUTS-0001');
+  // An ORPHANED order — propertyId null, as if its origin site was deleted
+  // (Order.propertyId is SetNull). The restricted member must NOT see it: null
+  // here means "a now-gone business", not "shared". This guards the orphaned-null
+  // branch (docs/131 §3.3), which the two site-stamped orders above cannot.
+  await seedOrder(tenant.tenantId, null, donutsCustomer, 'ORPHAN-0001');
+  // Automations exercise the SHARED-null branch: one per site plus a tenant-wide
+  // one. The restricted member must see their own site's AND the shared one, but
+  // not the machine shop's.
+  await seedAutomation(tenant.tenantId, parts, 'AUTO-BOBS');
+  await seedAutomation(tenant.tenantId, donuts, 'AUTO-DONUTS');
+  await seedAutomation(tenant.tenantId, null, 'AUTO-SHARED');
 });
 
 afterAll(async () => {
@@ -207,6 +270,47 @@ describe('per-member site access', () => {
     // id that does not exist, so the error cannot be used to enumerate which
     // businesses the account runs.
     expect(res.statusCode).toBe(404);
+  });
+
+  it('bounds a dashboard LIST (orders) to the member reachable sites', async () => {
+    // The read-scoping regression guard (docs/131 §3.3). The order list takes no
+    // ?property — a restricted member must still see only their business's
+    // orders, because the list is bounded by member access, not by a switcher.
+    const token = signToken(app, tenant, 'editor');
+    const res = await app.inject({
+      method: 'GET',
+      url: '/v1/orders',
+      headers: authHeader(token),
+    });
+    expect(res.statusCode).toBeLessThan(400);
+    // The donut member sees the donut order and NOT the machine shop's — the
+    // exact leak that existed before the reads were bounded.
+    expect(res.body).toContain('DONUTS-0001');
+    expect(res.body).not.toContain('BOBS-0001');
+    // ...and NOT the orphaned (null-property) order: for an order, null means a
+    // deleted business, so a restricted member has no claim to it (docs/131
+    // §3.3 orphaned-null). This is the branch a shared-null model would get
+    // wrong by admitting null — proving the distinction is real, not cosmetic.
+    expect(res.body).not.toContain('ORPHAN-0001');
+  });
+
+  it('includes tenant-wide (shared-null) records for a restricted member', async () => {
+    // The complement of the orphaned-order case (docs/131 §3.3). An automation's
+    // null site means "every business" (shared), so the donut-restricted member
+    // must see their own site's automation AND the tenant-wide one — but never
+    // the machine shop's. Getting THIS wrong (excluding null) would hide shared
+    // records; getting the ORDER case wrong (including null) would leak orphaned
+    // ones. The two tests together pin the distinction from both sides.
+    const token = signToken(app, tenant, 'editor');
+    const res = await app.inject({
+      method: 'GET',
+      url: '/v1/automations',
+      headers: authHeader(token),
+    });
+    expect(res.statusCode).toBeLessThan(400);
+    expect(res.body).toContain('AUTO-DONUTS');
+    expect(res.body).toContain('AUTO-SHARED');
+    expect(res.body).not.toContain('AUTO-BOBS');
   });
 
   it('leaves an unrestricted member reaching every site', async () => {

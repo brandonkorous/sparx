@@ -90,6 +90,10 @@ export async function list(
       ...(filter.paymentStatus ? { paymentStatus: filter.paymentStatus } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
+      // Member access ceiling (docs/131 §3.3): a restricted member sees only
+      // orders on their granted sites — NOT null-property (orphaned) orders,
+      // which belong to a deleted business they have no claim to.
+      ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
       // B2B scoping rides the customer relation — an Order carries no
       // b2bAccountId of its own. A specific account wins over the broad
       // "any B2B account" lens when both are supplied.

@@ -14,6 +14,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder } from '@wizeworks/silicaui-builder/react';
+import type { BuilderHandle, Op, OpMeta } from '@wizeworks/silicaui-builder/react';
 import type { DataSource as SilicaDataSource, Document, Site } from '@wizeworks/silicaui-html';
 import { useConfirm } from '@sparx/ui';
 import type {
@@ -31,6 +32,16 @@ import { makeRenderHostNode } from './host-cores';
 import { makeFormPanels } from './form-settings-panel';
 import { SilicaToolbar, type PublishView, type SaveState } from './silica-toolbar';
 import { useUnpublishedGuard } from './use-unpublished-guard';
+import { createSentBatches, useBuilderCollab } from './use-builder-collab';
+
+/** The ops accumulated since the last successful flush, plus the seq the client was at
+ *  before the first of them and a fresh idempotency key for this flush (docs/126
+ *  Phase 2). Undefined for a save with no ops (a legacy path). */
+interface OpBatch {
+  ops: Op[];
+  baseSeq: number;
+  batchId: string;
+}
 
 /** Project silica's extracted `Site` onto the sync wire shape — near-identity:
  *  silica's `Page` is already `{ id, name, slug, root }`; the frame contributes its
@@ -38,7 +49,7 @@ import { useUnpublishedGuard } from './use-unpublished-guard';
  *  The engine hands back the WHOLE site on every edit, so every part is persisted
  *  (docs/118) — a theme, symbol, or saved-theme edit must never be dropped on the
  *  floor here (silicaui 0.16 rounds `savedThemes` through `onChange`). */
-function toSyncInput(site: Site, since?: SyncBaseline): SiteSyncInput {
+function toSyncInput(site: Site, since?: SyncBaseline, opBatch?: OpBatch): SiteSyncInput {
   const roster = site.pages.map((p) => p.id);
   // Send only the pages whose identity or BODY actually changed (docs/126 Phase 0).
   // `pageIds` carries the full roster so the server still resolves deletion + ordering
@@ -63,6 +74,16 @@ function toSyncInput(site: Site, since?: SyncBaseline): SiteSyncInput {
     ...(site.symbols ? { symbols: site.symbols } : {}),
     ...(site.theme ? { theme: site.theme } : {}),
     ...(site.savedThemes ? { savedThemes: site.savedThemes } : {}),
+    // The op stream for this flush (docs/126 Phase 2). Cast to the wire envelope: the
+    // server validates only `target` + `kind` and stores each op verbatim, so the full
+    // silica `Op` shape passes through untouched.
+    ...(opBatch && opBatch.ops.length > 0
+      ? {
+          ops: opBatch.ops as unknown as NonNullable<SiteSyncInput['ops']>,
+          baseSeq: opBatch.baseSeq,
+          batchId: opBatch.batchId,
+        }
+      : {}),
   };
 }
 
@@ -124,6 +145,13 @@ export interface SilicaStudioProps {
   /** Draft-vs-published as of page load, from the server. The studio takes it from
    *  here: an edit makes the site unpublished, a publish makes it live. */
   initialPublishState: SitePublishState;
+  /** The active property id — the collaboration room this editor joins (docs/126
+   *  Phase 4). Undefined disables live collaboration (the editor still works solo). */
+  propertyId?: string;
+  /** The op log's sequence at load time (docs/126 Phase 4). Acked into the engine on
+   *  mount so its `baseSeq` starts aligned with what the server has, and used as the
+   *  catch-up origin when the collaboration socket connects. */
+  initialSeq?: number;
 }
 
 export function SilicaStudio({
@@ -135,6 +163,8 @@ export function SilicaStudio({
   sources,
   initialPageId,
   initialPublishState,
+  propertyId,
+  initialSeq = 0,
 }: SilicaStudioProps) {
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [picker, setPicker] = useState<PickerRequest | null>(null);
@@ -146,6 +176,19 @@ export function SilicaStudio({
     lastPublishedAt: initialPublishState.lastPublishedAt,
     neverPublished: initialPublishState.neverPublished,
   });
+
+  // The imperative handle onto the live engine (silicaui 0.30). `ackSeq` after a save,
+  // `applyRemoteOps` for a peer's edits (docs/126 Phase 4). Read once mounted; never
+  // re-seeds the document.
+  const builderRef = useRef<BuilderHandle | null>(null);
+
+  // Collaboration state (docs/126 Phase 4). `lastSeq` is where our document currently
+  // stands: seeded from the load, advanced on every successful save AND every applied
+  // remote op (the hook writes it too). `sentBatches` records our own batchIds so the
+  // relay can drop our echo. Both are refs shared with `useBuilderCollab`.
+  const lastSeqRef = useRef<number>(initialSeq);
+  const sentBatches = useRef(createSentBatches()).current;
+  const collab = useBuilderCollab({ propertyId, builderRef, sentBatches, lastSeqRef });
 
   // The media picker silica invokes when an image/video field asks for a source —
   // returns a promise that settles when the author picks an asset (or cancels).
@@ -163,10 +206,16 @@ export function SilicaStudio({
   // host is memoized once at mount and the form panel needs the CURRENT page at the
   // moment the author saves, not the one that happened to be open on load.
   const activeSlug = useRef<string | null>(null);
-  const onActivePageChange = useCallback((page: { slug: string }) => {
-    const slug = page.slug.replace(/^\/+|\/+$/g, '');
-    activeSlug.current = slug === '' ? null : slug;
-  }, []);
+  const setPeerActivePage = collab.setActivePage;
+  const onActivePageChange = useCallback(
+    (page: { id: string; slug: string }) => {
+      const slug = page.slug.replace(/^\/+|\/+$/g, '');
+      activeSlug.current = slug === '' ? null : slug;
+      // Tell co-editors which page this author moved to (presence "where").
+      setPeerActivePage(page.id);
+    },
+    [setPeerActivePage]
+  );
 
   // sparx's contribution to silica's Inspector: where a form's submissions go
   // (docs/115). silicaui ships the form and does the whole client half, then stops at
@@ -209,16 +258,52 @@ export function SilicaStudio({
     updatedAt: Object.fromEntries(pages.map((p) => [p.id, p.updatedAt])),
   });
 
+  // Ops accumulated across the current debounce window (docs/126 Phase 2). Each
+  // `onChange` contributes the ops for one edit; the flush sends them as one batch. The
+  // `baseSeq` we carry is the engine's seq before the FIRST accumulated op — what the
+  // server needs to know where this batch began. Reset after every flush attempt.
+  const opBuffer = useRef<Op[]>([]);
+  const opBaseSeq = useRef<number | null>(null);
+
+  // Align the engine's sequence to the loaded document once it's mounted, so the first
+  // edit's `meta.baseSeq` is what the server actually has — not 0. Runs once.
+  const seqAligned = useRef(false);
+  useEffect(() => {
+    if (seqAligned.current || initialSeq <= 0) return;
+    seqAligned.current = true;
+    builderRef.current?.ackSeq(initialSeq);
+  }, [initialSeq]);
+
   const flush = useCallback(() => {
     timer.current = null;
     const next = pending.current;
     if (!next) return;
     pending.current = null;
+    // Snapshot + clear the op buffer for THIS flush. A fresh batchId makes the append
+    // idempotent: if this PUT is retried, the server recognizes the batch and doesn't
+    // double-record. Ops that fail to send are re-buffered below, before the newer ones.
+    const ops = opBuffer.current;
+    const baseSeq = opBaseSeq.current ?? 0;
+    opBuffer.current = [];
+    opBaseSeq.current = null;
+    const batchId = crypto.randomUUID();
+    // Register BEFORE the round trip: the server may relay this batch back to us before
+    // the PUT's own response lands, and the relay handler must already recognize it as
+    // ours (docs/126 Phase 4 echo suppression).
+    if (ops.length > 0) sentBatches.add(batchId);
     setSaveState('saving');
-    void syncBuilderSite(toSyncInput(next, baseline.current ?? undefined)).then((res) => {
+    const opBatch: OpBatch | undefined = ops.length > 0 ? { ops, baseSeq, batchId } : undefined;
+    void syncBuilderSite(toSyncInput(next, baseline.current ?? undefined, opBatch)).then((res) => {
       if (!res.ok) {
         // Re-queue the failed payload so the next edit (or unmount flush) retries it.
         pending.current ??= next;
+        // Put the unsent ops back AHEAD of any that arrived while this PUT was in flight,
+        // preserving causal order — the retry re-sends them under a NEW batchId, which is
+        // correct because the failed attempt never committed.
+        if (ops.length > 0) {
+          opBuffer.current = [...ops, ...opBuffer.current];
+          opBaseSeq.current = baseSeq;
+        }
         setSaveState('error');
         return;
       }
@@ -229,14 +314,27 @@ export function SilicaStudio({
         next,
         res.data?.pageUpdatedAt ?? baseline.current?.updatedAt ?? {}
       );
+      // Advance the engine's sequence to what the server assigned, so the next batch's
+      // `meta.baseSeq` is correct. Null when this flush carried no ops (nothing to ack).
+      if (res.data?.seq != null) {
+        builderRef.current?.ackSeq(res.data.seq);
+        lastSeqRef.current = Math.max(lastSeqRef.current, res.data.seq);
+      }
       // Only claim "saved" if nothing newer arrived while the PUT was in flight.
       setSaveState(pending.current ? 'unsaved' : 'saved');
     });
-  }, []);
+    // `sentBatches` is a stable captured ref value; listed to satisfy exhaustive-deps
+    // without changing the callback's identity.
+  }, [sentBatches]);
 
   const onChange = useCallback(
-    (next: Site) => {
+    (next: Site, ops: readonly Op[], meta: OpMeta) => {
       pending.current = next;
+      // Accumulate this edit's ops. The batch's base is the engine seq before the FIRST
+      // op we buffer since the last flush — later edits in the same window build on it,
+      // so only the first one's `baseSeq` matters.
+      opBaseSeq.current ??= meta.baseSeq;
+      if (ops.length > 0) opBuffer.current.push(...ops);
       setSaveState('unsaved');
       // Any edit makes the site differ from what visitors are served. Deliberately
       // NOT reconciled back to false on undo: proving "this is byte-identical to the
@@ -261,34 +359,62 @@ export function SilicaStudio({
     };
   }, [flush]);
 
-  const onPublish = useCallback(async ({ site: published }: { site: Site }) => {
-    // Persist the just-edited site first (skip the debounce), then snapshot
-    // draft → published so the publish reflects the newest state.
-    setSaveState('saving');
-    const synced = await syncBuilderSite(toSyncInput(published, baseline.current ?? undefined));
-    if (!synced.ok) {
-      setSaveState('error');
-      return;
-    }
-    pending.current = null;
-    // The publish path writes through the same reconcile, so the baseline advances
-    // here too — otherwise the next autosave would re-send every page as "changed".
-    baseline.current = baselineOf(
-      published,
-      synced.data?.pageUpdatedAt ?? baseline.current?.updatedAt ?? {}
-    );
-    setSaveState('saved');
-    const done = await publishBuilderSite();
-    // Only claim "live" if the publish actually succeeded — a failed publish that
-    // still flipped the badge to green would recreate the exact lie this fixes.
-    if (done.ok) {
-      setPublish({
-        hasUnpublished: false,
-        lastPublishedAt: new Date().toISOString(),
-        neverPublished: false,
-      });
-    }
-  }, []);
+  const onPublish = useCallback(
+    async ({ site: published }: { site: Site }) => {
+      // Persist the just-edited site first (skip the debounce), then snapshot
+      // draft → published so the publish reflects the newest state.
+      setSaveState('saving');
+      // Drain any ops buffered but not yet flushed (the author edited, then hit Publish
+      // before the 700ms debounce fired) so the op log records them too. Same idempotent
+      // batch discipline as `flush`.
+      const ops = opBuffer.current;
+      const baseSeq = opBaseSeq.current ?? 0;
+      opBuffer.current = [];
+      opBaseSeq.current = null;
+      let opBatch: OpBatch | undefined;
+      if (ops.length > 0) {
+        const batchId = crypto.randomUUID();
+        sentBatches.add(batchId);
+        opBatch = { ops, baseSeq, batchId };
+      }
+      const synced = await syncBuilderSite(
+        toSyncInput(published, baseline.current ?? undefined, opBatch)
+      );
+      if (!synced.ok) {
+        // Re-buffer the ops so the next save retries them; the publish is aborted.
+        if (ops.length > 0) {
+          opBuffer.current = [...ops, ...opBuffer.current];
+          opBaseSeq.current = baseSeq;
+        }
+        setSaveState('error');
+        return;
+      }
+      if (synced.data?.seq != null) {
+        builderRef.current?.ackSeq(synced.data.seq);
+        lastSeqRef.current = Math.max(lastSeqRef.current, synced.data.seq);
+      }
+      pending.current = null;
+      // The publish path writes through the same reconcile, so the baseline advances
+      // here too — otherwise the next autosave would re-send every page as "changed".
+      baseline.current = baselineOf(
+        published,
+        synced.data?.pageUpdatedAt ?? baseline.current?.updatedAt ?? {}
+      );
+      setSaveState('saved');
+      const done = await publishBuilderSite();
+      // Only claim "live" if the publish actually succeeded — a failed publish that
+      // still flipped the badge to green would recreate the exact lie this fixes.
+      if (done.ok) {
+        setPublish({
+          hasUnpublished: false,
+          lastPublishedAt: new Date().toISOString(),
+          neverPublished: false,
+        });
+      }
+      // `sentBatches` is a stable captured ref value (see `flush`).
+    },
+    [sentBatches]
+  );
 
   // The leave warning, part one: closing or reloading the tab. The browser shows its
   // own generic dialog and ignores custom text, so the toolbar badge carries the real
@@ -327,6 +453,8 @@ export function SilicaStudio({
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
       <Builder
+        // The imperative handle — `ackSeq` after a save, `applyRemoteOps` for Phase 4.
+        ref={builderRef}
         // `<Builder document>` takes `Document | Site` as of silicaui 0.12, so the
         // multi-page `Site` passes straight through (this used to need a cast).
         document={site}
@@ -349,6 +477,7 @@ export function SilicaStudio({
             pages={pages}
             sources={sources}
             initialPageId={initialPageId}
+            peers={collab.peers}
           />
         }
       />

@@ -64,6 +64,19 @@ export async function getPublishState(): Promise<SitePublishState> {
   return api.get<SitePublishState>('/v1/builder/site/publish-state');
 }
 
+/** The op log's current high-water sequence (docs/126 Phase 4). The studio acks it into
+ *  the engine at mount so its `baseSeq` starts correct, then requests catch-up from there
+ *  over the collaboration socket. Degrades to 0 on failure — a wrong-low seq costs a
+ *  redundant catch-up, never a lost edit. */
+export async function getBuilderSeq(): Promise<number> {
+  try {
+    const { seq } = await api.get<{ seq: number }>('/v1/builder/site/seq');
+    return seq;
+  } catch {
+    return 0;
+  }
+}
+
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS
 // content types + the code-defined Commerce/CRM sources. The editor's binding
 // picker, canvas preview, and layer chips all derive from this.

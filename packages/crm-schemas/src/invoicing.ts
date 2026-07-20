@@ -238,6 +238,11 @@ export const ListBillingDocumentsInput = z.object({
   stageId: z.string().uuid().optional(),
   customerId: z.string().uuid().optional(),
   b2bAccountId: z.string().uuid().optional(),
+  // The member's reachable sites (docs/131 §3.3), set by the route from site
+  // access — undefined = unrestricted. A document's `propertyId` is REQUIRED
+  // (every invoice has an issuer), so there is no null/orphaned case: a
+  // restricted member sees strictly their granted businesses' documents.
+  propertyIds: z.array(z.string().uuid()).optional(),
   status: z.string().max(20).optional(),
   includeDeleted: z.boolean().optional(),
   // `z.coerce.number()` (not `z.number()`) so HTTP query strings — the dashboard

@@ -52,7 +52,9 @@ export async function sendWaitlistOffer(
         serviceId: true,
         desiredFrom: true,
         desiredTo: true,
-        service: { select: { name: true } },
+        // The offer goes out under the business that runs the service
+        // (docs/131 §3.4/§4), not the tenant's primary.
+        service: { select: { name: true, propertyId: true } },
       },
     })
   );
@@ -69,6 +71,7 @@ export async function sendWaitlistOffer(
     await sendTenantEmailByKey(logger, tenantId, {
       key: 'waitlist-offer',
       to: customer.email,
+      propertyId: entry.service?.propertyId ?? null,
       ref: { customerId: entry.customerId, waitlistEntryId: entryId },
     }).catch((err: unknown) => {
       logger.warn({ tenantId, entryId, err }, 'waitlist: offer email failed');

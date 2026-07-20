@@ -15,6 +15,7 @@ import { dealService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { reachableSiteIds } from '../../../lib/property.js';
 import dealAttachmentRoutes from './deal-attachments.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -39,7 +40,7 @@ const ForecastQuery = z.object({
 
 const dealRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/crm/deals', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await dealService.list(toCrmContext(request), {
@@ -49,6 +50,9 @@ const dealRoutes: FastifyPluginAsync = async (app) => {
       customerId: q.customer_id,
       b2bAccountId: q.b2b_account_id,
       assignedRepId: q.assigned_rep_id ?? undefined,
+      // A site-restricted member sees only their businesses' deals (docs/131
+      // §3.3); an unrestricted member sees all (reachableSiteIds → undefined).
+      propertyIds: reachableSiteIds(auth),
       state: q.state,
       take: q.take,
       skip: q.skip,

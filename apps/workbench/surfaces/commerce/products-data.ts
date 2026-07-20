@@ -62,6 +62,15 @@ import { api } from '../../lib/api/client';
 // The API origin, for the ONE request that cannot go through `api`: the media
 // upload PUT, whose URL is pre-authorised and must not carry a bearer token.
 import { getTokenState } from '../../lib/api/token';
+// Stock shapes are the inventory module's (it owns stock; a product's Stock facet
+// is a consumer). Imported under the commerce names the facet has always used and
+// re-exported below, so there is ONE definition of each row that cannot drift.
+import type {
+  StockLevel as ProductStockLevel,
+  StockHold as StockReservation,
+  StockMovement,
+  StockLocation,
+} from '../inventory/data';
 
 /* ── Shapes: the product itself ─────────────────────────────────────────── */
 
@@ -372,91 +381,13 @@ export interface DropshipSupplier {
   name: string;
 }
 
-/* ── Shapes: stock ──────────────────────────────────────────────────────── */
+/* ── Shapes: stock (owned by the inventory module) ──────────────────────── */
 
-/** One (variant × warehouse) level. A product's stock is a list of these — a
- *  variant in three warehouses is three rows, which is why the facet has to sum
- *  per variant rather than expect one row each. */
-export interface ProductStockLevel {
-  variantId: string;
-  sku: string | null;
-  productId: string;
-  productTitle: string | null;
-  warehouseId: string;
-  warehouseCode: string;
-  warehouseName: string;
-  onHand: number;
-  /** Spoken for by carts and orders that have not shipped. */
-  allocated: number;
-  /** What is genuinely sellable: on-hand minus allocated minus the buffer. */
-  available: number;
-  reorderPoint: number | null;
-  reorderQuantity: number | null;
-  /** How long a restock takes to arrive. The other half of a reorder point —
-   *  "reorder at 5" only means something against how long you then wait. */
-  leadTimeDays: number | null;
-  /** Units deliberately held back from shoppers. Explains an `available` that is
-   *  lower than on-hand minus allocated. */
-  safetyBuffer: number;
-  /** The standard cost, typed in. `avgCostCents` is the moving average the
-   *  system recomputes from costed receipts. */
-  unitCostCents: number | null;
-  avgCostCents: number | null;
-  updatedAt: string;
-}
-
-/** One hold against stock — the itemization of a level's `allocated` count. */
-export interface StockReservation {
-  id: string;
-  variantId: string;
-  variantSku: string | null;
-  warehouseId: string;
-  warehouseName: string | null;
-  warehouseCode: string | null;
-  quantity: number;
-  /** `cart` | `order` | `subscription`. */
-  holderType: string;
-  holderId: string;
-  status: string;
-  /** When a cart hold lapses on its own. Null on an order hold, which does not. */
-  expiresAt: string | null;
-  createdAt: string;
-  releasedAt: string | null;
-}
-
-/** One line of the append-only stock ledger. */
-export interface StockMovement {
-  id: string;
-  variantId: string;
-  variantSku: string | null;
-  warehouseId: string;
-  warehouseName: string | null;
-  warehouseCode: string | null;
-  /** Signed change to on-hand. */
-  delta: number;
-  balanceAfter: number | null;
-  reason: string;
-  referenceType: string | null;
-  referenceId: string | null;
-  actorType: string;
-  actorId: string | null;
-  note: string | null;
-  createdAt: string;
-}
-
-/** A place stock is kept. Not product data — but the Stock facet is its only
- *  consumer here, and a second copy of this type is exactly what this file
- *  exists to prevent. */
-export interface StockLocation {
-  id: string;
-  name: string;
-  code: string;
-  type: string;
-  city: string | null;
-  region: string | null;
-  country: string | null;
-  isActive: boolean;
-}
+// The stock shapes are imported from the inventory module at the top of this
+// file (under the commerce names the facet has always used) and re-exported here,
+// so consumers that reach for them alongside the product shapes still find them
+// on this data layer — while a SINGLE definition of each row lives one folder over.
+export type { ProductStockLevel, StockReservation, StockMovement, StockLocation };
 
 /* ── Shapes: lookups ────────────────────────────────────────────────────── */
 

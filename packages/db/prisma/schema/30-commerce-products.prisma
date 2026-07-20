@@ -52,6 +52,11 @@ model Product {
   priceMinCents  Int?    @map("price_min_cents")
   priceMaxCents  Int?    @map("price_max_cents")
   inStock        Boolean @default(false) @map("in_stock")
+  // In stock, but at least one variant/warehouse level has fallen to/below its
+  // reorder point — the canonical "running low" predicate (@sparx/inventory
+  // isLowStock). Maintained in the SAME place as inStock (syncProductInStock),
+  // and read by the collection-rule compiler's `inventory low_stock` predicate.
+  lowStock       Boolean @default(false) @map("low_stock")
   bestSellerRank Int?    @map("best_seller_rank")
   averageRating  Float?  @map("average_rating")
   reviewCount    Int     @default(0) @map("review_count")

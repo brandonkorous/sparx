@@ -453,6 +453,11 @@ export interface ListAutomationsFilter {
   status?: string;
   triggerType?: string;
   origin?: 'user' | 'system';
+  /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
+   *  restricted member sees their businesses' automations PLUS tenant-wide
+   *  (null-property) ones — an automation's null means "applies to every site"
+   *  (shared), unlike an order's orphaned null. */
+  propertyIds?: string[];
 }
 
 export async function listAutomations(
@@ -462,6 +467,9 @@ export async function listAutomations(
   return withTenant({ tenantId: ctx.tenantId }, (tx) =>
     tx.automation.findMany({
       where: {
+        ...(filter.propertyIds
+          ? { OR: [{ propertyId: { in: filter.propertyIds } }, { propertyId: null }] }
+          : {}),
         ...(filter.status ? { status: filter.status } : {}),
         ...(filter.triggerType ? { triggerType: filter.triggerType } : {}),
         ...(filter.origin ? { origin: filter.origin } : {}),

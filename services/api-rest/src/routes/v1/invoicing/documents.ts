@@ -36,6 +36,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { ApiError } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
+import { reachableSiteIds } from '../../../lib/property.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -107,7 +108,7 @@ const PaymentLinkBody = z.object({
 
 const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireInvoicingModule(request);
     const q = ListDocumentsQuery.parse(request.query);
     const { items, total } = await billingDocumentService.list(toInvoicingContext(request), {
@@ -116,6 +117,9 @@ const documentRoutes: FastifyPluginAsync = (app) => {
       stageId: q.stageId,
       customerId: q.customerId,
       b2bAccountId: q.b2bAccountId,
+      // Bound to the member's reachable sites (docs/131 §3.3) — invoices are
+      // among the most sensitive per-business records.
+      propertyIds: reachableSiteIds(auth),
       status: q.status,
       includeDeleted: q.includeDeleted,
       // The service speaks limit/offset; `default(50)`/`default(0)` apply when omitted.

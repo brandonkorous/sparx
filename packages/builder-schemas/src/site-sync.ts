@@ -87,6 +87,34 @@ export const SilicaThemeInput = z.looseObject({
   tokens: z.record(z.string(), z.unknown()),
 }) as unknown as z.ZodType<SilicaTheme>;
 
+/** One tree an op addresses (silicaui `OpTarget`). `frame`/`site` carry no id; `page`/
+ *  `symbol` do. The server reads this to key the op log by owner without understanding
+ *  the op itself. */
+export const BuilderOpTarget = z.union([
+  z.object({ scope: z.literal('page'), id: z.string().min(1) }),
+  z.object({ scope: z.literal('frame') }),
+  z.object({ scope: z.literal('symbol'), id: z.string().min(1) }),
+  z.object({ scope: z.literal('site') }),
+]);
+export type BuilderOpTarget = z.infer<typeof BuilderOpTarget>;
+
+/**
+ * One op, validated at the ENVELOPE only (silicaui 0.30 `Op` — docs/126 §2).
+ *
+ * The server persists ops verbatim and only needs `target` (which tree — for the
+ * history index) and `kind` (which operation — for "every text edit" style queries).
+ * Everything else is stored opaquely via `z.looseObject`. This is deliberate decoupling:
+ * silicaui owns the op vocabulary, and adding a new op kind must never require a server
+ * schema change to keep recording history. The engine-side `Op` union (imported into the
+ * dashboard from `@wizeworks/silicaui-builder/react`) is the authority on the full shape;
+ * the wire only pins the two fields the log is keyed on.
+ */
+export const BuilderOpEnvelope = z.looseObject({
+  target: BuilderOpTarget,
+  kind: z.string().min(1).max(32),
+});
+export type BuilderOpEnvelope = z.infer<typeof BuilderOpEnvelope>;
+
 /** The whole extracted site — the debounced `onChange` payload. `frame`/`symbols`/
  *  `theme` are optional (a site can have no chrome, no saved components, and an
  *  unedited brand-derived theme). Every part is persisted; nothing is discarded. */
@@ -128,6 +156,30 @@ export const SiteSyncInput = z.object({
   // The saved-theme library (silicaui 0.16). Structural per-theme validation via
   // the same opaque `SilicaThemeInput`; persisted as draft-only authoring state.
   savedThemes: z.array(SilicaThemeInput).nullish(),
+  /**
+   * The causal-ordered ops the engine emitted for THIS batch of edits (silicaui 0.30's
+   * `onChange(site, ops, meta)` — docs/126 Phase 2). Appended to the op log alongside
+   * the snapshot write, never in place of it: the snapshot stays authoritative, this is
+   * the history + (future) realtime-relay stream.
+   *
+   * Omitted by every non-engine caller (MCP writers, blueprint installer) — they mutate
+   * the snapshot directly and have no op stream, which is correct: the log records what
+   * the collaborative editor did, and a scripted write has no author interleaving to
+   * reconcile.
+   */
+  ops: z.array(BuilderOpEnvelope).nullish(),
+  /**
+   * The sequence number the client was at before these ops (`meta.baseSeq`). The server
+   * assigns each op the next per-property seq and returns the new high-water mark so the
+   * client can `ackSeq()` it. Present iff `ops` is.
+   */
+  baseSeq: z.number().int().nonnegative().nullish(),
+  /**
+   * A client-generated id for this flush's ops, so a retried save is idempotent — the
+   * server refuses a batch it has already recorded rather than appending a second copy.
+   * Present iff `ops` is; the client mints a fresh one per flush.
+   */
+  batchId: z.string().min(1).max(64).nullish(),
 });
 export type SiteSyncInput = z.infer<typeof SiteSyncInput>;
 

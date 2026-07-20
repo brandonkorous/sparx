@@ -22,6 +22,9 @@ export interface ListTasksFilter {
   assignedToUserId?: string;
   customerId?: string;
   dealId?: string;
+  /** The sites this member may reach (docs/131 §3.3); undefined = unrestricted.
+   *  Restricted members see their businesses' tasks plus tenant-wide ones. */
+  propertyIds?: string[];
   status?: 'open' | 'completed' | 'cancelled';
   dueBefore?: Date;
   take?: number;
@@ -34,6 +37,9 @@ export async function list(
 ): Promise<{ items: Task[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.TaskWhereInput = {
+      ...(filter.propertyIds
+        ? { OR: [{ propertyId: { in: filter.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(filter.q ? { title: { contains: filter.q, mode: 'insensitive' } } : {}),
       ...(filter.assignedToUserId ? { assignedToUserId: filter.assignedToUserId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
@@ -70,9 +76,29 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Ta
   const userId = ctx.userId;
 
   const task = await withTenant(ctx, async (tx) => {
+    // Derive the task's site (docs/131 §5) from whatever it is about — the deal
+    // first (more specific), else the customer. Read here rather than trusted
+    // from input so a task always sits in the same business as its subject; a
+    // task about neither stays null (a general to-do).
+    let propertyId: string | null = null;
+    if (input.dealId) {
+      const deal = await tx.deal.findUnique({
+        where: { id: input.dealId },
+        select: { propertyId: true },
+      });
+      propertyId = deal?.propertyId ?? null;
+    } else if (input.customerId) {
+      const customer = await tx.customer.findUnique({
+        where: { id: input.customerId },
+        select: { propertyId: true },
+      });
+      propertyId = customer?.propertyId ?? null;
+    }
+
     const created = await tx.task.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId,
         title: input.title,
         description: input.description ?? null,
         dueAt: input.dueAt ? new Date(input.dueAt) : null,

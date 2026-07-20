@@ -68,6 +68,11 @@ export interface ListBookingsOptions {
   customerId?: string;
   b2bAccountId?: string;
   locationId?: string;
+  /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
+   *  booking's `propertyId` is denormalized from its service and SetNull on site
+   *  delete, so null = ORPHANED (not shared): a restricted member sees only
+   *  their granted sites' bookings, never orphaned ones. */
+  propertyIds?: string[];
   /** ISO instant — only bookings whose start is at/after this. */
   from?: string;
   /** ISO instant — only bookings whose start is before this. */
@@ -83,6 +88,7 @@ function buildWhere(opts: ListBookingsOptions): Record<string, unknown> {
   if (opts.to) startAt.lt = new Date(opts.to);
   return {
     deletedAt: null,
+    ...(opts.propertyIds ? { propertyId: { in: opts.propertyIds } } : {}),
     ...(opts.statusIn?.length
       ? { status: { in: opts.statusIn } }
       : opts.status

@@ -23,6 +23,7 @@ import {
   STARTER_LAYOUT,
   SiteSyncInput,
   blankPageTree,
+  type BuilderOpEnvelope,
   type SitePublishState,
   type PublishedSilicaFrameDto,
   type PublishedSilicaPageDto,
@@ -50,6 +51,7 @@ import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import { dropOwnerTx, reindexTreeTx } from './node-index-service';
 import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifact-service';
+import { appendOpsTx } from './op-log-service';
 import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
@@ -397,6 +399,15 @@ export interface SyncOptions {
  *  page in the property, so the caller can advance its optimistic-concurrency map. */
 export interface SiteSyncResult {
   pageUpdatedAt: Record<string, string>;
+  /** The op log's new high-water sequence (docs/126 Phase 2), when this sync carried
+   *  ops. The client `ackSeq()`s it so its `baseSeq` advances to what the server
+   *  assigned. Null when the caller sent no ops (MCP writers, blueprint installer). */
+  seq: number | null;
+  /** The ops just persisted, for the caller to RELAY to co-editors (docs/126 Phase 4).
+   *  Server-side only — the api-rest route hands this to the socket broadcaster and
+   *  strips it from the HTTP response (the sender already has these ops). Null when no
+   *  ops were recorded. */
+  relay: { batchId: string; seq: number; ops: BuilderOpEnvelope[] } | null;
 }
 
 export async function sync(
@@ -618,6 +629,24 @@ export async function sync(
       },
     });
 
+    // Record the engine's ops in the SAME transaction as the snapshot write (docs/126
+    // Phase 2). Additive — the snapshot above stays authoritative — but co-committed, so
+    // the log can never claim an edit that rolled back. Only the collaborative editor
+    // sends ops; scripted callers (MCP, blueprint installer) send none and get seq=null.
+    let seq: number | null = null;
+    let relay: SiteSyncResult['relay'] = null;
+    if (input.ops && input.ops.length > 0) {
+      const batchId = input.batchId ?? `sync-${input.baseSeq ?? 0}`;
+      const result = await appendOpsTx(tx, ctx, input.ops, batchId, input.baseSeq ?? 0);
+      seq = result.newSeq;
+      // Relay only a batch we ACTUALLY recorded — an idempotent retry (alreadyApplied)
+      // was already relayed on its first pass, and re-broadcasting it would make peers
+      // apply the same ops twice.
+      if (!result.alreadyApplied) {
+        relay = { batchId, seq: result.newSeq, ops: input.ops };
+      }
+    }
+
     // Hand back each page's post-write `updatedAt` so the client can advance its
     // precondition map (docs/126 Phase 1). Without this the client's timestamps would
     // go stale the instant it saved, and its own next write would look like a conflict
@@ -628,6 +657,8 @@ export async function sync(
     });
     return {
       pageUpdatedAt: Object.fromEntries(after.map((r) => [r.id, r.updatedAt.toISOString()])),
+      seq,
+      relay,
     };
   });
 }

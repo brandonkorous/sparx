@@ -44,11 +44,13 @@
 // Zod schema (`SiteSyncInput`), keeping api-rest free of @sparx/builder-schemas.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { artifactService, nodeIndexService, siteService } from '@sparx/builder';
+import { artifactService, nodeIndexService, opLogService, siteService } from '@sparx/builder';
+import { withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
 
 const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/site', async (request) => {
@@ -60,11 +62,29 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
 
   app.put('/v1/builder/site', async (request) => {
     requireRole(request, 'editor');
+    const ctx = await toBuilderContext(request);
     await requireBuilderModule(request);
-    const result = await siteService.sync(await toBuilderContext(request), request.body);
-    // The fresh per-page `updatedAt` rides back so the studio can advance its
-    // optimistic-concurrency map (docs/126 Phase 1).
+    const { relay, ...result } = await siteService.sync(ctx, request.body);
+    // Relay the just-persisted ops to co-editors (docs/126 Phase 4). Done here, not in
+    // the service, because the socket server is an api-rest concern — the service stays
+    // socket-agnostic. `relay` is stripped from the response: the sender already holds
+    // these ops, so echoing them back over HTTP would be waste.
+    if (relay) getBuilderBroadcaster()?.opsAppended(ctx.propertyId, relay);
+    // The fresh per-page `updatedAt` + the op-log seq ride back so the studio can advance
+    // its optimistic-concurrency map (Phase 1) and `ackSeq` the engine (Phase 2).
     return ok({ saved: true, ...result });
+  });
+
+  // The op log's current high-water sequence (docs/126 Phase 4). The studio reads it at
+  // load so it can `ackSeq` the engine to the right starting point and request catch-up
+  // from there over the socket — closing the gap between the HTTP load and the socket
+  // join. Cheap: a single MAX(seq).
+  app.get('/v1/builder/site/seq', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const seq = await withTenant(ctx, (tx) => opLogService.currentSeq(ctx, tx));
+    return ok({ seq });
   });
 
   // ── Where-used (docs/126 §5.4) ─────────────────────────────────────────────

@@ -1,9 +1,36 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.4.0
+Version: 1.6.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
+> **1.6.0 — Phase 4 SHIPPED: multi-editor is ON.** The realtime relay is live on a
+> `/ws/builder` socket.io namespace (a second server beside `/ws/chat`, same Redis
+> fan-out). Persistence still rides the HTTP sync PUT (Phase 2); after ops persist, the
+> route broadcasts them to the site's room, and every other editor applies them through
+> the engine's `applyRemoteOps` — echo-suppressed by `batchId`. Presence (who is editing
+> and which page, a silicaui `AvatarGroup` in the toolbar) and reconnect **catch-up**
+> (the client asks "I'm at seq N, what did I miss?" → `opsSince`) both work. The studio
+> acks the load-time seq into the engine so `baseSeq` starts aligned. Verified with a
+> two-live-client smoke test against the real DB (auth, forged-token reject, presence
+> join/leave/where, op relay, catch-up — 8/8). **The last remaining refinement is
+> soft-subtree claim** (deferred — LWW + presence already make concurrent edits correct
+> and visible; claim is a nicety, §6). **Every phase of docs/126 is now shipped.**
+>
+> **1.5.0 — silicaui 0.30 landed; Phases 2 & 3 SHIPPED (host side).** The engine now
+> emits `onChange(site, ops, meta)` with causal-ordered ops + `meta.baseSeq`, mints
+> fractional `ord` keys on nodes, and takes remote ops via the `BuilderHandle` ref
+> (`applyRemoteOps`/`replaceState`/`ackSeq`). **Phase 2 (host):** an append-only op
+> log — `builder_page_ops`, migration `20261221000000_builder_page_ops` — recorded in
+> the same transaction as the snapshot; the studio buffers ops per debounce, sends
+> them with the sync, and `ackSeq`s the returned seq. **One correction from building
+> against the real API:** seq is **per-property, not per-page** (§5, §5.6) — the
+> engine's `baseSeq` is document-wide, so a per-page seq (the original sketch) could
+> not answer the reconnect question. **Phase 3 (`ord`) needs nothing host-side** — the
+> engine mints `ord` onto nodes and our `looseObject` tree schema round-trips it
+> verbatim (§3.1). **Only Phase 4 (the realtime relay) remains**, and it now has its
+> substrate: the seq'd op log the relay reads to catch a reconnecting client up.
+>
 > **1.4.0 — Phase 5 UI shipped; retention decided.** The publish-history drawer and
 > restore are live in the studio, and product deletion now warns which pages pin the
 > record (§5.4 put to work). The node index is backfilled on publish, not only on
@@ -350,14 +377,14 @@ No sequence numbers, no conflict dialogs, no merge UI.
 ## 5. Storage lifecycle
 
 ```
-builder_page_ops        append-only  (page_id, seq, actor_id, batch_id, op, inverse, created_at)
-builder_page_snapshot   materialized (page_id, seq, tree, ord)
-builder_page_artifacts  immutable    (property_id, owner_kind, owner_id, hash, tree, created_at)   SHIPPED
-builder_releases        append-only  (property_id, hash, manifest, page_count, source, actor_id)   SHIPPED
-builder_node_index      derived      (owner_kind, owner_id, node_id, type, symbol_id, binding_*)   SHIPPED
+builder_page_ops        append-only  (property_id, seq, batch_id, actor_id, owner_kind, owner_id, op_kind, op)  SHIPPED
+builder_page_snapshot   materialized  — NOT built; silica_draft_tree IS the snapshot for now (§5.5)
+builder_page_artifacts  immutable    (property_id, owner_kind, owner_id, hash, tree, created_at)                SHIPPED
+builder_releases        append-only  (property_id, hash, manifest, page_count, source, actor_id)               SHIPPED
+builder_node_index      derived      (owner_kind, owner_id, node_id, type, symbol_id, binding_*)               SHIPPED
 ```
 
-Frame and symbol trees use the same three-table shape keyed on layout id / symbol key.
+The op log's key differs from the original sketch above in two ways learned from building against silicaui 0.30 (§5.6): **seq is per-property, not per-page**, and there is **no `inverse` column** — the engine owns undo (its own snapshot stack, or a host `HistoryDelegate` in a shared session), so the host does not store inverse ops to replay undo itself.
 
 ### 5.1 Draft read
 
@@ -416,6 +443,18 @@ It buys:
 
 `draft_tree` / `published_tree` (sparx) and `silica_draft_tree` / `silica_published_tree` all retire. `silica_draft_tree` becomes `builder_page_snapshot.tree`; `silica_published_tree` becomes the artifact. The legacy sparx pair is dropped outright — they hold a blank stub for silica pages today ([site-service.ts:414](../packages/builder/src/services/site-service.ts#L414)), and dropping them **forces** the SEO / component / search integrations to move rather than silently no-op against a stub.
 
+**Not done yet.** `silica_draft_tree` is still the authoritative snapshot the editor loads and the storefront (via publish) serves. The op log runs parallel to it — the same parallel-run discipline the artifacts used — and the event-sourced read (snapshot + replay, §5.1) is a later cutover, not part of Phase 2.
+
+### 5.6 Two things the real engine changed about the op log — **SHIPPED**
+
+Built against silicaui 0.30, two details of the §5 sketch turned out wrong, and the code follows the engine, not the sketch:
+
+- **Seq is per-property, not per-page.** The engine tracks ONE document-wide sequence per editing session: `meta.baseSeq` is "the seq this client last had applied" across its whole site, and `ackSeq(seq)` advances that single counter. A per-page seq (the sketch's `(page_id, seq)`) could not answer the question the reconnect path actually asks — "this client is at seq N, what did it miss?" — because "at seq N" is not per-page. So `builder_page_ops` carries a per-property monotonic `seq`, and `owner_kind`/`owner_id` merely record which tree an op's `target` addressed. The unique `(tenant, property, seq)` index is both the order and the concurrency guard.
+
+- **No `inverse` column; the engine owns undo.** The sketch stored an inverse op per row to replay undo host-side. 0.30 makes that the engine's job — a local snapshot stack for a single author, or a host `HistoryDelegate` the engine drives in a shared session (§6). The host records what happened; it does not need to know how to reverse it, so the column is gone.
+
+The server validates each op at the **envelope only** (`target` + `kind`) and stores it verbatim as JSONB. This is deliberate: silicaui owns the op vocabulary, and adding an op kind must never require a host schema change to keep recording history. The full `Op` union lives in `@wizeworks/silicaui-builder/react` and is the dashboard's authority; the wire pins only the two fields the log is keyed on.
+
 ---
 
 ## 6. The silicaui `<Builder>` contract
@@ -461,7 +500,19 @@ Four integration blockers, all plumbing rather than architecture:
 | 3   | **`onChange` echoes.** The relay fires on every commit, so a host wiring `onChange` → broadcast creates a loop                                                           | Suppression flag during remote application                                       |
 | 4   | **The IndexedDB draft silently beats server state.** Snapshots carry `savedAt` and nothing else — no seq, no revision — and on boot the local draft wins unconditionally | **Stamp `seq` into the draft snapshot.** Do not solve it with `persistKey: null` |
 
-Blocker 4 is the same bug class we have already hit: our own studio reads `document` once at mount, so a server-side heal gets overwritten by the client's next autosave ([\_lib/actions.ts:90-93](<../apps/dashboard/app/(dashboard)/builder/_lib/actions.ts#L90>)). Under multi-editor it upgrades from "a heal is lost" to "a returning collaborator's stale draft clobbers authoritative state, undetectably." Stamping the seq is the fix; dropping crash recovery to dodge it is not.
+Blocker 4 is the same bug class we have already hit: our own studio reads `document` once at mount, so a server-side heal gets overwritten by the client's next autosave ([\_lib/actions.ts:90-93](<../apps/dashboard/app/(dashboard)/builder/_lib/actions.ts#L90>)). Under multi-editor it upgrades from "a heal is lost" to "a returning collaborator's stale draft clobbers authoritative state, undetectably." Stamping the seq is the fix; dropping crash recovery to dodge it is not. (Shipped: our studio runs `persistKey: null` — server-authoritative — and acks the load-time seq into the engine on mount, so its `baseSeq` never starts at a stale 0.)
+
+### 6.3 How the relay was actually built — **SHIPPED**
+
+The one architectural decision Phase 4 forced: **persistence stays on the HTTP sync PUT; the socket relays, it does not write.** There is one durable path (the PUT appends ops + snapshot in a transaction, Phase 2), and the socket is a fan-out over it — never a second writer of the same truth. Concretely:
+
+- **`/ws/builder`** is a second socket.io server beside `/ws/chat`, same staff-JWT handshake and same Redis adapter for cross-replica fan-out. The client also hands it the `propertyId`, verified against the tenant before the socket joins that site's room (`builder:<propertyId>`).
+- **The write path broadcasts.** After `siteService.sync` appends a batch, the api-rest route hands the persisted `{ batchId, seq, ops }` to a `BuilderBroadcaster` (the same module-singleton pattern as the chat broadcaster) which emits `ops:relay` to the room. The service stays socket-agnostic; the route strips the relay payload from the HTTP response so the sender isn't shipped its own ops back over HTTP.
+- **Echo suppression is by `batchId`, not socket identity.** The originator is in the room and receives its own echo; it drops it because it minted that `batchId`. This keeps the HTTP path free of any socket coupling — it never needs to know which socket sent the save. Suppression is load-bearing, not an optimization: re-applying one's own `node.insert` would duplicate the node.
+- **Catch-up closes the load→join gap.** On connect the client asks `catchup(baseSeq)`; the server returns `opsSince(baseSeq)` and the client applies + `ackSeq`s. The load-time seq (a new `GET /v1/builder/site/seq`) seeds the client's `baseSeq` so this window is exactly "what landed between the HTTP load and the socket joining."
+- **Presence** rides `fetchSockets()` (adapter-aware, correct across replicas), rendered as a silicaui `AvatarGroup` in the toolbar — peers on the _same page_ get a ring, since that's the edit most likely to collide.
+
+**Deferred: soft-subtree claim.** The design (§1.1) names presence _and_ a soft claim. Presence shipped; the claim did not. Per-node LWW already makes concurrent edits correct, and presence makes them visible, so a claim is a refinement (reserve a subtree, show it locked to peers) rather than a correctness requirement. Recorded as the one open item so it does not read as an oversight.
 
 ---
 
@@ -511,9 +562,9 @@ Host and engine phases interlock. The engine's `onChange(site, ops, meta)` is **
 | -------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **0**    | Per-page diff at the `syncBuilderSite` boundary — write only changed pages                                    | **Emission hygiene** (prerequisite): eight methods bypass the commit chokepoint with a manual history push, and four emit **twice per user action** — `createSymbol` fires `onChange` twice today. Route everything through one chokepoint; batch a logical action into one emit | Kills write amplification; drops payload under the 1MB ceiling; shrinks LWW blast radius to one page. **Without engine Phase 0, causal ordering within a batch is unimplementable** |
 | **1**    | `updatedAt` precondition per page + reject-and-resync                                                         | —                                                                                                                                                                                                                                                                                | Makes 125 §5 non-catastrophic while the protocol is built                                                                                                                           |
-| **2**    | Op vocabulary, apply endpoint, `builder_page_ops` + snapshot. Server accepts **either** ops or whole-site     | **Ops out**: op union, emission from commit, `onChange(site, ops, meta)`, symbol-cascade discipline (§2.6)                                                                                                                                                                       | History (125 §6); granular writes. Host can stop trusting the full-site PUT here                                                                                                    |
-| **3**    | Fractional-key generation and validation                                                                      | **`ord`**: field on `Node`, key generation in insert/move/duplicate, drag-and-drop converted off raw indices in canvas + navigator, publish-time strip                                                                                                                           | Conflict-free concurrent insert/reorder                                                                                                                                             |
-| **4**    | socket.io `/builder` namespace, presence, soft claim, seq in the draft snapshot                               | **Ops in**: imperative handle, `applyRemoteOps` / `replaceState`, `commitRemote`, echo suppression, burst batching                                                                                                                                                               | **Multi-editor actually turns on.** The only phase with design left in it                                                                                                           |
+| **2** ✅ | `builder_page_ops` append-only log (per-property seq); studio buffers ops per debounce, sends + `ackSeq`s     | **Ops out** (silicaui 0.30): op union, `onChange(site, ops, meta)`, symbol-cascade discipline (§2.6)                                                                                                                                                                             | History (125 §6); granular-write substrate. **SHIPPED** — seq is per-property not per-page (§5.6); envelope-only validation                                                         |
+| **3** ✅ | Nothing — `ord` rides the node tree JSON, preserved by the `looseObject` schema (§3.1)                        | **`ord`** (silicaui 0.30): field on `Node`, key generation in insert/move/duplicate, publish-time strip                                                                                                                                                                          | Conflict-free concurrent insert/reorder. **SHIPPED free host-side**                                                                                                                 |
+| **4** ✅ | `/ws/builder` namespace + presence + reconnect catch-up + relay via `applyRemoteOps`; soft-claim deferred     | **Ops in** (silicaui 0.30): `applyRemoteOps` / `replaceState` / `ackSeq` / `setHistoryDelegate` on the handle                                                                                                                                                                    | **Multi-editor turns on. SHIPPED** — two-client smoke test green. Soft-subtree claim is the one deferred nicety (LWW + presence already cover correctness + the social signal)      |
 | **5** ✅ | Immutable content-addressed artifact; wire the publisher; `cache-revalidation-worker` consumes builder topics | —                                                                                                                                                                                                                                                                                | 125 §7; unblocks caching for 127. **SHIPPED** — plus publish history + restore, which the sketch did not anticipate as a product surface                                            |
 | **6**    | Derived node index; retire `site.replace` as the common path; drop legacy columns                             | Inverse-op undo (single-author) + host-delegated undo (collaborative)                                                                                                                                                                                                            | Where-used, impact analysis, component upgrade as a query                                                                                                                           |
 

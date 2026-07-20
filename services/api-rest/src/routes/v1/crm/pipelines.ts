@@ -15,6 +15,7 @@ import { pipelineService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const StagePathIds = z.object({
@@ -30,12 +31,14 @@ const ListQuery = z.object({
 
 const pipelineRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/pipelines', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await pipelineService.list(toCrmContext(request), {
       q: q.q,
       includeArchived: q.include_archived,
+      // Restricted members see only their businesses' pipelines (docs/131 §3.3).
+      propertyIds: reachableSiteIds(auth),
       take: q.take,
       skip: q.skip,
     });
@@ -51,9 +54,19 @@ const pipelineRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/crm/pipelines', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCrmModule(request);
-    const pipeline = await pipelineService.create(toCrmContext(request), request.body);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Default the pipeline to the site being worked in (docs/131 §5); explicit
+    // null still authors a tenant-wide process.
+    const propertyId =
+      body.propertyId === undefined
+        ? await resolvePropertyId(
+            auth,
+            request.headers['x-sparx-property-id'] as string | undefined
+          )
+        : (body.propertyId as string | null);
+    const pipeline = await pipelineService.create(toCrmContext(request), { ...body, propertyId });
     reply.code(201);
     return ok(pipeline);
   });

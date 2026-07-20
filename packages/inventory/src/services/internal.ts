@@ -6,6 +6,7 @@
 import type { TxClient } from '@sparx/db';
 
 import { InventoryNotFoundError } from '../errors';
+import { isLowStock } from './low-stock';
 
 // Cart reservations default to a 30-minute soft hold; the reaper releases them.
 export const CART_TTL_SECONDS_DEFAULT = 30 * 60;
@@ -27,10 +28,11 @@ export async function ensureVariantExists(tx: TxClient, variantId: string): Prom
 }
 
 /**
- * Recompute the product's denormalized `inStock` flag from current available
- * across all warehouses. Cheap, runs inside the caller's tx so the storefront's
- * PLP grid stays consistent with inventory state. Called by `applyMovement`
- * (every onHand change) and by the reservation paths (allocated changes).
+ * Recompute the product's denormalized `inStock` + `lowStock` flags from current
+ * levels across all warehouses. Cheap, runs inside the caller's tx so the
+ * storefront's PLP grid stays consistent with inventory state. Called by
+ * `applyMovement` (every onHand change) and by the reservation paths (allocated
+ * changes).
  */
 export async function syncProductInStock(tx: TxClient, variantId: string): Promise<void> {
   const variant = await tx.productVariant.findFirst({
@@ -48,7 +50,8 @@ export async function syncProductInStock(tx: TxClient, variantId: string): Promi
   const [levels, sellableWithoutStock] = await Promise.all([
     tx.inventoryLevel.findMany({
       where: { variant: { productId: variant.productId, deletedAt: null } },
-      select: { onHand: true, allocated: true },
+      // safetyBuffer + reorderPoint feed the low-stock predicate below.
+      select: { onHand: true, allocated: true, safetyBuffer: true, reorderPoint: true },
     }),
     tx.productVariant.count({
       where: {
@@ -59,8 +62,14 @@ export async function syncProductInStock(tx: TxClient, variantId: string): Promi
     }),
   ]);
   const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated), 0);
+  const inStock = total > 0 || sellableWithoutStock > 0;
+  // "Low stock" = still sellable, but at least one level has crossed its reorder
+  // point per the module's ONE canonical predicate (isLowStock). A level with no
+  // reorder point never counts (an owner who set no trigger asked for no signal),
+  // and an always-purchasable product with no tracked levels is never "low".
+  const lowStock = inStock && levels.some((l) => isLowStock(l));
   await tx.product.update({
     where: { id: variant.productId },
-    data: { inStock: total > 0 || sellableWithoutStock > 0 },
+    data: { inStock, lowStock },
   });
 }

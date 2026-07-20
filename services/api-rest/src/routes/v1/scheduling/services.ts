@@ -21,7 +21,7 @@ import {
   deleteService,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
@@ -36,9 +36,14 @@ const ListQuery = z.object({
 const schedulingServiceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/services', async (request) => {
     await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
     const { tenantId } = toSchedulingContext(request);
     const query = ListQuery.parse(request.query);
-    const { items, total } = await listServicesPaged(tenantId, query);
+    // Bound to the member's reachable sites (docs/131 §3.3).
+    const { items, total } = await listServicesPaged(tenantId, {
+      ...query,
+      propertyIds: reachableSiteIds(auth),
+    });
     return paged(items.map(serviceView), { total, per_page: query.take ?? 50 });
   });
 

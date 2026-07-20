@@ -18,7 +18,7 @@ import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 import { silicaEmailDataResolver } from '../../../lib/email-data.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolvePropertyId, reachableSiteIds } from '../../../lib/property.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 const EstimateQuery = z.object({ segment_id: z.string().uuid().optional() });
@@ -31,11 +31,13 @@ const ListBroadcastsQuery = z.object({
 
 const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/email/broadcasts', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireEmailModule(request);
     const q = ListBroadcastsQuery.parse(request.query);
     const { items, total } = await broadcastService.list(toEmailContext(request), {
       q: q.q,
+      // Bound to the member's reachable sites (docs/131 §3.3).
+      propertyIds: reachableSiteIds(auth),
       take: q.take,
       skip: q.skip,
     });

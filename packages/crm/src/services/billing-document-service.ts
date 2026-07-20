@@ -70,6 +70,9 @@ export async function list(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.BillingDocumentWhereInput = {
       ...(filter.includeDeleted ? {} : { deletedAt: null }),
+      // Member access ceiling (docs/131 §3.3): only the member's businesses'
+      // documents. propertyId is required here, so no null case to admit.
+      ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
       ...(filter.workflowId ? { workflowId: filter.workflowId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),

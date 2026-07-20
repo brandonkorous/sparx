@@ -46,6 +46,7 @@ import {
   type BookingWithRelations,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { reachableSiteIds } from '../../../lib/property.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 
@@ -77,9 +78,15 @@ const CalendarQuery = z.object({
 const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/bookings', async (request) => {
     await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
     const { tenantId } = toSchedulingContext(request);
     const q = ListQuery.parse(request.query);
-    const { rows, total } = await listBookings(tenantId, q);
+    // Bound to the member's reachable sites (docs/131 §3.3) — a restricted member
+    // sees only their businesses' appointments (customer PII).
+    const { rows, total } = await listBookings(tenantId, {
+      ...q,
+      propertyIds: reachableSiteIds(auth),
+    });
     return paged(rows.map(bookingView), {
       page: Math.floor(q.skip / q.take) + 1,
       per_page: q.take,

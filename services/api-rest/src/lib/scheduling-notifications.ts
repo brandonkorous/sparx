@@ -54,6 +54,9 @@ interface Dispatchable {
   channel: 'email' | 'sms';
   bookingId: string;
   customerId: string | null;
+  /** The booking's site (docs/131 §3.4/§4) — sends the reminder under the right
+   *  business's sender identity, not the tenant's primary. */
+  propertyId: string | null;
   /** Email address or phone number, per channel. */
   recipient: string;
   serviceName: string;
@@ -118,6 +121,7 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
         timezone: true,
         status: true,
         customerId: true,
+        propertyId: true,
         service: { select: { name: true } },
       },
     });
@@ -157,6 +161,7 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
       channel: row.channel as 'email' | 'sms',
       bookingId: row.booking_id,
       customerId,
+      propertyId: booking.propertyId,
       recipient,
       serviceName: booking.service?.name ?? 'your booking',
       startAt: booking.startAt,
@@ -176,6 +181,7 @@ async function dispatch(
     const res = await sendTenantEmailByKey(logger, tenantId, {
       key: BOOKING_EMAIL_KEY[d.type],
       to: d.recipient,
+      propertyId: d.propertyId,
       ref: { customerId: d.customerId, bookingId: d.bookingId },
       emailType: 'transactional',
       variables: { source: 'scheduling' },

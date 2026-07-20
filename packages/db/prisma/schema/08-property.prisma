@@ -73,6 +73,7 @@ model Property {
   builderNodeIndex     BuilderNodeIndex[]
   builderPageArtifacts BuilderPageArtifact[]
   builderReleases      BuilderRelease[]
+  builderPageOps       BuilderPageOp[]
   builderLayouts       BuilderLayout[]
   builderAssignments   BuilderPageAssignment[]
   // The silica site record (docs/118): this site's authored theme + saved-component
@@ -203,6 +204,17 @@ model Property {
   // and feeds its broadcasts. Nullable (a cross-business audience is real);
   // SegmentMember inherits and has no relation here.
   segments Segment[]
+
+  // CRM sales pipelines (docs/131 §5). Pipeline is the authored process
+  // (Cascade); Deal is the record, denormalized from its pipeline (SetNull,
+  // outlives the site). PipelineStage inherits and has no relation here.
+  pipelines Pipeline[]
+  deals     Deal[]
+
+  // CRM tasks (docs/131 §5) — a work queue item, denormalized from its
+  // customer/deal so a site-scoped member sees only their business's tasks.
+  // SetNull: a task outlives its site.
+  tasks Task[]
 
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]
