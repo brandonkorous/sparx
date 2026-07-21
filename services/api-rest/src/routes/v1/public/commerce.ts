@@ -63,7 +63,31 @@ const ProductListQuery = PagingQuery.extend({
   tag: z.string().optional(),
   fitmentMake: z.string().optional(),
   fitmentYear: z.coerce.number().int().optional(),
+  inStock: z.coerce.boolean().optional(),
+  minPriceCents: z.coerce.number().int().min(0).optional(),
+  maxPriceCents: z.coerce.number().int().min(0).optional(),
+  // Scope the whole listing to ONE collection (flat membership) or ONE category
+  // (browse-node rollup: self + descendants). This is what lets the collection and
+  // category detail pages reuse the PLP's facets/sort/pagination instead of a bare
+  // grid — the scope is resolved to ids inside the tenant transaction below.
+  collection: z.string().optional(),
+  category: z.string().optional(),
+  sort: z
+    .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
+    .default('relevance'),
 });
+
+// The PLP sort vocabulary → a Prisma orderBy. Mirrors `SEARCH_SORT_BY` (the Typesense
+// side) so the Postgres listing and the search index sort identically. `relevance` is
+// the catalog default: in-stock first, then most-recently-updated.
+const PLP_ORDER_BY: Record<string, Prisma.ProductOrderByWithRelationInput[]> = {
+  relevance: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+  'price-asc': [{ priceMinCents: 'asc' }],
+  'price-desc': [{ priceMaxCents: 'desc' }],
+  'title-asc': [{ title: 'asc' }],
+  'title-desc': [{ title: 'desc' }],
+  newest: [{ createdAt: 'desc' }],
+};
 
 // Typesense-backed storefront search. Typo-tolerant, faceted, fast. Typesense
 // owns ranking/filtering/faceting; Postgres still owns the canonical display
@@ -422,52 +446,93 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = ProductListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const where = {
-      status: 'active' as const,
-      deletedAt: null,
-      // Model B: only products visible on the active site (global or scoped here).
-      ...productSiteVisibilityWhere(propertyId),
-      ...(q.vendor ? { vendor: q.vendor } : {}),
-      ...(q.productType ? { productType: q.productType } : {}),
-      ...(q.tag ? { tags: { has: q.tag } } : {}),
-      ...(q.q
-        ? {
-            OR: [
-              { title: { contains: q.q, mode: 'insensitive' as const } },
-              { description: { contains: q.q, mode: 'insensitive' as const } },
-            ],
-          }
-        : {}),
-      ...(q.fitmentMake || q.fitmentYear
-        ? {
-            fitments: {
-              some: {
-                // Descendant-by-name: "Ford" matches a product attached at the
-                // Ford node OR any model/engine under it (node.pathNames).
-                ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
-                // Numeric narrowing against the rule's range windows.
-                ...(q.fitmentYear
-                  ? {
-                      ranges: {
-                        some: {
-                          AND: [
-                            { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
-                            { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
-                          ],
-                        },
-                      },
-                    }
-                  : {}),
-              },
-            },
-          }
-        : {}),
-    };
     const result = await withTenant({ tenantId }, async (tx) => {
+      // Optional scope: narrow the whole listing to a collection (flat membership) or a
+      // category (browse-node rollup — self + descendants off the materialized dot-path,
+      // exactly like /categories/:handle/products). Resolved here, inside the tenant tx,
+      // because both lookups are RLS-scoped. A scope handle that doesn't resolve (or is
+      // hidden on this site) returns null → 404, matching the dedicated detail endpoints.
+      let scopeWhere: Prisma.ProductWhereInput = {};
+      if (q.collection) {
+        const collection = await tx.productCollection.findFirst({
+          where: {
+            handle: q.collection,
+            deletedAt: null,
+            ...collectionSiteVisibilityWhere(propertyId),
+          },
+          select: { id: true },
+        });
+        if (!collection) return null;
+        scopeWhere = { collectionLinks: { some: { collectionId: collection.id } } };
+      } else if (q.category) {
+        const category = await tx.productCategory.findFirst({
+          where: {
+            handle: q.category,
+            deletedAt: null,
+            ...categorySiteVisibilityWhere(propertyId),
+          },
+          select: { id: true, path: true },
+        });
+        if (!category) return null;
+        const descendants = await tx.productCategory.findMany({
+          where: { path: { startsWith: `${category.path}.` }, deletedAt: null },
+          select: { id: true },
+        });
+        const categoryIds = [category.id, ...descendants.map((d) => d.id)];
+        scopeWhere = { categoryLinks: { some: { categoryId: { in: categoryIds } } } };
+      }
+
+      const where: Prisma.ProductWhereInput = {
+        status: 'active' as const,
+        deletedAt: null,
+        // Model B: only products visible on the active site (global or scoped here).
+        ...productSiteVisibilityWhere(propertyId),
+        ...scopeWhere,
+        ...(q.vendor ? { vendor: q.vendor } : {}),
+        ...(q.productType ? { productType: q.productType } : {}),
+        ...(q.tag ? { tags: { has: q.tag } } : {}),
+        ...(q.inStock === true ? { inStock: true } : {}),
+        // Price window (cents). Matches the Typesense search semantics: a product's
+        // from-price is at/above the min and its to-price at/below the max.
+        ...(q.minPriceCents !== undefined ? { priceMinCents: { gte: q.minPriceCents } } : {}),
+        ...(q.maxPriceCents !== undefined ? { priceMaxCents: { lte: q.maxPriceCents } } : {}),
+        ...(q.q
+          ? {
+              OR: [
+                { title: { contains: q.q, mode: 'insensitive' as const } },
+                { description: { contains: q.q, mode: 'insensitive' as const } },
+              ],
+            }
+          : {}),
+        ...(q.fitmentMake || q.fitmentYear
+          ? {
+              fitments: {
+                some: {
+                  // Descendant-by-name: "Ford" matches a product attached at the
+                  // Ford node OR any model/engine under it (node.pathNames).
+                  ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
+                  // Numeric narrowing against the rule's range windows.
+                  ...(q.fitmentYear
+                    ? {
+                        ranges: {
+                          some: {
+                            AND: [
+                              { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
+                              { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
+                            ],
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              },
+            }
+          : {}),
+      };
       const [rows, total] = await Promise.all([
         tx.product.findMany({
           where,
-          orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+          orderBy: PLP_ORDER_BY[q.sort] ?? PLP_ORDER_BY.relevance,
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
           select: productSelect(propertyId),
@@ -476,6 +541,8 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ]);
       return { rows, total };
     });
+    // A scope handle that didn't resolve — surface it as a 404 like the detail routes.
+    if (!result) throw notFound('Collection or category', q.collection ?? q.category ?? '');
     const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
     return paged(
       await withYourPrices(tenantId, result.rows.map(publicProduct), viewerB2bAccountId),

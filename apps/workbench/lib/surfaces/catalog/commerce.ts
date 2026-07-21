@@ -60,6 +60,23 @@ import { ProductStockSurface } from '../../../surfaces/commerce/product-stock';
 import { ProductSubscriptionsSurface } from '../../../surfaces/commerce/product-subscriptions';
 import { ProductTradePricingSurface } from '../../../surfaces/commerce/product-trade-pricing';
 import { ProductTranslationsSurface } from '../../../surfaces/commerce/product-translations';
+import { CollectionsListSurface } from '../../../surfaces/commerce/collections-list';
+import { CollectionDetailSurface } from '../../../surfaces/commerce/collection-detail';
+import { CategoriesListSurface } from '../../../surfaces/commerce/categories-list';
+import { CategoryDetailSurface } from '../../../surfaces/commerce/category-detail';
+import { ReturnsListSurface } from '../../../surfaces/commerce/returns-list';
+import { ReturnDetailSurface } from '../../../surfaces/commerce/return-detail';
+import { CartsListSurface } from '../../../surfaces/commerce/carts-list';
+import { CartDetailSurface } from '../../../surfaces/commerce/cart-detail';
+import { CheckoutSessionsListSurface } from '../../../surfaces/commerce/checkout-list';
+import { CheckoutSessionDetailSurface } from '../../../surfaces/commerce/checkout-detail';
+import { SubscriptionsListSurface } from '../../../surfaces/commerce/subscriptions-list';
+import { SubscriptionDetailSurface } from '../../../surfaces/commerce/subscription-detail';
+import { ReviewsQueueSurface } from '../../../surfaces/commerce/reviews-queue';
+import { QaQueueSurface } from '../../../surfaces/commerce/qa-queue';
+import { WishlistsSurface } from '../../../surfaces/commerce/wishlists';
+import { ChannelsSurface } from '../../../surfaces/commerce/channels';
+import { MarketSurface } from '../../../surfaces/commerce/market';
 import { stub } from './stub';
 import { type NamedRow } from './rows';
 
@@ -239,16 +256,19 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Catalog',
     order: 11,
     keywords: ['groups', 'categories'],
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/commerce/collections',
-      queryKey: ['commerce', 'collections'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search collections…',
-      emptyTitle: 'No collections yet',
-      emptyBody: 'Collections group products together so shoppers can browse them.',
-      emptyIcon: Layers,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name ?? row.title) }],
-    }),
+    // Custom list, not the generic entity list: it carries its own "Add a
+    // collection" button and distinguishes manual from rule-driven collections.
+    component: CollectionsListSurface,
+  },
+  {
+    key: 'commerce.collection.detail',
+    title: 'Collection',
+    module: 'commerce',
+    icon: Layers,
+    component: CollectionDetailSurface,
+    // Opened from the list ({id:'new'} to create, {id} to edit); a create is the
+    // same surface as an edit, so it is a pane, not a launcher entry.
+    listed: false,
   },
   {
     key: 'commerce.categories.list',
@@ -257,16 +277,17 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     icon: Tags,
     section: 'Catalog',
     order: 12,
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/commerce/categories',
-      queryKey: ['commerce', 'categories'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search categories…',
-      emptyTitle: 'No categories yet',
-      emptyBody: 'Categories organise your catalog into a browsable structure.',
-      emptyIcon: Tags,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name ?? row.title) }],
-    }),
+    // Custom list that FLATTENS the category tree — the generic list showed only
+    // root categories, so every sub-category was unreachable. Carries its own add.
+    component: CategoriesListSurface,
+  },
+  {
+    key: 'commerce.category.detail',
+    title: 'Category',
+    module: 'commerce',
+    icon: Tags,
+    component: CategoryDetailSurface,
+    listed: false,
   },
   stub({
     key: 'commerce.bundles.list',
@@ -359,7 +380,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
   }),
 
   /* ── In progress ───────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'commerce.carts.list',
     title: 'Carts',
     module: 'commerce',
@@ -367,9 +388,17 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'In progress',
     order: 30,
     keywords: ['abandoned', 'baskets'],
-    body: 'Carts are orders someone started but hasn’t paid for yet — including the ones they walked away from.',
-  }),
-  stub({
+    component: CartsListSurface,
+  },
+  {
+    key: 'commerce.cart.detail',
+    title: 'Cart',
+    module: 'commerce',
+    icon: ShoppingCart,
+    component: CartDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.checkout-sessions.list',
     title: 'Checkout sessions',
     module: 'commerce',
@@ -377,9 +406,17 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'In progress',
     order: 31,
     keywords: ['payment', 'in progress'],
-    body: 'A checkout session is a shopper part-way through paying. Useful when you need to see where a payment stalled.',
-  }),
-  stub({
+    component: CheckoutSessionsListSurface,
+  },
+  {
+    key: 'commerce.checkout-session.detail',
+    title: 'Checkout session',
+    module: 'commerce',
+    icon: CreditCard,
+    component: CheckoutSessionDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.subscriptions.list',
     title: 'Subscriptions',
     module: 'commerce',
@@ -387,8 +424,16 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'In progress',
     order: 32,
     keywords: ['recurring', 'memberships', 'plans'],
-    body: 'Subscriptions charge a customer on a repeating schedule instead of once.',
-  }),
+    component: SubscriptionsListSurface,
+  },
+  {
+    key: 'commerce.subscription.detail',
+    title: 'Subscription',
+    module: 'commerce',
+    icon: Repeat2,
+    component: SubscriptionDetailSurface,
+    listed: false,
+  },
 
   /* ── After the sale ────────────────────────────────────────────────────── */
   {
@@ -398,18 +443,18 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     icon: Boxes,
     section: 'After the sale',
     order: 40,
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/commerce/returns',
-      queryKey: ['commerce', 'returns'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search returns…',
-      emptyTitle: 'No returns yet',
-      emptyBody: 'When a customer sends something back, it shows up here.',
-      emptyIcon: Boxes,
-      columns: [{ key: 'id', header: 'Return', render: (row) => row.id, numeric: true }],
-    }),
+    keywords: ['rma', 'refunds', 'sent back'],
+    component: ReturnsListSurface,
   },
-  stub({
+  {
+    key: 'commerce.return.detail',
+    title: 'Return',
+    module: 'commerce',
+    icon: Boxes,
+    component: ReturnDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.reviews.list',
     title: 'Reviews',
     module: 'commerce',
@@ -417,9 +462,9 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'After the sale',
     order: 41,
     keywords: ['ratings', 'feedback', 'stars'],
-    body: 'Reviews are what customers said about a product after buying it, and what you choose to publish.',
-  }),
-  stub({
+    component: ReviewsQueueSurface,
+  },
+  {
     key: 'commerce.qa.list',
     title: 'Questions & answers',
     module: 'commerce',
@@ -427,9 +472,9 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'After the sale',
     order: 42,
     keywords: ['qa', 'questions', 'support'],
-    body: 'Questions shoppers asked on a product page, and the answers you gave that everyone can now read.',
-  }),
-  stub({
+    component: QaQueueSurface,
+  },
+  {
     key: 'commerce.wishlists.list',
     title: 'Wishlists',
     module: 'commerce',
@@ -437,11 +482,11 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'After the sale',
     order: 43,
     keywords: ['saved', 'favourites'],
-    body: 'Wishlists are the products people saved for later — a good signal of what to stock or put on offer.',
-  }),
+    component: WishlistsSurface,
+  },
 
   /* ── Selling ───────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'commerce.channels.list',
     title: 'Sales channels',
     module: 'commerce',
@@ -449,9 +494,9 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Selling',
     order: 50,
     keywords: ['storefront', 'pos', 'places'],
-    body: 'Sales channels are the different places you sell — your own site, a marketplace, in person.',
-  }),
-  stub({
+    component: ChannelsSurface,
+  },
+  {
     key: 'commerce.market',
     title: 'sparx.market',
     module: 'commerce',
@@ -459,8 +504,8 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Selling',
     order: 51,
     keywords: ['marketplace', 'listing'],
-    body: 'sparx.market is the shared marketplace where your products can be listed alongside other sparx businesses.',
-  }),
+    component: MarketSurface,
+  },
   stub({
     key: 'commerce.shipping.list',
     title: 'Shipping',

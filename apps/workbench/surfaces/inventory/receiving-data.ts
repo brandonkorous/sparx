@@ -100,10 +100,17 @@ export function useReceipt(id: string) {
 /* ── Writes ─────────────────────────────────────────────────────────────── */
 
 /** One line as the booking form sends it: which PO line, and how many good units
- *  arrived (the count that becomes stock). */
+ *  arrived (the count that becomes stock). `quantityDamaged` reports units that
+ *  turned up broken — recorded in the stock ledger (received, then written off)
+ *  but never added to sellable stock and never counted against the order. An
+ *  optional `lotNumber` marks the good units as a traceable batch — when present,
+ *  receiving mints or extends that lot so the stock can later be traced (an
+ *  expiry, a recall). Both are left off for ordinary lines. */
 export interface ReceiveLineInput {
   purchaseOrderLineId: string;
   quantity: number;
+  quantityDamaged?: number;
+  lotNumber?: string;
 }
 
 export interface CreateReceiptInput {

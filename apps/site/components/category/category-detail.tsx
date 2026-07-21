@@ -1,31 +1,29 @@
 // The category DETAIL experience as ONE self-contained server component — the pinned
-// `commerce.category-detail` core (docs/122). A category is a browse TREE node (not a flat
-// merchandising surface): this shows the category's header, its subcategories, and a ROLLUP
-// of every product beneath it (self + descendants), paginated. The /category/[handle] route
-// drops it into an editable silica shell via a host node, so a tenant surrounds the browse
+// `commerce.category-detail` core (docs/122 + docs/127 §8). A category is a browse TREE
+// node (not a flat merchandising surface): this shows the category's header, its
+// subcategories, and a ROLLUP of every product beneath it (self + descendants) as a
+// FACETED, sortable, paginated grid — the same `ScopedProductBrowser` the PLP and
+// collection detail use, scoped to this category. The /category/[handle] route drops it
+// into an editable silica shell via a host node, so a tenant surrounds the browse
 // experience (intro copy, promos) without touching the rollup logic. Self-contained: given
-// the handle + page, it resolves the category, its lineage, and its products itself.
+// the handle + search params, it resolves the category, its lineage, and its filtered page.
 //
-// Extracted from the old app/category/[handle]/page.tsx body (breadcrumbs included, since
-// they need the lineage the core already computes). The route keeps the record lookup + the
-// 404/redirect guard; this core assumes a resolvable handle and renders an empty notice if
-// one ever slips through.
+// The facet/sort/pagination used to be a bare grid + pager here; it now shares the one
+// browser implementation (docs/127 §8), so a deep category is genuinely shoppable.
 
 import Image from 'next/image';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Pagination } from '@/components/pagination';
-import { ProductGrid } from '@/components/product-grid';
-import { getCategory, listCategories, listCategoryProducts } from '@/lib/commerce';
+import {
+  ScopedProductBrowser,
+  type SearchParams,
+} from '@/components/products/scoped-product-browser';
+import { getCategory, listCategories } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
 import type { ResolvedSite } from '@/lib/site-context';
 
 import { categoryLineage } from '@/app/category/_lib/lineage';
 import { CategoryCard } from '@/app/category/_lib/category-card';
-
-const PER_PAGE = 24;
-
-const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 export async function CategoryDetail({
   site,
@@ -34,24 +32,17 @@ export async function CategoryDetail({
 }: {
   site: ResolvedSite;
   handle: string;
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: SearchParams;
 }) {
   const sp = searchParams ?? {};
-  const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
   const category = await getCategory(site.slug, handle);
   if (!category) {
     return <p className="st-muted">This category isn’t available right now.</p>;
   }
 
-  const [all, products] = await Promise.all([
-    listCategories(site.slug),
-    listCategoryProducts(site.slug, handle, page, PER_PAGE),
-  ]);
+  const all = await listCategories(site.slug);
   const { ancestors, children } = categoryLineage(all, category);
-  const { items, total, perPage } = products;
-  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
-  const totalPages = Math.max(1, Math.ceil(total / perPage));
   const hero = mediaUrl(category.heroMediaId, site.slug);
 
   return (
@@ -125,36 +116,14 @@ export async function CategoryDetail({
         </section>
       ) : null}
 
-      <section>
-        {total > 0 ? (
-          <div className="st-toolbar">
-            <span className="st-toolbar__count">
-              {total} {total === 1 ? 'product' : 'products'}
-            </span>
-          </div>
-        ) : null}
-
-        <ProductGrid
-          products={items}
-          tenantSlug={site.slug}
-          currency={currency}
-          locale={locale}
-          empty={
-            children.length > 0 ? (
-              <p className="st-muted">Pick a subcategory above to start browsing.</p>
-            ) : undefined
-          }
-        />
-
-        {totalPages > 1 ? (
-          <Pagination
-            basePath={`/category/${category.handle}`}
-            currentParams={sp}
-            page={page}
-            totalPages={totalPages}
-          />
-        ) : null}
-      </section>
+      {/* The category's product ROLLUP (self + descendants), faceted + sorted + paged by
+          the shared browser scoped to this category handle. */}
+      <ScopedProductBrowser
+        site={site}
+        searchParams={sp}
+        basePath={`/category/${category.handle}`}
+        scope={{ category: category.handle }}
+      />
     </>
   );
 }

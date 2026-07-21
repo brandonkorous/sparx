@@ -17,17 +17,22 @@
 //
 // ── Every narrowing is a SERVER query ──────────────────────────────────────
 //
-// Search, the location and supplier filters, the urgency/shortfall sort and the
-// paging all go to `/v1/inventory/reorder/worklist`. The endpoint flattens the
-// grouped reorder engine, applies the narrowing over the WHOLE low set, then
-// pages — so this client never sorts or filters a page and calls it the answer.
+// Search, the location and supplier filters, the sort (urgency / shortfall /
+// runs-out-soonest) and the paging all go to `/v1/inventory/reorder/worklist`.
+// The endpoint flattens the grouped reorder engine, applies the narrowing over
+// the WHOLE low set, then pages — so this client never sorts or filters a page
+// and calls it the answer.
 //
-// ── No days-of-cover ───────────────────────────────────────────────────────
+// ── Days of cover comes from the ledger, not a guess ───────────────────────
 //
-// The reorder engine works off the reorder point + lead time, not a sales
-// velocity, so there is no honest "days of cover" figure to show — inventing one
-// from a single snapshot would be a number that looks precise and means nothing.
-// Urgency here is "how little is left" and "how far below the trigger", both real.
+// Each row now carries a real sales-velocity read: units sold per day over a
+// trailing window, the days of cover the available stock gives at that rate, and
+// the date it is projected to hit zero. The worklist route does NOT compute this
+// — it merges the shared `reorderAnalysis` (the same figures the reports export
+// and the AI supply tools use) onto each low row, so the number is honest and
+// consistent everywhere. Two distinct "no figure" cases are kept apart: velocity
+// measured as zero (nothing selling — no deadline) versus velocity not measured
+// for this row at all. Neither is faked into an urgency it does not have.
 // ══════════════════════════════════════════════════════════════════════════
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
@@ -78,6 +83,14 @@ export interface ReorderRow {
   unitCostCents: number | null;
   /** `unitCostCents × suggestedQuantity`, when a cost is known. */
   estimatedCostCents: number | null;
+  /** Average units sold per day over the trailing velocity window. 0 means it was
+   *  measured and nothing sold; null means it could not be measured for this row. */
+  velocityPerDay: number | null;
+  /** How many days the available stock lasts at that rate. Null when nothing is
+   *  selling (no honest cover) or velocity was not measured. */
+  daysOfCover: number | null;
+  /** ISO date this row is projected to hit zero, at that rate. Null with cover. */
+  projectedStockoutAt: string | null;
 }
 
 /** A supplier, trimmed to what the filter needs. */
@@ -108,7 +121,7 @@ export interface DraftReorderResult {
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
-export type ReorderSort = 'urgency' | 'shortfall';
+export type ReorderSort = 'urgency' | 'shortfall' | 'cover';
 
 export interface ReorderQuery {
   q?: string;
@@ -216,29 +229,76 @@ export function useDraftReorder() {
 
 /* ── Saying what a number means ─────────────────────────────────────────── */
 
-export interface ReorderState {
+/** How this row's supplier reads on screen — the name, or a plain marker when
+ *  nothing supplies it yet. */
+export function supplierLabel(row: Pick<ReorderRow, 'supplierName' | 'supplierCode'>): string {
+  return row.supplierName ?? row.supplierCode ?? 'No supplier yet';
+}
+
+/* ── Sales velocity → "when does this run out?" in shop words ────────────── */
+
+/**
+ * How fast this sells, said the way an owner counts it — never a bare decimal.
+ *
+ * A brisk seller reads "~4/day"; a slow one that shifts less than one a day reads
+ * "~1 every 5 days", which is far easier to picture than "0.2/day". Null means we
+ * have no honest figure: either nothing has sold (a measured zero) or this row
+ * fell outside the measured window — both show as a dash rather than a fake rate.
+ */
+export function velocityLabel(row: Pick<ReorderRow, 'velocityPerDay'>): string | null {
+  const v = row.velocityPerDay;
+  // `== null` catches both the honest null and a field a stale server omitted —
+  // either way there is no rate to print, never a NaN.
+  if (v == null || v <= 0) return null;
+  if (v >= 1) return `~${Math.round(v)}/day`;
+  return `~1 every ${Math.max(2, Math.round(1 / v))} days`;
+}
+
+export interface CoverSignal {
+  /** The badge text — a whole plain sentence, toned by how soon it bites. */
   label: string;
   tone: Tone;
 }
 
 /**
- * What a low row means, in the words an owner would use.
+ * The headline for a row: when it runs out, in words, coloured by urgency.
  *
- * Every worklist row is already at or below its reorder point, so there is no
- * "in stock" case here — only how bad it is. Nothing left to sell is the worse
- * problem (a website already saying "out of stock") and wears danger; still
- * having a few but under the trigger wears warning.
+ * Order matters. Already out is the worst regardless of pace and wears danger.
+ * With a real sales rate we say the projected stock-out plainly — "Out in about
+ * 6 days" while it is near, "Out around 12 Aug" once it is far enough that a date
+ * reads better than a countdown — and colour it danger under three days, warning
+ * under a week, otherwise a calm success (there is time). A measured zero is "Not
+ * selling": low, but nothing is drawing it down, so no deadline and no alarm. When
+ * velocity was never measured for this row we fall back to the plain low state
+ * rather than invent a cover it cannot support.
  */
-export function reorderState(row: { available: number }): ReorderState {
-  return row.available <= 0
-    ? { label: 'Out of stock', tone: 'danger' }
-    : { label: 'Running low', tone: 'warning' };
+export function coverSignal(row: ReorderRow): CoverSignal {
+  if (row.available <= 0) return { label: 'Out of stock', tone: 'danger' };
+  // `== null` (not `=== null`) so a field a stale server omitted degrades to the
+  // plain low state rather than falling through into NaN cover arithmetic.
+  if (row.velocityPerDay == null) return { label: 'Running low', tone: 'warning' };
+  if (row.velocityPerDay === 0 || row.daysOfCover == null) {
+    return { label: 'Not selling', tone: 'info' };
+  }
+  const days = row.daysOfCover;
+  const tone: Tone = days <= 3 ? 'danger' : days <= 7 ? 'warning' : 'success';
+  return { label: stockoutPhrase(days, row.projectedStockoutAt), tone };
 }
 
-/** How this row's supplier reads on screen — the name, or a plain marker when
- *  nothing supplies it yet. */
-export function supplierLabel(row: Pick<ReorderRow, 'supplierName' | 'supplierCode'>): string {
-  return row.supplierName ?? row.supplierCode ?? 'No supplier yet';
+/** The projected stock-out as a phrase: a countdown while it is near, a calendar
+ *  date once that is easier to read than "in about 40 days". */
+function stockoutPhrase(days: number, projectedStockoutAt: string | null): string {
+  if (days < 1) return 'Out within a day';
+  if (days < 2) return 'Out in about a day';
+  if (days < 14 || !projectedStockoutAt) return `Out in about ${Math.round(days)} days`;
+  return `Out around ${formatStockoutDate(projectedStockoutAt)}`;
+}
+
+/** A short, monthless-year date — "12 Aug" — the way a person would say it. */
+function formatStockoutDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return 'soon';
+  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
 /** How many distinct purchase orders a set of chosen lines would draft — one per

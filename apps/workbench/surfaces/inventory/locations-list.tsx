@@ -2,16 +2,16 @@
 
 // LOCATIONS — every place you keep stock: a warehouse, a shop floor, a van.
 //
-// ── Cards, not a table ───────────────────────────────────────────────────
+// ── A table, like every other list ───────────────────────────────────────
 //
-// The house rule: a short list of one-line-ish things is cards, not a table.
-// Locations are exactly that — most businesses have a handful, each one an
-// identity (a name and the code on its shelf labels) plus two facts (what kind
-// of place it is, and where it is). A table here would invent columns to justify
-// itself and repeat a header strip no one reads; a card per location puts the
-// name first and the state badge on the right, which is the whole of what you
-// scan for. A business with fifty 3PLs is rare enough that it is not worth
-// trading that clarity away — and the search and kind filters handle scale.
+// A location is an identity (a name and the code on its shelf labels) plus two
+// facts — what kind of place it is, and where it is. Laid down a table those
+// facts line up into columns you scan, and the list reads the same as every
+// other list in the app rather than as its own bespoke thing. The columns
+// disclose with @container: docked narrow you see the name, its code and its
+// state; given room the kind and the town come back. The name cell is the one
+// that GIVES (`max-w-0 w-full`), so the state badge is never the column shoved
+// off the right edge.
 //
 // ── Every narrowing is a SERVER filter ───────────────────────────────────
 //
@@ -29,15 +29,17 @@ import { useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   NativeSelect,
   SearchInput,
+  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
-import { EyeOff, MapPin, Plus, Warehouse } from 'lucide-react';
+import { EyeOff, Plus, Warehouse } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -68,59 +70,6 @@ function emptyAdvice(search: string, typeLabel: string | null, includeClosed: bo
   if (typeLabel) parts.push(`You are only seeing “${typeLabel}” places — switch to every kind.`);
   if (!includeClosed) parts.push('Closed locations are hidden — turn them on to include those.');
   return parts.join(' ');
-}
-
-function LocationCard({
-  location,
-  onOpen,
-}: {
-  location: Location;
-  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const state = locationState(location);
-  const place = locationPlace(location);
-
-  return (
-    // A real <button>: the whole card opens the location, and it must be
-    // keyboard-reachable as one target rather than a div wearing a role.
-    <button
-      type="button"
-      className="card bg-base-100 hover:bg-base-200 flex cursor-pointer flex-col gap-2 p-4 text-left"
-      onClick={onOpen}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <Warehouse className="text-base-content size-4 shrink-0" aria-hidden />
-          {/* The name is what a person recognises; it leads and nothing else on
-              the card gets to be its size. A styled span, not a heading — an
-              interactive card is a <button>, and a heading may not sit inside one. */}
-          <span className="min-w-0 truncate text-lg font-semibold">{location.name}</span>
-        </div>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
-        </Badge>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        {/* The code is how the shelves are labelled, so it earns a place beside
-            the name — set in mono because it is a code, not prose. */}
-        <span className="font-mono text-sm">{location.code}</span>
-        <span aria-hidden>·</span>
-        <Text as="span" className="text-sm">
-          {locationTypeLabel(location.type)}
-        </Text>
-      </div>
-
-      {place ? (
-        <div className="flex items-center gap-1.5">
-          <MapPin className="size-3.5 shrink-0" aria-hidden />
-          <Text as="span" className="min-w-0 truncate text-sm">
-            {place}
-          </Text>
-        </div>
-      ) : null}
-    </button>
-  );
 }
 
 export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -231,19 +180,67 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     return (
-      // One column in a narrow docked pane, two once there is room — driven by
-      // PANE width, so a pane at 320px on a wide monitor still reads as a list.
-      <div className="grid grid-cols-1 gap-3 @2xl:grid-cols-2">
-        {rows.map((location) => (
-          <LocationCard
-            key={location.id}
-            location={location}
-            onOpen={(event) => {
-              open(location, event);
-            }}
-          />
-        ))}
-      </div>
+      <Table size="sm" hover>
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th className="hidden whitespace-nowrap @lg:table-cell">Kind</th>
+            <th className="hidden @xl:table-cell">Where</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((location) => {
+            const state = locationState(location);
+            const place = locationPlace(location);
+            return (
+              <tr
+                key={location.id}
+                className="cursor-pointer"
+                tabIndex={0}
+                role="button"
+                onClick={(event) => {
+                  open(location, event);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  event.preventDefault();
+                  open(location, event);
+                }}
+              >
+                {/* `max-w-0 w-full` makes this the cell that GIVES: a table cell
+                    sizes to its content, so without it a long location name
+                    pushes the row wider and shoves the State badge off the right
+                    edge — the one column that must never be the one to go. */}
+                <td className="w-full max-w-0">
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate font-medium">{location.name}</span>
+                    {/* The code is how the shelves are labelled — mono because it
+                        is a code, not prose. */}
+                    <span className="truncate font-mono text-sm">{location.code}</span>
+                    {/* Below @lg the Kind column is gone; below @xl the Where
+                        column is gone. Each folds back here so a narrow pane
+                        still says what the place is and where it is. */}
+                    <span className="truncate text-sm @lg:hidden">
+                      {locationTypeLabel(location.type)}
+                    </span>
+                    {place ? <span className="truncate text-sm @xl:hidden">{place}</span> : null}
+                  </span>
+                </td>
+                <td className="hidden whitespace-nowrap @lg:table-cell">
+                  {locationTypeLabel(location.type)}
+                </td>
+                <td className="hidden max-w-48 truncate @xl:table-cell">{place ?? '—'}</td>
+                <td>
+                  <Badge color={state.tone} variant="soft" size="sm">
+                    {state.label}
+                  </Badge>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
     );
   };
 
@@ -335,10 +332,9 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </PaneToolbar>
 
       {/* Capped and centred — torn onto a second monitor this pane is 2000px
-          wide, and uncapped the cards stretch into billboards. */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-5xl">{body()}</div>
-      </div>
+          wide, and uncapped the table puts the State badge a foot from the name
+          it belongs to. The base-100 card lifts the rows off the recessed pane. */}
+      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
 
       <div className="mx-auto w-full max-w-5xl shrink-0">
         <ListPagination

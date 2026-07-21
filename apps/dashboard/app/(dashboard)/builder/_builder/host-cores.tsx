@@ -291,6 +291,9 @@ function renderHostNodeInner(node: HostNode, root: unknown): React.ReactNode {
         </CoreFrame>
       );
     case HOST_KEYS.commerceCategoryDetail:
+    case HOST_KEYS.commerceCollectionDetail:
+      // Both are a header band over a faceted product grid — the same canvas footprint
+      // (the collection detail simply omits the subcategory strip at render time).
       return (
         <CoreFrame label={label}>
           <CategoryDetailSkeleton />

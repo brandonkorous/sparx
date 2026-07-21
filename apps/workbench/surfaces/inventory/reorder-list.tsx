@@ -8,9 +8,18 @@
 // asked to be warned at. The job of the screen is to scan those rows, pick the
 // ones to act on, and turn them into draft purchase orders — grouped for you by
 // supplier, because that is the shape of a real order. So it IS a table: each row
-// carries four numbers you compare down a column (what's left, the trigger level,
-// how many to order, how many are already coming), exactly the case the house
-// rule keeps tables for.
+// carries several numbers you compare down a column (what's left, the trigger
+// level, how many to order, how many are already coming), exactly the case the
+// house rule keeps tables for.
+//
+// ── The headline is WHEN it runs out ──────────────────────────────────────
+//
+// "How little is left" tells you it is low; it does not tell you how long you
+// have. The row now leads with days of cover — the available stock divided by how
+// fast it actually sells (straight from the ledger, not a guess) — said in plain
+// words: "Out in about 6 days", "Out around 12 Aug", or "Not selling" when nothing
+// is drawing it down. Soonest-to-run-out is a sort, because the shortest cover is
+// the most urgent thing to buy.
 //
 // ── Every narrowing is a SERVER query ────────────────────────────────────
 //
@@ -55,13 +64,14 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { locationLabel, plural, stockErrorMessage, useStockLocations } from './data';
 import {
+  coverSignal,
   purchaseOrderCount,
-  reorderState,
   supplierLabel,
   useDraftReorder,
   useReorderSummary,
   useReorderSuppliers,
   useReorderWorklist,
+  velocityLabel,
   type DraftLine,
   type ReorderRow,
   type ReorderSort,
@@ -303,14 +313,16 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="hidden @2xl:table-cell">Supplier</th>
             <th className="hidden text-right whitespace-nowrap @lg:table-cell">Available</th>
             <th className="hidden text-right whitespace-nowrap @xl:table-cell">Reorder at</th>
+            <th className="hidden text-right whitespace-nowrap @xl:table-cell">Sells</th>
             <th className="text-right whitespace-nowrap">To order</th>
             <th className="hidden text-right whitespace-nowrap @3xl:table-cell">On the way</th>
-            <th>State</th>
+            <th className="whitespace-nowrap">Runs out</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => {
-            const state = reorderState(row);
+            const cover = coverSignal(row);
+            const sells = velocityLabel(row);
             const key = rowKey(row);
             const suppliable = row.supplierId !== null;
             return (
@@ -362,10 +374,13 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <span className="truncate">{row.title ?? 'Untitled product'}</span>
                     <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
                     {/* Columns that vanish on a narrow pane fold back in here — a
-                        reorder line without its place or its supplier is half an
-                        answer. */}
+                        reorder line without its place, its supplier or how fast it
+                        sells is half an answer. */}
                     <span className="truncate text-sm @lg:hidden">{locationLabel(row)}</span>
                     <span className="truncate text-sm @2xl:hidden">{supplierLabel(row)}</span>
+                    {sells ? (
+                      <span className="truncate text-sm @xl:hidden">Sells {sells}</span>
+                    ) : null}
                   </span>
                 </td>
 
@@ -386,15 +401,18 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden text-right tabular-nums @xl:table-cell">
                   {row.reorderPoint}
                 </td>
+                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
+                  {sells ?? '—'}
+                </td>
                 <td className="text-right font-medium whitespace-nowrap tabular-nums">
                   {row.suggestedQuantity}
                 </td>
                 <td className="hidden text-right tabular-nums @3xl:table-cell">
                   {row.onOrder > 0 ? row.onOrder : '—'}
                 </td>
-                <td>
-                  <Badge color={state.tone} variant="soft" size="sm">
-                    {state.label}
+                <td className="whitespace-nowrap">
+                  <Badge color={cover.tone} variant="soft" size="sm">
+                    {cover.label}
                   </Badge>
                 </td>
               </tr>
@@ -461,12 +479,13 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           ))}
         </NativeSelect>
 
-        {/* Default order is the useful one — most urgent first. The other view,
-            "furthest below its trigger", is a wide-pane refinement, so it sheds
-            below @2xl rather than crowd the filters that matter more. */}
+        {/* Default order is the useful one — least on the shelf first. The other
+            views ("runs out soonest" and "furthest below its trigger") are
+            wide-pane refinements, so they shed below @2xl rather than crowd the
+            filters that matter more. */}
         <NativeSelect
           size="sm"
-          className="hidden max-w-44 shrink @2xl:block"
+          className="hidden max-w-48 shrink @2xl:block"
           aria-label="Order the list by"
           value={sort}
           onChange={(event) => {
@@ -474,7 +493,8 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           }}
         >
-          <option value="urgency">Most urgent first</option>
+          <option value="urgency">Least in stock first</option>
+          <option value="cover">Runs out soonest</option>
           <option value="shortfall">Furthest below target</option>
         </NativeSelect>
 

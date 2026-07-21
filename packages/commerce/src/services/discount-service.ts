@@ -511,6 +511,47 @@ export async function lookupGiftCard(
   });
 }
 
+export interface GiftCardTransactionRow {
+  id: string;
+  deltaCents: number;
+  reason: string;
+  note: string | null;
+  orderId: string | null;
+  createdAt: string;
+}
+
+export interface GiftCardDetail extends GiftCardSummary {
+  message: string | null;
+  transactions: GiftCardTransactionRow[];
+}
+
+/**
+ * One gift card in full, WITH its ledger. The balance and every movement are
+ * read-only history — a gift card is money, so it is never edited in place; it
+ * is adjusted (an audited transaction) through `adjustGiftCard`.
+ */
+export async function getGiftCard(ctx: ServiceContext, id: string): Promise<GiftCardDetail> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.giftCard.findFirst({
+      where: { id },
+      include: { transactions: { orderBy: { createdAt: 'desc' }, take: 200 } },
+    })
+  );
+  if (!row) throw new CommerceNotFoundError('GiftCard', id);
+  return {
+    ...serializeGiftCard(row),
+    message: row.message,
+    transactions: row.transactions.map((t) => ({
+      id: t.id,
+      deltaCents: t.deltaCents,
+      reason: t.reason,
+      note: t.note,
+      orderId: t.orderId,
+      createdAt: t.createdAt.toISOString(),
+    })),
+  };
+}
+
 /**
  * Apply a gift card to a cart. Reserves the lesser of (cart total, gift
  * card balance) as a CartDiscount with code='giftcard:<id>'. Real

@@ -19,6 +19,7 @@ import { CartView } from '@/components/cart-view';
 import { SearchExperience, type SearchParams } from '@/components/search/search-experience';
 import { ProductListing } from '@/components/products/product-listing';
 import { CollectionIndex } from '@/components/collections/collection-index';
+import { CollectionDetail } from '@/components/collections/collection-detail';
 import { CategoryIndex } from '@/components/category/category-index';
 import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices } from '@/components/booking/booking-services';
@@ -75,9 +76,18 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         // Self-contained: resolves the tenant from the request host, no props/context.
         return <BookingServices />;
       case HOST_KEYS.commerceCategoryDetail:
-        // Per-record: the route passes the category handle (+ page in searchParams).
+        // Per-record: the route passes the category handle (+ facets/sort/page in searchParams).
         return (
           <CategoryDetail
+            site={ctx.site}
+            handle={ctx.recordHandle ?? ''}
+            searchParams={ctx.searchParams}
+          />
+        );
+      case HOST_KEYS.commerceCollectionDetail:
+        // Per-record: the route passes the collection handle (+ facets/sort/page in searchParams).
+        return (
+          <CollectionDetail
             site={ctx.site}
             handle={ctx.recordHandle ?? ''}
             searchParams={ctx.searchParams}

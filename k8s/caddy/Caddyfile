@@ -169,6 +169,24 @@ mcp.kanninja.com {
   reverse_proxy mcp.kanninja.svc.cluster.local:80
 }
 
+# ----- SilicaUI marketing + docs site (co-tenant in the `silicaui` namespace) -----
+# Same model as kanNINJA above: the site's workloads live in their own
+# `silicaui` namespace (a static Next.js export served by nginx), reached
+# cross-namespace via its ClusterIP Service. NO `tls { on_demand }` — the
+# on-demand ask endpoint only validates sparx tenants/custom domains and would
+# REJECT silicaui.com, so this explicit host block takes a normal Caddy-managed
+# Let's Encrypt cert instead. Requires silicaui.com / www DNS to resolve to this
+# LB (35.254.145.54) first.
+silicaui.com {
+  import security_headers
+  reverse_proxy site.silicaui.svc.cluster.local:80
+}
+
+www.silicaui.com {
+  import security_headers
+  redir https://silicaui.com{uri} permanent
+}
+
 # ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----
 # The Layer-4 operator console (docs/16 §2.4, docs/apps/admin/build-plan.md).
 # Access control is enforced IN FRONT by Cloudflare Access (D8/D9), the

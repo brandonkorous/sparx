@@ -32,6 +32,9 @@ const ListContractPricesQuery = z.object({
   b2b_account_id: z.string().uuid(),
 });
 
+const AccountCreditLedgerParams = z.object({ customerId: z.string().uuid() });
+const AccountCreditLedgerQuery = z.object({ currency: z.string().length(3).optional() });
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const pricingRoutes: FastifyPluginAsync = async (app) => {
   // Price lists
@@ -186,6 +189,13 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return paged(items, { total, per_page: q.take ?? 50 });
   });
 
+  app.get('/v1/commerce/discounts/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await discountService.getDiscount(toCommerceContext(request), id));
+  });
+
   app.post('/v1/commerce/discounts', async (request, reply) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
@@ -245,6 +255,15 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok(await discountService.lookupGiftCard(toCommerceContext(request), q?.code ?? ''));
   });
 
+  // One gift card in full, WITH its ledger. Static `/lookup` is registered above;
+  // Fastify prefers the literal segment, so this param route never shadows it.
+  app.get('/v1/commerce/gift-cards/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await discountService.getGiftCard(toCommerceContext(request), id));
+  });
+
   app.post('/v1/commerce/gift-cards/adjust', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
@@ -256,6 +275,29 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
     return ok(await discountService.grantAccountCredit(toCommerceContext(request), request.body));
+  });
+
+  // One customer's store-credit balance + its ledger. Static `/grant` is
+  // registered above; Fastify prefers the literal segment over `:customerId`.
+  // (The list of every customer WITH credit lives at GET /v1/commerce/
+  // account-credit in routes/v1/commerce/lists.ts.)
+  app.get('/v1/commerce/account-credit/:customerId/ledger', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { customerId } = AccountCreditLedgerParams.parse(request.params);
+    const q = AccountCreditLedgerQuery.parse(request.query);
+    const currency = q.currency ?? 'USD';
+    const ctx = toCommerceContext(request);
+    const [balance, transactions] = await Promise.all([
+      discountService.getAccountCreditBalance(ctx, customerId, currency),
+      discountService.listAccountCreditTransactions(ctx, customerId, currency),
+    ]);
+    return ok({
+      customerId,
+      currency,
+      balanceCents: balance?.balanceCents ?? 0,
+      transactions,
+    });
   });
 };
 

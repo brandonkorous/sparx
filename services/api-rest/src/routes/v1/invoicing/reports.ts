@@ -13,8 +13,9 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { invoicingReportingService } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
+import { resolveListScope } from '../../../lib/property.js';
 
 // Accepts ?from=&to= (ISO 8601) and defaults to the last 30 days when both are
 // omitted — matches the dashboard's presets so the surface is forgiving.
@@ -22,6 +23,11 @@ const TimeseriesQuery = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
   grain: z.enum(['day', 'week', 'month']).optional(),
+  // docs/131 §6: which business's figures. A site id → that site; `all` → the
+  // tenant-wide total (member-access gated); absent → the active site
+  // (x-sparx-property-id). resolveListScope returns undefined for the all-sites
+  // total.
+  property: z.string().min(1).max(63).optional(),
 });
 
 const CustomerBreakdownQuery = z.object({
@@ -40,10 +46,16 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const q = TimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
+    const propertyId = await resolveListScope(
+      requireAuth(request),
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     return ok(
       await invoicingReportingService.collectedTimeseries(toInvoicingContext(request), {
         range,
         ...(q.grain ? { grain: q.grain } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });

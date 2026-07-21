@@ -1,6 +1,6 @@
 # 131 — Site Scoping: the operational layer
 
-Version: 1.4.0
+Version: 1.5.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
@@ -774,40 +774,63 @@ migratable one.**
    are the two that matter most.
 4. **P1** — customer-visible surfaces, module by module.
 5. **P2** — internal filtering, which is largely quality-of-life.
-6. **Per-property rollups** (§6), unblocking [130](130-analytics-normalization.md)
-   and the dashboards in [129](129-analytics-dashboards.md).
+6. **Per-property rollups** (§6) — **DONE** (migration 20270105), unblocking
+   [130](130-analytics-normalization.md) and the dashboards in
+   [129](129-analytics-dashboards.md).
 
-### Step 6 (rollups) is a distinct PHASE, not remaining cleanup — and it carries a decision
+### Step 6 (rollups) — BUILT (migration 20270105_per_site_analytics_rollups)
 
-The five daily rollups in `75-analytics-rollups.prisma`
-(`RollupCommerceDailyRevenue`, `RollupInvoicingDailyCollected`,
-`RollupDropshipDailyOrders`, `RollupAutomationDailyRuns`,
-`RollupInventoryDailyValuation`) are each keyed `(tenant, UTC day)`. Per-site
-dashboards need a site dimension in that key — but this is not a mechanical
-column-add, because it interacts with a fact this remediation deliberately chose:
+The five daily rollups in `75-analytics-rollups.prisma` were keyed `(tenant, UTC
+day)`. Per-site dashboards need a site dimension in that key, and the source rows
+have NULLABLE `propertyId` (orders + dropship are SetNull — they outlive their
+site), so on any tenant that ever deleted a site some revenue belongs to no
+current site. The two decisions that made this a phase rather than a column-add,
+resolved up front:
 
-**The source rows they aggregate have NULLABLE `propertyId`.** Orders and billing
-documents are SetNull — they outlive their site — so on any tenant that has ever
-deleted a site, some revenue and some collected cash belong to no current site. A
-rollup PK cannot be null, so the phase must decide how those rows bucket:
+1. **Orphaned revenue → an explicit "unattributed" bucket, NOT folded into the
+   primary.** Folding would attribute a closed business's numbers to the primary
+   site — the exact distortion the §3.6 invoice work refused. A per-site read
+   EXCLUDES the null bucket; the all-sites total INCLUDES it, so it is never lost,
+   only never misattributed.
+2. **Inventory valuation stays TENANT-ONLY.** Stock lives in warehouses (no
+   `property_id`) and one physical pool serves every site a product is listed on;
+   any per-site split would double-count or invent an allocation. It keeps the
+   `(tenant, day)` grain — the one rollup §6 leaves alone.
 
-- an explicit "unattributed" bucket per tenant (a sentinel), included in the
-  all-sites total but shown separately per-site; or
-- fold null-property source rows into the tenant's primary at rollup time (simpler
-  reads, but attributes a closed business's numbers to the primary — a reporting
-  distortion the §3.6 invoice work went out of its way to avoid); or
-- keep the existing `(tenant, day)` rows AS the all-sites total and add parallel
-  `(tenant, property, day)` rows beside them (double the storage, no null problem,
-  read path picks the grain).
+The critical realization from grounding the decision in the schema: **the null
+semantics are NOT uniform**, so a single rule would have been wrong.
 
-It also changes each rollup's reconcile query (add `GROUP BY property_id`) and
-every `/reports/*` read (per-site filter + an all-sites sum). That is a real
-slice with a numbers-affecting decision at its centre, so it belongs to the
-analytics phase (docs 129/130) with that decision made up front — not bolted onto
-the tail of the operational-layer remediation, whose job is done.
+| Rollup | Site source | Grain | Null bucket |
+| --- | --- | --- | --- |
+| Commerce revenue | `Order.property_id` (nullable) | per-site | orphaned — per-site read EXCLUDES; all-sites includes |
+| Invoicing collected/billed | `BillingDocument.property_id` (NOT NULL, Restrict) | per-site | **none** — site can't be deleted while billed; composite PK |
+| Dropship | storefront `Order` via `DropshipOrder.order` (nullable) | per-site | orphaned — same as commerce |
+| Automation runs | `AutomationRun.property_id` (nullable) | per-site | **SHARED** — null = tenant-wide automation; per-site read INCLUDES it |
+| Inventory valuation | none (tenant stock pool) | tenant-only | N/A |
 
-`RollupSiteDaily` (traffic) already carries `property_id` — site analytics was
-built per-site from the start, which is the shape the others need.
+Shape (mirrors `ProductReviewRollup` §4): the three nullable-property rollups get a
+surrogate `id` PK + a `NULLS NOT DISTINCT` unique over `(tenant, property, day)`
+(a nullable key component can't sit in a composite `@@id`); invoicing keeps a plain
+composite PK on its non-null property; a `Property` FK is `onDelete: Cascade` (a
+deleted site drops its rollup rows and the next reconcile re-buckets its orphaned
+source rows into null — SetNull would instead collide onto the existing null row
+under the unique). Each reconcile now groups `GROUP BY property_id, day` and stamps
+the site; the shared read aggregate splits into a SCOPED read (one site, or all)
+and a per-property reconcile pass; every `/reports/*` timeseries resolves the site
+via `resolveListScope` (`?property=<id>` | `all` (member-gated) | active header)
+and the read SUMS the per-site rollup rows back to the tenant total for the
+all-sites case. `RollupSiteDaily` (traffic) already carried `property_id`, and was
+the template the others followed.
+
+The migration TRUNCATEs the four changed rollup tables (they are derived — the
+nightly reconcile, which is also the backfill, repopulates with correct per-site
+attribution, and the reads live-overlay "today" from source in the meantime). The
+per-site logic is proven by `revenue-rollup-per-site.test.ts` (the exemplar: two
+sites + an orphaned order, asserting each site sees only its own revenue and the
+orphan surfaces only in the all-sites total). NOTE: that test and the four affected
+packages' typecheck are GATED on applying 20270105 + regenerating the Prisma client
+— the standard migration-as-file / client-regen handoff (the migration reaches
+Cloud SQL only through the pipeline).
 
 **Now is the moment, and the window is exactly this.** With no production tenants
 every item here is a schema edit and a code change — no backfill, no deprecation,

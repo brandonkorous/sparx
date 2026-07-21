@@ -2,13 +2,14 @@
 
 // SUPPLIERS — the businesses you buy from, and what you buy from each.
 //
-// ── Cards, not a table ────────────────────────────────────────────────────
+// ── A table, like every other list ────────────────────────────────────────
 //
-// A supplier is a name, a way to reach them, and a couple of default terms —
-// one-line things, not columns of numbers you scan down. The house rule sends
-// that to cards: the supplier's identity is the content, and the only thing that
-// earns a badge is the exceptional state (archived). A table here would invent a
-// "Terms" column to justify itself and badge every active row green for no gain.
+// A supplier is a name and code, a way to reach them, and a couple of default
+// terms. Laid down a table those line up into columns you scan, and the list
+// reads the same as every other list in the app. The columns disclose with
+// @container: docked narrow you see the name, its code and whether it is active;
+// given room the contact and the terms come back. The name cell is the one that
+// GIVES (`max-w-0 w-full`), so the State badge is never shoved off the right.
 //
 // ── Two different empties ─────────────────────────────────────────────────
 //
@@ -20,88 +21,25 @@ import { useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   SearchInput,
-  Text,
+  Table,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { Archive, Mail, Phone, Plus, Truck } from 'lucide-react';
+import { Archive, Plus, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  supplierAddress,
-  supplierState,
-  supplierTerms,
-  useSuppliers,
-  type Supplier,
-} from './suppliers-data';
+import { supplierState, supplierTerms, useSuppliers } from './suppliers-data';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-function SupplierCard({
-  supplier,
-  onOpen,
-}: {
-  supplier: Supplier;
-  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const state = supplierState(supplier);
-  const terms = supplierTerms(supplier);
-  const address = supplierAddress(supplier);
-
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="card bg-base-100 border-base-300 hover:border-module flex w-full flex-col gap-2 border p-4 text-left transition-colors"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <Text className="truncate text-lg font-semibold">{supplier.name}</Text>
-          <Text className="truncate font-mono text-sm">{supplier.code}</Text>
-        </div>
-        {/* Only the exceptional state is badged — a wall of green "Active" pills
-            is noise, so an active supplier's card carries its details instead. */}
-        {supplier.isActive ? null : (
-          <Badge color={state.tone} variant="soft" size="sm">
-            {state.label}
-          </Badge>
-        )}
-      </div>
-
-      {supplier.contactName ? (
-        <Text className="truncate text-sm">{supplier.contactName}</Text>
-      ) : null}
-
-      {supplier.email || supplier.phone ? (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          {supplier.email ? (
-            <span className="inline-flex min-w-0 items-center gap-1.5">
-              <Mail className="size-3.5 shrink-0" aria-hidden />
-              <Text className="truncate text-sm">{supplier.email}</Text>
-            </span>
-          ) : null}
-          {supplier.phone ? (
-            <span className="inline-flex items-center gap-1.5">
-              <Phone className="size-3.5 shrink-0" aria-hidden />
-              <Text className="text-sm">{supplier.phone}</Text>
-            </span>
-          ) : null}
-        </div>
-      ) : null}
-
-      {terms ? <Text className="text-sm">{terms}</Text> : null}
-      {address ? <Text className="truncate text-sm">{address}</Text> : null}
-    </button>
-  );
 }
 
 export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -189,17 +127,75 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     return (
-      <div className="grid gap-3 @3xl:grid-cols-2">
-        {rows.map((supplier) => (
-          <SupplierCard
-            key={supplier.id}
-            supplier={supplier}
-            onOpen={(event) => {
-              openSupplier(supplier.id, event);
-            }}
-          />
-        ))}
-      </div>
+      <Table size="sm" hover>
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th className="hidden @xl:table-cell">Contact</th>
+            <th className="hidden @3xl:table-cell">Terms</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((supplier) => {
+            const state = supplierState(supplier);
+            const terms = supplierTerms(supplier);
+            // Whoever you'd actually ring or email — a person's name if you have
+            // it, otherwise the address you have on file.
+            const contactName = supplier.contactName;
+            const contactVia = supplier.email ?? supplier.phone;
+            const contactSummary = contactName ?? contactVia;
+            return (
+              <tr
+                key={supplier.id}
+                className="cursor-pointer"
+                tabIndex={0}
+                role="button"
+                onClick={(event) => {
+                  openSupplier(supplier.id, event);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  event.preventDefault();
+                  openSupplier(supplier.id, event);
+                }}
+              >
+                {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
+                    supplier name never pushes the State badge off the right. */}
+                <td className="w-full max-w-0">
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate font-medium">{supplier.name}</span>
+                    <span className="truncate font-mono text-sm">{supplier.code}</span>
+                    {/* Below @xl the Contact column is gone; below @3xl the Terms
+                        column is gone. Each folds back here so a narrow pane
+                        still says who to reach and how you buy. */}
+                    {contactSummary ? (
+                      <span className="truncate text-sm @xl:hidden">{contactSummary}</span>
+                    ) : null}
+                    {terms ? <span className="truncate text-sm @3xl:hidden">{terms}</span> : null}
+                  </span>
+                </td>
+                <td className="hidden max-w-56 @xl:table-cell">
+                  <span className="flex min-w-0 flex-col">
+                    {contactName ? <span className="truncate">{contactName}</span> : null}
+                    {contactVia ? (
+                      <span className="truncate text-sm">{contactVia}</span>
+                    ) : contactName ? null : (
+                      <span>—</span>
+                    )}
+                  </span>
+                </td>
+                <td className="hidden max-w-56 truncate @3xl:table-cell">{terms ?? '—'}</td>
+                <td>
+                  <Badge color={state.tone} variant="soft" size="sm">
+                    {state.label}
+                  </Badge>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
     );
   };
 
@@ -260,7 +256,8 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      <div className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</div>
+      {/* Capped and centred, base-100 card lifted off the recessed pane. */}
+      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
 
       <div className="mx-auto w-full max-w-5xl shrink-0">
         <ListPagination

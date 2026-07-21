@@ -387,6 +387,12 @@ export type SubmitPurchaseOrderInput = z.infer<typeof SubmitPurchaseOrderInput>;
 export const ReceiveLineInput = z.object({
   purchaseOrderLineId: Uuid,
   quantity: z.number().int().positive(),
+  // Damaged-on-arrival units. Booked as two ledger facts on the same receipt —
+  // a `receive` (+) at the same landed cost, then a `damage` (−) write-off — so
+  // the arrival and the valued loss are both recorded, while net on-hand stays 0.
+  // Damaged units are NEVER added to sellable stock and NEVER credited against
+  // the PO line (the supplier still owes them). Defaults to 0.
+  quantityDamaged: z.number().int().min(0).optional(),
   // Actual landed cost — defaults to the PO line's agreed cost when omitted.
   unitCostCents: z.number().int().nonnegative().optional(),
   lotNumber: z.string().min(1).max(63).optional(),

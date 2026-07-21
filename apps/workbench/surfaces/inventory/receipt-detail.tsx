@@ -19,10 +19,12 @@
 // ── What arrived vs what was ordered ──────────────────────────────────────
 //
 // Each line shows what is still outstanding and reacts as you type: short, exact,
-// or more than expected, in plain words. Anything damaged is recorded against the
-// receipt but NOT booked into sellable stock — damaged units are not stock. If
-// what you book differs from what was outstanding, posting asks you to confirm,
-// because a receipt moves real stock numbers and cannot be edited afterwards.
+// or more than expected, in plain words. Anything damaged is sent as its own
+// count: the stock ledger records it arriving and then being written off, so it
+// is NEVER added to sellable stock and NEVER counted against the order — the
+// supplier still owes those units. If what you book differs from what was
+// outstanding, posting asks you to confirm, because a receipt moves real stock
+// numbers and cannot be edited afterwards.
 
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -74,6 +76,8 @@ const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 interface LineEntry {
   received: string;
   damaged: string;
+  /** Optional batch / lot code for this line — only sent when the buyer types one. */
+  lot: string;
 }
 
 function outstandingFor(line: PurchaseOrderLine): number {
@@ -114,7 +118,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
   useEffect(() => {
     if (!detail) return;
     const next: Record<string, LineEntry> = {};
-    for (const line of detail.lines) next[line.id] = { received: '', damaged: '' };
+    for (const line of detail.lines) next[line.id] = { received: '', damaged: '', lot: '' };
     setEntries(next);
   }, [detail]);
 
@@ -125,7 +129,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
   const setEntry = (lineId: string, key: keyof LineEntry, value: string) => {
     setEntries((current) => ({
       ...current,
-      [lineId]: { received: '', damaged: '', ...current[lineId], [key]: value },
+      [lineId]: { received: '', damaged: '', lot: '', ...current[lineId], [key]: value },
     }));
   };
 
@@ -134,13 +138,18 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     const next: Record<string, LineEntry> = {};
     for (const line of detail.lines) {
       const out = outstandingFor(line);
-      next[line.id] = { received: out > 0 ? String(out) : '', damaged: '' };
+      next[line.id] = {
+        received: out > 0 ? String(out) : '',
+        damaged: '',
+        // Keep any batch code already typed — filling quantities shouldn't wipe it.
+        lot: entries[line.id]?.lot ?? '',
+      };
     }
     setEntries(next);
   };
 
   const parsed = (detail?.lines ?? []).map((line) => {
-    const entry = entries[line.id] ?? { received: '', damaged: '' };
+    const entry = entries[line.id] ?? { received: '', damaged: '', lot: '' };
     const received = Number.parseInt(entry.received, 10);
     const damaged = Number.parseInt(entry.damaged, 10);
     return {
@@ -148,13 +157,16 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
       outstanding: outstandingFor(line),
       received: Number.isFinite(received) && received > 0 ? received : 0,
       damaged: Number.isFinite(damaged) && damaged > 0 ? damaged : 0,
+      lot: entry.lot.trim(),
     };
   });
 
   const receiving = parsed.filter((row) => row.received > 0);
   const totalUnits = receiving.reduce((sum, row) => sum + row.received, 0);
+  // Damaged units are reported alongside the good units on a line, so a discrepancy
+  // only counts damage on a line that is actually being received.
   const anyDiscrepancy = parsed.some(
-    (row) => (row.received > 0 && row.received !== row.outstanding) || row.damaged > 0
+    (row) => row.received > 0 && (row.received !== row.outstanding || row.damaged > 0)
   );
   const anyInvalid = parsed.some((row) => {
     const entry = entries[row.line.id];
@@ -170,22 +182,13 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
 
   useDirtySource(dirty, 'You have a delivery you have not booked in yet. Close anyway?');
 
-  const buildDamageNote = (): string | null => {
-    const damaged = parsed.filter((row) => row.damaged > 0);
-    if (damaged.length === 0) return null;
-    const parts = damaged.map(
-      (row) => `${String(row.damaged)}× ${row.line.variantSku ?? row.line.productTitle ?? 'item'}`
-    );
-    return `Damaged on arrival (not booked into stock): ${parts.join(', ')}`;
-  };
-
   const post = async () => {
     if (!canPost || !detail) return;
 
     if (anyDiscrepancy) {
       const shorts = parsed.filter((row) => row.received > 0 && row.received < row.outstanding);
       const overs = parsed.filter((row) => row.received > row.outstanding);
-      const damaged = parsed.filter((row) => row.damaged > 0);
+      const damaged = receiving.filter((row) => row.damaged > 0);
       const notes: string[] = [];
       if (shorts.length > 0) {
         notes.push(`${String(shorts.length)} line(s) are short of what was outstanding`);
@@ -194,7 +197,9 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
         notes.push(`${String(overs.length)} line(s) have more than was expected`);
       }
       if (damaged.length > 0) {
-        notes.push(`${String(damaged.length)} line(s) had damaged units you are not booking in`);
+        notes.push(
+          `${String(damaged.length)} line(s) had damaged units — recorded and written off, not added to sellable stock or counted against the order`
+        );
       }
       const ok = await confirm({
         title: 'Book this delivery as counted?',
@@ -206,11 +211,14 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
       if (!ok) return;
     }
 
-    const damageNote = buildDamageNote();
-    const combinedNote = [note.trim(), damageNote].filter((part) => part && part !== '').join('\n');
     const lines: ReceiveLineInput[] = receiving.map((row) => ({
       purchaseOrderLineId: row.line.id,
       quantity: row.received,
+      // Damaged units ride the same line — the server records them arriving and
+      // then writing them off, so they never join sellable stock or the order.
+      ...(row.damaged > 0 ? { quantityDamaged: row.damaged } : {}),
+      // Only a line the buyer actually gave a batch code becomes a traceable lot.
+      ...(row.lot ? { lotNumber: row.lot } : {}),
     }));
 
     createReceipt.mutate(
@@ -218,7 +226,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
         purchaseOrderId: poId,
         ...(receivedAt ? { receivedAt: receivedAt.toISOString() } : {}),
         ...(reference.trim() ? { reference: reference.trim() } : {}),
-        ...(combinedNote ? { note: combinedNote } : {}),
+        ...(note.trim() ? { note: note.trim() } : {}),
         lines,
       },
       {
@@ -359,7 +367,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
 
               <FormSection
                 title="What turned up"
-                description="Enter how many good units arrived for each line. Anything damaged is recorded but not added to sellable stock."
+                description="Enter how many good units arrived for each line. Put anything that turned up damaged in the Damaged box — it is recorded and written off, so it never joins your sellable stock and the order stays open for it."
                 action={
                   <Button size="sm" variant="outline" color="neutral" onClick={fillOutstanding}>
                     Fill in what&apos;s outstanding
@@ -372,6 +380,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                       <th>Item</th>
                       <th className="text-right whitespace-nowrap">Outstanding</th>
                       <th className="whitespace-nowrap">Received now</th>
+                      <th className="hidden whitespace-nowrap @lg:table-cell">Batch / lot</th>
                       <th className="hidden whitespace-nowrap @md:table-cell">Damaged</th>
                       <th>How it lands</th>
                     </tr>
@@ -404,6 +413,21 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                               value={entries[row.line.id]?.received ?? ''}
                               onChange={(event) => {
                                 setEntry(row.line.id, 'received', event.target.value);
+                              }}
+                            />
+                          </td>
+                          <td className="hidden @lg:table-cell">
+                            <Input
+                              color="module"
+                              size="sm"
+                              maxLength={63}
+                              aria-label={`Batch or lot number for ${row.line.variantSku ?? 'item'}`}
+                              placeholder="Leave blank"
+                              spellCheck={false}
+                              className="w-32"
+                              value={entries[row.line.id]?.lot ?? ''}
+                              onChange={(event) => {
+                                setEntry(row.line.id, 'lot', event.target.value);
                               }}
                             />
                           </td>
@@ -445,6 +469,20 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                     Nothing to book in yet — enter what arrived above.
                   </Text>
                 )}
+
+                <Text className="text-sm">
+                  <span className="font-medium">Damaged units.</span> Count anything that arrived
+                  broken or unsellable. Your stock records it turning up and then being written off,
+                  so it is never added to what you can sell — and because the supplier still owes
+                  you those units, the order stays open until they are replaced.
+                </Text>
+
+                <Text className="text-sm">
+                  <span className="font-medium">Batch / lot number.</span> If this delivery is a
+                  batch you need to trace later — something with an expiry date, or that could be
+                  recalled — give it a code here so you can find these exact units again. Leave it
+                  blank for anything ordinary.
+                </Text>
               </FormSection>
 
               <FormSection title="Delivery details">
@@ -492,9 +530,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                       />
                     }
                   />
-                  <FieldDescription>
-                    Kept with the receipt. Any damaged units are added here automatically.
-                  </FieldDescription>
+                  <FieldDescription>Kept with the receipt.</FieldDescription>
                 </Field>
               </FormSection>
             </>

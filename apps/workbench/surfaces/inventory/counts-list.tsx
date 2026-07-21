@@ -3,13 +3,17 @@
 // STOCK COUNTS — the sessions where you count what is actually on the shelf and
 // correct the numbers when they disagree.
 //
-// ── Cards, not a table ────────────────────────────────────────────────────
+// ── A table, like every other list ────────────────────────────────────────
 //
-// A count is a session, not a numeric row: a location, a state, how far the
-// counting has got, and the money value of the differences it found. Those do
-// not line up into columns you scan down — they read as a small summary per
-// session. So this is a card per count, one column, capped and centred, which
-// also survives a pane docked at 320px without a horizontal scrollbar.
+// A count is a session: a location, a state, how far the counting has got, and
+// the money value of the differences it found. Laid down a table those become
+// columns you scan — how many items, how big the difference, when it started —
+// and the list reads the same as every other list in the app. The columns
+// disclose with @container: docked narrow you see the location, its number and
+// its state, with the progress and difference folded under the name; given room
+// they come back as their own right-aligned numeric columns. The name cell is
+// the one that GIVES (`max-w-0 w-full`), so the State badge is never shoved off
+// the right edge.
 //
 // ── Creating a count is a PANE, in its "new" state ────────────────────────
 //
@@ -31,10 +35,9 @@ import {
   Button,
   Card,
   EmptyState,
-  Heading,
   NativeSelect,
   SearchInput,
-  Text,
+  Table,
   Timestamp,
   ToolbarSeparator,
 } from '@wizeworks/silicaui-react';
@@ -176,38 +179,77 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     return (
-      <ul className="flex flex-col gap-2 p-2">
-        {rows.map((count) => {
-          const state = countState(count.status);
-          return (
-            <li key={count.id}>
-              <button
-                type="button"
-                className="card bg-base-100 border-base-300 hover:border-base-content/20 flex w-full flex-col gap-1.5 border p-4 text-left"
+      <Table size="sm" hover>
+        <thead>
+          <tr>
+            <th>Count</th>
+            <th className="hidden text-right whitespace-nowrap @lg:table-cell">Counted</th>
+            <th className="hidden text-right whitespace-nowrap @xl:table-cell">Difference</th>
+            <th className="hidden @3xl:table-cell">Started</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((count) => {
+            const state = countState(count.status);
+            // The difference value is only frozen once counting is done, so a
+            // session still being counted shows a dash rather than a misleading
+            // "£0.00" that reads as "everything matched".
+            const difference =
+              count.status === 'counting' ? '—' : formatCents(count.varianceValueCents);
+            return (
+              <tr
+                key={count.id}
+                className="cursor-pointer"
+                tabIndex={0}
+                role="button"
                 onClick={(event) => {
                   openCount(count, event);
                 }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  event.preventDefault();
+                  openCount(count, event);
+                }}
               >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="flex min-w-0 flex-col">
-                    <Heading level={3} className="min-w-0 truncate text-lg font-semibold">
+                {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
+                    location name never pushes the State badge off the right. */}
+                <td className="w-full max-w-0">
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate font-medium">
                       {count.warehouseName ?? 'Stock count'}
-                    </Heading>
-                    <Text className="font-mono text-sm">{count.number}</Text>
-                  </div>
+                    </span>
+                    <span className="truncate font-mono text-sm">{count.number}</span>
+                    {/* Below @lg the Counted and Difference columns are gone, so
+                        the plain-language summary folds back here; below @3xl the
+                        Started column folds back too. */}
+                    <span className="truncate text-sm @lg:hidden">
+                      {countTypeLabel(count.type)} · {summaryLine(count)}
+                    </span>
+                    <span className="truncate text-sm @3xl:hidden">
+                      Started <Timestamp value={count.createdAt} format="relative" />
+                    </span>
+                  </span>
+                </td>
+                <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
+                  {count.countedLineCount}/{count.lineCount}
+                </td>
+                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
+                  {difference}
+                </td>
+                <td className="hidden whitespace-nowrap @3xl:table-cell">
+                  <Timestamp value={count.createdAt} format="relative" />
+                </td>
+                <td>
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}
                   </Badge>
-                </div>
-                <Text className="text-sm">
-                  {countTypeLabel(count.type)} · {summaryLine(count)} ·{' '}
-                  <Timestamp value={count.createdAt} format="relative" />
-                </Text>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
     );
   };
 
@@ -293,9 +335,11 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      <Card className="mx-auto min-h-0 w-full max-w-3xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Capped and centred, base-100 card lifted off the recessed pane. Wide
+          enough that a floated pane can disclose every column. */}
+      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-3xl shrink-0">
+      <div className="mx-auto w-full max-w-5xl shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

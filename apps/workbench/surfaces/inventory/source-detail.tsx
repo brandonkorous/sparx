@@ -35,6 +35,11 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
   Field,
   FieldControl,
   FieldDescription,
@@ -48,12 +53,27 @@ import {
   useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Cable, FileSpreadsheet, Pause, Play, RefreshCw, Save, Server, Trash2 } from 'lucide-react';
+import {
+  Cable,
+  Check,
+  Copy,
+  FileSpreadsheet,
+  KeyRound,
+  Pause,
+  Play,
+  RefreshCw,
+  Save,
+  Server,
+  Trash2,
+  Unlink,
+} from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   agentOnline,
@@ -67,9 +87,12 @@ import {
   SYNC_INTERVALS,
   useCreateSource,
   useDeleteSource,
+  useEnrollSource,
   useInventorySource,
+  useRevokeAgent,
   useSyncSource,
   useUpdateSource,
+  type EnrollResult,
   type InventorySource,
   type SourceType,
 } from './sources-data';
@@ -139,6 +162,149 @@ function TypeIcon({ type, className }: { type: SourceType; className?: string })
   return <Icon className={className} aria-hidden />;
 }
 
+/** Only an admin or the account owner may pair a bridge — the server enforces
+ *  this and 403s otherwise, so the interface simply doesn't offer the controls
+ *  to anyone who would only be handed an error. */
+function canPairBridge(role: string | undefined): boolean {
+  return role === 'admin' || role === 'owner';
+}
+
+/* ── The one-time pairing key ─────────────────────────────────────────────
+ *
+ * The bridge's key is handed back exactly ONCE from the server and never stored
+ * anywhere we can show again. So this is the one screen where a real secret is
+ * on display, and it earns a modal: it holds nothing durable to return to, the
+ * only job is "copy this before it is gone", and letting it black out just this
+ * pane keeps it out of the pane's own draft. Dismissing without ticking "saved"
+ * asks first, because closing loses the key for good.
+ */
+function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: () => void }) {
+  const toast = useToast();
+  const confirm = useImperativeAlertDialog();
+  const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(result.apiKey);
+      setCopied(true);
+      // Copying IS saving, for the purpose of the guard below — someone who has
+      // it on their clipboard has it. They can still untick if they want.
+      setSaved(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 1600);
+    } catch {
+      toast.add({
+        title: 'Could not copy that',
+        description: 'Select the key and copy it by hand before you close this.',
+        type: 'error',
+      });
+    }
+  };
+
+  async function requestClose() {
+    if (!saved) {
+      const ok = await confirm({
+        title: 'Close without saving the key?',
+        description:
+          'This key is shown only this once. If you close now you will not be able to see it again — you would have to make a new one and update the bridge with it.',
+        confirmLabel: 'Close anyway',
+        cancelLabel: 'Keep it open',
+        color: 'danger',
+      });
+      if (!ok) return;
+    }
+    onClose();
+  }
+
+  return (
+    // Scoped to the pane that opened it, so in a split view it blacks out only
+    // this source — never the pane beside it.
+    <PaneScope>
+      <Dialog
+        open
+        onOpenChange={(next) => {
+          if (!next) void requestClose();
+        }}
+      >
+        <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col gap-4 overflow-hidden">
+          <DialogTitle>{result.rotated ? 'Your new pairing key' : 'Your pairing key'}</DialogTitle>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1">
+            <Alert color="warning" variant="soft">
+              <AlertContent>
+                <AlertTitle>You will only see this once</AlertTitle>
+                <AlertDescription>
+                  Copy it now and paste it into the bridge program on your computer. For safety we
+                  never show it again — if you lose it, just make a new one here.
+                  {result.rotated
+                    ? ' The bridge’s old key has already stopped working, so update it with this one.'
+                    : ''}
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+
+            {/* Monospaced, selectable, break-anywhere — this is a long string
+                someone will paste, and transcribing it by eye is the failure
+                mode. The copy button is the intended path. */}
+            <div className="flex min-w-0 items-center gap-1">
+              <code className="bg-base-200 min-w-0 flex-1 rounded px-2 py-1 font-mono text-sm break-all">
+                {result.apiKey}
+              </code>
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                shape="square"
+                aria-label="Copy the pairing key"
+                title="Copy the pairing key"
+                onClick={() => {
+                  void copy();
+                }}
+              >
+                {copied ? (
+                  <Check className="size-4" aria-hidden />
+                ) : (
+                  <Copy className="size-4" aria-hidden />
+                )}
+              </Button>
+            </div>
+
+            <label className="flex items-center gap-2">
+              <Checkbox
+                color="module"
+                checked={saved}
+                aria-label="I have saved this key"
+                onChange={(event) => {
+                  setSaved(event.target.checked);
+                }}
+              />
+              <Text as="span">I have copied this key somewhere safe</Text>
+            </label>
+          </div>
+
+          <DialogFooter>
+            <Button
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                void requestClose();
+              }}
+            >
+              Close
+            </Button>
+            <Button color="module" size="sm" disabled={!saved} onClick={onClose}>
+              Done
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PaneScope>
+  );
+}
+
 /* ── The editor ──────────────────────────────────────────────────────────── */
 
 function SourceEditor({
@@ -160,6 +326,14 @@ function SourceEditor({
   const update = useUpdateSource();
   const remove = useDeleteSource();
   const sync = useSyncSource();
+  const enroll = useEnrollSource();
+  const revoke = useRevokeAgent();
+  const viewer = useViewer();
+  const canPair = canPairBridge(viewer.data?.role);
+
+  // The plaintext bridge key, held only long enough to show it once. It lives in
+  // local state so a background refetch (which pairing triggers) never wipes it.
+  const [pairingKey, setPairingKey] = useState<EnrollResult | null>(null);
 
   const isNew = source === null;
   const initial = useMemo(() => draftFromSource(source), [source]);
@@ -388,6 +562,56 @@ function SourceEditor({
       onError: (error) => {
         toast.add({
           title: 'Could not remove that source',
+          description: sourceErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const pairBridge = () => {
+    if (!source) return;
+    enroll.mutate(source.id, {
+      onSuccess: (result) => {
+        // Straight into the copy-then-dismiss dialog — this is the only moment
+        // the key exists on screen.
+        setPairingKey(result);
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not pair the bridge',
+          description: sourceErrorMessage(
+            error,
+            'Nothing was changed. If this keeps happening, ask an account admin to pair it.'
+          ),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const unpairBridge = async () => {
+    if (!source) return;
+    const ok = await confirm({
+      title: `Unpair ${source.name}?`,
+      description:
+        'This switches off the key the bridge uses to sign in, so it stops sending stock straight away. The connection stays on your list — you can pair it again with a fresh key whenever you like.',
+      confirmLabel: 'Unpair it',
+      cancelLabel: 'Keep it paired',
+      color: 'danger',
+    });
+    if (!ok) return;
+    revoke.mutate(source.id, {
+      onSuccess: () => {
+        toast.add({
+          title: `${source.name} unpaired`,
+          description: 'Its bridge can no longer send stock until you pair it again.',
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not unpair that',
           description: sourceErrorMessage(error, 'Nothing was changed.'),
           type: 'error',
         });
@@ -852,20 +1076,77 @@ function SourceEditor({
             <FormSection title="How the bridge connects">
               <Text className="text-sm">
                 An on-site bridge is a small program you install on your own computers. It sends
-                stock to us whenever something changes — we never reach into your network. After you
-                add this, install the bridge and pair it using the code it shows you.
+                stock to us whenever something changes — we never reach into your network.
               </Text>
-              {source && !source.enrolledAt ? (
-                <Alert color="warning" variant="soft">
+
+              {source == null ? (
+                // Nothing to pair yet: the source has to exist first.
+                <Text className="text-sm">
+                  Once you add this, install the bridge and come back here to pair it. Pairing gives
+                  you a one-time key to paste into the bridge so it can sign in.
+                </Text>
+              ) : canPair ? (
+                <div className="flex flex-col gap-3">
+                  {source.enrolledAt ? (
+                    <Text className="text-sm">
+                      This bridge is paired
+                      {source.apiKeyPrefix ? ` with a key starting ${source.apiKeyPrefix}…` : ''}.
+                      If that key is ever lost, or you reinstall the bridge, make a new one — the
+                      old key stops working the moment you do.
+                    </Text>
+                  ) : (
+                    <Alert color="info" variant="soft">
+                      <AlertContent>
+                        <AlertTitle>Not paired yet</AlertTitle>
+                        <AlertDescription>
+                          Install the bridge on your computer, then pair it here. You will get a
+                          one-time key to paste into the bridge — until it is paired, no numbers
+                          will arrive.
+                        </AlertDescription>
+                      </AlertContent>
+                    </Alert>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      color="module"
+                      loading={enroll.isPending}
+                      onClick={pairBridge}
+                    >
+                      <KeyRound className="size-4" aria-hidden />
+                      {source.enrolledAt ? 'Generate a new pairing key' : 'Pair this bridge'}
+                    </Button>
+                    {source.enrolledAt ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="danger"
+                        loading={revoke.isPending}
+                        onClick={() => {
+                          void unpairBridge();
+                        }}
+                      >
+                        <Unlink className="size-4" aria-hidden />
+                        Unpair
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              ) : (
+                // A non-admin sees the state but not the controls — the server
+                // would refuse them anyway.
+                <Alert color="info" variant="soft">
                   <AlertContent>
-                    <AlertTitle>Not paired yet</AlertTitle>
+                    <AlertTitle>Pairing is an admin job</AlertTitle>
                     <AlertDescription>
-                      This source is waiting for its bridge. Install the bridge on your computer and
-                      pair it — until then no numbers will arrive.
+                      {source.enrolledAt
+                        ? 'This bridge is paired and sending stock. Replacing its key or unpairing it is done by an account admin or the owner — ask one of them if it needs changing.'
+                        : 'This bridge is not paired yet. Setting it up is done by an account admin or the owner — ask one of them to pair it and send you the key for the bridge.'}
                     </AlertDescription>
                   </AlertContent>
                 </Alert>
-              ) : null}
+              )}
             </FormSection>
           ) : null}
 
@@ -957,6 +1238,15 @@ function SourceEditor({
           ) : null}
         </div>
       </div>
+
+      {pairingKey ? (
+        <PairingKeyDialog
+          result={pairingKey}
+          onClose={() => {
+            setPairingKey(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -65,6 +65,11 @@ export const HOST_KEYS = {
    *  (`commerce.category` record type); the route passes the category handle + page via
    *  context. Read-only. */
   commerceCategoryDetail: 'commerce.category-detail',
+  /** The collection DETAIL — one collection's header + its members as a faceted, sortable,
+   *  paginated grid (the same browser the PLP + category detail use, scoped to this
+   *  collection). A per-record functional template (`commerce.collection` record type);
+   *  the route passes the collection handle + search params via context. Read-only. */
+  commerceCollectionDetail: 'commerce.collection-detail',
   /** The bookable-service DETAIL — one service's header + its LIVE time-picker (availability,
    *  slot selection, booking). A per-record functional template (`scheduling.service` record
    *  type); the route passes the service id via context. Interactive (client widget). */
@@ -210,6 +215,14 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     category: 'commerce',
     icon: 'grid',
     hint: 'One category: its header, subcategories, and the full product rollup beneath it. Pinned: style and surround it, but it can’t be removed.',
+    defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
+  },
+  {
+    key: HOST_KEYS.commerceCollectionDetail,
+    label: 'Collection detail',
+    category: 'commerce',
+    icon: 'gallery',
+    hint: 'One collection: its header and members as a filterable, sortable, paginated grid. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
   },
   {

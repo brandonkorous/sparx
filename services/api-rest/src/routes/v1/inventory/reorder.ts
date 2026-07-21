@@ -5,9 +5,16 @@
 // `requireInventoryModule` + `toInventoryContext` (standalone-usable, no commerce).
 //
 //   GET  /v1/inventory/reorder/suggestions   ?warehouse_id&take          (grouped, the board)
-//   GET  /v1/inventory/reorder/worklist       ?warehouse_id&supplier_id&q&sort&take&skip
+//   GET  /v1/inventory/reorder/worklist       ?warehouse_id&supplier_id&q&sort&take&skip&velocity_days
 //   GET  /v1/inventory/reorder/summary        (does ANY level even have a reorder rule?)
 //   POST /v1/inventory/reorder/draft          → draft PO(s) from selected lines
+//
+// The worklist row also carries a sales-velocity read (units sold per day over a
+// trailing window → days of cover → projected stock-out date). That is NOT
+// recomputed here: it comes straight from `@sparx/inventory`'s `reorderAnalysis`,
+// the one implementation shared with the reports route and the MCP supply tools,
+// merged onto each low row by (variant × warehouse). So "how long until this runs
+// out" and "how little is left" are two honest reads of the SAME low set.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -26,10 +33,14 @@ const WorklistQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   supplier_id: z.string().uuid().optional(),
   q: z.string().trim().min(1).max(200).optional(),
-  // Most urgent first (fewest available) or furthest below its reorder point.
-  sort: z.enum(['urgency', 'shortfall']).optional(),
+  // Least on the shelf first (urgency), furthest below its reorder point
+  // (shortfall), or soonest to run out at its current sales rate (cover).
+  sort: z.enum(['urgency', 'shortfall', 'cover']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  // Trailing window the sales velocity is measured over (days). Passed straight
+  // to the shared analysis; the service defaults it to 30 when absent.
+  velocity_days: z.coerce.number().int().min(1).max(365).optional(),
 });
 
 /**
@@ -62,6 +73,29 @@ interface ReorderWorklistRow {
   currency: string | null;
   unitCostCents: number | null;
   estimatedCostCents: number | null;
+  // ── Sales-velocity read, merged from `reorderAnalysis` (not recomputed) ──
+  // `null` means "we could not measure it for this row" (it fell outside the
+  // bounded analysis window), which is a different thing from a measured zero.
+  /** Average units sold per day over the trailing velocity window. 0 = measured
+   *  but nothing sold; null = not measured for this row. */
+  velocityPerDay: number | null;
+  /** How many days the available stock lasts at that rate. Null when nothing is
+   *  selling (no honest cover to give) or velocity was not measured. */
+  daysOfCover: number | null;
+  /** When it is projected to hit zero, at that rate. Null alongside daysOfCover. */
+  projectedStockoutAt: string | null;
+}
+
+/**
+ * The value a row sorts by under "runs out soonest": days of cover, but with two
+ * honest overrides. An already-out row (nothing available) is the most urgent
+ * whatever its sales rate, so it leads; a row with no cover figure — nothing
+ * selling, or velocity not measured — has no deadline to sort against, so it
+ * sinks to the bottom rather than pretending to be either urgent or safe.
+ */
+function coverSortValue(row: ReorderWorklistRow): number {
+  if (row.available <= 0) return -1;
+  return row.daysOfCover ?? Number.POSITIVE_INFINITY;
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
@@ -87,10 +121,40 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     const q = WorklistQuery.parse(request.query);
 
-    const suggestions = await inventoryService.listReorderSuggestions(toInventoryContext(request), {
+    const ctx = toInventoryContext(request);
+    const suggestions = await inventoryService.listReorderSuggestions(ctx, {
       ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
       take: 500,
     });
+
+    // The sales-velocity read over the SAME low set — one shared implementation,
+    // never re-derived here. Keyed by (variant × warehouse) so it lines straight
+    // up with the flattened worklist rows below. `take` is the analysis maximum;
+    // it orders by the least available first, so the rows most likely to be acted
+    // on are always the ones that carry a cover figure.
+    const analysis = await inventoryService.reorderAnalysis(ctx, {
+      ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
+      ...(q.velocity_days !== undefined ? { velocityDays: q.velocity_days } : {}),
+      take: 250,
+    });
+    const velocityByRow = new Map(
+      analysis.rows.map((r) => [
+        `${r.variantId}:${r.warehouseId}`,
+        {
+          velocityPerDay: r.velocityPerDay,
+          daysOfCover: r.daysOfCover,
+          projectedStockoutAt: r.projectedStockoutAt,
+        },
+      ])
+    );
+    // A row the analysis window did not reach keeps `null` velocity — an honest
+    // "not measured", distinct from a measured zero (nothing selling).
+    const velocityFor = (variantId: string, warehouseId: string) =>
+      velocityByRow.get(`${variantId}:${warehouseId}`) ?? {
+        velocityPerDay: null,
+        daysOfCover: null,
+        projectedStockoutAt: null,
+      };
 
     const rows: ReorderWorklistRow[] = [];
     for (const group of suggestions.groups) {
@@ -116,6 +180,7 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
           currency: group.currency,
           unitCostCents: line.unitCostCents,
           estimatedCostCents: line.estimatedCostCents,
+          ...velocityFor(line.variantId, line.warehouseId),
         });
       }
     }
@@ -141,6 +206,7 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
         currency: null,
         unitCostCents: null,
         estimatedCostCents: null,
+        ...velocityFor(item.variantId, item.warehouseId),
       });
     }
 
@@ -159,6 +225,14 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
       if (sort === 'shortfall') {
         const gapDelta = b.reorderPoint - b.available - (a.reorderPoint - a.available);
         return gapDelta !== 0 ? gapDelta : a.available - b.available;
+      }
+      if (sort === 'cover') {
+        // Soonest to run out first. Already-out rows lead regardless of rate;
+        // rows with no cover figure (nothing selling, or not measured) have no
+        // deadline, so they fall to the end. Ties break on the least available.
+        const ca = coverSortValue(a);
+        const cb = coverSortValue(b);
+        return ca !== cb ? ca - cb : a.available - b.available;
       }
       // Urgency: the least on the shelf first; ties break on the bigger shortfall
       // so the order is deterministic across pages.

@@ -190,6 +190,51 @@ export function useSyncSource() {
   });
 }
 
+/* ── Pairing an on-site bridge ────────────────────────────────────────────
+ *
+ * An "On-site bridge" (type `agent`) is a small program the business installs
+ * on their own computers. It signs in with a key of its own that ONLY it holds.
+ * Pairing mints that key on the server; the full key is handed back exactly ONCE
+ * and never stored anywhere we can show again. Pairing a second time ROTATES it —
+ * a fresh key is issued and the old one stops working — which is how you recover
+ * from a key that leaked or a bridge that was reinstalled. Both are admin-only on
+ * the server; a non-admin gets a 403 we surface as a plain message.
+ */
+
+/** What the server hands back from a pair/rotate. `apiKey` is the plaintext,
+ *  shown once; `prefix` is the visible start that is safe to keep on screen. */
+export interface EnrollResult {
+  sourceId: string;
+  apiKey: string;
+  prefix: string;
+  /** True when this replaced an existing key rather than pairing for the first
+   *  time — the old key stopped working the moment this one was issued. */
+  rotated: boolean;
+}
+
+export function useEnrollSource() {
+  const invalidate = useInvalidateSources();
+  return useMutation({
+    mutationFn: (id: string) => api.post<EnrollResult>(`/v1/inventory/sources/${id}/enroll`),
+    onSuccess: (result) => {
+      // The source now carries a new prefix / enrolledAt, and its row in the
+      // list changes state, so refresh both.
+      invalidate(result.sourceId);
+    },
+  });
+}
+
+export function useRevokeAgent() {
+  const invalidate = useInvalidateSources();
+  return useMutation({
+    mutationFn: (id: string) =>
+      api.post<{ sourceId: string; unpaired: boolean }>(`/v1/inventory/sources/${id}/revoke-agent`),
+    onSuccess: (result) => {
+      invalidate(result.sourceId);
+    },
+  });
+}
+
 /* ── Saying what a source is, in plain words ─────────────────────────────── */
 
 export interface SourceState {

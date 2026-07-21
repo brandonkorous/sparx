@@ -329,6 +329,12 @@ export interface ProductListFilters {
   maxPriceCents?: number;
   inStock?: boolean;
   sort?: ProductSort;
+  /** Scope the listing to ONE collection by handle (flat membership). Backs the
+   *  collection detail page's faceted grid. */
+  collection?: string;
+  /** Scope the listing to ONE category by handle — a browse-node rollup (self +
+   *  descendants). Backs the category detail page's faceted grid. */
+  category?: string;
   page?: number;
   perPage?: number;
 }
@@ -352,6 +358,8 @@ export async function listProducts(
     maxPriceCents: filters.maxPriceCents,
     inStock: filters.inStock === undefined ? undefined : String(filters.inStock),
     sort: filters.sort,
+    collection: filters.collection,
+    category: filters.category,
     page: filters.page,
     perPage: filters.perPage,
   };

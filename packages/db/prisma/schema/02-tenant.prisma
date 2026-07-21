@@ -264,15 +264,15 @@ model Tenant {
   dunningAttempts    DunningAttempt[]
 
   // Commerce module — reviews + Q&A + wishlists
-  productReviews      ProductReview[]
-  reviewMedia         ReviewMedia[]
-  reviewHelpfulVotes  ReviewHelpfulVote[]
-  reviewModerationLog ReviewModerationLog[]
-  productQuestions    ProductQuestion[]
-  productAnswers      ProductAnswer[]
-  wishlists           Wishlist[]
+  productReviews       ProductReview[]
+  reviewMedia          ReviewMedia[]
+  reviewHelpfulVotes   ReviewHelpfulVote[]
+  reviewModerationLog  ReviewModerationLog[]
+  productQuestions     ProductQuestion[]
+  productAnswers       ProductAnswer[]
+  wishlists            Wishlist[]
   productReviewRollups ProductReviewRollup[]
-  wishlistItems       WishlistItem[]
+  wishlistItems        WishlistItem[]
 
   // Commerce module — returns
   returnRequests    ReturnRequest[]

@@ -3,13 +3,14 @@
 // STOCK SOURCES — the connections that keep your numbers in step with something
 // outside sparx (a published spreadsheet, another system, an on-site bridge).
 //
-// ── Cards, not a table ───────────────────────────────────────────────────
+// ── Why this one IS a table ──────────────────────────────────────────────
 //
-// A business has a handful of these, and each is a one-line thing — a name, what
-// kind it is, whether it is working, when it last ran. A table would invent
-// columns to justify itself; a card per source keeps the identity as the content
-// and the state as one badge. Each card opens its setup pane; "Sync now" sits
-// beside it as its own control rather than being swallowed by the row.
+// A source is a one-line thing, but a business scans DOWN a source list asking
+// the same three questions of each — what kind is it, when did it last bring
+// numbers in, is it healthy. A table lets that scan happen down a column, and
+// discloses those columns with @container so a pane docked narrow still shows
+// the two that always matter: what it is called and whether it is working. The
+// rest (kind, last updated, health) shed as the pane gets tight.
 //
 // ── Search and status go to the server ───────────────────────────────────
 //
@@ -20,24 +21,27 @@ import { useState } from 'react';
 import {
   Badge,
   Button,
+  Card,
   EmptyState,
   NativeSelect,
   SearchInput,
+  Table,
+  Text,
   Timestamp,
   ToolbarSeparator,
-  useToast,
 } from '@wizeworks/silicaui-react';
-import { Cable, FileSpreadsheet, Link2, Plus, RefreshCw, Server } from 'lucide-react';
+import { Cable, FileSpreadsheet, Link2, Plus, Server } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  sourceErrorMessage,
+  agentOnline,
+  relativeTime,
   sourceState,
   sourceTypeLabel,
+  syncIntervalLabel,
   useInventorySources,
-  useSyncSource,
   type InventorySource,
   type SourceStatus,
   type SourceType,
@@ -55,91 +59,19 @@ function TypeIcon({ type }: { type: SourceType }) {
   return <Icon className="text-module size-5 shrink-0" aria-hidden />;
 }
 
-function SourceCard({
-  source,
-  onOpen,
-}: {
-  source: InventorySource;
-  onOpen: (source: InventorySource, event: { shiftKey: boolean; altKey: boolean }) => void;
-}) {
-  const toast = useToast();
-  const sync = useSyncSource();
-  const state = sourceState(source);
-
-  const runSync = () => {
-    sync.mutate(source.id, {
-      onSuccess: () => {
-        toast.add({
-          title: `${source.name} is syncing`,
-          description: 'We have started pulling the latest numbers. They will land shortly.',
-          type: 'success',
-        });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not start a sync',
-          description: sourceErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
-  };
-
-  return (
-    <li className="card bg-base-100 flex flex-wrap items-center gap-3 p-4">
-      {/* The row is a real button; "Sync now" is its sibling, never nested — an
-          action inside a button is invalid and unreachable by keyboard. */}
-      <button
-        type="button"
-        className="flex min-w-0 flex-1 items-center gap-3 text-left"
-        onClick={(event) => {
-          onOpen(source, event);
-        }}
-      >
-        <TypeIcon type={source.type} />
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate text-base font-semibold">{source.name}</span>
-          <span className="text-sm">
-            {sourceTypeLabel(source.type)}
-            {' · '}
-            {source.lastSyncAt ? (
-              <>
-                last updated <Timestamp value={source.lastSyncAt} format="relative" />
-              </>
-            ) : (
-              'not run yet'
-            )}
-          </span>
-        </span>
-      </button>
-
-      <Badge color={state.tone} variant="soft" size="sm">
-        {state.label}
-      </Badge>
-
-      {/* An on-site bridge pushes to us — there is nothing for us to pull on
-          demand, so it gets no "Sync now". */}
-      {source.type === 'agent' ? null : (
-        <Button
-          size="sm"
-          variant="outline"
-          color="neutral"
-          className="shrink-0"
-          loading={sync.isPending}
-          disabled={source.status === 'paused'}
-          title={
-            source.status === 'paused'
-              ? 'This source is paused — turn it back on to sync'
-              : 'Pull the latest numbers now'
-          }
-          onClick={runSync}
-        >
-          <RefreshCw className="size-4" aria-hidden />
-          <span className="hidden @sm:inline">Sync now</span>
-        </Button>
-      )}
-    </li>
-  );
+/**
+ * The "how is it doing" line — a plain-word detail that goes BEYOND the status
+ * badge. For an on-site bridge that means when it last reached us (the thing
+ * that quietly drifts stale); for a feed we pull, it is the schedule we pull on.
+ */
+function healthLine(source: InventorySource): string {
+  if (source.type === 'agent') {
+    if (!source.enrolledAt) return 'Not paired yet';
+    return agentOnline(source.agentLastSeenAt)
+      ? `Reached us ${relativeTime(source.agentLastSeenAt)}`
+      : `Silent — last seen ${relativeTime(source.agentLastSeenAt)}`;
+  }
+  return syncIntervalLabel(source.syncIntervalSec);
 }
 
 const STATUS_OPTIONS: { value: SourceStatus | ''; label: string }[] = [
@@ -182,6 +114,8 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const body = () => {
+    // A failed load REPLACES the list. Rendering an empty grid under a live
+    // filter invites someone to conclude they have no sources.
     if (isError) {
       return (
         <EmptyState
@@ -223,11 +157,84 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     return (
-      <ul className="flex flex-col gap-2">
-        {rows.map((source) => (
-          <SourceCard key={source.id} source={source} onOpen={openSource} />
-        ))}
-      </ul>
+      <Card className="overflow-hidden">
+        <Table size="sm" hover>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th className="hidden @lg:table-cell">Kind</th>
+              <th className="hidden whitespace-nowrap @xl:table-cell">Last updated</th>
+              <th className="hidden @3xl:table-cell">How it is doing</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((source) => {
+              const state = sourceState(source);
+              return (
+                <tr
+                  key={source.id}
+                  className="cursor-pointer"
+                  tabIndex={0}
+                  role="button"
+                  onClick={(event) => {
+                    openSource(source, event);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    openSource(source, event);
+                  }}
+                >
+                  {/* `max-w-0 w-full` is load-bearing: a table cell sizes to its
+                      content, so a long source name would push the row wider and
+                      shove the state badge — the one column that must never go —
+                      off the right edge. Zeroing the max width makes THIS the
+                      cell that gives, which is what lets the truncation bite. */}
+                  <td className="w-full max-w-0">
+                    <span className="flex min-w-0 items-center gap-3">
+                      <TypeIcon type={source.type} />
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-base font-medium">{source.name}</span>
+                        {/* Below @lg the Kind and Last-updated columns are gone,
+                            so their gist comes back here — a row that reads as a
+                            bare name tells you nothing about the connection. */}
+                        <span className="truncate text-sm @lg:hidden">
+                          {sourceTypeLabel(source.type)}
+                          {' · '}
+                          {source.lastSyncAt ? (
+                            <>
+                              updated <Timestamp value={source.lastSyncAt} format="relative" />
+                            </>
+                          ) : (
+                            'not run yet'
+                          )}
+                        </span>
+                      </span>
+                    </span>
+                  </td>
+                  <td className="hidden max-w-40 truncate @lg:table-cell">
+                    {sourceTypeLabel(source.type)}
+                  </td>
+                  <td className="hidden whitespace-nowrap @xl:table-cell">
+                    {source.lastSyncAt ? (
+                      <Timestamp value={source.lastSyncAt} format="relative" />
+                    ) : (
+                      'Not run yet'
+                    )}
+                  </td>
+                  <td className="hidden max-w-56 truncate @3xl:table-cell">{healthLine(source)}</td>
+                  <td>
+                    <Badge color={state.tone} variant="soft" size="sm">
+                      {state.label}
+                    </Badge>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Card>
     );
   };
 
@@ -304,6 +311,11 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
+        {rows.length > 0 ? (
+          <Text className="hidden px-1 pb-1 text-sm @xl:block">
+            Click to open · Shift-click alongside · Alt-click new window
+          </Text>
+        ) : null}
       </div>
     </div>
   );

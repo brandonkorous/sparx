@@ -53,8 +53,8 @@ import {
   UpdateAutomationInput,
 } from '@sparx/automation-schemas';
 import { ok } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
-import { reachableSiteIds } from '../../../lib/property.js';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
+import { reachableSiteIds, resolveListScope } from '../../../lib/property.js';
 import { notFound } from '@sparx/api-core/errors';
 import type { StaffRole } from '@sparx/api-core/auth';
 
@@ -79,6 +79,12 @@ const RunsTimeseriesQuery = z.object({
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
   grain: z.enum(['day', 'week', 'month']).optional(),
+  // docs/131 §6: which business's run activity. A site id → that site's runs
+  // PLUS the shared tenant-wide (null-property) runs every site is entitled to
+  // see (the shared-null read); `all` → the tenant-wide total; absent → the
+  // active site (x-sparx-property-id). Resolved by resolveListScope, which
+  // returns undefined for the all-sites total.
+  property: z.string().min(1).max(63).optional(),
 });
 
 function resolveRange(input: { from?: string; to?: string }): { from: string; to: string } {
@@ -122,7 +128,18 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'viewer');
     const q = RunsTimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
-    return ok(await runsTimeseries(ctx, { range, ...(q.grain ? { grain: q.grain } : {}) }));
+    const propertyId = await resolveListScope(
+      requireAuth(request),
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
+    return ok(
+      await runsTimeseries(ctx, {
+        range,
+        ...(q.grain ? { grain: q.grain } : {}),
+        ...(propertyId ? { propertyId } : {}),
+      })
+    );
   });
 
   // Every automation + its trailing-window run count / success rate (docs/97 §5)

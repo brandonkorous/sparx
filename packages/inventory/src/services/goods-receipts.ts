@@ -4,6 +4,14 @@
 // PO line's received count, and optionally mints/extends a LotBatch. The PO then
 // advances to `partial` or `received`. There is no editable draft receipt — a
 // correction is a later adjustment/count (P4). Standalone-usable.
+//
+// Damaged-on-arrival units (a line's optional `quantityDamaged`) are booked as a
+// PAIR of ledger movements on the same atomic post: a `receive` (+qty at the same
+// landed cost, so arrival and cost basis are truthfully recorded) immediately
+// followed by a `damage` (−qty) write-off. Net on-hand for the damaged units is 0,
+// but both facts and the valued loss live in the ledger. Damaged units are NOT
+// credited against the PO line (the supplier still owes them, so a partly-damaged
+// delivery keeps the PO open for the shortfall) and never join a lot.
 
 import { CreateGoodsReceiptInput } from '@sparx/commerce-schemas';
 import { Prisma, withTenant } from '@sparx/db';
@@ -138,9 +146,11 @@ export async function createGoodsReceipt(
   }
   if (!created) throw new InventoryValidationError('Could not allocate a goods-receipt number');
 
-  // Threshold events (inStock / low / depleted) fire post-commit, per movement.
+  // Threshold events (inStock / low / depleted) fire post-commit, per movement —
+  // each carries its own reason (`receive` for good + damaged arrivals, `damage`
+  // for the write-off), so the event stream mirrors the ledger truthfully.
   for (const e of created.events) {
-    await emitStockEvents(ctx, e.variantId, e.warehouseId, e.result, e.delta, 'receive');
+    await emitStockEvents(ctx, e.variantId, e.warehouseId, e.result, e.delta, e.reason);
   }
   return getGoodsReceipt(ctx, created.receiptId);
 }
@@ -150,6 +160,7 @@ interface ReceiptEvent {
   warehouseId: string;
   result: MovementResult;
   delta: number;
+  reason: string;
 }
 
 async function createOnce(
@@ -200,12 +211,12 @@ async function createOnce(
     for (const lineInput of input.lines) {
       const poLine = byId.get(lineInput.purchaseOrderLineId)!;
       events.push(
-        await applyReceiptLine(tx, ctx, {
+        ...(await applyReceiptLine(tx, ctx, {
           receiptId: receipt.id,
           warehouseId: po.warehouseId,
           poLine,
           input: lineInput,
-        })
+        }))
       );
     }
 
@@ -219,7 +230,9 @@ async function createOnce(
       action: 'inventory.goods_receipt.created',
       entityType: 'GoodsReceipt',
       entityId: receipt.id,
-      diff: { after: { number: receipt.number, purchaseOrderId: po.id, lineCount: events.length } },
+      diff: {
+        after: { number: receipt.number, purchaseOrderId: po.id, lineCount: input.lines.length },
+      },
     });
 
     return { receiptId: receipt.id, events };
@@ -233,7 +246,9 @@ interface PoLineLite {
 }
 
 /** Post one received line: ledger movement (moving-average), receipt-line row,
- *  PO-line received bump, optional lot. Returns the post-commit event tuple. */
+ *  PO-line received bump, optional lot — plus, for any damaged-on-arrival units,
+ *  the receive/damage write-off pair. Returns the post-commit event(s): one for
+ *  the good arrival, and (when damaged > 0) two more for the damaged pair. */
 async function applyReceiptLine(
   tx: TxClient,
   ctx: ServiceContext,
@@ -244,14 +259,19 @@ async function applyReceiptLine(
     input: {
       purchaseOrderLineId: string;
       quantity: number;
+      quantityDamaged?: number;
       unitCostCents?: number;
       lotNumber?: string;
     };
   }
-): Promise<ReceiptEvent> {
+): Promise<ReceiptEvent[]> {
   const { receiptId, warehouseId, poLine, input } = params;
   const unitCostCents = input.unitCostCents ?? poLine.unitCostCents;
+  const damaged = input.quantityDamaged ?? 0;
+  const actorType = resolveActorType(ctx);
 
+  // The receipt line records the GOOD units only — `quantityReceived` is what
+  // became sellable stock. Damaged units are ledger-only (no receipt-line column).
   const line = await tx.goodsReceiptLine.create({
     data: {
       tenantId: ctx.tenantId,
@@ -274,7 +294,7 @@ async function applyReceiptLine(
     referenceType: 'GoodsReceipt',
     referenceId: receiptId,
     unitCostCents,
-    actorType: resolveActorType(ctx),
+    actorType,
     actorId: ctx.userId ?? null,
     idempotencyKey: `goods-receipt:${line.id}`,
   });
@@ -285,11 +305,14 @@ async function applyReceiptLine(
     });
   }
 
+  // Only GOOD units are credited against the PO line — damaged units leave the
+  // supplier owing the shortfall, so the PO stays open for them.
   await tx.purchaseOrderLine.update({
     where: { id: poLine.id },
     data: { quantityReceived: { increment: input.quantity } },
   });
 
+  // A lot traces sellable stock, so it accrues the good units only.
   if (input.lotNumber) {
     await upsertLot(
       tx,
@@ -301,7 +324,61 @@ async function applyReceiptLine(
     );
   }
 
-  return { variantId: poLine.variantId, warehouseId, result, delta: input.quantity };
+  const events: ReceiptEvent[] = [
+    { variantId: poLine.variantId, warehouseId, result, delta: input.quantity, reason: 'receive' },
+  ];
+
+  // Damaged-on-arrival: two ledger facts in the same transaction. First the units
+  // truthfully arrive (`receive` + at the same landed cost, so the moving-average
+  // basis is recorded), then they are immediately written off (`damage` −). Net
+  // on-hand change is 0; the valued loss (qty × landed cost) lives on the damage
+  // row. Neither movement touches the PO line's received count or a lot.
+  if (damaged > 0) {
+    const damagedIn = await applyMovement(tx, {
+      tenantId: ctx.tenantId,
+      variantId: poLine.variantId,
+      warehouseId,
+      delta: damaged,
+      reason: 'receive',
+      referenceType: 'GoodsReceipt',
+      referenceId: receiptId,
+      unitCostCents,
+      actorType,
+      actorId: ctx.userId ?? null,
+      idempotencyKey: `goods-receipt:${line.id}:damaged-in`,
+    });
+    const writeOff = await applyMovement(tx, {
+      tenantId: ctx.tenantId,
+      variantId: poLine.variantId,
+      warehouseId,
+      delta: -damaged,
+      reason: 'damage',
+      referenceType: 'GoodsReceipt',
+      referenceId: receiptId,
+      unitCostCents,
+      actorType,
+      actorId: ctx.userId ?? null,
+      idempotencyKey: `goods-receipt:${line.id}:damaged-writeoff`,
+    });
+    events.push(
+      {
+        variantId: poLine.variantId,
+        warehouseId,
+        result: damagedIn,
+        delta: damaged,
+        reason: 'receive',
+      },
+      {
+        variantId: poLine.variantId,
+        warehouseId,
+        result: writeOff,
+        delta: -damaged,
+        reason: 'damage',
+      }
+    );
+  }
+
+  return events;
 }
 
 /** Mint a new lot or add to an existing one (lots accumulate across receipts). */

@@ -10,7 +10,7 @@
 // commerce's revenueTimeseries (the reference implementation); invoicing differs
 // only in deriving each day from two source tables instead of one.
 
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma, withTenant, type TxClient } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 
@@ -135,26 +135,45 @@ interface RawBilledDayRow {
   billed: unknown;
 }
 
-// One pass per source table over the window, merged by UTC day. Payments are
-// bucketed by `received_at` (net cash = deposits + payments − refunds); billed
-// documents by `finalized_at`. RLS scopes both reads to the tenant. Shared by
-// the live overlay/cold-start in collectedTimeseries and by the nightly
-// reconcile.
+// Per-property variants (docs/131 §6): the reconcile pass carries the site each
+// row belongs to. Non-nullable — the site is always resolvable (see
+// aggregateCollectedByDayPerProperty).
+interface RawPaymentDayPropRow extends RawPaymentDayRow {
+  property_id: string;
+}
+
+interface RawBilledDayPropRow extends RawBilledDayRow {
+  property_id: string;
+}
+
+// One pass per source table over the window, merged by UTC day, SCOPED for a
+// read (docs/131 §6). Payments are bucketed by `received_at` (net cash =
+// deposits + payments − refunds); billed documents by `finalized_at`.
+// `propertyId` undefined = every site (the tenant-wide total); a value = only
+// that site's cashflow. The site is authoritative on `billing_documents`:
+// `billing_document_payments.property_id` is nullable and untrusted, so each
+// payment is JOINed to its parent document (`document_id` → `billing_documents`)
+// and filtered/grouped by the DOCUMENT's non-null `property_id`. RLS scopes both
+// reads to the tenant. Shared by the live overlay/cold-start in
+// collectedTimeseries.
 async function aggregateCollectedByDay(
   tx: TxClient,
   from: Date,
-  toExclusive: Date
+  toExclusive: Date,
+  propertyId?: string
 ): Promise<DayRow[]> {
   const [payments, billed] = await Promise.all([
     tx.$queryRaw<RawPaymentDayRow[]>`
       SELECT
-        (received_at AT TIME ZONE 'UTC')::date              AS bucket,
-        COUNT(*) FILTER (WHERE kind <> 'refund')::int       AS payments_count,
-        COALESCE(SUM(amount) FILTER (WHERE kind <> 'refund'), 0) AS gross_collected,
-        COALESCE(SUM(amount) FILTER (WHERE kind = 'refund'), 0)  AS refunded
-      FROM billing_document_payments
-      WHERE received_at >= ${from}
-        AND received_at < ${toExclusive}
+        (p.received_at AT TIME ZONE 'UTC')::date              AS bucket,
+        COUNT(*) FILTER (WHERE p.kind <> 'refund')::int       AS payments_count,
+        COALESCE(SUM(p.amount) FILTER (WHERE p.kind <> 'refund'), 0) AS gross_collected,
+        COALESCE(SUM(p.amount) FILTER (WHERE p.kind = 'refund'), 0)  AS refunded
+      FROM billing_document_payments p
+      JOIN billing_documents d ON d.id = p.document_id
+      WHERE p.received_at >= ${from}
+        AND p.received_at < ${toExclusive}
+        ${propertyId ? Prisma.sql`AND d.property_id = ${propertyId}::uuid` : Prisma.empty}
       GROUP BY 1
     `,
     tx.$queryRaw<RawBilledDayRow[]>`
@@ -168,6 +187,7 @@ async function aggregateCollectedByDay(
         AND finalized_at IS NOT NULL
         AND finalized_at >= ${from}
         AND finalized_at < ${toExclusive}
+        ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
       GROUP BY 1
     `,
   ]);
@@ -192,6 +212,80 @@ async function aggregateCollectedByDay(
   }
   for (const b of billed) {
     const row = rowFor(b.bucket);
+    row.invoicesCount = Number(b.invoices_count ?? 0);
+    row.billedCents = rawToCents(b.billed);
+  }
+
+  return [...byKey.values()].sort((a, b) => (a.key < b.key ? -1 : 1));
+}
+
+// The per-PROPERTY pass the nightly reconcile writes (docs/131 §6): one row per
+// (site, day) across BOTH source series, merged by (property, day). Unlike the
+// commerce revenue rollup, `RollupInvoicingDailyCollected.propertyId` is NON-NULL
+// — the site is ALWAYS resolvable because `billing_documents.property_id` is not
+// null, so there is no unattributed bucket here. Payments inherit the site from
+// their parent document (JOIN on `document_id`, never the payment's own nullable
+// `property_id`); billed documents group by their own `property_id`. GROUP BY the
+// site so every business's daily figures are stored separately and a per-site
+// read is an indexed lookup, not a re-scan.
+async function aggregateCollectedByDayPerProperty(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<(DayRow & { propertyId: string })[]> {
+  const [payments, billed] = await Promise.all([
+    tx.$queryRaw<RawPaymentDayPropRow[]>`
+      SELECT
+        d.property_id                                        AS property_id,
+        (p.received_at AT TIME ZONE 'UTC')::date              AS bucket,
+        COUNT(*) FILTER (WHERE p.kind <> 'refund')::int       AS payments_count,
+        COALESCE(SUM(p.amount) FILTER (WHERE p.kind <> 'refund'), 0) AS gross_collected,
+        COALESCE(SUM(p.amount) FILTER (WHERE p.kind = 'refund'), 0)  AS refunded
+      FROM billing_document_payments p
+      JOIN billing_documents d ON d.id = p.document_id
+      WHERE p.received_at >= ${from}
+        AND p.received_at < ${toExclusive}
+      GROUP BY d.property_id, 2
+    `,
+    tx.$queryRaw<RawBilledDayPropRow[]>`
+      SELECT
+        property_id                             AS property_id,
+        (finalized_at AT TIME ZONE 'UTC')::date AS bucket,
+        COUNT(*)::int                           AS invoices_count,
+        COALESCE(SUM(total), 0)                 AS billed
+      FROM billing_documents
+      WHERE deleted_at IS NULL
+        AND voided_at IS NULL
+        AND finalized_at IS NOT NULL
+        AND finalized_at >= ${from}
+        AND finalized_at < ${toExclusive}
+      GROUP BY property_id, 2
+    `,
+  ]);
+
+  const byKey = new Map<string, DayRow & { propertyId: string }>();
+  const rowFor = (propertyId: string, bucket: Date): DayRow & { propertyId: string } => {
+    const date = startOfUtcDay(new Date(bucket));
+    const dayKey = utcDateKey(date);
+    // (property, day) composite key — the space joiner can never appear in a UUID
+    // or a `YYYY-MM-DD` string, so it cannot alias two distinct pairs.
+    const mapKey = `${propertyId} ${dayKey}`;
+    let row = byKey.get(mapKey);
+    if (!row) {
+      row = { key: dayKey, date, propertyId, ...ZERO_MEASURES };
+      byKey.set(mapKey, row);
+    }
+    return row;
+  };
+
+  for (const p of payments) {
+    const row = rowFor(p.property_id, p.bucket);
+    row.paymentsCount = Number(p.payments_count ?? 0);
+    row.refundedCents = rawToCents(p.refunded);
+    row.collectedCents = rawToCents(p.gross_collected) - row.refundedCents;
+  }
+  for (const b of billed) {
+    const row = rowFor(b.property_id, b.bucket);
     row.invoicesCount = Number(b.invoices_count ?? 0);
     row.billedCents = rawToCents(b.billed);
   }
@@ -230,11 +324,32 @@ function foldByGrain(
   return [...map.values()].sort((a, b) => (a.bucket < b.bucket ? -1 : 1));
 }
 
+// Sum a day's measures into the bucket map. Accumulates rather than overwrites
+// because the all-sites read (docs/131 §6) now finds MULTIPLE rollup rows per
+// bucket — one per site — that must add up to the tenant total. The closed and
+// open windows stay disjoint, so this never double-counts across them.
+function addCollectedMeasures(byKey: Map<string, DayMeasures>, key: string, m: DayMeasures): void {
+  const cur = byKey.get(key);
+  byKey.set(
+    key,
+    cur
+      ? {
+          paymentsCount: cur.paymentsCount + m.paymentsCount,
+          invoicesCount: cur.invoicesCount + m.invoicesCount,
+          collectedCents: cur.collectedCents + m.collectedCents,
+          refundedCents: cur.refundedCents + m.refundedCents,
+          billedCents: cur.billedCents + m.billedCents,
+        }
+      : { ...m }
+  );
+}
+
 export async function collectedTimeseries(
   ctx: ServiceContext,
-  input: { range: DateRange; grain?: RollupGrain }
+  input: { range: DateRange; grain?: RollupGrain; propertyId?: string }
 ): Promise<CollectedTimeseries> {
   const grain = input.grain ?? 'day';
+  const propertyId = input.propertyId;
   const from = startOfUtcDay(new Date(input.range.from));
   const to = startOfUtcDay(new Date(input.range.to));
   // First day served live (recomputed on every read). Everything before it is a
@@ -249,14 +364,19 @@ export async function collectedTimeseries(
     // 1) Closed days from the rollup. Cold-start fallback: if the rollup hasn't
     //    been reconciled yet, aggregate the closed window live so a fresh deploy
     //    still serves real history immediately (cheap at Phase-1 volumes).
+    //    Per-site (docs/131 §6): filter to the one site, or read every site row
+    //    and let addCollectedMeasures sum them back to the tenant total.
     if (closedToExclusive.getTime() > from.getTime()) {
       const rollup = await tx.rollupInvoicingDailyCollected.findMany({
-        where: { bucket: { gte: from, lt: closedToExclusive } },
+        where: {
+          bucket: { gte: from, lt: closedToExclusive },
+          ...(propertyId ? { propertyId } : {}),
+        },
         orderBy: { bucket: 'asc' },
       });
       if (rollup.length > 0) {
         for (const r of rollup) {
-          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+          addCollectedMeasures(byKey, utcDateKey(startOfUtcDay(new Date(r.bucket))), {
             paymentsCount: r.paymentsCount,
             invoicesCount: r.invoicesCount,
             collectedCents: Number(r.collectedCents),
@@ -265,8 +385,8 @@ export async function collectedTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateCollectedByDay(tx, from, closedToExclusive)) {
-          byKey.set(d.key, d);
+        for (const d of await aggregateCollectedByDay(tx, from, closedToExclusive, propertyId)) {
+          addCollectedMeasures(byKey, d.key, d);
         }
       }
     }
@@ -274,8 +394,8 @@ export async function collectedTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateCollectedByDay(tx, overlayFrom, toExclusive)) {
-        byKey.set(d.key, d);
+      for (const d of await aggregateCollectedByDay(tx, overlayFrom, toExclusive, propertyId)) {
+        addCollectedMeasures(byKey, d.key, d);
       }
     }
 
@@ -321,13 +441,18 @@ export async function reconcileCollectedRollup(
   const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
-    const rows = await aggregateCollectedByDay(tx, windowStart, toExclusive);
+    // Per (property, day) rows (docs/131 §6). Delete-then-insert the whole window
+    // for the tenant regardless of property — every site's rows are rewritten in
+    // one pass, so a late refund/void on any site self-heals and a site with no
+    // activity that day simply has no row.
+    const rows = await aggregateCollectedByDayPerProperty(tx, windowStart, toExclusive);
 
     await tx.rollupInvoicingDailyCollected.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
       await tx.rollupInvoicingDailyCollected.createMany({
         data: rows.map((r) => ({
           tenantId: ctx.tenantId,
+          propertyId: r.propertyId,
           bucket: r.date,
           paymentsCount: r.paymentsCount,
           invoicesCount: r.invoicesCount,

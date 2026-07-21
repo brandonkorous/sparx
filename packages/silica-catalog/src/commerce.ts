@@ -254,43 +254,18 @@ export function productDetailPage(): Node {
   });
 }
 
-/** The full collection-detail PAGE body — a header (the collection's name +
- *  description) above a grid of the collection's OWN products. Self-scoping: the
- *  root repeats over the injected `collection` object (a collection-of-one), so the
- *  header binds `name`/`description` scope-relative to the collection, and the grid's
- *  inner repeat walks the collection's `products` list (a scope-relative field the
- *  storefront pre-fetches onto the record) — each card then scopes to its product and
- *  links to that product's PDP. No whole-catalog `commerce.product` source is bound,
- *  so only THIS collection's products render. */
+/** The full collection-detail PAGE body (docs/122 + docs/127 §8) — the `commerce.collection`
+ *  record template's default: an editable shell wrapping the PINNED `commerce.collection-detail`
+ *  core. Like the category detail, the whole experience (header + a FACETED, sortable,
+ *  paginated grid of the collection's members) is server-computed from the handle + search
+ *  params, so it is one self-contained functional core the tenant surrounds/restyles but
+ *  can't delete. This REPLACED a bind-based flat grid that could only ever show one
+ *  truncated page with no filters — the core reuses the PLP's `ScopedProductBrowser`
+ *  scoped to the collection, so a large collection is genuinely shoppable. No shell
+ *  heading — the core renders its own header. The route mounts `<CollectionDetail>` at the
+ *  host node with the collection handle. */
 export function collectionDetailPage(): Node {
-  return repeat(
-    el('div', 'flex flex-col', {
-      children: [
-        el('section', 'bg-base-100 px-6 py-12 text-center', {
-          children: [
-            bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'name'),
-            bind(
-              el('p', 'mx-auto mt-3 max-w-2xl text-lg text-base-content', {
-                text: 'Collection description.',
-              }),
-              'description'
-            ),
-          ],
-        }),
-        el('section', 'bg-base-100 @container px-6 pb-12', {
-          children: [
-            repeat(
-              el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4', {
-                children: [productCardNode()],
-              }),
-              'products'
-            ),
-          ],
-        }),
-      ],
-    }),
-    'collection'
-  );
+  return functionalShell(HOST_KEYS.commerceCollectionDetail);
 }
 
 /** The full category-detail PAGE body (docs/122) — the `commerce.category` record

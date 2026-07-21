@@ -23,9 +23,9 @@ model RollupCommerceDailyRevenue {
   // ProductReviewRollup. property_id null = the "unattributed" bucket: revenue whose
   // order outlived its site (Order.property_id is SetNull). Per-site reads exclude
   // it; the all-sites total sums every row including it.
-  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String  @map("tenant_id") @db.Uuid
-  propertyId String? @map("property_id") @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
   bucket     DateTime @db.Date
 
@@ -61,15 +61,15 @@ model RollupCommerceDailyRevenue {
 // net of refunds — the same net cash definition `aggregatePayments` uses — so
 // the chart never disagrees with the AR figures.
 model RollupInvoicingDailyCollected {
-  tenantId String @map("tenant_id") @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
   // NON-null (docs/131 §6): unlike commerce/dropship, the invoicing source
   // (billing_documents.property_id) is NOT NULL and ON DELETE RESTRICT — a site
   // with billing history cannot be deleted, so there is never an unattributed
   // bucket here. Both series attribute to the DOCUMENT's site (a payment inherits
   // its document's property), so a composite PK is exact and no surrogate is needed.
-  propertyId String @map("property_id") @db.Uuid
+  propertyId String   @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
-  bucket   DateTime @db.Date
+  bucket     DateTime @db.Date
 
   // Payment/deposit events received this day (refunds excluded from the count).
   paymentsCount  Int    @default(0) @map("payments_count")
@@ -107,9 +107,9 @@ model RollupDropshipDailyOrders {
   // rollup: a DropshipOrder has no site of its own — it attributes to its storefront
   // Order (DropshipOrder.order), whose property_id is SetNull, so a routed order can
   // outlive its site into the null "unattributed" bucket.
-  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String  @map("tenant_id") @db.Uuid
-  propertyId String? @map("property_id") @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
   bucket     DateTime @db.Date
 
@@ -149,9 +149,9 @@ model RollupAutomationDailyRuns {
   // null bucket is a first-class, meaningful value. Per-site reads therefore
   // INCLUDE the null bucket (every site sees the tenant-wide automations' activity),
   // the shared-null read the operational layer uses for Automation itself.
-  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String  @map("tenant_id") @db.Uuid
-  propertyId String? @map("property_id") @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
   bucket     DateTime @db.Date
 
